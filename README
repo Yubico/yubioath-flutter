@@ -29,7 +29,7 @@ binary your are building).
 Clone the git repository and checkout the desired release tag (or
 branch):
 
-  git clone https://github.com/Yubico/yubico-authenticator.git
+  git clone https://github.com/Yubico/yubioath-desktop.git
   cd yubico-authenticator
 
 To sign the executable, copy the pfx file to yubicoauth.pfx and place
@@ -53,4 +53,4 @@ XXX: move this section to github issues once we upload to github
 
 - add mac packaging 
 - Add possibility to change password
-- Support for adding HOTP credentials via the Add Account button
+
