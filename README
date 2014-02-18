@@ -1,0 +1,56 @@
+Yubico Authenticator
+====================
+
+The Yubico Authenticator is a graphical desktop tool for generating
+Open AuTHentication (OATH) event-based HOTP and time-based TOTP
+one-time password codes, with the help of a Yubikey NEO that protects
+the shared secrets.
+
+License
+-------
+
+Yubico Authenticator is licensed under GPLv3+, see COPYING for
+details.
+
+Dependencies
+------------
+
+To build the Yubico Authenticator you need the following Python
+modules: PySide, PBKDF2, pyscard.  To use it, you need a YubiKey NEO
+with the OATH applet loaded.
+
+Building Windows binaries
+-------------------------
+
+For Windows you will need python, PySide, PyInstaller and Pywin32
+installed (32 or 64-bit versions depending on the architecture of the
+binary your are building).
+
+Clone the git repository and checkout the desired release tag (or
+branch):
+
+  git clone https://github.com/Yubico/yubico-authenticator.git
+  cd yubico-authenticator
+
+To sign the executable, copy the pfx file to yubicoauth.pfx and place
+it in the root of the project folder. You will need signtool.exe (from
+the Windows SDK) either copied into the root as well or in a location
+in your PATH.
+
+Run "pyinstaller.exe -w -i yubico.ico yubicoauthenticator.spec" from
+the main project folder.
+
+Building Mac OSX binaries
+-------------------------
+
+Currently we do not have binaries for OSX, contribution is welcome.
+It should be possible via PyInstaller.
+
+Todo
+----
+
+XXX: move this section to github issues once we upload to github
+
+- add mac packaging 
+- Add possibility to change password
+- Support for adding HOTP credentials via the Add Account button

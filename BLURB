@@ -1,0 +1,7 @@
+Author: Yubico
+Basename: yubico-authenticator
+Homepage: http://opensource.yubico.com/yubico-authenticator
+License: BSD-2-Clause
+Name: Yubico Authenticator
+Project: yubico-authenticator
+Summary: Crossplatform graphical user interface to generate one-time passwords.
