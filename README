@@ -49,8 +49,5 @@ It should be possible via PyInstaller.
 Todo
 ----
 
-XXX: move this section to github issues once we upload to github
-
-- add mac packaging 
 - Add possibility to change password
 
