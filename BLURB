@@ -1,6 +1,6 @@
 Author: Yubico
-Basename: yubico-authenticator
-Homepage: http://opensource.yubico.com/yubico-authenticator
+Basename: yubioath-desktop
+Homepage: http://opensource.yubico.com/yubioath-desktop
 License: BSD-2-Clause
 Name: Yubico Authenticator
 Project: yubico-authenticator
