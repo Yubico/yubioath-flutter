@@ -3,5 +3,5 @@ Basename: yubioath-desktop
 Homepage: http://opensource.yubico.com/yubioath-desktop
 License: BSD-2-Clause
 Name: Yubico Authenticator
-Project: yubico-authenticator
+Project: yubioath-desktop
 Summary: Crossplatform graphical user interface to generate one-time passwords.
