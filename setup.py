@@ -29,13 +29,13 @@ def get_version():
         return match.group(1)
 
 setup(
-    name='yubico-authenticator',
+    name='yubioath-desktop',
     version=get_version(),
     author='Tommaso Galassi De Orchi',
     author_email='tom@yubico.com',
     maintainer='Yubico Open Source Maintainers',
     maintainer_email='ossmaint@yubico.com',
-    url='https://github.com/Yubico/yubico-authenticator',
+    url='https://github.com/Yubico/yubioath-desktop',
     license='BSD 2 clause',
     packages=['yubicoauthenticator'],
     include_package_data=True,
