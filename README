@@ -52,7 +52,7 @@ Running from Linux / OSX
 
 Install Python 2.7.5
 
-Run "python ui_systray"
+	Run "python ui_systray.py"
 
 The application will start and sit on the system's systray.
 
