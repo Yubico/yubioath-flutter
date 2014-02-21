@@ -46,6 +46,20 @@ Building Mac OSX binaries
 Currently we do not have binaries for OSX, contribution is welcome.
 It should be possible via PyInstaller.
 
+
+Running from Linux / OSX
+----------------------------
+
+Install Python 2.7.5
+
+Run "python ui_systray"
+
+The application will start and sit on the system's systray.
+
+
+
+
+
 Todo
 ----
 
