@@ -40,6 +40,7 @@ in your PATH.
 Run "pyinstaller.exe -w -i yubico.ico yubicoauthenticator.spec" from
 the main project folder.
 
+
 Building Mac OSX binaries
 -------------------------
 
@@ -58,10 +59,7 @@ The application will start and sit on the system's systray.
 
 
 
+ToDo:
 
-
-Todo
-----
-
-- Add possibility to change password
-
+* .deb packaging
+* OSX .app
