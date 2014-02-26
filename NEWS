@@ -1,3 +1,9 @@
-* Version 0.0.1 (released 2014-02-18)
+* Version 0.0.2 (released 2014-02-26)
+
+  * New Features:
+    - Menu Bar
+    - Ability to set a password
+ 
+* Version 0.0.1 (released 2014-02-19)
 
   * Initial release supporting mode changing.
