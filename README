@@ -49,17 +49,19 @@ It should be possible via PyInstaller.
 
 
 Running from Linux / OSX
-----------------------------
+------------------------
 
 Install Python 2.7.5
-
+	
+	cd yubicoauthenticator/
 	Run "python ui_systray.py"
 
 The application will start and sit on the system's systray.
 
 
 
-ToDo:
+ToDo
+----
 
 * .deb packaging
 * OSX .app
