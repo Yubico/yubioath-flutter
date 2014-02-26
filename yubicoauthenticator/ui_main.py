@@ -180,7 +180,8 @@ class Ui_Dialog(object):
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
-        self.menuFile.setIcon(self.icon)
+        #self.menuFile.setIcon(self.icon)
+        self.menuFile.setTitle("File")
 
         self.menuItem_1 = QtGui.QAction(Dialog)
         self.menuItem_1.setObjectName("menuItem_1")

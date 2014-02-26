@@ -53,6 +53,7 @@ SEND_REMAINING_INS = 0xa5;
 	#properties 0x01
 HMAC_SHA1 = 0x01
 TOTP = 0x20
+HOTP = 0x10
 
 
 
