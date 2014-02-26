@@ -46,7 +46,13 @@ CALCULATE_INS = 0xa2;
 VALIDATE_INS = 0xa3;
 CALCULATE_ALL_INS = 0xa4;
 SEND_REMAINING_INS = 0xa5;
-
+	#hmac-sha1 0x01
+	#hmac-sha256 0x02
+	#totp 0x20
+	#hotp 0x10
+	#properties 0x01
+HMAC_SHA1 = 0x01
+TOTP = 0x20
 
 
 
@@ -174,6 +180,28 @@ def put_payload(account):
 
 
 #
+# creates payload for a setting a new password
+#
+
+def set_code_payload(key, response, challenge):
+	
+	#build payload
+	key_algorithm = HMAC_SHA1 | TOTP
+
+
+	payload = chr(tags['KEY_TAG']) + chr(len(key)+1) + chr(key_algorithm) + key + chr(tags['CHALLENGE_TAG']) + chr(len(challenge)) + challenge + chr(tags['RESPONSE_TAG']) + chr(len(response)) + response
+
+	return payload
+
+
+def unset_code_payload():
+
+	#set length to zero rest is ignored
+	payload = chr(tags['KEY_TAG']) + chr(0)
+	return payload
+
+
+#
 # calculate_payload: currnetly is used only to calculate HOTP so be careful!
 #
 def calculate_payload(hotp_name):
@@ -183,7 +211,9 @@ def calculate_payload(hotp_name):
 	
 	return payload
 
-
+#
+# parses the response from the HOTP challenge
+#
 def parse_hotp_response(resp):
 
 	i=0

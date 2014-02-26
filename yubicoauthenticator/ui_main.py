@@ -48,6 +48,7 @@ import sys
 import time
 import ui_addaccount 
 import ui_systray as gm
+import ui_password_change
 import yubico_authenticator as yc
 
 
@@ -68,10 +69,10 @@ class Ui_Dialog(object):
             basedir = os.path.dirname(__file__)
 
         Dialog.setObjectName("Dialog")
-        Dialog.resize(311, 507)
-        Dialog.setFixedSize(311, 507)
+        Dialog.resize(311, 527)
+        Dialog.setFixedSize(311, 527)
         self.gridLayoutWidget = QtGui.QWidget(Dialog)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 30, 291, 331))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 50, 291, 331))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
 
         self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
@@ -104,7 +105,7 @@ class Ui_Dialog(object):
 
         #set the progress bar
         self.progressBar = QtGui.QProgressBar(Dialog)
-        self.progressBar.setGeometry(QtCore.QRect(10, 410, 231, 23))
+        self.progressBar.setGeometry(QtCore.QRect(10, 420, 231, 23))
         self.progressBar.setInputMethodHints(QtCore.Qt.ImhNone)
         self.progressBar.setMaximum(30)
         self.progressBar.setProperty("value", 30)
@@ -116,7 +117,7 @@ class Ui_Dialog(object):
         # Setting up all lables
         #
         self.label = QtGui.QLabel(Dialog)
-        self.label.setGeometry(QtCore.QRect(240, 413, 51, 16))
+        self.label.setGeometry(QtCore.QRect(243, 423, 51, 16))
         self.label.setObjectName("label")
         font = QtGui.QFont()
         font.setPointSize(8)
@@ -124,14 +125,14 @@ class Ui_Dialog(object):
 
 
         self.label_2 = QtGui.QLabel(Dialog)
-        self.label_2.setGeometry(QtCore.QRect(65, 0, 101, 41))
+        self.label_2.setGeometry(QtCore.QRect(65, 15, 101, 41))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
         
         self.label_3 = QtGui.QLabel(Dialog)
-        self.label_3.setGeometry(QtCore.QRect(170, 0, 161, 41))        
+        self.label_3.setGeometry(QtCore.QRect(180, 15, 161, 41))        
         font = QtGui.QFont()
         font.setFamily("Calibri")
         self.label_3.setFont(font)
@@ -139,12 +140,12 @@ class Ui_Dialog(object):
         self.label_3.setObjectName("label_3")
         
         self.label_4 = QtGui.QLabel(Dialog)
-        self.label_4.setGeometry(QtCore.QRect(10, 362, 211, 31))
+        self.label_4.setGeometry(QtCore.QRect(10, 382, 211, 31))
         self.label_4.setAutoFillBackground(True)
         self.label_4.setObjectName("label_4")
         
         self.label_5 = QtGui.QLabel(Dialog)
-        self.label_5.setGeometry(QtCore.QRect(225, 363, 81, 31))
+        self.label_5.setGeometry(QtCore.QRect(228, 385, 81, 31))
         self.label_5.setText("")
         self.label_5.setPixmap(QtGui.QPixmap("yubico-logo81.png"))
         self.label_5.setObjectName("label_5")
@@ -152,52 +153,59 @@ class Ui_Dialog(object):
 
         # adding buttons
         self.pushButton = QtGui.QPushButton(Dialog)
-        self.pushButton.setGeometry(QtCore.QRect(10, 440, 141, 51))
+        self.pushButton.setGeometry(QtCore.QRect(10, 465, 141, 51))
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.addCredential)
 
         self.pushButton_2 = QtGui.QPushButton(Dialog)
-        self.pushButton_2.setGeometry(QtCore.QRect(160, 440, 141, 51))
+        self.pushButton_2.setGeometry(QtCore.QRect(160, 465, 141, 51))
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(self.delCredential)
 
 
         # adding separator
         self.line = QtGui.QFrame(Dialog)
-        self.line.setGeometry(QtCore.QRect(10, 390, 291, 20))
+        self.line.setGeometry(QtCore.QRect(10, 445, 291, 20))
         self.line.setFrameShape(QtGui.QFrame.HLine)
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
         self.line.setObjectName("line")
 
 
 
-        #adding a menu LOL
-        # self.menubar = QtGui.QMenuBar(Dialog)
-        # self.menubar.setGeometry(QtCore.QRect(0, 0, 300, 21))
-        # self.menubar.setObjectName("menubar")
-        # self.menuFile = QtGui.QMenu(self.menubar)
-        # self.menuFile.setObjectName("menuFile")
-        # self.actionItem_1 = QtGui.QAction(Dialog)
-        # self.actionItem_1.setObjectName("actionItem_1")
-        # self.actionItem_2 = QtGui.QAction(Dialog)
-        # self.actionItem_2.setObjectName("actionItem_2")
-        # self.actionExit = QtGui.QAction(Dialog)
-        # self.actionExit.setObjectName("actionExit")
-        # self.actionHelp = QtGui.QAction(Dialog)
-        # self.actionHelp.setObjectName("actionHelp")
-        # self.actionAbout = QtGui.QAction(Dialog)
-        # self.actionAbout.setObjectName("actionAbout")
-        # self.menuFile.addAction(self.actionItem_1)
-        # self.menuFile.addAction(self.actionItem_2)
-        # self.menuFile.addSeparator()
-        # self.menuFile.addAction(self.actionExit)
-        # self.menubar.addAction(self.menuFile.menuAction())
-        # QtCore.QMetaObject.connectSlotsByName(Dialog)
+        #adding a menu 
+        self.menubar = QtGui.QMenuBar(Dialog)
+        self.icon = QtGui.QIcon(YUBICO_ICON)
+        
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 330, 21))
+        self.menubar.setObjectName("menubar")
+        self.menuFile = QtGui.QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
+        self.menuFile.setIcon(self.icon)
 
+        self.menuItem_1 = QtGui.QAction(Dialog)
+        self.menuItem_1.setObjectName("menuItem_1")
+        self.menuItem_2 = QtGui.QAction(Dialog)
+        self.menuItem_2.setObjectName("menuItem_2")
+        self.menuExit = QtGui.QAction(Dialog)
+        self.menuExit.setObjectName("menuExit")
 
+        self.menuFile.addAction(self.menuItem_1)
+        self.menuFile.addAction(self.menuItem_2)
+        self.menuFile.addSeparator()
+        self.menuFile.addAction(self.menuExit)
 
+        #exit item of file menu
+        self.menuExit.setShortcut('Ctrl+Q')
+        self.menuExit.setStatusTip('Exit Yubico Authenticator')
+        self.menuExit.triggered.connect(self.menu_exit)
+        #change password file menu
+        self.menuItem_1.triggered.connect(self.menu_change_password)
+        #display about
+        self.menuItem_2.triggered.connect(self.menu_about)
 
+        self.menubar.addAction(self.menuFile.menuAction())
 
+        #retranslate & connect
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
@@ -216,10 +224,10 @@ class Ui_Dialog(object):
         self.label_4.setText(QtGui.QApplication.translate("Dialog", "<span style=\" font-size:8pt; color:#C04141;\">Click to copy; double click copy and minimize</span>", None, QtGui.QApplication.UnicodeUTF8))
         
         #retranslate menu
-        # self.menuFile.setTitle(QtGui.QApplication.translate("Dialog", "File", None, QtGui.QApplication.UnicodeUTF8))
-        # self.actionItem_1.setText(QtGui.QApplication.translate("Dialog", "item 1", None, QtGui.QApplication.UnicodeUTF8))
-        # self.actionItem_2.setText(QtGui.QApplication.translate("Dialog", "item 2", None, QtGui.QApplication.UnicodeUTF8))
-        # self.actionExit.setText(QtGui.QApplication.translate("Dialog", "exit", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuFile.setTitle(QtGui.QApplication.translate("Dialog", "File", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuItem_1.setText(QtGui.QApplication.translate("Dialog", "Change Password", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuItem_2.setText(QtGui.QApplication.translate("Dialog", "About", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuExit.setText(QtGui.QApplication.translate("Dialog", "Exit", None, QtGui.QApplication.UnicodeUTF8))
 
 
         self.update_progressbar()
@@ -372,3 +380,51 @@ class Ui_Dialog(object):
         clipboard.clear(QtGui.QClipboard.Clipboard)
         clipboard.setText(str(item.text()), QtGui.QClipboard.Clipboard)
         self.hide_interface()
+
+
+    #                       #
+    # FILEMENU ITEM ACTIONS #
+    #                       #
+
+    def menu_exit(self):
+        istance = QtCore.QCoreApplication.instance()
+        istance.exit()
+
+    def menu_change_password(self):
+        #ask the user for new password
+        new_password = []
+
+        inputbox = ui_password_change.Ui_Password_Change(new_password)
+        inputbox.show()
+        if inputbox.exec_() == 1:
+            #run the PUT command
+            if len(new_password[0]) != 0:
+                #set the new user's provided password
+                yc.execute_command("set_code", new_password[0])
+                self.refresh()
+            else:
+                #user picked a blank password, so we unset the code and leave the neo unprotected
+                yc.execute_command("unset_code", new_password[0])
+                self.refresh()
+
+
+    def menu_about(self):
+        # display message
+        title = "Yubico Authenticator - About"
+        message = """ 
+        Copyright (c) 2013-2014 Yubico AB
+
+        This program is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version.
+
+        This program is distributed in the hope that it will be useful, but
+        WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+        General Public License for more details.
+
+        You should have received a copy of the GNU General Public License
+        along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+
+        QtGui.QMessageBox.information(QtGui.QWidget(), title, message)

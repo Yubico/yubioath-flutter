@@ -60,7 +60,9 @@ commands = {
 'calculate_all': {'cl':0x00,'ins':0xa4,'p1':0x00,'p2':0x01,'data':None},
 'unlock': {'cl':0x00,'ins':0xa3,'p1':0x00,'p2':0x00,'data':None}, 
 'delete': {'cl':0x00,'ins':0x02,'p1':0x00,'p2':0x00,'data':None},
-'put': {'cl':0x00,'ins':0x01,'p1':0x00,'p2':0x00,'data':None}
+'put': {'cl':0x00,'ins':0x01,'p1':0x00,'p2':0x00,'data':None},
+'set_code': {'cl':0x00,'ins':0x03,'p1':0x00,'p2':0x00,'data':None},
+'unset_code': {'cl':0x00,'ins':0x03,'p1':0x00,'p2':0x00,'data':None}
 }
 
 
@@ -71,7 +73,7 @@ commands = {
 
 
 
-def execute_command(command_name, param=None, parm2=None):
+def execute_command(command_name, param=None):
 		global neo
 
 		####################
@@ -103,8 +105,8 @@ def execute_command(command_name, param=None, parm2=None):
 
 		# this is never used to be implemented
 		elif command_name == 'unlock':
-			payload = functions.unlock_applet()
-
+			#payload = functions.unlock_applet()
+			print "debug123"
 
 		# this command deletes 1 entry from the credential list
 		elif command_name == 'delete':
@@ -145,11 +147,40 @@ def execute_command(command_name, param=None, parm2=None):
 				print e
 				return None
 
-			
+		elif command_name == 'set_code':
+
+			install_id = functions.get_id(neo) #get id
+			challenge = '\x1f\x2f\x3f\x4f\x5f\x6f\x7f\x8f'
+
+			#1000 round of pbkdf2
+			key = PBKDF2(param, install_id).read(16)
+			response = hmac.new(key, challenge, hashlib.sha1).digest()
+			#build payload
+			payload = functions.set_code_payload(key, response, challenge)
+
+			try: 
+				resp = neo._cmd_ok(cmd['cl'], cmd['ins'], cmd['p1'], cmd['p2'], payload)
+				return 
+				
+			except Exception, e:
+				print e
+				return None
+
+		elif command_name == 'unset_code':
+
+			payload = functions.unset_code_payload()
+
+			try:
+				resp = neo._cmd_ok(cmd['cl'], cmd['ins'], cmd['p1'], cmd['p2'], payload)
+				return
+			except Exception, e:
+				print e
+				return None
+
 
 		else:
 			print "unknown command"
-			exit(1)
+			sys.exit(1)
 
 
 		return cred_list	
