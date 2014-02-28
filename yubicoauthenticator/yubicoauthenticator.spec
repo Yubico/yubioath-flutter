@@ -37,12 +37,21 @@ with open('__init__.py', 'r') as f:
     match = re.search(r"(?m)^__version__\s*=\s*['\"](.+)['\"]$", f.read())
     ver_str = match.group(1)
 
-
-a = Analysis(['.\\ui_systray.py'],
-             pathex=['C:\\Users\\JohnDoe\\Desktop\\YubicoAuthenticator\\yubicoauthenticator'],
+if WIN:
+	a = Analysis(['.\\ui_systray.py'],
+             pathex=['C:\\Users\\v\\Documents\\Git\\yubioath-desktop\\yubicoauthenticator'],
              hiddenimports=[],
              hookspath=None,
              runtime_hooks=None)
+			 
+if OSX:
+	a = Analysis(['.\ui_systray.py'],
+             pathex=['.'],
+             hiddenimports=[],
+             hookspath=None,
+             runtime_hooks=None)
+
+			 
 pyz = PYZ(a.pure)
 exe = EXE(pyz,
           a.scripts,
@@ -146,6 +155,7 @@ import shutil
 shutil.copy2('yubioath-48.png', 'dist/Yubico Authenticator/yubioath-48.png')
 shutil.copy2('yubico.ico', 'dist/Yubico Authenticator/yubico.ico')
 shutil.copy2('yubico.png', 'dist/Yubico Authenticator/yubico.png')
+shutil.copy2('yubico-logo81.png', 'dist/Yubico Authenticator/yubico-logo81.png')
 
 	
 pfx_pass = "yubico"
