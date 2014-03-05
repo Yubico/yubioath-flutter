@@ -50,7 +50,7 @@ Run "pyinstaller -w -i yubico.ico yubicoauthenticator.spec" from
 the main project folder.
 
 Codesign the code with:
-codesign -s '3rd Party Mac developer Application' /path/to/directory/project.app 
+codesign -s 'Developer ID Application' /path/to/directory/project.app --deep
 
 Build the package with:
 http://s.sudre.free.fr/Software/Packages/about.html
