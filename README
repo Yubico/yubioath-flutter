@@ -44,8 +44,16 @@ the main project folder.
 Building Mac OSX binaries
 -------------------------
 
-Currently we do not have binaries for OSX, contribution is welcome.
-It should be possible via PyInstaller.
+Install PyInstaller via pip
+
+Run "pyinstaller -w -i yubico.ico yubicoauthenticator.spec" from
+the main project folder.
+
+Codesign the code with:
+codesign -s '3rd Party Mac developer Application' /path/to/directory/project.app 
+
+Build the package with:
+http://s.sudre.free.fr/Software/Packages/about.html
 
 
 Running from Linux / OSX
