@@ -16,9 +16,10 @@
 import os
 import sys
 import time
+import signal
 import ui_main as gl
 import yubico_authenticator as yc
-import signal
+
 
 from PySide import QtCore
 from PySide import QtGui
