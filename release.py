@@ -84,7 +84,8 @@ class release(Command):
             artifacts = [
                 'dist/%s.tar.gz' % self.fullname,
                 'dist/%s.tar.gz.sig' % self.fullname,
-		'dist/%s.exe' % self.fullname
+		'dist/%s.exe' % self.fullname,
+                'dist/%s.pkg' % self.fullname
             ]
             cmd = '%s/publish %s %s %s' % (
                 web_repo, self.name, self.version, ' '.join(artifacts))
