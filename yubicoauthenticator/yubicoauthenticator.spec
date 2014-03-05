@@ -169,6 +169,8 @@ if OSX:
 	shutil.copy2('yubico.ico', 'dist/Yubico Authenticator.app/Contents/MacOS/yubico.ico')
 	shutil.copy2('yubico.png', 'dist/Yubico Authenticator.app/Contents/MacOS/yubico.png')
 	shutil.copy2('yubico-logo81.png', 'dist/Yubico Authenticator.app/Contents/MacOS/yubico-logo81.png')
+	shutil.copy2('yubioath-48.icns', 'dist/Yubico Authenticator.app/Contents/MacOS/yubioath-48.png')
+	shutil.copy2('yubioath-48.icns', 'dist/Yubico Authenticator.app/Contents/Resources/yubioath-48.png')
 
 
 #######################
