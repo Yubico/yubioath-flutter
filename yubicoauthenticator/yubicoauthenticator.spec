@@ -24,7 +24,19 @@ import errno
 from glob import glob
 from getpass import getpass
 
+######################
+#					 #
+# USER CONFIGURATION #
+#					 #
+######################
+
 NAME = "Yubico Authenticator"
+PROJECT_PATH = "C:\\Users\\v\\Documents\\Git\\yubioath-desktop\\yubicoauthenticator"
+ICON = "yubico.ico"
+
+### END OF USER CONFIGURATION ###
+
+
 
 WIN = sys.platform in ['win32', 'cygwin']
 OSX = sys.platform in ['darwin']
@@ -39,13 +51,13 @@ with open('__init__.py', 'r') as f:
 
 if WIN:
 	a = Analysis(['.\\ui_systray.py'],
-             pathex=['C:\\Users\\v\\Documents\\Git\\yubioath-desktop\\yubicoauthenticator'],
+             pathex=[PROJECT_PATH],
              hiddenimports=[],
              hookspath=None,
              runtime_hooks=None)
 			 
 if OSX:
-	a = Analysis(['.\ui_systray.py'],
+	a = Analysis(['ui_systray.py'],
              pathex=['.'],
              hiddenimports=[],
              hookspath=None,
@@ -62,7 +74,7 @@ exe = EXE(pyz,
           upx=True,
           console=False,
 		  append_pkg=not OSX,
-		  icon='yubico.ico' )
+		  icon=ICON )
 		  
 coll = COLLECT(exe,
                a.binaries,
@@ -70,7 +82,7 @@ coll = COLLECT(exe,
                a.datas,
                strip=None,
                upx=True,
-               name='Yubico Authenticator')
+               name=NAME)
 			   
 # Read version information on Windows.
 VERSION = None
@@ -146,18 +158,19 @@ if OSX:
 	
 	
 # fix graphics folder
-#import distutils.core
-# copy subdirectory example
-#fromDirectory = 'C:\\Users\\JohnDoe\\Desktop\\YubicoAuthenticator\\yubicoauthenticator\\graphics'
-#toDirectory = 'C:\\Users\\JohnDoe\\Desktop\\YubicoAuthenticator\\yubicoauthenticator\\dist\\Yubico Authenticator\\'
-#distutils.dir_util.copy_tree(fromDirectory, toDirectory)
 import shutil
 shutil.copy2('yubioath-48.png', 'dist/Yubico Authenticator/yubioath-48.png')
 shutil.copy2('yubico.ico', 'dist/Yubico Authenticator/yubico.ico')
 shutil.copy2('yubico.png', 'dist/Yubico Authenticator/yubico.png')
 shutil.copy2('yubico-logo81.png', 'dist/Yubico Authenticator/yubico-logo81.png')
 
-	
+
+#######################
+#                     #
+# SIGN THE EXECUTABLE #
+#                     #
+#######################
+
 pfx_pass = "yubico"
 	
 if WIN:
