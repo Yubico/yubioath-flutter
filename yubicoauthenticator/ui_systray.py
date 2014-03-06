@@ -42,7 +42,7 @@ else:
 if sys.platform == 'darwin':
     from platform import mac_ver
     if tuple(mac_ver()[0].split('.')) >= (10, 9):
-        QtGui.QFont.insertSubstitution(".Lucida Grande UI", "Lucida Grande")
+        QtGui.QFont.insertSubstitution(".Lucida Grande UI", "LucidaGrande")
 
 
 QtCore.QCoreApplication.setOrganizationName('Yubico')
