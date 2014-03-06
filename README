@@ -46,8 +46,8 @@ Building Mac OSX binaries
 
 Install PyInstaller via pip
 
-Run "pyinstaller -w -i yubico.ico yubicoauthenticator.spec" from
-the main project folder.
+Run "pyinstaller -w -i "yubioath-48.png" yubicoauthenticator.spec" 
+from the main project folder.
 
 Codesign the code with:
 codesign -s 'Developer ID Application' /path/to/directory/project.app --deep
