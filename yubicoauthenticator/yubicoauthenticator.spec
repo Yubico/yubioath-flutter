@@ -24,6 +24,12 @@ import errno
 from glob import glob
 from getpass import getpass
 
+
+WIN = sys.platform in ['win32', 'cygwin']
+OSX = sys.platform in ['darwin']
+
+
+
 ######################
 #					 #
 # USER CONFIGURATION #
@@ -32,14 +38,15 @@ from getpass import getpass
 
 NAME = "Yubico Authenticator"
 PROJECT_PATH = "C:\\Users\\v\\Documents\\Git\\yubioath-desktop\\yubicoauthenticator"
-ICON = "yubico.ico"
-
+#windows icon
+if WIN:
+	ICON = "yubico.ico"
+#osx icon
+if OSX:
+	ICON = "yubioath-48.icns"
 ### END OF USER CONFIGURATION ###
 
 
-
-WIN = sys.platform in ['win32', 'cygwin']
-OSX = sys.platform in ['darwin']
 
 #if WIN:
 #	ICON = os.path.join('graphics\\graphics', 'yubico.ico')
