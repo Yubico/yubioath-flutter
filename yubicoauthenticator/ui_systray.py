@@ -20,6 +20,7 @@ import signal
 import ui_main as gl
 import yubico_authenticator as yc
 
+from __init__ import __version__ as version
 
 from PySide import QtCore
 from PySide import QtGui
@@ -124,6 +125,8 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 			else:
 				#time.sleep(0.5)	
 				self.myapp = Window()
+				self.myapp.setWindowTitle("Authenticator V. (%s)" % version)
+				self.myapp.setWindowIcon(QtGui.QIcon(os.path.join(basedir, YUBICO_ICON)))
 				self.myapp.show()
 				self.myapp.activateWindow()
 				self.myapp.raise_()
