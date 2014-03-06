@@ -64,6 +64,9 @@ class Ui_Password_Change(QtGui.QDialog):
         self.lineEdit_2.setPlaceholderText("New password")
         self.lineEdit_3.setPlaceholderText("Confirm new password")
 
+        #defin.e echo mode
+        self.lineEdit_2.setEchoMode(QtGui.QLineEdit.Password)
+        self.lineEdit_3.setEchoMode(QtGui.QLineEdit.Password)
 
         self.setModal(True)
         

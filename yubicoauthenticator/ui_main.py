@@ -212,8 +212,6 @@ class Ui_Dialog(object):
 
 
 
-
-
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Yubico Authenticator", None, QtGui.QApplication.UnicodeUTF8))
         self.progressBar.setFormat(QtGui.QApplication.translate("Dialog", "%vs", None, QtGui.QApplication.UnicodeUTF8))

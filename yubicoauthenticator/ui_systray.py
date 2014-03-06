@@ -82,8 +82,16 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 		self.connect(appabout, QtCore.SIGNAL('triggered()') ,self.appShowAbout)
 		self.connect(appexit, QtCore.SIGNAL('triggered()'), self.appExit)
 
+		self.activated.connect(self.iconActivated)
+
+
 		self.show()
 
+	def iconActivated(self, reason):
+		if reason in (QtGui.QSystemTrayIcon.Trigger, QtGui.QSystemTrayIcon.DoubleClick):
+			self.appCalc()
+		else:
+			return
 
 	def appCalc(self):
 		#return presence and if the neo is password protected	
@@ -102,7 +110,9 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 						#success! now run the authenticator
 						#time.sleep(0.5)	
 						self.myapp = Window()
-						self.myapp.show()		
+						self.myapp.show()
+						self.myapp.activateWindow()
+						self.myapp.raise_()		
 					else:
 						#fail for some reasons
 						QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Warning!"), self.tr("Wrong password or applet is corrupted"))			
@@ -115,6 +125,8 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 				#time.sleep(0.5)	
 				self.myapp = Window()
 				self.myapp.show()
+				self.myapp.activateWindow()
+				self.myapp.raise_()
 		else:
 			#there is no neo
 			QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Warning!"), self.tr("No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port"))
