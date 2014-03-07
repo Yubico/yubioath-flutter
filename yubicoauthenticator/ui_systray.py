@@ -20,7 +20,7 @@ import signal
 import ui_main as gl
 import yubico_authenticator as yc
 
-from __init__ import __version__ as version
+
 
 from PySide import QtCore
 from PySide import QtGui
@@ -28,7 +28,7 @@ from PySide import QtGui
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 YUBICO_ICON = "yubioath-48.png"
-
+VERSION = "0.0.5"
 
 #FIX FOR PYINSTALLER
 if getattr(sys, 'frozen', False):
@@ -83,18 +83,17 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 		self.connect(appabout, QtCore.SIGNAL('triggered()') ,self.appShowAbout)
 		self.connect(appexit, QtCore.SIGNAL('triggered()'), self.appExit)
 
-		self.activated.connect(self.iconActivated)
-
 
 		self.show()
-
-	def iconActivated(self, reason):
-		if reason in (QtGui.QSystemTrayIcon.Trigger, QtGui.QSystemTrayIcon.DoubleClick):
+		#try to pop the application
+		if sys.platform == "darwin":
+			print "sono darwin"
 			self.appCalc()
-		else:
-			return
+
 
 	def appCalc(self):
+		#instantiate the new windows but don't show it yet (needed for qmessagebox parent)
+		self.myapp = Window()
 		#return presence and if the neo is password protected	
 		neo, is_protected = yc.check_neo_presence()
 		#check if the neo is present
@@ -113,7 +112,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 						self.myapp = Window()
 						self.myapp.show()
 						self.myapp.activateWindow()
-						self.myapp.raise_()		
+						#self.myapp.raise_()		
 					else:
 						#fail for some reasons
 						QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Warning!"), self.tr("Wrong password or applet is corrupted"))			
@@ -125,15 +124,16 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 			else:
 				#time.sleep(0.5)	
 				self.myapp = Window()
-				self.myapp.setWindowTitle("Authenticator V. (%s)" % version)
+				self.myapp.setWindowTitle("Authenticator V. (%s)" % VERSION)
 				self.myapp.setWindowIcon(QtGui.QIcon(os.path.join(basedir, YUBICO_ICON)))
 				self.myapp.show()
 				self.myapp.activateWindow()
-				self.myapp.raise_()
+				#self.myapp.raise_()
 		else:
 			#there is no neo
-			QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Warning!"), self.tr("No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port"))
-
+			QtGui.QMessageBox.information(self.myapp, self.tr("Warning: No Yubikey NEO detected"),
+                                               "No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port", QtGui.QMessageBox.Ok)
+			
 
 	def appShowAbout(self):
 		QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Yubico Authenticator"), self.tr("""
