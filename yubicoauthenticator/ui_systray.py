@@ -42,7 +42,7 @@ else:
 if sys.platform == 'darwin':
     from platform import mac_ver
     if tuple(mac_ver()[0].split('.')) >= (10, 9):
-        QtGui.QFont.insertSubstitution(".Lucida Grande UI", "LucidaGrande")
+        QtGui.QFont.insertSubstitution(".Lucida Grande UI", "Lucida Grande")
 
 
 QtCore.QCoreApplication.setOrganizationName('Yubico')
@@ -87,7 +87,6 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 		self.show()
 		#try to pop the application
 		if sys.platform == "darwin":
-			print "sono darwin"
 			self.appCalc()
 
 
