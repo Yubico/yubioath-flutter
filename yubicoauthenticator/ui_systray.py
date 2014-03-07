@@ -101,7 +101,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 			if is_protected:
 				#hide icon to avoid double clicks and glitches.
 				self.hide()
-				password, ok = QtGui.QInputDialog.getText(None, "Password", "Password:", QtGui.QLineEdit.Password)
+				password, ok = QtGui.QInputDialog.getText(self.myapp, "Password", "Password:", QtGui.QLineEdit.Password)
 				self.show()
 				if ok:
 					#do soemthing
