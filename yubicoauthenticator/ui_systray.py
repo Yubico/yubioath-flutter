@@ -101,7 +101,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 			if is_protected:
 				#hide icon to avoid double clicks and glitches.
 				self.hide()
-				password, ok = QtGui.QInputDialog.getText(self.myapp, "Password", "Password:", QtGui.QLineEdit.Password)
+				password, ok = QtGui.QInputDialog.getText(None, "Password", "Password:", QtGui.QLineEdit.Password)
 				self.show()
 				if ok:
 					#do soemthing
@@ -114,8 +114,8 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 						#self.myapp.raise_()		
 					else:
 						#fail for some reasons
-                                               "No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port", QtGui.QMessageBox.Ok)		
-						QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Warning!"), self.tr("Wrong password or applet is corrupted"))			
+						QtGui.QMessageBox.information(self.myapp, self.tr("Warning: No Yubikey NEO detected"),
+                                               "No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port", QtGui.QMessageBox.Ok)			
 						return
 				else:
 					QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Warning!"), self.tr("A password is required to access the Yubico Authenticator."))			
