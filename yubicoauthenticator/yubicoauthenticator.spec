@@ -160,7 +160,8 @@ if OSX:
 
     from shutil import copy2 as copy
     copy('resources/qt.conf', 'dist/%s.app/Contents/Resources/' % NAME)
-	
+	copy('resources/patch', 'dist/%s.app/Contents/Resources/' % NAME)
+	copy('resources/libccid-yubikey.diff', 'dist/%s.app/Contents/Resources/' % NAME)
 	
 	
 	
@@ -174,6 +175,7 @@ shutil.copy2('yubioath-128.png', 'dist/Yubico Authenticator/yubioath-128.png')
 
 
 if OSX:
+	#icons and logos
 	shutil.copy2('yubioath-128.png', 'dist/Yubico Authenticator.app/Contents/MacOS/yubioath-128.png')
 	shutil.copy2('yubioath-128.png', 'dist/Yubico Authenticator.app/Contents/Resources/yubioath-128.png')
 	shutil.copy2('yubioath-128.icns', 'dist/Yubico Authenticator.app/Contents/MacOS/yubioath-128.icns')
