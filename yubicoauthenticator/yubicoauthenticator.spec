@@ -160,8 +160,8 @@ if OSX:
 
     from shutil import copy2 as copy
     copy('resources/qt.conf', 'dist/%s.app/Contents/Resources/' % NAME)
-	copy('resources/patch', 'dist/%s.app/Contents/Resources/' % NAME)
-	copy('resources/libccid-yubikey.diff', 'dist/%s.app/Contents/Resources/' % NAME)
+	copy('resources/osx/patch', 'dist/%s.app/Contents/Resources/' % NAME)
+	copy('resources/osx/libccid-yubikey.diff', 'dist/%s.app/Contents/Resources/' % NAME)
 	
 	
 	
