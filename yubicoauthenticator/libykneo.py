@@ -77,6 +77,51 @@ def open_key(name=None):
 
 
 
+# def open_key2(name=None):
+#     """
+#     Opens a smartcard reader matching the given name and connects to the
+#     ykneo-bitcoin applet through it.
+
+#     Returns a reference to the YkneoYubiOath object.
+#     """
+#     print "LISTING ALL READERS:"
+#     for reader in readers():
+#         print reader
+
+#     for reader in readers():
+#             print "testing reader %s" % reader
+#             try:
+#                 conn = reader.createConnection()
+#                 conn.connect()
+#                 print "i am after conn.connect"
+#                 data, status = _cmd2(reader, 0, 0xa4, 0x04, 0x00, 'a0000005272101'.decode('hex'))
+#                 print data
+#                 print status
+#                 if (status) != 0x9000:
+#                     print "unable to select the applet on reader %s" % reader
+#                 else:
+#                     return YkneoYubiOath(conn)
+#             except:
+#                 continue 
+
+#     raise Exception('No smartcard reader found with YubiOath applet')
+
+
+
+# def _cmd2(reader, cl, ins, p1, p2, data=''):
+#     print "i am in cmd2"
+#     command = '%02x%02x%02x%02x%02x%s' % (cl, ins, p1, p2, len(data),
+#                                           data.encode('hex'))
+#     try:
+#         data, sw1, sw2 = reader.transmit(hex2cmd(command))
+#     except Exception, e:
+#         print e
+#         sys.exit(1)
+
+#     return data, sw1 << 8 | sw2
+
+
+
 class YkneoYubiOath(object):
 
     """
@@ -195,8 +240,8 @@ class YkneoYubiOath(object):
         return data, sw1 << 8 | sw2
 
 
-
     def _cmd_ok(self, *args, **kwargs):
+
         data, status = self._cmd(*args, **kwargs)
         #get high bits
         low = status & 0xFF;
