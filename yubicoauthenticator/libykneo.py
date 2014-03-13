@@ -14,10 +14,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import sys
 import struct
 
 # smartcard module
 from smartcard.System import readers
+from smartcard.Exceptions import (CardConnectionException,
+    NoCardException, SmartcardException)
 
 
 READER_PATTERN = re.compile('.*Yubikey NEO.*', re.I)
@@ -84,25 +87,27 @@ def open_key(name=None):
 
 #     Returns a reference to the YkneoYubiOath object.
 #     """
+#     test=[]
 #     print "LISTING ALL READERS:"
+    
 #     for reader in readers():
-#         print reader
+#         test.append(reader)
+#         print test
 
-#     for reader in readers():
-#             print "testing reader %s" % reader
-#             try:
-#                 conn = reader.createConnection()
-#                 conn.connect()
-#                 print "i am after conn.connect"
-#                 data, status = _cmd2(reader, 0, 0xa4, 0x04, 0x00, 'a0000005272101'.decode('hex'))
-#                 print data
-#                 print status
-#                 if (status) != 0x9000:
-#                     print "unable to select the applet on reader %s" % reader
-#                 else:
-#                     return YkneoYubiOath(conn)
-#             except:
-#                 continue 
+    
+#     try:
+#         conn = test[1].createConnection()
+#         conn.connect()
+#         print "i am after conn.connect"
+#         data, status = _cmd2(conn, 0, 0xa4, 0x04, 0x00, 'a0000005272101'.decode('hex'))
+#         print data
+#         print status
+#         if (status) != 0x9000:
+#             print "unable to select the applet on reader %s" % reader
+#         else:
+#             return YkneoYubiOath(conn)
+#     except Exception, e:
+#         print e
 
 #     raise Exception('No smartcard reader found with YubiOath applet')
 

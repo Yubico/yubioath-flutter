@@ -15,6 +15,7 @@
 
 import os
 import sys
+import text
 import time
 import signal
 import ui_main as gl
@@ -28,7 +29,6 @@ from PySide import QtGui
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 YUBICO_ICON = "yubioath-48.png"
-VERSION = "0.0.5"
 
 #FIX FOR PYINSTALLER
 if getattr(sys, 'frozen', False):
@@ -124,7 +124,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 			else:
 				#time.sleep(0.5)	
 				self.myapp = Window()
-				self.myapp.setWindowTitle("Authenticator V. (%s)" % VERSION)
+				self.myapp.setWindowTitle("Authenticator Authenticator")
 				self.myapp.setWindowIcon(QtGui.QIcon(os.path.join(basedir, YUBICO_ICON)))
 				self.myapp.show()
 				self.myapp.activateWindow()
@@ -136,40 +136,11 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 			
 
 	def appShowAbout(self):
-		QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Yubico Authenticator"), self.tr("""
-
-Copyright (c) 2013-2014 Yubico AB
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""))
+		QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Yubico Authenticator"), self.tr(text.copyright))
 
 
 	def appInstructions(self):
-		QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Yubico Authenticator"), self.tr("""
-
-This application generates TOTP & HOTP codes. Currently does not support adding HOTP accounts.
-
-How to use it:
-
-Plug in your Yubikey NEO in one of the USB port available on your computer. Be sure that you have the Yubico Authenticator applet installed on the Yubikey NEO!
-
-1) Right click on the Yubico icon (Y) in the task bar 
-
-2) Select "Show codes"
-
-3) Click once on the displayed values to copy text to the clipboard. Double click to copy text and minimize the window.
-
-4) To quit the application right click on the Yubico icon (Y) in the taskbar and select Exit."""))
+		QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Yubico Authenticator"), self.tr(text.instructions))
 
 	def appExit(self):
 		sys.exit(0)
