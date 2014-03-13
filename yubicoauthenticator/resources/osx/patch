@@ -8,7 +8,7 @@ FILE="/usr/libexec/SmartCardServices/drivers/ifd-ccid.bundle/Contents/Info.plist
 
 if [ -f $FILE ];
 then
-	if grep -Fxqi "$FILE" Yubikey
+	if grep -q 'Yubikey' "$FILE"
 	then
 		echo "already patched"
 	else
@@ -16,5 +16,5 @@ then
 	fi
 
 else
-   echo "File $FILE does not exist."
+   echo "File $FILE does not exist. Did you installed the CCID TOOLS?"
 fi
