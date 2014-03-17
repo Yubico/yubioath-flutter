@@ -195,7 +195,8 @@ def check_neo_presence():
 	#check if NEO is inserted
 	if not neo:
 		try:
-			neo = libykneo.open_key(None)
+			#use open_key if this gives problems
+			neo = libykneo.open_key_multiple_readers(None)
 			#return PRESENCE and PROTECTED
 			if neo.password_protected:
 				#PRESENT AND PROTECTED

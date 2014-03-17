@@ -80,50 +80,48 @@ def open_key(name=None):
 
 
 
-# def open_key2(name=None):
-#     """
-#     Opens a smartcard reader matching the given name and connects to the
-#     ykneo-bitcoin applet through it.
 
-#     Returns a reference to the YkneoYubiOath object.
-#     """
-#     test=[]
-#     print "LISTING ALL READERS:"
-    
-#     for reader in readers():
-#         test.append(reader)
-#         print test
+#
+# same as open keys but will try to look for the Yubico Authenticator applet on all readers (slower then open_key)
+#
+def open_key_multiple_readers(name=None):
+    """
+    Opens a smartcard reader matching the given name and connects to the
+    ykneo-bitcoin applet through it.
 
-    
-#     try:
-#         conn = test[1].createConnection()
-#         conn.connect()
-#         print "i am after conn.connect"
-#         data, status = _cmd2(conn, 0, 0xa4, 0x04, 0x00, 'a0000005272101'.decode('hex'))
-#         print data
-#         print status
-#         if (status) != 0x9000:
-#             print "unable to select the applet on reader %s" % reader
-#         else:
-#             return YkneoYubiOath(conn)
-#     except Exception, e:
-#         print e
+    Returns a reference to the YkneoYubiOath object.
+    """
+    for reader in readers():
+        try:
+            conn = reader.createConnection()
+            conn.connect()
 
-#     raise Exception('No smartcard reader found with YubiOath applet')
+            data, status = _cmd2(conn, 0, 0xa4, 0x04, 0x00, 'a0000005272101'.decode('hex'))
+
+            print "status:"
+            print status
+            if (status) != 0x9000:
+                print "unable to select the applet on reader %s" % reader
+            else:
+                return YkneoYubiOath(conn)
+        except Exception, e:
+            print "WARNING: %s" % e
+
+    raise Exception('No smartcard reader found with YubiOath applet')
 
 
 
-# def _cmd2(reader, cl, ins, p1, p2, data=''):
-#     print "i am in cmd2"
-#     command = '%02x%02x%02x%02x%02x%s' % (cl, ins, p1, p2, len(data),
-#                                           data.encode('hex'))
-#     try:
-#         data, sw1, sw2 = reader.transmit(hex2cmd(command))
-#     except Exception, e:
-#         print e
-#         sys.exit(1)
+def _cmd2(conn, cl, ins, p1, p2, data=''):
 
-#     return data, sw1 << 8 | sw2
+    command = '%02x%02x%02x%02x%02x%s' % (cl, ins, p1, p2, len(data),
+                                          data.encode('hex'))
+    try:
+        data, sw1, sw2 = conn.transmit(hex2cmd(command))
+    except Exception, e:
+        print "FATAL: %s" % e
+        sys.exit(1)
+
+    return data, sw1 << 8 | sw2
 
 
 
