@@ -157,15 +157,13 @@ if OSX:
     app = BUNDLE(coll,
                  name="%s.app" % NAME,
                  icon=ICON)
-
-	from shutil import copy2 as copy
-	copy('resources/qt.conf', 'dist/%s.app/Contents/Resources/' % NAME)
-	copy('resources/osx/patch', 'dist/%s.app/Contents/Resources/' % NAME)
-	copy('resources/osx/libccid-yubikey.diff', 'dist/%s.app/Contents/Resources/' % NAME)
-
+    from shutil import copy2 as copy
+    copy('resources/qt.conf', 'dist/%s.app/Contents/Resources/' % NAME)
+    copy('resources/osx/patch', 'dist/%s.app/Contents/Resources/' % NAME)
+    copy('resources/osx/libccid-yubikey.diff', 'dist/%s.app/Contents/Resources/' % NAME)
 
 
-	
+
 # fix graphics folder
 import shutil
 shutil.copy2('yubioath-48.png', 'dist/Yubico Authenticator/yubioath-48.png')
