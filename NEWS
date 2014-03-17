@@ -1,3 +1,10 @@
+* Version 0.0.6 (released 2014-03-17)
+  
+  * New MultiReader support
+    - detect the NEO over multiple readers
+    - improved patch for mac osx
+    - minor fix
+
 * Version 0.0.5 (released 2014-03-11)
 
   * New Mac OSX
