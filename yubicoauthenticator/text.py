@@ -1,4 +1,4 @@
-from __init__ import __version__ as version
+version = "0.0.6"
 
 
 copyright = """
