@@ -21,7 +21,7 @@
 Name "yubico-authenticator-"
 
 ; The file to write
-OutFile "../dist/Yubico Authenticator/yubico-authenticator-${YUBICOAUTHENTICATOR_VERSION}.exe"
+OutFile "../dist/Yubico Authenticator/yubioath-desktop-${YUBICOAUTHENTICATOR_VERSION}.exe"
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\Yubico\Yubico Authenticator"
