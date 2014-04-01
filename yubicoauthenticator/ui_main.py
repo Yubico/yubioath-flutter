@@ -46,6 +46,7 @@ QProgressBar::chunk {
 import os
 import sys
 import time
+import text
 import ui_addaccount 
 import ui_systray as gm
 import ui_password_change
@@ -228,7 +229,6 @@ class Ui_Dialog(object):
         self.menuItem_2.setText(QtGui.QApplication.translate("Dialog", "About", None, QtGui.QApplication.UnicodeUTF8))
         self.menuExit.setText(QtGui.QApplication.translate("Dialog", "Exit", None, QtGui.QApplication.UnicodeUTF8))
 
-
         self.update_progressbar()
         self.refresh()
 
@@ -408,22 +408,25 @@ class Ui_Dialog(object):
 
 
     def menu_about(self):
+        QtGui.QMessageBox.information(QtGui.QWidget(), "Yubico Authenticator", text.copyright)
+
+
         # display message
-        title = "Yubico Authenticator - About"
-        message = """ 
-        Copyright (c) 2013-2014 Yubico AB
+        # title = "Yubico Authenticator - About"
+        # message = """ 
+        # Copyright (c) 2013-2014 Yubico AB
 
-        This program is free software: you can redistribute it and/or modify
-        it under the terms of the GNU General Public License as published by
-        the Free Software Foundation, either version 3 of the License, or
-        (at your option) any later version.
+        # This program is free software: you can redistribute it and/or modify
+        # it under the terms of the GNU General Public License as published by
+        # the Free Software Foundation, either version 3 of the License, or
+        # (at your option) any later version.
 
-        This program is distributed in the hope that it will be useful, but
-        WITHOUT ANY WARRANTY; without even the implied warranty of
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-        General Public License for more details.
+        # This program is distributed in the hope that it will be useful, but
+        # WITHOUT ANY WARRANTY; without even the implied warranty of
+        # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+        # General Public License for more details.
 
-        You should have received a copy of the GNU General Public License
-        along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+        # You should have received a copy of the GNU General Public License
+        # along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
-        QtGui.QMessageBox.information(QtGui.QWidget(), title, message)
+        # QtGui.QMessageBox.information(QtGui.QWidget(), title, message)
