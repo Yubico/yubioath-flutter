@@ -2,5 +2,6 @@ include release.py
 include COPYING
 include NEWS
 include ChangeLog
-include /yubicoauthenticator/resources/*
-include /yubicoauthenticator/*.png
+include yubicoauthenticator/resources/*
+include yubicoauthenticator/*.png
+include scripts/*.1
