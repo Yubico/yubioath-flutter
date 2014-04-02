@@ -98,8 +98,7 @@ def open_key_multiple_readers(name=None):
 
             data, status = _cmd2(conn, 0, 0xa4, 0x04, 0x00, 'a0000005272101'.decode('hex'))
 
-            print "status:"
-            print status
+            
             if (status) != 0x9000:
                 print "unable to select the applet on reader %s" % reader
             else:
