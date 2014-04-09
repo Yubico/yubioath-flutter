@@ -201,6 +201,6 @@ pfx_pass = "yubico"
 if WIN:
   import subprocess
   subprocess.call(['C:/Program Files (x86)/NSIS/makensis.exe', '-DYUBICOAUTHENTICATOR_VERSION='+ver_str, 'resources\yubicoauthenticator.nsi'])
-  installer = ("dist\Yubico Authenticator\yubico-authenticator-%s.exe" % ver_str)
+  installer = ("dist\Yubico Authenticator\yubioath-desktop-%s.exe" % ver_str)
   subprocess.call(['C:/Program Files (x86)/Microsoft SDKs/Windows/v7.1A/Bin/signtool.exe', 'sign', '/f', 'certificate.pfx', '/p', pfx_pass, '/t', 'http://timestamp.verisign.com/scripts/timstamp.dll', installer])
   print "Installer created: %s" % installer
