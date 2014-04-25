@@ -223,14 +223,15 @@ def unlock_applet(neo, password):
 	
 	install_id = functions.get_id(neo) #get id
 	challenge = functions.get_challenge(neo) #get challenge
-	
+
 	key = PBKDF2(password, install_id).read(16)
 	response = hmac.new(key, challenge, hashlib.sha1).digest()
 	cmd = commands['unlock']
 	payload = functions.unlock_payload(response)
 
 	try:
-		result = neo._cmd_ok(cmd['cl'], cmd['ins'], cmd['p1'], cmd['p2'], payload)	
+		result = neo._cmd_ok(cmd['cl'], cmd['ins'], cmd['p1'], cmd['p2'], payload)
+		neo.password_protected = False	
 		return True
 	except Exception, e:
 		#set the NEO to none as we will need to check for password again

@@ -87,11 +87,13 @@ def open_key(name=None):
 def open_key_multiple_readers(name=None):
     """
     Opens a smartcard reader matching the given name and connects to the
-    ykneo-bitcoin applet through it.
+    ykneo-oath applet through it.
 
     Returns a reference to the YkneoYubiOath object.
     """
     for reader in readers():
+        print "list of readers"
+        print readers
         try:
             conn = reader.createConnection()
             conn.connect()
@@ -102,9 +104,13 @@ def open_key_multiple_readers(name=None):
             if (status) != 0x9000:
                 print "unable to select the applet on reader %s" % reader
             else:
+                print "using reader"
+                print reader
                 return YkneoYubiOath(conn)
         except Exception, e:
             print "WARNING: %s" % e
+            print "i am in the except of multiple readers"
+
 
     raise Exception('No smartcard reader found with YubiOath applet')
 
