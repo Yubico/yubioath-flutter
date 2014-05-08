@@ -22,8 +22,6 @@ import argparse
 import ui_main as gl
 import yubico_authenticator as yc
 
-
-
 from PySide import QtCore
 from PySide import QtGui
 

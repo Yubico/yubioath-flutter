@@ -329,7 +329,7 @@ class Ui_Dialog(object):
             pointer.setQuitOnLastWindowClosed(False)
             pointer.closeAllWindows()
         else:
-            print "no systray mode"
+            print "nothing for now"
 
 
     def closeEvent(self):
