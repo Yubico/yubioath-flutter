@@ -18,6 +18,7 @@ import sys
 import text
 import time
 import signal
+import argparse
 import ui_main as gl
 import yubico_authenticator as yc
 
@@ -25,6 +26,22 @@ import yubico_authenticator as yc
 
 from PySide import QtCore
 from PySide import QtGui
+
+
+
+#####################
+#Command line input #
+#####################
+parser = argparse.ArgumentParser(description="Yubico Authenticator", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+# Add more options if you like
+parser.add_argument('--version', action='version', version='Yubico Authenticator %s' % text.version)
+parser.add_argument('--disable-systray', dest='nosystray', action='store_true', help="if disable the authenticator will not run in systray mode")
+parser.set_defaults(nosystray=False)
+args = parser.parse_args()
+
+nosystray = args.nosystray
+
+
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -173,17 +190,74 @@ class Window(QtGui.QWidget):
 
 
     def closeEvent(self, event):
-    	#handle the close event (x) top right corner
-        self.ui.closeEvent()
+    	if not nosystray:
+    		#handle the close event (x) top right corner
+    		self.ui.closeEvent()
+    	else:
+			event.ignore()
+			#self.ui.progress_timer.stop()
 
+			pointer = QtCore.QCoreApplication.instance()
+			pointer.setQuitOnLastWindowClosed(True)
+			self.showMinimized()
 
 
 if __name__ == "__main__":
-	app = QtGui.QApplication(sys.argv)
-	app.setQuitOnLastWindowClosed(False)
 	
-	trayIcon = SystemTrayIcon()
-	QtCore.QObject.connect(trayIcon, QtCore.SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), trayIcon.iconActivated)
-	trayIcon.show()
+	#check if systray mode is enabled
+	if not nosystray:
 
-	sys.exit(app.exec_())
+		app = QtGui.QApplication(sys.argv)
+		app.setQuitOnLastWindowClosed(False)
+		
+		trayIcon = SystemTrayIcon()
+		QtCore.QObject.connect(trayIcon, QtCore.SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), trayIcon.iconActivated)
+		trayIcon.show()
+
+		sys.exit(app.exec_())
+
+	else:
+		#the user selected --disable-systray mode
+		app = QtGui.QApplication(sys.argv)
+		app.setQuitOnLastWindowClosed(False)
+		
+		# trayIcon = SystemTrayIcon()
+		# QtCore.QObject.connect(trayIcon, QtCore.SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), trayIcon.iconActivated)
+		# trayIcon.show()
+		neo, is_protected = yc.check_neo_presence()
+		#check if the neo is present
+		if neo:
+			#check if it is password protected
+			if is_protected:
+				#hide icon to avoid double clicks and glitches.
+				password, ok = QtGui.QInputDialog.getText(self, "Password", "Password:", QtGui.QLineEdit.Password)
+				if ok:
+				#do soemthing
+					if yc.unlock_applet(neo, password):
+						#success! now run the authenticator
+						#time.sleep(0.5)
+						main_window = Window()
+						main_window.show()
+						main_window.activateWindow()
+					else:
+						#fail for some reasons
+						send_message("Warning: No Yubikey NEO detected", "No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port", 0)
+						sys.exit(-2)
+						#return
+				else:
+					send_message("Error:", "A password is required to access the Yubico Authenticator.", 1)
+					sys.exit(-3)
+					#return
+			#the neo is not protected go on with standard operations!
+			else:
+				#time.sleep(0.5)	
+				main_window = Window()
+				main_window.show()
+				main_window.activateWindow()
+				#self.myapp.raise_()
+		else:
+			#there is no neo
+			send_message("Warning: No Yubikey NEO detected", "No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port", 0)
+			sys.exit(-2)
+
+		sys.exit(app.exec_())

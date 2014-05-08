@@ -322,16 +322,23 @@ class Ui_Dialog(object):
 
     # check must be a BOOLEAN
     def hide_interface(self):
-        self.progress_timer.stop()
+        if not gm.nosystray:
+            self.progress_timer.stop()
 
-        pointer = QtCore.QCoreApplication.instance()
-        pointer.setQuitOnLastWindowClosed(False)
-        pointer.closeAllWindows()
+            pointer = QtCore.QCoreApplication.instance()
+            pointer.setQuitOnLastWindowClosed(False)
+            pointer.closeAllWindows()
+        else:
+            print "no systray mode"
 
 
     def closeEvent(self):
-        #hide the interface and stop timers
-        self.hide_interface()
+        if not gm.nosystray:
+            #hide the interface and stop timers
+            self.hide_interface()
+        else:
+            event.ignore()
+            self.hide_interface()
 
 
     def itemClicked(self, item):

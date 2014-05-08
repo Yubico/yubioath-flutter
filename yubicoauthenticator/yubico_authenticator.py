@@ -25,7 +25,7 @@ import base64
 import struct
 import hashlib
 import binascii
-import argparse
+
 
 # Import PBKDF2 function
 from pbkdf2 import PBKDF2
