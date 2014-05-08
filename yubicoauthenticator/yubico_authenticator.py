@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Copyright (c) 2013-2014 Yubico AB
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,226 +13,249 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import io
 import os
 import sys
-import hmac
+import text
 import time
-import hmac
-import base64
-import struct
-import hashlib
-import binascii
+import signal
+import argparse
+import ui_main as gl
+import yubico_authenticator as yc
+
+from PySide import QtCore
+from PySide import QtGui
 
 
-# Import PBKDF2 function
-from pbkdf2 import PBKDF2
 
-# Yubikey NEO managment library
-import libykneo
-
-# functions and definitions
-import functions
-
-global neo
-neo = None
 #####################
 #Command line input #
 #####################
-# parser = argparse.ArgumentParser(description='This is a alpha version of the YubiOATH desktop client.\n')
-# parser.add_argument('-r','--reader',help='\nSmartCard reader e.g. "Yubikey NEO"', required=False, default="Yubikey NEO")
-# parser.add_argument('-c','--command', help='Specify command:\"list_all\" \"calculate\" \"validate\" \"calculate_all\"', required=True)
-# parser.add_argument('-n','--account',help='\nCompute code for this specific account', required=False, default=None)
-# parser.add_argument('-t','--time',help='\nTime of totp computation', required=False, default=None) 
-# parser.add_argument('-p','--password', help='\nPassword to unlock the Yubikey NEO', required=False, default=None)
-# args = parser.parse_args()
+parser = argparse.ArgumentParser(description="Yubico Authenticator", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+# Add more options if you like
+parser.add_argument('--version', action='version', version='Yubico Authenticator %s' % text.version)
+parser.add_argument('--disable-systray', dest='nosystray', action='store_true', help="if disable the authenticator will not run in systray mode")
+parser.set_defaults(nosystray=False)
+args = parser.parse_args()
 
-
-######################
-#commands definition #
-######################
-commands = {
-'list_all': {'cl':0x00,'ins':0xa1,'p1':0x00,'p2':0x00,'data':None},
-'calculate': {'cl':0x00,'ins':0xa2,'p1':0x00,'p2':0x01,'data':None},
-'validate': {'cl':0x00,'ins':0xa3,'p1':0x00,'p2':0x00,'data':None},
-'calculate_all': {'cl':0x00,'ins':0xa4,'p1':0x00,'p2':0x01,'data':None},
-'unlock': {'cl':0x00,'ins':0xa3,'p1':0x00,'p2':0x00,'data':None}, 
-'delete': {'cl':0x00,'ins':0x02,'p1':0x00,'p2':0x00,'data':None},
-'put': {'cl':0x00,'ins':0x01,'p1':0x00,'p2':0x00,'data':None},
-'set_code': {'cl':0x00,'ins':0x03,'p1':0x00,'p2':0x00,'data':None},
-'unset_code': {'cl':0x00,'ins':0x03,'p1':0x00,'p2':0x00,'data':None}
-}
+nosystray = args.nosystray
 
 
 
-##############################
-# connect to the Yubikey NEO #
-##############################
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+YUBICO_ICON = "yubioath-48.png"
+
+#FIX FOR PYINSTALLER
+if getattr(sys, 'frozen', False):
+    # we are running in a PyInstaller bundle
+    basedir = sys._MEIPASS
+else:
+    # we are running in a normal Python environment
+    basedir = os.path.dirname(__file__)
+
+# Font fix for OSX Mavericks
+if sys.platform == 'darwin':
+    from platform import mac_ver
+    if tuple(mac_ver()[0].split('.')) >= (10, 9):
+        QtGui.QFont.insertSubstitution(".Lucida Grande UI", "Lucida Grande")
+
+
+QtCore.QCoreApplication.setOrganizationName('Yubico')
+QtCore.QCoreApplication.setOrganizationDomain('yubico.com')
+QtCore.QCoreApplication.setApplicationName('YubiKey Authenticator')
 
 
 
-def execute_command(command_name, param=None):
-		global neo
+class SystemTrayIcon(QtGui.QSystemTrayIcon):
+	def __init__(self, parent=None):
+		QtGui.QSystemTrayIcon.__init__(self, parent)
+		
 
-		####################
-		# execute commands #
-		####################
-		cmd = commands[command_name]
-		cred_list = None
-
-		if command_name == 'list_all':
-			resp = neo._cmd_ok(cmd['cl'], cmd['ins'], cmd['p1'], cmd['p2'])
-			#tag = resp[0]
-			#length = resp[1]
-
-		#this calculates all TOTP codes
-		elif command_name == 'calculate_all':
-			payload = functions.calc_all_payload()
-			try:
-				resp = neo._cmd_ok(cmd['cl'], cmd['ins'], cmd['p1'], cmd['p2'], payload)
-				
-			except Exception, e:
-
-				#set the neo to NONE as we need to check for password again
-				print e
-				neo = None
-				return None	
-
-			cred_list = functions.parse_response(resp)
-
-
-		# this is never used to be implemented
-		elif command_name == 'unlock':
-			#payload = functions.unlock_applet()
-			print "debug123"
-
-		# this command deletes 1 entry from the credential list
-		elif command_name == 'delete':
-			#prepare payload for the command
-			payload = functions.delete_payload(param)
-			try:
-				resp = neo._cmd_ok(cmd['cl'], cmd['ins'], cmd['p1'], cmd['p2'], payload)
-				return True
-
-			except Exception, e:
-				#set NEO at None because it may have been unplugged
-				neo = None
-				print e
-				return False
-
-		elif command_name == "put":
-			#build the payload for the command
-			payload = functions.put_payload(param)
-			try:
-				resp = neo._cmd_ok(cmd['cl'], cmd['ins'], cmd['p1'], cmd['p2'], payload)
-				return True
-				
-			except Exception, e:
-				#set NEO at None because it may have been unplugged
-				neo = None
-				print e
-				return False
-
-		elif command_name == "calculate":
-			payload = functions.calculate_payload(param)
-
-			try:
-				resp = neo._cmd_ok(cmd['cl'], cmd['ins'], cmd['p1'], cmd['p2'], payload)
-				hotp = functions.parse_hotp_response(resp)
-				return hotp	
-			except Exception, e:
-				#neo = None
-				print e
-				return None
-
-		elif command_name == 'set_code':
-
-			install_id = functions.get_id(neo) #get id
-			challenge = '\x1f\x2f\x3f\x4f\x5f\x6f\x7f\x8f'
-
-			#1000 round of pbkdf2
-			key = PBKDF2(param, install_id).read(16)
-			response = hmac.new(key, challenge, hashlib.sha1).digest()
-			#build payload
-			payload = functions.set_code_payload(key, response, challenge)
-
-			try: 
-				resp = neo._cmd_ok(cmd['cl'], cmd['ins'], cmd['p1'], cmd['p2'], payload)
-				return 
-				
-			except Exception, e:
-				print e
-				return None
-
-		elif command_name == 'unset_code':
-
-			payload = functions.unset_code_payload()
-
-			try:
-				resp = neo._cmd_ok(cmd['cl'], cmd['ins'], cmd['p1'], cmd['p2'], payload)
-				return
-			except Exception, e:
-				print e
-				return None
-
-
+		#FIX FOR PYINSTALLER
+		if getattr(sys, 'frozen', False):
+		    # we are running in a PyInstaller bundle
+		    basedir = sys._MEIPASS
 		else:
-			print "unknown command"
-			sys.exit(1)
+		    # we are running in a normal Python environment
+		    basedir = os.path.dirname(__file__)
 
 
-		return cred_list	
+		#set working dir for the icon else it wont show up when executed from the nsis .lnk
+		self.setIcon(QtGui.QIcon(os.path.join(basedir, YUBICO_ICON)))
+		self.iconMenu = QtGui.QMenu(parent)
+		self.setToolTip('Yubico Authenticator')
+
+		
+
+		appcalc = self.iconMenu.addAction("Show Code")
+		appinstr = self.iconMenu.addAction("Instructions")
+		appabout = self.iconMenu.addAction("About")
+		appexit = self.iconMenu.addAction("Exit")
+		self.setContextMenu(self.iconMenu)
+
+		self.connect(appcalc, QtCore.SIGNAL('triggered()') ,self.appCalc)
+		self.connect(appinstr, QtCore.SIGNAL('triggered()') ,self.appInstructions)
+		self.connect(appabout, QtCore.SIGNAL('triggered()') ,self.appShowAbout)
+		self.connect(appexit, QtCore.SIGNAL('triggered()'), self.appExit)
 
 
+		self.show()
+		#try to pop the application
+		if sys.platform == "darwin":
+			self.appCalc()
 
-#
-# Check if the NEO is plugged in and if it is protected
-#
-def check_neo_presence():
-	global neo
-	#check if NEO is inserted
-	if not neo:
-		try:
-			#use open_key if this gives problems
-			neo = libykneo.open_key_multiple_readers(None)
-			#return PRESENCE and PROTECTED
-			if neo.password_protected:
-				#PRESENT AND PROTECTED
-				return neo, True
+
+	def appCalc(self):
+		#instantiate the new windows but don't show it yet (needed for qmessagebox parent)
+		self.myapp = Window()
+		#return presence and if the neo is password protected	
+		neo, is_protected = yc.check_neo_presence()
+		#check if the neo is present
+		if neo:
+			#check if it is password protected
+			if is_protected:
+				#hide icon to avoid double clicks and glitches.
+				self.hide()
+				password, ok = QtGui.QInputDialog.getText(self.myapp, "Password", "Password:", QtGui.QLineEdit.Password)
+				self.show()
+				if ok:
+					#do soemthing
+					if yc.unlock_applet(neo, password):
+						#success! now run the authenticator
+						#time.sleep(0.5)	
+						self.myapp = Window()
+						self.myapp.show()
+						self.myapp.activateWindow()
+						#self.myapp.raise_()		
+					else:
+						#fail for some reasons
+						QtGui.QMessageBox.information(self.myapp, self.tr("Warning: No Yubikey NEO detected"),
+                                               text.no_yubikey_no_m82, QtGui.QMessageBox.Ok)			
+						return
+				else:
+					QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Warning!"), self.tr("A password is required to access the Yubico Authenticator."))			
+					return
+			#the neo is not protected go on with standard operations!
 			else:
-				#PRESENTE BUT NOT PROTECTED
-				return neo, False
-		except Exception, e:
-			print e
-			#The NEO is not plugged in, protected is not checked
-			return None, False	
-	else:
-		if neo.password_protected:
-			#PRESENT AND PROTECTED
-			return neo, True
+				#time.sleep(0.5)	
+				self.myapp = Window()
+				self.myapp.setWindowTitle("Authenticator Authenticator")
+				self.myapp.setWindowIcon(QtGui.QIcon(os.path.join(basedir, YUBICO_ICON)))
+				self.myapp.show()
+				self.myapp.activateWindow()
+				#self.myapp.raise_()
 		else:
-			return neo, False
+			#there is no neo
+			QtGui.QMessageBox.information(self.myapp, self.tr("Warning: No Yubikey NEO detected"),
+                                               text.no_yubikey_no_m82, QtGui.QMessageBox.Ok)
+			
+
+	def appShowAbout(self):
+		QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Yubico Authenticator"), self.tr(text.copyright))
 
 
-#
-# Unlock the applet with the provided user password
-#
-def unlock_applet(neo, password):
+	def appInstructions(self):
+		QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Yubico Authenticator"), self.tr(text.instructions))
+
+	def appExit(self):
+		sys.exit(0)
+
+
+	def iconActivated(self, reason):
+		if reason == QtGui.QSystemTrayIcon.DoubleClick:
+			self.appCalc()
+
+
+
+
+# main window class
+class Window(QtGui.QWidget):
+    def __init__(self, parent=None):
+        super(Window, self).__init__(parent)
+        #FIX FOR PYINSTALLER 
+        if getattr(sys, 'frozen', False):
+        # we are running in a PyInstaller bundle 
+       		basedir = sys._MEIPASS 
+        else: 
+        # we are running in a normal Python environment 
+        	basedir = os.path.dirname(__file__) 
+
+        windowIcon = QtGui.QIcon(os.path.join(basedir, YUBICO_ICON))
+        self.setWindowIcon(windowIcon)
+        self.ui = gl.Ui_Dialog()
+        self.ui.setupUi(self)
+
+
+
+    def closeEvent(self, event):
+    	if not nosystray:
+    		#handle the close event (x) top right corner
+    		self.ui.closeEvent()
+    	else:
+			event.ignore()
+			#self.ui.progress_timer.stop()
+
+			pointer = QtCore.QCoreApplication.instance()
+			pointer.setQuitOnLastWindowClosed(True)
+			self.showMinimized()
+
+
+if __name__ == "__main__":
 	
-	install_id = functions.get_id(neo) #get id
-	challenge = functions.get_challenge(neo) #get challenge
+	#check if systray mode is enabled
+	if not nosystray:
 
-	key = PBKDF2(password, install_id).read(16)
-	response = hmac.new(key, challenge, hashlib.sha1).digest()
-	cmd = commands['unlock']
-	payload = functions.unlock_payload(response)
+		app = QtGui.QApplication(sys.argv)
+		app.setQuitOnLastWindowClosed(False)
+		
+		trayIcon = SystemTrayIcon()
+		QtCore.QObject.connect(trayIcon, QtCore.SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), trayIcon.iconActivated)
+		trayIcon.show()
 
-	try:
-		result = neo._cmd_ok(cmd['cl'], cmd['ins'], cmd['p1'], cmd['p2'], payload)
-		neo.password_protected = False	
-		return True
-	except Exception, e:
-		#set the NEO to none as we will need to check for password again
-		neo = None
-		print e
-		return False
+		sys.exit(app.exec_())
+
+	else:
+		#the user selected --disable-systray mode
+		app = QtGui.QApplication(sys.argv)
+		app.setQuitOnLastWindowClosed(False)
+		
+		# trayIcon = SystemTrayIcon()
+		# QtCore.QObject.connect(trayIcon, QtCore.SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), trayIcon.iconActivated)
+		# trayIcon.show()
+		neo, is_protected = yc.check_neo_presence()
+		#check if the neo is present
+		if neo:
+			#check if it is password protected
+			if is_protected:
+				#hide icon to avoid double clicks and glitches.
+				password, ok = QtGui.QInputDialog.getText(self, "Password", "Password:", QtGui.QLineEdit.Password)
+				if ok:
+				#do soemthing
+					if yc.unlock_applet(neo, password):
+						#success! now run the authenticator
+						#time.sleep(0.5)
+						main_window = Window()
+						main_window.show()
+						main_window.activateWindow()
+					else:
+						#fail for some reasons
+						send_message("Warning: No Yubikey NEO detected", text.no_yubikey_no_m82, 0)
+						sys.exit(-2)
+						#return
+				else:
+					send_message("Error:", "A password is required to access the Yubico Authenticator.", 1)
+					sys.exit(-3)
+					#return
+			#the neo is not protected go on with standard operations!
+			else:
+				#time.sleep(0.5)	
+				main_window = Window()
+				main_window.show()
+				main_window.activateWindow()
+				#self.myapp.raise_()
+		else:
+			#there is no neo
+			send_message("Warning: No Yubikey NEO detected", text.no_yubikey_no_m82, 0)
+			sys.exit(-2)
+
+		sys.exit(app.exec_())

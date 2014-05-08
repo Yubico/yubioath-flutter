@@ -62,8 +62,8 @@ Running from Linux / OSX
 Install Python 2.7.x
 	
 	cd yubicoauthenticator/
-	Run "python ui_systray.py --help"
-	Run "python ui_systray.py"
+	Run "python yubico_authenticator.py --help"
+	Run "python yubico_authenticator.py"
 
 The application will start and sit on the system's systray.
 
@@ -78,7 +78,7 @@ No systray mode
 For users without a systrabar or running desktop envinronment with non standard Qt behaviour
 
 	cd yubicoauthenticator/
-	Run "python ui_systray --disable-systray"
+	Run "python yubico_authenticator.py --disable-systray"
 
 
 

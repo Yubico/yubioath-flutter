@@ -57,14 +57,14 @@ with open('__init__.py', 'r') as f:
     ver_str = match.group(1)
 
 if WIN:
-	a = Analysis(['.\\ui_systray.py'],
+	a = Analysis(['.\\yubico_authenticator.py'],
              pathex=[PROJECT_PATH],
              hiddenimports=[],
              hookspath=None,
              runtime_hooks=None)
 			 
 if OSX:
-	a = Analysis(['ui_systray.py'],
+	a = Analysis(['yubico_authenticator.py'],
              pathex=[''],
              hiddenimports=[],
              hookspath=None,
