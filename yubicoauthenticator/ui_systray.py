@@ -130,7 +130,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 					else:
 						#fail for some reasons
 						QtGui.QMessageBox.information(self.myapp, self.tr("Warning: No Yubikey NEO detected"),
-                                               "No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port. Ensure that the NEO is mode HID+CCID -m82", QtGui.QMessageBox.Ok)			
+                                               text.no_yubikey_no_m82, QtGui.QMessageBox.Ok)			
 						return
 				else:
 					QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Warning!"), self.tr("A password is required to access the Yubico Authenticator."))			
@@ -147,7 +147,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 		else:
 			#there is no neo
 			QtGui.QMessageBox.information(self.myapp, self.tr("Warning: No Yubikey NEO detected"),
-                                               "No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port. Ensure that the NEO is mode HID+CCID -m82", QtGui.QMessageBox.Ok)
+                                               text.no_yubikey_no_m82, QtGui.QMessageBox.Ok)
 			
 
 	def appShowAbout(self):
@@ -239,7 +239,7 @@ if __name__ == "__main__":
 						main_window.activateWindow()
 					else:
 						#fail for some reasons
-						send_message("Warning: No Yubikey NEO detected", "No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port. Ensure that the NEO is mode HID+CCID -m82", 0)
+						send_message("Warning: No Yubikey NEO detected", text.no_yubikey_no_m82, 0)
 						sys.exit(-2)
 						#return
 				else:
@@ -255,7 +255,7 @@ if __name__ == "__main__":
 				#self.myapp.raise_()
 		else:
 			#there is no neo
-			send_message("Warning: No Yubikey NEO detected", "No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port. Ensure that the NEO is mode HID+CCID -m82", 0)
+			send_message("Warning: No Yubikey NEO detected", text.no_yubikey_no_m82, 0)
 			sys.exit(-2)
 
 		sys.exit(app.exec_())

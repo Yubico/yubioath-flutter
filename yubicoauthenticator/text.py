@@ -38,3 +38,8 @@ Plug in your Yubikey NEO in one of the USB port available on your computer. Be s
 3) Click once on the displayed values to copy text to the clipboard. Double click to copy text and minimize the window.
 
 4) To quit the application right click on the Yubico icon (Y) in the taskbar and select Exit (or you can use ctrl + Q)"""
+
+
+
+no_yubikey_no_m82 = """No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port.
+Ensure that the NEO is mode HID+CCID -m82. """
