@@ -63,7 +63,7 @@ Install Python 2.7.x
 	
 	cd yubicoauthenticator/
 	Run "python ui_systray.py --help"
-	Run "python ui_systray.py --disable-systray"
+	Run "python ui_systray.py"
 
 The application will start and sit on the system's systray.
 
@@ -72,7 +72,7 @@ On Ubuntu 14.04 you need the following packages first.
 	sudo apt-get install pcscd python-pyscard python-pbkdf2 python-pyside.qtgui
 
 
-No systra mode
+No systray mode
 --------------
 
 For users without a systrabar or running desktop envinronment with non standard Qt behaviour
