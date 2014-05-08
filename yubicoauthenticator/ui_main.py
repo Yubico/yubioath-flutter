@@ -48,9 +48,10 @@ import sys
 import time
 import text
 import ui_addaccount 
-import ui_systray as gm
+import commands as yc
 import ui_password_change
-import yubico_authenticator as yc
+import yubico_authenticator as gm
+
 
 
 from PySide import QtCore, QtGui
