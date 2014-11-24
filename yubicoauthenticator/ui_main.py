@@ -268,11 +268,11 @@ class Ui_Dialog(object):
             
             for credential in cred_list:
                 if credential.algorithm == 'totp':
-                    self.leftList.addItem(str(credential.name))
+                    self.leftList.addItem(str(credential.name).decode('utf-8').strip())
                     self.rightList.addItem(str(credential.code))
 
                 else:
-                    self.leftList.addItem(str(credential.name))
+                    self.leftList.addItem(str(credential.name).decode('utf-8').strip())
                     
                     self.rightList.addItem('HOTP')
                     #identify the row and set the tooltip
@@ -299,6 +299,7 @@ class Ui_Dialog(object):
             #strip off white spaces
             new_account['ACCOUNT_NAME'].replace(" ", "")
             new_account['SECRET_KEY'].replace(" ", "")
+            #new_account['ACCOUNT_NAME'] = str(new_account['ACCOUNT_NAME']).encode("utf-8").strip()
             #run the PUT command
             yc.execute_command("put", new_account)
             self.refresh()

@@ -81,7 +81,7 @@ class Ui_AddAccount(QtGui.QDialog):
         self.label_3.setText("Secret Key")
 
         #set place holder text
-        self.lineEdit.setPlaceholderText("tom@example.com")
+        self.lineEdit.setPlaceholderText("johndoe@example.com")
         self.lineEdit_2.setPlaceholderText("thei ncre dibl ehul kisi nmod hex!")
         # set modal option
         self.setModal(True)
@@ -91,7 +91,7 @@ class Ui_AddAccount(QtGui.QDialog):
     def verify(self):
         #set the data and quit
         # WARNING THE lineEdit.text() RETURNS A UNICODE 
-        self.new_account['ACCOUNT_NAME'] = self.lineEdit.text().encode('utf-8')
+        self.new_account['ACCOUNT_NAME'] = self.lineEdit.text().encode('utf-8').strip()
         #remove whitespace
         self.new_account['SECRET_KEY'] = self.lineEdit_2.text().replace(" ", "")
 
