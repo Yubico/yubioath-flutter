@@ -83,7 +83,7 @@ def get_user_password(neo):
 
 	password, ok = QtGui.QInputDialog.getText(None, "Password", "Password:", QtGui.QLineEdit.Password)
 	if ok:
-		return password
+		return password.encode('utf-8').strip()
 	else:
 		return None
 

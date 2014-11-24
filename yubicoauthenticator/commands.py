@@ -106,7 +106,7 @@ def execute_command(command_name, param=None):
 		# this is never used to be implemented
 		elif command_name == 'unlock':
 			#payload = functions.unlock_applet()
-			print "debug123"
+			print "God Mode!"
 
 		# this command deletes 1 entry from the credential list
 		elif command_name == 'delete':
