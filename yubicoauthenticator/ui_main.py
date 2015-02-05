@@ -329,7 +329,7 @@ class Ui_Dialog(object):
 
             pointer = QtCore.QCoreApplication.instance()
             pointer.setQuitOnLastWindowClosed(False)
-            pointer.closeAllWindows()
+            #pointer.closeAllWindows()
         else:
             print "nothing for now"
 
