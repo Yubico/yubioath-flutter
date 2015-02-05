@@ -235,7 +235,7 @@ if __name__ == "__main__":
 			#check if it is password protected
 			if is_protected:
 				#hide icon to avoid double clicks and glitches.
-				password, ok = QtGui.QInputDialog.getText(self, "Password", "Password:", QtGui.QLineEdit.Password)
+				password, ok = QtGui.QInputDialog.getText(None, "Password", "Password:", QtGui.QLineEdit.Password)
 				if ok:
 				#do soemthing
 					if yc.unlock_applet(neo, password):
@@ -246,11 +246,11 @@ if __name__ == "__main__":
 						main_window.activateWindow()
 					else:
 						#fail for some reasons
-						send_message("Warning: No Yubikey NEO detected", text.no_yubikey_no_m82, 0)
+						QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Warning!"),("Warning: No Yubikey NEO detected", text.no_yubikey_no_m82, 0))
 						sys.exit(-2)
 						#return
 				else:
-					send_message("Error:", "A password is required to access the Yubico Authenticator.", 1)
+					QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Warning!"),("Error:", "A password is required to access the Yubico Authenticator.", 1))
 					sys.exit(-3)
 					#return
 			#the neo is not protected go on with standard operations!
@@ -262,7 +262,7 @@ if __name__ == "__main__":
 				#self.myapp.raise_()
 		else:
 			#there is no neo
-			send_message("Warning: No Yubikey NEO detected", text.no_yubikey_no_m82, 0)
+			QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Warning!"),("Warning: No Yubikey NEO detected", text.no_yubikey_no_m82, 0))
 			sys.exit(-2)
 
 		sys.exit(app.exec_())
