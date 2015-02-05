@@ -117,22 +117,28 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 				#hide icon to avoid double clicks and glitches.
 				self.hide()
 				password, ok = QtGui.QInputDialog.getText(self.myapp, "Password", "Password:", QtGui.QLineEdit.Password)
-				password = password.encode('utf-8').strip()
+				password_utf8 = password.encode('utf-8').strip()
 				self.show()
 				if ok:
 					#do soemthing
-					if yc.unlock_applet(neo, password):
-						#success! now run the authenticator
-						#time.sleep(0.5)	
-						self.myapp = Window()
-						self.myapp.show()
-						self.myapp.activateWindow()
-						#self.myapp.raise_()		
-					else:
-						#fail for some reasons
-						QtGui.QMessageBox.information(self.myapp, self.tr("Warning: No Yubikey NEO detected"),
-                                               text.no_yubikey_no_m82, QtGui.QMessageBox.Ok)			
-						return
+					if not yc.unlock_applet(neo, password_utf8):
+                                                password_8bit = ""
+                                                for x in range(0, len(password)):
+                                                    char = ord(password[x]) & 0xff
+                                                    password_8bit += chr(char)
+                                                if password_8bit == password_utf8 or not yc.unlock_applet(neo, password_8bit):
+                                                    #fail for some reasons
+                                                    QtGui.QMessageBox.information(self.myapp,
+                                                                                  self.tr("Warning: No Yubikey NEO detected"),
+                                                                                  text.no_yubikey_no_m82, QtGui.QMessageBox.Ok)
+                                                    return
+
+					#success! now run the authenticator
+					#time.sleep(0.5)
+					self.myapp = Window()
+					self.myapp.show()
+					self.myapp.activateWindow()
+					#self.myapp.raise_()
 				else:
 					QtGui.QMessageBox.information(QtGui.QWidget(), self.tr("Warning!"), self.tr("A password is required to access the Yubico Authenticator."))			
 					return
