@@ -140,7 +140,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 			else:
 				#time.sleep(0.5)	
 				self.myapp = Window()
-				self.myapp.setWindowTitle("Authenticator Authenticator")
+				self.myapp.setWindowTitle("Yubico Authenticator")
 				self.myapp.setWindowIcon(QtGui.QIcon(os.path.join(basedir, YUBICO_ICON)))
 				self.myapp.show()
 				self.myapp.activateWindow()
