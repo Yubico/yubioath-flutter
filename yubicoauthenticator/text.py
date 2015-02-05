@@ -42,4 +42,4 @@ Plug in your Yubikey NEO in one of the USB port available on your computer. Be s
 
 
 no_yubikey_no_m82 = """No Yubikey NEO found. Please plugin your Yubikey NEO in one of your USB port.
-Ensure that the NEO is mode HID+CCID -m82. """
+Ensure that the NEO has CCID mode enabled, e.g -m86 or -m82. Download the Yubikey NEO manager from developers.yubico.com"""
