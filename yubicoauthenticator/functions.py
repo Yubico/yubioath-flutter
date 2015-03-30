@@ -301,15 +301,15 @@ def parse_response(resp):
 		
 		#read the number of digits for the totp
 		i+=1
-		totp_digits = resp[i]
+		totp_digits = ord(resp[i])
 		
 		#read the totp
 		i+=1
-		totp = (struct.unpack(">I", resp[i:i+totp_length])[0]) % 1000000
-		
+		totp_modulo = pow(10, totp_digits)
+		totp = str((struct.unpack(">I", resp[i:i+totp_length])[0]) % totp_modulo)
 
-		if len(str(totp)) < 6:
-			totp = str(totp).rjust(6,'0')
+		# pad out with 0s to correct length
+		totp = totp.rjust(totp_digits, '0')
 		i+=totp_length
 		
 		cred_list.append(add_entry('totp', name, totp))
