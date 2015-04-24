@@ -1,7 +1,10 @@
 include release.py
+include qt_resources.py
 include COPYING
 include NEWS
 include ChangeLog
-include yubicoauthenticator/resources/*
-include yubicoauthenticator/*.png
+include screenshot.png
 include scripts/*.1
+include resources/*
+include qt_resources/*
+include doc/*.adoc
