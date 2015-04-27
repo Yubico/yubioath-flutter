@@ -24,6 +24,87 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
+import os
+import sys
+import time
+import argparse
+import yubioath.gui.qt_resources
+from PySide import QtGui, QtCore
+from yubioath import __version__ as version
+from yubioath.gui import messages as m
+from yubioath.gui.view.main import MainWindow
+from yubioath.gui.worker import Worker
+
+if getattr(sys, 'frozen', False):
+    # we are running in a PyInstaller bundle
+    basedir = sys._MEIPASS
+else:
+    # we are running in a normal Python environment
+    basedir = os.path.dirname(__file__)
+
+# Font fixes for OSX
+if sys.platform == 'darwin':
+    from platform import mac_ver
+    mac_version = tuple(mac_ver()[0].split('.'))
+    if (10, 9) <= mac_version < (10, 10):  # Mavericks
+        QtGui.QFont.insertSubstitution('.Lucida Grande UI', 'Lucida Grande')
+    if (10, 10) <= mac_version:  # Yosemite
+        QtGui.QFont.insertSubstitution('.Helvetica Neue DeskInterface',
+                                       'Helvetica Neue')
+
+
+class YubiOathApplication(QtGui.QApplication):
+
+    def __init__(self, argv):
+        super(YubiOathApplication, self).__init__(argv)
+
+        self._set_basedir()
+
+        m._translate(self)
+
+        QtCore.QCoreApplication.setOrganizationName(m.organization)
+        QtCore.QCoreApplication.setOrganizationDomain(m.domain)
+        QtCore.QCoreApplication.setApplicationName(m.app_name)
+
+        self.window = self._create_window()
+        self.worker = Worker(self.window)
+
+        QtCore.QTimer.singleShot(0, self.start)
+
+    def start(self):
+        args = self._parse_args()
+
+        if args.tray:
+            pass
+
+        self.window.show()
+        self.window.raise_()
+
+    def _parse_args(self):
+        parser = argparse.ArgumentParser(description='Yubico Authenticator',
+                                         add_help=True)
+        parser.add_argument('-t', '--tray', action='store_true')
+        return parser.parse_args()
+
+    def _set_basedir(self):
+        if getattr(sys, 'frozen', False):
+            # we are running in a PyInstaller bundle
+            self.basedir = sys._MEIPASS
+        else:
+            # we are running in a normal Python environment
+            self.basedir = os.path.dirname(__file__)
+
+    def _create_window(self):
+        window = MainWindow()
+        window.setWindowTitle(m.win_title_1 % version)
+        window.setWindowIcon(QtGui.QIcon(':/yubioath.png'))
+        return window
+
 
 def main():
-    print "TODO"
+    app = YubiOathApplication(sys.argv)
+    status = app.exec_()
+    app.worker.thread().quit()
+    app.deleteLater()
+    time.sleep(0.01)  # Without this the process sometimes stalls.
+    sys.exit(status)
