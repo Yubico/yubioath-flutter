@@ -27,16 +27,27 @@
 from smartcard.System import readers
 from yubioath.core.utils import (der_read, der_pack, hmac_sha1, derive_key,
                                  get_random_bytes)
+from time import time
+import struct
 
 YKOATH_AID = 'a000000527210101'.decode('hex')
 
 INS_SET_CODE = 0x03
+INS_RESET = 0x04
+INS_LIST = 0xa1
+INS_CALCULATE = 0xa2
 INS_VALIDATE = 0xa3
+INS_CALC_ALL = 0xa4
+INS_SEND_REMAINING = 0xa5
+
+RESP_MORE_DATA = 0x61
 
 TAG_NAME = 0x71
+TAG_NAME_LIST = 0x72
 TAG_KEY = 0x73
 TAG_CHALLENGE = 0x74
 TAG_RESPONSE = 0x75
+TAG_T_RESPONSE = 0x76
 TAG_VERSION = 0x79
 
 TYPE_MASK = 0xf0
@@ -86,6 +97,36 @@ def ensure_unlocked(ykoath):
         raise DeviceLockedError()
 
 
+def time_challenge():
+    return chr(0)*4 + struct.pack('>I', int(time()/30))
+
+
+def parse_truncated(resp):
+    n_digits = ord(resp[0])
+    code = struct.unpack('>I', resp[1:])[0]
+    return ('%%0%dd' % n_digits) % (code % 10 ** n_digits)
+
+
+class Credential(object):
+    """
+    Reference to a credential.
+    """
+
+    def __init__(self, ykoath, algorithm, name):
+        self._ykoath = ykoath
+        self.algorithm = algorithm
+        self.name = name
+
+    def calculate(self):
+        if self.algorithm & TYPE_MASK == TYPE_TOTP:
+            challenge = time_challenge()
+        else:
+            challenge = ''
+        data = der_pack(TAG_NAME, self.name, TAG_CHALLENGE, challenge)
+        resp = self._ykoath._send(INS_CALCULATE, data, p2=1)
+        return parse_truncated(der_read(resp, TAG_T_RESPONSE)[0])
+
+
 class YubiOath(object):
 
     """
@@ -97,8 +138,12 @@ class YubiOath(object):
 
         self._select()
 
-    def _send(self, ins, data, p1=0, p2=0, expected=0x9000):
+    def _send(self, ins, data='', p1=0, p2=0, expected=0x9000):
         resp, status = self._device.send_apdu(0, ins, p1, p2, data)
+        while (status >> 8) == RESP_MORE_DATA:
+            more, status = self._device.send_apdu(
+                0, INS_SEND_REMAINING, 0, 0, '')
+            resp += more
         if expected != status:
             raise CardError(status)
         return resp
@@ -153,6 +198,31 @@ class YubiOath(object):
         else:
             data = der_pack(TAG_KEY, '')
         self._send(INS_SET_CODE, data)
+
+    def reset(self):
+        self._send(INS_RESET, p1=0xde, p2=0xad)
+        self._challenge = None
+
+    def list(self):
+        resp = self._send(INS_LIST)
+        items = []
+        while resp:
+            data, resp = der_read(resp, TAG_NAME_LIST)
+            items.append(Credential(self, ord(data[0]), data[1:]))
+        return items
+
+    def calculate_all(self):
+        data = der_pack(TAG_CHALLENGE, time_challenge())
+        resp = self._send(INS_CALC_ALL, data, p2=1)
+        results = {}
+        while resp:
+            name, resp = der_read(resp, TAG_NAME)
+            tag, value, resp = der_read(resp)
+            if tag == TAG_T_RESPONSE:
+                results[name] = parse_truncated(value)
+            else:
+                results[name] = None
+        return results
 
 
 def open_scard(name='YubiKey'):
