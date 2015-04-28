@@ -32,6 +32,8 @@ import struct
 
 YKOATH_AID = 'a000000527210101'.decode('hex')
 
+INS_PUT = 0x01
+INS_DELETE = 0x02
 INS_SET_CODE = 0x03
 INS_RESET = 0x04
 INS_LIST = 0xa1
@@ -48,7 +50,9 @@ TAG_KEY = 0x73
 TAG_CHALLENGE = 0x74
 TAG_RESPONSE = 0x75
 TAG_T_RESPONSE = 0x76
+TAG_PROPERTY = 0x78
 TAG_VERSION = 0x79
+TAG_IMF = 0x7a
 
 TYPE_MASK = 0xf0
 TYPE_HOTP = 0x10
@@ -97,8 +101,8 @@ def ensure_unlocked(ykoath):
         raise DeviceLockedError()
 
 
-def time_challenge():
-    return chr(0)*4 + struct.pack('>I', int(time()/30))
+def time_challenge(t):
+    return chr(0)*4 + struct.pack('>I', int(t/30))
 
 
 def parse_truncated(resp):
@@ -112,19 +116,26 @@ class Credential(object):
     Reference to a credential.
     """
 
-    def __init__(self, ykoath, algorithm, name):
+    def __init__(self, ykoath, oath_type, name):
         self._ykoath = ykoath
-        self.algorithm = algorithm
+        self.oath_type = oath_type
         self.name = name
 
-    def calculate(self):
-        if self.algorithm & TYPE_MASK == TYPE_TOTP:
-            challenge = time_challenge()
+    def calculate(self, timestamp=None):
+        if self.oath_type == TYPE_TOTP:
+            challenge = time_challenge(timestamp or time())
         else:
             challenge = ''
         data = der_pack(TAG_NAME, self.name, TAG_CHALLENGE, challenge)
         resp = self._ykoath._send(INS_CALCULATE, data, p2=1)
         return parse_truncated(der_read(resp, TAG_T_RESPONSE)[0])
+
+    def delete(self):
+        data = der_pack(TAG_NAME, self.name)
+        self._ykoath._send(INS_DELETE, data)
+
+    def __repr__(self):
+        return self.name
 
 
 class YubiOath(object):
@@ -204,25 +215,41 @@ class YubiOath(object):
         self._challenge = None
 
     def list(self):
+        ensure_unlocked(self)
         resp = self._send(INS_LIST)
         items = []
         while resp:
             data, resp = der_read(resp, TAG_NAME_LIST)
-            items.append(Credential(self, ord(data[0]), data[1:]))
+            items.append(Credential(self, TYPE_MASK & ord(data[0]), data[1:]))
         return items
 
-    def calculate_all(self):
-        data = der_pack(TAG_CHALLENGE, time_challenge())
+    def calculate_all(self, timestamp=None):
+        ensure_unlocked(self)
+        data = der_pack(TAG_CHALLENGE, time_challenge(timestamp or time()))
         resp = self._send(INS_CALC_ALL, data, p2=1)
-        results = {}
+        results = []
         while resp:
             name, resp = der_read(resp, TAG_NAME)
             tag, value, resp = der_read(resp)
             if tag == TAG_T_RESPONSE:
-                results[name] = parse_truncated(value)
-            else:
-                results[name] = None
+                results.append((
+                    Credential(self, TYPE_TOTP, name),
+                    parse_truncated(value)))
+            else:  # Assume HOTP
+                results.append((Credential(self, TYPE_HOTP, name), None))
         return results
+
+    def put(self, name, key, oath_type=TYPE_TOTP, algo=ALG_SHA1, digits=6,
+            imf=0, always_increasing=False):
+        ensure_unlocked(self)
+        keydata = chr(oath_type | algo) + chr(digits) + key
+        data = der_pack(TAG_NAME, name, TAG_KEY, keydata)
+        if always_increasing:
+            data += der_pack(TAG_PROPERTY, chr(1))
+        if imf > 0:
+            data += der_pack(TAG_IMF, struct.pack('>I', imf))
+        self._send(INS_PUT, data)
+        return Credential(self, oath_type, name)
 
 
 def open_scard(name='YubiKey'):
