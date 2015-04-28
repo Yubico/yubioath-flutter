@@ -102,12 +102,12 @@ def ensure_unlocked(ykoath):
 
 
 def time_challenge(t):
-    return chr(0)*4 + struct.pack('>I', int(t/30))
+    return struct.pack('>q', int(t/30))
 
 
 def parse_truncated(resp):
     n_digits = ord(resp[0])
-    code = struct.unpack('>I', resp[1:])[0]
+    code = struct.unpack('>I', resp[1:])[0] & 0x7fffffff
     return ('%%0%dd' % n_digits) % (code % 10 ** n_digits)
 
 
