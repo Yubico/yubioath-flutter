@@ -100,7 +100,7 @@ class Credential(object):
         return self.name
 
 
-class YubiOath(object):
+class YubiOathCcid(object):
 
     """
     Device interface to a OATH-enabled YubiKey.
