@@ -24,9 +24,12 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from ctypes import (Structure, POINTER, c_int, c_uint8, c_uint, c_char_p,
-                    sizeof, create_string_buffer)
+from yubioath.core.utils import time_challenge, parse_full, format_code
+from yubioath.core.exc import InvalidSlotError
 from yubioath.core.libloader import load_library
+from ctypes import (Structure, POINTER, c_int, c_uint8, c_uint, c_char_p,
+                    sizeof, create_string_buffer, cast, addressof)
+import weakref
 
 _lib = load_library('ykpers-1', '1')
 
@@ -68,12 +71,47 @@ if not yk_init():
     raise Exception("Unable to initialize ykpers")
 
 
-def read_challenge(challenge, slot=1, mayblock=0):
-    dev = yk_open_first_key()
-    resp = create_string_buffer(64)
-    rc = yk_challenge_response(dev, SLOTS[slot], mayblock, len(challenge),
-                               challenge, sizeof(resp), resp)
-    yk_close_key(dev)
-    if rc != 1:
-        raise Exception(rc)
-    return resp.raw[:20]
+class YkWrapper(object):
+
+    def __init__(self, key):
+        self.key = key
+
+    def __del__(self):
+        yk_close_key(self.key)
+        del self.key
+
+
+class LegacyOathOtp(object):
+
+    """
+    OTP interface to a legacy OATH-enabled YubiKey.
+    """
+
+    def __init__(self, device):
+        self._device = device
+
+    def calculate(self, slot, digits=6, timestamp=None):
+        challenge = time_challenge(timestamp)
+        resp = create_string_buffer(64)
+        rc = yk_challenge_response(self._device, SLOTS[slot], 0, len(challenge),
+                                   challenge, sizeof(resp), resp)
+        if rc != 1:
+            raise InvalidSlotError()
+        return format_code(parse_full(resp.raw[:20]), digits)
+
+
+# Keep track of YK_KEY references.
+_refs = []
+
+
+def open_otp():
+    key = yk_open_first_key()
+    if key:
+        key_p = cast(addressof(key.contents), POINTER(YK_KEY))
+
+        def cb(ref):
+            _refs.remove(ref)
+            yk_close_key(key_p)
+        _refs.append(weakref.ref(key, cb))
+        return key
+    return None

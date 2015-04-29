@@ -27,6 +27,8 @@
 from Crypto.Hash import HMAC, SHA
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Random import get_random_bytes
+import struct
+import time
 
 __all__ = [
     'hmac_sha1',
@@ -37,17 +39,42 @@ __all__ = [
 ]
 
 
+#
+# OATH related
+#
+
 def hmac_sha1(secret, message):
     return HMAC.new(secret, message, digestmod=SHA).digest()
 
+
+def time_challenge(t=None):
+    return struct.pack('>q', int((t or time.time())/30))
+
+
+def parse_full(resp):
+    offs = ord(resp[-1]) & 0xf
+    return parse_truncated(resp[offs:offs+4])
+
+
+def parse_truncated(resp):
+    return struct.unpack('>I', resp)[0] & 0x7fffffff
+
+
+def format_code(code, digits=6):
+    return ('%%0%dd' % digits) % (code % 10 ** digits)
+
+
+#
+# General utils
+#
 
 def derive_key(salt, passphrase):
     return PBKDF2(passphrase, salt, 16, 1000)
 
 
 def der_pack(*values):
-    return ''.join([chr(t) + chr(len(v)) + v for t,v in zip(values[0::2],
-                                                            values[1::2])])
+    return ''.join([chr(t) + chr(len(v)) + v for t, v in zip(values[0::2],
+                                                             values[1::2])])
 
 
 def der_read(der_data, expected_t=None):

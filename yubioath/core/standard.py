@@ -24,10 +24,10 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from smartcard.System import readers
+from yubioath.core.exc import CardError, DeviceLockedError
 from yubioath.core.utils import (der_read, der_pack, hmac_sha1, derive_key,
-                                 get_random_bytes)
-from time import time
+                                 get_random_bytes, time_challenge,
+                                 parse_truncated, format_code)
 import struct
 
 YKOATH_AID = 'a000000527210101'.decode('hex')
@@ -63,52 +63,14 @@ ALG_SHA1 = 0x01
 ALG_SHA256 = 0x02
 
 
-class CardError(Exception):
-
-    def __init__(self, status, message=''):
-        super(CardError, self).__init__('Card Error (%04x): %s' %
-                                        (status, message))
-
-
-class DeviceLockedError(Exception):
-
-    def __init__(self):
-        super(DeviceLockedError, self).__init__('Device is locked!')
-
-
-class ScardDevice(object):
-
-    """
-    Pyscard based backend.
-    """
-
-    def __init__(self, reader):
-        self.reader = reader
-
-    def send_apdu(self, cl, ins, p1, p2, data):
-        header = [cl, ins, p1, p2, len(data)]
-        print "SEND:", (''.join(map(chr, header)) + data).encode('hex')
-        resp, sw1, sw2 = self.reader.transmit(header + map(ord, data))
-        print "RECV:", (''.join(map(chr, resp))).encode('hex')
-        return ''.join(map(chr, resp)), sw1 << 8 | sw2
-
-    def __del__(self):
-        self.reader.disconnect()
-
-
 def ensure_unlocked(ykoath):
     if ykoath.locked:
         raise DeviceLockedError()
 
 
-def time_challenge(t):
-    return struct.pack('>q', int(t/30))
-
-
-def parse_truncated(resp):
-    n_digits = ord(resp[0])
-    code = struct.unpack('>I', resp[1:])[0] & 0x7fffffff
-    return ('%%0%dd' % n_digits) % (code % 10 ** n_digits)
+def format_truncated(t_resp):
+    digits, data = ord(t_resp[0]), t_resp[1:]
+    return format_code(parse_truncated(data), digits)
 
 
 class Credential(object):
@@ -123,12 +85,12 @@ class Credential(object):
 
     def calculate(self, timestamp=None):
         if self.oath_type == TYPE_TOTP:
-            challenge = time_challenge(timestamp or time())
+            challenge = time_challenge(timestamp)
         else:
             challenge = ''
         data = der_pack(TAG_NAME, self.name, TAG_CHALLENGE, challenge)
         resp = self._ykoath._send(INS_CALCULATE, data, p2=1)
-        return parse_truncated(der_read(resp, TAG_T_RESPONSE)[0])
+        return format_truncated(der_read(resp, TAG_T_RESPONSE)[0])
 
     def delete(self):
         data = der_pack(TAG_NAME, self.name)
@@ -225,7 +187,7 @@ class YubiOath(object):
 
     def calculate_all(self, timestamp=None):
         ensure_unlocked(self)
-        data = der_pack(TAG_CHALLENGE, time_challenge(timestamp or time()))
+        data = der_pack(TAG_CHALLENGE, time_challenge(timestamp))
         resp = self._send(INS_CALC_ALL, data, p2=1)
         results = []
         while resp:
@@ -234,7 +196,7 @@ class YubiOath(object):
             if tag == TAG_T_RESPONSE:
                 results.append((
                     Credential(self, TYPE_TOTP, name),
-                    parse_truncated(value)))
+                    format_truncated(value)))
             else:  # Assume HOTP
                 results.append((Credential(self, TYPE_HOTP, name), None))
         return results
@@ -250,12 +212,3 @@ class YubiOath(object):
             data += der_pack(TAG_IMF, struct.pack('>I', imf))
         self._send(INS_PUT, data)
         return Credential(self, oath_type, name)
-
-
-def open_scard(name='YubiKey'):
-    name = name.lower()
-    for reader in readers():
-        if name in reader.name.lower():
-            conn = reader.createConnection()
-            conn.connect()
-            return YubiOath(ScardDevice(conn))
