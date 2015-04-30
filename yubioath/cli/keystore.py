@@ -24,30 +24,47 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
+import os
+import json
 
-class CardError(Exception):
-
-    def __init__(self, status, message=''):
-        super(CardError, self).__init__('Card Error (%04x): %s' %
-                                        (status, message))
-        self.status = status
+CONFIG_HOME = os.path.join(os.path.expanduser('~'), '.yubioath')
+KEY_FILE = os.path.join(CONFIG_HOME, 'keys.ini')
 
 
-class DeviceLockedError(Exception):
-
-    def __init__(self):
-        super(DeviceLockedError, self).__init__('Device is locked!')
+def get_keystore():
+    return Keystore(KEY_FILE)
 
 
-class InvalidSlotError(Exception):
+class Keystore(object):
+    def __init__(self, fname):
+        self.fname = fname
+        self._data = {}
+        if os.path.isfile(fname):
+            with open(fname) as f:
+                try:
+                    data = json.load(f)
+                    if isinstance(data, dict):
+                        self._data = data
+                except ValueError:
+                    pass
 
-    def __init__(self):
-        super(InvalidSlotError, self).__init__(
-            'The selected slot does not contain a valid OATH credential.')
+    def get(self, id):
+        key = id.encode('hex')
+        if key in self._data:
+            return self._data[key].decode('hex')
+        return None
 
+    def put(self, id, key):
+        self._data[id.encode('hex')] = key.encode('hex')
+        self._save()
 
-class NeedsTouchError(Exception):
+    def delete(self, id):
+        del self._data[id.encode('hex')]
+        self._save()
 
-    def __init__(self):
-        super(NeedsTouchError, self).__init__(
-            'The selected slot needs touch to be used.')
+    def _save(self):
+        directory = os.path.dirname(self.fname)
+        if not os.path.isdir(directory):
+            os.makedirs(directory)
+        with open(self.fname, 'w') as f:
+            json.dump(self._data, f)

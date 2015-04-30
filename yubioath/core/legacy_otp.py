@@ -25,13 +25,16 @@
 # for the parts of OpenSSL used as well as that of the covered work.
 
 from yubioath.core.utils import time_challenge, parse_full, format_code
-from yubioath.core.exc import InvalidSlotError
+from yubioath.core.standard import TYPE_TOTP
+from yubioath.core.exc import InvalidSlotError, NeedsTouchError
 from yubioath.core.libloader import load_library
 from ctypes import (Structure, POINTER, c_int, c_uint8, c_uint, c_char_p,
                     sizeof, create_string_buffer, cast, addressof)
 import weakref
 
 _lib = load_library('ykpers-1', '1')
+if not hasattr(_lib, 'yk_init'):
+    raise ImportError('Can\'t find ykpers library')
 
 
 def define(name, args, res):
@@ -56,19 +59,26 @@ SLOTS = [
 
 YK_KEY = type('YK_KEY', (Structure,), {})
 
-yk_init = define('yk_init', [], c_int)
-yk_release = define('yk_release', [], c_int)
+_yk_errno_location = define('_yk_errno_location', [], c_int)
+yk_init = define('yk_init', [], bool)
+yk_release = define('yk_release', [], bool)
 
 yk_open_first_key = define('yk_open_first_key', [], POINTER(YK_KEY))
-yk_close_key = define('yk_close_key', [POINTER(YK_KEY)], c_int)
+yk_close_key = define('yk_close_key', [POINTER(YK_KEY)], bool)
 
 yk_challenge_response = define('yk_challenge_response',
                                [POINTER(YK_KEY), c_uint8, c_int, c_uint,
-                                c_char_p, c_uint, c_char_p],
-                               c_int)
+                                c_char_p, c_uint, c_char_p], bool)
+
+YK_ETIMEOUT = 0x04
+YK_EWOULDBLOCK = 0x0b
 
 if not yk_init():
     raise Exception("Unable to initialize ykpers")
+
+
+def yk_get_errno():
+    return cast(_yk_errno_location(), POINTER(c_int)).contents.value
 
 
 class YkWrapper(object):
@@ -90,14 +100,38 @@ class LegacyOathOtp(object):
     def __init__(self, device):
         self._device = device
 
-    def calculate(self, slot, digits=6, timestamp=None):
+    def calculate(self, slot, digits=6, timestamp=None, mayblock=0):
         challenge = time_challenge(timestamp)
         resp = create_string_buffer(64)
-        rc = yk_challenge_response(self._device, SLOTS[slot], 0, len(challenge),
-                                   challenge, sizeof(resp), resp)
-        if rc != 1:
+        status = yk_challenge_response(self._device, SLOTS[slot], mayblock,
+                                       len(challenge), challenge, sizeof(resp),
+                                       resp)
+        if not status:
+            errno = yk_get_errno()
+            if errno == YK_EWOULDBLOCK:
+                raise NeedsTouchError()
             raise InvalidSlotError()
         return format_code(parse_full(resp.raw[:20]), digits)
+
+
+class LegacyCredential(object):
+
+    def __init__(self, legacy, slot, digits=6):
+        self.name = 'YubiKey slot %d' % slot
+        self.oath_type = TYPE_TOTP
+        self._legacy = legacy
+        self._slot = slot
+        self._digits = digits
+
+    def calculate(self, timestamp=None, mayblock=0):
+        return self._legacy.calculate(self._slot, self._digits, timestamp,
+                                      mayblock)
+
+    def delete(self):
+        raise NotImplementedError()
+
+    def __repr__(self):
+        return self.name
 
 
 # Keep track of YK_KEY references.

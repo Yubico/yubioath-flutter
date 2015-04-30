@@ -24,7 +24,7 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from yubioath.core.exc import CardError, InvalidSlotError
+from yubioath.core.exc import CardError, InvalidSlotError, NeedsTouchError
 from yubioath.core.utils import (format_code, parse_full, time_challenge)
 
 YKLEGACY_AID = 'a0000005272001'.decode('hex')
@@ -58,9 +58,14 @@ class LegacyOathCcid(object):
     def _select(self):
         self._send(0xa4, YKLEGACY_AID, p1=0x04)
 
-    def calculate(self, slot, digits=6, timestamp=None):
+    def calculate(self, slot, digits=6, timestamp=None, mayblock=0):
         data = time_challenge(timestamp)
-        resp = self._send(INS_CHALRESP, data, p1=SLOTS[slot])
+        try:
+            resp = self._send(INS_CHALRESP, data, p1=SLOTS[slot])
+        except CardError as e:
+            if e.status == 0x6985:
+                raise NeedsTouchError()
+            raise
         if not resp:
             raise InvalidSlotError()
         return format_code(parse_full(resp), digits)
