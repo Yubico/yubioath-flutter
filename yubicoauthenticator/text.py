@@ -37,7 +37,10 @@ Plug in your Yubikey NEO in one of the USB port available on your computer. Be s
 
 3) Click once on the displayed values to copy text to the clipboard. Double click to copy text and minimize the window.
 
-4) To quit the application right click on the Yubico icon (Y) in the taskbar and select Exit (or you can use ctrl + Q)"""
+4) To quit the application right click on the Yubico icon (Y) in the taskbar and select Exit (or you can use ctrl + Q)
+
+In case you are also using gpg, make sure to add "card-timeout 5" to  ~/.gnupg/scdaemon.conf
+"""
 
 
 
