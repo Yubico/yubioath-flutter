@@ -26,19 +26,8 @@
 
 
 from setuptools import setup, find_packages
-from release import release
-from qt_resources import qt_resources, qt_sdist
-import re
-
-VERSION_PATTERN = re.compile(r"(?m)^__version__\s*=\s*['\"](.+)['\"]$")
-
-
-def get_version():
-    """Return the current version as defined by yubioath/__init__.py."""
-
-    with open('yubioath/__init__.py', 'r') as f:
-        match = VERSION_PATTERN.search(f.read())
-        return match.group(1)
+from yubioath.yubicommon import release, get_version
+from yubioath.yubicommon.qt import qt_resources, qt_sdist
 
 setup(
     name='yubioath-desktop',
@@ -51,12 +40,12 @@ setup(
     license='GPLv3+',
     description='Crossplatform tool for generating TOTP & HOTP codes with a Yubikey NEO',
     packages=find_packages(),
-    scripts=['scripts/yubioath'],
+    scripts=['scripts/yubioath', 'scripts/yubioath-cli'],
     setup_requires=['nose>=1.0'],
     install_requires=['PySide', 'pyscard', 'pycrypto'],
     test_suite='nose.collector',
     tests_require=[''],
-    cmdclass={'release': release, 'qt_resources': qt_resources,
+    cmdclass={'release': release, 'qt_resources': qt_resources('yubioath'),
               'sdist': qt_sdist},
     classifiers=[
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',

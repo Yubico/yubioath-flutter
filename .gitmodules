@@ -1,0 +1,3 @@
+[submodule "vendor/yubicommon"]
+	path = vendor/yubicommon
+	url = ../python-yubicommon/
