@@ -128,7 +128,6 @@ def read_creds(args, keystore):
                     sys.stderr.write('Incorrect password from file.\n')
                     keystore.delete(std.id)
             while std.locked:
-                # TODO: See if password is persisted.
                 pw = getpass.getpass('Password:')
                 key = std.calculate_key(pw)
                 try:

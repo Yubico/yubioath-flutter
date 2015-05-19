@@ -25,13 +25,11 @@
 # for the parts of OpenSSL used as well as that of the covered work.
 
 
-from setuptools import setup, find_packages
-from yubioath.yubicommon import release, get_version
+from yubioath.yubicommon import setup
 from yubioath.yubicommon.qt import qt_resources, qt_sdist
 
 setup(
     name='yubioath-desktop',
-    version=get_version(),
     author='Dain Nilsson',
     author_email='dain@yubico.com',
     maintainer='Yubico Open Source Maintainers',
@@ -39,14 +37,13 @@ setup(
     url='https://github.com/Yubico/yubioath-desktop',
     license='GPLv3+',
     description='Crossplatform tool for generating TOTP & HOTP codes with a Yubikey NEO',
-    packages=find_packages(),
     scripts=['scripts/yubioath', 'scripts/yubioath-cli'],
     setup_requires=['nose>=1.0'],
-    install_requires=['PySide', 'pyscard', 'pycrypto'],
+    yc_requires=['qt'],
+    install_requires=['pyscard', 'pycrypto'],
     test_suite='nose.collector',
     tests_require=[''],
-    cmdclass={'release': release, 'qt_resources': qt_resources('yubioath'),
-              'sdist': qt_sdist},
+    cmdclass={'qt_resources': qt_resources('yubioath.gui'), 'sdist': qt_sdist},
     classifiers=[
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Operating System :: OS Independent',

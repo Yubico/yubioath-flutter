@@ -24,58 +24,73 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-import os
 import sys
-import time
 import argparse
-import yubioath.gui.qt_resources
 from PySide import QtGui, QtCore
 from yubioath import __version__ as version
+from yubioath.yubicommon import qt
 from yubioath.gui import messages as m
-from yubioath.gui.view.main import MainWindow
-from yubioath.gui.worker import Worker
-
-if getattr(sys, 'frozen', False):
-    # we are running in a PyInstaller bundle
-    basedir = sys._MEIPASS
-else:
-    # we are running in a normal Python environment
-    basedir = os.path.dirname(__file__)
-
-# Font fixes for OSX
-if sys.platform == 'darwin':
-    from platform import mac_ver
-    mac_version = tuple(mac_ver()[0].split('.'))
-    if (10, 9) <= mac_version < (10, 10):  # Mavericks
-        QtGui.QFont.insertSubstitution('.Lucida Grande UI', 'Lucida Grande')
-    if (10, 10) <= mac_version:  # Yosemite
-        QtGui.QFont.insertSubstitution('.Helvetica Neue DeskInterface',
-                                       'Helvetica Neue')
+# from yubioath.core.ykpers import libversion as ykpers_version
+ykpers_version = 'None'
+from yubioath.gui.view.codes import CodesWidget
 
 
-class YubiOathApplication(QtGui.QApplication):
+ABOUT_TEXT = """
+<h2>%s</h2>
+%s<br>
+%s
+<h4>%s</h4>
+%%s
+<br><br>
+""" % (m.app_name, m.copyright, m.version_1, m.libraries)
 
-    def __init__(self, argv):
-        super(YubiOathApplication, self).__init__(argv)
 
-        self._set_basedir()
+class MainWidget(QtGui.QStackedWidget):
 
-        m._translate(self)
+    def __init__(self):
+        super(MainWidget, self).__init__()
+
+        self._build_ui()
+
+    def showEvent(self, event):
+        event.accept()
+
+    def _build_ui(self):
+        self.addWidget(CodesWidget())
+        self.addWidget(QtGui.QLabel(m.no_key))
+
+
+class YubiOathApplication(qt.Application):
+
+    def __init__(self):
+        super(YubiOathApplication, self).__init__(m)
 
         QtCore.QCoreApplication.setOrganizationName(m.organization)
         QtCore.QCoreApplication.setOrganizationDomain(m.domain)
         QtCore.QCoreApplication.setApplicationName(m.app_name)
 
-        self.window = self._create_window()
-        self.worker = Worker(self.window)
+        self._widget = None
+        self._settings = {}  # TODO get_store('window')
 
-        QtCore.QTimer.singleShot(0, self.start)
+        self._init_window()
 
-    def start(self):
+    def _init_window(self):
+        self.window.setWindowTitle(m.win_title_1 % version)
+        self.window.setWindowIcon(QtGui.QIcon(':/yubioath.png'))
+        self.window.resize(self._settings.get('size', QtCore.QSize(200, 300)))
+        pos = self._settings.get('pos')
+        if pos:
+            self.window.move(pos)
+
+        self._build_menu_bar()
+
         args = self._parse_args()
 
         if args.tray:
             pass
+
+        self.window.shown.connect(self._on_shown)
+        self.window.closed.connect(self._on_closed)
 
         self.window.show()
         self.window.raise_()
@@ -86,25 +101,49 @@ class YubiOathApplication(QtGui.QApplication):
         parser.add_argument('-t', '--tray', action='store_true')
         return parser.parse_args()
 
-    def _set_basedir(self):
-        if getattr(sys, 'frozen', False):
-            # we are running in a PyInstaller bundle
-            self.basedir = sys._MEIPASS
-        else:
-            # we are running in a normal Python environment
-            self.basedir = os.path.dirname(__file__)
+    def _build_menu_bar(self):
+        file_menu = self.window.menuBar().addMenu(m.menu_file)
+        add_action = QtGui.QAction(m.action_add, file_menu)
+        add_action.triggered.connect(self._add_credential)
+        file_menu.addAction(add_action)
+        password_action = QtGui.QAction(m.action_password, file_menu)
+        password_action.triggered.connect(self._change_password)
+        file_menu.addAction(password_action)
+        settings_action = QtGui.QAction(m.action_settings, file_menu)
+        settings_action.triggered.connect(self._show_settings)
+        file_menu.addAction(settings_action)
 
-    def _create_window(self):
-        window = MainWindow()
-        window.setWindowTitle(m.win_title_1 % version)
-        window.setWindowIcon(QtGui.QIcon(':/yubioath.png'))
-        return window
+        help_menu = self.window.menuBar().addMenu(m.menu_help)
+        about_action = QtGui.QAction(m.action_about, help_menu)
+        about_action.triggered.connect(self._about)
+        help_menu.addAction(about_action)
+
+    def _on_shown(self):
+        if not self._widget:
+            self._widget = MainWidget()
+            self.window.setCentralWidget(self._widget)
+
+    def _on_closed(self):
+        self._settings['pos'] = self.window.pos()
+        self._settings['size'] = self.window.size()
+
+    def _libversions(self):
+        return 'ykpers: %s' % ykpers_version
+
+    def _about(self):
+        QtGui.QMessageBox.about(self.window, m.about_1 % m.app_name,
+                                ABOUT_TEXT % (version, self._libversions()))
+
+    def _add_credential(self):
+        print "TODO"
+
+    def _change_password(self):
+        print "TODO"
+
+    def _show_settings(self):
+        print "TODO"
 
 
 def main():
-    app = YubiOathApplication(sys.argv)
-    status = app.exec_()
-    app.worker.thread().quit()
-    app.deleteLater()
-    time.sleep(0.01)  # Without this the process sometimes stalls.
-    sys.exit(status)
+    app = YubiOathApplication()
+    sys.exit(app.exec_())

@@ -24,10 +24,10 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from yubioath.core.utils import time_challenge, parse_full, format_code
-from yubioath.core.standard import TYPE_TOTP
-from yubioath.core.exc import InvalidSlotError, NeedsTouchError
-from yubioath.core.libloader import load_library
+from .utils import time_challenge, parse_full, format_code
+from .standard import TYPE_TOTP
+from .exc import InvalidSlotError, NeedsTouchError
+from .libloader import load_library
 from ctypes import (Structure, POINTER, c_int, c_uint8, c_uint, c_char_p,
                     sizeof, create_string_buffer, cast, addressof)
 import weakref

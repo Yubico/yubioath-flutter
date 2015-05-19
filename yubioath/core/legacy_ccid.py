@@ -24,8 +24,8 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from yubioath.core.exc import CardError, InvalidSlotError, NeedsTouchError
-from yubioath.core.utils import (format_code, parse_full, time_challenge)
+from .exc import CardError, InvalidSlotError, NeedsTouchError
+from .utils import (format_code, parse_full, time_challenge)
 
 YKLEGACY_AID = 'a0000005272001'.decode('hex')
 

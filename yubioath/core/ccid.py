@@ -41,21 +41,21 @@ class ScardDevice(object):
     Pyscard based backend.
     """
 
-    def __init__(self, reader):
-        self.reader = reader
+    def __init__(self, connection):
+        self._conn = connection
 
     def send_apdu(self, cl, ins, p1, p2, data):
         header = [cl, ins, p1, p2, len(data)]
-        #print "SEND:", (''.join(map(chr, header)) + data).encode('hex')
-        resp, sw1, sw2 = self.reader.transmit(header + map(ord, data))
-        #print "RECV:", (''.join(map(chr, resp))).encode('hex')
+        # print "SEND:", (''.join(map(chr, header)) + data).encode('hex')
+        resp, sw1, sw2 = self._conn.transmit(header + map(ord, data))
+        # print "RECV:", (''.join(map(chr, resp))).encode('hex')
         return ''.join(map(chr, resp)), sw1 << 8 | sw2
 
     def __del__(self):
-        self.reader.disconnect()
+        self._conn.disconnect()
 
 
-def open_scard(name='YubiKey'):
+def open_scard(name='Yubikey'):
     name = name.lower()
     for reader in readers():
         if name in reader.name.lower():

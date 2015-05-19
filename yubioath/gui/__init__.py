@@ -23,3 +23,5 @@
 # permission to convey the resulting work. Corresponding Source for a
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
+
+from . import qt_resources

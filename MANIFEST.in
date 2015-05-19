@@ -1,5 +1,3 @@
-include release.py
-include qt_resources.py
 include COPYING
 include NEWS
 include ChangeLog
