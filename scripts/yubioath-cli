@@ -35,19 +35,11 @@ TODO:
 """
 
 from yubioath.core.ccid import open_scard
-from yubioath.core.standard import YubiOathCcid, TYPE_HOTP
-from yubioath.core.legacy_ccid import LegacyOathCcid
-from yubioath.core.exc import CardError, InvalidSlotError, NeedsTouchError
-try:
-    from yubioath.core.legacy_otp import (open_otp, LegacyOathOtp,
-                                          LegacyCredential)
-except ImportError:
-    print "No ykpers"
-    open_otp = None
+from yubioath.core.standard import TYPE_HOTP
 from yubioath.cli.keystore import get_keystore
+from yubioath.cli.controller import CliController
 from time import time
 import argparse
-import getpass
 import sys
 
 
@@ -85,108 +77,18 @@ def print_creds(results):
         print format_str.format(cred, code)
 
 
-def read_slot_ccid(std, slot, digits, timestamp=None):
-    cred = LegacyCredential(std, slot, digits)
-    try:
-        return (cred, cred.calculate(timestamp))
-    except InvalidSlotError:
-        return (cred, 'INVALID')
-
-def read_slot_otp(legacy, slot, digits, timestamp=None, needs_touch=False):
-    cred = LegacyCredential(legacy, slot, digits)
-    if not needs_touch:
-        try:
-            return (cred, cred.calculate(timestamp))
-        except InvalidSlotError:
-            return (cred, 'INVALID')
-        except NeedsTouchError:
-            pass
-    sys.stderr.write('Touch your YubiKey...\n')
-    try:
-        return (cred, cred.calculate(timestamp, 1))
-    except InvalidSlotError:
-        return (cred, 'TIMEOUT')
-
-
-def read_creds(args, keystore):
-    results = []
-    key_found = False
-    do_legacy = bool(args.slot1 or args.slot2)
-    legacy_creds = [None, None]
-    needs_touch = [False, False]
-
-    ccid_dev = open_scard(args.reader)
-    if ccid_dev:
-        try:
-            std = YubiOathCcid(ccid_dev)
-            key_found = True
-            key = keystore.get(std.id)
-            if std.locked and key:
-                try:
-                    std.unlock(key)
-                except CardError:
-                    sys.stderr.write('Incorrect password from file.\n')
-                    keystore.delete(std.id)
-            while std.locked:
-                pw = getpass.getpass('Password:')
-                key = std.calculate_key(pw)
-                try:
-                    std.unlock(key)
-                    if args.save_password:
-                        keystore.put(std.id, key)
-                        sys.stderr.write('Password saved to %s\n' %
-                                         keystore.fname)
-                except CardError:
-                    sys.stderr.write('Incorrect password!\n')
-            results.extend(std.calculate_all(args.timestamp))
-        except CardError:
-            pass  # No applet?
-
-        if do_legacy:
-            try:
-                legacy = LegacyOathCcid(ccid_dev)
-                for (slot, digits) in [(0, args.slot1), (1, args.slot2)]:
-                    if digits:
-                        try:
-                            legacy_creds[slot] = read_slot_ccid(
-                                legacy, slot+1, digits, args.timestamp)
-                        except NeedsTouchError:
-                            needs_touch[slot] = True
-            except CardError:
-                pass  # No applet?
-        del ccid_dev
-
-    if open_otp and ((args.slot1 and not legacy_creds[0]) \
-                     or (args.slot2 and not legacy_creds[1])):
-        otp_dev = open_otp()
-        if otp_dev:
-            key_found = True
-            legacy = LegacyOathOtp(otp_dev)
-            if not legacy_creds[0] and args.slot1:
-                legacy_creds[0] = read_slot_otp(
-                    legacy, 1, args.slot1, args.timestamp, needs_touch[0])
-            if not legacy_creds[1] and args.slot2:
-                legacy_creds[1] = read_slot_otp(
-                    legacy, 2, args.slot2, args.timestamp, needs_touch[1])
-            del otp_dev
-
-    if not key_found:
-        sys.stderr.write('No YubiKey found!\n')
-        sys.exit(1)
-
-    if legacy_creds[1]:
-        results.insert(0, legacy_creds[1])
-    if legacy_creds[0]:
-        results.insert(0, legacy_creds[0])
-
-    return results
-
-
 if __name__ == '__main__':
     args = parse_args()
 
-    keystore = get_keystore()
-    creds = read_creds(args, keystore)
+    ccid_dev = open_scard(args.reader)
+
+    controller = CliController(get_keystore(), args.save_password)
+    creds = controller.read_creds(ccid_dev, args.slot1, args.slot2,
+                                  args.timestamp)
+
+    if creds is None:
+        sys.stderr.write('No YubiKey found!\n')
+        sys.exit(1)
 
     if args.query:
         query = args.query.lower()

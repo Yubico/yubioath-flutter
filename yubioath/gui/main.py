@@ -30,6 +30,7 @@ from PySide import QtGui, QtCore
 from yubioath import __version__ as version
 from yubioath.yubicommon import qt
 from yubioath.gui import messages as m
+from yubioath.gui.controller import GuiController
 # from yubioath.core.ykpers import libversion as ykpers_version
 ykpers_version = 'None'
 from yubioath.gui.view.codes import CodesWidget
@@ -47,17 +48,28 @@ ABOUT_TEXT = """
 
 class MainWidget(QtGui.QStackedWidget):
 
-    def __init__(self):
+    def __init__(self, controller):
         super(MainWidget, self).__init__()
 
+        self._controller = controller
+
         self._build_ui()
+        controller.refreshed.connect(self._refresh)
 
     def showEvent(self, event):
         event.accept()
 
     def _build_ui(self):
-        self.addWidget(CodesWidget())
-        self.addWidget(QtGui.QLabel(m.no_key))
+        self.codes_widget = CodesWidget(self._controller)
+        self.no_key_widget = QtGui.QLabel(m.no_key)
+        self.addWidget(self.codes_widget)
+        self.addWidget(self.no_key_widget)
+
+    def _refresh(self):
+        if self._controller.credentials is None:
+            self.setCurrentIndex(1)
+        else:
+            self.setCurrentIndex(0)
 
 
 class YubiOathApplication(qt.Application):
@@ -72,6 +84,8 @@ class YubiOathApplication(qt.Application):
         self._widget = None
         self._settings = {}  # TODO get_store('window')
 
+        reader = self._settings.get('reader', 'Yubikey')
+        self._controller = GuiController(reader, 0, 6)
         self._init_window()
 
     def _init_window(self):
@@ -120,7 +134,7 @@ class YubiOathApplication(qt.Application):
 
     def _on_shown(self):
         if not self._widget:
-            self._widget = MainWidget()
+            self._widget = MainWidget(self._controller)
             self.window.setCentralWidget(self._widget)
 
     def _on_closed(self):

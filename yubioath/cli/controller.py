@@ -24,47 +24,38 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-import os
-import json
-
-CONFIG_HOME = os.path.join(os.path.expanduser('~'), '.yubioath')
-KEY_FILE = os.path.join(CONFIG_HOME, 'keys.json')
-
-
-def get_keystore():
-    return Keystore(KEY_FILE)
+from yubioath.core.controller import Controller
+from yubioath.core.exc import CardError
+from getpass import getpass
+import sys
 
 
-class Keystore(object):
-    def __init__(self, fname):
-        self.fname = fname
-        self._data = {}
-        if os.path.isfile(fname):
-            with open(fname) as f:
-                try:
-                    data = json.load(f)
-                    if isinstance(data, dict):
-                        self._data = data
-                except ValueError:
-                    pass
+class CliController(Controller):
 
-    def get(self, id):
-        key = id.encode('hex')
-        if key in self._data:
-            return self._data[key].decode('hex')
-        return None
+    def __init__(self, keystore, save=False):
+        self.keystore = keystore
+        self._save = save
 
-    def put(self, id, key):
-        self._data[id.encode('hex')] = key.encode('hex')
-        self._save()
+    def _prompt_touch(self):
+        sys.stderr.write('Touch your YubiKey...\n')
 
-    def delete(self, id):
-        del self._data[id.encode('hex')]
-        self._save()
+    def unlock(self, device):
+        key = self.keystore.get(device.id)
+        if key:
+            try:
+                device.unlock(key)
+            except CardError:
+                sys.stderr.write('Incorrect password from file.\n')
+                self.keystore.delete(device.id)
 
-    def _save(self):
-        directory = os.path.dirname(self.fname)
-        if not os.path.isdir(directory):
-            os.makedirs(directory)
-        with open(self.fname, 'w') as f:
-            json.dump(self._data, f)
+        while device.locked:
+            pw = getpass('Password: ')
+            key = device.calculate_key(pw)
+            try:
+                device.unlock(key)
+                if self._save:
+                    self.keystore.put(device.id, key)
+                    sys.stderr.write('Password saved to %s\n' %
+                                     self.keystore.fname)
+            except CardError:
+                sys.stderr.write('Incorrect password!\n')

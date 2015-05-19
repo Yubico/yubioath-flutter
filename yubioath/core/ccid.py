@@ -55,13 +55,20 @@ class ScardDevice(object):
         self._conn.disconnect()
 
 
-def open_scard(name='Yubikey'):
-    name = name.lower()
-    for reader in readers():
-        if name in reader.name.lower():
-            conn = reader.createConnection()
-            try:
-                conn.connect()
-                return ScardDevice(conn)
-            except SmartcardException:
-                pass
+def open_scard(name_or_reader='Yubikey'):
+    reader = None
+    if isinstance(name_or_reader, basestring):
+        name = name_or_reader.lower()
+        for reader in readers():
+            if name in reader.name.lower():
+                break
+    else:
+        reader = name_or_reader
+
+    if reader:
+        conn = reader.createConnection()
+        try:
+            conn.connect()
+            return ScardDevice(conn)
+        except SmartcardException:
+            pass
