@@ -27,7 +27,7 @@
 from .utils import time_challenge, parse_full, format_code
 from .standard import TYPE_TOTP
 from .exc import InvalidSlotError, NeedsTouchError
-from .libloader import load_library
+from yubioath.yubicommon.ctypes import load_library
 from ctypes import (Structure, POINTER, c_int, c_uint8, c_uint, c_char_p,
                     sizeof, create_string_buffer, cast, addressof)
 import weakref

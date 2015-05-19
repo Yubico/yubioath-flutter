@@ -39,7 +39,7 @@ setup(
     description='Crossplatform tool for generating TOTP & HOTP codes with a Yubikey NEO',
     scripts=['scripts/yubioath', 'scripts/yubioath-cli'],
     setup_requires=['nose>=1.0'],
-    yc_requires=['qt'],
+    yc_requires=['ctypes', 'qt'],
     install_requires=['pyscard', 'pycrypto'],
     test_suite='nose.collector',
     tests_require=[''],
