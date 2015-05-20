@@ -83,13 +83,7 @@ class Credential(object):
         self.name = name
 
     def calculate(self, timestamp=None):
-        if self.oath_type == TYPE_TOTP:
-            challenge = time_challenge(timestamp)
-        else:
-            challenge = ''
-        data = der_pack(TAG_NAME, self.name, TAG_CHALLENGE, challenge)
-        resp = self._ykoath._send(INS_CALCULATE, data, p2=1)
-        return format_truncated(der_read(resp, TAG_T_RESPONSE)[0])
+        return self._ykoath.calculate(self.name, self.oath_type, timestamp)
 
     def delete(self):
         data = der_pack(TAG_NAME, self.name)
@@ -140,6 +134,15 @@ class YubiOathCcid(object):
     @property
     def locked(self):
         return self._challenge is not None
+
+    def calculate(self, name, oath_type, timestamp=None):
+        if oath_type == TYPE_TOTP:
+            challenge = time_challenge(timestamp)
+        else:
+            challenge = ''
+        data = der_pack(TAG_NAME, name, TAG_CHALLENGE, challenge)
+        resp = self._send(INS_CALCULATE, data, p2=1)
+        return format_truncated(der_read(resp, TAG_T_RESPONSE)[0])
 
     def calculate_key(self, passphrase):
         return derive_key(self.id, passphrase)

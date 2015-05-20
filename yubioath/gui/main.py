@@ -85,13 +85,13 @@ class YubiOathApplication(qt.Application):
         self._settings = {}  # TODO get_store('window')
 
         reader = self._settings.get('reader', 'Yubikey')
-        self._controller = GuiController(reader, 0, 6)
+        self._controller = GuiController(reader, 6, 6)
         self._init_window()
 
     def _init_window(self):
         self.window.setWindowTitle(m.win_title_1 % version)
         self.window.setWindowIcon(QtGui.QIcon(':/yubioath.png'))
-        self.window.resize(self._settings.get('size', QtCore.QSize(200, 300)))
+        self.window.resize(self._settings.get('size', QtCore.QSize(320, 340)))
         pos = self._settings.get('pos')
         if pos:
             self.window.move(pos)

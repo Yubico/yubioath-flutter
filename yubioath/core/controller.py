@@ -38,6 +38,15 @@ except ImportError:
 
 class Controller(object):
 
+    @property
+    def otp_supported(self):
+        return bool(open_otp)
+
+    def open_otp(self):
+        otp_dev = open_otp()
+        if otp_dev:
+            return LegacyOathOtp(otp_dev)
+
     def _prompt_touch(self):
         pass
 
@@ -107,19 +116,18 @@ class Controller(object):
                     pass  # No applet?
             del ccid_dev
 
-        if open_otp and ((slot1 and not legacy_creds[0])
-                        or (slot2 and not legacy_creds[1])):
-            otp_dev = open_otp()
-            if otp_dev:
+        if self.otp_supported and ((slot1 and not legacy_creds[0])
+                                   or (slot2 and not legacy_creds[1])):
+            legacy = self.open_otp()
+            if legacy:
                 key_found = True
-                legacy = LegacyOathOtp(otp_dev)
                 if not legacy_creds[0] and slot1:
                     legacy_creds[0] = self.read_slot_otp(
                         legacy, 1, slot1, timestamp, needs_touch[0])
                 if not legacy_creds[1] and slot2:
                     legacy_creds[1] = self.read_slot_otp(
                         legacy, 2, slot2, timestamp, needs_touch[1])
-                del otp_dev
+                del legacy._device
 
         if not key_found:
             return None

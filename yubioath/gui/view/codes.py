@@ -26,6 +26,7 @@
 
 from PySide import QtGui, QtCore
 from .. import messages as m
+from ..controller import CredentialType
 from time import time
 
 
@@ -58,15 +59,69 @@ class TimeleftBar(QtGui.QProgressBar):
             self.expired.emit()
 
 
+class Code(QtGui.QWidget):
+
+    def __init__(self, cred, timestamp):
+        super(Code, self).__init__()
+        self.cred = cred
+        self.timestamp = timestamp
+
+        layout = QtGui.QHBoxLayout(self)
+
+        labels = QtGui.QVBoxLayout()
+        self._name_lbl = QtGui.QLabel(cred.name)
+        labels.addWidget(self._name_lbl)
+        self._code_lbl = QtGui.QLabel()
+        labels.addWidget(self._code_lbl)
+        layout.addLayout(labels)
+        layout.addStretch()
+
+        self._calc_btn = QtGui.QPushButton('Calc')
+        self._calc_btn.clicked.connect(self._calc)
+        layout.addWidget(self._calc_btn)
+
+        self._copy_btn = QtGui.QPushButton('Copy')
+        self._copy_btn.clicked.connect(self._copy)
+        layout.addWidget(self._copy_btn)
+
+        self._draw()
+
+    @property
+    def expired(self):
+        return self.cred.code.timestamp < self.timestamp
+
+    def _draw(self):
+        cred = self.cred
+        name = self.cred.name.replace(':', '<br>')
+        if self.expired:
+            name_fmt = '<b style="color: gray;">%s</b>'
+        else:
+            name_fmt = '<b>%s</b>'
+        self._code_lbl.setText(name_fmt % (self.cred.code.code))
+
+    def _copy(self):
+        print "TODO: copy", self.cred.code.code
+
+    def _calc(self):
+        if self.cred.cred_type == CredentialType.TOUCH:
+            print "Touch key now"  # TODO
+            self.cred.calculate()
+            self._draw()
+        elif self.cred.cred_type == CredentialType.HOTP:
+            self.cred.calculate()
+            self._draw()
+
+
 class CodesList(QtGui.QWidget):
 
-    def __init__(self, credentials=[]):
+    def __init__(self, timestamp=0, credentials=[]):
         super(CodesList, self).__init__()
 
         layout = QtGui.QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
 
-        for (cred, code) in credentials:
-            layout.addWidget(QtGui.QLabel(str(cred)))
+        for cred in credentials:
+            layout.addWidget(Code(cred, timestamp))
 
 
 class CodesWidget(QtGui.QWidget):
@@ -86,6 +141,7 @@ class CodesWidget(QtGui.QWidget):
         layout.addWidget(self._timeleft)
 
         self._scroll_area = QtGui.QScrollArea()
+        self._scroll_area.setWidgetResizable(True)
         self._scroll_area.setWidget(CodesList())
         layout.addWidget(self._scroll_area)
 
@@ -93,6 +149,6 @@ class CodesWidget(QtGui.QWidget):
         self._scroll_area.takeWidget()
         creds = self._controller.credentials
         if creds is not None:
-            self._scroll_area.setWidget(CodesList(creds or []))
-            self._timeleft.set_timeleft(
-                1000 * (self._controller.expires - time()))
+            timestamp = self._controller.timer.time
+            self._scroll_area.setWidget(CodesList(timestamp, creds or []))
+            self._timeleft.set_timeleft(1000 * (timestamp + 30 - time()))
