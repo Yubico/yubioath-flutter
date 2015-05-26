@@ -181,15 +181,15 @@ class GuiController(QtCore.QObject, Controller):
         self._slot1 = slot1
         self._slot2 = slot2
         self._keys = {}
-        self._needs_read = True
+        self._needs_read = False
         self._reader = None
         self._creds = None
         self._lock = QtCore.QMutex()
         self.timer = Timer()
 
         self._update(System.readers(), [])
-        self._observer = CcidReaderObserver(self)
-        self._observer2 = CcidCardObserver(self)
+        self._reader_observer = CcidReaderObserver(self)
+        self._card_observer = CcidCardObserver(self)
 
         self.startTimer(2000)
         self.timer.time_changed.connect(self.refresh_codes)
