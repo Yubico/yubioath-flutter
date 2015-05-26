@@ -24,12 +24,10 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-import sys
-import argparse
 from PySide import QtGui, QtCore
 from yubioath import __version__ as version
 from yubioath.yubicommon import qt
-from ..cli.keystore import get_keystore
+from ..cli.keystore import get_keystore, CONFIG_HOME
 try:
     from ..core.legacy_otp import ykpers_version
 except ImportError:
@@ -37,6 +35,9 @@ except ImportError:
 from . import messages as m
 from .controller import GuiController
 from .view.codes import CodesWidget
+import sys
+import os
+import argparse
 
 
 ABOUT_TEXT = """
@@ -85,7 +86,10 @@ class YubiOathApplication(qt.Application):
         QtCore.QCoreApplication.setApplicationName(m.app_name)
 
         self._widget = None
-        self._settings = {}  # TODO get_store('window')
+        self.settings = qt.Settings.wrap(
+            os.path.join(CONFIG_HOME, 'settings.ini'),
+            QtCore.QSettings.IniFormat)
+        self._settings = self.settings.get_group('settings')
 
         reader = self._settings.get('reader', 'Yubikey')
         self._controller = GuiController(self, reader)
