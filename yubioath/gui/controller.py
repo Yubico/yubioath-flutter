@@ -29,6 +29,7 @@ from ..core.standard import YubiOathCcid
 from ..core.controller import Controller
 from ..core.exc import CardError
 from .view.get_password import GetPasswordDialog
+from .keystore import get_keystore
 from yubioath.yubicommon.qt import get_active_window
 from PySide import QtCore
 from smartcard import System
@@ -180,11 +181,11 @@ class GuiController(QtCore.QObject, Controller):
         self._reader_name = reader_name
         self._slot1 = slot1
         self._slot2 = slot2
-        self._keys = {}
         self._needs_read = False
         self._reader = None
         self._creds = None
         self._lock = QtCore.QMutex()
+        self._keystore = get_keystore()
         self.timer = Timer()
 
         self._update(System.readers(), [])
@@ -195,7 +196,7 @@ class GuiController(QtCore.QObject, Controller):
         self.timer.time_changed.connect(self.refresh_codes)
 
     def unlock(self, dev):
-        dev.unlock(self._keys[dev.id])
+        dev.unlock(self._keystore.get(dev.id))
 
     def grab_lock(self, lock=None):
         return lock or QtCore.QMutexLocker(self._lock)
@@ -236,16 +237,18 @@ class GuiController(QtCore.QObject, Controller):
     def _init_dev(self, dev):
         _lock = self.grab_lock()
         while dev.locked:
-            if dev.id not in self._keys:
+            if self._keystore.get(dev.id) is None:
                 dialog = GetPasswordDialog(get_active_window())
                 if dialog.exec_():
-                    self._keys[dev.id] = dev.calculate_key(dialog.password)
+                    self._keystore.put(dev.id,
+                                       dev.calculate_key(dialog.password),
+                                       dialog.remember)
                 else:
                     return
             try:
-                dev.unlock(self._keys[dev.id])
+                dev.unlock(self._keystore.get(dev.id))
             except CardError:
-                del self._keys[dev.id]
+                self._keystore.delete(dev.id)
         self.refresh_codes(self.timer.time, _lock)
 
     def _await(self):
