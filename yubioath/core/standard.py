@@ -27,6 +27,7 @@
 from .exc import CardError, DeviceLockedError
 from .utils import (der_read, der_pack, hmac_sha1, derive_key, get_random_bytes,
                     time_challenge, parse_truncated, format_code)
+from hashlib import sha1
 import struct
 
 YKOATH_AID = 'a000000527210101'.decode('hex')
@@ -209,6 +210,8 @@ class YubiOathCcid(object):
     def put(self, name, key, oath_type=TYPE_TOTP, algo=ALG_SHA1, digits=6,
             imf=0, always_increasing=False):
         ensure_unlocked(self)
+        if len(key) > 64:  # Keys longer than 64 bytes are hashed, as per HMAC.
+            key = sha1(key).digest()
         keydata = chr(oath_type | algo) + chr(digits) + key
         data = der_pack(TAG_NAME, name, TAG_KEY, keydata)
         if always_increasing:
