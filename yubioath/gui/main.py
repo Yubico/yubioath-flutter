@@ -66,14 +66,14 @@ class MainWidget(QtGui.QStackedWidget):
     def _build_ui(self):
         self.codes_widget = CodesWidget(self._controller)
         self.no_key_widget = QtGui.QLabel(m.no_key)
-        self.addWidget(self.codes_widget)
         self.addWidget(self.no_key_widget)
+        self.addWidget(self.codes_widget)
 
     def _refresh(self):
         if self._controller.credentials is None:
-            self.setCurrentIndex(1)
-        else:
             self.setCurrentIndex(0)
+        else:
+            self.setCurrentIndex(1)
 
 
 class YubiOathApplication(qt.Application):
