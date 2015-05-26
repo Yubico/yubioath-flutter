@@ -30,6 +30,9 @@ from ..controller import CredentialType
 from time import time
 
 
+INF = float('inf')
+
+
 class TimeleftBar(QtGui.QProgressBar):
     expired = QtCore.Signal()
 
@@ -61,10 +64,12 @@ class TimeleftBar(QtGui.QProgressBar):
 
 class Code(QtGui.QWidget):
 
-    def __init__(self, cred, timestamp):
+    def __init__(self, cred, timer, on_change):
         super(Code, self).__init__()
         self.cred = cred
-        self.timestamp = timestamp
+        self._on_change = on_change
+        self.cred.changed.connect(self._draw)
+        self.timer = timer
 
         layout = QtGui.QHBoxLayout(self)
 
@@ -84,44 +89,40 @@ class Code(QtGui.QWidget):
         self._copy_btn.clicked.connect(self._copy)
         layout.addWidget(self._copy_btn)
 
+        timer.time_changed.connect(self._draw)
+
         self._draw()
 
     @property
     def expired(self):
-        return self.cred.code.timestamp < self.timestamp
+        return self.cred.code.timestamp < self.timer.time
 
     def _draw(self):
-        cred = self.cred
-        name = self.cred.name.replace(':', '<br>')
         if self.expired:
             name_fmt = '<b style="color: gray;">%s</b>'
         else:
             name_fmt = '<b>%s</b>'
         self._code_lbl.setText(name_fmt % (self.cred.code.code))
+        self._on_change()
 
     def _copy(self):
         print "TODO: copy", self.cred.code.code
 
     def _calc(self):
-        if self.cred.cred_type == CredentialType.TOUCH:
-            print "Touch key now"  # TODO
+        if self.cred.cred_type in [CredentialType.TOUCH, CredentialType.HOTP]:
             self.cred.calculate()
-            self._draw()
-        elif self.cred.cred_type == CredentialType.HOTP:
-            self.cred.calculate()
-            self._draw()
 
 
 class CodesList(QtGui.QWidget):
 
-    def __init__(self, timestamp=0, credentials=[]):
+    def __init__(self, timer, credentials=[], on_change=None):
         super(CodesList, self).__init__()
 
         layout = QtGui.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
         for cred in credentials:
-            layout.addWidget(Code(cred, timestamp))
+            layout.addWidget(Code(cred, timer, on_change))
 
 
 class CodesWidget(QtGui.QWidget):
@@ -131,9 +132,11 @@ class CodesWidget(QtGui.QWidget):
 
         self._controller = controller
         controller.refreshed.connect(self.refresh)
+        controller.timer.time_changed.connect(self.refresh_timer)
 
         self._build_ui()
         self.refresh()
+        self.refresh_timer()
 
     def _build_ui(self):
         layout = QtGui.QVBoxLayout(self)
@@ -142,13 +145,25 @@ class CodesWidget(QtGui.QWidget):
 
         self._scroll_area = QtGui.QScrollArea()
         self._scroll_area.setWidgetResizable(True)
-        self._scroll_area.setWidget(CodesList())
+        self._scroll_area.setWidget(QtGui.QWidget())
         layout.addWidget(self._scroll_area)
+
+    def refresh_timer(self, timestamp=None):
+        if timestamp is None:
+            timestamp = self._controller.timer.time
+        expiring = False
+        for c in self._controller.credentials or []:
+            if c.code.timestamp >= timestamp and c.code.timestamp < INF:
+                expiring = True
+                break
+        if expiring:
+            self._timeleft.set_timeleft(1000 * (timestamp + 30 - time()))
+        else:
+            self._timeleft.set_timeleft(0)
 
     def refresh(self):
         self._scroll_area.takeWidget()
         creds = self._controller.credentials
-        if creds is not None:
-            timestamp = self._controller.timer.time
-            self._scroll_area.setWidget(CodesList(timestamp, creds or []))
-            self._timeleft.set_timeleft(1000 * (timestamp + 30 - time()))
+        self._scroll_area.setWidget(
+            CodesList(self._controller.timer, creds or [], self.refresh_timer))
+        # Show timer IF: AutoCredential in creds, OR TouchCredential

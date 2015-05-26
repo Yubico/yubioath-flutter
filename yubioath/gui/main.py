@@ -85,7 +85,7 @@ class YubiOathApplication(qt.Application):
         self._settings = {}  # TODO get_store('window')
 
         reader = self._settings.get('reader', 'Yubikey')
-        self._controller = GuiController(reader, 6, 6)
+        self._controller = GuiController(self, reader)
         self._init_window()
 
     def _init_window(self):
