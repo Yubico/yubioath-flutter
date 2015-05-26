@@ -29,11 +29,14 @@ import argparse
 from PySide import QtGui, QtCore
 from yubioath import __version__ as version
 from yubioath.yubicommon import qt
-from yubioath.gui import messages as m
-from yubioath.gui.controller import GuiController
-# from yubioath.core.ykpers import libversion as ykpers_version
-ykpers_version = 'None'
-from yubioath.gui.view.codes import CodesWidget
+from ..cli.keystore import get_keystore
+try:
+    from ..core.legacy_otp import ykpers_version
+except ImportError:
+    ykpers_version = 'None'
+from . import messages as m
+from .controller import GuiController
+from .view.codes import CodesWidget
 
 
 ABOUT_TEXT = """
@@ -92,9 +95,6 @@ class YubiOathApplication(qt.Application):
         self.window.setWindowTitle(m.win_title_1 % version)
         self.window.setWindowIcon(QtGui.QIcon(':/yubioath.png'))
         self.window.resize(self._settings.get('size', QtCore.QSize(320, 340)))
-        pos = self._settings.get('pos')
-        if pos:
-            self.window.move(pos)
 
         self._build_menu_bar()
 
@@ -138,7 +138,6 @@ class YubiOathApplication(qt.Application):
             self.window.setCentralWidget(self._widget)
 
     def _on_closed(self):
-        self._settings['pos'] = self.window.pos()
         self._settings['size'] = self.window.size()
 
     def _libversions(self):
