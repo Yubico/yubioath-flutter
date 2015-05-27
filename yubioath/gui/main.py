@@ -35,6 +35,7 @@ except ImportError:
 from . import messages as m
 from .controller import GuiController
 from .view.codes import CodesWidget
+from .view.settings import SettingsDialog
 import sys
 import os
 import argparse
@@ -158,7 +159,7 @@ class YubiOathApplication(qt.Application):
         print "TODO"
 
     def _show_settings(self):
-        print "TODO"
+        SettingsDialog(self.window).exec_()
 
 
 def main():

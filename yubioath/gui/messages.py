@@ -49,6 +49,11 @@ action_settings = "&Settings"
 settings = "Settings"
 general = "General"
 no_key = "Insert a YubiKey..."
+ykstd_slots = "YubiKey standard slots"
+enable_slot_1 = "Read from slot %d"
+n_digits = "Number of digits"
+enable_systray = "Show in system tray"
+reader_name = "Card reader name"
 
 
 def _translate(qt):

@@ -32,6 +32,17 @@ from time import time
 
 INF = float('inf')
 
+TIMELEFT_STYLE = """
+QProgressBar {
+  padding: 1px;
+}
+QProgressBar::chunk {
+  background-color: #2196f3;
+  margin: 0px;
+  width: 1px;
+}
+"""
+
 
 class TimeleftBar(QtGui.QProgressBar):
     expired = QtCore.Signal()
@@ -39,6 +50,8 @@ class TimeleftBar(QtGui.QProgressBar):
     def __init__(self):
         super(TimeleftBar, self).__init__()
 
+        self.setStyleSheet(TIMELEFT_STYLE)
+        self.setMaximumHeight(8)
         self.setInvertedAppearance(True)
         self.setRange(0, 30000)
         self.setValue(0)
@@ -166,4 +179,3 @@ class CodesWidget(QtGui.QWidget):
         creds = self._controller.credentials
         self._scroll_area.setWidget(
             CodesList(self._controller.timer, creds or [], self.refresh_timer))
-        # Show timer IF: AutoCredential in creds, OR TouchCredential
