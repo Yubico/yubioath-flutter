@@ -31,7 +31,7 @@ from ..core.exc import CardError
 from .view.get_password import GetPasswordDialog
 from .keystore import get_keystore
 from . import messages as m
-from yubioath.yubicommon.qt import get_active_window
+from yubioath.yubicommon.qt import get_active_window, MutexLocker
 from PySide import QtCore, QtGui
 from smartcard import System
 from smartcard.ReaderMonitoring import ReaderMonitor, ReaderObserver
@@ -215,8 +215,8 @@ class GuiController(QtCore.QObject, Controller):
     def unlock(self, dev):
         dev.unlock(self._keystore.get(dev.id))
 
-    def grab_lock(self, lock=None):
-        return lock or QtCore.QMutexLocker(self._lock)
+    def grab_lock(self, lock=None, try_lock=False):
+        return lock or MutexLocker(self._lock, False).lock(try_lock)
 
     def read_slot_otp_touch(self, cred, timestamp):
         return (cred, 'TIMEOUT')
@@ -322,7 +322,9 @@ class GuiController(QtCore.QObject, Controller):
         return Code(std.calculate(cred.name, cred.oath_type), float('inf'))
 
     def refresh_codes(self, timestamp=None, lock=None):
-        lock = self.grab_lock(lock)
+        lock = self.grab_lock(lock, True)
+        if not lock:
+            return
         device = open_scard(self._reader)
         self._needs_read = self._reader and device is None
         timestamp = timestamp or self.timer.time
