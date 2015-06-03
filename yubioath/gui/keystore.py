@@ -32,6 +32,7 @@ def get_keystore():
 
 
 class Keystore(object):
+
     def __init__(self, store):
         self._store = store
         self._data = {}
@@ -46,5 +47,6 @@ class Keystore(object):
             self._data[id] = key
 
     def delete(self, id):
-        del self._data[id]
+        if id in self._data:
+            del self._data[id]
         self._store.delete(id)

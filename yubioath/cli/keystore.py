@@ -36,6 +36,7 @@ def get_keystore():
 
 
 class Keystore(object):
+
     def __init__(self, fname):
         self.fname = fname
         self._data = {}
@@ -59,8 +60,10 @@ class Keystore(object):
         self._save()
 
     def delete(self, id):
-        del self._data[id.encode('hex')]
-        self._save()
+        key = id.encode('hex')
+        if key in self._data:
+            del self._data[key]
+            self._save()
 
     def _save(self):
         directory = os.path.dirname(self.fname)
