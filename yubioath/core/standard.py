@@ -205,6 +205,7 @@ class YubiOathCcid(object):
                     format_truncated(value)))
             else:  # Assume HOTP
                 results.append((Credential(self, TYPE_HOTP, name), None))
+        results.sort(lambda a, b: cmp(a[0].name.lower(), b[0].name.lower()))
         return results
 
     def put(self, name, key, oath_type=TYPE_TOTP, algo=ALG_SHA1, digits=6,
