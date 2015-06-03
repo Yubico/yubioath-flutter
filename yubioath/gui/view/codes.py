@@ -88,6 +88,7 @@ class Code(QtGui.QWidget):
 
         labels = QtGui.QVBoxLayout()
         self._name_lbl = QtGui.QLabel(cred.name)
+        self._name_lbl.setMinimumWidth(10)
         labels.addWidget(self._name_lbl)
         self._code_lbl = QtGui.QLabel()
         labels.addWidget(self._code_lbl)
@@ -134,6 +135,10 @@ class Code(QtGui.QWidget):
                                      lambda: self._calc_btn.setEnabled(True))
         self.cred.calculate()
 
+    def mouseDoubleClickEvent(self, event):
+        print "TODO: calc, copy and close?", self.cred.code.code
+        event.accept()
+
 
 class CodesList(QtGui.QWidget):
 
@@ -169,6 +174,10 @@ class CodesWidget(QtGui.QWidget):
 
         self._scroll_area = QtGui.QScrollArea()
         self._scroll_area.setWidgetResizable(True)
+        self._scroll_area.setHorizontalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff)
+        self._scroll_area.setVerticalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOn)
         self._scroll_area.setWidget(QtGui.QWidget())
         layout.addWidget(self._scroll_area)
 
@@ -190,3 +199,6 @@ class CodesWidget(QtGui.QWidget):
         creds = self._controller.credentials
         self._scroll_area.setWidget(
             CodesList(self._controller.timer, creds or [], self.refresh_timer))
+        w = self._scroll_area.widget().minimumSizeHint().width()
+        w += self._scroll_area.verticalScrollBar().width()
+        self._scroll_area.setMinimumWidth(w)
