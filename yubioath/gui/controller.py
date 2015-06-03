@@ -314,10 +314,11 @@ class GuiController(QtCore.QObject, Controller):
             self.unlock(std)
         return Code(std.calculate(cred.name, cred.oath_type), float('inf'))
 
-    def refresh_codes(self, timestamp, lock=None):
+    def refresh_codes(self, timestamp=None, lock=None):
         lock = self.grab_lock(lock)
         device = open_scard(self._reader)
         self._needs_read = self._reader and device is None
+        timestamp = timestamp or self.timer.time
         creds = self.read_creds(device, self.slot1, self.slot2, timestamp)
         self._set_creds(creds)
 

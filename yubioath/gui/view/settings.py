@@ -77,11 +77,11 @@ class SettingsDialog(qt.Dialog):
         layout.addRow(btns)
 
     def _reset(self):
-        slot1 = self.settings.get('slot1')
+        slot1 = self.settings.get('slot1', 0)
         self._slot1_digits.setCurrentIndex(1 if slot1 == 8 else 0)
         self._slot1_enabled.setChecked(bool(slot1))
 
-        slot2 = self.settings.get('slot2')
+        slot2 = self.settings.get('slot2', 0)
         self._slot2_digits.setCurrentIndex(1 if slot2 == 8 else 0)
         self._slot2_enabled.setChecked(bool(slot2))
 
