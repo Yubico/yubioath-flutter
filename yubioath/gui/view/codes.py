@@ -124,7 +124,8 @@ class Code(QtGui.QWidget):
         self._on_change()
 
     def _copy(self):
-        print "TODO: copy", self.cred.code.code
+        QtCore.QCoreApplication.instance().clipboard().setText(
+            self.cred.code.code)
 
     def _calc(self):
         if self.cred.cred_type is CredentialType.HOTP:
