@@ -1,88 +1,81 @@
-Yubico Authenticator
-====================
+== Yubico Authenticator
+The Yubico Authenticator is a graphical desktop tool for generating Open
+AuTHentication (OATH) event-based HOTP and time-based TOTP one-time password
+codes, with the help of a Yubikey that protects the shared secrets.
 
-The Yubico Authenticator is a graphical desktop tool for generating
-Open AuTHentication (OATH) event-based HOTP and time-based TOTP
-one-time password codes, with the help of a Yubikey NEO that protects
-the shared secrets.
+=== License
+Yubico Authenticator is licensed under GPLv3+, see COPYING for details.
 
-License
--------
+Entypo pictograms by Daniel Bruce - www.entypo.com
 
-Yubico Authenticator is licensed under GPLv3+, see COPYING for
-details.
+=== Installation
+TODO: Binaries/PPA do not yet exist!
+The recommended way to install this software including dependencies is by using
+the provided precompiled binaries for your platform. For Windows and OS X,
+there are installers available for download
+https://developers.yubico.com/yubioath-desktop/Releases/[here]. For Ubuntu we
+have a custom PPA with a package for it
+https://launchpad.net/~yubico/+archive/ubuntu/stable[here].
 
-Dependencies
-------------
+=== Dependencies
+Yubico Authenticator requires PySide, yubikey-personalization, pyscard, and
+PyCrypto.
 
-To build the Yubico Authenticator you need the following Python
-modules: PySide, PBKDF2, pyscard.  To use it, you need a YubiKey NEO
-with the OATH applet loaded.
+=== Building binaries
+TODO: PyInstaller spec file does not yet exist!
+Binaries for Windows and OSX are built using PyInstaller.
 
-Building Windows binaries
--------------------------
+Get the source release file, yubioath-desktop-<version>.tar.gz, and extract it.
+It should contain a single directory, henceforth refered to as the release
+directory.
 
-For Windows you will need python, PySide, PyInstaller and Pywin32
-installed (32 or 64-bit versions depending on the architecture of the
+When building binaries for Windows or OS X, you will need to include
+.dll/.dylib files from the yubikey-personalization project. Create a
+subdirectory called "lib" in the release directory. Download the correct binary
+release for your architecture from
+https://developers.yubico.com/yubikey-personalization/Releases/[here] and
+extract the contained .dll/.dylib files to the "lib" directory you created
+previously.
+
+==== Windows
+For Windows you will need python, PySide, pyscard, PyCrypto, PyInstaller and
+Pywin32 installed (32 or 64-bit versions depending on the architecture of the
 binary your are building).
 
-Clone the git repository and checkout the desired release tag (or
-branch):
+To sign the executable you will need signtool.exe (from the Windows SDK) either
+copied into the root as well or in a location in your PATH, as well as a
+certificate in the Windows certificate store that you wish to sign with.
 
-  git clone https://github.com/Yubico/yubioath-desktop.git
-  cd yubico-authenticator
+Run "pyinstaller.exe resources/yubioath.spec" from the main release directory.
 
-To sign the executable, copy the pfx file to yubicoauth.pfx and place
-it in the root of the project folder. You will need signtool.exe (from
-the Windows SDK) either copied into the root as well or in a location
-in your PATH.
+TODO: NSIS configuration file does not yet exist!
+With NSIS installed, a Windows installer will be built as well.
 
-Run "pyinstaller.exe -w -i yubico.ico yubicoauthenticator.spec" from
-the main project folder.
+==== OSX
+For OSX you need python, pyside, pyscard, pycrypto, and pyinstaller installed.
+One way to install these dependencies is by using Homebrew and pip:
 
+  brew install python
+  brew install pyside
+  pip install PyInstaller
+  pip install pycrypto
+  pip install pyscard
 
-Building Mac OSX binaries
--------------------------
+NOTE: Homebrew will build backwards-incompatible binaries, so the resulting
+build will not run on an older version of OSX.
 
-Install PyInstaller via pip
+Run "pyinstaller resources/yubioath.spec" from the main release directory. This
+will create an .app in the dist directory.
 
-Run "pyinstaller -w -i "yubioath-48.png" yubicoauthenticator.spec" 
-from the main project folder.
+Sign the code using codesign:
 
-Codesign the code with:
-codesign -s 'Developer ID Application' /path/to/directory/project.app --deep
+  codesign -s 'Developer ID Application' dist/Yubico\ Authenticator.app --deep
 
-Build the package with:
-http://s.sudre.free.fr/Software/Packages/about.html
+TODO: Packages configuration file does not yet exist!
+There is also a project file for use with
+http://s.sudre.free.fr/Packaging.html[Packages] located at
+`resources/yubioath.pkgproj`. This can be used to create an installer for
+distribution, which you should sign prior to distribution:
 
-
-Running from Linux / OSX
-------------------------
-
-Install Python 2.7.x
-	
-	cd yubicoauthenticator/
-	Run "python yubico_authenticator.py --help"
-	Run "python yubico_authenticator.py"
-
-The application will start and sit on the system's systray.
-
-On Ubuntu 14.04 you need the following packages first.
-	
-	sudo apt-get install pcscd python-pyscard python-pbkdf2 python-pyside.qtgui
-
-
-No systray mode
---------------
-
-For users without a systrabar or running desktop envinronment with non standard Qt behaviour
-
-	cd yubicoauthenticator/
-	Run "python yubico_authenticator.py --disable-systray"
-
-
-
-ToDo
-----
-
-* .deb packaging
+  packagesbuild resources/yubioath.pkgproj
+  productsign --sign 'Developer ID Installer' dist/Yubico\ Authenticator.pkg dist/yubioath-desktop-mac.pkg
