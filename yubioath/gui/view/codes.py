@@ -75,6 +75,18 @@ class TimeleftBar(QtGui.QProgressBar):
             self.expired.emit()
 
 
+class CodeMenu(QtGui.QMenu):
+
+    def __init__(self, parent):
+        super(CodeMenu, self).__init__(parent)
+        self.cred = parent.cred
+
+        self.addAction(m.action_delete).triggered.connect(self._delete)
+
+    def _delete(self):
+        print "TODO: Delete", self.cred
+
+
 class Code(QtGui.QWidget):
 
     def __init__(self, cred, timer, on_change):
@@ -83,11 +95,16 @@ class Code(QtGui.QWidget):
         self._on_change = on_change
         self.cred.changed.connect(self._draw)
         self.timer = timer
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._menu)
 
+        self._build_ui()
+
+    def _build_ui(self):
         layout = QtGui.QHBoxLayout(self)
 
         labels = QtGui.QVBoxLayout()
-        self._name_lbl = QtGui.QLabel(cred.name)
+        self._name_lbl = QtGui.QLabel(self.cred.name)
         self._name_lbl.setMinimumWidth(10)
         labels.addWidget(self._name_lbl)
         self._code_lbl = QtGui.QLabel()
@@ -98,14 +115,15 @@ class Code(QtGui.QWidget):
         self._calc_btn = QtGui.QPushButton(QtGui.QIcon(':/calc.png'), None)
         self._calc_btn.clicked.connect(self._calc)
         layout.addWidget(self._calc_btn)
-        if cred.cred_type not in [CredentialType.TOUCH, CredentialType.HOTP]:
+        if self.cred.cred_type not in [CredentialType.TOUCH,
+                                       CredentialType.HOTP]:
             self._calc_btn.setVisible(False)
 
         self._copy_btn = QtGui.QPushButton(QtGui.QIcon(':/copy.png'), None)
         self._copy_btn.clicked.connect(self._copy)
         layout.addWidget(self._copy_btn)
 
-        timer.time_changed.connect(self._draw)
+        self.timer.time_changed.connect(self._draw)
 
         self._draw()
 
@@ -135,8 +153,12 @@ class Code(QtGui.QWidget):
                                      lambda: self._calc_btn.setEnabled(True))
         self.cred.calculate()
 
+    def _menu(self, pos):
+        CodeMenu(self).popup(self.mapToGlobal(pos))
+
     def mouseDoubleClickEvent(self, event):
-        print "TODO: calc, copy and close?", self.cred.code.code
+        if event.button() is QtCore.Qt.LeftButton:
+            print "TODO: calc, copy and close?", self.cred.code.code
         event.accept()
 
 
