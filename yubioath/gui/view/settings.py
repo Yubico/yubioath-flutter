@@ -28,13 +28,17 @@ from yubioath.yubicommon import qt
 from .. import messages as m
 from PySide import QtGui
 
+INDENT = 16
+
 
 class SettingsDialog(qt.Dialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent, settings):
         super(SettingsDialog, self).__init__(parent)
+        self.settings = settings
 
         self.accepted.connect(self._save)
         self._build_ui()
+        self._reset()
 
     def _build_ui(self):
         layout = QtGui.QFormLayout(self)
@@ -47,7 +51,7 @@ class SettingsDialog(qt.Dialog):
         self._slot1_enabled.stateChanged.connect(self._slot1_digits.setEnabled)
         self._slot1_digits.setEnabled(False)
         layout.addRow(m.n_digits, self._slot1_digits)
-        layout.labelForField(self._slot1_digits).setIndent(16)
+        layout.labelForField(self._slot1_digits).setIndent(INDENT)
 
         self._slot2_enabled = QtGui.QCheckBox(m.enable_slot_1 % 2)
         layout.addRow(self._slot2_enabled)
@@ -56,7 +60,7 @@ class SettingsDialog(qt.Dialog):
         self._slot2_enabled.stateChanged.connect(self._slot2_digits.setEnabled)
         self._slot2_digits.setEnabled(False)
         layout.addRow(m.n_digits, self._slot2_digits)
-        layout.labelForField(self._slot2_digits).setIndent(16)
+        layout.labelForField(self._slot2_digits).setIndent(INDENT)
 
         layout.addRow(self.section(m.general))
 
@@ -71,6 +75,19 @@ class SettingsDialog(qt.Dialog):
         btns.accepted.connect(self.accept)
         btns.rejected.connect(self.reject)
         layout.addRow(btns)
+
+    def _reset(self):
+        slot1 = self.settings.get('slot1')
+        self._slot1_digits.setCurrentIndex(1 if slot1 == 8 else 0)
+        self._slot1_enabled.setChecked(bool(slot1))
+
+        slot2 = self.settings.get('slot2')
+        self._slot2_digits.setCurrentIndex(1 if slot2 == 8 else 0)
+        self._slot2_enabled.setChecked(bool(slot2))
+
+        self._systray.setChecked(self.settings.get('systray', True))
+
+        self._reader_name.setText(self.settings.get('reader', 'Yubikey'))
 
     @property
     def slot1(self):
@@ -91,4 +108,7 @@ class SettingsDialog(qt.Dialog):
         return self._reader_name.text()
 
     def _save(self):
-        print "TODO: Save settings"
+        self.settings['slot1'] = self.slot1
+        self.settings['slot2'] = self.slot2
+        self.settings['systray'] = self.systray
+        self.settings['reader'] = self.reader_name

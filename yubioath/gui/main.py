@@ -93,7 +93,7 @@ class YubiOathApplication(qt.Application):
         self._settings = self.settings.get_group('settings')
 
         reader = self._settings.get('reader', 'Yubikey')
-        self._controller = GuiController(self, reader, 0, 6)
+        self._controller = GuiController(self, self._settings)
         self._init_window()
 
     def _init_window(self):
@@ -159,7 +159,7 @@ class YubiOathApplication(qt.Application):
         print "TODO"
 
     def _show_settings(self):
-        SettingsDialog(self.window).exec_()
+        SettingsDialog(self.window, self._settings).exec_()
 
 
 def main():

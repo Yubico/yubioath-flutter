@@ -175,12 +175,10 @@ class Timer(QtCore.QObject):
 class GuiController(QtCore.QObject, Controller):
     refreshed = QtCore.Signal()
 
-    def __init__(self, app, reader_name, slot1=0, slot2=0):
+    def __init__(self, app, settings):
         super(GuiController, self).__init__()
         self._app = app
-        self._reader_name = reader_name
-        self._slot1 = slot1
-        self._slot2 = slot2
+        self._settings = settings
         self._needs_read = False
         self._reader = None
         self._creds = None
@@ -195,6 +193,18 @@ class GuiController(QtCore.QObject, Controller):
         self.startTimer(2000)
         self.timer.time_changed.connect(self.refresh_codes)
 
+    @property
+    def reader_name(self):
+        return self._settings.get('reader', 'Yubikey')
+
+    @property
+    def slot1(self):
+        return self._settings.get('slot1', 0)
+
+    @property
+    def slot2(self):
+        return self._settings.get('slot2', 0)
+
     def unlock(self, dev):
         dev.unlock(self._keystore.get(dev.id))
 
@@ -206,7 +216,7 @@ class GuiController(QtCore.QObject, Controller):
 
     @property
     def otp_enabled(self):
-        return self.otp_supported and bool(self._slot1 or self._slot2)
+        return self.otp_supported and bool(self.slot1 or self.slot2)
 
     @property
     def credentials(self):
@@ -224,7 +234,7 @@ class GuiController(QtCore.QObject, Controller):
 
         if self._reader is None:
             for reader in added:
-                if self._reader_name in reader.name:
+                if self.reader_name in reader.name:
                     self._reader = reader
                     self._creds = []
                     ccid_dev = open_scard(reader)
@@ -308,7 +318,7 @@ class GuiController(QtCore.QObject, Controller):
         lock = self.grab_lock(lock)
         device = open_scard(self._reader)
         self._needs_read = self._reader and device is None
-        creds = self.read_creds(device, self._slot1, self._slot2, timestamp)
+        creds = self.read_creds(device, self.slot1, self.slot2, timestamp)
         self._set_creds(creds)
 
     def timerEvent(self, event):
@@ -316,7 +326,7 @@ class GuiController(QtCore.QObject, Controller):
         if self._reader is None and self._creds is None and self.otp_enabled:
             _lock = self.grab_lock()
             timestamp = self.timer.time
-            read = self.read_creds(None, self._slot1, self._slot2, timestamp)
+            read = self.read_creds(None, self.slot1, self.slot2, timestamp)
             if read is not None and self._reader is None:
                 self._set_creds(read)
         event.accept()
