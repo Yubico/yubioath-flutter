@@ -94,11 +94,13 @@ class Code(QtGui.QWidget):
         layout.addLayout(labels)
         layout.addStretch()
 
-        self._calc_btn = QtGui.QPushButton('Calc')
+        self._calc_btn = QtGui.QPushButton(QtGui.QIcon(':/calc.png'), None)
         self._calc_btn.clicked.connect(self._calc)
         layout.addWidget(self._calc_btn)
+        if cred.cred_type not in [CredentialType.TOUCH, CredentialType.HOTP]:
+            self._calc_btn.setVisible(False)
 
-        self._copy_btn = QtGui.QPushButton('Copy')
+        self._copy_btn = QtGui.QPushButton(QtGui.QIcon(':/copy.png'), None)
         self._copy_btn.clicked.connect(self._copy)
         layout.addWidget(self._copy_btn)
 
@@ -115,15 +117,21 @@ class Code(QtGui.QWidget):
             name_fmt = '<b style="color: gray;">%s</b>'
         else:
             name_fmt = '<b>%s</b>'
+        if self.cred.cred_type is CredentialType.TOUCH:
+            self._calc_btn.setEnabled(self.expired)
         self._code_lbl.setText(name_fmt % (self.cred.code.code))
+        self._copy_btn.setEnabled(bool(self.cred.code.code))
         self._on_change()
 
     def _copy(self):
         print "TODO: copy", self.cred.code.code
 
     def _calc(self):
-        if self.cred.cred_type in [CredentialType.TOUCH, CredentialType.HOTP]:
-            self.cred.calculate()
+        if self.cred.cred_type is CredentialType.HOTP:
+            self._calc_btn.setDisabled(True)
+            QtCore.QTimer.singleShot(5000,
+                                     lambda: self._calc_btn.setEnabled(True))
+        self.cred.calculate()
 
 
 class CodesList(QtGui.QWidget):
@@ -136,6 +144,8 @@ class CodesList(QtGui.QWidget):
 
         for cred in credentials:
             layout.addWidget(Code(cred, timer, on_change))
+
+        layout.addStretch()
 
 
 class CodesWidget(QtGui.QWidget):
