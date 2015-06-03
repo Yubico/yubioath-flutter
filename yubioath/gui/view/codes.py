@@ -169,9 +169,14 @@ class CodesList(QtGui.QWidget):
 
         layout = QtGui.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
         for cred in credentials:
             layout.addWidget(Code(cred, timer, on_change))
+            line = QtGui.QFrame()
+            line.setFrameShape(QtGui.QFrame.HLine)
+            line.setFrameShadow(QtGui.QFrame.Sunken)
+            layout.addWidget(line)
 
         layout.addStretch()
 
