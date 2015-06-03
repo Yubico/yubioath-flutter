@@ -67,6 +67,7 @@ class MainWidget(QtGui.QStackedWidget):
     def _build_ui(self):
         self.codes_widget = CodesWidget(self._controller)
         self.no_key_widget = QtGui.QLabel(m.no_key)
+        self.no_key_widget.setAlignment(QtCore.Qt.AlignCenter)
         self.addWidget(self.no_key_widget)
         self.addWidget(self.codes_widget)
 
