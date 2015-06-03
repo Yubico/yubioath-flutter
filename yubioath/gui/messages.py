@@ -55,6 +55,8 @@ enable_slot_1 = "Read from slot %d"
 n_digits = "Number of digits"
 enable_systray = "Show in system tray"
 reader_name = "Card reader name"
+touch_title = "Touch required"
+touch_desc = "Touch your YubiKey now"
 
 
 def _translate(qt):

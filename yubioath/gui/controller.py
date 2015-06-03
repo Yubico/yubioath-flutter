@@ -30,8 +30,9 @@ from ..core.controller import Controller
 from ..core.exc import CardError
 from .view.get_password import GetPasswordDialog
 from .keystore import get_keystore
+from . import messages as m
 from yubioath.yubicommon.qt import get_active_window
-from PySide import QtCore
+from PySide import QtCore, QtGui
 from smartcard import System
 from smartcard.ReaderMonitoring import ReaderMonitor, ReaderObserver
 from smartcard.CardMonitoring import CardMonitor, CardObserver
@@ -86,12 +87,18 @@ class TouchCredential(Credential):
         self._digits = digits
 
     def calculate(self):
+        dialog = QtGui.QMessageBox(get_active_window())
+        dialog.setWindowTitle(m.touch_title)
+        dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
+        dialog.setIcon(QtGui.QMessageBox.Information)
+        dialog.setText(m.touch_desc)
         def cb(code):
             self.code = code
-        self._controller._app.worker.post(
-            'Touch...',
+            dialog.accept()
+        self._controller._app.worker.post_bg(
             (self._controller._calculate_touch, self._slot, self._digits),
             cb)
+        dialog.exec_()
 
 
 class HotpCredential(Credential):
