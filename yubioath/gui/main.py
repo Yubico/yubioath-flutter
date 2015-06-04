@@ -124,12 +124,14 @@ class YubiOathApplication(qt.Application):
 
     def _build_menu_bar(self):
         file_menu = self.window.menuBar().addMenu(m.menu_file)
-        add_action = QtGui.QAction(m.action_add, file_menu)
-        add_action.triggered.connect(self._add_credential)
-        file_menu.addAction(add_action)
-        password_action = QtGui.QAction(m.action_password, file_menu)
-        password_action.triggered.connect(self._change_password)
-        file_menu.addAction(password_action)
+        self._add_action = QtGui.QAction(m.action_add, file_menu)
+        self._add_action.triggered.connect(self._add_credential)
+        self._add_action.setEnabled(False)
+        file_menu.addAction(self._add_action)
+        self._password_action = QtGui.QAction(m.action_password, file_menu)
+        self._password_action.triggered.connect(self._change_password)
+        self._password_action.setEnabled(False)
+        file_menu.addAction(self._password_action)
         settings_action = QtGui.QAction(m.action_settings, file_menu)
         settings_action.triggered.connect(self._show_settings)
         file_menu.addAction(settings_action)
@@ -138,6 +140,13 @@ class YubiOathApplication(qt.Application):
         about_action = QtGui.QAction(m.action_about, help_menu)
         about_action.triggered.connect(self._about)
         help_menu.addAction(about_action)
+
+        self._controller.refreshed.connect(self._refresh_menu)
+
+    def _refresh_menu(self):
+        enabled = bool(self._controller._reader)
+        self._add_action.setEnabled(enabled)
+        self._password_action.setEnabled(enabled)
 
     def _on_shown(self):
         if not self._widget:
@@ -157,15 +166,26 @@ class YubiOathApplication(qt.Application):
     def _add_credential(self):
         dialog = AddCredDialog(self.window)
         if dialog.exec_():
-            self._controller.add_cred(dialog.name, dialog.key,
-                                      oath_type=dialog.oath_type,
-                                      digits=dialog.n_digits)
-            self._controller.refresh_codes()
+            if not self._controller._reader:
+                QtGui.QMessageBox.critical(
+                    self.window, m.key_removed, m.key_removed_desc)
+            else:
+                try:
+                    self._controller.add_cred(dialog.name, dialog.key,
+                                              oath_type=dialog.oath_type,
+                                              digits=dialog.n_digits)
+                    self._controller.refresh_codes()
+                except Exception as e:
+                    print e
 
     def _change_password(self):
         dialog = SetPasswordDialog(self.window)
         if dialog.exec_():
-            self._controller.set_password(dialog.password, dialog.remember)
+            if not self._controller._reader:
+                QtGui.QMessageBox.critical(
+                    self.window, m.key_removed, m.key_removed_desc)
+            else:
+                self._controller.set_password(dialog.password, dialog.remember)
 
     def _show_settings(self):
         if SettingsDialog(self.window, self._settings).exec_():
