@@ -170,13 +170,9 @@ class YubiOathApplication(qt.Application):
                 QtGui.QMessageBox.critical(
                     self.window, m.key_removed, m.key_removed_desc)
             else:
-                try:
-                    self._controller.add_cred(dialog.name, dialog.key,
-                                              oath_type=dialog.oath_type,
-                                              digits=dialog.n_digits)
-                    self._controller.refresh_codes()
-                except Exception as e:
-                    print e
+                self._controller.add_cred(dialog.name, dialog.key,
+                                          oath_type=dialog.oath_type,
+                                          digits=dialog.n_digits)
 
     def _change_password(self):
         dialog = SetPasswordDialog(self.window)

@@ -70,19 +70,30 @@ class Credential(QtCore.QObject):
         self.changed.emit()
 
 
-class AutoCredential(Credential):
+class BoundCredential(Credential):
 
-    def __init__(self, name, code):
-        super(AutoCredential, self).__init__(name, CredentialType.AUTO)
+    def __init__(self, controller, name, cred_type):
+        super(BoundCredential, self).__init__(name, cred_type)
+        self._controller = controller
+
+    def delete(self):
+        self._controller.delete_cred(self.name)
+
+
+class AutoCredential(BoundCredential):
+
+    def __init__(self, controller, name, code):
+        super(AutoCredential, self).__init__(
+            controller, name, CredentialType.AUTO)
         self._code = code
 
 
-class TouchCredential(Credential):
+class TouchCredential(BoundCredential):
 
     def __init__(self, controller, name, slot, digits):
-        super(TouchCredential, self).__init__(name, CredentialType.TOUCH)
+        super(TouchCredential, self).__init__(
+            controller, name, CredentialType.TOUCH)
 
-        self._controller = controller
         self._slot = slot
         self._digits = digits
 
@@ -102,11 +113,11 @@ class TouchCredential(Credential):
         dialog.exec_()
 
 
-class HotpCredential(Credential):
+class HotpCredential(BoundCredential):
 
     def __init__(self, controller, cred, name):
-        super(HotpCredential, self).__init__(name, CredentialType.HOTP)
-        self._controller = controller
+        super(HotpCredential, self).__init__(
+            controller, name, CredentialType.HOTP)
         self._cred = cred
 
     def calculate(self):
@@ -281,7 +292,7 @@ class GuiController(QtCore.QObject, Controller):
         if code is None:
             return HotpCredential(self, cred, cred.name)
         else:
-            return AutoCredential(cred.name, Code(code, self.timer.time))
+            return AutoCredential(self, cred.name, Code(code, self.timer.time))
 
     def _set_creds(self, creds):
         if creds:
@@ -343,11 +354,24 @@ class GuiController(QtCore.QObject, Controller):
         event.accept()
 
     def add_cred(self, *args, **kwargs):
-        _lock = self.grab_lock()
+        lock = self.grab_lock()
         dev = YubiOathCcid(open_scard(self._reader))
         if dev.locked:
             self.unlock(dev)
         dev.put(*args, **kwargs)
+        self._creds = None
+        self.refresh_codes(lock=lock)
+
+    def delete_cred(self, name):
+        if name in ['YubiKey slot 1', 'YubiKey slot 2']:
+            raise NotImplementedError('Deleting YubiKey slots not implemented')
+        lock = self.grab_lock()
+        dev = YubiOathCcid(open_scard(self._reader))
+        if dev.locked:
+            self.unlock(dev)
+        dev.delete(name)
+        self._creds = None
+        self.refresh_codes(lock=lock)
 
     def set_password(self, password, remember=False):
         _lock = self.grab_lock()

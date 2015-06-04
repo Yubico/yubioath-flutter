@@ -84,7 +84,7 @@ class CodeMenu(QtGui.QMenu):
         self.addAction(m.action_delete).triggered.connect(self._delete)
 
     def _delete(self):
-        print "TODO: Delete", self.cred
+        self.cred.delete()
 
 
 class Code(QtGui.QWidget):
