@@ -34,7 +34,7 @@ class SetPasswordDialog(qt.Dialog):
     def __init__(self, parent):
         super(SetPasswordDialog, self).__init__(parent)
 
-        self.setWindowTitle(m.add_cred)
+        self.setWindowTitle(m.set_pass)
         self._build_ui()
 
     def _build_ui(self):

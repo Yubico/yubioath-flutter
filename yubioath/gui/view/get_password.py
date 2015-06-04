@@ -33,6 +33,7 @@ class GetPasswordDialog(qt.Dialog):
 
     def __init__(self, parent=None):
         super(GetPasswordDialog, self).__init__(parent)
+        self.setWindowTitle(m.pass_required)
 
         layout = QtGui.QFormLayout(self)
         self._pwd_field = QtGui.QLineEdit()
