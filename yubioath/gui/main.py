@@ -34,6 +34,7 @@ except ImportError:
     ykpers_version = 'None'
 from . import messages as m
 from .controller import GuiController
+from .view.systray import Systray
 from .view.codes import CodesWidget
 from .view.settings import SettingsDialog
 from .view.add_cred import AddCredDialog
@@ -96,7 +97,15 @@ class YubiOathApplication(qt.Application):
         self._settings = self.settings.get_group('settings')
 
         self._controller = GuiController(self, self._settings)
+
+        self._systray = Systray(self)
+
+        self._init_systray()
         self._init_window()
+
+    def _init_systray(self):
+        self._systray.setIcon(QtGui.QIcon(':/yubioath.png'))
+        self._systray.setVisible(self._settings.get('systray', False))
 
     def _init_window(self):
         self.window.setWindowTitle(m.win_title_1 % version)
@@ -111,7 +120,7 @@ class YubiOathApplication(qt.Application):
             pass
 
         self.window.shown.connect(self._on_shown)
-        self.window.closed.connect(self._on_closed)
+        self.window.closeEvent = self._on_closed
 
         self.window.show()
         self.window.raise_()
@@ -153,8 +162,14 @@ class YubiOathApplication(qt.Application):
             self._widget = MainWidget(self._controller)
             self.window.setCentralWidget(self._widget)
 
-    def _on_closed(self):
+    def _on_closed(self, event):
         self._settings['size'] = self.window.size()
+        if self._systray.isVisible():
+            # TODO: Remember position, restore from systray.
+            self.window.hide()
+            event.ignore()
+        else:
+            event.accept()
 
     def _libversions(self):
         return 'ykpers: %s' % ykpers_version
@@ -185,6 +200,7 @@ class YubiOathApplication(qt.Application):
 
     def _show_settings(self):
         if SettingsDialog(self.window, self._settings).exec_():
+            self._systray.setVisible(self._settings.get('systray', False))
             self._controller.refresh_codes()
 
 
