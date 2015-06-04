@@ -56,8 +56,11 @@ class Keystore(object):
         return None
 
     def put(self, id, key):
-        self._data[id.encode('hex')] = key.encode('hex')
-        self._save()
+        if not key:
+            self.delete(id)
+        else:
+            self._data[id.encode('hex')] = key.encode('hex')
+            self._save()
 
     def delete(self, id):
         key = id.encode('hex')
