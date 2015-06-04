@@ -166,7 +166,7 @@ class YubiOathCcid(object):
             raise ValueError('Response did not match verification!')
         self._challenge = None
 
-    def set_key(self, key=''):
+    def set_key(self, key=None):
         ensure_unlocked(self)
         if key:
             keydata = chr(TYPE_TOTP | ALG_SHA1) + key

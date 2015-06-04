@@ -29,28 +29,47 @@ from .. import messages as m
 from PySide import QtGui
 
 
-class GetPasswordDialog(qt.Dialog):
+class SetPasswordDialog(qt.Dialog):
 
-    def __init__(self, parent=None):
-        super(GetPasswordDialog, self).__init__(parent)
+    def __init__(self, parent):
+        super(SetPasswordDialog, self).__init__(parent)
 
+        self.setWindowTitle(m.add_cred)
+        self._build_ui()
+
+    def _build_ui(self):
         layout = QtGui.QFormLayout(self)
-        self._pwd_field = QtGui.QLineEdit()
-        self._pwd_field.setEchoMode(QtGui.QLineEdit.Password)
-        layout.addRow(m.password, self._pwd_field)
+
+        self._new_pass = QtGui.QLineEdit()
+        self._new_pass.setEchoMode(QtGui.QLineEdit.Password)
+        layout.addRow(m.new_pass, self._new_pass)
+
+        self._ver_pass = QtGui.QLineEdit()
+        self._ver_pass.setEchoMode(QtGui.QLineEdit.Password)
+        layout.addRow(m.ver_pass, self._ver_pass)
 
         self._remember = QtGui.QCheckBox(m.remember)
         layout.addRow(self._remember)
 
         btns = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok |
                                       QtGui.QDialogButtonBox.Cancel)
-        btns.accepted.connect(self.accept)
+        btns.accepted.connect(self._save)
         btns.rejected.connect(self.reject)
-        layout.addWidget(btns)
+        layout.addRow(btns)
+
+    def _save(self):
+        if not self._new_pass.text() == self._ver_pass.text():
+            self._new_pass.setText('')
+            self._ver_pass.setText('')
+            self._new_pass.setFocus()
+            QtGui.QMessageBox.warning(self, m.pass_mismatch,
+                                      m.pass_mismatch_desc)
+        else:
+            self.accept()
 
     @property
     def password(self):
-        return self._pwd_field.text()
+        return self._new_pass.text()
 
     @property
     def remember(self):

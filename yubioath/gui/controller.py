@@ -317,10 +317,10 @@ class GuiController(QtCore.QObject, Controller):
 
     def _calculate_hotp(self, cred):
         _lock = self.grab_lock()
-        std = YubiOathCcid(open_scard(self._reader))
-        if std.locked:
-            self.unlock(std)
-        return Code(std.calculate(cred.name, cred.oath_type), float('inf'))
+        dev = YubiOathCcid(open_scard(self._reader))
+        if dev.locked:
+            self.unlock(dev)
+        return Code(dev.calculate(cred.name, cred.oath_type), float('inf'))
 
     def refresh_codes(self, timestamp=None, lock=None):
         lock = self.grab_lock(lock, True)
@@ -344,7 +344,16 @@ class GuiController(QtCore.QObject, Controller):
 
     def add_cred(self, *args, **kwargs):
         _lock = self.grab_lock()
-        std = YubiOathCcid(open_scard(self._reader))
-        if std.locked:
-            self.unlock(std)
-        std.put(*args, **kwargs)
+        dev = YubiOathCcid(open_scard(self._reader))
+        if dev.locked:
+            self.unlock(dev)
+        dev.put(*args, **kwargs)
+
+    def set_password(self, password, remember=False):
+        _lock = self.grab_lock()
+        dev = YubiOathCcid(open_scard(self._reader))
+        if dev.locked:
+            self.unlock(dev)
+        key = dev.calculate_key(password)
+        dev.set_key(key)
+        self._keystore.put(dev.id, key, remember)

@@ -27,11 +27,16 @@
 from yubioath.yubicommon import qt
 from ...core.standard import TYPE_TOTP, TYPE_HOTP
 from .. import messages as m
-from PySide import QtGui
+from PySide import QtGui, QtCore
 from base64 import b32decode
+
+NAME_VALIDATOR = QtGui.QRegExpValidator(QtCore.QRegExp(r'.{3,}'))
+B32_VALIDATOR = QtGui.QRegExpValidator(
+    QtCore.QRegExp(r'[a-z2-7]+=*', QtCore.Qt.CaseInsensitive))
 
 
 class AddCredDialog(qt.Dialog):
+
     def __init__(self, parent):
         super(AddCredDialog, self).__init__(parent)
 
@@ -42,9 +47,11 @@ class AddCredDialog(qt.Dialog):
         layout = QtGui.QFormLayout(self)
 
         self._cred_name = QtGui.QLineEdit()
+        self._cred_name.setValidator(NAME_VALIDATOR)
         layout.addRow(m.cred_name, self._cred_name)
 
         self._cred_key = QtGui.QLineEdit()
+        self._cred_key.setValidator(B32_VALIDATOR)
         layout.addRow(m.cred_key, self._cred_key)
 
         layout.addRow(QtGui.QLabel(m.cred_type))
@@ -65,9 +72,19 @@ class AddCredDialog(qt.Dialog):
 
         btns = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok |
                                       QtGui.QDialogButtonBox.Cancel)
-        btns.accepted.connect(self.accept)
+        btns.accepted.connect(self._save)
         btns.rejected.connect(self.reject)
         layout.addRow(btns)
+
+    def _save(self):
+        if not self._cred_name.hasAcceptableInput():
+            QtGui.QMessageBox.warning(self, m.invalid_name, m.invalid_name_desc)
+            self._cred_name.selectAll()
+        elif not self._cred_key.hasAcceptableInput():
+            QtGui.QMessageBox.warning(self, m.invalid_key, m.invalid_key_desc)
+            self._cred_key.selectAll()
+        else:
+            self.accept()
 
     @property
     def name(self):
@@ -75,7 +92,8 @@ class AddCredDialog(qt.Dialog):
 
     @property
     def key(self):
-        return b32decode(self._cred_key.text().upper())
+        unpadded = self._cred_key.text().upper()
+        return b32decode(unpadded + '=' * (-len(unpadded) % 8))
 
     @property
     def oath_type(self):

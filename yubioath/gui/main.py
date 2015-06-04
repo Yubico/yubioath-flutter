@@ -37,6 +37,7 @@ from .controller import GuiController
 from .view.codes import CodesWidget
 from .view.settings import SettingsDialog
 from .view.add_cred import AddCredDialog
+from .view.set_password import SetPasswordDialog
 import sys
 import os
 import argparse
@@ -162,7 +163,9 @@ class YubiOathApplication(qt.Application):
             self._controller.refresh_codes()
 
     def _change_password(self):
-        print "TODO"
+        dialog = SetPasswordDialog(self.window)
+        if dialog.exec_():
+            self._controller.set_password(dialog.password, dialog.remember)
 
     def _show_settings(self):
         if SettingsDialog(self.window, self._settings).exec_():

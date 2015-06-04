@@ -69,6 +69,8 @@ def format_code(code, digits=6):
 #
 
 def derive_key(salt, passphrase):
+    if not passphrase:
+        return None
     return PBKDF2(passphrase, salt, 16, 1000)
 
 
