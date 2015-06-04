@@ -27,7 +27,7 @@
 from PySide import QtGui, QtCore
 from yubioath import __version__ as version
 from yubioath.yubicommon import qt
-from ..cli.keystore import get_keystore, CONFIG_HOME
+from ..cli.keystore import CONFIG_HOME
 try:
     from ..core.legacy_otp import ykpers_version
 except ImportError:
@@ -36,6 +36,7 @@ from . import messages as m
 from .controller import GuiController
 from .view.codes import CodesWidget
 from .view.settings import SettingsDialog
+from .view.add_cred import AddCredDialog
 import sys
 import os
 import argparse
@@ -153,7 +154,12 @@ class YubiOathApplication(qt.Application):
                                 ABOUT_TEXT % (version, self._libversions()))
 
     def _add_credential(self):
-        print "TODO"
+        dialog = AddCredDialog(self.window)
+        if dialog.exec_():
+            self._controller.add_cred(dialog.name, dialog.key,
+                                      oath_type=dialog.oath_type,
+                                      digits=dialog.n_digits)
+            self._controller.refresh_codes()
 
     def _change_password(self):
         print "TODO"

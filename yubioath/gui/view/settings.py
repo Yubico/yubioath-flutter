@@ -32,10 +32,12 @@ INDENT = 16
 
 
 class SettingsDialog(qt.Dialog):
+
     def __init__(self, parent, settings):
         super(SettingsDialog, self).__init__(parent)
         self.settings = settings
 
+        self.setWindowTitle(m.settings)
         self.accepted.connect(self._save)
         self._build_ui()
         self._reset()

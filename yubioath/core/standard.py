@@ -211,6 +211,8 @@ class YubiOathCcid(object):
     def put(self, name, key, oath_type=TYPE_TOTP, algo=ALG_SHA1, digits=6,
             imf=0, always_increasing=False):
         ensure_unlocked(self)
+        if isinstance(name, unicode):
+            name = name.encode('utf8')
         if len(key) > 64:  # Keys longer than 64 bytes are hashed, as per HMAC.
             key = sha1(key).digest()
         keydata = chr(oath_type | algo) + chr(digits) + key

@@ -92,6 +92,7 @@ class TouchCredential(Credential):
         dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
         dialog.setIcon(QtGui.QMessageBox.Information)
         dialog.setText(m.touch_desc)
+
         def cb(code):
             self.code = code
             dialog.accept()
@@ -127,8 +128,8 @@ class CcidReaderObserver(ReaderObserver):
         self._monitor = ReaderMonitor()
         self._monitor.addObserver(self)
 
-    def update(self, observable, xxx_todo_changeme):
-        (added, removed) = xxx_todo_changeme
+    def update(self, observable, tup):
+        (added, removed) = tup
         c = self._controller()
         if c:
             c._update(added, removed)
@@ -144,8 +145,8 @@ class CcidCardObserver(CardObserver):
         self._monitor = CardMonitor()
         self._monitor.addObserver(self)
 
-    def update(self, observable, xxx_todo_changeme1):
-        (added, removed) = xxx_todo_changeme1
+    def update(self, observable, tup):
+        (added, removed) = tup
         c = self._controller()
         if c:
             c._update([card.reader for card in added], [removed])
@@ -271,8 +272,8 @@ class GuiController(QtCore.QObject, Controller):
     def _await(self):
         self._creds = None
 
-    def wrap_credential(self, xxx_todo_changeme2):
-        (cred, code) = xxx_todo_changeme2
+    def wrap_credential(self, tup):
+        (cred, code) = tup
         if code == 'INVALID':
             return Credential(cred.name, CredentialType.INVALID)
         if code == 'TIMEOUT':
@@ -340,3 +341,10 @@ class GuiController(QtCore.QObject, Controller):
             if read is not None and self._reader is None:
                 self._set_creds(read)
         event.accept()
+
+    def add_cred(self, *args, **kwargs):
+        _lock = self.grab_lock()
+        std = YubiOathCcid(open_scard(self._reader))
+        if std.locked:
+            self.unlock(std)
+        std.put(*args, **kwargs)
