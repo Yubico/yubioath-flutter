@@ -25,6 +25,7 @@
 # for the parts of OpenSSL used as well as that of the covered work.
 
 from PySide import QtGui
+from .. import messages as m
 
 
 class Systray(QtGui.QSystemTrayIcon):
@@ -33,8 +34,21 @@ class Systray(QtGui.QSystemTrayIcon):
         super(Systray, self).__init__(parent)
 
         self.activated.connect(self._activated)
-        # TODO: Add context menu with quit.
+        self._build_menu()
+
+    def _build_menu(self):
+        menu = QtGui.QMenu()
+
+        quit_action = QtGui.QAction(m.action_quit, menu)
+        quit_action.triggered.connect(self._quit)
+        menu.addAction(quit_action)
+
+        self.setContextMenu(menu)
 
     def _activated(self, reason):
         if reason == QtGui.QSystemTrayIcon.ActivationReason.Trigger:
             self.parent().window.show()
+
+    def _quit(self):
+        self.hide()
+        self.parent().window.close()

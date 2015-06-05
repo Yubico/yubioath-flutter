@@ -91,6 +91,7 @@ class YubiOathApplication(qt.Application):
         QtCore.QCoreApplication.setApplicationName(m.app_name)
 
         self._widget = None
+        self._pos = None
         self.settings = qt.Settings.wrap(
             os.path.join(CONFIG_HOME, 'settings.ini'),
             QtCore.QSettings.IniFormat)
@@ -114,13 +115,11 @@ class YubiOathApplication(qt.Application):
 
         self._build_menu_bar()
 
-        args = self._parse_args()
+        # args = self._parse_args()
 
-        if args.tray:
-            pass
-
-        self.window.shown.connect(self._on_shown)
+        self.window.showEvent = self._on_shown
         self.window.closeEvent = self._on_closed
+        self.window.hideEvent = self._on_hide
 
         self.window.show()
         self.window.raise_()
@@ -128,7 +127,6 @@ class YubiOathApplication(qt.Application):
     def _parse_args(self):
         parser = argparse.ArgumentParser(description='Yubico Authenticator',
                                          add_help=True)
-        parser.add_argument('-t', '--tray', action='store_true')
         return parser.parse_args()
 
     def _build_menu_bar(self):
@@ -157,15 +155,23 @@ class YubiOathApplication(qt.Application):
         self._add_action.setEnabled(enabled)
         self._password_action.setEnabled(enabled)
 
-    def _on_shown(self):
+    def _on_shown(self, event):
         if not self._widget:
             self._widget = MainWidget(self._controller)
             self.window.setCentralWidget(self._widget)
+        if self._pos:
+            def move():
+                self.window.move(self._pos)
+            QtCore.QTimer.singleShot(1, move)  # Required for correct placement.
+        event.accept()
+
+    def _on_hide(self, event):
+        self._pos = self.window.pos()
+        event.accept()
 
     def _on_closed(self, event):
         self._settings['size'] = self.window.size()
         if self._systray.isVisible():
-            # TODO: Remember position, restore from systray.
             self.window.hide()
             event.ignore()
         else:
