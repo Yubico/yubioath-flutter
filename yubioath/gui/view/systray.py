@@ -48,6 +48,7 @@ class Systray(QtGui.QSystemTrayIcon):
     def _activated(self, reason):
         if reason == QtGui.QSystemTrayIcon.ActivationReason.Trigger:
             self.parent().window.show()
+            self.parent().window.activateWindow()
 
     def quit(self):
         self.hide()

@@ -91,7 +91,6 @@ class YubiOathApplication(qt.Application):
         QtCore.QCoreApplication.setApplicationName(m.app_name)
 
         self._widget = None
-        self._pos = None
         self.settings = qt.Settings.wrap(
             os.path.join(CONFIG_HOME, 'settings.ini'),
             QtCore.QSettings.IniFormat)
@@ -163,19 +162,16 @@ class YubiOathApplication(qt.Application):
         if not self._widget:
             self._widget = MainWidget(self._controller)
             self.window.setCentralWidget(self._widget)
-        if self._pos:
-            def move():
-                self.window.move(self._pos)
-            QtCore.QTimer.singleShot(1, move)  # Required for correct placement.
         event.accept()
 
     def _on_hide(self, event):
-        self._pos = self.window.pos()
         event.accept()
 
     def _on_closed(self, event):
         self._settings['size'] = self.window.size()
         if self._systray.isVisible():
+            # Unless move is called the position isn't saved!
+            self.window.move(self.window.pos())
             self.window.hide()
             event.ignore()
         else:
