@@ -344,8 +344,10 @@ class GuiController(QtCore.QObject, Controller):
         self._set_creds(creds)
 
     def timerEvent(self, event):
-        # TODO Only if window active
-        if self._reader is None and self._creds is None and self.otp_enabled:
+        if self._app.window.isVisible() \
+                and self._reader is None \
+                and self._creds is None \
+                and self.otp_enabled:
             _lock = self.grab_lock()
             timestamp = self.timer.time
             read = self.read_creds(None, self.slot1, self.slot2, timestamp)

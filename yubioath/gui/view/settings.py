@@ -64,7 +64,7 @@ class SettingsDialog(qt.Dialog):
         layout.addRow(m.n_digits, self._slot2_digits)
         layout.labelForField(self._slot2_digits).setIndent(INDENT)
 
-        layout.addRow(self.section(m.general))
+        layout.addRow(self.section(m.advanced))
 
         self._systray = QtGui.QCheckBox(m.enable_systray)
         layout.addRow(self._systray)

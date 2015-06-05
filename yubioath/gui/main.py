@@ -206,7 +206,7 @@ class YubiOathApplication(qt.Application):
 
     def _show_settings(self):
         if SettingsDialog(self.window, self._settings).exec_():
-            self._systray.setVisible(self._settings.get('systray', False))
+            self._systray.setVisible(self._settings.get('systray', True))
             self._controller.refresh_codes()
 
 
