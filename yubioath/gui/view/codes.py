@@ -27,6 +27,7 @@
 from PySide import QtGui, QtCore
 from .. import messages as m
 from ..controller import CredentialType
+from yubioath.yubicommon.qt.utils import connect_once
 from time import time
 
 
@@ -158,7 +159,14 @@ class Code(QtGui.QWidget):
 
     def mouseDoubleClickEvent(self, event):
         if event.button() is QtCore.Qt.LeftButton:
-            print "TODO: calc, copy and close?", self.cred.code.code
+            if not self.cred.code.code and self.cred.cred_type in \
+                    [CredentialType.HOTP, CredentialType.TOUCH]:
+                connect_once(self.cred.changed, self._copy)
+                self.cred.calculate()
+                self.window().close()
+            else:
+                self._copy()  # TODO: Type code out with keyboard?
+                self.window().close()
         event.accept()
 
 
