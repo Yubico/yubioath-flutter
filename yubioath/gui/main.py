@@ -142,6 +142,10 @@ class YubiOathApplication(qt.Application):
         settings_action = QtGui.QAction(m.action_settings, file_menu)
         settings_action.triggered.connect(self._show_settings)
         file_menu.addAction(settings_action)
+        file_menu.addSeparator()
+        quit_action = QtGui.QAction(m.action_quit, file_menu)
+        quit_action.triggered.connect(self._systray.quit)
+        file_menu.addAction(quit_action)
 
         help_menu = self.window.menuBar().addMenu(m.menu_help)
         about_action = QtGui.QAction(m.action_about, help_menu)
