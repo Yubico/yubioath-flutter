@@ -24,7 +24,7 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from ..core.ccid import open_scard
+from ..core.ccid import observe_reader
 from ..core.standard import YubiOathCcid
 from ..core.controller import Controller
 from ..core.exc import CardError
@@ -33,12 +33,8 @@ from .keystore import get_keystore
 from . import messages as m
 from yubioath.yubicommon.qt import get_active_window, MutexLocker
 from PySide import QtCore, QtGui
-from smartcard import System
-from smartcard.ReaderMonitoring import ReaderMonitor, ReaderObserver
-from smartcard.CardMonitoring import CardMonitor, CardObserver
 from time import time
 from collections import namedtuple
-import weakref
 
 
 class CredentialType:
@@ -132,40 +128,6 @@ def names(creds):
     return set(map(lambda c: c.name, creds))
 
 
-class CcidReaderObserver(ReaderObserver):
-
-    def __init__(self, controller):
-        self._controller = weakref.ref(controller)
-        self._monitor = ReaderMonitor()
-        self._monitor.addObserver(self)
-
-    def update(self, observable, tup):
-        (added, removed) = tup
-        c = self._controller()
-        if c:
-            c._update(added, removed)
-
-    def delete(self):
-        self._monitor.deleteObservers()
-
-
-class CcidCardObserver(CardObserver):
-
-    def __init__(self, controller):
-        self._controller = weakref.ref(controller)
-        self._monitor = CardMonitor()
-        self._monitor.addObserver(self)
-
-    def update(self, observable, tup):
-        (added, removed) = tup
-        c = self._controller()
-        if c:
-            c._update([card.reader for card in added], [removed])
-
-    def delete(self):
-        self._monitor.deleteObservers()
-
-
 class Timer(QtCore.QObject):
     time_changed = QtCore.Signal(int)
 
@@ -205,9 +167,7 @@ class GuiController(QtCore.QObject, Controller):
         self._keystore = get_keystore()
         self.timer = Timer()
 
-        self._update(System.readers(), [])
-        self._reader_observer = CcidReaderObserver(self)
-        self._card_observer = CcidCardObserver(self)
+        self._watcher = observe_reader(self.reader_name, self._on_reader)
 
         self.startTimer(2000)
         self.timer.time_changed.connect(self.refresh_codes)
@@ -241,27 +201,22 @@ class GuiController(QtCore.QObject, Controller):
     def credentials(self):
         return self._creds
 
-    def __del__(self):
-        self._observer.delete()
-
-    def _update(self, added, removed):
-        if self._reader in removed:  # Device removed
+    def _on_reader(self, watcher, reader):
+        if reader:
+            if self._reader is None:
+                self._reader = reader
+                self._creds = []
+                ccid_dev = watcher.open()
+                if ccid_dev:
+                    dev = YubiOathCcid(ccid_dev)
+                    self._app.worker.post_fg((self._init_dev, dev))
+            elif self._needs_read:
+                self.refresh_codes(self.timer.time)
+        else:
             self._reader = None
             self._creds = None
             self._expires = 0
             self.refreshed.emit()
-
-        if self._reader is None:
-            for reader in added:
-                if self.reader_name in reader.name:
-                    self._reader = reader
-                    self._creds = []
-                    ccid_dev = open_scard(reader)
-                    if ccid_dev:
-                        dev = YubiOathCcid(ccid_dev)
-                        self._app.worker.post_fg((self._init_dev, dev))
-        elif self._needs_read:
-            self.refresh_codes(self.timer.time)
 
     def _init_dev(self, dev):
         _lock = self.grab_lock()
@@ -328,7 +283,7 @@ class GuiController(QtCore.QObject, Controller):
 
     def _calculate_hotp(self, cred):
         _lock = self.grab_lock()
-        dev = YubiOathCcid(open_scard(self._reader))
+        dev = YubiOathCcid(self._watcher.open())
         if dev.locked:
             self.unlock(dev)
         return Code(dev.calculate(cred.name, cred.oath_type), float('inf'))
@@ -337,7 +292,7 @@ class GuiController(QtCore.QObject, Controller):
         lock = self.grab_lock(lock, True)
         if not lock:
             return
-        device = open_scard(self._reader)
+        device = self._watcher.open()
         self._needs_read = self._reader and device is None
         timestamp = timestamp or self.timer.time
         creds = self.read_creds(device, self.slot1, self.slot2, timestamp)
@@ -357,7 +312,7 @@ class GuiController(QtCore.QObject, Controller):
 
     def add_cred(self, *args, **kwargs):
         lock = self.grab_lock()
-        dev = YubiOathCcid(open_scard(self._reader))
+        dev = YubiOathCcid(self._watcher.open())
         if dev.locked:
             self.unlock(dev)
         dev.put(*args, **kwargs)
@@ -368,7 +323,7 @@ class GuiController(QtCore.QObject, Controller):
         if name in ['YubiKey slot 1', 'YubiKey slot 2']:
             raise NotImplementedError('Deleting YubiKey slots not implemented')
         lock = self.grab_lock()
-        dev = YubiOathCcid(open_scard(self._reader))
+        dev = YubiOathCcid(self._watcher.open())
         if dev.locked:
             self.unlock(dev)
         dev.delete(name)
@@ -377,7 +332,7 @@ class GuiController(QtCore.QObject, Controller):
 
     def set_password(self, password, remember=False):
         _lock = self.grab_lock()
-        dev = YubiOathCcid(open_scard(self._reader))
+        dev = YubiOathCcid(self._watcher.open())
         if dev.locked:
             self.unlock(dev)
         key = dev.calculate_key(password)

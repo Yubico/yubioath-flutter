@@ -30,6 +30,7 @@ from yubioath.yubicommon.qt import qt_resources, qt_sdist
 
 setup(
     name='yubioath-desktop',
+    fullname='Yubico Authenticator',
     author='Dain Nilsson',
     author_email='dain@yubico.com',
     maintainer='Yubico Open Source Maintainers',
