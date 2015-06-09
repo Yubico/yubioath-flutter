@@ -137,21 +137,17 @@ class CardWatcher(object):
 def observe_reader(reader_name='Yubikey', callback=None):
     return CardWatcher(reader_name, callback)
 
+from .ccid_poll import observe_reader as _or
+observe_reader = _or
 
-def open_scard(name_or_reader='Yubikey'):
-    reader = None
-    if isinstance(name_or_reader, basestring):
-        name = name_or_reader.lower()
-        for reader in System.readers():
-            if name in reader.name.lower():
-                break
-    else:
-        reader = name_or_reader
 
-    if reader:
-        conn = reader.createConnection()
-        try:
-            conn.connect()
-            return ScardDevice(conn)
-        except SmartcardException:
-            pass
+def open_scard(name='Yubikey'):
+    name = name.lower()
+    for reader in System.readers():
+        if name in reader.name.lower():
+            conn = reader.createConnection()
+            try:
+                conn.connect()
+                return ScardDevice(conn)
+            except SmartcardException:
+                pass
