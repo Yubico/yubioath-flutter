@@ -59,7 +59,7 @@ SLOTS = [
 
 YK_KEY = type('YK_KEY', (Structure,), {})
 
-_yk_errno_location = define('_yk_errno_location', [], c_int)
+_yk_errno_location = define('_yk_errno_location', [], POINTER(c_int))
 yk_init = define('yk_init', [], bool)
 yk_release = define('yk_release', [], bool)
 ykpers_check_version = define('ykpers_check_version', [c_char_p], c_char_p)
@@ -81,7 +81,7 @@ ykpers_version = ykpers_check_version(None)
 
 
 def yk_get_errno():
-    return cast(_yk_errno_location(), POINTER(c_int)).contents.value
+    return _yk_errno_location().contents.value
 
 
 class YkWrapper(object):
