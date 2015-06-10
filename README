@@ -22,7 +22,6 @@ Yubico Authenticator requires PySide, yubikey-personalization, pyscard, and
 PyCrypto.
 
 === Building binaries
-TODO: PyInstaller spec file does not yet exist!
 Binaries for Windows and OSX are built using PyInstaller.
 
 Get the source release file, yubioath-desktop-<version>.tar.gz, and extract it.
@@ -46,7 +45,7 @@ To sign the executable you will need signtool.exe (from the Windows SDK) either
 copied into the root as well or in a location in your PATH, as well as a
 certificate in the Windows certificate store that you wish to sign with.
 
-Run "pyinstaller.exe resources/yubioath.spec" from the main release directory.
+Run "python setup.py executable" from the main release directory.
 
 TODO: NSIS configuration file does not yet exist!
 With NSIS installed, a Windows installer will be built as well.
