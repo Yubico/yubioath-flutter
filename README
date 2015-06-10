@@ -63,7 +63,7 @@ One way to install these dependencies is by using Homebrew and pip:
 NOTE: Homebrew will build backwards-incompatible binaries, so the resulting
 build will not run on an older version of OSX.
 
-Run "pyinstaller resources/yubioath.spec" from the main release directory. This
+Run "python setup.py executable" from the main release directory. This
 will create an .app in the dist directory.
 
 Sign the code using codesign:
