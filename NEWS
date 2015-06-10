@@ -1,3 +1,8 @@
+* Version 2.0.0 (unreleased)
+ ** Complete rewrite
+    - Supports all OATH-enabled YubiKeys, including YubiKey Standard.
+    - New overhauled UI.
+
 * Version 0.1.1 (released 2014-04-25)
 
   * Fix Password bug
