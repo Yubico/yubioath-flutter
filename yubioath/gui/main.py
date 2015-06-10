@@ -105,7 +105,7 @@ class YubiOathApplication(qt.Application):
 
     def _init_systray(self):
         self._systray.setIcon(QtGui.QIcon(':/yubioath.png'))
-        self._systray.setVisible(self._settings.get('systray', False))
+        self._systray.setVisible(self._settings.get('systray', True))
 
     def _init_window(self):
         self.window.setWindowTitle(m.win_title_1 % version)

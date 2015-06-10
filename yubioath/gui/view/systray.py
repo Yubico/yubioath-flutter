@@ -26,12 +26,19 @@
 
 from PySide import QtGui
 from .. import messages as m
+import sys
 
 
 class Systray(QtGui.QSystemTrayIcon):
 
     def __init__(self, parent):
         super(Systray, self).__init__(parent)
+
+        self._reason = QtGui.QSystemTrayIcon.ActivationReason.Trigger
+
+        # Require double-click on OSX since single click opens menu.
+        if sys.platform == 'darwin':
+            self._reason = QtGui.QSystemTrayIcon.ActivationReason.DoubleClick
 
         self.activated.connect(self._activated)
         self._build_menu()
@@ -46,7 +53,7 @@ class Systray(QtGui.QSystemTrayIcon):
         self.setContextMenu(menu)
 
     def _activated(self, reason):
-        if reason == QtGui.QSystemTrayIcon.ActivationReason.Trigger:
+        if reason == self._reason:
             self.parent().window.show()
             self.parent().window.activateWindow()
 
