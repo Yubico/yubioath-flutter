@@ -1,0 +1,71 @@
+#!/usr/bin/python
+
+import re
+import subprocess
+
+DEVICES = [
+    ('0x1050', '0x0111', 'Yubico Yubikey NEO OTP+CCID'),
+    ('0x1050', '0x0112', 'Yubico Yubikey NEO CCID'),
+    ('0x1050', '0x0115', 'Yubico Yubikey NEO U2F+CCID'),
+    ('0x1050', '0x0116', 'Yubico Yubikey NEO OTP+U2F+CCID'),
+    ('0x1050', '0x0404', 'Yubico Yubikey 4 CCID'),
+    ('0x1050', '0x0405', 'Yubico Yubikey 4 OTP+CCID'),
+    ('0x1050', '0x0406', 'Yubico Yubikey 4 U2F+CCID'),
+    ('0x1050', '0x0407', 'Yubico Yubikey 4 OTP+U2F+CCID')
+]
+
+FNAME = "/usr/libexec/SmartCardServices/drivers/ifd-ccid.bundle/Contents/Info.plist"
+
+
+def add_device(dev, content):
+    # Parsing XML with regexes, what a wonderful idea!
+    names = re.search('<key>ifdFriendlyName</key>\s*<array>(.*?)</array>', content, re.DOTALL)
+
+    if names.group(1).find('<string>%s</string>' % dev[2]) > 0:
+        print "%s already present, skipping..." % dev[2]
+        # Already added
+        return content
+
+    print "Adding:", dev[2]
+    pos = names.start(1)
+    content = content[:pos] + '\n\t\t<string>%s</string>' % dev[2] + content[pos:]
+
+    vids = re.search('<key>ifdVendorID</key>\s*<array>(.*?)</array>', content, re.DOTALL)
+    pos = vids.start(1)
+    content = content[:pos] + '\n\t\t<string>%s</string>' % dev[0] + content[pos:]
+
+    pids = re.search('<key>ifdProductID</key>\s*<array>(.*?)</array>', content, re.DOTALL)
+    pos = pids.start(1)
+    content = content[:pos] + '\n\t\t<string>%s</string>' % dev[1] + content[pos:]
+
+    return content
+
+
+def restart_pcscd():
+    pids = subprocess.check_output("ps ax | grep pcscd | grep -v grep | awk '{ print $1 }'",
+                                  shell=True).strip()
+    if pids:
+        print "Killing PCSCD..."
+        for pid in pids.split():
+            subprocess.call(['kill', '-9', pid])
+
+
+def main():
+    print "Patching file:", FNAME
+    with open(FNAME, 'r') as f:
+        content = f.read()
+
+    for dev in DEVICES:
+        content = add_device(dev, content)
+
+    print "Saving file:", FNAME
+    with open(FNAME, 'w') as f:
+        f.write(content)
+
+    restart_pcscd()
+
+    print "Patching complete!"
+
+
+if __name__ == '__main__':
+    main()

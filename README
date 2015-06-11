@@ -76,5 +76,5 @@ http://s.sudre.free.fr/Packaging.html[Packages] located at
 `resources/yubioath.pkgproj`. This can be used to create an installer for
 distribution, which you should sign prior to distribution:
 
-  packagesbuild resources/yubioath.pkgproj
+  packagesbuild resources/osx-installer.pkgproj
   productsign --sign 'Developer ID Installer' dist/Yubico\ Authenticator.pkg dist/yubioath-desktop-mac.pkg
