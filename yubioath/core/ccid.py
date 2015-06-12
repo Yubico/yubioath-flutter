@@ -29,6 +29,7 @@ from smartcard.ReaderMonitoring import ReaderMonitor, ReaderObserver
 from smartcard.CardMonitoring import CardMonitor, CardObserver
 from smartcard.Exceptions import SmartcardException
 import weakref
+import sys
 
 
 class CardError(Exception):
@@ -86,7 +87,7 @@ class _CcidCardObserver(CardObserver):
         (added, removed) = tup
         c = self._controller()
         if c:
-            c._update([card.reader for card in added], [removed])
+            c._update([card.reader for card in added], [r.reader for r in removed])
 
     def delete(self):
         self._monitor.deleteObservers()
@@ -137,8 +138,9 @@ class CardWatcher(object):
 def observe_reader(reader_name='Yubikey', callback=None):
     return CardWatcher(reader_name, callback)
 
-from .ccid_poll import observe_reader as _or
-observe_reader = _or
+if sys.platform == 'win32':
+    from .ccid_poll import observe_reader as _or
+    observe_reader = _or
 
 
 def open_scard(name='Yubikey'):

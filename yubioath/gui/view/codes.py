@@ -159,8 +159,9 @@ class Code(QtGui.QWidget):
 
     def mouseDoubleClickEvent(self, event):
         if event.button() is QtCore.Qt.LeftButton:
-            if not self.cred.code.code and self.cred.cred_type in \
-                    [CredentialType.HOTP, CredentialType.TOUCH]:
+            if (not self.cred.code.code or self.expired) and \
+                    self.cred.cred_type in [CredentialType.HOTP,
+                                            CredentialType.TOUCH]:
                 connect_once(self.cred.changed, self._copy)
                 self.cred.calculate()
                 self.window().close()

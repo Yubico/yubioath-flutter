@@ -210,6 +210,10 @@ class GuiController(QtCore.QObject, Controller):
                 if ccid_dev:
                     dev = YubiOathCcid(ccid_dev)
                     self._app.worker.post_fg((self._init_dev, dev))
+                else:
+                    self._needs_read = True
+                    self._app.worker.post_fg((QtCore.QTimer.singleShot, 100,
+                                              self.refresh_codes))
             elif self._needs_read:
                 self.refresh_codes(self.timer.time)
         else:
