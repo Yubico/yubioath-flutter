@@ -37,7 +37,7 @@ setup(
     maintainer_email='ossmaint@yubico.com',
     url='https://github.com/Yubico/yubioath-desktop',
     license='GPLv3+',
-    description='Crossplatform tool for generating TOTP & HOTP codes with a Yubikey NEO',
+    description='Graphical interface for displaying OATH codes with a Yubikey',
     scripts=['scripts/yubioath', 'scripts/yubioath-cli'],
     setup_requires=['nose>=1.0'],
     yc_requires=['ctypes', 'qt'],

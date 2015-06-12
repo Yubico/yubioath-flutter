@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Yubico Authenticator
+GenericName=Yubico Authenticator
+Comment=Graphical interface for displaying OATH codes with a Yubikey
+Exec=yubioath
+Icon=yubioath
+StartupNotify=false
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=YubiKey;Yubico;Authenticator;
