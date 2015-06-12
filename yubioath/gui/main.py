@@ -90,6 +90,8 @@ class YubiOathApplication(qt.Application):
         QtCore.QCoreApplication.setOrganizationDomain(m.domain)
         QtCore.QCoreApplication.setApplicationName(m.app_name)
 
+        self.ensure_singleton()
+
         self._widget = None
         self.settings = qt.Settings.wrap(
             os.path.join(CONFIG_HOME, 'settings.ini'),
