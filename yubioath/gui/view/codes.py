@@ -85,7 +85,12 @@ class CodeMenu(QtGui.QMenu):
         self.addAction(m.action_delete).triggered.connect(self._delete)
 
     def _delete(self):
-        self.cred.delete()
+        res = QtGui.QMessageBox.warning(self, m.delete_title,
+                                        m.delete_desc_1 % self.cred.name,
+                                        QtGui.QMessageBox.Ok,
+                                        QtGui.QMessageBox.Cancel)
+        if res == QtGui.QMessageBox.Ok:
+            self.cred.delete()
 
 
 class Code(QtGui.QWidget):

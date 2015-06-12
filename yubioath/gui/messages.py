@@ -78,6 +78,13 @@ pass_mismatch = "Passwords do not match"
 pass_mismatch_desc = "Please enter the same password twice"
 touch_title = "Touch required"
 touch_desc = "Touch your YubiKey now"
+delete_title = "Confirm credential deletion"
+delete_desc_1 = """<span>Are you sure you want to delete the credential?</span>
+<br>
+This action cannot be undone.
+<br><br>
+<b>Delete credential: %s</b>
+"""
 
 
 def _translate(qt):
