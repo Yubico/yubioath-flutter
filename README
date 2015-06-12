@@ -47,7 +47,6 @@ certificate in the Windows certificate store that you wish to sign with.
 
 Run "python setup.py executable" from the main release directory.
 
-TODO: NSIS configuration file does not yet exist!
 With NSIS installed, a Windows installer will be built as well.
 
 ==== OSX
@@ -70,7 +69,6 @@ Sign the code using codesign:
 
   codesign -s 'Developer ID Application' dist/Yubico\ Authenticator.app --deep
 
-TODO: Packages configuration file does not yet exist!
 There is also a project file for use with
 http://s.sudre.free.fr/Packaging.html[Packages] located at
 `resources/yubioath.pkgproj`. This can be used to create an installer for
