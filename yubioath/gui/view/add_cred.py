@@ -29,10 +29,29 @@ from ...core.standard import TYPE_TOTP, TYPE_HOTP
 from .. import messages as m
 from PySide import QtGui, QtCore
 from base64 import b32decode
+import re
 
 NAME_VALIDATOR = QtGui.QRegExpValidator(QtCore.QRegExp(r'.{3,}'))
-B32_VALIDATOR = QtGui.QRegExpValidator(
-    QtCore.QRegExp(r'[a-z2-7]+=*', QtCore.Qt.CaseInsensitive))
+
+
+class B32Validator(QtGui.QValidator):
+
+    def __init__(self, parent=None):
+        super(B32Validator, self).__init__(parent)
+        self.partial = re.compile(r'^[a-z2-7]+$', re.IGNORECASE)
+
+    def fixup(self, value):
+        unpadded = value.upper()
+        return unpadded + '=' * (-len(unpadded) % 8)
+
+    def validate(self, value, pos):
+        try:
+            b32decode(self.fixup(value))
+            return QtGui.QValidator.Acceptable
+        except:
+            if self.partial.match(value):
+                return QtGui.QValidator.Intermediate
+        return QtGui.QValidator.Invalid
 
 
 class AddCredDialog(qt.Dialog):
@@ -51,7 +70,7 @@ class AddCredDialog(qt.Dialog):
         layout.addRow(m.cred_name, self._cred_name)
 
         self._cred_key = QtGui.QLineEdit()
-        self._cred_key.setValidator(B32_VALIDATOR)
+        self._cred_key.setValidator(B32Validator())
         layout.addRow(m.cred_key, self._cred_key)
 
         layout.addRow(QtGui.QLabel(m.cred_type))
