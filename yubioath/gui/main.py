@@ -164,6 +164,8 @@ class YubiOathApplication(qt.Application):
         if not self._widget:
             self._widget = MainWidget(self._controller)
             self.window.setCentralWidget(self._widget)
+        else:
+            self._controller.refresh_codes()
         event.accept()
 
     def _on_hide(self, event):
