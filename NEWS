@@ -1,4 +1,4 @@
-* Version 2.0.0 (unreleased)
+* Version 2.0.0 (released 2015-06-15)
  ** Complete rewrite
     - Supports all OATH-enabled YubiKeys, including YubiKey Standard.
     - New overhauled UI.
