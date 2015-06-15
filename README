@@ -99,8 +99,8 @@ other OSes may not be supported for development.
 ==== Installing the dependencies
 Make sure to install the needed dependencies:
 
-  sudo apt-get install python-dev python-setuptools python-crypto \
-      python-pyscard python-pyside pyside-tools libykpers-1-1 pcscd
+  sudo apt-get install python-setuptools python-crypto python-pyscard \
+      python-pyside pyside-tools libykpers-1-1 pcscd
 
 ==== Check out the code
 Run these commands to check out the source code:
