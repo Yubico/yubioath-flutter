@@ -51,8 +51,11 @@ class ScardDevice(object):
         # print "RECV:", (''.join(map(chr, resp))).encode('hex')
         return ''.join(map(chr, resp)), sw1 << 8 | sw2
 
-    def __del__(self):
+    def close(self):
         self._conn.disconnect()
+
+    def __del__(self):
+        self.close()
 
 
 def open_scard(name='Yubikey'):

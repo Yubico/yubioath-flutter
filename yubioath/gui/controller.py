@@ -301,11 +301,14 @@ class GuiController(QtCore.QObject, Controller):
     def refresh_codes(self, timestamp=None, lock=None):
         if not self._reader:
             return self._on_reader(self._watcher, self._watcher.reader)
+        elif not self._app.window.isVisible():
+            self._needs_read = True
+            return
         lock = self.grab_lock(lock, True)
         if not lock:
             return
         device = self._watcher.open()
-        self._needs_read = self._reader and device is None
+        self._needs_read = bool(self._reader and device is None)
         timestamp = timestamp or self.timer.time
         try:
             creds = self.read_creds(device, self.slot1, self.slot2, timestamp)

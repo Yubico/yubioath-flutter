@@ -113,6 +113,6 @@ class CardWatcher(object):
 def observe_reader(reader_name='Yubikey', callback=None):
     return CardWatcher(reader_name, callback)
 
-if sys.platform == 'win32':
+if sys.platform == 'win32' or True:
     from .ccid_poll import observe_reader as _or
     observe_reader = _or

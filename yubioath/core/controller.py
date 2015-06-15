@@ -114,7 +114,7 @@ class Controller(object):
                                 needs_touch[slot] = True
                 except CardError:
                     pass  # No applet?
-            del ccid_dev
+            ccid_dev.close()
 
         if self.otp_supported and ((slot1 and not legacy_creds[0])
                                    or (slot2 and not legacy_creds[1])):

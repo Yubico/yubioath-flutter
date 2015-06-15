@@ -53,6 +53,9 @@ class LLScardDevice(object):
         return ''.join(map(chr, response[:-2])), status
 
     def __del__(self):
+        self.close()
+
+    def close(self):
         SCardDisconnect(self._card, SCARD_UNPOWER_CARD)
         SCardReleaseContext(self._context)
 
