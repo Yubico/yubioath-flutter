@@ -29,8 +29,8 @@ from smartcard import System
 from smartcard.ReaderMonitoring import ReaderMonitor, ReaderObserver
 from smartcard.CardMonitoring import CardMonitor, CardObserver
 from smartcard.Exceptions import SmartcardException
+from PySide import QtCore
 import weakref
-import sys
 
 
 class _CcidReaderObserver(ReaderObserver):
@@ -68,9 +68,17 @@ class _CcidCardObserver(CardObserver):
         self._monitor.deleteObservers()
 
 
-class CardWatcher(object):
+class CardStatus:
+    NoCard, InUse, Present = range(3)
 
-    def __init__(self, reader_name, callback):
+
+class CardWatcher(QtCore.QObject):
+    status_changed = QtCore.Signal(int)
+
+    def __init__(self, reader_name, callback, parent=None):
+        super(CardWatcher, self).__init__(parent)
+
+        self._status = CardStatus.NoCard
         self.reader_name = reader_name
         self._callback = callback or (lambda _: _)
         self._reader = None
@@ -81,11 +89,23 @@ class CardWatcher(object):
     def _update(self, added, removed):
         if self._reader in removed:  # Device removed
             self.reader = None
+            self._set_status(CardStatus.NoCard)
 
         if self._reader is None:
             for reader in added:
                 if self.reader_name in reader.name:
                     self.reader = reader
+                    self._set_status(CardStatus.Present)
+                    return
+
+    @property
+    def status(self):
+        return self._status
+
+    def _set_status(self, value):
+        if self._status != value:
+            self._status = value
+            self.status_changed.emit(value)
 
     @property
     def reader(self):
@@ -101,9 +121,10 @@ class CardWatcher(object):
             conn = self._reader.createConnection()
             try:
                 conn.connect()
+                self._set_status(CardStatus.Present)
                 return ScardDevice(conn)
             except SmartcardException:
-                pass
+                self._set_status(CardStatus.InUse)
 
     def __del__(self):
         self._reader_observer.delete()
@@ -112,7 +133,3 @@ class CardWatcher(object):
 
 def observe_reader(reader_name='Yubikey', callback=None):
     return CardWatcher(reader_name, callback)
-
-if sys.platform == 'win32' or True:
-    from .ccid_poll import observe_reader as _or
-    observe_reader = _or

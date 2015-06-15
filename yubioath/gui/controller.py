@@ -27,7 +27,7 @@
 from ..core.standard import YubiOathCcid
 from ..core.controller import Controller
 from ..core.exc import CardError, DeviceLockedError
-from .ccid import observe_reader
+from .ccid import CardStatus
 from .view.get_password import GetPasswordDialog
 from .keystore import get_keystore
 from . import messages as m
@@ -35,6 +35,12 @@ from yubioath.yubicommon.qt import get_active_window, MutexLocker
 from PySide import QtCore, QtGui
 from time import time
 from collections import namedtuple
+
+import sys
+if sys.platform == 'win32':  # Windows has issues with the high level API.
+    from .ccid_poll import observe_reader
+else:
+    from .ccid import observe_reader
 
 
 class CredentialType:
@@ -167,7 +173,7 @@ class GuiController(QtCore.QObject, Controller):
         self._keystore = get_keystore()
         self.timer = Timer()
 
-        self._watcher = observe_reader(self.reader_name, self._on_reader)
+        self.watcher = observe_reader(self.reader_name, self._on_reader)
 
         self.startTimer(2000)
         self.timer.time_changed.connect(self.refresh_codes)
@@ -271,10 +277,7 @@ class GuiController(QtCore.QObject, Controller):
                 return
             elif self._reader and self._needs_read and self._creds:
                 return
-            else:
-                self._creds = creds
-        else:
-            self._creds = creds
+        self._creds = creds
         self.refreshed.emit()
 
     def _calculate_touch(self, slot, digits):
@@ -294,20 +297,25 @@ class GuiController(QtCore.QObject, Controller):
 
     def _calculate_hotp(self, cred):
         _lock = self.grab_lock()
-        dev = YubiOathCcid(self._watcher.open())
+        ccid_dev = self.watcher.open()
+        if not ccid_dev:
+            if self.watcher.status != CardStatus.Present:
+                self._set_creds(None)
+            return
+        dev = YubiOathCcid(ccid_dev)
         if self.unlock(dev):
             return Code(dev.calculate(cred.name, cred.oath_type), float('inf'))
 
     def refresh_codes(self, timestamp=None, lock=None):
         if not self._reader:
-            return self._on_reader(self._watcher, self._watcher.reader)
+            return self._on_reader(self.watcher, self.watcher.reader)
         elif not self._app.window.isVisible():
             self._needs_read = True
             return
         lock = self.grab_lock(lock, True)
         if not lock:
             return
-        device = self._watcher.open()
+        device = self.watcher.open()
         self._needs_read = bool(self._reader and device is None)
         timestamp = timestamp or self.timer.time
         try:
@@ -331,7 +339,7 @@ class GuiController(QtCore.QObject, Controller):
 
     def add_cred(self, *args, **kwargs):
         lock = self.grab_lock()
-        dev = YubiOathCcid(self._watcher.open())
+        dev = YubiOathCcid(self.watcher.open())
         if self.unlock(dev):
             dev.put(*args, **kwargs)
             self._creds = None
@@ -341,7 +349,7 @@ class GuiController(QtCore.QObject, Controller):
         if name in ['YubiKey slot 1', 'YubiKey slot 2']:
             raise NotImplementedError('Deleting YubiKey slots not implemented')
         lock = self.grab_lock()
-        dev = YubiOathCcid(self._watcher.open())
+        dev = YubiOathCcid(self.watcher.open())
         if dev.locked:
             self.unlock(dev)
         dev.delete(name)
@@ -350,7 +358,7 @@ class GuiController(QtCore.QObject, Controller):
 
     def set_password(self, password, remember=False):
         _lock = self.grab_lock()
-        dev = YubiOathCcid(self._watcher.open())
+        dev = YubiOathCcid(self.watcher.open())
         if self.unlock(dev):
             key = dev.calculate_key(password)
             dev.set_key(key)

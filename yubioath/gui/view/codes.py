@@ -192,6 +192,13 @@ class CodesList(QtGui.QWidget):
             line.setFrameShadow(QtGui.QFrame.Sunken)
             layout.addWidget(line)
 
+        if not credentials:
+            no_creds = QtGui.QLabel(m.no_creds)
+            no_creds.setAlignment(QtCore.Qt.AlignCenter)
+            layout.addStretch()
+            layout.addWidget(no_creds)
+            layout.addStretch()
+
         layout.addStretch()
 
 
@@ -236,7 +243,7 @@ class CodesWidget(QtGui.QWidget):
             self._timeleft.set_timeleft(0)
 
     def refresh(self):
-        self._scroll_area.takeWidget()
+        self._scroll_area.takeWidget().deleteLater()
         creds = self._controller.credentials
         self._scroll_area.setWidget(
             CodesList(self._controller.timer, creds or [], self.refresh_timer))

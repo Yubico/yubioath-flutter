@@ -24,8 +24,10 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
+from .ccid import CardStatus
 from smartcard.Exceptions import SmartcardException
 from smartcard.scard import *
+from PySide import QtCore
 import smartcard.util
 import threading
 import time
@@ -100,9 +102,13 @@ class PollerThread(threading.Thread):
             return []
 
 
-class CardWatcher(object):
+class CardWatcher(QtCore.QObject):
+    status_changed = QtCore.Signal(int)
 
-    def __init__(self, reader_name, callback):
+    def __init__(self, reader_name, callback, parent=None):
+        super(CardWatcher, self).__init__(parent)
+
+        self._status = CardStatus.NoCard
         self.reader_name = reader_name
         self._callback = callback or (lambda _: _)
         self._reader = None
@@ -112,11 +118,23 @@ class CardWatcher(object):
     def _update(self, added, removed):
         if self._reader in removed:  # Device removed
             self.reader = None
+            self._set_status(CardStatus.NoCard)
 
         if self._reader is None:
             for reader in added:
                 if self.reader_name in reader:
                     self.reader = reader
+                    self._set_status(CardStatus.Present)
+                    return
+
+    @property
+    def status(self):
+        return self._status
+
+    def _set_status(self, value):
+        if self._status != value:
+            self._status = value
+            self.status_changed.emit(value)
 
     @property
     def reader(self):
@@ -142,8 +160,8 @@ class CardWatcher(object):
                     raise Exception('Unable to connect: ' +
                                     SCardGetErrorMessage(hresult))
                 return LLScardDevice(hcontext, hcard, dwActiveProtocol)
-            except Exception as message:
-                print "Exception:", message
+            except Exception:
+                self._set_status(CardStatus.InUse)
 
     def __del__(self):
         self._thread.running = False

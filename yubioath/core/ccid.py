@@ -28,13 +28,6 @@ from smartcard import System
 from smartcard.Exceptions import SmartcardException
 
 
-class CardError(Exception):
-
-    def __init__(self, status, message=''):
-        super(CardError, self).__init__('Card Error (%04x): %s' %
-                                        (status, message))
-
-
 class ScardDevice(object):
 
     """

@@ -34,6 +34,7 @@ except ImportError:
     ykpers_version = 'None'
 from . import messages as m
 from .controller import GuiController
+from .ccid import CardStatus
 from .view.systray import Systray
 from .view.codes import CodesWidget
 from .view.settings import SettingsDialog
@@ -63,6 +64,7 @@ class MainWidget(QtGui.QStackedWidget):
 
         self._build_ui()
         controller.refreshed.connect(self._refresh)
+        controller.watcher.status_changed.connect(self._set_status)
 
     def showEvent(self, event):
         event.accept()
@@ -79,6 +81,14 @@ class MainWidget(QtGui.QStackedWidget):
             self.setCurrentIndex(0)
         else:
             self.setCurrentIndex(1)
+
+    def _set_status(self, status):
+        if status == CardStatus.NoCard:
+            self.no_key_widget.setText(m.no_key)
+        elif status == CardStatus.InUse:
+            self.no_key_widget.setText(m.key_busy)
+        elif status == CardStatus.Present:
+            self.no_key_widget.setText(m.key_present)
 
 
 class YubiOathApplication(qt.Application):
