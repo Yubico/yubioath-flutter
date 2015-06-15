@@ -24,10 +24,10 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from ..core.ccid import observe_reader
 from ..core.standard import YubiOathCcid
 from ..core.controller import Controller
 from ..core.exc import CardError, DeviceLockedError
+from .ccid import observe_reader
 from .view.get_password import GetPasswordDialog
 from .keystore import get_keystore
 from . import messages as m
@@ -316,7 +316,7 @@ class GuiController(QtCore.QObject, Controller):
     def timerEvent(self, event):
         if self._app.window.isVisible():
             if self._reader and self._needs_read:
-                self.refresh_codes()
+                self._app.worker.post_bg(self.refresh_codes)
             elif self._reader is None and self._creds is None \
                     and self.otp_enabled:
                 _lock = self.grab_lock()
