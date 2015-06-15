@@ -1,0 +1,65 @@
+#!/usr/bin/python
+
+import re
+import subprocess
+import os
+
+DEVICES = [
+    ('0x1050', '0x0111', 'Yubico Yubikey NEO OTP+CCID'),
+    ('0x1050', '0x0112', 'Yubico Yubikey NEO CCID'),
+    ('0x1050', '0x0115', 'Yubico Yubikey NEO U2F+CCID'),
+    ('0x1050', '0x0116', 'Yubico Yubikey NEO OTP+U2F+CCID'),
+    ('0x1050', '0x0404', 'Yubico Yubikey 4 CCID'),
+    ('0x1050', '0x0405', 'Yubico Yubikey 4 OTP+CCID'),
+    ('0x1050', '0x0406', 'Yubico Yubikey 4 U2F+CCID'),
+    ('0x1050', '0x0407', 'Yubico Yubikey 4 OTP+U2F+CCID')
+]
+
+FNAME = "/etc/libccid_Info.plist"
+
+
+def add_device(dev, content):
+    # Parsing XML with regexes, what a wonderful idea!
+    names = re.search('<key>ifdFriendlyName</key>\s*<array>(.*?)</array>', content, re.DOTALL)
+
+    if names.group(1).find('<string>%s</string>' % dev[2]) > 0:
+        # Already added
+        return content
+
+    print "Adding: %s" % dev[2]
+
+    pos = names.start(1)
+    content = content[:pos] + '\n\t\t<string>%s</string>' % dev[2] + content[pos:]
+
+    vids = re.search('<key>ifdVendorID</key>\s*<array>(.*?)</array>', content, re.DOTALL)
+    pos = vids.start(1)
+    content = content[:pos] + '\n\t\t<string>%s</string>' % dev[0] + content[pos:]
+
+    pids = re.search('<key>ifdProductID</key>\s*<array>(.*?)</array>', content, re.DOTALL)
+    pos = pids.start(1)
+    content = content[:pos] + '\n\t\t<string>%s</string>' % dev[1] + content[pos:]
+
+    return content
+
+def main():
+    # Patch libccid file:
+    if os.path.isfile(FNAME):
+        print "Updating %s..." % FNAME
+        with open(FNAME, 'r') as f:
+            content = f.read()
+
+        for dev in DEVICES:
+            content = add_device(dev, content)
+
+        with open(FNAME, 'w') as f:
+            f.write(content)
+
+        print "Restarting PCSCD..."
+        subprocess.call(['service', 'pcscd', 'restart'])
+    else:
+        print "libccid_Info.plist not found, skipping..."
+
+    print "Done!"
+
+if __name__ == '__main__':
+    main()

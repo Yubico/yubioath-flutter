@@ -17,6 +17,17 @@ https://developers.yubico.com/yubioath-desktop/Releases/[here]. For Ubuntu we
 have a custom PPA with a package for it
 https://launchpad.net/~yubico/+archive/ubuntu/stable[here].
 
+==== Detecting the device
+Under Linux and OS X this application uses libccid to communicate with the
+YubiKey. This library requires that each card reader used is listed in its
+configuration file, else the device will not be detected ("Insert a YubiKey..."
+will be displayed even though a YubiKey is present). To ensure that your
+libccid configuration contains all necessary entries you can run one of the two
+files locates in the resources directory of this repository, linux-patch-ccid
+or osx-patch-ccid, depending on your OS. You will need to run these scripts as
+root. If installing the OS X version from the binary installer, this script
+will be run automatically for you.
+
 === Dependencies
 Yubico Authenticator requires PySide, yubikey-personalization, pyscard, and
 PyCrypto.
@@ -75,4 +86,33 @@ http://s.sudre.free.fr/Packaging.html[Packages] located at
 distribution, which you should sign prior to distribution:
 
   packagesbuild resources/osx-installer.pkgproj
-  productsign --sign 'Developer ID Installer' dist/Yubico\ Authenticator.pkg dist/yubioath-desktop-mac.pkg
+  productsign --sign 'Developer ID Installer' dist/Yubico\ Authenticator.pkg \
+      dist/yubioath-desktop-mac.pkg
+
+=== Working with the source code repository
+To work with the source code repository, if you wish to build your own release
+or contribute pull requests, follow these steps to set up your environment. If
+you just wish to install the application use the pre-build binaries or the
+source release packages. This project is developed on a Debian based system,
+other OSes may not be supported for development.
+
+==== Installing the dependencies
+Make sure to install the needed dependencies:
+
+  sudo apt-get install python-dev python-setuptools python-crypto \
+      python-pyscard python-pyside pyside-tools libykpers-1-1 pcscd
+
+==== Check out the code
+Run these commands to check out the source code:
+
+  git clone https://github.com/Yubico/yubioath-desktop.git
+  cd yubioath-desktop
+  git submodules init
+  git submodules update
+
+==== Build a source release
+To build a source release tar ball, run this command:
+
+  python setup.py sdist
+
+The resulting build will be created in the dist/ subdirectory.
