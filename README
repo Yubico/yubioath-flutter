@@ -1,15 +1,12 @@
 == Yubico Authenticator
 The Yubico Authenticator is a graphical desktop tool for generating Open
 AuTHentication (OATH) event-based HOTP and time-based TOTP one-time password
-codes, with the help of a Yubikey that protects the shared secrets.
+codes, with the help of a YubiKey that protects the shared secrets.
 
-=== License
-Yubico Authenticator is licensed under GPLv3+, see COPYING for details.
-
-Entypo pictograms by Daniel Bruce - www.entypo.com
+image::screenshot.png[]
 
 === Installation
-TODO: Binaries/PPA do not yet exist!
+TODO: PPA do not yet exist!
 The recommended way to install this software including dependencies is by using
 the provided precompiled binaries for your platform. For Windows and OS X,
 there are installers available for download
@@ -116,3 +113,8 @@ To build a source release tar ball, run this command:
   python setup.py sdist
 
 The resulting build will be created in the dist/ subdirectory.
+
+=== License
+Yubico Authenticator is licensed under GPLv3+, see COPYING for details.
+
+Entypo pictograms by Daniel Bruce - www.entypo.com
