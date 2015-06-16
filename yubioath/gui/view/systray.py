@@ -46,6 +46,10 @@ class Systray(QtGui.QSystemTrayIcon):
     def _build_menu(self):
         menu = QtGui.QMenu()
 
+        show_action = QtGui.QAction(m.action_show, menu)
+        show_action.triggered.connect(self._show)
+        menu.addAction(show_action)
+
         quit_action = QtGui.QAction(m.action_quit, menu)
         quit_action.triggered.connect(self.quit)
         menu.addAction(quit_action)
@@ -54,8 +58,11 @@ class Systray(QtGui.QSystemTrayIcon):
 
     def _activated(self, reason):
         if reason == self._reason:
-            self.parent().window.show()
-            self.parent().window.activateWindow()
+            self._show()
+
+    def _show(self):
+        self.parent().window.show()
+        self.parent().window.activateWindow()
 
     def quit(self):
         self.hide()
