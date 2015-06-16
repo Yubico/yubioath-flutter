@@ -27,6 +27,7 @@
 
 from yubioath.yubicommon import setup
 from yubioath.yubicommon.qt import qt_resources, qt_sdist
+from yubioath.yubicommon.exe import executable
 
 setup(
     name='yubioath-desktop',
@@ -40,11 +41,15 @@ setup(
     description='Graphical interface for displaying OATH codes with a Yubikey',
     scripts=['scripts/yubioath', 'scripts/yubioath-cli'],
     setup_requires=['nose>=1.0'],
-    yc_requires=['ctypes', 'qt'],
+    yc_requires=['ctypes', 'qt', 'exe'],
     install_requires=['pyscard', 'pycrypto'],
-    test_suite='nose.collector',
+    test_suite='test',
     tests_require=[''],
-    cmdclass={'qt_resources': qt_resources('yubioath.gui'), 'sdist': qt_sdist},
+    cmdclass={
+        'executable': executable,
+        'qt_resources': qt_resources('yubioath.gui'),
+        'sdist': qt_sdist
+    },
     classifiers=[
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Operating System :: OS Independent',
