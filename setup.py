@@ -25,9 +25,9 @@
 # for the parts of OpenSSL used as well as that of the covered work.
 
 
-from yubioath.yubicommon import setup
-from yubioath.yubicommon.qt import qt_resources, qt_sdist
-from yubioath.yubicommon.exe import executable
+from yubioath.yubicommon.setup import setup
+from yubioath.yubicommon.setup.qt import qt_resources, qt_sdist
+from yubioath.yubicommon.setup.exe import executable
 
 setup(
     name='yubioath-desktop',
@@ -40,11 +40,11 @@ setup(
     license='GPLv3+',
     description='Graphical interface for displaying OATH codes with a Yubikey',
     scripts=['scripts/yubioath', 'scripts/yubioath-cli'],
-    setup_requires=['nose>=1.0'],
-    yc_requires=['ctypes', 'qt', 'exe'],
+    setup_requires=[],
+    yc_requires=['ctypes', 'qt'],
     install_requires=['pyscard', 'pycrypto'],
     test_suite='test',
-    tests_require=[''],
+    tests_require=[],
     cmdclass={
         'executable': executable,
         'qt_resources': qt_resources('yubioath.gui'),
