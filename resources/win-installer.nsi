@@ -78,7 +78,7 @@ Section
 ;Create shortcuts
   SetShellVarContext all
   SetOutPath "$SMPROGRAMS\$STARTMENU_FOLDER"
-  CreateShortCut "Yubico Authenticator.lnk" "$INSTDIR\Yubico Authenticator.exe" "" "$INSTDIR\Yubico Authenticator.exe" 0
+  CreateShortCut "Yubico Authenticator.lnk" "$INSTDIR\yubioath.exe" "" "$INSTDIR\yubioath.exe" 0
   CreateShortCut "Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 1
 !insertmacro MUI_STARTMENU_WRITE_END
 
