@@ -6,7 +6,6 @@ codes, with the help of a YubiKey that protects the shared secrets.
 image::screenshot.png[]
 
 === Installation
-TODO: PPA do not yet exist!
 The recommended way to install this software including dependencies is by using
 the provided precompiled binaries for your platform. For Windows and OS X,
 there are installers available for download
