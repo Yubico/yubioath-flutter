@@ -25,6 +25,9 @@ or osx-patch-ccid, depending on your OS. You will need to run these scripts as
 root. If installing the OS X version from the binary installer, this script
 will be run automatically for you.
 
+NOTE: You may have to reboot your computer for the change to the libccid
+configuration to take effect!
+
 === Dependencies
 Yubico Authenticator requires PySide, yubikey-personalization, pyscard, and
 PyCrypto.
