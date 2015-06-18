@@ -32,6 +32,7 @@ try:
     from ..core.legacy_otp import ykpers_version
 except ImportError:
     ykpers_version = 'None'
+from ..core.utils import kill_scdaemon
 from . import messages as m
 from .controller import GuiController
 from .ccid import CardStatus
@@ -171,6 +172,9 @@ class YubiOathApplication(qt.Application):
         self._password_action.setEnabled(enabled)
 
     def _on_shown(self, event):
+        if self._settings.get('kill_scdaemon', False):
+            kill_scdaemon()
+
         if not self._widget:
             self._widget = MainWidget(self._controller)
             self.window.setCentralWidget(self._widget)

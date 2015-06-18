@@ -69,6 +69,9 @@ class SettingsDialog(qt.Dialog):
         self._systray = QtGui.QCheckBox(m.enable_systray)
         layout.addRow(self._systray)
 
+        self._kill_scdaemon = QtGui.QCheckBox(m.kill_scdaemon)
+        layout.addRow(self._kill_scdaemon)
+
         self._reader_name = QtGui.QLineEdit()
         layout.addRow(m.reader_name, self._reader_name)
 
@@ -88,6 +91,8 @@ class SettingsDialog(qt.Dialog):
         self._slot2_enabled.setChecked(bool(slot2))
 
         self._systray.setChecked(self.settings.get('systray', True))
+        self._kill_scdaemon.setChecked(
+            self.settings.get('kill_scdaemon', False))
 
         self._reader_name.setText(self.settings.get('reader', 'Yubikey'))
 
@@ -106,6 +111,10 @@ class SettingsDialog(qt.Dialog):
         return self._systray.isChecked()
 
     @property
+    def kill_scdaemon(self):
+        return self._kill_scdaemon.isChecked()
+
+    @property
     def reader_name(self):
         return self._reader_name.text()
 
@@ -113,4 +122,5 @@ class SettingsDialog(qt.Dialog):
         self.settings['slot1'] = self.slot1
         self.settings['slot2'] = self.slot2
         self.settings['systray'] = self.systray
+        self.settings['kill_scdaemon'] = self.kill_scdaemon
         self.settings['reader'] = self.reader_name

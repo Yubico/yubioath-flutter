@@ -27,6 +27,7 @@
 from Crypto.Hash import HMAC, SHA
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Random import get_random_bytes
+import subprocess
 import struct
 import time
 
@@ -102,3 +103,28 @@ def b2len(bs):
         l *= 256
         l += ord(b)
     return l
+
+
+def kill_scdaemon():
+    try:
+        # Works for Windows.
+        from win32com.client import GetObject
+        from win32api import OpenProcess, CloseHandle, TerminateProcess
+        WMI = GetObject('winmgmts:')
+        ps = WMI.InstancesOf('Win32_Process')
+        for p in ps:
+            if p.Properties_('Name').Value == 'scdaemon.exe':
+                pid = p.Properties_('ProcessID').Value
+                print "Killing", pid
+                handle = OpenProcess(1, False, pid)
+                TerminateProcess(handle, -1)
+                CloseHandle(handle)
+    except ImportError:
+        # Works for Linux and OS X.
+        pids = subprocess.check_output(
+            "ps ax | grep scdaemon | grep -v grep | awk '{ print $1 }'",
+            shell=True).strip()
+        if pids:
+            for pid in pids.split():
+                print "Killing", pid
+                subprocess.call(['kill', '-9', pid])
