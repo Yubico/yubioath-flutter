@@ -74,6 +74,8 @@ yk_challenge_response = define('yk_challenge_response',
 # Programming
 SLOT_CONFIG = 1
 SLOT_CONFIG2 = 3
+CONFIG1_VALID = 1
+CONFIG2_VALID = 2
 
 YKP_CONFIG = type('YKP_CONFIG', (Structure,), {})
 YK_CONFIG = type('YK_CONFIG', (Structure,), {})
@@ -81,6 +83,7 @@ YK_STATUS = type('YK_STATUS', (Structure,), {})
 
 ykds_alloc = define('ykds_alloc', [], POINTER(YK_STATUS))
 ykds_free = define('ykds_free', [POINTER(YK_STATUS)], None)
+ykds_touch_level = define('ykds_touch_level', [POINTER(YK_STATUS)], c_int)
 yk_get_status = define('yk_get_status', [
     POINTER(YK_KEY), POINTER(YK_STATUS)], c_int)
 
@@ -110,11 +113,6 @@ ykp_core_config = define('ykp_core_config', [POINTER(YKP_CONFIG)],
 yk_write_command = define('yk_write_command',
                           [POINTER(YK_KEY), POINTER(YK_CONFIG), c_uint8,
                            c_char_p], bool)
-
-
-
-ykp_export_config = define('ykp_export_config',
-                           [POINTER(YKP_CONFIG), c_char_p, c_uint8, c_int], bool)
 
 YK_ETIMEOUT = 0x04
 YK_EWOULDBLOCK = 0x0b
@@ -148,6 +146,17 @@ class LegacyOathOtp(object):
     def __init__(self, device):
         self._device = device
 
+    def slot_status(self):
+        st = ykds_alloc()
+        yk_get_status(self._device, st)
+        tl = ykds_touch_level(st)
+        ykds_free(st)
+
+        return (
+            tl & CONFIG1_VALID == CONFIG1_VALID,
+            tl & CONFIG2_VALID == CONFIG2_VALID
+        )
+
     def calculate(self, slot, digits=6, timestamp=None, mayblock=0):
         challenge = time_challenge(timestamp)
         resp = create_string_buffer(64)
@@ -168,9 +177,9 @@ class LegacyOathOtp(object):
             raise ValueError('YubiKey slots cannot handle keys over 20 bytes')
         slot = SLOT_CONFIG if slot == 1 else SLOT_CONFIG2
 
-        cfg = ykp_alloc()
         st = ykds_alloc()
         yk_get_status(self._device, st)
+        cfg = ykp_alloc()
         ykp_configure_version(cfg, st)
         ykds_free(st)
         ykp_set_tktflag_CHAL_RESP(cfg, True)
