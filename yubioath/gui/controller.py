@@ -107,11 +107,15 @@ class TouchCredential(BoundCredential):
         dialog.setText(m.touch_desc)
 
         def cb(code):
-            self.code = code
             dialog.accept()
+            if isinstance(code, Exception):
+                QtGui.QMessageBox.warning(get_active_window(), m.error,
+                                          code.message)
+            else:
+                self.code = code
         self._controller._app.worker.post_bg(
             (self._controller._calculate_touch, self._slot, self._digits),
-            cb)
+            cb, True)
         dialog.exec_()
 
 
@@ -169,6 +173,7 @@ class GuiController(QtCore.QObject, Controller):
         self._needs_read = False
         self._reader = None
         self._creds = None
+        self._expires = 0
         self._lock = QtCore.QMutex()
         self._keystore = get_keystore()
         self.timer = Timer()
@@ -335,7 +340,8 @@ class GuiController(QtCore.QObject, Controller):
         if self._app.window.isVisible():
             if self._reader and self._needs_read:
                 self._app.worker.post_bg(self.refresh_codes)
-            elif self._reader is None and self._creds is None \
+            elif self._reader is None \
+                    and (self._creds is None or self._expires == 0) \
                     and self.otp_enabled:
                 _lock = self.grab_lock()
                 timestamp = self.timer.time
