@@ -213,7 +213,7 @@ class GuiController(QtCore.QObject, Controller):
     def credentials(self):
         return self._creds
 
-    def _on_reader(self, watcher, reader):
+    def _on_reader(self, watcher, reader, lock=None):
         if reader:
             if self._reader is None:
                 self._reader = reader
@@ -231,8 +231,15 @@ class GuiController(QtCore.QObject, Controller):
                 self.refresh_codes(self.timer.time)
         else:
             self._reader = None
-            self._creds = None
             self._expires = 0
+            if self.otp_enabled:
+                lock = self.grab_lock(lock)
+                timestamp = self.timer.time
+                read = self.read_creds(None, self.slot1, self.slot2, timestamp)
+                if read is not None and self._reader is None:
+                    self._set_creds(read)
+            else:
+                self._creds = None
             self.refreshed.emit()
 
     def _init_dev(self, dev):
@@ -308,7 +315,7 @@ class GuiController(QtCore.QObject, Controller):
 
     def refresh_codes(self, timestamp=None, lock=None):
         if not self._reader:
-            return self._on_reader(self.watcher, self.watcher.reader)
+            return self._on_reader(self.watcher, self.watcher.reader, lock)
         elif not self._app.window.isVisible():
             self._needs_read = True
             return
