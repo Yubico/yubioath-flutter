@@ -168,7 +168,7 @@ class YubiOathApplication(qt.Application):
 
     def _refresh_menu(self):
         enabled = bool(self._controller._reader)
-        self._add_action.setEnabled(enabled)
+        self._add_action.setEnabled(bool(self._controller.credentials))
         self._password_action.setEnabled(enabled)
 
     def _on_shown(self, event):
@@ -203,7 +203,7 @@ class YubiOathApplication(qt.Application):
                                 ABOUT_TEXT % (version, self._libversions()))
 
     def _add_credential(self):
-        dialog = AddCredDialog(self.window)
+        dialog = AddCredDialog(parent=self.window)
         if dialog.exec_():
             if not self._controller._reader:
                 QtGui.QMessageBox.critical(

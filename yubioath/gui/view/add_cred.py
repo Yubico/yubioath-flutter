@@ -56,7 +56,7 @@ class B32Validator(QtGui.QValidator):
 
 class AddCredDialog(qt.Dialog):
 
-    def __init__(self, parent):
+    def __init__(self, std=True, otp=False, url=None, parent=None):
         super(AddCredDialog, self).__init__(parent)
 
         self.setWindowTitle(m.add_cred)

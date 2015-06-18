@@ -29,7 +29,7 @@ from .standard import TYPE_TOTP
 from .exc import InvalidSlotError, NeedsTouchError
 from yubioath.yubicommon.ctypes import load_library
 from ctypes import (Structure, POINTER, c_int, c_uint8, c_uint, c_char_p,
-                    sizeof, create_string_buffer, cast, addressof)
+                    c_bool, sizeof, create_string_buffer, cast, addressof)
 import weakref
 
 _lib = load_library('ykpers-1', '1')
@@ -70,6 +70,51 @@ yk_close_key = define('yk_close_key', [POINTER(YK_KEY)], bool)
 yk_challenge_response = define('yk_challenge_response',
                                [POINTER(YK_KEY), c_uint8, c_int, c_uint,
                                 c_char_p, c_uint, c_char_p], bool)
+
+# Programming
+SLOT_CONFIG = 1
+SLOT_CONFIG2 = 3
+
+YKP_CONFIG = type('YKP_CONFIG', (Structure,), {})
+YK_CONFIG = type('YK_CONFIG', (Structure,), {})
+YK_STATUS = type('YK_STATUS', (Structure,), {})
+
+ykds_alloc = define('ykds_alloc', [], POINTER(YK_STATUS))
+ykds_free = define('ykds_free', [POINTER(YK_STATUS)], None)
+yk_get_status = define('yk_get_status', [
+    POINTER(YK_KEY), POINTER(YK_STATUS)], c_int)
+
+ykp_alloc = define('ykp_alloc', [], POINTER(YKP_CONFIG))
+ykp_free_config = define('ykp_free_config', [POINTER(YKP_CONFIG)], bool)
+
+ykp_configure_version = define('ykp_configure_version',
+                               [POINTER(YKP_CONFIG), POINTER(YK_STATUS)], None)
+
+ykp_HMAC_key_from_raw = define('ykp_HMAC_key_from_raw',
+                               [POINTER(YKP_CONFIG), c_char_p], bool)
+ykp_set_tktflag_CHAL_RESP = define('ykp_set_tktflag_CHAL_RESP',
+                                   [POINTER(YKP_CONFIG), c_bool], bool)
+ykp_set_cfgflag_CHAL_HMAC = define('ykp_set_cfgflag_CHAL_HMAC',
+                                   [POINTER(YKP_CONFIG), c_bool], bool)
+ykp_set_cfgflag_HMAC_LT64 = define('ykp_set_cfgflag_HMAC_LT64',
+                                   [POINTER(YKP_CONFIG), c_bool], bool)
+ykp_set_extflag_SERIAL_API_VISIBLE = define(
+    'ykp_set_extflag_SERIAL_API_VISIBLE', [POINTER(YKP_CONFIG), c_bool], bool)
+ykp_set_extflag_ALLOW_UPDATE = define('ykp_set_extflag_ALLOW_UPDATE',
+                                      [POINTER(YKP_CONFIG), c_bool], bool)
+ykp_set_cfgflag_CHAL_BTN_TRIG = define('ykp_set_cfgflag_CHAL_BTN_TRIG',
+                                       [POINTER(YKP_CONFIG), c_bool], bool)
+
+ykp_core_config = define('ykp_core_config', [POINTER(YKP_CONFIG)],
+                         POINTER(YK_CONFIG))
+yk_write_command = define('yk_write_command',
+                          [POINTER(YK_KEY), POINTER(YK_CONFIG), c_uint8,
+                           c_char_p], bool)
+
+
+
+ykp_export_config = define('ykp_export_config',
+                           [POINTER(YKP_CONFIG), c_char_p, c_uint8, c_int], bool)
 
 YK_ETIMEOUT = 0x04
 YK_EWOULDBLOCK = 0x0b
@@ -115,6 +160,35 @@ class LegacyOathOtp(object):
                 raise NeedsTouchError()
             raise InvalidSlotError()
         return format_code(parse_full(resp.raw[:20]), digits)
+
+    def put(self, slot, key, require_touch=False):
+        if len(key) > 64:  # Keys longer than 64 bytes are hashed, as per HMAC.
+            key = sha1(key).digest()
+        if len(key) > 20:
+            raise ValueError('YubiKey slots cannot handle keys over 20 bytes')
+        slot = SLOT_CONFIG if slot == 1 else SLOT_CONFIG2
+
+        cfg = ykp_alloc()
+        st = ykds_alloc()
+        yk_get_status(self._device, st)
+        ykp_configure_version(cfg, st)
+        ykds_free(st)
+        ykp_set_tktflag_CHAL_RESP(cfg, True)
+        ykp_set_cfgflag_CHAL_HMAC(cfg, True)
+        ykp_set_cfgflag_HMAC_LT64(cfg, True)
+        ykp_set_extflag_SERIAL_API_VISIBLE(cfg, True)
+        ykp_set_extflag_ALLOW_UPDATE(cfg, True)
+        if require_touch:
+            ykp_set_cfgflag_CHAL_BTN_TRIG(cfg, True)
+
+        ykp_HMAC_key_from_raw(cfg, key)
+
+        ycfg = ykp_core_config(cfg)
+        try:
+            if not yk_write_command(self._device, ycfg, slot, None):
+                raise ValueError("Error writing configuration to key")
+        finally:
+            ykp_free_config(cfg)
 
 
 class LegacyCredential(object):
