@@ -53,6 +53,7 @@ Code = namedtuple('Code', 'code timestamp')
 UNINITIALIZED = Code('', 0)
 
 TIME_PERIOD = 30
+INF = float('inf')
 
 
 class Credential(QtCore.QObject):
@@ -175,15 +176,18 @@ class GuiController(QtCore.QObject, Controller):
         self._needs_read = False
         self._reader = None
         self._creds = None
-        self._expires = 0
         self._lock = QtCore.QMutex()
         self._keystore = get_keystore()
         self.timer = Timer()
 
         self.watcher = observe_reader(self.reader_name, self._on_reader)
 
-        self.startTimer(2000)
+        self.startTimer(3000)
         self.timer.time_changed.connect(self.refresh_codes)
+
+    def settings_changed(self):
+        self.watcher.reader_name = self.reader_name
+        self.refresh_codes()
 
     @property
     def reader_name(self):
@@ -220,6 +224,12 @@ class GuiController(QtCore.QObject, Controller):
     def credentials(self):
         return self._creds
 
+    def has_expiring(self, timestamp):
+        for c in self._creds or []:
+            if c.code.timestamp >= timestamp and c.code.timestamp < INF:
+                return True
+        return False
+
     def get_capabilities(self):
         _lock = self.grab_lock()
         if self.watcher.open():
@@ -247,15 +257,7 @@ class GuiController(QtCore.QObject, Controller):
                 self.refresh_codes(self.timer.time)
         else:
             self._reader = None
-            self._expires = 0
-            if self.otp_enabled:
-                lock = self.grab_lock(lock)
-                timestamp = self.timer.time
-                read = self.read_creds(None, self.slot1, self.slot2, timestamp)
-                if read is not None and self._reader is None:
-                    self._set_creds(read)
-            else:
-                self._creds = None
+            self._creds = None
             self.refreshed.emit()
 
     def _init_dev(self, dev):
@@ -293,11 +295,14 @@ class GuiController(QtCore.QObject, Controller):
         if creds:
             creds = map(self.wrap_credential, creds)
             if self._creds and names(creds) == names(self._creds):
-                creds = dict((c.name, c) for c in creds)
+                creds_map = dict((c.name, c) for c in creds)
                 for cred in self._creds:
                     if cred.cred_type == CredentialType.AUTO:
-                        cred.code = creds[cred.name].code
-                return
+                        cred.code = creds_map[cred.name].code
+                    elif cred.cred_type != creds_map[cred.name].cred_type:
+                        break
+                else:
+                    return
             elif self._reader and self._needs_read and self._creds:
                 return
         self._creds = creds
@@ -330,7 +335,7 @@ class GuiController(QtCore.QObject, Controller):
             return Code(dev.calculate(cred.name, cred.oath_type), float('inf'))
 
     def refresh_codes(self, timestamp=None, lock=None):
-        if not self._reader:
+        if not self._reader and self.watcher.reader:
             return self._on_reader(self.watcher, self.watcher.reader, lock)
         elif not self._app.window.isVisible():
             self._needs_read = True
@@ -349,16 +354,17 @@ class GuiController(QtCore.QObject, Controller):
 
     def timerEvent(self, event):
         if self._app.window.isVisible():
+            timestamp = self.timer.time
             if self._reader and self._needs_read:
                 self._app.worker.post_bg(self.refresh_codes)
-            elif self._reader is None \
-                    and (self._creds is None or self._expires == 0) \
-                    and self.otp_enabled:
-                _lock = self.grab_lock()
-                timestamp = self.timer.time
-                read = self.read_creds(None, self.slot1, self.slot2, timestamp)
-                if read is not None and self._reader is None:
-                    self._set_creds(read)
+            elif self._reader is None and self.otp_enabled:
+                def refresh_otp():
+                    _lock = self.grab_lock(try_lock=True)
+                    if _lock:
+                        read = self.read_creds(None, self.slot1, self.slot2,
+                                               timestamp)
+                        self._set_creds(read)
+                self._app.worker.post_bg(refresh_otp)
         event.accept()
 
     def add_cred(self, *args, **kwargs):

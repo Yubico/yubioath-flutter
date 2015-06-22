@@ -31,8 +31,6 @@ from yubioath.yubicommon.qt.utils import connect_once
 from time import time
 
 
-INF = float('inf')
-
 TIMELEFT_STYLE = """
 QProgressBar {
   padding: 1px;
@@ -232,12 +230,7 @@ class CodesWidget(QtGui.QWidget):
     def refresh_timer(self, timestamp=None):
         if timestamp is None:
             timestamp = self._controller.timer.time
-        expiring = False
-        for c in self._controller.credentials or []:
-            if c.code.timestamp >= timestamp and c.code.timestamp < INF:
-                expiring = True
-                break
-        if expiring:
+        if self._controller.has_expiring(timestamp):
             self._timeleft.set_timeleft(1000 * (timestamp + 30 - time()))
         else:
             self._timeleft.set_timeleft(0)

@@ -177,8 +177,7 @@ class YubiOathApplication(qt.Application):
         if not self._widget:
             self._widget = MainWidget(self._controller)
             self.window.setCentralWidget(self._widget)
-        else:
-            self._controller.refresh_codes()
+        self._controller.refresh_codes()
         event.accept()
 
     def _on_hide(self, event):
@@ -236,7 +235,7 @@ class YubiOathApplication(qt.Application):
     def _show_settings(self):
         if SettingsDialog(self.window, self._settings).exec_():
             self._systray.setVisible(self._settings.get('systray', True))
-            self._controller.refresh_codes()
+            self._controller.settings_changed()
 
 
 def main():

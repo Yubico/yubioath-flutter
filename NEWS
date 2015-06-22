@@ -1,5 +1,7 @@
 * Version 2.1.0 (unreleased)
  ** Added setting to kill scdaemon on show, to release the device.
+ ** Added the ability to program standard YuibKeys with slot based TOTP credentials.
+ ** Better handling of composite modes.
 
 * Version 2.0.2 (released 2015-06-16)
  ** Minor packaging related fixes.
