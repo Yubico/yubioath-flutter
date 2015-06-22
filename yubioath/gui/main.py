@@ -40,6 +40,7 @@ from .view.systray import Systray
 from .view.codes import CodesWidget
 from .view.settings import SettingsDialog
 from .view.add_cred import AddCredDialog
+from .view.add_cred_legacy import AddCredDialog as AddCredLegacyDialog
 from .view.set_password import SetPasswordDialog
 import sys
 import os
@@ -145,7 +146,6 @@ class YubiOathApplication(qt.Application):
         file_menu = self.window.menuBar().addMenu(m.menu_file)
         self._add_action = QtGui.QAction(m.action_add, file_menu)
         self._add_action.triggered.connect(self._add_credential)
-        self._add_action.setEnabled(False)
         file_menu.addAction(self._add_action)
         self._password_action = QtGui.QAction(m.action_password, file_menu)
         self._password_action.triggered.connect(self._change_password)
@@ -168,7 +168,6 @@ class YubiOathApplication(qt.Application):
 
     def _refresh_menu(self):
         enabled = bool(self._controller._reader)
-        self._add_action.setEnabled(bool(self._controller.credentials))
         self._password_action.setEnabled(enabled)
 
     def _on_shown(self, event):
@@ -203,15 +202,27 @@ class YubiOathApplication(qt.Application):
                                 ABOUT_TEXT % (version, self._libversions()))
 
     def _add_credential(self):
-        dialog = AddCredDialog(parent=self.window)
-        if dialog.exec_():
-            if not self._controller._reader:
-                QtGui.QMessageBox.critical(
-                    self.window, m.key_removed, m.key_removed_desc)
-            else:
-                self._controller.add_cred(dialog.name, dialog.key,
-                                          oath_type=dialog.oath_type,
-                                          digits=dialog.n_digits)
+        c = self._controller.get_capabilities()
+        if c.ccid:
+            dialog = AddCredDialog(parent=self.window)
+            if dialog.exec_():
+                if not self._controller._reader:
+                    QtGui.QMessageBox.critical(
+                        self.window, m.key_removed, m.key_removed_desc)
+                else:
+                    self._controller.add_cred(dialog.name, dialog.key,
+                                            oath_type=dialog.oath_type,
+                                            digits=dialog.n_digits)
+        elif c.otp:
+            dialog = AddCredLegacyDialog(c.otp, parent=self.window)
+            if dialog.exec_():
+                self._controller.add_cred_legacy(dialog.slot, dialog.key,
+                                                 dialog.touch)
+                key = 'slot%d' % dialog.slot
+                self._settings[key] = dialog.n_digits
+                self._controller.refresh_codes()
+        else:
+            QtGui.QMessageBox.critical(self.window, 'No key' ,'No key')
 
     def _change_password(self):
         dialog = SetPasswordDialog(self.window)

@@ -91,6 +91,16 @@ This action cannot be undone.
 <br><br>
 <b>Delete credential: %s</b>
 """
+slot = "YubiKey slot"
+slot_2 = "Slot %d (%s)"
+free = "free"
+in_use = "in use"
+require_touch = "Require touch"
+no_slot = "No slot chosen"
+no_slot_desc = "Please choose a slot to write the credential to"
+overwrite_slot = "Overwrite slot?"
+overwrite_slot_desc_1 = "This will overwrite the credential currently stored " \
+    "in slot %d. This action cannot be undone."
 
 
 def _translate(qt):

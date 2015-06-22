@@ -153,8 +153,8 @@ class LegacyOathOtp(object):
         ykds_free(st)
 
         return (
-            tl & CONFIG1_VALID == CONFIG1_VALID,
-            tl & CONFIG2_VALID == CONFIG2_VALID
+            bool(tl & CONFIG1_VALID == CONFIG1_VALID),
+            bool(tl & CONFIG2_VALID == CONFIG2_VALID)
         )
 
     def calculate(self, slot, digits=6, timestamp=None, mayblock=0):
@@ -176,6 +176,7 @@ class LegacyOathOtp(object):
         if len(key) > 20:
             raise ValueError('YubiKey slots cannot handle keys over 20 bytes')
         slot = SLOT_CONFIG if slot == 1 else SLOT_CONFIG2
+        key += chr(0) * (20 - len(key))  # Keys must be padded to 20 bytes.
 
         st = ykds_alloc()
         yk_get_status(self._device, st)
@@ -190,7 +191,8 @@ class LegacyOathOtp(object):
         if require_touch:
             ykp_set_cfgflag_CHAL_BTN_TRIG(cfg, True)
 
-        ykp_HMAC_key_from_raw(cfg, key)
+        if ykp_HMAC_key_from_raw(cfg, key):
+            raise ValueError("Error setting the key")
 
         ycfg = ykp_core_config(cfg)
         try:

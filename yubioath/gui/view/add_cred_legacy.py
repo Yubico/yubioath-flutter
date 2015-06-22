@@ -25,65 +25,43 @@
 # for the parts of OpenSSL used as well as that of the covered work.
 
 from yubioath.yubicommon import qt
-from ...core.standard import TYPE_TOTP, TYPE_HOTP
+from .add_cred import B32Validator
 from .. import messages as m
 from PySide import QtGui, QtCore
 from base64 import b32decode
-import re
-
-NAME_VALIDATOR = QtGui.QRegExpValidator(QtCore.QRegExp(r'.{3,}'))
-
-
-class B32Validator(QtGui.QValidator):
-
-    def __init__(self, parent=None):
-        super(B32Validator, self).__init__(parent)
-        self.partial = re.compile(r'^[a-z2-7]+$', re.IGNORECASE)
-
-    def fixup(self, value):
-        unpadded = value.upper()
-        return unpadded + '=' * (-len(unpadded) % 8)
-
-    def validate(self, value, pos):
-        try:
-            b32decode(self.fixup(value))
-            return QtGui.QValidator.Acceptable
-        except:
-            if self.partial.match(value):
-                return QtGui.QValidator.Intermediate
-        return QtGui.QValidator.Invalid
 
 
 class AddCredDialog(qt.Dialog):
 
-    def __init__(self, url=None, parent=None):
+    def __init__(self, otp_slots=(0, 0), url=None, parent=None):
         super(AddCredDialog, self).__init__(parent)
 
         self.setWindowTitle(m.add_cred)
+        self._slot_status = otp_slots
         self._build_ui()
 
     def _build_ui(self):
         layout = QtGui.QFormLayout(self)
 
-        self._cred_name = QtGui.QLineEdit()
-        self._cred_name.setValidator(NAME_VALIDATOR)
-        layout.addRow(m.cred_name, self._cred_name)
-
         self._cred_key = QtGui.QLineEdit()
         self._cred_key.setValidator(B32Validator())
         layout.addRow(m.cred_key, self._cred_key)
 
-        layout.addRow(QtGui.QLabel(m.cred_type))
-        self._cred_type = QtGui.QButtonGroup(self)
-        self._cred_totp = QtGui.QRadioButton(m.cred_totp)
-        self._cred_totp.setProperty('value', TYPE_TOTP)
-        self._cred_type.addButton(self._cred_totp)
-        layout.addRow(self._cred_totp)
-        self._cred_hotp = QtGui.QRadioButton(m.cred_hotp)
-        self._cred_hotp.setProperty('value', TYPE_HOTP)
-        self._cred_type.addButton(self._cred_hotp)
-        layout.addRow(self._cred_hotp)
-        self._cred_totp.setChecked(True)
+        layout.addRow(QtGui.QLabel(m.slot))
+        self._slot = QtGui.QButtonGroup(self)
+        slot1_status = m.in_use if self._slot_status[0] else m.free
+        self._slot_1 = QtGui.QRadioButton(m.slot_2 % (1, slot1_status))
+        self._slot_1.setProperty('value', 1)
+        self._slot.addButton(self._slot_1)
+        layout.addRow(self._slot_1)
+        slot2_status = m.in_use if self._slot_status[1] else m.free
+        self._slot_2 = QtGui.QRadioButton(m.slot_2 % (2, slot2_status))
+        self._slot_2.setProperty('value', 2)
+        self._slot.addButton(self._slot_2)
+        layout.addRow(self._slot_2)
+
+        self._touch = QtGui.QCheckBox(m.require_touch)
+        layout.addRow(self._touch)
 
         self._n_digits = QtGui.QComboBox()
         self._n_digits.addItems(['6', '8'])
@@ -96,18 +74,18 @@ class AddCredDialog(qt.Dialog):
         layout.addRow(btns)
 
     def _save(self):
-        if not self._cred_name.hasAcceptableInput():
-            QtGui.QMessageBox.warning(self, m.invalid_name, m.invalid_name_desc)
-            self._cred_name.selectAll()
-        elif not self._cred_key.hasAcceptableInput():
+        if not self._cred_key.hasAcceptableInput():
             QtGui.QMessageBox.warning(self, m.invalid_key, m.invalid_key_desc)
             self._cred_key.selectAll()
+        elif not self._slot.checkedButton():
+            QtGui.QMessageBox.warning(self, m.no_slot, m.no_slot_desc)
+        elif self._slot_status[self.slot - 1] \
+            and QtGui.QMessageBox.Ok != QtGui.QMessageBox.warning(
+                self, m.overwrite_slot, m.overwrite_slot_desc_1 % self.slot,
+                QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel):
+            return
         else:
             self.accept()
-
-    @property
-    def name(self):
-        return self._cred_name.text()
 
     @property
     def key(self):
@@ -115,8 +93,12 @@ class AddCredDialog(qt.Dialog):
         return b32decode(unpadded + '=' * (-len(unpadded) % 8))
 
     @property
-    def oath_type(self):
-        return self._cred_type.checkedButton().property('value')
+    def slot(self):
+        return self._slot.checkedButton().property('value')
+
+    @property
+    def touch(self):
+        return self._touch.isChecked()
 
     @property
     def n_digits(self):

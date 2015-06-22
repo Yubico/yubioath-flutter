@@ -47,6 +47,8 @@ class CredentialType:
     AUTO, HOTP, TOUCH, INVALID = range(4)
 
 
+Capabilities = namedtuple('Capabilities', 'ccid, otp')
+
 Code = namedtuple('Code', 'code timestamp')
 UNINITIALIZED = Code('', 0)
 
@@ -218,6 +220,15 @@ class GuiController(QtCore.QObject, Controller):
     def credentials(self):
         return self._creds
 
+    def get_capabilities(self):
+        _lock = self.grab_lock()
+        if self.watcher.open():
+            return Capabilities(True, None)
+        legacy = self.open_otp()
+        if legacy:
+            return Capabilities(None, legacy.slot_status())
+        return Capabilities(None, None)
+
     def _on_reader(self, watcher, reader, lock=None):
         if reader:
             if self._reader is None:
@@ -357,6 +368,16 @@ class GuiController(QtCore.QObject, Controller):
             dev.put(*args, **kwargs)
             self._creds = None
             self.refresh_codes(lock=lock)
+
+    def add_cred_legacy(self, *args, **kwargs):
+        lock = self.grab_lock()
+        legacy = self.open_otp()
+        if not legacy:
+            raise Exception('No YubiKey found!')
+        legacy.put(*args, **kwargs)
+        del legacy
+        self._creds = None
+        self.refresh_codes(lock=lock)
 
     def delete_cred(self, name):
         if name in ['YubiKey slot 1', 'YubiKey slot 2']:
