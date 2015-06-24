@@ -26,75 +26,8 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-"""
-yubioath command line tool.
-
-TODO:
-    * Implement put and delete.
-    * Add -c, --clipboard to copy code to clipboard directly.
-"""
-
-from yubioath.core.ccid import open_scard
-from yubioath.core.standard import TYPE_HOTP
-from yubioath.cli.keystore import get_keystore
-from yubioath.cli.controller import CliController
-from time import time
-import argparse
-import sys
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Read OATH onte time passwords from a YubiKey.",
-        add_help=True
-    )
-    parser.add_argument('-s1', '--slot1', help='Number of digits to output for '
-                        'slot 1', type=int, default=0)
-    parser.add_argument('-s2', '--slot2', help='Number of digits to output for '
-                        'slot 2', type=int, default=0)
-    parser.add_argument('-S', '--save-password', help='Save the access key for '
-                        'later use.', action='store_true')
-    parser.add_argument('-t', '--timestamp', help='User provided timestamp',
-                        type=int, default=int(time()) + 5)
-    parser.add_argument('-r', '--reader', help='Name to match Smartcard reader '
-                        'against (case insensitive)', default='YubiKey')
-    parser.add_argument('query', help='Credential name to match against '
-                        '(case insensitive)', nargs='?')
-
-    return parser.parse_args()
-
-
-def print_creds(results):
-    if not results:
-        sys.stderr.write('No credentials found.\n')
-        return
-
-    longest = max(map(lambda r: len(r[0].name), results))
-    format_str = '{:<%d}  {:>10}' % longest
-    for (cred, code) in results:
-        if code is None:
-            code = '[HOTP credential]'
-        print format_str.format(cred, code)
+from yubioath.cli import main
 
 
 if __name__ == '__main__':
-    args = parse_args()
-
-    ccid_dev = open_scard(args.reader)
-
-    controller = CliController(get_keystore(), args.save_password)
-    creds = controller.read_creds(ccid_dev, args.slot1, args.slot2,
-                                  args.timestamp)
-
-    if creds is None:
-        sys.stderr.write('No YubiKey found!\n')
-        sys.exit(1)
-
-    if args.query:
-        query = args.query.lower()
-        creds = filter(lambda (c, _): query in c.name.lower(), creds)
-        if len(creds) == 1 and creds[0][0].oath_type == TYPE_HOTP:
-            cred = creds[0][0]
-            creds = [(cred, cred.calculate(args.timestamp))]
-
-    print_creds(creds)
+    main.main()

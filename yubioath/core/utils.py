@@ -27,6 +27,7 @@
 from Crypto.Hash import HMAC, SHA
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Random import get_random_bytes
+from urlparse import urlparse, parse_qs
 import subprocess
 import struct
 import time
@@ -63,6 +64,18 @@ def parse_truncated(resp):
 
 def format_code(code, digits=6):
     return ('%%0%dd' % digits) % (code % 10 ** digits)
+
+
+def parse_uri(uri):
+    parsed = urlparse(uri)
+    if parsed.scheme != 'otpauth':  # Not a uri, assume secret.
+        return {'secret': uri}
+    params = dict((k, v[0]) for k, v in parse_qs(parsed.query).items())
+    params['name'] = parsed.path[1:]
+    params['type'] = parsed.hostname
+    if 'issuer' in params and not params['name'].startswith(params['issuer']):
+        params['name'] = params['issuer'] + ':' + params['name']
+    return params
 
 
 #

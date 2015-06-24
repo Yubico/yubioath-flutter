@@ -369,37 +369,35 @@ class GuiController(QtCore.QObject, Controller):
 
     def add_cred(self, *args, **kwargs):
         lock = self.grab_lock()
-        dev = YubiOathCcid(self.watcher.open())
-        if self.unlock(dev):
-            dev.put(*args, **kwargs)
-            self._creds = None
-            self.refresh_codes(lock=lock)
+        ccid_dev = self.watcher.open()
+        if ccid_dev:
+            dev = YubiOathCcid(ccid_dev)
+            if self.unlock(dev):
+                super(GuiController, self).add_cred(dev, *args, **kwargs)
+                self._creds = None
+                self.refresh_codes(lock=lock)
 
     def add_cred_legacy(self, *args, **kwargs):
         lock = self.grab_lock()
-        legacy = self.open_otp()
-        if not legacy:
-            raise Exception('No YubiKey found!')
-        legacy.put(*args, **kwargs)
-        del legacy
+        super(GuiController, self).add_cred_legacy(*args, **kwargs)
         self._creds = None
         self.refresh_codes(lock=lock)
 
     def delete_cred(self, name):
-        if name in ['YubiKey slot 1', 'YubiKey slot 2']:
-            raise NotImplementedError('Deleting YubiKey slots not implemented')
         lock = self.grab_lock()
-        dev = YubiOathCcid(self.watcher.open())
-        if dev.locked:
-            self.unlock(dev)
-        dev.delete(name)
-        self._creds = None
-        self.refresh_codes(lock=lock)
+        ccid_dev = self.watcher.open()
+        if ccid_dev:
+            dev = YubiOathCcid(ccid_dev)
+            if self.unlock(dev):
+                super(GuiController, self).delete_cred(dev, name)
+                self._creds = None
+                self.refresh_codes(lock=lock)
 
     def set_password(self, password, remember=False):
         _lock = self.grab_lock()
-        dev = YubiOathCcid(self.watcher.open())
-        if self.unlock(dev):
-            key = dev.calculate_key(password)
-            dev.set_key(key)
-            self._keystore.put(dev.id, key, remember)
+        ccid_dev = self.watcher.open()
+        if ccid_dev:
+            dev = YubiOathCcid(ccid_dev)
+            if self.unlock(dev):
+                key = super(GuiController, self).set_password(dev, password)
+                self._keystore.put(dev.id, key, remember)

@@ -24,8 +24,9 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from yubioath.core.controller import Controller
-from yubioath.core.exc import CardError
+from ..core.controller import Controller
+from ..core.standard import YubiOathCcid
+from ..core.exc import CardError
 from getpass import getpass
 import sys
 
@@ -59,3 +60,17 @@ class CliController(Controller):
                                      self.keystore.fname)
             except CardError:
                 sys.stderr.write('Incorrect password!\n')
+
+    def set_password(self, ccid_dev, password, remember=False):
+        dev = YubiOathCcid(ccid_dev)
+        key = super(CliController, self).set_password(dev, password)
+        if remember:
+            self.keystore.put(dev.id, key)
+
+    def add_cred(self, ccid_dev, *args, **kwargs):
+        dev = YubiOathCcid(ccid_dev)
+        super(CliController, self).add_cred(dev, *args, **kwargs)
+
+    def delete_cred(self, ccid_dev, name):
+        dev = YubiOathCcid(ccid_dev)
+        super(CliController, self).delete_cred(dev, name)
