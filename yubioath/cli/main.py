@@ -56,32 +56,29 @@ class YubiOathCli(object):
             description="Read OATH one time passwords from a YubiKey.",
             add_help=True
         )
-        parser.add_argument('-S', '--save-password', help='save the access key '
+
+        global_opts = argparse.ArgumentParser(add_help=False)
+        global_opts.add_argument('-S', '--save-password', help='save the access key '
                             'for later use.', action='store_true')
-        parser.add_argument('-r', '--reader', help='name to match smartcard '
+        global_opts.add_argument('-r', '--reader', help='name to match smartcard '
                             'reader against (case insensitive)',
                             default='YubiKey')
 
         subparsers = parser.add_subparsers(dest='command', help='subcommands')
 
-        self._init_show(subparsers.add_parser('show',
+        self._init_show(subparsers.add_parser('show', parents=[global_opts],
                                               help='read one or more codes'))
-        self._init_put(subparsers.add_parser('put',
+        self._init_put(subparsers.add_parser('put', parents=[global_opts],
                                              help='store a new credential'))
-        self._init_delete(subparsers.add_parser('delete',
+        self._init_delete(subparsers.add_parser('delete', parents=[global_opts],
                                                 help='delete a new credential'))
         self._init_password(subparsers.add_parser(
-            'password', help='set/unset the password'))
+            'password', parents=[global_opts], help='set/unset the password'))
         return parser
 
     def _init_show(self, parser):
         parser.add_argument('query', help='credential name to match against '
                             '(case insensitive)', nargs='?')
-        parser.add_argument('-S', '--save-password', help='save the access key '
-                            'for later use.', action='store_true')
-        parser.add_argument('-r', '--reader', help='name to match smartcard '
-                            'reader against (case insensitive)',
-                            default='YubiKey')
         parser.add_argument('-s1', '--slot1', help='number of digits to '
                             'output for slot 1', type=int, default=0)
         parser.add_argument('-s2', '--slot2', help='number of digits to '
