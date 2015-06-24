@@ -59,8 +59,9 @@ class YubiOathCli(object):
         )
 
         global_opts = argparse.ArgumentParser(add_help=False)
-        global_opts.add_argument('-S', '--save-password', help='save the access key '
-                            'for later use.', action='store_true')
+        global_opts.add_argument('-R', '--remember', help='remember any '
+                                 'entered access key for later use.',
+                                 action='store_true')
         global_opts.add_argument('-r', '--reader', help='name to match smartcard '
                             'reader against (case insensitive)',
                             default='YubiKey')
