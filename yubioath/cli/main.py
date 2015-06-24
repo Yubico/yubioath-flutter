@@ -68,6 +68,8 @@ class YubiOathCli(object):
                                               help='read one or more codes'))
         self._init_put(subparsers.add_parser('put',
                                              help='store a new credential'))
+        self._init_delete(subparsers.add_parser('delete',
+                                                help='delete a new credential'))
         return parser
 
     def _init_show(self, parser):
@@ -90,6 +92,9 @@ class YubiOathCli(object):
                             choices=['totp', 'hotp'], default='totp')
         parser.add_argument('-T', '--touch', help='require touch',
                             action='store_true')
+
+    def _init_delete(self, parser):
+        parser.add_argument('name', help='name of the credential to delete')
 
     def parse_args(self):
         # Default to "show" sub command.
@@ -149,8 +154,13 @@ class YubiOathCli(object):
             self._controller.add_cred(self._dev, args.name, args.key, oath_type)
         else:
             self._controller.add_cred_legacy(args.target, args.key, args.touch)
-        return 1
 
+    def delete(self, args):
+        if self._dev is None:
+            sys.stderr.write('No YubiKey found!\n')
+            return 1
+        self._controller.delete_cred(self._dev, args.name)
+        sys.stderr.write('Credential deleted!\n')
 
 def print_creds(results):
     if not results:
