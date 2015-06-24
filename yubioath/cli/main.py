@@ -127,12 +127,16 @@ class YubiOathCli(object):
 
     def _init_put(self, parser):
         parser.add_argument('key', help='base32 encoded key, or otpauth:// URI')
-        parser.add_argument('-D', '--destination', help='Where to store the '
+        parser.add_argument('-S', '--destination', help='Where to store the '
                             'credential', type=int, choices=[0, 1, 2],
                             default=0)
         parser.add_argument('-N', '--name', help='credential name')
         parser.add_argument('-A', '--oath-type', help='OATH algorithm',
                             choices=['totp', 'hotp'], default='totp')
+        parser.add_argument('-D', '--digits', help='number of digits',
+                            type=int, choices=[6, 8])
+        parser.add_argument('-I', '--imf', help='initial moving factor',
+                            type=int, default=0)
         parser.add_argument('-T', '--touch', help='require touch',
                             action='store_true')
 
@@ -142,6 +146,8 @@ class YubiOathCli(object):
             args.key = parsed['secret']
             args.name = args.name or parsed.get('name')
             args.oath_type = parsed.get('type')
+            args.digits = args.digits or int(parsed.get('digits', '6'))
+            args.imf = args.imf or int(parsed.get('counter', '0'))
 
         unpadded = args.key.upper()
         args.key = b32decode(unpadded + '=' * (-len(unpadded) % 8))
@@ -158,7 +164,8 @@ class YubiOathCli(object):
                     sys.stderr.write('Missing required argument: --name\n')
                     return 1
             oath_type = TYPE_TOTP if args.oath_type == 'totp' else TYPE_HOTP
-            self._controller.add_cred(self._dev, args.name, args.key, oath_type)
+            self._controller.add_cred(self._dev, args.name, args.key, oath_type,
+                                      digits=args.digits, imf=args.imf)
         else:
             self._controller.add_cred_legacy(args.destination, args.key,
                                              args.touch)
