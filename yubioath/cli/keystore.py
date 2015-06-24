@@ -74,3 +74,7 @@ class Keystore(object):
             os.makedirs(directory)
         with open(self.fname, 'w') as f:
             json.dump(self._data, f)
+
+    def clear(self):
+        if os.path.isfile(self.fname):
+            os.remove(self.fname)

@@ -31,6 +31,7 @@ from .keystore import get_keystore
 from .controller import CliController
 from time import time
 from base64 import b32decode
+from getpass import getpass
 import argparse
 import sys
 
@@ -101,7 +102,9 @@ class YubiOathCli(object):
         parser.add_argument('name', help='name of the credential to delete')
 
     def _init_password(self, parser):
-        parser.add_argument('-P', '--new-password', help='the password to set')
+        parser.add_argument('action', choices=['set', 'unset', 'forget'],
+                            help='the action to perform')
+        parser.add_argument('password', help='the password to set', nargs='?')
 
     def parse_args(self):
         # Default to "show" sub command.
@@ -171,15 +174,30 @@ class YubiOathCli(object):
         sys.stderr.write('Credential deleted!\n')
 
     def password(self, args):
-        if self._dev is None:
-            sys.stderr.write('No YubiKey found!\n')
-            return 1
-        self._controller.set_password(self._dev, args.new_password,
-                                      args.save_password)
-        if args.new_password:
-            sys.stderr.write('New password set!\n')
+        if args.action == 'forget':
+            self._controller.keystore.clear()
+            sys.stderr.write('Saved access keys deleted!\n')
         else:
-            sys.stderr.write('Password cleared!\n')
+            if self._dev is None:
+                sys.stderr.write('No YubiKey found!\n')
+                return 1
+            if args.action == 'set':
+                if not args.password:
+                    pw = getpass('New password: ')
+                    pw2 = getpass('Re-type password: ')
+                    if pw == pw2:
+                        args.password = pw
+                    else:
+                        sys.stderr.write('Passwords did not match!\n')
+                        return 1
+            else:
+                args.password = ''
+            self._controller.set_password(self._dev, args.password,
+                                          args.save_password)
+            if args.password:
+                sys.stderr.write('New password set!\n')
+            else:
+                sys.stderr.write('Password cleared!\n')
 
 
 def print_creds(results):
