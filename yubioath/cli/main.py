@@ -78,35 +78,6 @@ class YubiOathCli(object):
             'password', parents=[global_opts], help='set/unset the password'))
         return parser
 
-    def _init_show(self, parser):
-        parser.add_argument('query', help='credential name to match against '
-                            '(case insensitive)', nargs='?')
-        parser.add_argument('-s1', '--slot1', help='number of digits to '
-                            'output for slot 1', type=int, default=0)
-        parser.add_argument('-s2', '--slot2', help='number of digits to '
-                            'output for slot 2', type=int, default=0)
-        parser.add_argument('-t', '--timestamp', help='user provided timestamp',
-                            type=int, default=int(time()) + 5)
-
-    def _init_put(self, parser):
-        parser.add_argument('key', help='base32 encoded key, or otpauth:// URI')
-        parser.add_argument('-D', '--destination', help='Where to store the '
-                            'credential', type=int, choices=[0, 1, 2],
-                            default=0)
-        parser.add_argument('-N', '--name', help='credential name')
-        parser.add_argument('-A', '--oath-type', help='OATH algorithm',
-                            choices=['totp', 'hotp'], default='totp')
-        parser.add_argument('-T', '--touch', help='require touch',
-                            action='store_true')
-
-    def _init_delete(self, parser):
-        parser.add_argument('name', help='name of the credential to delete')
-
-    def _init_password(self, parser):
-        parser.add_argument('action', choices=['set', 'unset', 'forget'],
-                            help='the action to perform')
-        parser.add_argument('password', help='the password to set', nargs='?')
-
     def parse_args(self):
         # Default to "show" sub command.
         subcmds = list(subcmd_names(self._parser))
@@ -119,9 +90,19 @@ class YubiOathCli(object):
         args = self.parse_args()
 
         self._dev = open_scard(args.reader)
-        self._controller = CliController(get_keystore(), args.save_password)
+        self._controller = CliController(get_keystore(), args.remember)
 
         return getattr(self, args.command)(args) or 0
+
+    def _init_show(self, parser):
+        parser.add_argument('query', help='credential name to match against '
+                            '(case insensitive)', nargs='?')
+        parser.add_argument('-s1', '--slot1', help='number of digits to '
+                            'output for slot 1', type=int, default=0)
+        parser.add_argument('-s2', '--slot2', help='number of digits to '
+                            'output for slot 2', type=int, default=0)
+        parser.add_argument('-t', '--timestamp', help='user provided timestamp',
+                            type=int, default=int(time()) + 5)
 
     def show(self, args):
         creds = self._controller.read_creds(self._dev, args.slot1, args.slot2,
@@ -139,6 +120,17 @@ class YubiOathCli(object):
                 creds = [(cred, cred.calculate(args.timestamp))]
 
         print_creds(creds)
+
+    def _init_put(self, parser):
+        parser.add_argument('key', help='base32 encoded key, or otpauth:// URI')
+        parser.add_argument('-D', '--destination', help='Where to store the '
+                            'credential', type=int, choices=[0, 1, 2],
+                            default=0)
+        parser.add_argument('-N', '--name', help='credential name')
+        parser.add_argument('-A', '--oath-type', help='OATH algorithm',
+                            choices=['totp', 'hotp'], default='totp')
+        parser.add_argument('-T', '--touch', help='require touch',
+                            action='store_true')
 
     def put(self, args):
         if args.key.startswith('otpauth://'):
@@ -167,6 +159,9 @@ class YubiOathCli(object):
             self._controller.add_cred_legacy(args.destination, args.key,
                                              args.touch)
 
+    def _init_delete(self, parser):
+        parser.add_argument('name', help='name of the credential to delete')
+
     def delete(self, args):
         if self._dev is None:
             sys.stderr.write('No YubiKey found!\n')
@@ -174,15 +169,26 @@ class YubiOathCli(object):
         self._controller.delete_cred(self._dev, args.name)
         sys.stderr.write('Credential deleted!\n')
 
+    def _init_password(self, parser):
+        actions = parser.add_mutually_exclusive_group(required=True)
+        actions.add_argument('-S', '--set', help='sets a new password',
+                             action='store_true')
+        actions.add_argument('-U', '--unset', help='unsets the password',
+                             action='store_true')
+        actions.add_argument('-F', '--forget', help='forgets all stored keys',
+                             action='store_true')
+        parser.add_argument('-P', '--password', help='new password to set')
+
     def password(self, args):
-        if args.action == 'forget':
+        if args.forget:
             self._controller.keystore.clear()
             sys.stderr.write('Saved access keys deleted!\n')
         else:
             if self._dev is None:
                 sys.stderr.write('No YubiKey found!\n')
                 return 1
-            if args.action == 'set':
+
+            if args.set:
                 if not args.password:
                     pw = getpass('New password: ')
                     pw2 = getpass('Re-type password: ')
@@ -191,13 +197,11 @@ class YubiOathCli(object):
                     else:
                         sys.stderr.write('Passwords did not match!\n')
                         return 1
-            else:
-                args.password = ''
-            self._controller.set_password(self._dev, args.password,
-                                          args.save_password)
-            if args.password:
+                self._controller.set_password(self._dev, args.password,
+                                              args.remember)
                 sys.stderr.write('New password set!\n')
-            else:
+            elif args.unset:
+                self._controller.set_password(self._dev, '')
                 sys.stderr.write('Password cleared!\n')
 
 
@@ -216,4 +220,8 @@ def print_creds(results):
 
 def main():
     app = YubiOathCli()
-    sys.exit(app.run())
+    try:
+        sys.exit(app.run())
+    except KeyboardInterrupt:
+        sys.stderr.write('^C\nInterrupted, exiting.\n')
+        sys.exit(130)
