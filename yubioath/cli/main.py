@@ -70,11 +70,18 @@ class YubiOathCli(object):
                                              help='store a new credential'))
         self._init_delete(subparsers.add_parser('delete',
                                                 help='delete a new credential'))
+        self._init_password(subparsers.add_parser(
+            'password', help='set/unset the password'))
         return parser
 
     def _init_show(self, parser):
         parser.add_argument('query', help='credential name to match against '
                             '(case insensitive)', nargs='?')
+        parser.add_argument('-S', '--save-password', help='save the access key '
+                            'for later use.', action='store_true')
+        parser.add_argument('-r', '--reader', help='name to match smartcard '
+                            'reader against (case insensitive)',
+                            default='YubiKey')
         parser.add_argument('-s1', '--slot1', help='number of digits to '
                             'output for slot 1', type=int, default=0)
         parser.add_argument('-s2', '--slot2', help='number of digits to '
@@ -84,7 +91,7 @@ class YubiOathCli(object):
 
     def _init_put(self, parser):
         parser.add_argument('key', help='base32 encoded key, or otpauth:// URI')
-        parser.add_argument('-S', '--target', help='Where to store the '
+        parser.add_argument('-D', '--destination', help='Where to store the '
                             'credential', type=int, choices=[0, 1, 2],
                             default=0)
         parser.add_argument('-N', '--name', help='credential name')
@@ -95,6 +102,9 @@ class YubiOathCli(object):
 
     def _init_delete(self, parser):
         parser.add_argument('name', help='name of the credential to delete')
+
+    def _init_password(self, parser):
+        parser.add_argument('-P', '--new-password', help='the password to set')
 
     def parse_args(self):
         # Default to "show" sub command.
@@ -139,7 +149,7 @@ class YubiOathCli(object):
         unpadded = args.key.upper()
         args.key = b32decode(unpadded + '=' * (-len(unpadded) % 8))
 
-        if args.target == 0:
+        if args.destination == 0:
             if self._dev is None:
                 sys.stderr.write('No YubiKey found!\n')
                 return 1
@@ -153,7 +163,8 @@ class YubiOathCli(object):
             oath_type = TYPE_TOTP if args.oath_type == 'totp' else TYPE_HOTP
             self._controller.add_cred(self._dev, args.name, args.key, oath_type)
         else:
-            self._controller.add_cred_legacy(args.target, args.key, args.touch)
+            self._controller.add_cred_legacy(args.destination, args.key,
+                                             args.touch)
 
     def delete(self, args):
         if self._dev is None:
@@ -162,9 +173,21 @@ class YubiOathCli(object):
         self._controller.delete_cred(self._dev, args.name)
         sys.stderr.write('Credential deleted!\n')
 
+    def password(self, args):
+        if self._dev is None:
+            sys.stderr.write('No YubiKey found!\n')
+            return 1
+        self._controller.set_password(self._dev, args.new_password,
+                                      args.save_password)
+        if args.new_password:
+            sys.stderr.write('New password set!\n')
+        else:
+            sys.stderr.write('Password cleared!\n')
+
+
 def print_creds(results):
     if not results:
-        sys.stderr.write('No credentials found.\n')
+        sys.stderr.write('No credentials found\n')
         return
 
     longest = max(map(lambda r: len(r[0].name), results))

@@ -66,6 +66,9 @@ class CliController(Controller):
         key = super(CliController, self).set_password(dev, password)
         if remember:
             self.keystore.put(dev.id, key)
+            sys.stderr.write('Password saved to %s\n' % self.keystore.fname)
+        else:
+            self.keystore.delete(dev.id)
 
     def add_cred(self, ccid_dev, *args, **kwargs):
         dev = YubiOathCcid(ccid_dev)
