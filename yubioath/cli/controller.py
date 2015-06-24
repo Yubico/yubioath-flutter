@@ -77,3 +77,8 @@ class CliController(Controller):
     def delete_cred(self, ccid_dev, name):
         dev = YubiOathCcid(ccid_dev)
         super(CliController, self).delete_cred(dev, name)
+
+    def reset_device(self, ccid_dev):
+        dev = YubiOathCcid(ccid_dev)
+        self.keystore.delete(dev.id)
+        super(CliController, self).reset_device(dev)

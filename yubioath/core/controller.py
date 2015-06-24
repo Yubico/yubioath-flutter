@@ -165,3 +165,6 @@ class Controller(object):
         if dev.locked:
             self.unlock(dev)
         dev.delete(name)
+
+    def reset_device(self, dev):
+        dev.reset()

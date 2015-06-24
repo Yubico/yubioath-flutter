@@ -76,6 +76,10 @@ class YubiOathCli(object):
                                                 help='delete a new credential'))
         self._init_password(subparsers.add_parser(
             'password', parents=[global_opts], help='set/unset the password'))
+        self._init_reset(subparsers.add_parser('reset', parents=[global_opts],
+                                                help='wipe all non slot-based '
+                                               'OATH credentials'))
+
         return parser
 
     def parse_args(self):
@@ -204,6 +208,32 @@ class YubiOathCli(object):
                 self._controller.set_password(self._dev, '')
                 sys.stderr.write('Password cleared!\n')
 
+    def _init_reset(self, parser):
+        parser.add_argument('-f', '--force', help='do not ask before resetting',
+                            action='store_true')
+
+    def reset(self, args):
+        if self._dev is None:
+            sys.stderr.write('No YubiKey found!\n')
+            return 1
+
+        if not args.force:
+            sys.stderr.write('WARNING!!! You are about to completely wipe all '
+                             'non slot-based OATH credentials from the device!'
+                             '\n')
+            confirm = ''
+            while confirm != 'yes':
+                sys.stderr.write('Proceed? [yes/no]: ')
+                confirm = sys.stdin.readline().strip()
+                if confirm == 'no':
+                    sys.stderr.write('Aborted...\n')
+                    return 1
+                elif confirm != 'yes':
+                    sys.stderr.write('Please type out "yes" or "no".\n')
+
+        self._controller.reset_device(self._dev)
+        sys.stderr.write('Your YubiKey has been reset.\n')
+
 
 def print_creds(results):
     if not results:
@@ -223,5 +253,5 @@ def main():
     try:
         sys.exit(app.run())
     except KeyboardInterrupt:
-        sys.stderr.write('^C\nInterrupted, exiting.\n')
+        sys.stderr.write('\nInterrupted, exiting.\n')
         sys.exit(130)
