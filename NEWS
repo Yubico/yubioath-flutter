@@ -1,8 +1,11 @@
 * Version 2.1.0 (unreleased)
- ** Added setting to kill scdaemon on show, to release the device.
- ** Added the ability to program standard YubiKeys with slot based TOTP credentials.
+ ** Added setting to kill scdaemon on show, to release the device (GUI only).
+ ** Added the ability to program standard YubiKeys with slot-based TOTP
+    credentials.
+ ** Added functionality to the CLI for programming YubiKeys.
+ ** Added the reset command for wiping a device (CLI only).
  ** Better handling of composite modes.
- ** Added functionality to the CLI programming YubiKeys.
+ ** Support non-ascii characters in card reader names.
 
 * Version 2.0.2 (released 2015-06-16)
  ** Minor packaging related fixes.
