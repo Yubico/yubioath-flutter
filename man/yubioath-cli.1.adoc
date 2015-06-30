@@ -8,7 +8,7 @@ yubioath\-cli(1)
 yubioath-cli - Yubico Authenticator command line interface
 
 == Synopsis
-*yubioath-cli* [-h] {show,put,delete,password,reset}
+*yubioath-cli* [-h] _command_
 
 == Description
 The Yubico Authenticator is a graphical desktop tool for generating Open
