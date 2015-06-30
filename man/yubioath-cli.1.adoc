@@ -52,7 +52,7 @@ to the global options:
     uniquely specifices the credential as to avoid unwanted counter
     incrementation.
 
-=== *yubioath-cli put [OPTIONS] KEY*
+=== *yubioath-cli put* [OPTIONS] KEY
     Load and store a credential into the YubiKey.
 
 *-S, --destination DEST*::
@@ -90,13 +90,13 @@ to the global options:
     given the other options are not needed, but can be used to override
     parameters in the URI, if needed.
 
-=== *yubioath-cli delete NAME*
+=== *yubioath-cli delete* NAME
     Deletes a credential from the main OATH credential storage.
 
 *NAME*::
     A filter string that uniquely identifies the credential to delete.
 
-=== *yubioath-cli password [OPTIONS]*
+=== *yubioath-cli password* [OPTIONS]
     Manage the access password of the OATH applet.
 
 *-S, --set*::
@@ -114,7 +114,7 @@ to the global options:
     the command will prompt the user to enter a new password while masking
     input.
 
-=== *yubioath-cli reset [OPTIONS]*
+=== *yubioath-cli reset* [OPTIONS]
     Factory-reset the OATH applet, unsetting any access password and erasing
     all stored credentials.
 
