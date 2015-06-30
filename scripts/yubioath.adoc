@@ -1,0 +1,22 @@
+yubioath(1)
+===========
+:doctype: manpage
+:man source: yubioath
+:man manual: Yubico Authenticator Manual
+
+== Name
+yubioath - Yubico Authenticator graphical interface
+
+== Synopsis
+yubioath
+
+== Description
+The Yubico Authenticator is a graphical desktop tool for generating Open
+AuTHentication (OATH) event-based HOTP and time-based TOTP one-time password
+codes, with the help of a YubiKey that protects the shared secrets.
+
+== Bugs
+Report bugs in the issue tracker (https://github.com/Yubico/yubioath-desktop/issues)
+
+== See also
+*yubioath-cli*(1)
