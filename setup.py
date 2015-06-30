@@ -26,7 +26,7 @@
 
 
 from yubioath.yubicommon.setup import setup
-from yubioath.yubicommon.setup.qt import qt_resources, qt_sdist
+from yubioath.yubicommon.setup.qt import qt_resources
 from yubioath.yubicommon.setup.exe import executable
 
 setup(
@@ -47,8 +47,7 @@ setup(
     tests_require=[],
     cmdclass={
         'executable': executable,
-        'qt_resources': qt_resources('yubioath.gui'),
-        'sdist': qt_sdist
+        'qt_resources': qt_resources('yubioath.gui')
     },
     classifiers=[
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',

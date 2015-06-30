@@ -7,4 +7,5 @@ dist/
 ChangeLog
 MANIFEST
 yubioath/gui/qt_resources.py
+scripts/*.1
 .DS_Store

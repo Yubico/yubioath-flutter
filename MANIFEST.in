@@ -2,6 +2,7 @@ include COPYING
 include NEWS
 include ChangeLog
 include screenshot.png
+include scripts/*.adoc
 include scripts/*.1
 include resources/*
 include qt_resources/*
