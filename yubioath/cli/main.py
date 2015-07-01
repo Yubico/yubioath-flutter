@@ -24,6 +24,7 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
+from .. import __version__
 from ..core.ccid import open_scard
 from ..core.standard import TYPE_HOTP, TYPE_TOTP
 from ..core.utils import parse_uri
@@ -53,18 +54,21 @@ class YubiOathCli(object):
         self._parser = self._init_parser()
 
     def _init_parser(self):
-        parser = argparse.ArgumentParser(
-            description="Read OATH one time passwords from a YubiKey.",
-            add_help=True
-        )
-
         global_opts = argparse.ArgumentParser(add_help=False)
         global_opts.add_argument('-R', '--remember', help='remember any '
-                                 'entered access key for later use.',
+                                 'entered access key for later use',
                                  action='store_true')
-        global_opts.add_argument('-r', '--reader', help='name to match smartcard '
-                            'reader against (case insensitive)',
-                            default='YubiKey')
+        global_opts.add_argument('-r', '--reader', help='name to match '
+                                 'smartcard reader against (case insensitive)',
+                                 default='YubiKey')
+
+        parser = argparse.ArgumentParser(
+            description="Read OATH one time passwords from a YubiKey.",
+            parents=[global_opts],
+            add_help=True
+        )
+        parser.add_argument('-v', '--version', action='version',
+                            version='%(prog)s ' + __version__)
 
         subparsers = parser.add_subparsers(dest='command', help='subcommands')
 
@@ -77,7 +81,7 @@ class YubiOathCli(object):
         self._init_password(subparsers.add_parser(
             'password', parents=[global_opts], help='set/unset the password'))
         self._init_reset(subparsers.add_parser('reset', parents=[global_opts],
-                                                help='wipe all non slot-based '
+                                               help='wipe all non slot-based '
                                                'OATH credentials'))
 
         return parser
@@ -85,7 +89,8 @@ class YubiOathCli(object):
     def parse_args(self):
         # Default to "show" sub command.
         subcmds = list(subcmd_names(self._parser))
-        if not intersects(sys.argv[1:], subcmds + ['-h', '--help']):
+        if not intersects(sys.argv[1:],
+                          subcmds + ['-h', '--help', '-v', '--version']):
             sys.argv.insert(1, 'show')
 
         return self._parser.parse_args()
