@@ -38,10 +38,10 @@ class B32Validator(QtGui.QValidator):
 
     def __init__(self, parent=None):
         super(B32Validator, self).__init__(parent)
-        self.partial = re.compile(r'^[a-z2-7]+$', re.IGNORECASE)
+        self.partial = re.compile(r'^[ a-z2-7]+$', re.IGNORECASE)
 
     def fixup(self, value):
-        unpadded = value.upper()
+        unpadded = value.upper().replace(' ', '')
         return unpadded + '=' * (-len(unpadded) % 8)
 
     def validate(self, value, pos):
@@ -111,8 +111,7 @@ class AddCredDialog(qt.Dialog):
 
     @property
     def key(self):
-        unpadded = self._cred_key.text().upper()
-        return b32decode(unpadded + '=' * (-len(unpadded) % 8))
+        return self._cred_key.validator().fixup(self._cred_key.text())
 
     @property
     def oath_type(self):
