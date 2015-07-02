@@ -49,12 +49,12 @@ Var STARTMENU_FOLDER
 
 Section "Kill process" KillProcess
 	${nsProcess::FindProcess} "yubioath.exe" $R0
-	StrCmp $R0 0 0 +2
-
-	MessageBox MB_OK "Yubico Authenticator is currently running, an will now be closed."
-	${nsProcess::KillProcess} "yubioath.exe" $R0
+  ${If} $R0 == 0
+	  MessageBox MB_OK "Yubico Authenticator is currently running, an will now be closed."
+    ${nsProcess::CloseProcess} "yubioath.exe" $R0
+    Sleep 2000
+  ${EndIf}
 	${nsProcess::Unload}
-	Sleep 1000
 SectionEnd
 
 
@@ -107,12 +107,12 @@ Section "Uninstall"
 
   ; Kill process
   ${nsProcess::FindProcess} "yubioath.exe" $R0
-  StrCmp $R0 0 0 +2
-
-  MessageBox MB_OK "Yubico Authenticator is currently running, an will now be closed."
-  ${nsProcess::KillProcess} "yubioath.exe" $R0
+  ${If} $R0 == 0
+    DetailPrint "Yubico Authenticator is running. Closing..."
+    ${nsProcess::CloseProcess} "yubioath.exe" $R0
+    Sleep 2000
+  ${EndIf}
   ${nsProcess::Unload}
-  Sleep 1000
 
   ; Remove all
   DELETE "$INSTDIR\*"
