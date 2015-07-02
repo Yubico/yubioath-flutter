@@ -1,4 +1,5 @@
 !include "MUI2.nsh"
+!include "nsProcess.nsh"
 
 !define MUI_ICON "yubioath-desktop.ico"
 
@@ -44,6 +45,18 @@ Var STARTMENU_FOLDER
 
 ;Languages
   !insertmacro MUI_LANGUAGE "English"
+
+
+Section "Kill process" KillProcess
+	${nsProcess::FindProcess} "yubioath.exe" $R0
+	StrCmp $R0 0 0 +2
+
+	MessageBox MB_OK "Yubico Authenticator is currently running, an will now be closed."
+	${nsProcess::KillProcess} "yubioath.exe" $R0
+	${nsProcess::Unload}
+	Sleep 1000
+SectionEnd
+
 
 ;--------------------------------
 
@@ -91,6 +104,15 @@ Section "Uninstall"
   ; Remove registry keys
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\yubioath-desktop"
   DeleteRegKey HKLM "Software\Yubico\yubioath-desktop"
+
+  ; Kill process
+  ${nsProcess::FindProcess} "yubioath.exe" $R0
+  StrCmp $R0 0 0 +2
+
+  MessageBox MB_OK "Yubico Authenticator is currently running, an will now be closed."
+  ${nsProcess::KillProcess} "yubioath.exe" $R0
+  ${nsProcess::Unload}
+  Sleep 1000
 
   ; Remove all
   DELETE "$INSTDIR\*"
