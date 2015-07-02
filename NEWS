@@ -1,3 +1,6 @@
+* Version 2.1.2 (unreleased)
+ ** Allow spaces in OATH keys.
+
 * Version 2.1.1 (released 2015-07-02)
  ** Added man pages.
  ** Fixed bug with non-CCID YubiKeys not displaying slot-bsed credentials.
