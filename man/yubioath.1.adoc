@@ -8,7 +8,7 @@ yubioath(1)
 yubioath - Yubico Authenticator graphical interface
 
 == Synopsis
-yubioath
+*yubioath*
 
 == Description
 The Yubico Authenticator is a graphical desktop tool for generating Open
