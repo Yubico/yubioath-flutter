@@ -1,6 +1,7 @@
-* Version 2.1.1 (unreleased)
+* Version 2.1.1 (released 2015-07-02)
  ** Added man pages.
  ** Fixed bug with non-CCID YubiKeys not displaying slot-bsed credentials.
+ ** Windows installer/uninstaller checks for running instance, and closes it.
 
 * Version 2.1.0 (released 2015-06-26)
  ** Added setting to kill scdaemon on show, to release the device (GUI only).
