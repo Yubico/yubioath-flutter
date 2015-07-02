@@ -117,7 +117,8 @@ class Controller(object):
 
         if self.otp_supported and ((slot1 and not legacy_creds[0])
                                    or (slot2 and not legacy_creds[1])):
-            ccid_dev.close()
+            if ccid_dev:
+                ccid_dev.close()
             legacy = self.open_otp()
             if legacy:
                 key_found = True

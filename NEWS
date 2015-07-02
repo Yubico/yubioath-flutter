@@ -1,5 +1,6 @@
 * Version 2.1.1 (unreleased)
  ** Added man pages.
+ ** Fixed bug with non-CCID YubiKeys not displaying slot-bsed credentials.
 
 * Version 2.1.0 (released 2015-06-26)
  ** Added setting to kill scdaemon on show, to release the device (GUI only).
