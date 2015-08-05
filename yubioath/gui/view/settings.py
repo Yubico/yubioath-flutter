@@ -46,33 +46,45 @@ class SettingsDialog(qt.Dialog):
         layout = QtGui.QFormLayout(self)
         layout.addRow(self.section(m.ykstd_slots))
 
+        # YubiKey slot 1
         self._slot1_enabled = QtGui.QCheckBox(m.enable_slot_1 % 1)
+        self._slot1_enabled.setToolTip(m.tt_slot_enabled_1 % 1)
         layout.addRow(self._slot1_enabled)
         self._slot1_digits = QtGui.QComboBox()
         self._slot1_digits.addItems(['6', '8'])
         self._slot1_enabled.stateChanged.connect(self._slot1_digits.setEnabled)
         self._slot1_digits.setEnabled(False)
+        self._slot1_digits.setToolTip(m.tt_num_digits)
         layout.addRow(m.n_digits, self._slot1_digits)
         layout.labelForField(self._slot1_digits).setIndent(INDENT)
 
+        # YubiKey slot 2
         self._slot2_enabled = QtGui.QCheckBox(m.enable_slot_1 % 2)
+        self._slot2_enabled.setToolTip(m.tt_slot_enabled_1 % 2)
         layout.addRow(self._slot2_enabled)
         self._slot2_digits = QtGui.QComboBox()
         self._slot2_digits.addItems(['6', '8'])
         self._slot2_enabled.stateChanged.connect(self._slot2_digits.setEnabled)
         self._slot2_digits.setEnabled(False)
+        self._slot2_digits.setToolTip(m.tt_num_digits)
         layout.addRow(m.n_digits, self._slot2_digits)
         layout.labelForField(self._slot2_digits).setIndent(INDENT)
 
         layout.addRow(self.section(m.advanced))
 
+        # Systray
         self._systray = QtGui.QCheckBox(m.enable_systray)
+        self._systray.setToolTip(m.tt_systray)
         layout.addRow(self._systray)
 
+        # Kill scdaemon
         self._kill_scdaemon = QtGui.QCheckBox(m.kill_scdaemon)
+        self._kill_scdaemon.setToolTip(m.tt_kill_scdaemon)
         layout.addRow(self._kill_scdaemon)
 
+        # Reader name
         self._reader_name = QtGui.QLineEdit()
+        self._reader_name.setToolTip(m.tt_reader_name)
         layout.addRow(m.reader_name, self._reader_name)
 
         btns = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok |
