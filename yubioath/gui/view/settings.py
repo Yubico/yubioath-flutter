@@ -102,7 +102,7 @@ class SettingsDialog(qt.Dialog):
         self._slot2_digits.setCurrentIndex(1 if slot2 == 8 else 0)
         self._slot2_enabled.setChecked(bool(slot2))
 
-        self._systray.setChecked(self.settings.get('systray', True))
+        self._systray.setChecked(self.settings.get('systray', False))
         self._kill_scdaemon.setChecked(
             self.settings.get('kill_scdaemon', False))
 
