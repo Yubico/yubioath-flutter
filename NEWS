@@ -1,5 +1,6 @@
 * Version 2.1.2 (unreleased)
  ** Allow spaces in OATH keys.
+ ** Don't crash if smartcard subsystem isn't available.
 
 * Version 2.1.1 (released 2015-07-02)
  ** Added man pages.
