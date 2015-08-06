@@ -52,19 +52,22 @@ def restart_pcscd():
 
 def main():
     print "Patching file:", FNAME
-    with open(FNAME, 'r') as f:
-        content = f.read()
+    try:
+        with open(FNAME, 'r') as f:
+            content = f.read()
 
-    for dev in DEVICES:
-        content = add_device(dev, content)
+        for dev in DEVICES:
+            content = add_device(dev, content)
 
-    print "Saving file:", FNAME
-    with open(FNAME, 'w') as f:
-        f.write(content)
+        print "Saving file:", FNAME
+        with open(FNAME, 'w') as f:
+            f.write(content)
 
-    restart_pcscd()
+        restart_pcscd()
 
-    print "Patching complete!"
+        print "Patching complete!"
+    except IOError as e:
+        print "Error patching file:", e
 
 
 if __name__ == '__main__':
