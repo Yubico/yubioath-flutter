@@ -29,6 +29,7 @@ from smartcard import System
 from smartcard.ReaderMonitoring import ReaderMonitor, ReaderObserver
 from smartcard.CardMonitoring import CardMonitor, CardObserver
 from smartcard.Exceptions import SmartcardException
+from smartcard.pcsc.PCSCExceptions import EstablishContextException
 from PySide import QtCore
 import weakref
 
@@ -84,7 +85,10 @@ class CardWatcher(QtCore.QObject):
         self._reader = None
         self._reader_observer = _CcidReaderObserver(self)
         self._card_observer = _CcidCardObserver(self)
-        self._update(System.readers(), [])
+        try:
+            self._update(System.readers(), [])
+        except EstablishContextException:
+            pass  # No PC/SC context!
 
     def _update(self, added, removed):
         if self._reader in removed:  # Device removed
