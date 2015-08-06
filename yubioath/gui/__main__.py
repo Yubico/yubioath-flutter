@@ -44,6 +44,7 @@ from .view.add_cred_legacy import AddCredDialog as AddCredLegacyDialog
 from .view.set_password import SetPasswordDialog
 import sys
 import os
+import signal
 import argparse
 
 
@@ -239,5 +240,10 @@ class YubiOathApplication(qt.Application):
 
 
 def main():
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = YubiOathApplication()
     sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()

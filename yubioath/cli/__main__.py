@@ -1,3 +1,5 @@
+# PYTHON_ARGCOMPLETE_OK
+
 # Copyright (c) 2014 Yubico AB
 # All rights reserved.
 #
@@ -92,6 +94,12 @@ class YubiOathCli(object):
         if not intersects(sys.argv[1:],
                           subcmds + ['-h', '--help', '-v', '--version']):
             sys.argv.insert(1, 'show')
+
+        try:
+            import argcomplete
+            argcomplete.autocomplete(self._parser)
+        except ImportError:
+            pass  # No argcomplete, no problem!
 
         return self._parser.parse_args()
 
@@ -267,3 +275,7 @@ def main():
     except KeyboardInterrupt:
         sys.stderr.write('\nInterrupted, exiting.\n')
         sys.exit(130)
+
+
+if __name__ == '__main__':
+    main()
