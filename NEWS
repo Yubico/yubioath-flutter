@@ -1,7 +1,8 @@
-* Version 2.1.2 (unreleased)
+* Version 2.2.0 (unreleased)
  ** Allow spaces in OATH keys.
  ** Don't crash if smartcard subsystem isn't available.
  ** Disable systray icon by default.
+ ** Added a flag to start the application minimized to the systray.
 
 * Version 2.1.1 (released 2015-07-02)
  ** Added man pages.

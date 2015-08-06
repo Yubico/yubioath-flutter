@@ -96,7 +96,7 @@ class MainWidget(QtGui.QStackedWidget):
 
 class YubiOathApplication(qt.Application):
 
-    def __init__(self):
+    def __init__(self, args):
         super(YubiOathApplication, self).__init__(m)
 
         QtCore.QCoreApplication.setOrganizationName(m.organization)
@@ -115,33 +115,27 @@ class YubiOathApplication(qt.Application):
 
         self._systray = Systray(self)
 
-        self._init_systray()
-        self._init_window()
+        self._init_systray(args.tray or self._settings.get('systray', False))
+        self._init_window(not args.tray)
 
-    def _init_systray(self):
+    def _init_systray(self, show=False):
         self._systray.setIcon(QtGui.QIcon(':/yubioath.png'))
-        self._systray.setVisible(self._settings.get('systray', False))
+        self._systray.setVisible(show)
 
-    def _init_window(self):
+    def _init_window(self, show=True):
         self.window.setWindowTitle(m.win_title_1 % version)
         self.window.setWindowIcon(QtGui.QIcon(':/yubioath.png'))
         self.window.resize(self._settings.get('size', QtCore.QSize(320, 340)))
 
         self._build_menu_bar()
 
-        # args = self._parse_args()
-
         self.window.showEvent = self._on_shown
         self.window.closeEvent = self._on_closed
         self.window.hideEvent = self._on_hide
 
-        self.window.show()
-        self.window.raise_()
-
-    def _parse_args(self):
-        parser = argparse.ArgumentParser(description='Yubico Authenticator',
-                                         add_help=True)
-        return parser.parse_args()
+        if show:
+            self.window.show()
+            self.window.raise_()
 
     def _build_menu_bar(self):
         file_menu = self.window.menuBar().addMenu(m.menu_file)
@@ -239,9 +233,17 @@ class YubiOathApplication(qt.Application):
             self._controller.settings_changed()
 
 
+def parse_args():
+        parser = argparse.ArgumentParser(description='Yubico Authenticator',
+                                         add_help=True)
+        parser.add_argument('-t', '--tray', action='store_true', help='starts '
+                            'the application minimized to the systray')
+        return parser.parse_args()
+
+
 def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    app = YubiOathApplication()
+    app = YubiOathApplication(parse_args())
     sys.exit(app.exec_())
 
 
