@@ -198,17 +198,17 @@ class YubiOathApplication(qt.Application):
     def _add_credential(self):
         c = self._controller.get_capabilities()
         if c.ccid:
-            dialog = AddCredDialog(parent=self.window)
+            dialog = AddCredDialog(self.worker, parent=self.window)
             if dialog.exec_():
                 if not self._controller._reader:
                     QtGui.QMessageBox.critical(
                         self.window, m.key_removed, m.key_removed_desc)
                 else:
                     self._controller.add_cred(dialog.name, dialog.key,
-                                            oath_type=dialog.oath_type,
-                                            digits=dialog.n_digits)
+                                              oath_type=dialog.oath_type,
+                                              digits=dialog.n_digits)
         elif c.otp:
-            dialog = AddCredLegacyDialog(c.otp, parent=self.window)
+            dialog = AddCredLegacyDialog(self.worker, c.otp, parent=self.window)
             if dialog.exec_():
                 self._controller.add_cred_legacy(dialog.slot, dialog.key,
                                                  dialog.touch)
@@ -216,7 +216,7 @@ class YubiOathApplication(qt.Application):
                 self._settings[key] = dialog.n_digits
                 self._controller.refresh_codes()
         else:
-            QtGui.QMessageBox.critical(self.window, 'No key' ,'No key')
+            QtGui.QMessageBox.critical(self.window, 'No key', 'No key')
 
     def _change_password(self):
         dialog = SetPasswordDialog(self.window)

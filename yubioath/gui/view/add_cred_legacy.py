@@ -27,21 +27,29 @@
 from yubioath.yubicommon import qt
 from .add_cred import B32Validator
 from .. import messages as m
-from PySide import QtGui, QtCore
+from ..qrparse import parse_qr_codes
+from ..qrdecode import decode_qr_data
+from ...core.utils import parse_uri
+from PySide import QtGui
 from base64 import b32decode
 
 
 class AddCredDialog(qt.Dialog):
 
-    def __init__(self, otp_slots=(0, 0), url=None, parent=None):
+    def __init__(self, worker, otp_slots=(0, 0), url=None, parent=None):
         super(AddCredDialog, self).__init__(parent)
 
         self.setWindowTitle(m.add_cred)
+        self._worker = worker
         self._slot_status = otp_slots
         self._build_ui()
 
     def _build_ui(self):
         layout = QtGui.QFormLayout(self)
+
+        self._qr_btn = QtGui.QPushButton('[QR ICON]')
+        self._qr_btn.clicked.connect(self._scan_qr)
+        layout.addRow('Scan QR code', self._qr_btn)
 
         self._cred_key = QtGui.QLineEdit()
         self._cred_key.setValidator(B32Validator())
@@ -86,6 +94,35 @@ class AddCredDialog(qt.Dialog):
             return
         else:
             self.accept()
+
+    def _do_scan_qr(self, qimage):
+        for qr in parse_qr_codes(qimage):
+            try:
+                data = decode_qr_data(qr)
+                if data.startswith('otpauth://'):
+                    return parse_uri(data)
+            except:
+                pass
+        return None
+
+    def _scan_qr(self):
+        winId = QtGui.QApplication.desktop().winId()
+        qimage = QtGui.QPixmap.grabWindow(winId).toImage()
+        self._worker.post(m.qr_scanning, (self._do_scan_qr, qimage),
+                          self._handle_qr)
+
+    def _handle_qr(self, parsed):
+        if parsed:
+            if parsed['type'] != 'totp':
+                QtGui.QMessageBox.warning(self, m.qr_not_supported,
+                                          m.qr_not_supported_desc)
+            else:
+                self._cred_key.setText(parsed['secret'])
+                n_digits = parsed.get('digits', '6')
+                self._n_digits.setCurrentIndex(0 if n_digits == '6' else 1)
+        else:
+            QtGui.QMessageBox.warning(self, m.qr_not_found, m.qr_not_found_desc)
+
 
     @property
     def key(self):

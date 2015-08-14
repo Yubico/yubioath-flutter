@@ -77,7 +77,7 @@ def parse_qr_codes(image, min_res=2):
             line = image.scanLine(line_i)
             for pixel_i in xrange(x, x+w):
                 pixel = line[pixel_i*bpp:(pixel_i+1)*bpp]
-                line_data.append(1 if pixel_matches(pixel, c) else 0)
+                line_data.append(1 if pixel == c else 0)
             data.append(line_data)
         return data
 
@@ -88,7 +88,7 @@ def parse_qr_codes(image, min_res=2):
             read = [[-1, None, 0]]
             for x in range(size.width()):
                 color = line[x*bpp:(x+1)*bpp]
-                if read[-1][1] and pixel_matches(read[-1][1], color):
+                if read[-1][1] == color:
                     read[-1][2] += 1
                 else:  # Pixel does not match, check
                     if len(read) == 5:
@@ -118,13 +118,6 @@ def parse_qr_codes(image, min_res=2):
         qr_data = bitmap_to_data(bitmap)
         qrs.append(qr_data)
     return qrs
-
-
-def pixel_matches(a, b, tolerance=20):
-    for i in range(len(a)):
-        if abs(ord(a[i]) - ord(b[i])) > tolerance:
-            return False
-    return True
 
 
 def list_copy(l):

@@ -101,6 +101,13 @@ no_slot_desc = "Please choose a slot to write the credential to"
 overwrite_slot = "Overwrite slot?"
 overwrite_slot_desc_1 = "This will overwrite the credential currently stored " \
     "in slot %d. This action cannot be undone."
+qr_scanning = "Scanning for QR code..."
+qr_not_found = "QR code not found"
+qr_not_found_desc = "No usable QR code detected. Make sure the QR code is " \
+    "fully visible on your screen and try again."
+qr_not_supported = "Credential not supported"
+qr_not_supported_desc = "This credential type is not supported for slot " \
+    "based usage."
 tt_slot_enabled_1 = "Check to calculate TOTP codes using the YubiKey " \
     "standard slot %d credential."
 tt_num_digits = "The number of digits to show for the credential."
