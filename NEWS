@@ -3,6 +3,7 @@
  ** Don't crash if smartcard subsystem isn't available.
  ** Disable systray icon by default.
  ** Added a flag to start the application minimized to the systray.
+ ** Added the ability to scan QR codes from the screen.
 
 * Version 2.1.1 (released 2015-07-02)
  ** Added man pages.
