@@ -30,124 +30,153 @@ Given an image, locates and parses the pixel data in QR codes.
 
 __all__ = ['parse_qr_codes']
 
+from collections import namedtuple
+Box = namedtuple('Box', ['x', 'y', 'w', 'h'])
+
+
+def is_dark(color):  # If any R, G, or B value is < 200 we consider it dark.
+    return any(ord(c) < 200 for c in color)
+
+
+def buffer_matches(matched):
+    return len(matched) == 5 \
+        and max(matched[:2] + matched[3:]) <= matched[2]/2 \
+        and min(matched[:2] + matched[3:]) >= matched[2]/6
+
+
+def check_line(pixels):
+    matching_dark = False
+    matched = [0, 0, 0, 0, 0]
+    for (i, pixel) in enumerate(pixels):
+        if is_dark(pixel):  # Dark pixel
+            if matching_dark:
+                matched[-1] += 1
+            else:
+                matched = matched[1:] + [1]
+                matching_dark = True
+        else:  # Light pixel
+            if not matching_dark:
+                matched[-1] += 1
+            else:
+                if buffer_matches(matched):
+                    width = sum(matched)
+                    yield i - width, width
+                matched = matched[1:] + [1]
+                matching_dark = False
+
+    # Check final state of buffer
+    if matching_dark and buffer_matches(matched):
+        width = sum(matched)
+        yield i - width, width
+
+
+def check_row(line, bpp, x_offs, x_width):
+    return check_line([line[i*bpp:(i+1)*bpp]
+                       for i in range(x_offs, x_offs + x_width)])
+
+
+def check_col(image, bpp, x, y_offs, y_height):
+    return check_line([image.scanLine(i)[x*bpp:(x+1)*bpp]
+                       for i in range(y_offs, y_offs + y_height)])
+
+
+def read_line(line, bpp, x_offs, x_width):
+    matching_dark = not is_dark(line[x_offs*bpp:(x_offs+1)*bpp])
+    matched = []
+    for x in range(x_offs, x_offs + x_width):
+        pixel = line[x*bpp:(x+1)*bpp]
+        if is_dark(pixel):  # Dark pixel
+            if matching_dark:
+                matched[-1] += 1
+            else:
+                matched.append(1)
+                matching_dark = True
+        else:  # Light pixel
+            if not matching_dark:
+                matched[-1] += 1
+            else:
+                matched.append(1)
+                matching_dark = False
+    return matching_dark, matched
+
+
+def read_bits(image, bpp, img_x, img_y, img_w, img_h, size):
+    qr_x_w = float(img_w) / size
+    qr_y_h = float(img_h) / size
+    qr_data = []
+    for qr_y in range(size):
+        y = img_y + int(qr_y_h / 2 + qr_y * qr_y_h)
+        img_line = image.scanLine(y)
+        qr_line = []
+        for qr_x in range(size):
+            x = img_x + int(qr_x_w / 2 + qr_x * qr_x_w)
+            qr_line.append(is_dark(img_line[x * bpp:(x+1) * bpp]))
+        qr_data.append(qr_line)
+    return qr_data
+
+
+FINDER = [
+    [True, True, True, True, True, True, True],
+    [True, False, False, False, False, False, True],
+    [True, False, True, True, True, False, True],
+    [True, False, True, True, True, False, True],
+    [True, False, True, True, True, False, True],
+    [True, False, False, False, False, False, True],
+    [True, True, True, True, True, True, True]
+]
+
 
 def parse_qr_codes(image, min_res=2):
     size = image.size()
     bpp = image.bytesPerLine() / size.width()
 
-    def data_to_line(data):
-        buf = ''
-        for segment in data:
-            (_, color, width) = segment
-            buf += color*width
-        return buf
+    finders = locate_finders(image, min_res)
 
-    def check_square_dir(data, x, y_start, y_inc=1):
-        data = list_copy(data)
-        refs = []  # row of pixels to match against from the middle going out.
-        refs.append(data_to_line(data))  # Middle row:   1011101
-        data[2][1] = data[1][1]
-        refs.append(data_to_line(data))  # Inner border: 1000001
-        data[1][1] = data[0][1]
-        data[2][1] = data[0][1]
-        data[3][1] = data[0][1]
-        refs.append(data_to_line(data))  # Outer border: 1111111
+    # Arrange finders into QR codes and extract data
+    for (tl, tr, bl) in identify_groups(finders):
+        min_x = min(tl.x, bl.x)
+        min_y = min(tl.y, tr.y)
+        width = tr.x + tr.w - min_x
+        height = bl.y + bl.h - min_y
 
-        d_width = len(refs[0])
-        y_end = -1 if y_inc < 0 else size.height()
-        prev_line = ''
-        for y in range(y_start, y_end, y_inc):
-            line = image.scanLine(y)[x*bpp:x*bpp+d_width]
-            if line != prev_line:
-                if not refs:
-                    return y - y_inc
-                ref = refs.pop(0)
-                if not ref == line:
-                    return None
-                prev_line = line
-        # Reach image upper/lower bound, stop.
-        return y if not refs else None
+        # Determine resolution by reading timing pattern
+        line = image.scanLine(min_y + int(6.5 / 7 * max(tl.h, tr.h)))
+        _, line_data = read_line(line, bpp, min_x, width)
+        size = len(line_data) + 12
 
-    def image_to_bitmap(box):
-        (x, y, w, h) = box
-        c = image.scanLine(y)[x*bpp:(x+1)*bpp]
-        data = []
-        for line_i in xrange(y, y+h):
-            line_data = []
-            line = image.scanLine(line_i)
-            for pixel_i in xrange(x, x+w):
-                pixel = line[pixel_i*bpp:(pixel_i+1)*bpp]
-                line_data.append(1 if pixel == c else 0)
-            data.append(line_data)
-        return data
-
-    def find_squares():
-        found = set()
-        for y in range(0, size.height(), min_res*3):
-            line = image.scanLine(y)
-            read = [[-1, None, 0]]
-            for x in range(size.width()):
-                color = line[x*bpp:(x+1)*bpp]
-                if read[-1][1] == color:
-                    read[-1][2] += 1
-                else:  # Pixel does not match, check
-                    if len(read) == 5:
-                        color_p = zip(*read)[1]
-                        c1, c2 = color_p[0], color_p[1]
-                        lens = zip(*read)[2]
-                        mid_len = lens[2]
-                        max_other_len = max(lens[:2] + lens[3:])
-                        if color_p == (c1, c2, c1, c2, c1) \
-                                and mid_len >= min_res*3 \
-                                and max_other_len <= (mid_len+1) / 2:
-                            # We have a match, check for whole square
-                            width = sum(zip(*read)[2])
-                            up_check = check_square_dir(read, x-width, y-1, -1)
-                            dn_check = check_square_dir(read, x-width, y+1, 1)
-                            if up_check is not None and dn_check is not None:
-                                height = dn_check - up_check + 1
-                                found.add((x-width, up_check, height, width))
-                        read.pop(0)
-                    read.append([x, color, 1])
-        return found
-
-    found = find_squares()
-    qrs = []
-    for qr in identify_qrs(found):
-        bitmap = image_to_bitmap(qr)
-        qr_data = bitmap_to_data(bitmap)
-        qrs.append(qr_data)
-    return qrs
+        # Read QR code data
+        yield read_bits(image, bpp, min_x, min_y, width, height, size)
 
 
-def list_copy(l):
-    return [x[:] for x in l]
+def locate_finders(image, min_res):
+    size = image.size()
+    bpp = image.bytesPerLine() / size.width()
+    finders = set()
+    for y in range(0, size.height(), min_res * 3):
+        for (x, w) in check_row(image.scanLine(y), bpp, 0, size.width()):
+            x_offs = x + w // 2
+            y_offs = max(0, y - w)
+            y_height = min(size.height() - y_offs, 2 * w)
+            match = next(check_col(image, bpp, x_offs, y_offs, y_height), None)
+            if match:
+                (pos, h) = match
+                y2 = y_offs + pos
+                if read_bits(image, bpp, x, y2, w, h, 7) == FINDER:
+                    finders.add(Box(x, y2, w, h))
+    return list(finders)
 
 
-def bitmap_to_data(bitmap):
-    data = bitmap
-    for _ in range(2):
-        new_data = []
-        prevline = []
-        for line in data:
-            if line != prevline:
-                new_data.append(line)
-                prevline = line
-        data = map(list, zip(*new_data))
-    return data
+def identify_groups(locators):
+    # Find top left
+    for tl in locators:
+        x_tol = tl.w / 14
+        y_tol = tl.h / 14
 
+        # Find top right
+        for tr in locators:
+            if tr.x > tl.x and abs(tl.y - tr.y) <= y_tol:
 
-def identify_qrs(boxes):
-    qrs = []
-    for box in boxes:
-        for right in boxes:
-            if box[0] != right[0] and box[1] == right[1] and box[3] == right[3]:
-                for under in boxes:
-                    if box[0] == under[0] and box[1] != under[1] \
-                            and box[2] == under[2]:
-                        qrs.append((
-                            box[0],
-                            box[1],
-                            right[0]+right[2] - box[0],
-                            under[1]+under[3] - box[1]))
-    return qrs
+                # Find bottom left
+                for bl in locators:
+                    if bl.y > tl.y and abs(tl.x - bl.x) <= x_tol:
+                        yield tl, tr, bl
