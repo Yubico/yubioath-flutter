@@ -69,9 +69,9 @@ class AddCredDialog(qt.Dialog):
     def _build_ui(self):
         layout = QtGui.QFormLayout(self)
 
-        self._qr_btn = QtGui.QPushButton('[QR ICON]')
+        self._qr_btn = QtGui.QPushButton(QtGui.QIcon(':/qr.png'), m.qr_scan)
         self._qr_btn.clicked.connect(self._scan_qr)
-        layout.addRow('Scan QR code', self._qr_btn)
+        layout.addRow(self._qr_btn)
 
         self._cred_name = QtGui.QLineEdit()
         self._cred_name.setValidator(NAME_VALIDATOR)
