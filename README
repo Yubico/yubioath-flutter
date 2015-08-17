@@ -13,7 +13,16 @@ https://developers.yubico.com/yubioath-desktop/Releases/[here]. For Ubuntu we
 have a custom PPA with a package for it
 https://launchpad.net/~yubico/+archive/ubuntu/stable[here].
 
-==== Detecting the device
+=== Supported devices
+Usage of this software requires a compatible YubiKey device. Yubico
+Authenticator is capable of provisioning and using both slot-based credentials
+(compatible with any YubiKey that supports OTP) as well as the more powerful
+standalong OATH functionality of the YubiKey NEO. To use the standalone OATH
+functionality your YubiKey must have the CCID mode enabled, which can be done
+by using the https://developers.yubico.com/yubikey-neo-manager/[YubiKey NEO
+Manager].
+
+==== Detecting the device when using CCID
 Under Linux and OS X this application uses libccid to communicate with the
 YubiKey. This library requires that each card reader used is listed in its
 configuration file, else the device will not be detected ("Insert a YubiKey..."
