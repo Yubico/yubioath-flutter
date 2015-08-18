@@ -46,8 +46,6 @@ setup(
     setup_requires=[],
     yc_requires=['ctypes', 'qt'],
     install_requires=['pyscard', 'pycrypto'],
-    test_suite='test',
-    tests_require=[],
     extras_require={
         'argcomplete': ['argcomplete']
     },
