@@ -67,6 +67,7 @@ def format_code(code, digits=6):
 
 
 def parse_uri(uri):
+    uri = uri.strip()  # Remove surrounding whitespace
     parsed = urlparse(uri)
     if parsed.scheme != 'otpauth':  # Not a uri, assume secret.
         return {'secret': uri}
