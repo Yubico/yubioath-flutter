@@ -44,12 +44,12 @@ class B32Validator(QtGui.QValidator):
         self.partial = re.compile(r'^[ a-z2-7]+$', re.IGNORECASE)
 
     def fixup(self, value):
-        unpadded = value.upper().replace(' ', '')
-        return unpadded + '=' * (-len(unpadded) % 8)
+        unpadded = value.upper().rstrip('=').replace(' ', '')
+        return b32decode(unpadded + '=' * (-len(unpadded) % 8))
 
     def validate(self, value, pos):
         try:
-            b32decode(self.fixup(value))
+            self.fixup(value)
             return QtGui.QValidator.Acceptable
         except:
             if self.partial.match(value):
