@@ -31,7 +31,7 @@ from yubioath.yubicommon.setup.exe import executable
 
 setup(
     name='yubioath-desktop',
-    longname='Yubico Authenticator',
+    long_name='Yubico Authenticator',
     author='Dain Nilsson',
     author_email='dain@yubico.com',
     maintainer='Yubico Open Source Maintainers',
