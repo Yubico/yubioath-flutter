@@ -3,7 +3,7 @@ The Yubico Authenticator is a graphical desktop tool for generating Open
 AuTHentication (OATH) event-based HOTP and time-based TOTP one-time password
 codes, with the help of a YubiKey that protects the shared secrets.
 
-image::screenshot.png[]
+image::usage.gif[]
 
 === Installation
 The recommended way to install this software including dependencies is by using
