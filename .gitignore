@@ -10,3 +10,6 @@ MANIFEST
 yubioath/gui/qt_resources.py
 man/*.1
 .DS_Store
+
+# IntelliJ / PyCharm
+.idea/
