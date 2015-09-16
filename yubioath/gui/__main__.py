@@ -25,14 +25,17 @@
 # for the parts of OpenSSL used as well as that of the covered work.
 
 from PySide import QtGui, QtCore
+from PySide.QtGui import QMessageBox
 from yubioath import __version__ as version
+from yubioath.gui.view import dialogs
+from yubioath.gui.view.dialogs import CcidDisabledDialog
 from yubioath.yubicommon import qt
 from ..cli.keystore import CONFIG_HOME
 try:
     from ..core.legacy_otp import ykpers_version
 except ImportError:
     ykpers_version = 'None'
-from ..core.utils import kill_scdaemon
+from ..core.utils import kill_scdaemon, ccid_supported_but_disabled
 from . import messages as m
 from .controller import GuiController
 from .ccid import CardStatus
@@ -67,7 +70,15 @@ class MainWidget(QtGui.QStackedWidget):
 
         self._build_ui()
         controller.refreshed.connect(self._refresh)
+        controller.ccid_disabled.connect(self.ccid_disabled)
         controller.watcher.status_changed.connect(self._set_status)
+
+    def ccid_disabled(self):
+        if not self._controller.mute_ccid_disabled_warning:
+            dialog = CcidDisabledDialog()
+            dialog.exec_()
+            if dialog.do_not_ask_again.isChecked():
+                self._controller.mute_ccid_disabled_warning = 1
 
     def showEvent(self, event):
         event.accept()

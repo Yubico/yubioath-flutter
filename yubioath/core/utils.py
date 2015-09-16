@@ -146,3 +146,28 @@ def kill_scdaemon():
             for pid in pids.split():
                 print "Killing", pid
                 subprocess.call(['kill', '-9', pid])
+
+
+YUBICO_VID = 0x1050
+NON_CCID_NEO_PIDS = [0x0110, 0x0114]
+
+def ccid_supported_but_disabled():
+    """
+    Check whether the first connected YubiKey supports CCID, but has it disabled.
+    """
+    try:
+        # PyUSB >= 1.0, this is a workaround for a problem with libusbx
+        # on Windows.
+        import usb.core
+        import usb.legacy
+        devices = [usb.legacy.Device(d) for d in usb.core.find(
+            find_all=True, idVendor=YUBICO_VID)]
+    except ImportError:
+        # Using PyUsb < 1.0.
+        import usb
+        devices = [d for bus in usb.busses() for d in bus.devices]
+    for device in devices:
+        if device.idVendor == YUBICO_VID:
+            if device.idProduct in NON_CCID_NEO_PIDS:
+                return True
+    return False
