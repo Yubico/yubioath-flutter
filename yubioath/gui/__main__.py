@@ -25,17 +25,17 @@
 # for the parts of OpenSSL used as well as that of the covered work.
 
 from PySide import QtGui, QtCore
-from PySide.QtGui import QMessageBox
+
 from yubioath import __version__ as version
-from yubioath.gui.view import dialogs
-from yubioath.gui.view.dialogs import CcidDisabledDialog
+from yubioath.gui.view.ccid_disabled import CcidDisabledDialog
 from yubioath.yubicommon import qt
 from ..cli.keystore import CONFIG_HOME
+
 try:
     from ..core.legacy_otp import ykpers_version
 except ImportError:
     ykpers_version = 'None'
-from ..core.utils import kill_scdaemon, ccid_supported_but_disabled
+from ..core.utils import kill_scdaemon
 from . import messages as m
 from .controller import GuiController
 from .ccid import CardStatus

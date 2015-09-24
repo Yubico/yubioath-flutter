@@ -120,6 +120,10 @@ tt_kill_scdaemon = "Kills any running scdaemon process when the window is " \
 tt_reader_name = "Changes the default smartcard reader name to look for. " \
     "This can be used to target a specific YubiKey when multiple are used, " \
     "or to target an NFC reader."
+ccid_disabled = '<b>CCID (smart card capabilities) is disabled on the' \
+    'inserted YubiKey.</b><br><br>Without CCID enabled, you will only be able' \
+    'to store 2 credentials.<br><br>' \
+    '<a href="%s">Learn how to enable CCID</a><br>'
 
 
 def _translate(qt):

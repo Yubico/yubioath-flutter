@@ -28,11 +28,11 @@ from ..core.standard import YubiOathCcid
 from ..core.controller import Controller
 from ..core.exc import CardError, DeviceLockedError
 from .ccid import CardStatus
+from yubioath.yubicommon.qt.utils import is_minimized
 from .view.get_password import GetPasswordDialog
 from .keystore import get_keystore
 from . import messages as m
 from yubioath.core.utils import ccid_supported_but_disabled
-from yubioath.gui.utils import is_minimized
 from yubioath.yubicommon.qt import get_active_window, MutexLocker
 from PySide import QtCore, QtGui
 from time import time
