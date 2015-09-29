@@ -28,9 +28,11 @@ from ..core.standard import YubiOathCcid
 from ..core.controller import Controller
 from ..core.exc import CardError, DeviceLockedError
 from .ccid import CardStatus
+from yubioath.yubicommon.qt.utils import is_minimized
 from .view.get_password import GetPasswordDialog
 from .keystore import get_keystore
 from . import messages as m
+from yubioath.core.utils import ccid_supported_but_disabled
 from yubioath.yubicommon.qt import get_active_window, MutexLocker
 from PySide import QtCore, QtGui
 from time import time
@@ -144,20 +146,21 @@ def names(creds):
 class Timer(QtCore.QObject):
     time_changed = QtCore.Signal(int)
 
-    def __init__(self):
+    def __init__(self, interval):
         super(Timer, self).__init__()
+        self._interval = interval
 
         now = time()
-        rem = now % TIME_PERIOD
-        QtCore.QTimer.singleShot((TIME_PERIOD - rem) * 1000, self.start_timer)
+        rem = now % interval
+        QtCore.QTimer.singleShot((self._interval - rem) * 1000, self.start_timer)
         self._time = int(now - rem)
 
     def start_timer(self):
-        self.startTimer(TIME_PERIOD * 1000)
+        self.startTimer(self._interval * 1000)
         self.timerEvent(QtCore.QEvent(QtCore.QEvent.None))
 
     def timerEvent(self, event):
-        self._time += TIME_PERIOD
+        self._time += self._interval
         self.time_changed.emit(self._time)
         event.accept()
 
@@ -168,6 +171,7 @@ class Timer(QtCore.QObject):
 
 class GuiController(QtCore.QObject, Controller):
     refreshed = QtCore.Signal()
+    ccid_disabled = QtCore.Signal()
 
     def __init__(self, app, settings):
         super(GuiController, self).__init__()
@@ -178,7 +182,8 @@ class GuiController(QtCore.QObject, Controller):
         self._creds = None
         self._lock = QtCore.QMutex()
         self._keystore = get_keystore()
-        self.timer = Timer()
+        self._current_device_has_ccid_disabled = False
+        self.timer = Timer(TIME_PERIOD)
 
         self.watcher = observe_reader(self.reader_name, self._on_reader)
 
@@ -200,6 +205,14 @@ class GuiController(QtCore.QObject, Controller):
     @property
     def slot2(self):
         return self._settings.get('slot2', 0)
+
+    @property
+    def mute_ccid_disabled_warning(self):
+        return self._settings.get('mute_ccid_disabled_warning', 0)
+
+    @mute_ccid_disabled_warning.setter
+    def mute_ccid_disabled_warning(self, value):
+        self._settings['mute_ccid_disabled_warning'] = value
 
     def unlock(self, dev):
         if dev.locked:
@@ -244,7 +257,7 @@ class GuiController(QtCore.QObject, Controller):
             if self._reader is None:
                 self._reader = reader
                 self._creds = []
-                if not self._app.window.isVisible():
+                if is_minimized(self._app.window):
                     self._needs_read = True
                 else:
                     ccid_dev = watcher.open()
@@ -337,7 +350,7 @@ class GuiController(QtCore.QObject, Controller):
     def refresh_codes(self, timestamp=None, lock=None):
         if not self._reader and self.watcher.reader:
             return self._on_reader(self.watcher, self.watcher.reader, lock)
-        elif not self._app.window.isVisible():
+        elif is_minimized(self._app.window):
             self._needs_read = True
             return
         lock = self.grab_lock(lock, True)
@@ -353,18 +366,27 @@ class GuiController(QtCore.QObject, Controller):
         self._set_creds(creds)
 
     def timerEvent(self, event):
-        if self._app.window.isVisible():
+        if not is_minimized(self._app.window):
             timestamp = self.timer.time
             if self._reader and self._needs_read:
                 self._app.worker.post_bg(self.refresh_codes)
-            elif self._reader is None and self.otp_enabled:
-                def refresh_otp():
-                    _lock = self.grab_lock(try_lock=True)
-                    if _lock:
-                        read = self.read_creds(None, self.slot1, self.slot2,
-                                               timestamp)
-                        self._set_creds(read)
-                self._app.worker.post_bg(refresh_otp)
+            elif self._reader is None:
+                if self.otp_enabled:
+                    def refresh_otp():
+                        _lock = self.grab_lock(try_lock=True)
+                        if _lock:
+                            read = self.read_creds(None, self.slot1, self.slot2,
+                                                   timestamp)
+                            self._set_creds(read)
+                    self._app.worker.post_bg(refresh_otp)
+                else:
+                    if ccid_supported_but_disabled():
+                        if not self._current_device_has_ccid_disabled:
+                            self.ccid_disabled.emit()
+                        self._current_device_has_ccid_disabled = True
+                        event.accept()
+                        return
+            self._current_device_has_ccid_disabled = False
         event.accept()
 
     def add_cred(self, *args, **kwargs):
