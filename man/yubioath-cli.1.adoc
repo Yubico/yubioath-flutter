@@ -46,7 +46,7 @@ to the global options:
     Use the user provided TIMESTAMP instead of the system clock.
 
 *QUERY*::
-    A filter string to match credential names agains. If given, only
+    A filter string to match credential names against. If given, only
     credentials containing the QUERY substring will be displayed. For HOTP
     credentials, codes will only be calculated when given a QUERY which
     uniquely specifices the credential as to avoid unwanted counter
