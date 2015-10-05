@@ -71,7 +71,8 @@ to the global options:
     Not applicable to slot-based credentials.
 
 *-D, --digits DIGITS*::
-    The number of digits to output when generating codes. Should be *6* or *8*.
+    The number of digits to output when generating codes. Should be *6*
+    (default) or *8*.
     Not applicable to slot-based credentials.
 
 *-I IMF, --imf IMF*::

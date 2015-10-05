@@ -162,6 +162,7 @@ class YubiOathCli(object):
             args.digits = args.digits or int(parsed.get('digits', '6'))
             args.imf = args.imf or int(parsed.get('counter', '0'))
 
+        args.digits = args.digits or 6
         unpadded = args.key.upper()
         args.key = b32decode(unpadded + '=' * (-len(unpadded) % 8))
 
