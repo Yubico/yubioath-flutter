@@ -130,11 +130,21 @@ class YubiOathCli(object):
             return 1
 
         if args.query:
-            query = args.query.lower()
-            creds = filter(lambda (c, _): query in c.name.lower(), creds)
-            if len(creds) == 1 and creds[0][0].oath_type == TYPE_HOTP:
-                cred = creds[0][0]
+            # Filter based on query. If exact match, show only that result.
+            matched = []
+            for cred, code in creds:
+                if cred.name == args.query:
+                    matched = [(cred, code)]
+                    break
+                if args.query.lower() in cred.name.lower():
+                    matched.append((cred, code))
+
+            # Only calculate HOTP codes if the credential is singled out.
+            if len(matched) == 1 and matched[0][0].oath_type == TYPE_HOTP:
+                cred = matched[0][0]
                 creds = [(cred, cred.calculate(args.timestamp))]
+            else:
+                creds = matched
 
         print_creds(creds)
 
