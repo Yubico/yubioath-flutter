@@ -152,17 +152,14 @@ class Timer(QtCore.QObject):
 
         now = time()
         rem = now % interval
-        QtCore.QTimer.singleShot((self._interval - rem) * 1000, self.start_timer)
         self._time = int(now - rem)
+        QtCore.QTimer.singleShot((self._interval - rem) * 1000, self._tick)
 
-    def start_timer(self):
-        self.startTimer(self._interval * 1000)
-        self.timerEvent(QtCore.QEvent(QtCore.QEvent.None))
-
-    def timerEvent(self, event):
+    def _tick(self):
         self._time += self._interval
         self.time_changed.emit(self._time)
-        event.accept()
+        next_time = self._time + self._interval
+        QtCore.QTimer.singleShot((next_time - time()) * 1000, self._tick)
 
     @property
     def time(self):

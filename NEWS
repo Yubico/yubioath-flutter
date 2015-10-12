@@ -1,4 +1,6 @@
 * Version 2.2.2 (unreleased)
+ ** Re-schedule timer each time period based on system time to prevent Qt timer
+    drift.
 
 * Version 2.2.1 (released 2015-08-20)
  ** Bugfix release: Fix adding credentials via the UI.
