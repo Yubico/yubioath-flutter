@@ -50,3 +50,6 @@ class Keystore(object):
         if id in self._data:
             del self._data[id]
         self._store.delete(id)
+
+    def forget(self):
+        self._data = {}

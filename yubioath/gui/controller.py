@@ -420,3 +420,6 @@ class GuiController(QtCore.QObject, Controller):
             if self.unlock(dev):
                 key = super(GuiController, self).set_password(dev, password)
                 self._keystore.put(dev.id, key, remember)
+
+    def forget_passwords(self):
+        self._keystore.forget()

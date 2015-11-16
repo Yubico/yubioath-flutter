@@ -187,6 +187,7 @@ class YubiOathApplication(qt.Application):
         event.accept()
 
     def _on_hide(self, event):
+        self._controller.forget_passwords()
         event.accept()
 
     def _on_closed(self, event):
