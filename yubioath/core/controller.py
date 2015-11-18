@@ -69,6 +69,7 @@ class Controller(object):
             if not use_touch:
                 raise NeedsTouchError()
             self._prompt_touch()
+
         try:
             return (cred, cred.calculate(timestamp))
         except InvalidSlotError:
@@ -83,14 +84,15 @@ class Controller(object):
                 except InvalidSlotError:
                     error = 'INVALID' if time.time() - start < 1 else 'TIMEOUT'
                     return (cred, error)
+            return (cred, None)
         finally:
             if cred.touch:
                 self._end_prompt_touch()
 
-    def read_creds(self, ccid_dev, slot1, slot2, timestamp):
+    def read_creds(self, ccid_dev, slot1, slot2, timestamp, mayblock=True):
         results = []
         key_found = False
-        do_legacy = bool(slot1 or slot2)
+        do_legacy = mayblock and bool(slot1 or slot2)
         legacy_creds = [None, None]
 
         if ccid_dev:

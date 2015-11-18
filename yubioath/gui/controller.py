@@ -24,7 +24,9 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from ..core.standard import YubiOathCcid
+from ..core.standard import (YubiOathCcid, TYPE_TOTP, TYPE_HOTP,
+                             Credential as StdCredential)
+from ..core.legacy_otp import LegacyCredential
 from ..core.controller import Controller
 from ..core.exc import CardError, DeviceLockedError
 from .ccid import CardStatus
@@ -45,27 +47,21 @@ else:
     from .ccid import observe_reader
 
 
-class CredentialType:
-    AUTO, HOTP, TOUCH, INVALID = range(4)
-
-
-Capabilities = namedtuple('Capabilities', 'ccid, otp')
-
-Code = namedtuple('Code', 'code timestamp')
-UNINITIALIZED = Code('', 0)
+Code = namedtuple('Code', 'code timestamp ttl')
+UNINITIALIZED = Code('', 0, 0)
 
 TIME_PERIOD = 30
 INF = float('inf')
 
 
-class Credential(QtCore.QObject):
+class CredEntry(QtCore.QObject):
     changed = QtCore.Signal()
 
-    def __init__(self, name, cred_type):
-        super(Credential, self).__init__()
-        self.name = name
-        self.cred_type = cred_type
-        self._code = UNINITIALIZED
+    def __init__(self, cred, controller):
+        super(CredEntry, self).__init__()
+        self.cred = cred
+        self._controller = controller
+        self._code = Code('', 0, 0)
 
     @property
     def code(self):
@@ -76,71 +72,40 @@ class Credential(QtCore.QObject):
         self._code = value
         self.changed.emit()
 
-
-class BoundCredential(Credential):
-
-    def __init__(self, controller, name, cred_type):
-        super(BoundCredential, self).__init__(name, cred_type)
-        self._controller = controller
-
-    def delete(self):
-        self._controller.delete_cred(self.name)
-
-
-class AutoCredential(BoundCredential):
-
-    def __init__(self, controller, name, code):
-        super(AutoCredential, self).__init__(
-            controller, name, CredentialType.AUTO)
-        self._code = code
-
-
-class TouchCredential(BoundCredential):
-
-    def __init__(self, controller, name, slot, digits):
-        super(TouchCredential, self).__init__(
-            controller, name, CredentialType.TOUCH)
-
-        self._slot = slot
-        self._digits = digits
+    @property
+    def manual(self):
+        return self.cred.touch or self.cred.oath_type == TYPE_HOTP
 
     def calculate(self):
-        dialog = QtGui.QMessageBox(get_active_window())
-        dialog.setWindowTitle(m.touch_title)
-        dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
-        dialog.setIcon(QtGui.QMessageBox.Information)
-        dialog.setText(m.touch_desc)
+        dialog = None
 
         def cb(code):
-            dialog.accept()
+            if dialog:
+                dialog.accept()
             if isinstance(code, Exception):
                 QtGui.QMessageBox.warning(get_active_window(), m.error,
                                           code.message)
             else:
                 self.code = code
-        self._controller._app.worker.post_bg(
-            (self._controller._calculate_touch, self._slot, self._digits),
-            cb, True)
-        dialog.exec_()
+        self._controller._app.worker.post_bg((self._controller._calculate_cred,
+                                              self.cred), cb)
+        if self.cred.touch:
+            dialog = QtGui.QMessageBox(get_active_window())
+            dialog.setWindowTitle(m.touch_title)
+            dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
+            dialog.setIcon(QtGui.QMessageBox.Information)
+            dialog.setText(m.touch_desc)
+            dialog.exec_()
+
+    def delete(self):
+        self._controller.delete_cred(self.cred.name)
 
 
-class HotpCredential(BoundCredential):
-
-    def __init__(self, controller, cred, name):
-        super(HotpCredential, self).__init__(
-            controller, name, CredentialType.HOTP)
-        self._cred = cred
-
-    def calculate(self):
-        def cb(code):
-            self.code = code
-        self._controller._app.worker.post_bg(
-            (self._controller._calculate_hotp, self._cred),
-            cb)
+Capabilities = namedtuple('Capabilities', 'ccid otp')
 
 
 def names(creds):
-    return set(map(lambda c: c.name, creds))
+    return set(map(lambda c: c.cred.name, creds))
 
 
 class Timer(QtCore.QObject):
@@ -223,9 +188,6 @@ class GuiController(QtCore.QObject, Controller):
     def grab_lock(self, lock=None, try_lock=False):
         return lock or MutexLocker(self._lock, False).lock(try_lock)
 
-    def read_slot_otp_touch(self, cred, timestamp):
-        return (cred, 'TIMEOUT')
-
     @property
     def otp_enabled(self):
         return self.otp_supported and bool(self.slot1 or self.slot2)
@@ -236,7 +198,7 @@ class GuiController(QtCore.QObject, Controller):
 
     def has_expiring(self, timestamp):
         for c in self._creds or []:
-            if c.code.timestamp >= timestamp and c.code.timestamp < INF:
+            if c.code.timestamp >= timestamp and c.code.ttl < INF:
                 return True
         return False
 
@@ -292,24 +254,22 @@ class GuiController(QtCore.QObject, Controller):
 
     def wrap_credential(self, tup):
         (cred, code) = tup
-        if code == 'INVALID':
-            return Credential(cred.name, CredentialType.INVALID)
-        if code == 'TIMEOUT':
-            return TouchCredential(self, cred.name, cred._slot, cred._digits)
-        if code is None:
-            return HotpCredential(self, cred, cred.name)
-        else:
-            return AutoCredential(self, cred.name, Code(code, self.timer.time))
+        entry = CredEntry(cred, self)
+        if code and code not in ['INVALID', 'TIMEOUT']:
+            entry.code = Code(code, self.timer.time, TIME_PERIOD)
+
+        return entry
 
     def _set_creds(self, creds):
         if creds:
             creds = map(self.wrap_credential, creds)
             if self._creds and names(creds) == names(self._creds):
-                creds_map = dict((c.name, c) for c in creds)
-                for cred in self._creds:
-                    if cred.cred_type == CredentialType.AUTO:
-                        cred.code = creds_map[cred.name].code
-                    elif cred.cred_type != creds_map[cred.name].cred_type:
+                entry_map = dict((c.cred.name, c) for c in creds)
+                for entry in self._creds:
+                    cred = entry.cred
+                    if not cred.touch:
+                        entry.code = entry_map[cred.name].code
+                    elif cred.oath_type != entry_map[cred.name].cred.oath_type:
                         break
                 else:
                     return
@@ -318,23 +278,29 @@ class GuiController(QtCore.QObject, Controller):
         self._creds = creds
         self.refreshed.emit()
 
-    def _calculate_touch(self, slot, digits):
+    def _calculate_cred(self, cred):
         _lock = self.grab_lock()
-        legacy = self.open_otp()
-        if not legacy:
-            raise ValueError('YubiKey removed!')
-
         now = time()
         timestamp = self.timer.time
         if timestamp + TIME_PERIOD - now < 10:
             timestamp += TIME_PERIOD
-        cred = self.read_slot_otp(legacy, slot, digits, timestamp, True)
-        cred, code = super(GuiController, self).read_slot_otp_touch(cred[0],
-                                                                    timestamp)
-        return Code(code, timestamp)
+        ttl = TIME_PERIOD
+        if cred.oath_type == TYPE_HOTP:
+            ttl = INF
 
-    def _calculate_hotp(self, cred):
-        _lock = self.grab_lock()
+        if cred.name in ['YubiKey slot 1', 'YubiKey slot 2']:
+            legacy = self.open_otp()
+            if not legacy:
+                raise ValueError('YubiKey removed!')
+
+            try:
+                cred._legacy = legacy
+                cred, code = super(GuiController, self).read_slot_otp(
+                    cred, timestamp, True)
+            finally:
+                cred._legacy = None  # Release the handle.
+            return Code(code, timestamp, TIME_PERIOD)
+
         ccid_dev = self.watcher.open()
         if not ccid_dev:
             if self.watcher.status != CardStatus.Present:
@@ -342,7 +308,11 @@ class GuiController(QtCore.QObject, Controller):
             return
         dev = YubiOathCcid(ccid_dev)
         if self.unlock(dev):
-            return Code(dev.calculate(cred.name, cred.oath_type), float('inf'))
+            return Code(dev.calculate(cred.name, cred.oath_type, timestamp),
+                        timestamp, ttl)
+
+    def read_slot_otp(self, cred, timestamp=None, use_touch=False):
+        return super(GuiController, self).read_slot_otp(cred, timestamp, False)
 
     def refresh_codes(self, timestamp=None, lock=None):
         if not self._reader and self.watcher.reader:
@@ -357,7 +327,8 @@ class GuiController(QtCore.QObject, Controller):
         self._needs_read = bool(self._reader and device is None)
         timestamp = timestamp or self.timer.time
         try:
-            creds = self.read_creds(device, self.slot1, self.slot2, timestamp)
+            creds = self.read_creds(device, self.slot1, self.slot2, timestamp,
+                                    False)
         except DeviceLockedError:
             creds = []
         self._set_creds(creds)
@@ -373,7 +344,7 @@ class GuiController(QtCore.QObject, Controller):
                         _lock = self.grab_lock(try_lock=True)
                         if _lock:
                             read = self.read_creds(None, self.slot1, self.slot2,
-                                                   timestamp)
+                                                   timestamp, False)
                             self._set_creds(read)
                     self._app.worker.post_bg(refresh_otp)
                 else:

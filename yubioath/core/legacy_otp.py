@@ -214,10 +214,9 @@ class LegacyCredential(object):
         self._digits = digits
 
     def calculate(self, timestamp=None):
-        mayblock = 1 if self.touch else 0
         try:
             return self._legacy.calculate(self._slot, self._digits, timestamp,
-                                          mayblock)
+                                          1 if self.touch else 0)
         except NeedsTouchError:
             self.touch = True
             raise

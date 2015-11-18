@@ -26,7 +26,6 @@
 
 from PySide import QtGui, QtCore
 from .. import messages as m
-from ..controller import CredentialType
 from yubioath.yubicommon.qt.utils import connect_once
 from time import time
 
@@ -84,7 +83,7 @@ class CodeMenu(QtGui.QMenu):
 
     def _delete(self):
         res = QtGui.QMessageBox.warning(self, m.delete_title,
-                                        m.delete_desc_1 % self.cred.name,
+                                        m.delete_desc_1 % self.cred.cred.name,
                                         QtGui.QMessageBox.Ok,
                                         QtGui.QMessageBox.Cancel)
         if res == QtGui.QMessageBox.Ok:
@@ -108,7 +107,7 @@ class Code(QtGui.QWidget):
         layout = QtGui.QHBoxLayout(self)
 
         labels = QtGui.QVBoxLayout()
-        self._name_lbl = QtGui.QLabel(self.cred.name)
+        self._name_lbl = QtGui.QLabel(self.cred.cred.name)
         self._name_lbl.setMinimumWidth(10)
         labels.addWidget(self._name_lbl)
         self._code_lbl = QtGui.QLabel()
@@ -119,9 +118,7 @@ class Code(QtGui.QWidget):
         self._calc_btn = QtGui.QPushButton(QtGui.QIcon(':/calc.png'), None)
         self._calc_btn.clicked.connect(self._calc)
         layout.addWidget(self._calc_btn)
-        if self.cred.cred_type not in [CredentialType.TOUCH,
-                                       CredentialType.HOTP]:
-            self._calc_btn.setVisible(False)
+        self._calc_btn.setVisible(self.cred.manual)
 
         self._copy_btn = QtGui.QPushButton(QtGui.QIcon(':/copy.png'), None)
         self._copy_btn.clicked.connect(self._copy)
@@ -140,8 +137,10 @@ class Code(QtGui.QWidget):
             name_fmt = '<b style="color: gray;">%s</b>'
         else:
             name_fmt = '<b>%s</b>'
-        if self.cred.cred_type is CredentialType.TOUCH:
-            self._calc_btn.setEnabled(self.expired)
+        if self.cred.manual:
+            expiry = self.cred.code.timestamp + self.cred.code.ttl
+            if expiry < self.timer.time:
+                self._calc_btn.setEnabled(self.expired)
         self._code_lbl.setText(name_fmt % (self.cred.code.code))
         self._copy_btn.setEnabled(bool(self.cred.code.code))
         self._on_change()
@@ -151,8 +150,9 @@ class Code(QtGui.QWidget):
             self.cred.code.code)
 
     def _calc(self):
-        if self.cred.cred_type is CredentialType.HOTP:
+        if self.cred.manual:
             self._calc_btn.setDisabled(True)
+            # TODO: If touch TOTP disable until expired.
             QtCore.QTimer.singleShot(5000,
                                      lambda: self._calc_btn.setEnabled(True))
         self.cred.calculate()
@@ -163,8 +163,7 @@ class Code(QtGui.QWidget):
     def mouseDoubleClickEvent(self, event):
         if event.button() is QtCore.Qt.LeftButton:
             if (not self.cred.code.code or self.expired) and \
-                    self.cred.cred_type in [CredentialType.HOTP,
-                                            CredentialType.TOUCH]:
+                    self.cred.manual:
                 connect_once(self.cred.changed, self._copy)
                 self.cred.calculate()
                 self.window().close()
