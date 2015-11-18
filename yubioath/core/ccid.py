@@ -41,7 +41,7 @@ class ScardDevice(object):
         header = [cl, ins, p1, p2, len(data)]
         # print "SEND:", (''.join(map(chr, header)) + data).encode('hex')
         resp, sw1, sw2 = self._conn.transmit(header + map(ord, data))
-        # print "RECV:", (''.join(map(chr, resp))).encode('hex')
+        # print "RECV:", (''.join(map(chr, resp + [sw1, sw2]))).encode('hex')
         return ''.join(map(chr, resp)), sw1 << 8 | sw2
 
     def close(self):

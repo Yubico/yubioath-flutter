@@ -50,9 +50,12 @@ TAG_KEY = 0x73
 TAG_CHALLENGE = 0x74
 TAG_RESPONSE = 0x75
 TAG_T_RESPONSE = 0x76
+TAG_NO_RESPONSE = 0x77
 TAG_PROPERTY = 0x78
 TAG_VERSION = 0x79
 TAG_IMF = 0x7a
+TAG_ALGO = 0x7b
+TAG_TOUCH_RESPONSE = 0x7c
 
 TYPE_MASK = 0xf0
 TYPE_HOTP = 0x10
@@ -61,6 +64,9 @@ TYPE_TOTP = 0x20
 ALG_MASK = 0x0f
 ALG_SHA1 = 0x01
 ALG_SHA256 = 0x02
+
+PROP_ALWAYS_INC = 0x01
+PROP_REQUIRE_TOUCH = 0x02
 
 
 def ensure_unlocked(ykoath):
@@ -78,10 +84,11 @@ class Credential(object):
     Reference to a credential.
     """
 
-    def __init__(self, ykoath, oath_type, name):
+    def __init__(self, ykoath, oath_type, name, touch=False):
         self._ykoath = ykoath
         self.oath_type = oath_type
         self.name = name
+        self.touch = touch
 
     def calculate(self, timestamp=None):
         return self._ykoath.calculate(self.name, self.oath_type, timestamp)
@@ -91,6 +98,31 @@ class Credential(object):
 
     def __repr__(self):
         return self.name
+
+
+class _426Device(object):
+    """
+    The 4.2.0-4.2.6 firmwares have a known issue with credentials that require
+    touch: If this action is performed within 2 seconds of a command resulting
+    in a long response (over 54 bytes), the command will hang. A workaround is
+    to send an invalid command (resulting in a short reply) prior to the
+    "calculate" command.
+    """
+
+    def __init__(self, delegate):
+        self._delegate = delegate
+        self._long_resp = False
+
+    def __getattr__(self, name):
+        return getattr(self._delegate, name)
+
+    def send_apdu(self, cl, ins, p1, p2, data):
+        if ins == INS_CALCULATE and self._long_resp:
+            self._delegate.send_apdu(0, 0, 0, 0, '')
+            self._long_resp = False
+        resp, status = self._delegate.send_apdu(cl, ins, p1, p2, data)
+        self._long_resp = len(resp) > 52 # 52 bytes resp, 2 bytes status...
+        return resp, status
 
 
 class YubiOathCcid(object):
@@ -103,6 +135,9 @@ class YubiOathCcid(object):
         self._device = device
 
         self._select()
+
+        if (4, 2, 0) <= self.version <= (4, 2, 6):
+            self._device = _426Device(device)
 
     def _send(self, ins, data='', p1=0, p2=0, expected=0x9000):
         resp, status = self._device.send_apdu(0, ins, p1, p2, data)
@@ -188,7 +223,8 @@ class YubiOathCcid(object):
         items = []
         while resp:
             data, resp = der_read(resp, TAG_NAME_LIST)
-            items.append(Credential(self, TYPE_MASK & ord(data[0]), data[1:]))
+            items.append(Credential(self, TYPE_MASK & ord(data[0]), data[1:],
+                                    None))
         return items
 
     def calculate_all(self, timestamp=None):
@@ -201,15 +237,23 @@ class YubiOathCcid(object):
             tag, value, resp = der_read(resp)
             if tag == TAG_T_RESPONSE:
                 results.append((
-                    Credential(self, TYPE_TOTP, name),
-                    format_truncated(value)))
-            else:  # Assume HOTP
+                    Credential(self, TYPE_TOTP, name, False),
+                    format_truncated(value)
+                ))
+            elif tag == TAG_TOUCH_RESPONSE:
+                results.append((
+                    Credential(self, TYPE_TOTP, name, True),
+                    None
+                ))
+            elif tag == TAG_NO_RESPONSE:
                 results.append((Credential(self, TYPE_HOTP, name), None))
+            else:
+                print "Unsupported tag: %02x" % tag
         results.sort(lambda a, b: cmp(a[0].name.lower(), b[0].name.lower()))
         return results
 
     def put(self, name, key, oath_type=TYPE_TOTP, algo=ALG_SHA1, digits=6,
-            imf=0, always_increasing=False):
+            imf=0, always_increasing=False, require_touch=False):
         ensure_unlocked(self)
         if isinstance(name, unicode):
             name = name.encode('utf8')
@@ -217,8 +261,15 @@ class YubiOathCcid(object):
             key = sha1(key).digest()
         keydata = chr(oath_type | algo) + chr(digits) + key
         data = der_pack(TAG_NAME, name, TAG_KEY, keydata)
+        properties = 0
         if always_increasing:
-            data += der_pack(TAG_PROPERTY, chr(1))
+            properties |= PROP_ALWAYS_INC
+        if require_touch:
+            if self.version < (4, 2, 6):
+                raise Exception("Touch-required not supported on this key")
+            properties |= PROP_REQUIRE_TOUCH
+        if properties:
+            data += chr(TAG_PROPERTY) + chr(properties)
         if imf > 0:
             data += der_pack(TAG_IMF, struct.pack('>I', imf))
         self._send(INS_PUT, data)

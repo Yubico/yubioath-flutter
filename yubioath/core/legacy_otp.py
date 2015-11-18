@@ -28,6 +28,7 @@ from .utils import time_challenge, parse_full, format_code
 from .standard import TYPE_TOTP
 from .exc import InvalidSlotError, NeedsTouchError
 from yubioath.yubicommon.ctypes import load_library
+from hashlib import sha1
 from ctypes import (Structure, POINTER, c_int, c_uint8, c_uint, c_char_p,
                     c_bool, sizeof, create_string_buffer, cast, addressof)
 import weakref
@@ -207,13 +208,20 @@ class LegacyCredential(object):
     def __init__(self, legacy, slot, digits=6):
         self.name = 'YubiKey slot %d' % slot
         self.oath_type = TYPE_TOTP
+        self.touch = None
         self._legacy = legacy
         self._slot = slot
         self._digits = digits
 
     def calculate(self, timestamp=None, mayblock=0):
-        return self._legacy.calculate(self._slot, self._digits, timestamp,
-                                      mayblock)
+        try:
+            return self._legacy.calculate(self._slot, self._digits, timestamp,
+                                          mayblock)
+        except NeedsTouchError:
+            self.touch = True
+            raise
+        else:
+            self.touch = mayblock != 0
 
     def delete(self):
         raise NotImplementedError()
