@@ -267,8 +267,9 @@ class GuiController(QtCore.QObject, Controller):
                 entry_map = dict((c.cred.name, c) for c in creds)
                 for entry in self._creds:
                     cred = entry.cred
-                    if not cred.touch:
-                        entry.code = entry_map[cred.name].code
+                    code = entry_map[cred.name].code
+                    if code.code:
+                        entry.code = code
                     elif cred.oath_type != entry_map[cred.name].cred.oath_type:
                         break
                 else:

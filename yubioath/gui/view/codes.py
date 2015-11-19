@@ -26,6 +26,7 @@
 
 from PySide import QtGui, QtCore
 from .. import messages as m
+from ...core.standard import TYPE_TOTP, TYPE_HOTP
 from yubioath.yubicommon.qt.utils import connect_once
 from time import time
 
@@ -77,26 +78,26 @@ class CodeMenu(QtGui.QMenu):
 
     def __init__(self, parent):
         super(CodeMenu, self).__init__(parent)
-        self.cred = parent.cred
+        self.entry = parent.entry
 
         self.addAction(m.action_delete).triggered.connect(self._delete)
 
     def _delete(self):
         res = QtGui.QMessageBox.warning(self, m.delete_title,
-                                        m.delete_desc_1 % self.cred.cred.name,
+                                        m.delete_desc_1 % self.entry.cred.name,
                                         QtGui.QMessageBox.Ok,
                                         QtGui.QMessageBox.Cancel)
         if res == QtGui.QMessageBox.Ok:
-            self.cred.delete()
+            self.entry.delete()
 
 
 class Code(QtGui.QWidget):
 
-    def __init__(self, cred, timer, on_change):
+    def __init__(self, entry, timer, on_change):
         super(Code, self).__init__()
-        self.cred = cred
+        self.entry = entry
         self._on_change = on_change
-        self.cred.changed.connect(self._draw)
+        self.entry.changed.connect(self._draw)
         self.timer = timer
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self._menu)
@@ -107,7 +108,7 @@ class Code(QtGui.QWidget):
         layout = QtGui.QHBoxLayout(self)
 
         labels = QtGui.QVBoxLayout()
-        self._name_lbl = QtGui.QLabel(self.cred.cred.name)
+        self._name_lbl = QtGui.QLabel(self.entry.cred.name)
         self._name_lbl.setMinimumWidth(10)
         labels.addWidget(self._name_lbl)
         self._code_lbl = QtGui.QLabel()
@@ -118,7 +119,7 @@ class Code(QtGui.QWidget):
         self._calc_btn = QtGui.QPushButton(QtGui.QIcon(':/calc.png'), None)
         self._calc_btn.clicked.connect(self._calc)
         layout.addWidget(self._calc_btn)
-        self._calc_btn.setVisible(self.cred.manual)
+        self._calc_btn.setVisible(self.entry.manual)
 
         self._copy_btn = QtGui.QPushButton(QtGui.QIcon(':/copy.png'), None)
         self._copy_btn.clicked.connect(self._copy)
@@ -130,42 +131,42 @@ class Code(QtGui.QWidget):
 
     @property
     def expired(self):
-        return self.cred.code.timestamp < self.timer.time
+        code = self.entry.code
+        return code.timestamp + code.ttl <= self.timer.time
 
     def _draw(self):
         if self.expired:
             name_fmt = '<b style="color: gray;">%s</b>'
         else:
             name_fmt = '<b>%s</b>'
-        if self.cred.manual:
-            expiry = self.cred.code.timestamp + self.cred.code.ttl
-            if expiry < self.timer.time:
-                self._calc_btn.setEnabled(self.expired)
-        self._code_lbl.setText(name_fmt % (self.cred.code.code))
-        self._copy_btn.setEnabled(bool(self.cred.code.code))
+        code = self.entry.code
+        if self.entry.manual and self.entry.cred.oath_type != TYPE_HOTP:
+            self._calc_btn.setEnabled(self.expired)
+        self._code_lbl.setText(name_fmt % (code.code))
+        self._copy_btn.setEnabled(bool(code.code))
         self._on_change()
 
     def _copy(self):
         QtCore.QCoreApplication.instance().clipboard().setText(
-            self.cred.code.code)
+            self.entry.code.code)
 
     def _calc(self):
-        if self.cred.manual:
+        if self.entry.manual:
             self._calc_btn.setDisabled(True)
-            # TODO: If touch TOTP disable until expired.
-            QtCore.QTimer.singleShot(5000,
-                                     lambda: self._calc_btn.setEnabled(True))
-        self.cred.calculate()
+        self.entry.calculate()
+        if self.entry.cred.oath_type == TYPE_HOTP:
+            QtCore.QTimer.singleShot(
+                5000, lambda: self._calc_btn.setEnabled(True))
 
     def _menu(self, pos):
         CodeMenu(self).popup(self.mapToGlobal(pos))
 
     def mouseDoubleClickEvent(self, event):
         if event.button() is QtCore.Qt.LeftButton:
-            if (not self.cred.code.code or self.expired) and \
-                    self.cred.manual:
-                connect_once(self.cred.changed, self._copy)
-                self.cred.calculate()
+            if (not self.entry.code.code or self.expired) and \
+                    self.entry.manual:
+                connect_once(self.entry.changed, self._copy)
+                self.entry.calculate()
                 self.window().close()
             else:
                 self._copy()  # TODO: Type code out with keyboard?
