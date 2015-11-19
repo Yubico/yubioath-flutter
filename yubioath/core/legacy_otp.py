@@ -208,12 +208,13 @@ class LegacyCredential(object):
     def __init__(self, legacy, slot, digits=6):
         self.name = 'YubiKey slot %d' % slot
         self.oath_type = TYPE_TOTP
-        self.touch = None
+        self.touch = None  # Touch is unknown
         self._legacy = legacy
         self._slot = slot
         self._digits = digits
 
-    def calculate(self, timestamp=None, mayblock=0):
+    def calculate(self, timestamp=None):
+        mayblock = 1 if self.touch else 0
         try:
             return self._legacy.calculate(self._slot, self._digits, timestamp,
                                           mayblock)
@@ -221,7 +222,8 @@ class LegacyCredential(object):
             self.touch = True
             raise
         else:
-            self.touch = mayblock != 0
+            if self.touch is None:
+                self.touch = False
 
     def delete(self):
         raise NotImplementedError()

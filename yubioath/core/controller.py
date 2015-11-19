@@ -28,6 +28,7 @@
 from .standard import YubiOathCcid
 from .legacy_ccid import LegacyOathCcid
 from .exc import CardError, InvalidSlotError, NeedsTouchError
+import time
 import sys
 try:
     from .legacy_otp import open_otp, LegacyOathOtp, LegacyCredential
@@ -63,34 +64,34 @@ class Controller(object):
         except InvalidSlotError:
             return (cred, 'INVALID')
 
-    def read_slot_otp(self, legacy, slot, digits, timestamp=None,
-                      needs_touch=False):
-        cred = LegacyCredential(legacy, slot, digits)
-        if not needs_touch:
-            try:
-                return (cred, cred.calculate(timestamp))
-            except InvalidSlotError:
-                return (cred, 'INVALID')
-            except NeedsTouchError:
-                pass
-
-        return self.read_slot_otp_touch(cred, timestamp)
-
-    def read_slot_otp_touch(self, cred, timestamp):
-        self._prompt_touch()
+    def read_slot_otp(self, cred, timestamp=None, use_touch=False):
+        if cred.touch:
+            if not use_touch:
+                raise NeedsTouchError()
+            self._prompt_touch()
         try:
-            return (cred, cred.calculate(timestamp, 1))
+            return (cred, cred.calculate(timestamp))
         except InvalidSlotError:
-            return (cred, 'TIMEOUT')
+            return (cred, 'INVALID')
+        except NeedsTouchError:
+            if use_touch:
+                try:
+                    time.sleep(0.1)  # Give the key a little time...
+                    self._prompt_touch()
+                    start = time.time()
+                    return (cred, cred.calculate(timestamp))
+                except InvalidSlotError:
+                    error = 'INVALID' if time.time() - start < 1 else 'TIMEOUT'
+                    return (cred, error)
         finally:
-            self._end_prompt_touch()
+            if cred.touch:
+                self._end_prompt_touch()
 
     def read_creds(self, ccid_dev, slot1, slot2, timestamp):
         results = []
         key_found = False
         do_legacy = bool(slot1 or slot2)
         legacy_creds = [None, None]
-        needs_touch = [False, False]
 
         if ccid_dev:
             try:
@@ -111,7 +112,7 @@ class Controller(object):
                                 legacy_creds[slot] = self.read_slot_ccid(
                                     legacy, slot+1, digits, timestamp)
                             except NeedsTouchError:
-                                needs_touch[slot] = True
+                                pass  # Handled over OTP instead
                 except CardError:
                     pass  # No applet?
 
@@ -124,10 +125,10 @@ class Controller(object):
                 key_found = True
                 if not legacy_creds[0] and slot1:
                     legacy_creds[0] = self.read_slot_otp(
-                        legacy, 1, slot1, timestamp, needs_touch[0])
+                        LegacyCredential(legacy, 1, slot1), timestamp, True)
                 if not legacy_creds[1] and slot2:
                     legacy_creds[1] = self.read_slot_otp(
-                        legacy, 2, slot2, timestamp, needs_touch[1])
+                        LegacyCredential(legacy, 2, slot2), timestamp, True)
                 del legacy._device
 
         if not key_found:
