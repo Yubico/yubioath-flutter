@@ -165,9 +165,11 @@ class Code(QtGui.QWidget):
         if event.button() is QtCore.Qt.LeftButton:
             if (not self.entry.code.code or self.expired) and \
                     self.entry.manual:
-                connect_once(self.entry.changed, self._copy)
+                def copy_close():
+                    self._copy()
+                    self.window().close()
+                connect_once(self.entry.changed, copy_close)
                 self.entry.calculate()
-                self.window().close()
             else:
                 self._copy()  # TODO: Type code out with keyboard?
                 self.window().close()
