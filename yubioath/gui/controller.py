@@ -108,7 +108,7 @@ class CredEntry(QtCore.QObject):
         self._controller.delete_cred(self.cred.name)
 
 
-Capabilities = namedtuple('Capabilities', 'ccid otp')
+Capabilities = namedtuple('Capabilities', 'ccid otp version')
 
 
 def names(creds):
@@ -211,12 +211,14 @@ class GuiController(QtCore.QObject, Controller):
 
     def get_capabilities(self):
         _lock = self.grab_lock()
-        if self.watcher.open():
-            return Capabilities(True, None)
+        ccid_dev = self.watcher.open()
+        if ccid_dev:
+            dev = YubiOathCcid(ccid_dev)
+            return Capabilities(True, None, dev.version)
         legacy = self.open_otp()
         if legacy:
-            return Capabilities(None, legacy.slot_status())
-        return Capabilities(None, None)
+            return Capabilities(None, legacy.slot_status(), (0, 0, 0))
+        return Capabilities(None, None, (0, 0, 0))
 
     def _on_reader(self, watcher, reader, lock=None):
         if reader:

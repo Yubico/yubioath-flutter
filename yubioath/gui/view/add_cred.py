@@ -59,10 +59,11 @@ class B32Validator(QtGui.QValidator):
 
 class AddCredDialog(qt.Dialog):
 
-    def __init__(self, worker, parent=None):
+    def __init__(self, worker, version, parent=None):
         super(AddCredDialog, self).__init__(parent)
 
         self._worker = worker
+        self._version = version
         self.setWindowTitle(m.add_cred)
         self._build_ui()
 
@@ -96,6 +97,11 @@ class AddCredDialog(qt.Dialog):
         self._n_digits = QtGui.QComboBox()
         self._n_digits.addItems(['6', '8'])
         layout.addRow(m.n_digits, self._n_digits)
+
+        self._require_touch = QtGui.QCheckBox(m.require_touch)
+        # Touch-required support not available before 4.2.6
+        if self._version >= (4, 2, 6):
+            layout.addRow(self._require_touch)
 
         btns = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok |
                                       QtGui.QDialogButtonBox.Cancel)
@@ -157,3 +163,7 @@ class AddCredDialog(qt.Dialog):
     @property
     def n_digits(self):
         return int(self._n_digits.currentText())
+
+    @property
+    def require_touch(self):
+        return self._require_touch.isChecked()

@@ -210,15 +210,17 @@ class YubiOathApplication(qt.Application):
     def _add_credential(self):
         c = self._controller.get_capabilities()
         if c.ccid:
-            dialog = AddCredDialog(self.worker, parent=self.window)
+            dialog = AddCredDialog(self.worker, c.version, parent=self.window)
             if dialog.exec_():
                 if not self._controller._reader:
                     QtGui.QMessageBox.critical(
                         self.window, m.key_removed, m.key_removed_desc)
                 else:
-                    self._controller.add_cred(dialog.name, dialog.key,
-                                              oath_type=dialog.oath_type,
-                                              digits=dialog.n_digits)
+                    self._controller.add_cred(
+                        dialog.name, dialog.key, oath_type=dialog.oath_type,
+                        digits=dialog.n_digits,
+                        require_touch=dialog.require_touch
+                    )
         elif c.otp:
             dialog = AddCredLegacyDialog(self.worker, c.otp, parent=self.window)
             if dialog.exec_():
