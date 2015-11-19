@@ -77,11 +77,17 @@ class CredEntry(QtCore.QObject):
         return self.cred.touch or self.cred.oath_type == TYPE_HOTP
 
     def calculate(self):
-        dialog = None
+        dialog = QtGui.QMessageBox(get_active_window())
+        dialog.setWindowTitle(m.touch_title)
+        dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
+        dialog.setIcon(QtGui.QMessageBox.Information)
+        dialog.setText(m.touch_desc)
+        timer = None
 
         def cb(code):
-            if dialog:
-                dialog.accept()
+            if timer:
+                timer.stop()
+            dialog.accept()
             if isinstance(code, Exception):
                 QtGui.QMessageBox.warning(get_active_window(), m.error,
                                           code.message)
@@ -90,12 +96,13 @@ class CredEntry(QtCore.QObject):
         self._controller._app.worker.post_bg((self._controller._calculate_cred,
                                               self.cred), cb)
         if self.cred.touch:
-            dialog = QtGui.QMessageBox(get_active_window())
-            dialog.setWindowTitle(m.touch_title)
-            dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
-            dialog.setIcon(QtGui.QMessageBox.Information)
-            dialog.setText(m.touch_desc)
             dialog.exec_()
+        elif self.cred.oath_type == TYPE_HOTP:
+            # HOTP might require touch, we don't know. Assume yes after 500ms.
+            timer = QtCore.QTimer(self)
+            timer.setSingleShot(True)
+            timer.timeout.connect(dialog.exec_)
+            timer.start(500)
 
     def delete(self):
         self._controller.delete_cred(self.cred.name)
