@@ -1,8 +1,9 @@
-* Version 2.2.2 (unreleased)
+* Version 2.3.0 (unreleased)
  ** Re-schedule timer each time period based on system time to prevent Qt timer
     drift.
  ** Clear password memory cache on minimize to prevent accidentally leaving the
     YubiKey unlocked unattended.
+ ** Support for credentials which require touch (YubiKey 4 only).
 
 * Version 2.2.1 (released 2015-08-20)
  ** Bugfix release: Fix adding credentials via the UI.
