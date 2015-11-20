@@ -1,4 +1,4 @@
-* Version 2.3.0 (unreleased)
+* Version 2.3.0 (released 2015-11-20)
  ** Re-schedule timer each time period based on system time to prevent Qt timer
     drift.
  ** Clear password memory cache on minimize to prevent accidentally leaving the
