@@ -108,7 +108,7 @@ class MainWidget(QtGui.QStackedWidget):
 class YubiOathApplication(qt.Application):
 
     def __init__(self, args):
-        super(YubiOathApplication, self).__init__(m)
+        super(YubiOathApplication, self).__init__(m, version)
 
         QtCore.QCoreApplication.setOrganizationName(m.organization)
         QtCore.QCoreApplication.setOrganizationDomain(m.domain)
@@ -134,7 +134,7 @@ class YubiOathApplication(qt.Application):
         self._systray.setVisible(show)
 
     def _init_window(self, show=True):
-        self.window.setWindowTitle(m.win_title_1 % version)
+        self.window.setWindowTitle(m.win_title_1 % self.version)
         self.window.setWindowIcon(QtGui.QIcon(':/yubioath.png'))
         self.window.resize(self._settings.get('size', QtCore.QSize(320, 340)))
 
@@ -205,7 +205,7 @@ class YubiOathApplication(qt.Application):
 
     def _about(self):
         QtGui.QMessageBox.about(self.window, m.about_1 % m.app_name,
-                                ABOUT_TEXT % (version, self._libversions()))
+                                ABOUT_TEXT % (self.version, self._libversions()))
 
     def _add_credential(self):
         c = self._controller.get_capabilities()
