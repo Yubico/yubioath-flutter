@@ -123,7 +123,7 @@ YK_EWOULDBLOCK = 0x0b
 if not yk_init():
     raise Exception("Unable to initialize ykpers")
 
-ykpers_version = ykpers_check_version(None)
+ykpers_version = ykpers_check_version(None).decode('ascii')
 
 
 def yk_get_errno():
@@ -179,7 +179,7 @@ class LegacyOathOtp(object):
         if len(key) > 20:
             raise ValueError('YubiKey slots cannot handle keys over 20 bytes')
         slot = SLOT_CONFIG if slot == 1 else SLOT_CONFIG2
-        key += chr(0) * (20 - len(key))  # Keys must be padded to 20 bytes.
+        key += b'\x00' * (20 - len(key))  # Keys must be padded to 20 bytes.
 
         st = ykds_alloc()
         yk_get_status(self._device, st)
