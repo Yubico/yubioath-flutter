@@ -106,8 +106,8 @@ def read_line(line, bpp, x_offs, x_width):
 
 
 def read_bits(image, bpp, img_x, img_y, img_w, img_h, size):
-    qr_x_w = float(img_w) / size
-    qr_y_h = float(img_h) / size
+    qr_x_w = img_w / size
+    qr_y_h = img_h / size
     qr_data = []
     for qr_y in range(size):
         y = img_y + int(qr_y_h / 2 + qr_y * qr_y_h)
