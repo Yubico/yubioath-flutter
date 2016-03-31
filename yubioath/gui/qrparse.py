@@ -28,7 +28,7 @@
 Given an image, locates and parses the pixel data in QR codes.
 """
 
-from __future__ import print_function
+from __future__ import division
 from yubioath.yubicommon.compat import byte2int
 from collections import namedtuple
 

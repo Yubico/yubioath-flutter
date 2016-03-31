@@ -31,6 +31,8 @@ and the input will thus have to be without any errors. Only supports numeric,
 alphanumeric and byte encodings.
 """
 
+from __future__ import division
+
 __all__ = ['decode_qr_data']
 
 
