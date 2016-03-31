@@ -213,7 +213,7 @@ class GuiController(QtCore.QObject, Controller):
         return False
 
     def get_capabilities(self):
-        _lock = self.grab_lock()
+        assert self.grab_lock()
         ccid_dev = self.watcher.open()
         if ccid_dev:
             dev = YubiOathCcid(ccid_dev)
@@ -245,7 +245,7 @@ class GuiController(QtCore.QObject, Controller):
             self.refreshed.emit()
 
     def _init_dev(self, dev):
-        _lock = self.grab_lock()
+        lock = self.grab_lock()
         while dev.locked:
             if self._keystore.get(dev.id) is None:
                 dialog = GetPasswordDialog(get_active_window())
@@ -259,7 +259,7 @@ class GuiController(QtCore.QObject, Controller):
                 dev.unlock(self._keystore.get(dev.id))
             except CardError:
                 self._keystore.delete(dev.id)
-        self.refresh_codes(self.timer.time, _lock)
+        self.refresh_codes(self.timer.time, lock)
 
     def _await(self):
         self._creds = None
@@ -292,7 +292,7 @@ class GuiController(QtCore.QObject, Controller):
         self.refreshed.emit()
 
     def _calculate_cred(self, cred):
-        _lock = self.grab_lock()
+        assert self.grab_lock()
         now = time()
         timestamp = self.timer.time
         if timestamp + TIME_PERIOD - now < 10:
@@ -354,8 +354,8 @@ class GuiController(QtCore.QObject, Controller):
             elif self._reader is None:
                 if self.otp_enabled:
                     def refresh_otp():
-                        _lock = self.grab_lock(try_lock=True)
-                        if _lock:
+                        lock = self.grab_lock(try_lock=True)
+                        if lock:
                             read = self.read_creds(None, self.slot1, self.slot2,
                                                    timestamp, False)
                             self._set_creds(read)
@@ -403,7 +403,7 @@ class GuiController(QtCore.QObject, Controller):
         self.refresh_codes(lock=lock)
 
     def set_password(self, password, remember=False):
-        _lock = self.grab_lock()
+        assert self.grab_lock()
         ccid_dev = self.watcher.open()
         if ccid_dev:
             dev = YubiOathCcid(ccid_dev)
