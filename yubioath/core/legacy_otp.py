@@ -24,6 +24,8 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
+from __future__ import print_function
+
 from .utils import time_challenge, parse_full, format_code
 from .standard import TYPE_TOTP
 from .exc import InvalidSlotError, NeedsTouchError
@@ -44,7 +46,7 @@ def define(name, args, res):
         fn.argtypes = args
         fn.restype = res
     except AttributeError:
-        print "Undefined symbol: %s" % name
+        print("Undefined symbol: %s" % name)
 
         def error(*args, **kwargs):
             raise Exception("Undefined symbol: %s" % name)

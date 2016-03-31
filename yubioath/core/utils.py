@@ -24,6 +24,9 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
+from __future__ import print_function
+
+from yubioath.yubicommon.compat import int2byte, byte2int
 from Crypto.Hash import HMAC, SHA
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Random import get_random_bytes
@@ -31,7 +34,7 @@ try:
     from urlparse import urlparse, parse_qs
     from urllib import unquote
 except ImportError:
-    from urllib.parse import unquote
+    from urllib.parse import unquote, urlparse, parse_qs
 import subprocess
 import struct
 import time
@@ -60,7 +63,7 @@ def time_challenge(t=None):
 
 
 def parse_full(resp):
-    offs = ord(resp[-1]) & 0xf
+    offs = byte2int(resp[-1]) & 0xf
     return parse_truncated(resp[offs:offs+4])
 
 
@@ -96,15 +99,15 @@ def derive_key(salt, passphrase):
 
 
 def der_pack(*values):
-    return ''.join([chr(t) + chr(len(v)) + v for t, v in zip(values[0::2],
-                                                             values[1::2])])
+    return b''.join([int2byte(t) + int2byte(len(v)) + v for t, v in zip(
+        values[0::2], values[1::2])])
 
 
 def der_read(der_data, expected_t=None):
-    t = ord(der_data[0])
+    t = byte2int(der_data[0])
     if expected_t is not None and expected_t != t:
         raise ValueError('Wrong tag. Expected: %x, got: %x' % (expected_t, t))
-    l = ord(der_data[1])
+    l = byte2int(der_data[1])
     offs = 2
     if l > 0x80:
         n_bytes = l - 0x80
@@ -121,7 +124,7 @@ def b2len(bs):
     l = 0
     for b in bs:
         l *= 256
-        l += ord(b)
+        l += byte2int(b)
     return l
 
 
@@ -135,7 +138,7 @@ def kill_scdaemon():
         for p in ps:
             if p.Properties_('Name').Value == 'scdaemon.exe':
                 pid = p.Properties_('ProcessID').Value
-                print "Killing", pid
+                print("Killing", pid)
                 handle = OpenProcess(1, False, pid)
                 TerminateProcess(handle, -1)
                 CloseHandle(handle)
@@ -146,7 +149,7 @@ def kill_scdaemon():
             shell=True).strip()
         if pids:
             for pid in pids.split():
-                print "Killing", pid
+                print("Killing", pid)
                 subprocess.call(['kill', '-9', pid])
 
 

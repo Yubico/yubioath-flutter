@@ -27,7 +27,7 @@
 from .exc import CardError, InvalidSlotError, NeedsTouchError
 from .utils import (format_code, parse_full, time_challenge)
 
-YKLEGACY_AID = 'a0000005272001'.decode('hex')
+YKLEGACY_AID = b'\xa0\x00\x00\x05\x27\x20\x01'
 
 INS_CHALRESP = 0x01
 

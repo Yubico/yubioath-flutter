@@ -26,6 +26,8 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
+from __future__ import print_function
+
 from .. import __version__
 from ..core.ccid import open_scard
 from ..core.standard import TYPE_HOTP, TYPE_TOTP
@@ -280,7 +282,7 @@ def print_creds(results):
         sys.stderr.write('No credentials found\n')
         return
 
-    longest = max(map(lambda r: len(r[0].name), results))
+    longest = max(len(r[0].name) for r in results)
     format_str = '{:<%d}  {:>10}' % longest
     for (cred, code) in results:
         if code is None:
@@ -288,7 +290,7 @@ def print_creds(results):
                 code = '[HOTP credential]'
             elif cred.touch:
                 code = '[Touch credential]'
-        print format_str.format(cred, code)
+        print(format_str.format(cred.name, code))
 
 
 def main():

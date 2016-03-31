@@ -24,8 +24,12 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
+from __future__ import print_function
+
 from smartcard import System
 from smartcard.Exceptions import SmartcardException
+
+from yubioath.yubicommon.compat import byte2int, int2byte
 
 
 class ScardDevice(object):
@@ -39,10 +43,11 @@ class ScardDevice(object):
 
     def send_apdu(self, cl, ins, p1, p2, data):
         header = [cl, ins, p1, p2, len(data)]
-        # print "SEND:", (''.join(map(chr, header)) + data).encode('hex')
-        resp, sw1, sw2 = self._conn.transmit(header + map(ord, data))
-        # print "RECV:", (''.join(map(chr, resp + [sw1, sw2]))).encode('hex')
-        return ''.join(map(chr, resp)), sw1 << 8 | sw2
+        # from binascii import b2a_hex
+        # print("SEND:", b2a_hex(''.join(map(int2byte, header)) + data))
+        resp, sw1, sw2 = self._conn.transmit(header + [byte2int(b) for b in data])
+        # print("RECV:", b2a_hex(b''.join(map(int2byte, resp + [sw1, sw2]))))
+        return b''.join(int2byte(i) for i in resp), sw1 << 8 | sw2
 
     def close(self):
         self._conn.disconnect()

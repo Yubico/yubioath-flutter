@@ -115,7 +115,7 @@ Capabilities = namedtuple('Capabilities', 'ccid otp version')
 
 
 def names(creds):
-    return set(map(lambda c: c.cred.name, creds))
+    return set(c.cred.name for c in creds)
 
 
 class Timer(QtCore.QObject):
@@ -274,7 +274,7 @@ class GuiController(QtCore.QObject, Controller):
 
     def _set_creds(self, creds):
         if creds:
-            creds = map(self.wrap_credential, creds)
+            creds = [self.wrap_credential(c) for c in creds]
             if self._creds and names(creds) == names(self._creds):
                 entry_map = dict((c.cred.name, c) for c in creds)
                 for entry in self._creds:
