@@ -68,15 +68,32 @@ ALG_SHA256 = 0x02
 PROP_ALWAYS_INC = 0x01
 PROP_REQUIRE_TOUCH = 0x02
 
+SCHEME_STANDARD = 0x00
+SCHEME_STEAM = 0x01
+
+STEAM_CHAR_TABLE = "23456789BCDFGHJKMNPQRTVWXY"
+
+
+def format_code_steam(int_data, digits):
+    chars = []
+    for i in range(5):
+        chars.append(STEAM_CHAR_TABLE[int_data % len(STEAM_CHAR_TABLE)])
+        int_data /= len(STEAM_CHAR_TABLE)
+    return ''.join(chars)
+
 
 def ensure_unlocked(ykoath):
     if ykoath.locked:
         raise DeviceLockedError()
 
 
-def format_truncated(t_resp):
+def format_truncated(t_resp, scheme=SCHEME_STANDARD):
     digits, data = ord(t_resp[0]), t_resp[1:]
-    return format_code(parse_truncated(data), digits)
+    int_data = parse_truncated(data)
+    if scheme == SCHEME_STANDARD:
+        return format_code(int_data, digits)
+    elif scheme == SCHEME_STEAM:
+        return format_code_steam(int_data, digits)
 
 
 class Credential(object):
@@ -121,7 +138,7 @@ class _426Device(object):
             self._delegate.send_apdu(0, 0, 0, 0, '')
             self._long_resp = False
         resp, status = self._delegate.send_apdu(cl, ins, p1, p2, data)
-        self._long_resp = len(resp) > 52 # 52 bytes resp, 2 bytes status...
+        self._long_resp = len(resp) > 52  # 52 bytes resp, 2 bytes status...
         return resp, status
 
 
@@ -181,7 +198,8 @@ class YubiOathCcid(object):
             challenge = ''
         data = der_pack(TAG_NAME, name, TAG_CHALLENGE, challenge)
         resp = self._send(INS_CALCULATE, data, p2=1)
-        return format_truncated(der_read(resp, TAG_T_RESPONSE)[0])
+        scheme = SCHEME_STEAM if name.startswith('Steam:') else SCHEME_STANDARD
+        return format_truncated(der_read(resp, TAG_T_RESPONSE)[0], scheme)
 
     def calculate_key(self, passphrase):
         return derive_key(self.id, passphrase)
@@ -236,9 +254,10 @@ class YubiOathCcid(object):
             name, resp = der_read(resp, TAG_NAME)
             tag, value, resp = der_read(resp)
             if tag == TAG_T_RESPONSE:
+                scheme = SCHEME_STEAM if name.startswith('Steam:') else SCHEME_STANDARD
                 results.append((
                     Credential(self, TYPE_TOTP, name, False),
-                    format_truncated(value)
+                    format_truncated(value, scheme)
                 ))
             elif tag == TAG_TOUCH_RESPONSE:
                 results.append((
