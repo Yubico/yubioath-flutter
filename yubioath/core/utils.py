@@ -35,6 +35,8 @@ except ImportError:
 import subprocess
 import struct
 import time
+import sys
+import re
 
 __all__ = [
     'hmac_sha1',
@@ -148,26 +150,65 @@ def kill_scdaemon():
                 subprocess.call(['kill', '-9', pid])
 
 
-YUBICO_VID = 0x1050
-NON_CCID_NEO_PIDS = [0x0110, 0x0114]
+NON_CCID_YK_PIDS = set([0x0110, 0x0113, 0x0114, 0x0401, 0x0402, 0x0403])
+
 
 def ccid_supported_but_disabled():
     """
     Check whether the first connected YubiKey supports CCID, but has it disabled.
     """
-    try:
-        # PyUSB >= 1.0, this is a workaround for a problem with libusbx
-        # on Windows.
-        import usb.core
-        import usb.legacy
-        devices = [usb.legacy.Device(d) for d in usb.core.find(
-            find_all=True, idVendor=YUBICO_VID)]
-    except ImportError:
-        # Using PyUsb < 1.0.
-        import usb
-        devices = [d for bus in usb.busses() for d in bus.devices]
-    for device in devices:
-        if device.idVendor == YUBICO_VID:
-            if device.idProduct in NON_CCID_NEO_PIDS:
-                return True
-    return False
+
+    if sys.platform in ['win32', 'cygwin']:
+        pids = _get_pids_win()
+    elif sys.platform == 'darwin':
+        pids = _get_pids_osx()
+    else:
+        pids = _get_pids_linux()
+
+    return bool(NON_CCID_YK_PIDS.intersection(pids))
+
+
+def _get_pids_linux():
+    pid_pattern = re.compile(r' 1050:([0-9a-f]{4}) ')
+    pids = []
+    for line in subprocess.check_output('lsusb').splitlines():
+        match = pid_pattern.search(line.decode('ascii'))
+        if match:
+            pids.append(int(match.group(1), 16))
+    return pids
+
+
+def _get_pids_osx():
+    pids = []
+    vid_ok = False
+    pid = None
+    output = subprocess.check_output(['system_profiler', 'SPUSBDataType'])
+    for line in output.splitlines():
+        line = line.strip()
+        if line.endswith(':'):  # New entry
+            if vid_ok and pid is not None:
+                pids.append(pid)
+            vid_ok = False
+            pid = None
+        if line.startswith('Vendor ID: '):
+            vid_ok = line.endswith(' 0x1050')
+        elif line.startswith('Product ID:'):
+            pid = int(line.rsplit(' ', 1)[1], 16)
+
+    return pids
+
+
+def _get_pids_win():
+    pid_pattern = re.compile(r'PID_([0-9A-F])')
+    pids = []
+    startupinfo = subprocess.STARTUPINFO()
+    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    output = subprocess.check_output(['wmic', 'path',
+                                      'Win32_USBControllerDevice', 'get', '*'],
+                                     startupinfo=startupinfo)
+    for line in output.splitlines():
+        if 'VID_1050' in line:
+            match = pid_pattern.search(line.decode('ascii'))
+            if match:
+                pids.append(int(match.group(1), 16))
+    return pids
