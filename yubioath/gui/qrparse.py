@@ -28,20 +28,25 @@
 Given an image, locates and parses the pixel data in QR codes.
 """
 
+from __future__ import print_function
+from yubioath.yubicommon.compat import byte2int
+from collections import namedtuple
+
+
 __all__ = ['parse_qr_codes']
 
-from collections import namedtuple
+
 Box = namedtuple('Box', ['x', 'y', 'w', 'h'])
 
 
 def is_dark(color):  # If any R, G, or B value is < 200 we consider it dark.
-    return any(ord(c) < 200 for c in color)
+    return any(byte2int(c) < 200 for c in color)
 
 
 def buffer_matches(matched):
     return len(matched) == 5 \
-        and max(matched[:2] + matched[3:]) <= matched[2]/2 \
-        and min(matched[:2] + matched[3:]) >= matched[2]/6
+        and max(matched[:2] + matched[3:]) <= matched[2] // 2 \
+        and min(matched[:2] + matched[3:]) >= matched[2] // 6
 
 
 def check_line(pixels):
@@ -128,7 +133,7 @@ FINDER = [
 
 def parse_qr_codes(image, min_res=2):
     size = image.size()
-    bpp = image.bytesPerLine() / size.width()
+    bpp = image.bytesPerLine() // size.width()
 
     finders = locate_finders(image, min_res)
 
@@ -150,7 +155,7 @@ def parse_qr_codes(image, min_res=2):
 
 def locate_finders(image, min_res):
     size = image.size()
-    bpp = image.bytesPerLine() / size.width()
+    bpp = image.bytesPerLine() // size.width()
     finders = set()
     for y in range(0, size.height(), min_res * 3):
         for (x, w) in check_row(image.scanLine(y), bpp, 0, size.width()):
