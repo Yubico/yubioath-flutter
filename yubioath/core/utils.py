@@ -199,7 +199,7 @@ def _get_pids_osx():
 
 
 def _get_pids_win():
-    pid_pattern = re.compile(r'PID_([0-9A-F])')
+    pid_pattern = re.compile(r'PID_([0-9A-F]{4})')
     pids = []
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
