@@ -163,12 +163,15 @@ class Controller(object):
         legacy.put(*args, **kwargs)
 
     def delete_cred(self, dev, name):
-        if name in ['YubiKey slot 1', 'YubiKey slot 2']:
-            raise NotImplementedError('Deleting YubiKey slots not implemented')
-
         if dev.locked:
             self.unlock(dev)
         dev.delete(name)
+
+    def delete_cred_legacy(self, slot):
+        legacy = self.open_otp()
+        if not legacy:
+            raise Exception('No YubiKey found!')
+        legacy.delete(slot)
 
     def reset_device(self, dev):
         dev.reset()

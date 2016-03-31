@@ -202,6 +202,11 @@ class LegacyOathOtp(object):
         finally:
             ykp_free_config(cfg)
 
+    def delete(self, slot):
+        slot = SLOT_CONFIG if slot == 1 else SLOT_CONFIG2
+        if not yk_write_command(self._device, None, slot, None):
+            raise ValueError("Error writing configuration to key")
+
 
 class LegacyCredential(object):
 
@@ -225,7 +230,7 @@ class LegacyCredential(object):
                 self.touch = False
 
     def delete(self):
-        raise NotImplementedError()
+        self._legacy.delete(self._slot)
 
     def __repr__(self):
         return self.name

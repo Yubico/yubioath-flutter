@@ -204,10 +204,13 @@ class YubiOathCli(object):
         parser.add_argument('name', help='name of the credential to delete')
 
     def delete(self, args):
-        if self._dev is None:
-            sys.stderr.write('No YubiKey found!\n')
-            return 1
-        self._controller.delete_cred(self._dev, args.name)
+        if args.name in ['YubiKey slot 1', 'YubiKey slot 2']:
+            self._controller.delete_cred_legacy(int(args.name[-1]))
+        else:
+            if self._dev is None:
+                sys.stderr.write('No YubiKey found!\n')
+                return 1
+            self._controller.delete_cred(self._dev, args.name)
         sys.stderr.write('Credential deleted!\n')
 
     def _init_password(self, parser):

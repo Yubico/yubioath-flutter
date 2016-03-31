@@ -105,7 +105,10 @@ class CredEntry(QtCore.QObject):
             timer.start(500)
 
     def delete(self):
-        self._controller.delete_cred(self.cred.name)
+        if self.cred.name in ['YubiKey slot 1', 'YubiKey slot 2']:
+            self._controller.delete_cred_legacy(int(self.cred.name[-1]))
+        else:
+            self._controller.delete_cred(self.cred.name)
 
 
 Capabilities = namedtuple('Capabilities', 'ccid otp version')
@@ -392,6 +395,12 @@ class GuiController(QtCore.QObject, Controller):
                 super(GuiController, self).delete_cred(dev, name)
                 self._creds = None
                 self.refresh_codes(lock=lock)
+
+    def delete_cred_legacy(self, *args, **kwargs):
+        lock = self.grab_lock()
+        super(GuiController, self).delete_cred_legacy(*args, **kwargs)
+        self._creds = None
+        self.refresh_codes(lock=lock)
 
     def set_password(self, password, remember=False):
         _lock = self.grab_lock()
