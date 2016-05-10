@@ -30,7 +30,7 @@ from .exc import CardError, DeviceLockedError
 from .utils import (der_read, der_pack, hmac_sha1, derive_key, get_random_bytes,
                     time_challenge, parse_truncated, format_code)
 from yubioath.yubicommon.compat import int2byte, byte2int
-from hashlib import sha1
+import hashlib
 import struct
 
 YKOATH_AID = b'\xa0\x00\x00\x05\x27\x21\x01\x01'
@@ -97,6 +97,20 @@ def format_truncated(t_resp, scheme=SCHEME_STANDARD):
         return format_code(int_data, digits)
     elif scheme == SCHEME_STEAM:
         return format_code_steam(int_data, digits)
+
+
+def hmac_shorten_key(key, algo):
+    if algo == ALG_SHA1:
+        h = hashlib.sha1
+    elif algo == ALG_SHA256:
+        h = hashlib.sha256
+    else:
+        raise ValueError('Unsupported algorithm!')
+
+    if len(key) > h.block_size:
+        key = h.update(key).digest()
+
+    return key
 
 
 class Credential(object):
@@ -278,8 +292,7 @@ class YubiOathCcid(object):
     def put(self, name, key, oath_type=TYPE_TOTP, algo=ALG_SHA1, digits=6,
             imf=0, always_increasing=False, require_touch=False):
         ensure_unlocked(self)
-        if len(key) > 64:  # Keys longer than 64 bytes are hashed, as per HMAC.
-            key = sha1(key).digest()
+        key = hmac_shorten_key(key)
         keydata = int2byte(oath_type | algo) + int2byte(digits) + key
         data = der_pack(TAG_NAME, name.encode('utf8'), TAG_KEY, keydata)
         properties = 0
