@@ -101,9 +101,9 @@ def format_truncated(t_resp, scheme=SCHEME_STANDARD):
 
 def hmac_shorten_key(key, algo):
     if algo == ALG_SHA1:
-        h = hashlib.sha1
+        h = hashlib.sha1()
     elif algo == ALG_SHA256:
-        h = hashlib.sha256
+        h = hashlib.sha256()
     else:
         raise ValueError('Unsupported algorithm!')
 
@@ -292,7 +292,7 @@ class YubiOathCcid(object):
     def put(self, name, key, oath_type=TYPE_TOTP, algo=ALG_SHA1, digits=6,
             imf=0, always_increasing=False, require_touch=False):
         ensure_unlocked(self)
-        key = hmac_shorten_key(key)
+        key = hmac_shorten_key(key, algo)
         keydata = int2byte(oath_type | algo) + int2byte(digits) + key
         data = der_pack(TAG_NAME, name.encode('utf8'), TAG_KEY, keydata)
         properties = 0
