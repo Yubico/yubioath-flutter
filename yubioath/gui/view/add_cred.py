@@ -59,12 +59,13 @@ class B32Validator(QtGui.QValidator):
 
 class AddCredDialog(qt.Dialog):
 
-    def __init__(self, worker, version, parent=None):
+    def __init__(self, worker, version, existing_entry_names, parent=None):
         super(AddCredDialog, self).__init__(parent)
 
         self._worker = worker
         self._version = version
         self.setWindowTitle(m.add_cred)
+        self._existing_entry_names = existing_entry_names
         self._build_ui()
 
     def _build_ui(self):
@@ -137,6 +138,18 @@ class AddCredDialog(qt.Dialog):
                 self._cred_hotp.setChecked(True)
         else:
             QtGui.QMessageBox.warning(self, m.qr_not_found, m.qr_not_found_desc)
+    
+    def _entry_exists(self):
+        return self._cred_name.text() in self._existing_entry_names
+    
+    def _confirm_overwrite(self):
+        msgBox = QtGui.QMessageBox(qt.get_active_window())
+        msgBox.setWindowTitle(m.overwrite_entry)
+        msgBox.setText(m.overwrite_entry)
+        msgBox.setInformativeText(m.overwrite_entry_desc)
+        msgBox.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        msgBox.setDefaultButton(QtGui.QMessageBox.No)
+        return msgBox.exec_() == QtGui.QMessageBox.Yes
 
     def _save(self):
         if not self._cred_name.hasAcceptableInput():
@@ -145,8 +158,12 @@ class AddCredDialog(qt.Dialog):
         elif not self._cred_key.hasAcceptableInput():
             QtGui.QMessageBox.warning(self, m.invalid_key, m.invalid_key_desc)
             self._cred_key.selectAll()
+        elif self._entry_exists() and not self._confirm_overwrite():
+            self._cred_key.selectAll()
         else:
             self.accept()
+    
+
 
     @property
     def name(self):

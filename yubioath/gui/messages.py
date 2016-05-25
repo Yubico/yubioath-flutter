@@ -101,6 +101,8 @@ no_slot_desc = "Please choose a slot to write the credential to"
 overwrite_slot = "Overwrite slot?"
 overwrite_slot_desc_1 = "This will overwrite the credential currently stored " \
     "in slot %d. This action cannot be undone."
+overwrite_entry = "Overwrite entry?"
+overwrite_entry_desc = "An entry with this username already exists.\n\nDo you wish to overwrite it? This action cannot be undone."
 qr_scan = "Scan a QR code"
 qr_scanning = "Scanning for QR code..."
 qr_not_found = "QR code not found"
