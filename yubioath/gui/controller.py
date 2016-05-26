@@ -222,6 +222,9 @@ class GuiController(QtCore.QObject, Controller):
         if legacy:
             return Capabilities(None, legacy.slot_status(), (0, 0, 0))
         return Capabilities(None, None, (0, 0, 0))
+    
+    def get_entry_names(self):
+        return names(self._creds)
 
     def _on_reader(self, watcher, reader, lock=None):
         if reader:
