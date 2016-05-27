@@ -143,13 +143,9 @@ class AddCredDialog(qt.Dialog):
         return self._cred_name.text() in self._existing_entry_names
     
     def _confirm_overwrite(self):
-        msgBox = QtGui.QMessageBox(qt.get_active_window())
-        msgBox.setWindowTitle(m.overwrite_entry)
-        msgBox.setText(m.overwrite_entry)
-        msgBox.setInformativeText(m.overwrite_entry_desc)
-        msgBox.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-        msgBox.setDefaultButton(QtGui.QMessageBox.No)
-        return msgBox.exec_() == QtGui.QMessageBox.Yes
+        return QtGui.QMessageBox.question(self, m.overwrite_entry, m.overwrite_entry_desc,
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Yes,
+                QtGui.QMessageBox.No) == QtGui.QMessageBox.Yes
 
     def _save(self):
         if not self._cred_name.hasAcceptableInput():
