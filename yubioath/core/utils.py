@@ -187,7 +187,7 @@ def _get_pids_osx():
     pid = None
     output = subprocess.check_output(['system_profiler', 'SPUSBDataType'])
     for line in output.splitlines():
-        line = line.strip()
+        line = line.decode().strip()
         if line.endswith(':'):  # New entry
             if vid_ok and pid is not None:
                 pids.append(pid)
