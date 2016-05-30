@@ -142,9 +142,9 @@ class Code(QtGui.QWidget):
 
     def _draw(self):
         if self.expired:
-            name_fmt = '<b style="color: gray;">%s</b>'
+            name_fmt = '<h2 style="color: gray;">%s</h2>'
         else:
-            name_fmt = '<b>%s</b>'
+            name_fmt = '<h2>%s</h2>'
         code = self.entry.code
         if self.entry.manual and self.entry.cred.oath_type != TYPE_HOTP:
             self._calc_btn.setEnabled(self.expired)
