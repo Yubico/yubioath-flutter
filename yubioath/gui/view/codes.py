@@ -96,6 +96,7 @@ class Code(QtGui.QWidget):
     def __init__(self, entry, timer, on_change):
         super(Code, self).__init__()
         self.entry = entry
+        self.issuer, self.name = self._split_issuer_name()
         self._on_change = on_change
         self.entry.changed.connect(self._draw)
         self.timer = timer
@@ -106,13 +107,18 @@ class Code(QtGui.QWidget):
 
     def _build_ui(self):
         layout = QtGui.QHBoxLayout(self)
-
         labels = QtGui.QVBoxLayout()
-        self._name_lbl = QtGui.QLabel(self.entry.cred.name)
-        self._name_lbl.setMinimumWidth(10)
-        labels.addWidget(self._name_lbl)
+
+        if self.issuer:
+            self._issuer_lbl = QtGui.QLabel(self.issuer)
+            labels.addWidget(self._issuer_lbl)
+
         self._code_lbl = QtGui.QLabel()
         labels.addWidget(self._code_lbl)
+
+        self._name_lbl = QtGui.QLabel(self.name)
+        labels.addWidget(self._name_lbl)
+
         layout.addLayout(labels)
         layout.addStretch()
 
@@ -160,6 +166,12 @@ class Code(QtGui.QWidget):
 
     def _menu(self, pos):
         CodeMenu(self).popup(self.mapToGlobal(pos))
+
+    def _split_issuer_name(self):
+        parts = self.entry.cred.name.split(':', 1)
+        if len(parts) == 2:
+            return parts
+        return None, self.entry.cred.name
 
     def mouseDoubleClickEvent(self, event):
         if event.button() is QtCore.Qt.LeftButton:
