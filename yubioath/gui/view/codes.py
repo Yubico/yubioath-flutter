@@ -237,7 +237,7 @@ class CodesWidget(QtGui.QWidget):
         self._scroll_area.setHorizontalScrollBarPolicy(
             QtCore.Qt.ScrollBarAlwaysOff)
         self._scroll_area.setVerticalScrollBarPolicy(
-            QtCore.Qt.ScrollBarAlwaysOn)
+            QtCore.Qt.ScrollBarAsNeeded)
         self._scroll_area.setWidget(QtGui.QWidget())
         layout.addWidget(self._scroll_area)
 
