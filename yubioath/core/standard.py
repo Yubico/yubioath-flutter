@@ -209,14 +209,16 @@ class YubiOathCcid(object):
         self._send(INS_DELETE, data)
 
     def calculate(self, name, oath_type, timestamp=None):
-        if oath_type == TYPE_TOTP:
-            challenge = time_challenge(timestamp)
-        else:
-            challenge = ''
+        challenge = time_challenge(timestamp) if oath_type == TYPE_TOTP else ''
         data = der_pack(TAG_NAME, name.encode('utf8'), TAG_CHALLENGE, challenge)
-        resp = self._send(INS_CALCULATE, data, p2=1)
+        resp = self._send(INS_CALCULATE, data)
+        # Manual dynamic truncation required for Steam entries
+        resp = der_read(resp, TAG_RESPONSE)[0]
+        digits, resp = resp[0:1], resp[1:]
+        offset = byte2int(resp[-1]) & 0xF
+        resp = resp[offset:offset + 4]
         scheme = SCHEME_STEAM if name.startswith('Steam:') else SCHEME_STANDARD
-        return format_truncated(der_read(resp, TAG_T_RESPONSE)[0], scheme)
+        return format_truncated(digits + resp, scheme)
 
     def calculate_key(self, passphrase):
         return derive_key(self.id, passphrase)
@@ -272,10 +274,14 @@ class YubiOathCcid(object):
             name = name.decode('utf8')
             tag, value, resp = der_read(resp)
             if tag == TAG_T_RESPONSE:
-                scheme = SCHEME_STEAM if name.startswith('Steam:') else SCHEME_STANDARD
+                # Steam credentials need to do be recalculated 
+                # to skip full truncation done by Yubikey 4
+                code = self.calculate(name, TYPE_TOTP) \
+                        if name.startswith('Steam:') \
+                        else format_truncated(value, SCHEME_STANDARD)
                 results.append((
                     Credential(self, TYPE_TOTP, name, False),
-                    format_truncated(value, scheme)
+                    code
                 ))
             elif tag == TAG_TOUCH_RESPONSE:
                 results.append((
