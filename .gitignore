@@ -3,6 +3,7 @@
 *.egg/
 .eggs/
 build/
+lib/
 dist/
 .ropeproject/
 ChangeLog
