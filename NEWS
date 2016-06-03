@@ -1,3 +1,10 @@
+* Version 2.4.0 (Unreleased)
+ ** Compability with Python 3.
+ ** Support for generating alphanumeric Steam authenticator codes for entries prefixed with "Steam:".
+ ** UX enhancements: split up issuer and name, bigger OTP codes.
+ ** Added confirmation dialog when overwriting entries.
+ ** Add deletion of slot based credentials.
+
 * Version 2.3.0 (released 2015-11-20)
  ** Re-schedule timer each time period based on system time to prevent Qt timer
     drift.
