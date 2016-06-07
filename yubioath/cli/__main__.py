@@ -37,249 +37,13 @@ from .controller import CliController
 from time import time
 from base64 import b32decode
 from getpass import getpass
-import argparse
+import click
 import sys
-
-
-def intersects(a, b):
-    return bool(set(a) & set(b))
-
-
-def subcmd_names(parser):
-    for a in parser._subparsers._actions:
-        if isinstance(a, argparse._SubParsersAction):
-            for name in a._name_parser_map.keys():
-                yield name
-
-
-class YubiOathCli(object):
-
-    def __init__(self):
-        self._parser = self._init_parser()
-
-    def _init_parser(self):
-        global_opts = argparse.ArgumentParser(add_help=False)
-        global_opts.add_argument('-R', '--remember', help='remember any '
-                                 'entered access key for later use',
-                                 action='store_true')
-        global_opts.add_argument('-r', '--reader', help='name to match '
-                                 'smartcard reader against (case insensitive)',
-                                 default='YubiKey')
-
-        parser = argparse.ArgumentParser(
-            description="Read OATH one time passwords from a YubiKey.",
-            parents=[global_opts],
-            add_help=True
-        )
-        parser.add_argument('-v', '--version', action='version',
-                            version='%(prog)s ' + __version__)
-
-        subparsers = parser.add_subparsers(dest='command', help='subcommands')
-
-        self._init_show(subparsers.add_parser('show', parents=[global_opts],
-                                              help='read one or more codes'))
-        self._init_put(subparsers.add_parser('put', parents=[global_opts],
-                                             help='store a new credential'))
-        self._init_delete(subparsers.add_parser('delete', parents=[global_opts],
-                                                help='delete a new credential'))
-        self._init_password(subparsers.add_parser(
-            'password', parents=[global_opts], help='set/unset the password'))
-        self._init_reset(subparsers.add_parser('reset', parents=[global_opts],
-                                               help='wipe all non slot-based '
-                                               'OATH credentials'))
-
-        return parser
-
-    def parse_args(self):
-        # Default to "show" sub command.
-        subcmds = list(subcmd_names(self._parser))
-        if not intersects(sys.argv[1:],
-                          subcmds + ['-h', '--help', '-v', '--version']):
-            sys.argv.insert(1, 'show')
-
-        try:
-            import argcomplete
-            argcomplete.autocomplete(self._parser)
-        except ImportError:
-            pass  # No argcomplete, no problem!
-
-        return self._parser.parse_args()
-
-    def run(self):
-        args = self.parse_args()
-
-        self._dev = open_scard(args.reader)
-        self._controller = CliController(get_keystore(), args.remember)
-
-        return getattr(self, args.command)(args) or 0
-
-    def _init_show(self, parser):
-        parser.add_argument('query', help='credential name to match against '
-                            '(case insensitive)', nargs='?')
-        parser.add_argument('-s1', '--slot1', help='number of digits to '
-                            'output for slot 1', type=int, default=0)
-        parser.add_argument('-s2', '--slot2', help='number of digits to '
-                            'output for slot 2', type=int, default=0)
-        parser.add_argument('-t', '--timestamp', help='user provided timestamp',
-                            type=int, default=int(time()) + 5)
-
-    def show(self, args):
-        creds = self._controller.read_creds(self._dev, args.slot1, args.slot2,
-                                            args.timestamp)
-
-        if creds is None:
-            sys.stderr.write('No YubiKey found!\n')
-            return 1
-
-        if args.query:
-            # Filter based on query. If exact match, show only that result.
-            matched = []
-            for cred, code in creds:
-                if cred.name == args.query:
-                    matched = [(cred, code)]
-                    break
-                if args.query.lower() in cred.name.lower():
-                    matched.append((cred, code))
-
-            # Only calculate Touch/HOTP codes if the credential is singled out.
-            if len(matched) == 1:
-                (cred, code) = matched[0]
-                if not code:
-                    if cred.touch:
-                        self._controller._prompt_touch()
-                    creds = [(cred, cred.calculate(args.timestamp))]
-                else:
-                    creds = [(cred, code)]
-            else:
-                creds = matched
-
-        print_creds(creds)
-
-    def _init_put(self, parser):
-        parser.add_argument('key', help='base32 encoded key, or otpauth:// URI')
-        parser.add_argument('-S', '--destination', help='Where to store the '
-                            'credential', type=int, choices=[0, 1, 2],
-                            default=0)
-        parser.add_argument('-N', '--name', help='credential name')
-        parser.add_argument('-A', '--oath-type', help='OATH algorithm',
-                            choices=['totp', 'hotp'], default='totp')
-        parser.add_argument('-D', '--digits', help='number of digits',
-                            type=int, choices=[6, 8])
-        parser.add_argument('-I', '--imf', help='initial moving factor',
-                            type=int, default=0)
-        parser.add_argument('-T', '--touch', help='require touch',
-                            action='store_true')
-
-    def put(self, args):
-        if args.key.startswith('otpauth://'):
-            parsed = parse_uri(args.key)
-            args.key = parsed['secret']
-            args.name = args.name or parsed.get('name')
-            args.oath_type = parsed.get('type')
-            args.digits = args.digits or int(parsed.get('digits', '6'))
-            args.imf = args.imf or int(parsed.get('counter', '0'))
-
-        args.digits = args.digits or 6
-        unpadded = args.key.upper()
-        args.key = b32decode(unpadded + '=' * (-len(unpadded) % 8))
-
-        if args.destination == 0:
-            if self._dev is None:
-                sys.stderr.write('No YubiKey found!\n')
-                return 1
-            if not args.name:
-                if sys.stdin.isatty():
-                    sys.stderr.write('Enter a name for the credential: ')
-                    args.name = sys.stdin.readline().strip()
-                if not args.name:
-                    sys.stderr.write('Missing required argument: --name\n')
-                    return 1
-            oath_type = TYPE_TOTP if args.oath_type == 'totp' else TYPE_HOTP
-            self._controller.add_cred(self._dev, args.name, args.key, oath_type,
-                                      digits=args.digits, imf=args.imf,
-                                      require_touch=args.touch)
-        else:
-            self._controller.add_cred_legacy(args.destination, args.key,
-                                             args.touch)
-
-    def _init_delete(self, parser):
-        parser.add_argument('name', help='name of the credential to delete')
-
-    def delete(self, args):
-        if args.name in ['YubiKey slot 1', 'YubiKey slot 2']:
-            self._controller.delete_cred_legacy(int(args.name[-1]))
-        else:
-            if self._dev is None:
-                sys.stderr.write('No YubiKey found!\n')
-                return 1
-            self._controller.delete_cred(self._dev, args.name)
-        sys.stderr.write('Credential deleted!\n')
-
-    def _init_password(self, parser):
-        actions = parser.add_mutually_exclusive_group(required=True)
-        actions.add_argument('-S', '--set', help='sets a new password',
-                             action='store_true')
-        actions.add_argument('-U', '--unset', help='unsets the password',
-                             action='store_true')
-        actions.add_argument('-F', '--forget', help='forgets all stored keys',
-                             action='store_true')
-        parser.add_argument('-P', '--password', help='new password to set')
-
-    def password(self, args):
-        if args.forget:
-            self._controller.keystore.clear()
-            sys.stderr.write('Saved access keys deleted!\n')
-        else:
-            if self._dev is None:
-                sys.stderr.write('No YubiKey found!\n')
-                return 1
-
-            if args.set:
-                if not args.password:
-                    pw = getpass('New password: ')
-                    pw2 = getpass('Re-type password: ')
-                    if pw == pw2:
-                        args.password = pw
-                    else:
-                        sys.stderr.write('Passwords did not match!\n')
-                        return 1
-                self._controller.set_password(self._dev, args.password,
-                                              args.remember)
-                sys.stderr.write('New password set!\n')
-            elif args.unset:
-                self._controller.set_password(self._dev, '')
-                sys.stderr.write('Password cleared!\n')
-
-    def _init_reset(self, parser):
-        parser.add_argument('-f', '--force', help='do not ask before resetting',
-                            action='store_true')
-
-    def reset(self, args):
-        if self._dev is None:
-            sys.stderr.write('No YubiKey found!\n')
-            return 1
-
-        if not args.force:
-            sys.stderr.write('WARNING!!! You are about to completely wipe all '
-                             'non slot-based OATH credentials from the device!'
-                             '\n')
-            confirm = ''
-            while confirm != 'yes':
-                sys.stderr.write('Proceed? [yes/no]: ')
-                confirm = sys.stdin.readline().strip()
-                if confirm == 'no':
-                    sys.stderr.write('Aborted...\n')
-                    return 1
-                elif confirm != 'yes':
-                    sys.stderr.write('Please type out "yes" or "no".\n')
-
-        self._controller.reset_device(self._dev)
-        sys.stderr.write('Your YubiKey has been reset.\n')
 
 
 def print_creds(results):
     if not results:
-        sys.stderr.write('No credentials found\n')
+        click.echo('No credentials found.')
         return
 
     longest = max(len(r[0].name) for r in results)
@@ -290,13 +54,197 @@ def print_creds(results):
                 code = '[HOTP credential]'
             elif cred.touch:
                 code = '[Touch credential]'
-        print(format_str.format(cred.name, code))
+        click.echo(format_str.format(cred.name, code))
+
+
+CLICK_CONTEXT_SETTINGS = dict(
+    help_option_names=['-h', '--help']
+)
+
+
+def print_version(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    click.echo('yubioath {}'.format(__version__))
+    ctx.exit()
+
+
+@click.group(context_settings=CLICK_CONTEXT_SETTINGS)
+@click.option('-v', '--version', is_flag=True, callback=print_version,
+              expose_value=False, is_eager=True)
+@click.option('-r', '--reader', default='YubiKey', help='Name to match '
+              'smartcard reader against (case insensitive).')
+@click.option('-R', '--remember', is_flag=True, help='Remember any entered '
+              'access key for later use.')
+@click.pass_context
+def cli(ctx, reader, remember):
+    """
+    Read OATH one time passwords from a YubiKey.
+    """
+    ctx.obj['dev'] = open_scard(reader)
+    ctx.obj['controller'] = CliController(get_keystore(), remember)
+    ctx.obj['remember'] = remember
+
+
+@cli.command()
+@click.argument('query', nargs=-1, required=False)
+@click.option('-s1', '--slot1', type=int, default=0)
+@click.option('-s2', '--slot2', type=int, default=0)
+@click.option('-t', '--timestamp', type=int, default=int(time()) + 5)
+@click.pass_context
+def show(ctx, query, slot1, slot2, timestamp):
+    """
+    Print one or more codes from a YubiKey.
+    """
+    dev = ctx.obj['dev']
+    controller = ctx.obj['controller']
+
+    creds = controller.read_creds(dev, slot1, slot2, timestamp)
+
+    if creds is None:
+        ctx.fail('No YubiKey found!')
+
+    if query:
+        query = ' '.join(query)
+        # Filter based on query. If exact match, show only that result.
+        matched = []
+        for cred, code in creds:
+            if cred.name == query:
+                matched = [(cred, code)]
+                break
+            if query.lower() in cred.name.lower():
+                matched.append((cred, code))
+
+        # Only calculate Touch/HOTP codes if the credential is singled out.
+        if len(matched) == 1:
+            (cred, code) = matched[0]
+            if not code:
+                if cred.touch:
+                    controller._prompt_touch()
+                creds = [(cred, cred.calculate(timestamp))]
+            else:
+                creds = [(cred, code)]
+        else:
+            creds = matched
+
+    print_creds(creds)
+
+
+@cli.command()
+@click.argument('key')
+@click.option('-S', '--destination', type=click.IntRange(0, 2), default=0)
+@click.option('-N', '--name', required=False, help='Credential name.')
+@click.option('-A', '--oath-type', type=click.Choice(['totp', 'hotp']),
+              default='totp', help='OATH algorithm.')
+@click.option('-D', '--digits', type=click.Choice(['6', '8']), default='6',
+              callback=lambda c, p, v: int(v), help='Number of digits.')
+@click.option('-I', '--imf', type=int, default=0, help='Initial moving factor.')
+@click.option('-T', '--touch', is_flag=True, help='Require touch.')
+@click.pass_context
+def put(ctx, key, destination, name, oath_type, digits, imf, touch):
+    """
+    Stores a new OATH credential in the YubiKey.
+    """
+    if key.startswith('otpauth://'):
+        parsed = parse_uri(key)
+        key = parsed['secret']
+        name = name or parsed.get('name')
+        oath_type = parsed.get('type')
+        digits = digits or int(parsed.get('digits', '6'))
+        imf = imf or int(parsed.get('counter', '0'))
+
+    digits = digits or 6
+    unpadded = key.upper()
+    key = b32decode(unpadded + '=' * (-len(unpadded) % 8))
+
+    controller = ctx.obj['controller']
+    if destination == 0:
+        dev = ctx.obj['dev'] or ctx.fail('No YubiKey found!')
+        name = name or click.prompt('Enter a name for the credential')
+        oath_type = TYPE_TOTP if oath_type == 'totp' else TYPE_HOTP
+        controller.add_cred(dev, name, key, oath_type, digits=digits, imf=imf,
+                            require_touch=touch)
+    else:
+        controller.add_cred_legacy(destination, key, touch)
+
+
+@cli.command()
+@click.argument('name')
+@click.pass_context
+def delete(ctx, name):
+    """
+    Deletes a credential from the YubiKey.
+    """
+    controller = ctx.obj['controller']
+    if name in ['YubiKey slot 1', 'YubiKey slot 2']:
+        controller.delete_cred_legacy(int(name[-1]))
+    else:
+        dev = ctx.obj['dev'] or ctx.fail('No YubiKey found!')
+        controller.delete_cred(dev, name)
+    click.echo('Credential deleted!')
+
+
+@cli.group()
+def password():
+    """
+    Manage the password used to protect access to the YubiKey.
+    """
+
+
+@password.command()
+@click.password_option()
+@click.pass_context
+def set(ctx, password):
+    """
+    Set a new password.
+    """
+    dev = ctx.obj['dev'] or ctx.fail('No YubiKey found!')
+    controller = ctx.obj['controller']
+    remember = ctx.obj['remember']
+    controller.set_password(dev, password, remember)
+    click.echo('New password set!')
+
+
+@password.command()
+@click.pass_context
+def unset(ctx):
+    """
+    Removes the need to enter a password to access credentials.
+    """
+    dev = ctx.obj['dev'] or ctx.fail('No YubiKey found!')
+    controller = ctx.obj['controller']
+    controller.set_password(dev, '')
+    click.echo('Password cleared!')
+
+
+@password.command()
+@click.pass_context
+def forget(ctx):
+    controller = ctx.obj['controller']
+    controller.keystore.clear()
+
+
+@cli.command()
+@click.option('-f', '--force', is_flag=True,
+              help='Confirm the action without prompting.')
+@click.pass_context
+def reset(ctx, force):
+    """
+    Deletes all stored OATH credentials from non-slot based storage.
+    """
+    dev = ctx.obj['dev'] or ctx.fail('No YubiKey found!')
+    controller = ctx.obj['controller']
+    force or click.confirm('WARNING!!! Really delete all non slot-based OATH '
+                           'credentials from the YubiKey?', abort=True)
+
+    controller.reset_device(dev)
+    click.echo('The OATH functionality of your YubiKey has been reset.\n')
+
 
 
 def main():
-    app = YubiOathCli()
     try:
-        sys.exit(app.run())
+        cli(obj={})
     except KeyboardInterrupt:
         sys.stderr.write('\nInterrupted, exiting.\n')
         sys.exit(130)

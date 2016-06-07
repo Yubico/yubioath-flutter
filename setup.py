@@ -40,14 +40,15 @@ setup(
     license='GPLv3+',
     description='Graphical interface for displaying OATH codes with a Yubikey',
     entry_points={
-        'gui_scripts': ['yubioath=yubioath.gui.__main__:main'],
-        'console_scripts': ['yubioath-cli=yubioath.cli.__main__:main']
+        'console_scripts': ['yubioath=yubioath.cli.__main__:main'],
+        'gui_scripts': ['yubioath-gui=yubioath.gui.__main__:main']
     },
     setup_requires=[],
     yc_requires=['ctypes', 'qt'],
     install_requires=['pyscard', 'pycrypto'],
     extras_require={
-        'argcomplete': ['argcomplete']
+        'yubioath-cli': ['click'],
+        'yubioath-gui': ['PySide']
     },
     cmdclass={
         'executable': executable,
