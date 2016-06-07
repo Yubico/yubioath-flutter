@@ -19,11 +19,11 @@ Download swig-3.0.8.tar.gz source from swig.org
     
     tar -xzcf swig-3.0.8.tar.gz
     cd swig-3.0.8
-    ./configure
-    make
-    make install
     curl -O ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.38.tar.gz
     sh Tools/pcre-build.sh
+   ./configure
+    make
+    make install
 
 === Qt 4
 A patch is included in this repository to make Qt 4.8.6 compile on OS X.
