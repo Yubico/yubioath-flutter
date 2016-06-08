@@ -63,6 +63,7 @@ class Systray(QtGui.QSystemTrayIcon):
     def _show(self):
         self.parent().window.show()
         self.parent().window.activateWindow()
+        self.parent().window.raise_()
 
     def quit(self):
         self.hide()
