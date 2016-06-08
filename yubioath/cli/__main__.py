@@ -245,12 +245,33 @@ def reset(ctx, force):
     click.echo('The OATH functionality of your YubiKey has been reset.\n')
 
 
+@cli.command(context_settings=dict(
+    ignore_unknown_options=True,
+    allow_extra_args=True
+))
+@click.option('-h', '--help', is_flag=True)
+@click.pass_context
+def gui(ctx, help):
+    """
+    Launches the Yubico Authenticator graphical interface.
+    """
+    try:
+        import PySide
+        assert PySide
+    except ImportError:
+        ctx.fail('GUI requires PySide to run.')
+    from yubioath.gui import __main__ as gui_main
+    sys.argv.remove(ctx.command.name)
+    sys.argv[0] = sys.argv[0] + ' ' + ctx.command.name
+    gui_main.main()
+
+
 def intersects(a, b):
     return bool(set(a) & set(b))
 
 
 def main():
-    commands = list(cli.commands) + ['-h', '--help']
+    commands = list(cli.commands) + CLICK_CONTEXT_SETTINGS['help_option_names']
 
     buf = [sys.argv[0]]
     rest = sys.argv[1:]
