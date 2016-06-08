@@ -32,6 +32,7 @@ from .utils import (der_read, der_pack, hmac_sha1, derive_key, get_random_bytes,
 from yubioath.yubicommon.compat import int2byte, byte2int
 import hashlib
 import struct
+import os
 
 YKOATH_AID = b'\xa0\x00\x00\x05\x27\x21\x01\x01'
 YKOATH_NO_SPACE = 0x6a84
@@ -282,7 +283,9 @@ class YubiOathCcid(object):
             name, resp = der_read(resp, TAG_NAME)
             name = name.decode('utf8')
             tag, value, resp = der_read(resp)
-            if tag == TAG_T_RESPONSE:
+            if name.startswith('_hidden:') and 'SHOW_HIDDEN' not in os.environ:
+                pass  # Ignore hidden credentials.
+            elif tag == TAG_T_RESPONSE:
                 # Steam credentials need to be recalculated
                 # to skip full truncation done by Yubikey 4.
                 code = self.calculate(name, TYPE_TOTP) \
