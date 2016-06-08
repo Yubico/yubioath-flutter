@@ -45,10 +45,11 @@ setup(
     },
     setup_requires=[],
     yc_requires=['ctypes', 'qt'],
+    yc_requires_exclude=['PySide'],
     install_requires=['pyscard', 'pycrypto'],
     extras_require={
-        'yubioath-cli': ['click'],
-        'yubioath-gui': ['PySide']
+        'cli': ['click'],
+        'gui': ['PySide']
     },
     cmdclass={
         'executable': executable,
