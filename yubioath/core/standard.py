@@ -26,7 +26,7 @@
 
 from __future__ import print_function, division
 
-from .exc import CardError, DeviceLockedError
+from .exc import CardError, DeviceLockedError, NoSpaceError
 from .utils import (der_read, der_pack, hmac_sha1, derive_key, get_random_bytes,
                     time_challenge, parse_truncated, format_code)
 from yubioath.yubicommon.compat import int2byte, byte2int
@@ -34,6 +34,7 @@ import hashlib
 import struct
 
 YKOATH_AID = b'\xa0\x00\x00\x05\x27\x21\x01\x01'
+YKOATH_NO_SPACE=0x6a84
 
 INS_PUT = 0x01
 INS_DELETE = 0x02
@@ -179,6 +180,10 @@ class YubiOathCcid(object):
             more, status = self._device.send_apdu(
                 0, INS_SEND_REMAINING, 0, 0, '')
             resp += more
+        
+        if status == YKOATH_NO_SPACE:
+            raise NoSpaceError()
+
         if expected != status:
             raise CardError(status)
         return resp

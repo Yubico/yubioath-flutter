@@ -126,7 +126,8 @@ ccid_disabled = '<b>CCID (smart card capabilities) is disabled on the ' \
     'inserted YubiKey.</b><br><br>Without CCID enabled, you will only be ' \
     'able to store 2 credentials.<br><br>' \
     '<a href="%s">Learn how to enable CCID</a><br>'
-
+no_space="No space available"
+no_space_desc="There is no space available on your device. Maybe you can delete som entries?"
 
 def _translate(qt):
     values = globals()

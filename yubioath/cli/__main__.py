@@ -32,6 +32,7 @@ from .. import __version__
 from ..core.ccid import open_scard
 from ..core.standard import TYPE_HOTP, TYPE_TOTP
 from ..core.utils import parse_uri
+from ..core.exc import NoSpaceError
 from .keystore import get_keystore
 from .controller import CliController
 from time import time
@@ -161,8 +162,12 @@ def put(ctx, key, destination, name, oath_type, digits, imf, touch):
         dev = ctx.obj['dev'] or ctx.fail('No YubiKey found!')
         name = name or click.prompt('Enter a name for the credential')
         oath_type = TYPE_TOTP if oath_type == 'totp' else TYPE_HOTP
-        controller.add_cred(dev, name, key, oath_type, digits=digits, imf=imf,
-                            require_touch=touch)
+        try:
+            controller.add_cred(dev, name, key, oath_type, digits=digits,
+                                imf=imf, require_touch=touch)
+        except NoSpaceError:
+            ctx.fail('There is no space available on your device. Maybe you '
+                     'can delete som entries?')
     else:
         controller.add_cred_legacy(destination, key, touch)
 

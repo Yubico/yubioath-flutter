@@ -36,6 +36,7 @@ try:
 except ImportError:
     ykpers_version = 'None'
 from ..core.utils import kill_scdaemon
+from ..core.exc import NoSpaceError
 from . import messages as m
 from .controller import GuiController
 from .ccid import CardStatus
@@ -216,11 +217,13 @@ class YubiOathApplication(qt.Application):
                     QtGui.QMessageBox.critical(
                         self.window, m.key_removed, m.key_removed_desc)
                 else:
-                    self._controller.add_cred(
+                    try:
+                        self._controller.add_cred(
                         dialog.name, dialog.key, oath_type=dialog.oath_type,
                         digits=dialog.n_digits,
-                        require_touch=dialog.require_touch
-                    )
+                        require_touch=dialog.require_touch)
+                    except NoSpaceError:
+                        QtGui.QMessageBox.critical(self.window, m.no_space, m.no_space_desc)
         elif c.otp:
             dialog = AddCredLegacyDialog(self.worker, c.otp, parent=self.window)
             if dialog.exec_():

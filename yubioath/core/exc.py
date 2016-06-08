@@ -39,6 +39,12 @@ class DeviceLockedError(Exception):
         super(DeviceLockedError, self).__init__('Device is locked!')
 
 
+class NoSpaceError(Exception):
+
+    def __init__(self):
+        super(NoSpaceError, self).__init__('No space available on device.')
+
+
 class InvalidSlotError(Exception):
 
     def __init__(self):
