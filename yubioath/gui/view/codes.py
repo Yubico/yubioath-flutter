@@ -251,7 +251,8 @@ class CodesWidget(QtGui.QWidget):
 
     def refresh(self):
         self._scroll_area.takeWidget().deleteLater()
-        creds = self._controller.credentials
+        creds = [c for c in self._controller.credentials
+                 if not c.cred.name.startswith('_hidden:')]
         self._scroll_area.setWidget(
             CodesList(self._controller.timer, creds or [], self.refresh_timer))
         w = self._scroll_area.widget().minimumSizeHint().width()

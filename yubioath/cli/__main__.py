@@ -104,10 +104,10 @@ def show(ctx, query, slot1, slot2, timestamp):
     if creds is None:
         ctx.fail('No YubiKey found!')
 
+    matched = []
     if query:
         query = ' '.join(query)
         # Filter based on query. If exact match, show only that result.
-        matched = []
         for cred, code in creds:
             if cred.name == query:
                 matched = [(cred, code)]
@@ -126,6 +126,9 @@ def show(ctx, query, slot1, slot2, timestamp):
                 creds = [(cred, code)]
         else:
             creds = matched
+
+    if not query or len(matched) > 1:  # Unless exact match, filter out hidden.
+        creds = [c for c in creds if not c[0].name.startswith('_hidden:')]
 
     print_creds(creds)
 
