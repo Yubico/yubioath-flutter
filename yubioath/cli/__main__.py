@@ -36,7 +36,6 @@ from .keystore import get_keystore
 from .controller import CliController
 from time import time
 from base64 import b32decode
-from getpass import getpass
 import click
 import sys
 
@@ -241,8 +240,34 @@ def reset(ctx, force):
     click.echo('The OATH functionality of your YubiKey has been reset.\n')
 
 
+def intersects(a, b):
+    return bool(set(a) & set(b))
+
 
 def main():
+    commands = list(cli.commands) + ['-h', '--help']
+
+    buf = [sys.argv[0]]
+    rest = sys.argv[1:]
+    found_command = False
+    while rest:
+        first = rest.pop(0)
+        if first in commands:
+            found_command = True
+            break  # We have a command, no more processing needed.
+        for p in cli.params:
+            if first in p.opts:  # first is an option.
+                buf.append(first)
+                if not p.is_flag and rest:  # Has a value.
+                    buf.append(rest.pop(0))
+                break  # Restart checking
+        else:  # No match, put the argument back and stop.
+            rest.insert(0, first)
+            break
+
+    if not found_command:  # No command found, default to "show".
+        sys.argv = buf + ['show'] + rest
+
     try:
         cli(obj={})
     except KeyboardInterrupt:
