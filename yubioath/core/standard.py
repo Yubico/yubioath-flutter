@@ -34,7 +34,7 @@ import hashlib
 import struct
 
 YKOATH_AID = b'\xa0\x00\x00\x05\x27\x21\x01\x01'
-YKOATH_NO_SPACE=0x6a84
+YKOATH_NO_SPACE = 0x6a84
 
 INS_PUT = 0x01
 INS_DELETE = 0x02
@@ -180,7 +180,7 @@ class YubiOathCcid(object):
             more, status = self._device.send_apdu(
                 0, INS_SEND_REMAINING, 0, 0, '')
             resp += more
-        
+
         if status == YKOATH_NO_SPACE:
             raise NoSpaceError()
 
@@ -265,8 +265,12 @@ class YubiOathCcid(object):
         items = []
         while resp:
             data, resp = der_read(resp, TAG_NAME_LIST)
-            items.append(Credential(self, TYPE_MASK & byte2int(data[0]), data[1:],
-                                    None))
+            items.append(Credential(
+                self,
+                TYPE_MASK & byte2int(data[0]),
+                data[1:],
+                None
+            ))
         return items
 
     def calculate_all(self, timestamp=None):
@@ -279,8 +283,8 @@ class YubiOathCcid(object):
             name = name.decode('utf8')
             tag, value, resp = der_read(resp)
             if tag == TAG_T_RESPONSE:
-                # Steam credentials need to do be recalculated 
-                # to skip full truncation done by Yubikey 4
+                # Steam credentials need to be recalculated
+                # to skip full truncation done by Yubikey 4.
                 code = self.calculate(name, TYPE_TOTP) \
                         if name.startswith('Steam:') \
                         else format_truncated(value, SCHEME_STANDARD)
