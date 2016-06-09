@@ -55,7 +55,15 @@ def main():
             f.write(content)
 
         print "Restarting PCSCD..."
-        subprocess.call(['service', 'pcscd', 'restart'])
+        try:
+            returncode = subprocess.check_call(['service', 'pcscd', 'restart'])
+        except CalledProcessError:
+            try:
+                subprocess.check_call(['systemctl', 'restart', 'pcscd'])
+            except CalledProcessError:
+                print "Failed to restart pcscd."
+
+
     else:
         print "libccid_Info.plist not found, skipping..."
 
