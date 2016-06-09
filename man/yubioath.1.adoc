@@ -1,5 +1,5 @@
 yubioath(1)
-===============
+===========
 :doctype: manpage
 :man source: yubioath
 :man manual: Yubico Authenticator Manual

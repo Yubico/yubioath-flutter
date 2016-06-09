@@ -1,5 +1,5 @@
 yubioath\-gui(1)
-===========
+================
 :doctype: manpage
 :man source: yubioath-gui
 :man manual: Yubico Authenticator Manual
