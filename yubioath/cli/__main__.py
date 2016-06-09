@@ -71,7 +71,8 @@ def print_version(ctx, param, value):
 
 @click.group(context_settings=CLICK_CONTEXT_SETTINGS)
 @click.option('-v', '--version', is_flag=True, callback=print_version,
-              expose_value=False, is_eager=True)
+              expose_value=False, is_eager=True, help='Prints the version of '
+              'the application and exits.')
 @click.option('-r', '--reader', default='YubiKey', help='Name to match '
               'smartcard reader against (case insensitive).')
 @click.option('-R', '--remember', is_flag=True, help='Remember any entered '
@@ -196,7 +197,7 @@ def password():
 
 
 @password.command()
-@click.password_option()
+@click.password_option('-p', '--password')
 @click.pass_context
 def set(ctx, password):
     """
