@@ -283,7 +283,7 @@ class YubiOathCcid(object):
             name, resp = der_read(resp, TAG_NAME)
             name = name.decode('utf8')
             tag, value, resp = der_read(resp)
-            if name.startswith('_hidden:') and 'SHOW_HIDDEN' not in os.environ:
+            if name.startswith('_hidden:') and 'YKOATH_SHOW_HIDDEN' not in os.environ:
                 pass  # Ignore hidden credentials.
             elif tag == TAG_T_RESPONSE:
                 # Steam credentials need to be recalculated
