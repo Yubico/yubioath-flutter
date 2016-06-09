@@ -86,8 +86,8 @@ class YkPers(CLibrary):
     ykp_set_cfgflag_CHAL_BTN_TRIG = [POINTER(YKP_CONFIG), c_bool], bool
 
     ykp_core_config = [POINTER(YKP_CONFIG)], POINTER(YK_CONFIG)
-    yk_write_command = [POINTER(YK_KEY), POINTER(YK_CONFIG), c_uint8, c_char_p],
-    bool
+    yk_write_command = [POINTER(YK_KEY), POINTER(YK_CONFIG), c_uint8, c_char_p
+                        ], bool
 
     def yk_get_errno(self):
         return self._yk_errno_location().contents.value
