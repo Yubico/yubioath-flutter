@@ -1,9 +1,12 @@
-* Version 2.4.0 (Unreleased)
- ** Added compatibility with Python 3.
+* Version 3.0.0 (Unreleased)
+ ** Added compatibility with Python 3 (Python 2 is still supported).
  ** Added support for generating alphanumeric Steam authenticator codes for entries prefixed with "Steam:".
  ** Added a confirmation dialog box when overwriting entries.
  ** Added the capability to delete slot-based credentials.
  ** UX enhancements: split up issuer and name; added larger OTP codes.
+ ** CLI was rewritten using the "click" library.
+ ** CLI gained a "gui" subcommand which launches the full GUI.
+ ** Binaries were renamed (yubioath -> yubioath-gui, yubioath-cli -> yubioath).
 
 * Version 2.3.0 (released 2015-11-20)
  ** Re-schedule timer each time period based on system time to prevent Qt timer

@@ -1,0 +1,59 @@
+== Building binaries
+Binaries for Windows and OSX are built using PyInstaller.
+
+Get the source release file, yubioath-desktop-<version>.tar.gz, and extract it.
+It should contain a single directory, henceforth refered to as the release
+directory.
+
+When building binaries for Windows or OS X, you will need to include
+.dll/.dylib files from the yubikey-personalization project. Create a
+subdirectory called "lib" in the release directory. Download the correct binary
+release for your architecture from
+https://developers.yubico.com/yubikey-personalization/Releases/[here] and
+extract the contained .dll/.dylib files to the "lib" directory you created
+previously.
+
+=== Windows
+For Windows you will need python, click, PySide, pyscard, PyCrypto, PyInstaller
+and Pywin32 installed (32 or 64-bit versions depending on the architecture of
+the binary your are building).
+
+To sign the executable you will need signtool.exe (from the Windows SDK) either
+copied into the root as well or in a location in your PATH, as well as a
+certificate in the Windows certificate store that you wish to sign with.
+
+Run "python setup.py executable" from the main release directory.
+
+With NSIS installed, a Windows installer will be built as well.
+
+=== OSX
+For OSX you need python, pyside, pyscard, pycrypto, and pyinstaller installed.
+One way to install these dependencies is by using Homebrew and pip:
+
+  brew install python
+  brew install pyside
+  pip install PyInstaller
+  pip install pycrypto
+  pip install pyscard
+  pip install click
+
+NOTE: Homebrew will build backwards-incompatible binaries, so the resulting
+build will not run on an older version of OSX.
+
+Run "python setup.py executable" from the main release directory. This
+will create an .app in the dist directory.
+
+Sign the code using codesign:
+
+  codesign -s 'Developer ID Application' dist/Yubico\ Authenticator.app --deep
+
+There is also a project file for use with
+http://s.sudre.free.fr/Packaging.html[Packages] located at
+`resources/yubioath.pkgproj`. This can be used to create an installer for
+distribution, which you should sign prior to distribution:
+
+  packagesbuild resources/osx-installer.pkgproj
+  productsign --sign 'Developer ID Installer' dist/Yubico\ Authenticator.pkg \
+      dist/yubioath-desktop-mac.pkg
+
+

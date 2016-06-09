@@ -1,17 +1,48 @@
 == Yubico Authenticator
-The Yubico Authenticator is a graphical desktop tool for generating Open
-AuTHentication (OATH) event-based HOTP and time-based TOTP one-time password
-codes, with the help of a YubiKey that protects the shared secrets.
+The Yubico Authenticator is a graphical desktop tool and command line tool for
+generating Open AuTHentication (OATH) event-based HOTP and time-based TOTP
+one-time password codes, with the help of a YubiKey that protects the shared
+secrets.
 
+=== Graphical interface
 image::usage.gif[]
+
+=== Command line interface
+  $ yubioath --help
+  Usage: yubioath [OPTIONS] COMMAND [ARGS]...
+
+  Commands:
+    delete    Deletes a credential from the YubiKey.
+    gui       Launches the Yubico Authenticator graphical interface.
+    password  Manage the password used to protect access to the YubiKey.
+    put       Stores a new OATH credential in the YubiKey.
+    reset     Deletes all stored OATH credentials from the YubiKey.
+    show      Print one or more codes from a YubiKey.
 
 === Installation
 The recommended way to install this software including dependencies is by using
-the provided precompiled binaries for your platform. For Windows and OS X (10.7 and above),
-there are installers available for download
+the provided precompiled binaries for your platform. For Windows and OS X (10.7
+and above), there are installers available for download
 https://developers.yubico.com/yubioath-desktop/Releases/[here]. For Ubuntu we
 have a custom PPA with a package for it
 https://launchpad.net/~yubico/+archive/ubuntu/stable[here].
+
+==== Using pip
+You can also install this project using pip, however the dependencies may
+require additional tools to build.  When installing from pip, you can choose
+whether or not you wish to install the graphical application, just the command
+line tool, or just the python library. You do so as follows:
+
+  $ pip install yubioath-desktop[cli,gui]  # This will install everything.
+  $ pip install yubioath-desktop  # This installs only the library.
+
+If you run into problems during installation it will likely be with one of the
+dependencies, such as PySide or pyscard. Please see the relevant documentation
+for installing each project, provided by those projects.
+
+You will also need libykpers, which is a C library used to manage credentials
+using the slot-based approach. Installation instructions for this project is
+availabe https://developers.yubico.com/yubikey-personalization/[here].
 
 === Supported devices
 Usage of this software requires a compatible YubiKey device. Yubico
@@ -37,65 +68,8 @@ NOTE: You may have to reboot your computer for the change to the libccid
 configuration to take effect!
 
 === Dependencies
-Yubico Authenticator requires PySide, yubikey-personalization, pyscard, and
-PyCrypto.
-
-=== Building binaries
-Binaries for Windows and OSX are built using PyInstaller.
-
-Get the source release file, yubioath-desktop-<version>.tar.gz, and extract it.
-It should contain a single directory, henceforth refered to as the release
-directory.
-
-When building binaries for Windows or OS X, you will need to include
-.dll/.dylib files from the yubikey-personalization project. Create a
-subdirectory called "lib" in the release directory. Download the correct binary
-release for your architecture from
-https://developers.yubico.com/yubikey-personalization/Releases/[here] and
-extract the contained .dll/.dylib files to the "lib" directory you created
-previously.
-
-==== Windows
-For Windows you will need python, PySide, pyscard, PyCrypto, PyInstaller and
-Pywin32 installed (32 or 64-bit versions depending on the architecture of the
-binary your are building).
-
-To sign the executable you will need signtool.exe (from the Windows SDK) either
-copied into the root as well or in a location in your PATH, as well as a
-certificate in the Windows certificate store that you wish to sign with.
-
-Run "python setup.py executable" from the main release directory.
-
-With NSIS installed, a Windows installer will be built as well.
-
-==== OSX
-For OSX you need python, pyside, pyscard, pycrypto, and pyinstaller installed.
-One way to install these dependencies is by using Homebrew and pip:
-
-  brew install python
-  brew install pyside
-  pip install PyInstaller
-  pip install pycrypto
-  pip install pyscard
-
-NOTE: Homebrew will build backwards-incompatible binaries, so the resulting
-build will not run on an older version of OSX.
-
-Run "python setup.py executable" from the main release directory. This
-will create an .app in the dist directory.
-
-Sign the code using codesign:
-
-  codesign -s 'Developer ID Application' dist/Yubico\ Authenticator.app --deep
-
-There is also a project file for use with
-http://s.sudre.free.fr/Packaging.html[Packages] located at
-`resources/yubioath.pkgproj`. This can be used to create an installer for
-distribution, which you should sign prior to distribution:
-
-  packagesbuild resources/osx-installer.pkgproj
-  productsign --sign 'Developer ID Installer' dist/Yubico\ Authenticator.pkg \
-      dist/yubioath-desktop-mac.pkg
+Yubico Authenticator requires click, PySide, yubikey-personalization, pyscard,
+and PyCrypto.
 
 === Working with the source code repository
 To work with the source code repository, if you wish to build your own release
@@ -108,15 +82,24 @@ other OSes may not be supported for development.
 Make sure to install the needed dependencies:
 
   sudo apt-get install python-setuptools python-crypto python-pyscard \
-      python-pyside pyside-tools libykpers-1-1 pcscd
+      python-pyside pyside-tools python-click libykpers-1-1 pcscd
 
 ==== Check out the code
 Run these commands to check out the source code:
 
-  git clone https://github.com/Yubico/yubioath-desktop.git
-  cd yubioath-desktop
-  git submodule init
-  git submodule update
+  git clone --recursive https://github.com/Yubico/yubioath-desktop.git
+
+==== Install the project using pip
+Install the project from the source code repository, in development mode:
+
+  cd yubioath-desktop  # cd into the git repository
+  python setup.py qt_resources  # Generate image resources (requires pyside-tools).
+  pip install -e .[cli,gui]  # Install the code in developer mode, using pip.
+
+You can now run the yubioath and yubioath-gui binaries, and anychanges you make
+to the code should be reflected in these commands. To remove the installation, run:
+
+  pip uninstall yubioath-desktop
 
 ==== Build a source release
 To build a source release tar ball, run this command:
