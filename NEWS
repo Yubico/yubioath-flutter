@@ -1,4 +1,4 @@
-* Version 3.0.0 (Unreleased)
+* Version 3.0.0 (released 2016-06-09)
  ** Added compatibility with Python 3 (Python 2 is still supported).
  ** Added support for generating alphanumeric Steam authenticator codes for entries prefixed with "Steam:".
  ** Added a confirmation dialog box when overwriting entries.
