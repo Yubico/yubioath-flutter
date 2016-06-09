@@ -127,7 +127,7 @@ ccid_disabled = '<b>CCID (smart card capabilities) is disabled on the ' \
     'able to store 2 credentials.<br><br>' \
     '<a href="%s">Learn how to enable CCID</a><br>'
 no_space="No space available"
-no_space_desc="There is no space available on your device. Maybe you can delete som entries?"
+no_space_desc="There is not enough space to add another credential on your device.\n\nTo create free space to add a new credential, delete those you no longer need."
 
 def _translate(qt):
     values = globals()

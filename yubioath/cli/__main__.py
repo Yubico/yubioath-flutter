@@ -166,8 +166,8 @@ def put(ctx, key, destination, name, oath_type, digits, imf, touch):
             controller.add_cred(dev, name, key, oath_type, digits=digits,
                                 imf=imf, require_touch=touch)
         except NoSpaceError:
-            ctx.fail('There is no space available on your device. Maybe you '
-                     'can delete som entries?')
+            ctx.fail('There is not enough space to add another credential on your device.'
+            'To create free space to add a new credential, delete those you no longer need.')
     else:
         controller.add_cred_legacy(destination, key, touch)
 
