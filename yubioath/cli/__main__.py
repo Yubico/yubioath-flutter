@@ -261,10 +261,10 @@ def gui(ctx, help):
         assert PySide
     except ImportError:
         ctx.fail('GUI requires PySide to run.')
-    from yubioath.gui import __main__ as gui_main
+    import yubioath.gui.__main__
     sys.argv.remove(ctx.command.name)
     sys.argv[0] = sys.argv[0] + ' ' + ctx.command.name
-    gui_main.main()
+    yubioath.gui.__main__.main()
 
 
 def intersects(a, b):
