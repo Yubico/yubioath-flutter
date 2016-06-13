@@ -48,10 +48,16 @@ Var STARTMENU_FOLDER
 
 
 Section "Kill process" KillProcess
-	${nsProcess::FindProcess} "yubioath.exe" $R0
+  ${nsProcess::FindProcess} "yubioath.exe" $R0
   ${If} $R0 == 0
-	  MessageBox MB_OK "Yubico Authenticator is currently running, an will now be closed."
+    DetailPrint "Yubico Authenticator (CLI) is running. Closing..."
     ${nsProcess::CloseProcess} "yubioath.exe" $R0
+    Sleep 2000
+  ${EndIf}
+  ${nsProcess::FindProcess} "yubioath-gui.exe" $R0
+  ${If} $R0 == 0
+    DetailPrint "Yubico Authenticator (GUI) is running. Closing..."
+    ${nsProcess::CloseProcess} "yubioath-gui.exe" $R0
     Sleep 2000
   ${EndIf}
 	${nsProcess::Unload}
@@ -91,7 +97,7 @@ Section
 ;Create shortcuts
   SetShellVarContext all
   SetOutPath "$SMPROGRAMS\$STARTMENU_FOLDER"
-  CreateShortCut "Yubico Authenticator.lnk" "$INSTDIR\yubioath.exe" "" "$INSTDIR\yubioath.exe" 0
+  CreateShortCut "Yubico Authenticator.lnk" "$INSTDIR\yubioath-gui.exe" "" "$INSTDIR\yubioath-gui.exe" 0
   CreateShortCut "Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 1
 !insertmacro MUI_STARTMENU_WRITE_END
 
@@ -105,11 +111,17 @@ Section "Uninstall"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\yubioath-desktop"
   DeleteRegKey HKLM "Software\Yubico\yubioath-desktop"
 
-  ; Kill process
+  ; Kill processes
   ${nsProcess::FindProcess} "yubioath.exe" $R0
   ${If} $R0 == 0
-    DetailPrint "Yubico Authenticator is running. Closing..."
+    DetailPrint "Yubico Authenticator (CLI) is running. Closing..."
     ${nsProcess::CloseProcess} "yubioath.exe" $R0
+    Sleep 2000
+  ${EndIf}
+  ${nsProcess::FindProcess} "yubioath-gui.exe" $R0
+  ${If} $R0 == 0
+    DetailPrint "Yubico Authenticator (GUI) is running. Closing..."
+    ${nsProcess::CloseProcess} "yubioath-gui.exe" $R0
     Sleep 2000
   ${EndIf}
   ${nsProcess::Unload}
