@@ -1,3 +1,8 @@
+* Version 3.0.1 (released 2016-06-13)
+ ** Bugfix release:
+    - Don't import OSX libs outside of OSX.
+    - Packaging related fixes.
+
 * Version 3.0.0 (released 2016-06-09)
  ** Added compatibility with Python 3 (Python 2 is still supported).
  ** Added support for generating alphanumeric Steam authenticator codes for entries prefixed with "Steam:".
@@ -46,6 +51,6 @@
  ** Minor fixes to platform specific quirks.
 
 * Version 2.0.0 (released 2015-06-15)
- ** Complete rewrite
+ ** Complete rewrite:
     - Supports all OATH-enabled YubiKeys, including YubiKey Standard.
     - New overhauled UI.
