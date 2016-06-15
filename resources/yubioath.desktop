@@ -2,7 +2,7 @@
 Name=Yubico Authenticator
 GenericName=Yubico Authenticator
 Comment=Graphical interface for displaying OATH codes with a Yubikey
-Exec=yubioath
+Exec=yubioath-gui
 Icon=yubioath
 StartupNotify=false
 Terminal=false
