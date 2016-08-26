@@ -263,7 +263,7 @@ def parse_bits(bits, version):
         while l > 0:
             if l >= 2:
                 num, bits = bits_to_int(bits[:11]), bits[11:]
-                buf += ALPHANUM[num / 45]
+                buf += ALPHANUM[num // 45]
                 buf += ALPHANUM[num % 45]
                 l -= 2
             else:
