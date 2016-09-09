@@ -30,7 +30,7 @@ from __future__ import print_function
 
 from .. import __version__
 from ..core.ccid import open_scard
-from ..core.standard import TYPE_HOTP, TYPE_TOTP
+from ..core.standard import ALG_SHA1, ALG_SHA256, TYPE_HOTP, TYPE_TOTP
 from ..core.utils import parse_uri
 from ..core.exc import NoSpaceError
 from .keystore import get_keystore
@@ -139,10 +139,12 @@ def show(ctx, query, slot1, slot2, timestamp):
               default='totp', help='Specify whether this is a time or counter-based OATH credential.')
 @click.option('-D', '--digits', type=click.Choice(['6', '8']), default='6',
               callback=lambda c, p, v: int(v), help='Number of digits.')
+@click.option('-H', '--hmac-algorithm', type=click.Choice(['SHA1', 'SHA256']), default='SHA1',
+              help='HMAC algorithm for OTP generation.')
 @click.option('-I', '--imf', type=int, default=0, help='Initial moving factor.')
 @click.option('-T', '--touch', is_flag=True, help='Require touch.')
 @click.pass_context
-def put(ctx, key, destination, name, oath_type, digits, imf, touch):
+def put(ctx, key, destination, name, oath_type, hmac_algorithm, digits, imf, touch):
     """
     Stores a new OATH credential in the YubiKey.
     """
@@ -151,8 +153,22 @@ def put(ctx, key, destination, name, oath_type, digits, imf, touch):
         key = parsed['secret']
         name = parsed.get('name')
         oath_type = parsed.get('type')
+        hmac_algorithm = parsed.get('algorithm', 'SHA1').upper()
         digits = int(parsed.get('digits', '6'))
         imf = int(parsed.get('counter', '0'))
+
+    if oath_type not in ['totp', 'hotp']:
+        ctx.fail('Invalid OATH credential type')
+
+    if hmac_algorithm == 'SHA1':
+        algo = ALG_SHA1
+    elif hmac_algorithm == 'SHA256':
+        algo = ALG_SHA256
+    else:
+        ctx.fail('Invalid HMAC algorithm')
+
+    if digits not in [6, 8]:
+        ctx.fail('Invalid number of digits for OTP')
 
     digits = digits or 6
     unpadded = key.upper()
@@ -165,7 +181,7 @@ def put(ctx, key, destination, name, oath_type, digits, imf, touch):
         oath_type = TYPE_TOTP if oath_type == 'totp' else TYPE_HOTP
         try:
             controller.add_cred(dev, name, key, oath_type, digits=digits,
-                                imf=imf, require_touch=touch)
+                                imf=imf, algo=algo, require_touch=touch)
         except NoSpaceError:
             ctx.fail('There is not enough space to add another credential on your device.'
             'To create free space to add a new credential, delete those you no longer need.')
