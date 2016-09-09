@@ -149,10 +149,10 @@ def put(ctx, key, destination, name, oath_type, digits, imf, touch):
     if key.startswith('otpauth://'):
         parsed = parse_uri(key)
         key = parsed['secret']
-        name = name or parsed.get('name')
+        name = parsed.get('name')
         oath_type = parsed.get('type')
-        digits = digits or int(parsed.get('digits', '6'))
-        imf = imf or int(parsed.get('counter', '0'))
+        digits = int(parsed.get('digits', '6'))
+        imf = int(parsed.get('counter', '0'))
 
     digits = digits or 6
     unpadded = key.upper()
