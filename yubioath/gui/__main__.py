@@ -221,6 +221,7 @@ class YubiOathApplication(qt.Application):
                         self._controller.add_cred(
                         dialog.name, dialog.key, oath_type=dialog.oath_type,
                         digits=dialog.n_digits,
+                        algo=dialog.algorithm,
                         require_touch=dialog.require_touch)
                     except NoSpaceError:
                         QtGui.QMessageBox.critical(self.window, m.no_space, m.no_space_desc)
