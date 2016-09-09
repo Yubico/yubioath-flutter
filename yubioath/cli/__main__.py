@@ -167,6 +167,11 @@ def put(ctx, key, destination, name, oath_type, hmac_algorithm, digits, imf, tou
     else:
         ctx.fail('Invalid HMAC algorithm')
 
+    if digits == 5 and name.startswith('Steam:'):
+        # Steam is a special case where we allow the otpauth URI to contain a 'digits'
+        # value of '5'.
+        digits = 6
+
     if digits not in [6, 8]:
         ctx.fail('Invalid number of digits for OTP')
 
