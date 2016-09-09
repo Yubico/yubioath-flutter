@@ -136,7 +136,7 @@ def show(ctx, query, slot1, slot2, timestamp):
 @click.option('-S', '--destination', type=click.IntRange(0, 2), default=0)
 @click.option('-N', '--name', required=False, help='Credential name.')
 @click.option('-A', '--oath-type', type=click.Choice(['totp', 'hotp']),
-              default='totp', help='OATH algorithm.')
+              default='totp', help='Specify whether this is a time or counter-based OATH credential.')
 @click.option('-D', '--digits', type=click.Choice(['6', '8']), default='6',
               callback=lambda c, p, v: int(v), help='Number of digits.')
 @click.option('-I', '--imf', type=int, default=0, help='Initial moving factor.')
