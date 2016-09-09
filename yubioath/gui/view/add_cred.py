@@ -132,13 +132,26 @@ class AddCredDialog(qt.Dialog):
 
     def _handle_qr(self, parsed):
         if parsed:
+            otp_type = parsed['type'].lower()
+            n_digits = parsed.get('digits', '6')
+            algo = parsed.get('algorithm', 'SHA1').upper()
+
+            if otp_type not in ['totp', 'hotp']:
+                QtGui.QMessageBox.warning(self, m.qr_invalid_type, m.qr_invalid_type_desc)
+                return
+            if n_digits not in ['6', '8']:
+                QtGui.QMessageBox.warning(self, m.qr_invalid_digits, m.qr_invalid_digits_desc)
+                return
+            if algo not in ['SHA1', 'SHA256']:
+                # RFC6238 says SHA512 is also supported, but it's not implemented here yet.
+                QtGui.QMessageBox.warning(self, m.qr_invalid_algo, m.qr_invalid_algo_desc)
+                return
+
             self._cred_name.setText(parsed['name'])
             self._cred_key.setText(parsed['secret'])
-            n_digits = parsed.get('digits', '6')
             self._n_digits.setCurrentIndex(0 if n_digits == '6' else 1)
-            algo = parsed.get('algorithm', 'SHA1').upper()
             self._algorithm.setCurrentIndex(0 if algo == 'SHA1' else 1)
-            if parsed['type'] == 'totp':
+            if otp_type == 'totp':
                 self._cred_totp.setChecked(True)
             else:
                 self._cred_hotp.setChecked(True)
