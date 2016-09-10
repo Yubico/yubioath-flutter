@@ -84,8 +84,14 @@ class SearchBox(QtGui.QWidget):
         layout = QtGui.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
+        self._model = QtGui.QStringListModel()
+        self._completer = QtGui.QCompleter()
+        self._completer.setModel(self._model)
+        self._completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+
         self._lineedit = QtGui.QLineEdit()
         self._lineedit.setPlaceholderText(m.search)
+        self._lineedit.setCompleter(self._completer)
         self._lineedit.textChanged.connect(self._text_changed)
         layout.addWidget(self._lineedit)
 
@@ -108,6 +114,9 @@ class SearchBox(QtGui.QWidget):
     def _filter_changed(self):
         search_filter = self._lineedit.text()
         self._codeswidget.set_search_filter(search_filter)
+
+    def set_string_list(self, strings):
+        self._model.setStringList(strings)
 
 
 class CodeMenu(QtGui.QMenu):
@@ -294,6 +303,16 @@ class CodesWidget(QtGui.QWidget):
         else:
             self._timeleft.set_timeleft(0)
 
+    def rebuild_completions(self):
+        creds = self._controller.credentials
+        stringlist = set()
+        if not creds:
+            return
+        for cred in creds:
+            cred_name = cred.cred.name
+            stringlist |= set(cred_name.split(':', 1))
+        self._searchbox.set_string_list(list(stringlist))
+
     def set_search_filter(self, search_filter):
         if len(search_filter) < 1:
             search_filter = None
@@ -303,6 +322,7 @@ class CodesWidget(QtGui.QWidget):
     def refresh(self):
         self._scroll_area.takeWidget().deleteLater()
         creds = self._controller.credentials
+        self.rebuild_completions()
         self._scroll_area.setWidget(
             CodesList(self._controller.timer, creds or [], self.refresh_timer, self._filter))
         w = self._scroll_area.widget().minimumSizeHint().width()
