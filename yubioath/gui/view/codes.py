@@ -74,6 +74,42 @@ class TimeleftBar(QtGui.QProgressBar):
             self.expired.emit()
 
 
+class SearchBox(QtGui.QWidget):
+
+    def __init__(self, codes):
+        super(SearchBox, self).__init__()
+
+        self._codeswidget = codes
+
+        layout = QtGui.QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        self._lineedit = QtGui.QLineEdit()
+        self._lineedit.setPlaceholderText(m.search)
+        self._lineedit.textChanged.connect(self._text_changed)
+        layout.addWidget(self._lineedit)
+
+        self._shortcut_focus = QtGui.QShortcut(
+            QtGui.QKeySequence.Find,
+            self._lineedit, self._lineedit.setFocus)
+        self._shortcut_clear = QtGui.QShortcut(
+            QtGui.QKeySequence(self.tr("Esc")),
+            self._lineedit, self._lineedit.clear)
+
+        self._timer = QtCore.QTimer()
+        self._timer.setSingleShot(True)
+        self._timer.setInterval(300)
+        self._timer.timeout.connect(self._filter_changed)
+
+    def _text_changed(self, query):
+        self._timer.stop()
+        self._timer.start()
+
+    def _filter_changed(self):
+        search_filter = self._lineedit.text()
+        self._codeswidget.set_search_filter(search_filter)
+
+
 class CodeMenu(QtGui.QMenu):
 
     def __init__(self, parent):
@@ -190,7 +226,7 @@ class Code(QtGui.QWidget):
 
 class CodesList(QtGui.QWidget):
 
-    def __init__(self, timer, credentials=[], on_change=None):
+    def __init__(self, timer, credentials=[], on_change=None, search_filter=None):
         super(CodesList, self).__init__()
 
         layout = QtGui.QVBoxLayout(self)
@@ -198,6 +234,9 @@ class CodesList(QtGui.QWidget):
         layout.setSpacing(0)
 
         for cred in credentials:
+            if search_filter is not None and \
+               search_filter.lower() not in cred.cred.name.lower():
+                continue
             layout.addWidget(Code(cred, timer, on_change))
             line = QtGui.QFrame()
             line.setFrameShape(QtGui.QFrame.HLine)
@@ -223,12 +262,15 @@ class CodesWidget(QtGui.QWidget):
         controller.refreshed.connect(self.refresh)
         controller.timer.time_changed.connect(self.refresh_timer)
 
+        self._filter = None
+
         self._build_ui()
         self.refresh()
         self.refresh_timer()
 
     def _build_ui(self):
         layout = QtGui.QVBoxLayout(self)
+
         self._timeleft = TimeleftBar()
         layout.addWidget(self._timeleft)
 
@@ -241,6 +283,9 @@ class CodesWidget(QtGui.QWidget):
         self._scroll_area.setWidget(QtGui.QWidget())
         layout.addWidget(self._scroll_area)
 
+        self._searchbox = SearchBox(self)
+        layout.addWidget(self._searchbox)
+
     def refresh_timer(self, timestamp=None):
         if timestamp is None:
             timestamp = self._controller.timer.time
@@ -249,11 +294,17 @@ class CodesWidget(QtGui.QWidget):
         else:
             self._timeleft.set_timeleft(0)
 
+    def set_search_filter(self, search_filter):
+        if len(search_filter) < 1:
+            search_filter = None
+        self._filter = search_filter
+        self.refresh()
+
     def refresh(self):
         self._scroll_area.takeWidget().deleteLater()
         creds = self._controller.credentials
         self._scroll_area.setWidget(
-            CodesList(self._controller.timer, creds or [], self.refresh_timer))
+            CodesList(self._controller.timer, creds or [], self.refresh_timer, self._filter))
         w = self._scroll_area.widget().minimumSizeHint().width()
         w += self._scroll_area.verticalScrollBar().width()
         self._scroll_area.setMinimumWidth(w)
