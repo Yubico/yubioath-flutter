@@ -415,4 +415,6 @@ class GuiController(QtCore.QObject, Controller):
                 self._keystore.put(dev.id, key, remember)
 
     def forget_passwords(self):
+        self._reader = None
+        self._creds = None
         self._keystore.forget()
