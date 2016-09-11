@@ -417,4 +417,5 @@ class GuiController(QtCore.QObject, Controller):
     def forget_passwords(self):
         self._reader = None
         self._creds = None
+        self.watcher.close()
         self._keystore.forget()

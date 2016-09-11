@@ -31,6 +31,17 @@ from smartcard.Exceptions import SmartcardException
 
 from yubioath.yubicommon.compat import byte2int, int2byte
 
+__all__ = ['ScardDevice', 'open_scard']
+
+# Mimics the weakref object interface while using strong references. Useful for
+# places where you actually need a strong reference but the interface you're
+# using only supports weakrefs.
+class strongref(object):
+    def __init__(self, value):
+        self._value = value
+
+    def __call__(self):
+        return self._value
 
 class ScardDevice(object):
 
@@ -45,12 +56,14 @@ class ScardDevice(object):
         header = [cl, ins, p1, p2, len(data)]
         # from binascii import b2a_hex
         # print("SEND:", b2a_hex(''.join(map(int2byte, header)) + data))
-        resp, sw1, sw2 = self._conn.transmit(header + [byte2int(b) for b in data])
+        resp, sw1, sw2 = self._conn().transmit(header + [byte2int(b) for b in data])
         # print("RECV:", b2a_hex(b''.join(map(int2byte, resp + [sw1, sw2]))))
         return b''.join(int2byte(i) for i in resp), sw1 << 8 | sw2
 
     def close(self):
-        self._conn.disconnect()
+        conn = self._conn()
+        if conn:
+            self._conn().disconnect()
 
     def __del__(self):
         self.close()
@@ -63,6 +76,6 @@ def open_scard(name='Yubikey'):
             conn = reader.createConnection()
             try:
                 conn.connect()
-                return ScardDevice(conn)
+                return ScardDevice(strongref(conn))
             except SmartcardException:
                 pass
