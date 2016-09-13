@@ -87,6 +87,7 @@ class SearchBox(QtGui.QWidget):
         self._model = QtGui.QStringListModel()
         self._completer = QtGui.QCompleter()
         self._completer.setModel(self._model)
+        self._completer.setCompletionMode(QtGui.QCompleter.InlineCompletion)
         self._completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
 
         self._lineedit = QtGui.QLineEdit()
