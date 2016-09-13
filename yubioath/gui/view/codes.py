@@ -98,7 +98,7 @@ class SearchBox(QtGui.QWidget):
 
         self._shortcut_focus = QtGui.QShortcut(
             QtGui.QKeySequence.Find,
-            self._lineedit, self._lineedit.setFocus)
+            self._lineedit, self._set_focus)
         self._shortcut_clear = QtGui.QShortcut(
             QtGui.QKeySequence(self.tr("Esc")),
             self._lineedit, self._lineedit.clear)
@@ -107,6 +107,10 @@ class SearchBox(QtGui.QWidget):
         self._timer.setSingleShot(True)
         self._timer.setInterval(300)
         self._timer.timeout.connect(self._filter_changed)
+
+    def _set_focus(self):
+        self._lineedit.setFocus()
+        self._lineedit.selectAll()
 
     def _text_changed(self, query):
         self._timer.stop()
