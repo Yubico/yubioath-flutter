@@ -25,7 +25,7 @@
 # for the parts of OpenSSL used as well as that of the covered work.
 
 from yubioath.yubicommon import qt
-from ...core.standard import TYPE_TOTP, TYPE_HOTP
+from ...core.standard import ALG_SHA1, ALG_SHA256, TYPE_TOTP, TYPE_HOTP
 from ...core.utils import parse_uri
 from .. import messages as m
 from ..qrparse import parse_qr_codes
@@ -99,6 +99,10 @@ class AddCredDialog(qt.Dialog):
         self._n_digits.addItems(['6', '8'])
         layout.addRow(m.n_digits, self._n_digits)
 
+        self._algorithm = QtGui.QComboBox()
+        self._algorithm.addItems(['SHA-1', 'SHA-256'])
+        layout.addRow(m.algorithm, self._algorithm)
+
         self._require_touch = QtGui.QCheckBox(m.require_touch)
         # Touch-required support not available before 4.2.6
         if self._version >= (4, 2, 6):
@@ -128,11 +132,26 @@ class AddCredDialog(qt.Dialog):
 
     def _handle_qr(self, parsed):
         if parsed:
+            otp_type = parsed['type'].lower()
+            n_digits = parsed.get('digits', '6')
+            algo = parsed.get('algorithm', 'SHA1').upper()
+
+            if otp_type not in ['totp', 'hotp']:
+                QtGui.QMessageBox.warning(self, m.qr_invalid_type, m.qr_invalid_type_desc)
+                return
+            if n_digits not in ['6', '8']:
+                QtGui.QMessageBox.warning(self, m.qr_invalid_digits, m.qr_invalid_digits_desc)
+                return
+            if algo not in ['SHA1', 'SHA256']:
+                # RFC6238 says SHA512 is also supported, but it's not implemented here yet.
+                QtGui.QMessageBox.warning(self, m.qr_invalid_algo, m.qr_invalid_algo_desc)
+                return
+
             self._cred_name.setText(parsed['name'])
             self._cred_key.setText(parsed['secret'])
-            n_digits = parsed.get('digits', '6')
             self._n_digits.setCurrentIndex(0 if n_digits == '6' else 1)
-            if parsed['type'] == 'totp':
+            self._algorithm.setCurrentIndex(0 if algo == 'SHA1' else 1)
+            if otp_type == 'totp':
                 self._cred_totp.setChecked(True)
             else:
                 self._cred_hotp.setChecked(True)
@@ -176,6 +195,10 @@ class AddCredDialog(qt.Dialog):
     @property
     def n_digits(self):
         return int(self._n_digits.currentText())
+
+    @property
+    def algorithm(self):
+        return ALG_SHA1 if self._algorithm.currentIndex() == 0 else ALG_SHA256
 
     @property
     def require_touch(self):
