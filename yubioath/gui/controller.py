@@ -330,15 +330,7 @@ class GuiController(QtCore.QObject, Controller):
     def read_slot_otp(self, cred, timestamp=None, use_touch=False):
         return super(GuiController, self).read_slot_otp(cred, timestamp, False)
 
-    def refresh_codes(self, timestamp=None, lock=None):
-        if not self._reader and self.watcher.reader:
-            return self._on_reader(self.watcher, self.watcher.reader, lock)
-        elif is_minimized(self._app.window):
-            self._needs_read = True
-            return
-        lock = self.grab_lock(lock, True)
-        if not lock:
-            return
+    def _refresh_codes_locked(self, timestamp=None, lock=None):
         device = self.watcher.open()
         self._needs_read = bool(self._reader and device is None)
         timestamp = timestamp or self.timer.time
@@ -349,11 +341,22 @@ class GuiController(QtCore.QObject, Controller):
             creds = []
         self._set_creds(creds)
 
+    def refresh_codes(self, timestamp=None, lock=None):
+        if not self._reader and self.watcher.reader:
+            return self._on_reader(self.watcher, self.watcher.reader, lock)
+        elif is_minimized(self._app.window):
+            self._needs_read = True
+            return
+        lock = self.grab_lock(lock, True)
+        if not lock:
+            return
+        self._app.worker.post_bg((self._refresh_codes_locked, timestamp, lock))
+
     def timerEvent(self, event):
         if not is_minimized(self._app.window):
             timestamp = self.timer.time
             if self._reader and self._needs_read:
-                self._app.worker.post_bg(self.refresh_codes)
+                self.refresh_codes()
             elif self._reader is None:
                 if self.otp_enabled:
                     def refresh_otp():
