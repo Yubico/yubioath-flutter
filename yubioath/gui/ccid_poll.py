@@ -25,10 +25,14 @@
 # for the parts of OpenSSL used as well as that of the covered work.
 
 from .ccid import CardStatus
-from smartcard.Exceptions import SmartcardException
-from smartcard.scard import *
+from yubioath.yubicommon.compat import byte2int, int2byte
+from smartcard.scard import (
+    SCardTransmit, SCardGetErrorMessage, SCardConnect, SCardDisconnect,
+    SCardEstablishContext, SCardReleaseContext, SCardListReaders,
+    SCARD_S_SUCCESS, SCARD_UNPOWER_CARD, SCARD_SCOPE_USER, SCARD_SHARE_SHARED,
+    SCARD_PROTOCOL_T0, SCARD_PROTOCOL_T1
+)
 from PySide import QtCore
-import smartcard.util
 import threading
 import time
 
@@ -46,13 +50,13 @@ class LLScardDevice(object):
         self._protocol = protocol
 
     def send_apdu(self, cl, ins, p1, p2, data):
-        apdu = [cl, ins, p1, p2, len(data)] + map(ord, data)
+        apdu = [cl, ins, p1, p2, len(data)] + [byte2int(b) for b in data]
         hresult, response = SCardTransmit(self._card, self._protocol, apdu)
         if hresult != SCARD_S_SUCCESS:
             raise Exception('Failed to transmit: ' +
                             SCardGetErrorMessage(hresult))
         status = response[-2] << 8 | response[-1]
-        return ''.join(map(chr, response[:-2])), status
+        return b''.join(int2byte(i) for i in response[:-2]), status
 
     def __del__(self):
         self.close()

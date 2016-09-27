@@ -24,9 +24,7 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from ..core.standard import (YubiOathCcid, TYPE_TOTP, TYPE_HOTP,
-                             Credential as StdCredential)
-from ..core.legacy_otp import LegacyCredential
+from ..core.standard import (YubiOathCcid, TYPE_HOTP)
 from ..core.controller import Controller
 from ..core.exc import CardError, DeviceLockedError
 from .ccid import CardStatus
@@ -222,7 +220,7 @@ class GuiController(QtCore.QObject, Controller):
         if legacy:
             return Capabilities(None, legacy.slot_status(), (0, 0, 0))
         return Capabilities(None, None, (0, 0, 0))
-    
+
     def get_entry_names(self):
         return names(self._creds)
 
