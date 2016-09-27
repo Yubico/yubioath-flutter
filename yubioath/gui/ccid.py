@@ -80,6 +80,7 @@ class CardWatcher(QtCore.QObject):
         super(CardWatcher, self).__init__(parent)
 
         self._status = CardStatus.NoCard
+        self._device = lambda: None
         self.reader_name = reader_name
         self._callback = callback or (lambda _: _)
         self._reader = None
@@ -121,12 +122,18 @@ class CardWatcher(QtCore.QObject):
         self._callback(self, value)
 
     def open(self):
+        dev = self._device()
+        if dev is not None:
+            return dev
+
         if self._reader:
             conn = self._reader.createConnection()
             try:
                 conn.connect()
                 self._set_status(CardStatus.Present)
-                return ScardDevice(conn)
+                dev = ScardDevice(conn)
+                self._device = weakref.ref(dev)
+                return dev
             except SmartcardException:
                 self._set_status(CardStatus.InUse)
 

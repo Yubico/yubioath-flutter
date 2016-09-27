@@ -243,6 +243,8 @@ class CodesList(QtGui.QWidget):
     def __init__(self, timer, credentials=[], on_change=None, search_filter=None):
         super(CodesList, self).__init__()
 
+        self._codes = []
+
         layout = QtGui.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
@@ -251,7 +253,9 @@ class CodesList(QtGui.QWidget):
             if search_filter is not None and \
                search_filter.lower() not in cred.cred.name.lower():
                 continue
-            layout.addWidget(Code(cred, timer, on_change))
+            code = Code(cred, timer, on_change)
+            layout.addWidget(code)
+            self._codes.append(code)
             line = QtGui.QFrame()
             line.setFrameShape(QtGui.QFrame.HLine)
             line.setFrameShadow(QtGui.QFrame.Sunken)
@@ -265,6 +269,11 @@ class CodesList(QtGui.QWidget):
             layout.addStretch()
 
         layout.addStretch()
+
+    def __del__(self):
+        for code in self._codes:
+            del code.entry
+            del code
 
 
 class CodesWidget(QtGui.QWidget):

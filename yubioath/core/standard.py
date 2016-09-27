@@ -215,7 +215,7 @@ class YubiOathCcid(object):
         self._send(INS_DELETE, data)
 
     def calculate(self, name, oath_type, timestamp=None):
-        challenge = time_challenge(timestamp) if oath_type == TYPE_TOTP else ''
+        challenge = time_challenge(timestamp) if oath_type == TYPE_TOTP else b''
         data = der_pack(TAG_NAME, name.encode('utf8'), TAG_CHALLENGE, challenge)
         resp = self._send(INS_CALCULATE, data)
         # Manual dynamic truncation required for Steam entries

@@ -45,7 +45,8 @@ class ScardDevice(object):
         header = [cl, ins, p1, p2, len(data)]
         # from binascii import b2a_hex
         # print("SEND:", b2a_hex(''.join(map(int2byte, header)) + data))
-        resp, sw1, sw2 = self._conn.transmit(header + [byte2int(b) for b in data])
+        resp, sw1, sw2 = self._conn.transmit(
+            header + [byte2int(b) for b in data])
         # print("RECV:", b2a_hex(b''.join(map(int2byte, resp + [sw1, sw2]))))
         return b''.join(int2byte(i) for i in resp), sw1 << 8 | sw2
 

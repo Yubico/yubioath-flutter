@@ -75,7 +75,8 @@ class CredEntry(QtCore.QObject):
         return self.cred.touch or self.cred.oath_type == TYPE_HOTP
 
     def calculate(self):
-        dialog = QtGui.QMessageBox(get_active_window())
+        window = get_active_window()
+        dialog = QtGui.QMessageBox(window)
         dialog.setWindowTitle(m.touch_title)
         dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
         dialog.setIcon(QtGui.QMessageBox.Information)
@@ -87,7 +88,7 @@ class CredEntry(QtCore.QObject):
                 timer.stop()
             dialog.accept()
             if isinstance(code, Exception):
-                QtGui.QMessageBox.warning(get_active_window(), m.error,
+                QtGui.QMessageBox.warning(window, m.error,
                                           code.message)
             else:
                 self.code = code
@@ -97,7 +98,7 @@ class CredEntry(QtCore.QObject):
             dialog.exec_()
         elif self.cred.oath_type == TYPE_HOTP:
             # HOTP might require touch, we don't know. Assume yes after 500ms.
-            timer = QtCore.QTimer(self)
+            timer = QtCore.QTimer(window)
             timer.setSingleShot(True)
             timer.timeout.connect(dialog.exec_)
             timer.start(500)
@@ -184,13 +185,13 @@ class GuiController(QtCore.QObject, Controller):
     def mute_ccid_disabled_warning(self, value):
         self._settings['mute_ccid_disabled_warning'] = value
 
-    def unlock(self, dev):
-        if dev.locked:
-            key = self._keystore.get(dev.id)
+    def unlock(self, std):
+        if std.locked:
+            key = self._keystore.get(std.id)
             if not key:
-                self._app.worker.post_fg((self._init_dev, dev))
+                self._app.worker.post_fg((self._init_std, std))
                 return False
-            dev.unlock(key)
+            std.unlock(key)
         return True
 
     def grab_lock(self, lock=None, try_lock=False):
@@ -234,8 +235,8 @@ class GuiController(QtCore.QObject, Controller):
                 else:
                     ccid_dev = watcher.open()
                     if ccid_dev:
-                        dev = YubiOathCcid(ccid_dev)
-                        self._app.worker.post_fg((self._init_dev, dev))
+                        std = YubiOathCcid(ccid_dev)
+                        self._app.worker.post_fg((self._init_std, std))
                     else:
                         self._needs_read = True
             elif self._needs_read:
@@ -245,22 +246,22 @@ class GuiController(QtCore.QObject, Controller):
             self._creds = None
             self.refreshed.emit()
 
-    def _init_dev(self, dev):
+    def _init_std(self, std):
         lock = self.grab_lock()
-        while dev.locked:
-            if self._keystore.get(dev.id) is None:
+        while std.locked:
+            if self._keystore.get(std.id) is None:
                 dialog = GetPasswordDialog(get_active_window())
                 if dialog.exec_():
-                    self._keystore.put(dev.id,
-                                       dev.calculate_key(dialog.password),
+                    self._keystore.put(std.id,
+                                       std.calculate_key(dialog.password),
                                        dialog.remember)
                 else:
                     return
             try:
-                dev.unlock(self._keystore.get(dev.id))
+                std.unlock(self._keystore.get(std.id))
             except CardError:
-                self._keystore.delete(dev.id)
-        self.refresh_codes(self.timer.time, lock)
+                self._keystore.delete(std.id)
+        self.refresh_codes(self.timer.time, lock, std)
 
     def _await(self):
         self._creds = None
@@ -328,8 +329,11 @@ class GuiController(QtCore.QObject, Controller):
     def read_slot_otp(self, cred, timestamp=None, use_touch=False):
         return super(GuiController, self).read_slot_otp(cred, timestamp, False)
 
-    def _refresh_codes_locked(self, timestamp=None, lock=None):
-        device = self.watcher.open()
+    def _refresh_codes_locked(self, timestamp=None, lock=None, std=None):
+        if not std:
+            device = self.watcher.open()
+        else:
+            device = std._device
         self._needs_read = bool(self._reader and device is None)
         timestamp = timestamp or self.timer.time
         try:
@@ -339,7 +343,7 @@ class GuiController(QtCore.QObject, Controller):
             creds = []
         self._set_creds(creds)
 
-    def refresh_codes(self, timestamp=None, lock=None):
+    def refresh_codes(self, timestamp=None, lock=None, std=None):
         if not self._reader and self.watcher.reader:
             return self._on_reader(self.watcher, self.watcher.reader, lock)
         elif is_minimized(self._app.window):
@@ -348,7 +352,8 @@ class GuiController(QtCore.QObject, Controller):
         lock = self.grab_lock(lock, True)
         if not lock:
             return
-        self._app.worker.post_bg((self._refresh_codes_locked, timestamp, lock))
+        self._app.worker.post_bg((self._refresh_codes_locked, timestamp, lock,
+                                  std))
 
     def timerEvent(self, event):
         if not is_minimized(self._app.window):
@@ -417,3 +422,4 @@ class GuiController(QtCore.QObject, Controller):
 
     def forget_passwords(self):
         self._keystore.forget()
+        self._set_creds([])
