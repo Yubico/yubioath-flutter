@@ -166,6 +166,12 @@ class YubiOathApplication(qt.Application):
         quit_action.triggered.connect(self._systray.quit)
         file_menu.addAction(quit_action)
 
+        if sys.platform == "darwin":
+            close_action = QtGui.QAction(m.action_close, file_menu)
+            close_action.setShortcut(QtGui.QKeySequence.Close)
+            close_action.triggered.connect(self.window.hide)
+            file_menu.addAction(close_action)
+
         help_menu = self.window.menuBar().addMenu(m.menu_help)
         about_action = QtGui.QAction(m.action_about, help_menu)
         about_action.triggered.connect(self._about)
