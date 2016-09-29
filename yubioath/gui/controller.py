@@ -365,8 +365,8 @@ class GuiController(QtCore.QObject, Controller):
                     def refresh_otp():
                         lock = self.grab_lock(try_lock=True)
                         if lock:
-                            read = self.read_creds(None, self.slot1, self.slot2,
-                                                   timestamp, False)
+                            read = self.read_creds(
+                                None, self.slot1, self.slot2, timestamp, False)
                             self._set_creds(read)
                     self._app.worker.post_bg(refresh_otp)
                 else:

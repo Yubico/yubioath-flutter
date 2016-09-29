@@ -135,16 +135,21 @@ def show(ctx, query, slot1, slot2, timestamp):
 @click.argument('key')
 @click.option('-S', '--destination', type=click.IntRange(0, 2), default=0)
 @click.option('-N', '--name', required=False, help='Credential name.')
-@click.option('-A', '--oath-type', type=click.Choice(['totp', 'hotp']),
-              default='totp', help='Specify whether this is a time or counter-based OATH credential.')
+@click.option(
+    '-A', '--oath-type', type=click.Choice(['totp', 'hotp']), default='totp',
+    help='Specify whether this is a time or counter-based OATH credential.')
 @click.option('-D', '--digits', type=click.Choice(['6', '8']), default='6',
               callback=lambda c, p, v: int(v), help='Number of digits.')
-@click.option('-H', '--hmac-algorithm', type=click.Choice(['SHA1', 'SHA256']), default='SHA1',
-              help='HMAC algorithm for OTP generation.')
-@click.option('-I', '--imf', type=int, default=0, help='Initial moving factor.')
+@click.option(
+    '-H', '--hmac-algorithm', type=click.Choice(['SHA1', 'SHA256']),
+    default='SHA1', help='HMAC algorithm for OTP generation.')
+@click.option(
+    '-I', '--imf', type=int, default=0, help='Initial moving factor.')
 @click.option('-T', '--touch', is_flag=True, help='Require touch.')
 @click.pass_context
-def put(ctx, key, destination, name, oath_type, hmac_algorithm, digits, imf, touch):
+def put(
+    ctx, key, destination, name, oath_type,
+        hmac_algorithm, digits, imf, touch):
     """
     Stores a new OATH credential in the YubiKey.
     """
@@ -168,8 +173,8 @@ def put(ctx, key, destination, name, oath_type, hmac_algorithm, digits, imf, tou
         ctx.fail('Invalid HMAC algorithm')
 
     if digits == 5 and name.startswith('Steam:'):
-        # Steam is a special case where we allow the otpauth URI to contain a 'digits'
-        # value of '5'.
+        # Steam is a special case where we allow the otpauth
+        # URI to contain a 'digits' value of '5'.
         digits = 6
 
     if digits not in [6, 8]:
@@ -188,8 +193,10 @@ def put(ctx, key, destination, name, oath_type, hmac_algorithm, digits, imf, tou
             controller.add_cred(dev, name, key, oath_type, digits=digits,
                                 imf=imf, algo=algo, require_touch=touch)
         except NoSpaceError:
-            ctx.fail('There is not enough space to add another credential on your device.'
-            'To create free space to add a new credential, delete those you no longer need.')
+            ctx.fail(
+                'There is not enough space to add another credential on your'
+                ' device. To create free space to add a new '
+                'credential, delete those you no longer need.')
     else:
         controller.add_cred_legacy(destination, key, touch)
 

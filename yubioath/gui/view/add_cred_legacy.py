@@ -121,8 +121,8 @@ class AddCredDialog(qt.Dialog):
                 n_digits = parsed.get('digits', '6')
                 self._n_digits.setCurrentIndex(0 if n_digits == '6' else 1)
         else:
-            QtGui.QMessageBox.warning(self, m.qr_not_found, m.qr_not_found_desc)
-
+            QtGui.QMessageBox.warning(
+                self, m.qr_not_found, m.qr_not_found_desc)
 
     @property
     def key(self):

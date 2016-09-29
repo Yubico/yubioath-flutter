@@ -26,7 +26,7 @@
 
 from PySide import QtGui, QtCore
 from .. import messages as m
-from ...core.standard import TYPE_TOTP, TYPE_HOTP
+from ...core.standard import TYPE_HOTP
 from yubioath.yubicommon.qt.utils import connect_once
 from time import time
 
@@ -240,7 +240,8 @@ class Code(QtGui.QWidget):
 
 class CodesList(QtGui.QWidget):
 
-    def __init__(self, timer, credentials=[], on_change=None, search_filter=None):
+    def __init__(
+            self, timer, credentials=[], on_change=None, search_filter=None):
         super(CodesList, self).__init__()
 
         self._codes = []
@@ -338,7 +339,11 @@ class CodesWidget(QtGui.QWidget):
         creds = self._controller.credentials
         self.rebuild_completions()
         self._scroll_area.setWidget(
-            CodesList(self._controller.timer, creds or [], self.refresh_timer, self._filter))
+            CodesList(
+                self._controller.timer,
+                creds or [],
+                self.refresh_timer,
+                self._filter))
         w = self._scroll_area.widget().minimumSizeHint().width()
         w += self._scroll_area.verticalScrollBar().width()
         self._scroll_area.setMinimumWidth(w)

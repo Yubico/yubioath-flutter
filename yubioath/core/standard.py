@@ -27,8 +27,9 @@
 from __future__ import print_function, division
 
 from .exc import CardError, DeviceLockedError, NoSpaceError
-from .utils import (der_read, der_pack, hmac_sha1, derive_key, get_random_bytes,
-                    time_challenge, parse_truncated, format_code)
+from .utils import (
+    der_read, der_pack, hmac_sha1, derive_key, get_random_bytes,
+    time_challenge, parse_truncated, format_code)
 from yubioath.yubicommon.compat import int2byte, byte2int
 import hashlib
 import struct
@@ -215,8 +216,10 @@ class YubiOathCcid(object):
         self._send(INS_DELETE, data)
 
     def calculate(self, name, oath_type, timestamp=None):
-        challenge = time_challenge(timestamp) if oath_type == TYPE_TOTP else b''
-        data = der_pack(TAG_NAME, name.encode('utf8'), TAG_CHALLENGE, challenge)
+        challenge = time_challenge(timestamp) \
+            if oath_type == TYPE_TOTP else b''
+        data = der_pack(
+            TAG_NAME, name.encode('utf8'), TAG_CHALLENGE, challenge)
         resp = self._send(INS_CALCULATE, data)
         # Manual dynamic truncation required for Steam entries
         resp = der_read(resp, TAG_RESPONSE)[0]
@@ -283,8 +286,9 @@ class YubiOathCcid(object):
             name, resp = der_read(resp, TAG_NAME)
             name = name.decode('utf8')
             tag, value, resp = der_read(resp)
-            if name.startswith('_hidden:') and 'YKOATH_SHOW_HIDDEN' not in os.environ:
-                pass  # Ignore hidden credentials.
+            if name.startswith('_hidden:') and 'YKOATH_SHOW_HIDDEN' \
+                    not in os.environ:
+                    pass  # Ignore hidden credentials.
             elif tag == TAG_T_RESPONSE:
                 # Steam credentials need to be recalculated
                 # to skip full truncation done by Yubikey 4.

@@ -137,14 +137,24 @@ class AddCredDialog(qt.Dialog):
             algo = parsed.get('algorithm', 'SHA1').upper()
 
             if otp_type not in ['totp', 'hotp']:
-                QtGui.QMessageBox.warning(self, m.qr_invalid_type, m.qr_invalid_type_desc)
+                QtGui.QMessageBox.warning(
+                    self,
+                    m.qr_invalid_type,
+                    m.qr_invalid_type_desc)
                 return
             if n_digits not in ['6', '8']:
-                QtGui.QMessageBox.warning(self, m.qr_invalid_digits, m.qr_invalid_digits_desc)
+                QtGui.QMessageBox.warning(
+                    self,
+                    m.qr_invalid_digits,
+                    m.qr_invalid_digits_desc)
                 return
             if algo not in ['SHA1', 'SHA256']:
-                # RFC6238 says SHA512 is also supported, but it's not implemented here yet.
-                QtGui.QMessageBox.warning(self, m.qr_invalid_algo, m.qr_invalid_algo_desc)
+                # RFC6238 says SHA512 is also supported,
+                # but it's not implemented here yet.
+                QtGui.QMessageBox.warning(
+                    self,
+                    m.qr_invalid_algo,
+                    m.qr_invalid_algo_desc)
                 return
 
             self._cred_name.setText(parsed['name'])
@@ -156,19 +166,24 @@ class AddCredDialog(qt.Dialog):
             else:
                 self._cred_hotp.setChecked(True)
         else:
-            QtGui.QMessageBox.warning(self, m.qr_not_found, m.qr_not_found_desc)
-    
+            QtGui.QMessageBox.warning(
+                self,
+                m.qr_not_found,
+                m.qr_not_found_desc)
+
     def _entry_exists(self):
         return self._cred_name.text() in self._existing_entry_names
-    
+
     def _confirm_overwrite(self):
-        return QtGui.QMessageBox.question(self, m.overwrite_entry, m.overwrite_entry_desc,
-                QtGui.QMessageBox.Yes | QtGui.QMessageBox.Yes,
-                QtGui.QMessageBox.No) == QtGui.QMessageBox.Yes
+        return QtGui.QMessageBox.question(
+            self, m.overwrite_entry, m.overwrite_entry_desc,
+            QtGui.QMessageBox.Yes | QtGui.QMessageBox.Yes,
+            QtGui.QMessageBox.No) == QtGui.QMessageBox.Yes
 
     def _save(self):
         if not self._cred_name.hasAcceptableInput():
-            QtGui.QMessageBox.warning(self, m.invalid_name, m.invalid_name_desc)
+            QtGui.QMessageBox.warning(
+                    self, m.invalid_name, m.invalid_name_desc)
             self._cred_name.selectAll()
         elif not self._cred_key.hasAcceptableInput():
             QtGui.QMessageBox.warning(self, m.invalid_key, m.invalid_key_desc)
@@ -177,8 +192,6 @@ class AddCredDialog(qt.Dialog):
             self._cred_key.selectAll()
         else:
             self.accept()
-    
-
 
     @property
     def name(self):

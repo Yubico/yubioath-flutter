@@ -102,10 +102,11 @@ require_touch = "Require touch"
 no_slot = "No slot chosen"
 no_slot_desc = "Please choose a slot to write the credential to"
 overwrite_slot = "Overwrite slot?"
-overwrite_slot_desc_1 = "This will overwrite the credential currently stored " \
-    "in slot %d. This action cannot be undone."
+overwrite_slot_desc_1 = "This will overwrite the credential currently " \
+    "stored in slot %d. This action cannot be undone."
 overwrite_entry = "Overwrite entry?"
-overwrite_entry_desc = "An entry with this username already exists.\n\nDo you wish to overwrite it? This action cannot be undone."
+overwrite_entry_desc = "An entry with this username already exists.\n\nDo " \
+    "you wish to overwrite it? This action cannot be undone."
 qr_scan = "Scan a QR code"
 qr_scanning = "Scanning for QR code..."
 qr_not_found = "QR code not found"
@@ -119,8 +120,8 @@ qr_invalid_type_desc = "Only TOTP and HOTP types are supported."
 qr_invalid_digits = "Invalid number of digits"
 qr_invalid_digits_desc = "An OTP may only contain 6 or 8 digits."
 qr_invalid_algo = "Unsupported algorithm"
-qr_invalid_algo_desc = "SHA1 and SHA256 are the only supported OTP algorithms " \
-    "at this time."
+qr_invalid_algo_desc = "SHA1 and SHA256 are the only supported OTP " \
+    "algorithms at this time."
 tt_slot_enabled_1 = "Check to calculate TOTP codes using the YubiKey " \
     "standard slot %d credential."
 tt_num_digits = "The number of digits to show for the credential."
@@ -136,11 +137,7 @@ ccid_disabled = '<b>CCID (smart card capabilities) is disabled on the ' \
     'inserted YubiKey.</b><br><br>Without CCID enabled, you will only be ' \
     'able to store 2 credentials.<br><br>' \
     '<a href="%s">Learn how to enable CCID</a><br>'
-no_space="No space available"
-no_space_desc="There is not enough space to add another credential on your device.\n\nTo create free space to add a new credential, delete those you no longer need."
-
-def _translate(qt):
-    values = globals()
-    for key, value in values.items():
-        if isinstance(value, basestring) and not key.startswith('_'):
-            values[key] = qt.tr(value)
+no_space = "No space available"
+no_space_desc = "There is not enough space to add another " \
+    "credential on your device.\n\nTo create free space to add a " \
+    "new credential, delete those you no longer need."

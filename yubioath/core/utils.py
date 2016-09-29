@@ -158,7 +158,8 @@ NON_CCID_YK_PIDS = set([0x0110, 0x0113, 0x0114, 0x0401, 0x0402, 0x0403])
 
 def ccid_supported_but_disabled():
     """
-    Check whether the first connected YubiKey supports CCID, but has it disabled.
+    Check whether the first connected YubiKey supports CCID,
+    but has it disabled.
     """
 
     if sys.platform in ['win32', 'cygwin']:

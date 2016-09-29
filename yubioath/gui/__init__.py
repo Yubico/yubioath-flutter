@@ -24,4 +24,11 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from . import qt_resources
+# Initialize resources (images, etc).
+try:
+    from . import qt_resources
+    assert qt_resources  # Silence warnings about unused import
+except ImportError:
+        print(
+            "Could not import GUI resources. Run 'python setup.py"
+            " qt_resources'.")
