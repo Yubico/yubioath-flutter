@@ -1,0 +1,23 @@
+language: python
+sudo: false
+
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+install:
+  - pip install --disable-pip-version-check --upgrade pip
+  - pip install flake8
+  - pip install -e .
+
+before_script:
+  - flake8
+
+script:
+  - python setup.py test
