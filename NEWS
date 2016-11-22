@@ -1,3 +1,9 @@
+* Version 3.1.0 (unreleased)
+ ** Added a search bar for credentials.
+ ** Added support for adding SHA256 credentials in the GUI.
+ ** Smart card is now being disconnected when the application is hidden.
+ ** Bugfix: QR codes were sometimes not being parsed.
+
 * Version 3.0.1 (released 2016-06-13)
  ** Bugfix release:
     - Don't import OSX libs outside of OSX.
