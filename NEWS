@@ -1,4 +1,4 @@
-* Version 3.1.0 (unreleased)
+* Version 3.1.0 (released 2016-11-22)
  ** Added a search bar for credentials.
  ** Added support for adding SHA256 credentials in the GUI.
  ** Smart card is now being disconnected when the application is hidden.
