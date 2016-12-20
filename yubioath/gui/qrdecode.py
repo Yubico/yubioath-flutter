@@ -81,7 +81,7 @@ MASKS = [
     lambda x, y: y % 2 == 0,
     lambda x, y: x % 3 == 0,
     lambda x, y: (y+x) % 3 == 0,
-    lambda x, y: (y/2 + x/3) % 2 == 0,
+    lambda x, y: (y//2 + x//3) % 2 == 0,
     lambda x, y: (y*x) % 2 + (y*x) % 3 == 0,
     lambda x, y: ((y*x) % 2 + (y*x) % 3) % 2 == 0,
     lambda x, y: ((y+x) % 2 + (y*x) % 3) % 2 == 0
@@ -331,7 +331,7 @@ def read_bits(qr_data, read_mask, mask):
     # Skip over vertical timing pattern
     for x in reversed(list(range(0, 6, 2)) + list(range(7, size, 2))):
         y_range = range(0, size)
-        if (size - x)/2 % 2 != 0:
+        if (size - x) % 4 != 0:
             y_range = reversed(y_range)
         for y in y_range:
             for i in reversed(range(2)):
