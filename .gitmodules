@@ -1,3 +1,0 @@
-[submodule "vendor/yubicommon"]
-	path = vendor/yubicommon
-	url = https://github.com/Yubico/python-yubicommon.git

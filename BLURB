@@ -1,7 +1,0 @@
-Author: Yubico
-Basename: yubioath-desktop
-Homepage: http://opensource.yubico.com/yubioath-desktop
-License: GPL-3.0+
-Name: Yubico Authenticator
-Project: yubioath-desktop
-Summary: Crossplatform graphical user interface to generate one-time passwords.
