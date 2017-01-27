@@ -1,0 +1,19 @@
+*.autosave
+.ropeproject
+dist/
+lib/
+__pycache__/
+Makefile*
+.qmake.stash
+*.user
+*/release/
+*.rc
+*.dll
+*.o
+*.ts
+# We generate .qrc files, so don't commit them:
+*.qrc
+qrc_*.cpp
+moc_*.cpp
+yubioath-deskop.app/
+pymodules

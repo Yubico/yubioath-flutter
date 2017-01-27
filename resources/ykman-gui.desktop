@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=YubiKey Manager
+GenericName=YubiKey Manager
+Comment=Graphical application for configuring your YubiKey over all USB transports.
+Exec=ykman-gui
+Icon=ykman
+StartupNotify=false
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=YubiKey;Manager;
