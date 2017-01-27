@@ -11,30 +11,21 @@ Item {
 
     ColumnLayout {
 
-        GroupBox {
-            id: deviceBox
-            title: qsTr("Device")
-            Layout.fillWidth: true
-            anchors.topMargin: margin
-            anchors.top: parent.top
+        Layout.fillWidth: true
+        anchors.topMargin: margin
+        anchors.top: parent.top
 
-            GridLayout {
-                anchors.fill: parent
-                columns: 1
+        Label {
+            text: device.name
+        }
 
-                Label {
-                    text: device.name
-                }
+        Label {
+            text: qsTr("Firmware: ") + device.version
+        }
 
-                Label {
-                    text: qsTr("Firmware: ") + device.version
-                }
-
-                Label {
-                    visible: device.serial
-                    text: qsTr("Serial: ") + device.serial
-                }
-            }
+        Label {
+            visible: device.serial
+            text: qsTr("Serial: ") + device.serial
         }
     }
 }

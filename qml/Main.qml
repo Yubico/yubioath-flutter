@@ -5,7 +5,7 @@ import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
     visible: true
-    title: qsTr("YubiKey Authenticator")
+    title: qsTr("Yubico Authenticator")
     flags: Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint | Qt.MSWindowsFixedSizeDialogHint
     menuBar: MenuBar {
 
@@ -20,7 +20,7 @@ ApplicationWindow {
         Menu {
             title: qsTr("Help")
             MenuItem {
-                text: qsTr("About YubiKey Manager")
+                text: qsTr("About Yubico Authenticator")
                 onTriggered: aboutPage.show()
             }
         }

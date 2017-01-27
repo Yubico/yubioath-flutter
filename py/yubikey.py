@@ -70,62 +70,6 @@ class Controller(object):
         except ModeSwitchError as e:
             return str(e)
 
-    def slots_status(self):
-        dev = self._descriptor.open_device(TRANSPORT.OTP)
-        return dev.driver.slot_status
-
-    def erase_slot(self, slot):
-        try:
-            dev = self._descriptor.open_device(TRANSPORT.OTP)
-            dev.driver.zap_slot(slot)
-        except YkpersError as e:
-            return e.errno
-
-    def swap_slots(self):
-        try:
-            dev = self._descriptor.open_device(TRANSPORT.OTP)
-            dev.driver.swap_slots()
-        except YkpersError as e:
-            return e.errno
-
-    def serial_modhex(self):
-        dev = self._descriptor.open_device(TRANSPORT.OTP)
-        return modhex_encode(b'\xff\x00' + struct.pack(b'>I', dev.serial))
-
-    def generate_static_pw(self):
-        return generate_static_pw(38).decode('utf-8')
-
-    def random_uid(self):
-        return b2a_hex(os.urandom(6)).decode('ascii')
-
-    def random_key(self, bytes):
-        return b2a_hex(os.urandom(int(bytes))).decode('ascii')
-
-    def program_otp(self, slot, public_id, private_id, key):
-        try:
-            key = a2b_hex(key)
-            public_id = modhex_decode(public_id)
-            private_id = a2b_hex(private_id)
-            dev = self._descriptor.open_device(TRANSPORT.OTP)
-            dev.driver.program_otp(slot, key, public_id, private_id)
-        except YkpersError as e:
-            return e.errno
-
-    def program_challenge_response(self, slot, key, touch):
-        try:
-            key = a2b_hex(key)
-            dev = self._descriptor.open_device(TRANSPORT.OTP)
-            dev.driver.program_chalresp(slot, key, touch)
-        except YkpersError as e:
-            return e.errno
-
-    def program_static_password(self, slot, key):
-        try:
-            dev = self._descriptor.open_device(TRANSPORT.OTP)
-            dev.driver.program_static(slot, key)
-        except YkpersError as e:
-            return e.errno
-
     def program_oath_hotp(self, slot, key, digits):
         try:
             unpadded = key.upper().rstrip('=').replace(' ', '')

@@ -9,9 +9,9 @@
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleExecutable</key>
-        <string>ykman-gui</string>
+        <string>yubioath</string>
         <key>CFBundleIdentifier</key>
-        <string>com.yubico.ykman</string>
+        <string>com.yubico.yubioath</string>
         <key>CFBundleName</key>
         <string>YubiKey Manager</string>
         <key>CFBundleVersion</key>

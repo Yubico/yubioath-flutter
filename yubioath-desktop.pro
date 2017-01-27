@@ -43,7 +43,7 @@ RC_ICONS = resources/icons/ykman.ico
 
 # Mac specific configuration
 macx {
-    ICON = resources/icons/ykman.icns
+    ICON =
     QMAKE_INFO_PLIST = resources/mac/Info.plist.in
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9 # Mavericks
     QMAKE_POST_LINK += cp -rnf pymodules yubioath-desktop.app/Contents/MacOS/
@@ -56,4 +56,5 @@ lupdate_only {
 }
 
 DISTFILES += \
-    py/yubikey.py
+    py/yubikey.py \
+    resources/icons/yubioath.icns
