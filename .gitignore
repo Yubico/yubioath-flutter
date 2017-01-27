@@ -15,5 +15,5 @@ Makefile*
 *.qrc
 qrc_*.cpp
 moc_*.cpp
-yubioath-deskop.app/
+yubioath-desktop.app/
 pymodules
