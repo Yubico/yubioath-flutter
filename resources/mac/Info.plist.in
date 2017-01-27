@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
         <key>CFBundleIconFile</key>
-        <string>ykman.icns</string>
+        <string>yubioath.icns</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleSignature</key>
@@ -13,7 +13,7 @@
         <key>CFBundleIdentifier</key>
         <string>com.yubico.yubioath</string>
         <key>CFBundleName</key>
-        <string>YubiKey Manager</string>
+        <string>Yubico Authenticator</string>
         <key>CFBundleVersion</key>
         <string>@FULL_VERSION@</string>
         <key>CFBundleShortVersionString</key>
