@@ -6,7 +6,8 @@ import QtQuick.Dialogs 1.2
 ApplicationWindow {
     visible: true
     title: qsTr("Yubico Authenticator")
-    flags: Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint | Qt.MSWindowsFixedSizeDialogHint
+    flags: Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
+           | Qt.WindowMinimizeButtonHint | Qt.MSWindowsFixedSizeDialogHint
     menuBar: MenuBar {
 
         Menu {
@@ -34,7 +35,7 @@ ApplicationWindow {
     YubiKey {
         id: yk
         onError: {
-            errorBox.text = traceback;
+            errorBox.text = traceback
             errorBox.open()
         }
     }
@@ -64,8 +65,8 @@ ApplicationWindow {
     Component {
         id: message
         Text {
-            width: 200
-            height: 200
+            width: 300
+            height: 400
             text: if (yk.nDevices == 0) {
                       qsTr("No YubiKey detected")
                   } else if (yk.nDevices == 1) {
@@ -81,7 +82,7 @@ ApplicationWindow {
     Component {
         id: deviceInfo
 
-        DeviceInfo {
+        CredentialList {
             device: yk
         }
     }
