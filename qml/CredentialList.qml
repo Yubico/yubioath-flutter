@@ -14,7 +14,7 @@ Column {
 
         ProgressBar {
                 id: bar
-                value: 30
+                value: 0
                 maximumValue: 30
                 minimumValue: 0
 
@@ -38,18 +38,10 @@ Column {
                     interval: 1000
                     repeat: true
                     running: true
-                    onTriggered: bar.value > bar.minimumValue ? bar.value -= 1 : bar.value = bar.maximumValue
+                    triggeredOnStart: true
+                    onTriggered: update()
                 }
             }
-
-        Timer {
-            id: oathTimer
-            triggeredOnStart: true
-            interval: 30000
-            repeat: true
-            running: true
-            onTriggered: {device.refresh_credentials(); bar.value = 0}
-        }
 
         Repeater {
             model: device.credentials
@@ -67,4 +59,15 @@ Column {
             }
         }
     }
+
+    function update() {
+        if (bar.value > bar.minimumValue) {
+            bar.value -= 1;
+        }
+        if (bar.value == bar.minimumValue) {
+            device.refresh_credentials()
+            bar.value = bar.maximumValue
+        }
+    }
+
 }
