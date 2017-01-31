@@ -47,14 +47,19 @@ Column {
 
             Column {
                 Text {
-                    text: qsTr('') + JSON.parse(modelData)['name']
+                    visible: modelData.issuer !== undefined
+                    text: qsTr('') + modelData.issuer
                 }
                 Text {
-                    text: qsTr('') + JSON.parse(modelData)['code']
+                    text: qsTr('') + modelData.code
                     font.family: "Chalkboard"
                     font.bold: true
                     font.pointSize: 20
                 }
+                Text {
+                    text: qsTr('') + modelData.name
+                }
+
             }
         }
     }

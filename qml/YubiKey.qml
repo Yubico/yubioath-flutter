@@ -65,7 +65,7 @@ Python {
                     serial = dev ? dev.serial : ''
                     enabled = dev ? dev.enabled : []
                     connections = dev ? dev.connections : []
-                    credentials = dev ? dev.credentials : []
+                    credentials = dev ? parseCredentials(dev.credentials) : []
                 })
             } else if (hasDevice) {
                 hasDevice = false
@@ -77,9 +77,32 @@ Python {
         if (enabled.indexOf('CCID') != -1) {
             do_call('yubikey.controller.refresh_credentials', [],
                     function (dev) {
-                        credentials = dev ? dev.credentials : []
+                        credentials = dev ? parseCredentials(
+                                                dev.credentials) : []
                     })
         }
+    }
+
+    function parseCredentials(creds) {
+        function hasIssuer(name) {
+            return name.indexOf(':') !== -1
+        }
+        function parseName(name) {
+            return name.split(":").slice(1).join(":")
+        }
+        function parseIssuer(name) {
+            return name.split(":", 1)
+        }
+        var result = []
+        for (var i = 0; i < creds.length; i++) {
+            var cred = JSON.parse(creds[i])
+            if (hasIssuer(cred.name)) {
+                cred.issuer = parseIssuer(cred.name)
+                cred.name = parseName(cred.name)
+            }
+            result.push(cred)
+        }
+        return result
     }
 
     function set_mode(connections, cb) {
