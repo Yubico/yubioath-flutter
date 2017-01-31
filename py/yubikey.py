@@ -64,7 +64,7 @@ class Controller(object):
 
 
     def refresh_credentials(self):
-        self._dev_info['credentials'] = [(c.name,c.code) for c in self._calculate_all()]
+        self._dev_info['credentials'] = [json.dumps(c.__dict__) for c in self._calculate_all()]
 
     def set_mode(self, connections):
         dev = self._descriptor.open_device()

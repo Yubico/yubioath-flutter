@@ -6,7 +6,6 @@ import QtQuick.Controls.Styles 1.4
 Column {
     property var device
     width: parent.width
-   // anchors.fill: parent.width
     height: parent.height
     property int margin: width / 30
 
@@ -48,10 +47,10 @@ Column {
 
             Column {
                 Text {
-                    text: qsTr('') + modelData[0]
+                    text: qsTr('') + JSON.parse(modelData)['name']
                 }
                 Text {
-                    text: qsTr('') + modelData[1]
+                    text: qsTr('') + JSON.parse(modelData)['code']
                     font.family: "Chalkboard"
                     font.bold: true
                     font.pointSize: 20
