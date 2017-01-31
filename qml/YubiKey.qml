@@ -13,7 +13,8 @@ Python {
     property string serial
     property var features: []
     property var connections: []
-    property var credentials: []
+    property var credentials: null
+    property int nextRefresh: 0
     property var enabled: []
     property bool ready: false
     property var queue: []
@@ -65,25 +66,28 @@ Python {
                     serial = dev ? dev.serial : ''
                     enabled = dev ? dev.enabled : []
                     connections = dev ? dev.connections : []
-                    credentials = dev ? parseCredentials(dev.credentials) : []
+
+                    var now = Math.floor(Date.now() / 1000)
+                    if (nextRefresh < now) {
+                        refresh_credentials(now)
+                    }
                 })
             } else if (hasDevice) {
                 hasDevice = false
+                credentials = null
+                nextRefresh = 0
             }
         })
     }
 
-    function refresh_credentials() {
+    function refresh_credentials(timestamp) {
         if (enabled.indexOf('CCID') != -1) {
-            do_call('yubikey.controller.refresh_credentials', [],
-                    function (dev) {
-                        credentials = dev ? parseCredentials(
-                                                dev.credentials) : []
-                    })
+            do_call('yubikey.controller.refresh_credentials', [timestamp],
+                    handleCredentials)
         }
     }
 
-    function parseCredentials(creds) {
+    function handleCredentials(creds) {
         function hasIssuer(name) {
             return name.indexOf(':') !== -1
         }
@@ -94,15 +98,20 @@ Python {
             return name.split(":", 1)
         }
         var result = []
+        var minExpiration = (Date.now() / 1000) + 10000
         for (var i = 0; i < creds.length; i++) {
             var cred = JSON.parse(creds[i])
             if (hasIssuer(cred.name)) {
                 cred.issuer = parseIssuer(cred.name)
                 cred.name = parseName(cred.name)
             }
+            if (cred.expiration && cred.expiration < minExpiration) {
+                minExpiration = cred.expiration
+            }
             result.push(cred)
         }
-        return result
+        nextRefresh = minExpiration
+        credentials = result
     }
 
     function set_mode(connections, cb) {

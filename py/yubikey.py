@@ -50,21 +50,18 @@ class Controller(object):
             if not dev:
                 return
             self._descriptor = desc
-
             self._dev_info = {
                 'name': dev.device_name,
                 'version': '.'.join(str(x) for x in dev.version),
                 'serial': dev.serial or '',
                 'enabled': [c.name for c in CAPABILITY if c & dev.enabled],
                 'connections': [t.name for t in TRANSPORT if t & dev.capabilities],
-                'credentials': []
             }
 
         return self._dev_info
 
-
-    def refresh_credentials(self):
-        self._dev_info['credentials'] = [json.dumps(c.__dict__) for c in self._calculate_all()]
+    def refresh_credentials(self, timestamp):
+        return [json.dumps(c.__dict__) for c in self._calculate_all(timestamp)]
 
     def set_mode(self, connections):
         dev = self._descriptor.open_device()
@@ -74,10 +71,10 @@ class Controller(object):
         except ModeSwitchError as e:
             return str(e)
 
-    def _calculate_all(self):
+    def _calculate_all(self, timestamp):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
-        creds = controller.calculate_all()
+        creds = controller.calculate_all(timestamp)
         creds = [c for c in creds if not c.hidden]
         return creds
 
