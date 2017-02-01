@@ -9,7 +9,7 @@ import struct
 from ykman.descriptor import get_descriptors
 from ykman.driver import ModeSwitchError
 from ykman.util import CAPABILITY, TRANSPORT, Mode
-from ykman.oath import OathController
+from ykman.oath import OathController, Credential
 
 
 NON_FEATURE_CAPABILITIES = [CAPABILITY.CCID, CAPABILITY.NFC]
@@ -61,7 +61,10 @@ class Controller(object):
         return self._dev_info
 
     def refresh_credentials(self, timestamp):
-        return [json.dumps(c.__dict__) for c in self._calculate_all(timestamp)]
+        return [c.to_dict() for c in self._calculate_all(timestamp)]
+
+    def calculate(self, credential, timestamp):
+        return self._calculate(Credential.from_dict(json.loads(credential)), timestamp).to_dict()
 
     def set_mode(self, connections):
         dev = self._descriptor.open_device()
@@ -70,6 +73,12 @@ class Controller(object):
             dev.mode = Mode(transports & TRANSPORT.usb_transports())
         except ModeSwitchError as e:
             return str(e)
+
+    def _calculate(self, credential, timestamp):
+        dev = self._descriptor.open_device(TRANSPORT.CCID)
+        controller = OathController(dev.driver)
+        cred = controller.calculate(credential, timestamp)
+        return cred
 
     def _calculate_all(self, timestamp):
         dev = self._descriptor.open_device(TRANSPORT.CCID)

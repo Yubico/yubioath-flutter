@@ -87,6 +87,16 @@ Python {
         }
     }
 
+
+    function calculate(credential) {
+        var now = Math.floor(Date.now() / 1000)
+        do_call('yubikey.controller.calculate', [JSON.stringify(credential), now], updateCredential)
+    }
+
+    function updateCredential(cred) {
+        console.log(cred)
+    }
+
     function handleCredentials(creds) {
         function hasIssuer(name) {
             return name.indexOf(':') !== -1
@@ -100,7 +110,7 @@ Python {
         var result = []
         var minExpiration = (Date.now() / 1000) + 10000
         for (var i = 0; i < creds.length; i++) {
-            var cred = JSON.parse(creds[i])
+            var cred = creds[i]
             if (hasIssuer(cred.name)) {
                 cred.issuer = parseIssuer(cred.name)
                 cred.name = parseName(cred.name)

@@ -62,6 +62,13 @@ Column {
                 anchors.rightMargin: 10
                 anchors.left: parent.left
                 anchors.leftMargin: 10
+
+                MouseArea {
+                       anchors.fill: parent
+                       onDoubleClicked: calculateCredential(modelData)
+                   }
+
+
                 Column {
                     anchors.verticalCenter: parent.verticalCenter
 
@@ -77,13 +84,24 @@ Column {
                             font.pointSize: 22
                         }
                         Text {
+                            visible: modelData.code == null
+                            text: qsTr('?')
+                            opacity: 0.8
+                            font.italic: false
+                            font.family: "Verdana"
+                            font.pointSize: 22
+                        }
+                        Text {
                             text: qsTr('') + modelData.name
                             font.pointSize: 13
                         }
                     }
-
             }
         }
+    }
+
+    function calculateCredential(credential) {
+        device.calculate(credential)
     }
 
     function updateExpiration() {
