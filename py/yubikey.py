@@ -4,7 +4,6 @@
 import os
 import json
 import types
-import struct
 
 from ykman.descriptor import get_descriptors
 from ykman.driver import ModeSwitchError
@@ -14,9 +13,10 @@ from ykman.oath import OathController, Credential
 
 NON_FEATURE_CAPABILITIES = [CAPABILITY.CCID, CAPABILITY.NFC]
 
+
 def as_json(f):
-    def wrapped(*args, **kwargs):
-        return json.dumps(f(*args, **kwargs))
+    def wrapped(*args):
+        return json.dumps(f(*(json.loads(a) for a in args)))
     return wrapped
 
 
@@ -25,7 +25,7 @@ class Controller(object):
     _dev_info = None
 
     def __init__(self):
-        # Wrap all return values as JSON.
+        # Wrap all args and return values as JSON.
         for f in dir(self):
             if not f.startswith('_'):
                 func = getattr(self, f)
@@ -64,7 +64,7 @@ class Controller(object):
         return [c.to_dict() for c in self._calculate_all(timestamp)]
 
     def calculate(self, credential, timestamp):
-        return self._calculate(Credential.from_dict(json.loads(credential)), timestamp).to_dict()
+        return self._calculate(Credential.from_dict(credential), timestamp).to_dict()
 
     def set_mode(self, connections):
         dev = self._descriptor.open_device()

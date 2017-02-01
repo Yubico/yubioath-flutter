@@ -47,7 +47,7 @@ Python {
         if (!ready) {
             queue.push([func, args, cb])
         } else {
-            call(func, args, function (json) {
+            call(func, args.map(JSON.stringify), function (json) {
                 if (cb) {
                     cb(json ? JSON.parse(json) : undefined)
                 }
@@ -90,7 +90,7 @@ Python {
 
     function calculate(credential) {
         var now = Math.floor(Date.now() / 1000)
-        do_call('yubikey.controller.calculate', [JSON.stringify(credential), now], updateCredential)
+        do_call('yubikey.controller.calculate', [credential, now], updateCredential)
     }
 
     function updateCredential(cred) {
