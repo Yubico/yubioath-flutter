@@ -4,13 +4,17 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
 
 Column {
+    id: column1
     property var device
     width: 300
     height: 400
     property int margin: width / 30
     property int expiration: 0
     property var credentials: device.credentials
-    onCredentialsChanged: updateExpiration()
+    onCredentialsChanged: {
+        updateExpiration()
+        console.log(JSON.stringify(credentials))
+    }
 
     ColumnLayout {
 
@@ -50,20 +54,34 @@ Column {
 
         Repeater {
             model: credentials
-            Column {
-                Text {
-                    visible: modelData.issuer !== undefined
-                    text: qsTr('') + modelData.issuer
-                }
-                Text {
-                    text: qsTr('') + modelData.code
-                    font.family: "Chalkboard"
-                    font.bold: true
-                    font.pointSize: 20
-                }
-                Text {
-                    text: qsTr('') + modelData.name
-                }
+
+            Rectangle {
+                height: 65
+                color: "#f1bde5"
+                anchors.right: parent.right
+                anchors.rightMargin: 10
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                Column {
+                    anchors.verticalCenter: parent.verticalCenter
+
+                        Text {
+                            visible: modelData.issuer !== undefined
+                            text: qsTr('') + modelData.issuer
+                            font.pointSize: 13
+                        }
+                        Text {
+                            visible: modelData.code != null
+                            text: qsTr('') + modelData.code
+                            font.family: "Verdana"
+                            font.pointSize: 22
+                        }
+                        Text {
+                            text: qsTr('') + modelData.name
+                            font.pointSize: 13
+                        }
+                    }
+
             }
         }
     }
