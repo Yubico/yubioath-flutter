@@ -44,6 +44,7 @@ ApplicationWindow {
 
     ColumnLayout {
         id: credentialsColumn
+        spacing: 10
         visible: yk.hasDevice
         anchors.right: parent.right
         anchors.left: parent.left
@@ -75,9 +76,11 @@ ApplicationWindow {
 
             Rectangle {
                 id: credentialRectangle
-                color: "#f1bde5"
+                color: "#00000000"
+                anchors.left: parent.left
+                anchors.leftMargin: 10
                 Layout.fillWidth: true
-                Layout.minimumHeight: 50
+                Layout.minimumHeight: 70
                 Layout.alignment: Qt.AlignTop
 
                 MouseArea {
@@ -86,10 +89,11 @@ ApplicationWindow {
                 }
 
                 ColumnLayout {
+                    spacing: 2
                     anchors.fill: parent
                     Text {
-                        visible: modelData.issuer !== undefined
-                        text: qsTr('') + modelData.issuer
+                        visible: hasIssuer(modelData.name)
+                        text: qsTr('') + parseIssuer(modelData.name)
                         font.pointSize: 13
                     }
                     Text {
@@ -107,7 +111,7 @@ ApplicationWindow {
                         font.pointSize: 15
                     }
                     Text {
-                        text: qsTr('') + modelData.name
+                        text: hasIssuer(modelData.name) ? qsTr('') + parseName(modelData.name) : modelData.name
                         font.pointSize: 13
                     }
                 }
@@ -176,6 +180,16 @@ ApplicationWindow {
         title: qsTr("Error!")
         text: ""
         standardButtons: StandardButton.Ok
+    }
+
+    function hasIssuer(name) {
+        return name.indexOf(':') !== -1
+    }
+    function parseName(name) {
+        return name.split(":").slice(1).join(":")
+    }
+    function parseIssuer(name) {
+        return name.split(":", 1)
     }
 
     function calculateCredential(credential) {

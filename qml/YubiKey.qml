@@ -106,23 +106,11 @@ Python {
     }
 
     function handleCredentials(creds) {
-        function hasIssuer(name) {
-            return name.indexOf(':') !== -1
-        }
-        function parseName(name) {
-            return name.split(":").slice(1).join(":")
-        }
-        function parseIssuer(name) {
-            return name.split(":", 1)
-        }
+
         var result = []
         var minExpiration = (Date.now() / 1000) + 10000
         for (var i = 0; i < creds.length; i++) {
             var cred = creds[i]
-            if (hasIssuer(cred.name)) {
-                cred.issuer = parseIssuer(cred.name)
-                cred.name = parseName(cred.name)
-            }
             if (cred.expiration && cred.expiration < minExpiration) {
                 minExpiration = cred.expiration
             }
