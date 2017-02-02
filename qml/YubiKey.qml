@@ -94,7 +94,15 @@ Python {
     }
 
     function updateCredential(cred) {
-        console.log(cred)
+        var result = []
+        for (var i = 0; i < credentials.length; i++) {
+            if (credentials[i].name === cred.name) {
+                result.push(cred)
+            } else {
+                result.push(credentials[i])
+            }
+        }
+        credentials = result
     }
 
     function handleCredentials(creds) {

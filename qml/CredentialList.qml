@@ -2,6 +2,8 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs 1.2
+
 
 Column {
     id: column1
@@ -13,7 +15,8 @@ Column {
     property var credentials: device.credentials
     onCredentialsChanged: {
         updateExpiration()
-        console.log(JSON.stringify(credentials))
+        touchYourYubikey.close()
+        console.log('CREDENTIALS    ', JSON.stringify(credentials))
     }
 
     ColumnLayout {
@@ -84,12 +87,13 @@ Column {
                             font.pointSize: 22
                         }
                         Text {
+                            id: credMessage
+                            text: "Double-click to generate code."
                             visible: modelData.code == null
-                            text: qsTr('?')
-                            opacity: 0.8
+                            opacity: 0.6
                             font.italic: false
                             font.family: "Verdana"
-                            font.pointSize: 22
+                            font.pointSize: 15
                         }
                         Text {
                             text: qsTr('') + modelData.name
@@ -100,8 +104,20 @@ Column {
         }
     }
 
+    MessageDialog {
+        id: touchYourYubikey
+        icon: StandardIcon.Information
+        title: qsTr("Touch your YubiKey")
+        text: qsTr("Touch your YubiKey to generate the code.")
+        standardButtons: StandardButton.NoButton
+    }
+
+
     function calculateCredential(credential) {
         device.calculate(credential)
+            if (credential.touch) {
+                touchYourYubikey.open()
+            }
     }
 
     function updateExpiration() {
