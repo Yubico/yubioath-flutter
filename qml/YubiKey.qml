@@ -156,6 +156,10 @@ Python {
                 [name, key, oathType, digits, algorithm, touch])
     }
 
+    function deleteCredential(credential) {
+        do_call('yubikey.controller.delete_credential', [credential])
+    }
+
     function set_mode(connections, cb) {
         do_call('yubikey.controller.set_mode', [connections], cb)
     }

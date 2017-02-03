@@ -83,6 +83,11 @@ class Controller(object):
         key = self._parse_key(key)
         controller.put(key, name, oath_type, digits, algo=algo, require_touch=touch)
 
+    def delete_credential(self, credential):
+        dev = self._descriptor.open_device(TRANSPORT.CCID)
+        controller = OathController(dev.driver)
+        controller.delete(Credential.from_dict(credential))
+
     def _calculate(self, credential, timestamp):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)

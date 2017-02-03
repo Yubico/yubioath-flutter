@@ -53,35 +53,36 @@ ApplicationWindow {
     }
 
     MouseArea {
-         enabled: yk.hasDevice
-         anchors.fill: parent
-         acceptedButtons: Qt.RightButton
-         onClicked: contextMenu.popup()
+        enabled: yk.hasDevice
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onClicked: contextMenu.popup()
     }
 
     Menu {
         id: contextMenu
-            MenuItem {
-                text: qsTr('Add...')
-                onTriggered: addCredential.open()
-            }
+        MenuItem {
+            text: qsTr('Add...')
+            onTriggered: addCredential.open()
         }
+    }
 
     Menu {
         id: credentialMenu
-            MenuItem {
-                text: qsTr('Copy')
-                onTriggered: console.log(selectedCredential.code)
-            }
-            MenuItem {
-                visible: selectedCredential != null && selectedCredential.code == null
-                text: qsTr('Generate code')
-                onTriggered: calculateCredential(selectedCredential)
-            }
-            MenuItem {
-                text: qsTr('Delete')
-            }
+        MenuItem {
+            text: qsTr('Copy')
         }
+        MenuItem {
+            visible: selectedCredential != null
+                     && selectedCredential.code == null
+            text: qsTr('Generate code')
+            onTriggered: calculateCredential(selectedCredential)
+        }
+        MenuItem {
+            text: qsTr('Delete')
+            onTriggered: confirmDeleteCredential.open()
+        }
+    }
 
     ColumnLayout {
         id: credentialsColumn
@@ -126,7 +127,10 @@ ApplicationWindow {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: {selectedCredential = modelData; credentialMenu.popup();}
+                    onClicked: {
+                        selectedCredential = modelData
+                        credentialMenu.popup()
+                    }
                     acceptedButtons: Qt.RightButton
                 }
 
@@ -145,11 +149,13 @@ ApplicationWindow {
                         font.pointSize: 22
                         readOnly: true
                         selectByMouse: true
-                        selectByKeyboard:true
-                        selectionColor : "#83d714"
+                        selectByKeyboard: true
+                        selectionColor: "#83d714"
                     }
                     Text {
-                        text: hasIssuer(modelData.name) ? qsTr('') + parseName(modelData.name) : modelData.name
+                        text: hasIssuer(
+                                  modelData.name) ? qsTr('') + parseName(
+                                                        modelData.name) : modelData.name
                         font.pointSize: 13
                     }
                 }
@@ -163,6 +169,18 @@ ApplicationWindow {
         title: qsTr("Touch your YubiKey")
         text: qsTr("Touch your YubiKey to generate the code.")
         standardButtons: StandardButton.NoButton
+    }
+
+    MessageDialog {
+        id: confirmDeleteCredential
+        icon: StandardIcon.Warning
+        title: qsTr("Delete credential?")
+        text: qsTr("Are you sure you want to delete the credential?")
+        standardButtons: StandardButton.Ok | StandardButton.Cancel
+        onAccepted: {
+            yk.deleteCredential(selectedCredential)
+            yk.refreshCredentials()
+        }
     }
 
     // @disable-check M301
