@@ -8,11 +8,17 @@ ApplicationWindow {
     id: applicationWindow1
     width: 300
     height: 400
+    minimumHeight: 400
+    minimumWidth: 300
     visible: true
     title: qsTr("Yubico Authenticator")
     property int expiration: 0
     property var credentials: yk.credentials
     property var selectedCredential
+
+    SystemPalette {
+        id: palette
+    }
 
     onCredentialsChanged: {
         updateExpiration()
@@ -86,7 +92,7 @@ ApplicationWindow {
 
     ColumnLayout {
         id: credentialsColumn
-        spacing: 10
+        spacing: 0
         visible: yk.hasDevice
         anchors.right: parent.right
         anchors.left: parent.left
@@ -103,11 +109,11 @@ ApplicationWindow {
             minimumValue: 0
             style: ProgressBarStyle {
                 progress: Rectangle {
-                    color: "#83d714"
+                    color: "#9aca3c"
                 }
 
                 background: Rectangle {
-                    color: "lightgray"
+                    color: palette.mid
                 }
             }
         }
@@ -118,9 +124,7 @@ ApplicationWindow {
 
             Rectangle {
                 id: credentialRectangle
-                color: "#00000000"
-                anchors.left: parent.left
-                anchors.leftMargin: 10
+                color: index % 2 == 0 ? "#00000000" : palette.alternateBase
                 Layout.fillWidth: true
                 Layout.minimumHeight: 70
                 Layout.alignment: Qt.AlignTop
@@ -135,6 +139,7 @@ ApplicationWindow {
                 }
 
                 ColumnLayout {
+                    anchors.leftMargin: 10
                     spacing: -15
                     anchors.fill: parent
                     Text {
@@ -150,7 +155,7 @@ ApplicationWindow {
                         readOnly: true
                         selectByMouse: true
                         selectByKeyboard: true
-                        selectionColor: "#83d714"
+                        selectionColor: "#9aca3c"
                     }
                     Text {
                         text: hasIssuer(
