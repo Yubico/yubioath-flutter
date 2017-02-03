@@ -5,9 +5,10 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
 Dialog {
-    id: addCredential
     title: qsTr("Add credential")
+    property var device
     standardButtons: StandardButton.Save | StandardButton.Cancel
+    onAccepted: addCredential()
 
     ColumnLayout {
         GridLayout {
@@ -23,7 +24,7 @@ Dialog {
                 Layout.fillWidth: false
             }
             TextField {
-                id: nameInput
+                id: name
                 Layout.fillHeight: false
                 Layout.fillWidth: true
             }
@@ -32,7 +33,7 @@ Dialog {
                 text: qsTr("Secret key (base32)")
             }
             TextField {
-                id: secretKeyInput
+                id: key
                 Layout.fillWidth: true
             }
         }
@@ -50,10 +51,12 @@ Dialog {
                         text: qsTr("Time based (TOTP)")
                         checked: true
                         exclusiveGroup: oathType
+                        property string name: "totp"
                     }
                     RadioButton {
                         text: qsTr("Counter based (HOTP)")
                         exclusiveGroup: oathType
+                        property string name: "hotp"
                     }
                 }
                 RowLayout {
@@ -65,12 +68,14 @@ Dialog {
                     }
                     RadioButton {
                         text: qsTr("6")
+                        checked: true
                         exclusiveGroup: digits
+                        property int digits: 6
                     }
                     RadioButton {
                         text: qsTr("8")
-                        checked: true
                         exclusiveGroup: digits
+                        property int digits: 8
                     }
                 }
                 RowLayout {
@@ -83,14 +88,32 @@ Dialog {
                     RadioButton {
                         text: qsTr("SHA-1")
                         exclusiveGroup: algorithm
+                        property string name: "SHA1"
                     }
                     RadioButton {
                         text: qsTr("SHA-256")
                         checked: true
                         exclusiveGroup: algorithm
+                        property string name: "SHA256"
+                    }
+                }
+                RowLayout {
+
+                    CheckBox {
+                        id: touch
+                        text: "Require touch"
+                        enabled: parseInt(device.version.split('.').join(
+                                              '')) >= 426
                     }
                 }
             }
         }
+    }
+
+    function addCredential() {
+        device.addCredential(name.text, key.text, oathType.current.name,
+                             digits.current.digits, algorithm.current.name,
+                             touch.checked)
+        device.refreshCredentials()
     }
 }

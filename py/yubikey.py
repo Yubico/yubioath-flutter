@@ -4,6 +4,9 @@
 import os
 import json
 import types
+import re
+from base64 import b32decode
+from binascii import a2b_hex
 
 from ykman.descriptor import get_descriptors
 from ykman.driver import ModeSwitchError
@@ -74,6 +77,12 @@ class Controller(object):
         except ModeSwitchError as e:
             return str(e)
 
+    def add_credential(self, name, key, oath_type, digits, algo, touch):
+        dev = self._descriptor.open_device(TRANSPORT.CCID)
+        controller = OathController(dev.driver)
+        key = self._parse_key(key)
+        controller.put(key, name, oath_type, digits, algo=algo, require_touch=touch)
+
     def _calculate(self, credential, timestamp):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
@@ -86,6 +95,18 @@ class Controller(object):
         creds = controller.calculate_all(timestamp)
         creds = [c for c in creds if not c.hidden]
         return creds
+
+    def _parse_key(self, val):
+        val = val.upper()
+        if re.match(r'^([0-9A-F]{2})+$', val):  # hex
+            return a2b_hex(val)
+        else:
+            # Key should be b32 encoded
+            return self._parse_b32_key(val)
+
+    def _parse_b32_key(self, key):
+        key += '=' * (-len(key) % 8)  # Support unpadded
+        return b32decode(key)
 
 
 controller = Controller()

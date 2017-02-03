@@ -48,6 +48,7 @@ ApplicationWindow {
 
     AddCredential {
         id: addCredential
+        device: yk
     }
 
     MouseArea {

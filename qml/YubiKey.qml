@@ -69,7 +69,7 @@ Python {
 
                     var now = Math.floor(Date.now() / 1000)
                     if (nextRefresh < now) {
-                        refresh_credentials(now)
+                        refreshCredentials()
                     }
                 })
             } else if (hasDevice) {
@@ -80,17 +80,18 @@ Python {
         })
     }
 
-    function refresh_credentials(timestamp) {
+    function refreshCredentials() {
+        var now = Math.floor(Date.now() / 1000)
         if (enabled.indexOf('CCID') != -1) {
-            do_call('yubikey.controller.refresh_credentials', [timestamp],
+            do_call('yubikey.controller.refresh_credentials', [now],
                     handleCredentials)
         }
     }
 
-
     function calculate(credential) {
         var now = Math.floor(Date.now() / 1000)
-        do_call('yubikey.controller.calculate', [credential, now], updateCredential)
+        do_call('yubikey.controller.calculate', [credential, now],
+                updateCredential)
     }
 
     function updateCredential(cred) {
@@ -106,7 +107,6 @@ Python {
     }
 
     function handleCredentials(creds) {
-
         var result = []
         var minExpiration = (Date.now() / 1000) + 10000
         for (var i = 0; i < creds.length; i++) {
@@ -118,6 +118,11 @@ Python {
         }
         nextRefresh = minExpiration
         credentials = result
+    }
+
+    function addCredential(name, key, oathType, digits, algorithm, touch) {
+        do_call('yubikey.controller.add_credential',
+                [name, key, oathType, digits, algorithm, touch])
     }
 
     function set_mode(connections, cb) {
