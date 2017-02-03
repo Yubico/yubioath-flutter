@@ -24,6 +24,10 @@ ApplicationWindow {
         Menu {
             title: qsTr("File")
             MenuItem {
+                text: qsTr('Add...')
+                onTriggered: addCredential.show()
+            }
+            MenuItem {
                 text: qsTr("Exit")
                 onTriggered: Qt.quit()
             }
@@ -41,6 +45,30 @@ ApplicationWindow {
     AboutPage {
         id: aboutPage
     }
+
+    AddCredential {
+        id: addCredential
+    }
+
+    MouseArea {
+         enabled: yk.hasDevice
+         anchors.fill: parent
+         acceptedButtons: Qt.LeftButton | Qt.RightButton
+         onClicked: {
+              if (Qt.RightButton) {
+                  contextMenu.popup()
+              }
+          }
+    }
+
+    Menu {
+        id: contextMenu
+            MenuItem {
+                text: qsTr('Add...')
+                onTriggered: addCredential.open()
+            }
+        }
+
 
     ColumnLayout {
         id: credentialsColumn
