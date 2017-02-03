@@ -135,7 +135,7 @@ ApplicationWindow {
                 }
 
                 ColumnLayout {
-                    spacing: 2
+                    spacing: -15
                     anchors.fill: parent
                     Text {
                         visible: hasIssuer(modelData.name)
