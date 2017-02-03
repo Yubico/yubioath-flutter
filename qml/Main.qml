@@ -16,14 +16,24 @@ ApplicationWindow {
     property var credentials: yk.credentials
     property var selectedCredential
 
-    SystemPalette {
-        id: palette
-    }
-
     onCredentialsChanged: {
         updateExpiration()
         touchYourYubikey.close()
         console.log('CREDENTIALS    ', JSON.stringify(credentials))
+    }
+
+    SystemPalette {
+        id: palette
+    }
+
+    TextEdit {
+        id: clipboard
+        visible: false
+        function setClipboard(value) {
+            text = value
+            selectAll()
+            copy()
+        }
     }
 
     menuBar: MenuBar {
@@ -77,6 +87,8 @@ ApplicationWindow {
         id: credentialMenu
         MenuItem {
             text: qsTr('Copy')
+            onTriggered: clipboard.setClipboard(selectedCredential.code)
+
         }
         MenuItem {
             visible: selectedCredential != null
