@@ -12,6 +12,7 @@ ApplicationWindow {
     title: qsTr("Yubico Authenticator")
     property int expiration: 0
     property var credentials: yk.credentials
+    property var selectedCredential
 
     onCredentialsChanged: {
         updateExpiration()
@@ -54,12 +55,8 @@ ApplicationWindow {
     MouseArea {
          enabled: yk.hasDevice
          anchors.fill: parent
-         acceptedButtons: Qt.LeftButton | Qt.RightButton
-         onClicked: {
-              if (Qt.RightButton) {
-                  contextMenu.popup()
-              }
-          }
+         acceptedButtons: Qt.RightButton
+         onClicked: contextMenu.popup()
     }
 
     Menu {
@@ -70,6 +67,21 @@ ApplicationWindow {
             }
         }
 
+    Menu {
+        id: credentialMenu
+            MenuItem {
+                text: qsTr('Copy')
+                onTriggered: console.log(selectedCredential.code)
+            }
+            MenuItem {
+                visible: selectedCredential != null && selectedCredential.code == null
+                text: qsTr('Generate code')
+                onTriggered: calculateCredential(selectedCredential)
+            }
+            MenuItem {
+                text: qsTr('Delete')
+            }
+        }
 
     ColumnLayout {
         id: credentialsColumn
@@ -114,7 +126,8 @@ ApplicationWindow {
 
                 MouseArea {
                     anchors.fill: parent
-                    onDoubleClicked: calculateCredential(modelData)
+                    onClicked: {selectedCredential = modelData; credentialMenu.popup();}
+                    acceptedButtons: Qt.RightButton
                 }
 
                 ColumnLayout {
@@ -125,19 +138,15 @@ ApplicationWindow {
                         text: qsTr('') + parseIssuer(modelData.name)
                         font.pointSize: 13
                     }
-                    Text {
+                    TextEdit {
                         visible: modelData.code != null
                         text: qsTr('') + modelData.code
                         font.family: "Verdana"
                         font.pointSize: 22
-                    }
-                    Text {
-                        id: credMessage
-                        text: "Double-click to generate code."
-                        visible: modelData.code == null
-                        opacity: 0.6
-                        font.family: "Verdana"
-                        font.pointSize: 15
+                        readOnly: true
+                        selectByMouse: true
+                        selectByKeyboard:true
+                        selectionColor : "#83d714"
                     }
                     Text {
                         text: hasIssuer(modelData.name) ? qsTr('') + parseName(modelData.name) : modelData.name

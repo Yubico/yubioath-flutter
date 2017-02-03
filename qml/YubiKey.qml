@@ -111,13 +111,44 @@ Python {
         var minExpiration = (Date.now() / 1000) + 10000
         for (var i = 0; i < creds.length; i++) {
             var cred = creds[i]
+            // Update min expiration
             if (cred.expiration && cred.expiration < minExpiration) {
                 minExpiration = cred.expiration
             }
+            // Touch credentials should only be replaced by user
+            if (credentialExists(cred.name) && cred.touch) {
+                result.push(getCredential(cred.name))
+                continue
+            }
+            // HOTP credentials should only be replaced by user
+            if (credentialExists(cred.name) && cred.oath_type === 'hotp') {
+                result.push(getCredential(cred.name))
+                continue
+            }
+            // TOTP credentials should be updated
             result.push(cred)
         }
         nextRefresh = minExpiration
         credentials = result
+    }
+
+    function getCredential(name) {
+        for (var i = 0; i < credentials.length; i++) {
+            if (credentials[i].name === name) {
+                return credentials[i]
+            }
+        }
+    }
+
+    function credentialExists(name) {
+        if (credentials != null) {
+            for (var i = 0; i < credentials.length; i++) {
+                if (credentials[i].name === name) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     function addCredential(name, key, oathType, digits, algorithm, touch) {
