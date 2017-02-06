@@ -141,8 +141,8 @@ ApplicationWindow {
                 anchors.top: appWindow.top
 
                 Repeater {
-                    id: repeater1
-                    model: credentials
+                    id: repeater
+                    model: filteredCredentials(credentials, search.text)
 
                     Rectangle {
                         id: credentialRectangle
@@ -198,6 +198,7 @@ ApplicationWindow {
             Layout.fillWidth: true
         }
     }
+
     MessageDialog {
         id: touchYourYubikey
         icon: StandardIcon.Information
@@ -271,6 +272,20 @@ ApplicationWindow {
         title: qsTr("Error!")
         text: ""
         standardButtons: StandardButton.Ok
+    }
+
+    function filteredCredentials(creds, search) {
+        var result = []
+        if (creds != null) {
+            for (var i = 0; i < creds.length; i++) {
+                var cred = creds[i]
+                if (cred.name.toLowerCase().indexOf(search.toLowerCase(
+                                                        )) !== -1) {
+                    result.push(creds[i])
+                }
+            }
+        }
+        return result
     }
 
     function hasIssuer(name) {
