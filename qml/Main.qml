@@ -42,7 +42,7 @@ ApplicationWindow {
             title: qsTr("File")
             MenuItem {
                 text: qsTr('Add...')
-                onTriggered: addCredential.show()
+                onTriggered: addCredential.open()
             }
             MenuItem {
                 text: qsTr("Exit")
