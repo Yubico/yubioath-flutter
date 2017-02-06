@@ -88,7 +88,6 @@ ApplicationWindow {
         MenuItem {
             text: qsTr('Copy')
             onTriggered: clipboard.setClipboard(selectedCredential.code)
-
         }
         MenuItem {
             visible: selectedCredential != null
@@ -102,84 +101,91 @@ ApplicationWindow {
         }
     }
 
-    ColumnLayout {
-        id: credentialsColumn
-        spacing: 0
-        visible: yk.hasDevice
-        anchors.right: parent.right
-        anchors.left: parent.left
-        anchors.top: parent.top
+    ScrollView {
+        anchors.fill: parent
+        id: scrollView
 
-        ProgressBar {
-            id: progressBar
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            Layout.maximumHeight: 10
-            Layout.minimumHeight: 10
-            Layout.minimumWidth: 300
-            Layout.fillWidth: true
-            maximumValue: 30
-            minimumValue: 0
-            style: ProgressBarStyle {
-                progress: Rectangle {
-                    color: "#9aca3c"
-                }
+        ColumnLayout {
+            width: scrollView.viewport.width
+            id: credentialsColumn
+            spacing: 0
+            visible: yk.hasDevice
+            anchors.right: parent.parent.right
+            anchors.left: parent.parent.left
+            anchors.top: parent.parent.top
 
-                background: Rectangle {
-                    color: palette.mid
+            ProgressBar {
+                id: progressBar
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.maximumHeight: 10
+                Layout.minimumHeight: 10
+                Layout.minimumWidth: 300
+                Layout.fillWidth: true
+                maximumValue: 30
+                minimumValue: 0
+
+                // width: scrollView.viewport.width
+                style: ProgressBarStyle {
+                    progress: Rectangle {
+                        color: "#9aca3c"
+                    }
+
+                    background: Rectangle {
+                        color: palette.mid
+                    }
                 }
             }
-        }
 
-        Repeater {
-            id: repeater1
-            model: credentials
+            Repeater {
+                id: repeater1
+                model: credentials
 
-            Rectangle {
-                id: credentialRectangle
-                color: index % 2 == 0 ? "#00000000" : palette.alternateBase
-                Layout.fillWidth: true
-                Layout.minimumHeight: 70
-                Layout.alignment: Qt.AlignTop
+                Rectangle {
+                    id: credentialRectangle
+                    color: index % 2 == 0 ? "#00000000" : palette.alternateBase
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 70
+                    Layout.alignment: Qt.AlignTop
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        selectedCredential = modelData
-                        credentialMenu.popup()
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            selectedCredential = modelData
+                            credentialMenu.popup()
+                        }
+                        acceptedButtons: Qt.RightButton
                     }
-                    acceptedButtons: Qt.RightButton
-                }
 
-                ColumnLayout {
-                    anchors.leftMargin: 10
-                    spacing: -15
-                    anchors.fill: parent
-                    Text {
-                        visible: hasIssuer(modelData.name)
-                        text: qsTr('') + parseIssuer(modelData.name)
-                        font.pointSize: 13
-                    }
-                    TextEdit {
-                        visible: modelData.code != null
-                        text: qsTr('') + modelData.code
-                        font.family: "Verdana"
-                        font.pointSize: 22
-                        readOnly: true
-                        selectByMouse: true
-                        selectByKeyboard: true
-                        selectionColor: "#9aca3c"
-                    }
-                    Text {
-                        text: hasIssuer(
-                                  modelData.name) ? qsTr('') + parseName(
-                                                        modelData.name) : modelData.name
-                        font.pointSize: 13
+                    ColumnLayout {
+                        anchors.leftMargin: 10
+                        spacing: -15
+                        anchors.fill: parent
+                        Text {
+                            visible: hasIssuer(modelData.name)
+                            text: qsTr('') + parseIssuer(modelData.name)
+                            font.pointSize: 13
+                        }
+                        TextEdit {
+                            visible: modelData.code != null
+                            text: qsTr('') + modelData.code
+                            font.family: "Verdana"
+                            font.pointSize: 22
+                            readOnly: true
+                            selectByMouse: true
+                            selectByKeyboard: true
+                            selectionColor: "#9aca3c"
+                        }
+                        Text {
+                            text: hasIssuer(
+                                      modelData.name) ? qsTr('') + parseName(
+                                                            modelData.name) : modelData.name
+                            font.pointSize: 13
+                        }
                     }
                 }
             }
         }
     }
-
     MessageDialog {
         id: touchYourYubikey
         icon: StandardIcon.Information
