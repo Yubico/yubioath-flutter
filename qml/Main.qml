@@ -127,7 +127,6 @@ ApplicationWindow {
         }
 
         ScrollView {
-            anchors.fill: appWindow
             id: scrollView
             Layout.fillHeight: true
             Layout.fillWidth: true
@@ -137,9 +136,9 @@ ApplicationWindow {
                 id: credentialsColumn
                 spacing: 0
                 visible: yk.hasDevice
-                anchors.right: parent.right
-                anchors.left: parent.left
-                anchors.top: parent.top
+                anchors.right: appWindow.right
+                anchors.left: appWindow.left
+                anchors.top: appWindow.top
 
                 Repeater {
                     id: repeater1
@@ -193,8 +192,10 @@ ApplicationWindow {
             }
         }
 
-        Label {
-            text: 'Search'
+        TextField {
+            id: search
+            placeholderText: 'Search...'
+            Layout.fillWidth: true
         }
     }
     MessageDialog {
