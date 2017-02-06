@@ -5,7 +5,7 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
-    id: applicationWindow1
+    id: appWindow
     width: 300
     height: 400
     minimumHeight: 400
@@ -101,89 +101,100 @@ ApplicationWindow {
         }
     }
 
-    ScrollView {
+    ColumnLayout {
         anchors.fill: parent
-        id: scrollView
+        spacing: 0
 
-        ColumnLayout {
-            width: scrollView.viewport.width
-            id: credentialsColumn
-            spacing: 0
-            visible: yk.hasDevice
-            anchors.right: parent.right
-            anchors.left: parent.left
-            anchors.top: parent.top
+        ProgressBar {
+            id: progressBar
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+            Layout.maximumHeight: 10
+            Layout.minimumHeight: 10
+            Layout.minimumWidth: 300
+            Layout.fillWidth: true
+            maximumValue: 30
+            minimumValue: 0
 
-            ProgressBar {
-                id: progressBar
-                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                Layout.maximumHeight: 10
-                Layout.minimumHeight: 10
-                Layout.minimumWidth: 300
-                Layout.fillWidth: true
-                maximumValue: 30
-                minimumValue: 0
+            style: ProgressBarStyle {
+                progress: Rectangle {
+                    color: "#9aca3c"
+                }
 
-                // width: scrollView.viewport.width
-                style: ProgressBarStyle {
-                    progress: Rectangle {
-                        color: "#9aca3c"
-                    }
+                background: Rectangle {
+                    color: palette.mid
+                }
+            }
+        }
 
-                    background: Rectangle {
-                        color: palette.mid
+        ScrollView {
+            anchors.fill: appWindow
+            id: scrollView
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
+            ColumnLayout {
+                width: scrollView.viewport.width
+                id: credentialsColumn
+                spacing: 0
+                visible: yk.hasDevice
+                anchors.right: parent.right
+                anchors.left: parent.left
+                anchors.top: parent.top
+
+                Repeater {
+                    id: repeater1
+                    model: credentials
+
+                    Rectangle {
+                        id: credentialRectangle
+                        color: index % 2 == 0 ? "#00000000" : palette.alternateBase
+                        Layout.fillWidth: true
+                        Layout.minimumHeight: 70
+                        Layout.alignment: Qt.AlignTop
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                selectedCredential = modelData
+                                credentialMenu.popup()
+                            }
+                            acceptedButtons: Qt.RightButton
+                        }
+
+                        ColumnLayout {
+                            anchors.leftMargin: 10
+                            spacing: -15
+                            anchors.fill: parent
+                            Text {
+                                visible: hasIssuer(modelData.name)
+                                text: qsTr('') + parseIssuer(modelData.name)
+                                font.pointSize: 13
+                            }
+                            TextEdit {
+                                visible: modelData.code != null
+                                text: qsTr('') + modelData.code
+                                font.family: "Verdana"
+                                font.pointSize: 22
+                                readOnly: true
+                                selectByMouse: true
+                                selectByKeyboard: true
+                                selectionColor: "#9aca3c"
+                            }
+                            Text {
+                                text: hasIssuer(
+                                          modelData.name) ? qsTr(
+                                                                '') + parseName(
+                                                                modelData.name) : modelData.name
+                                font.pointSize: 13
+                            }
+                        }
                     }
                 }
             }
+        }
 
-            Repeater {
-                id: repeater1
-                model: credentials
-
-                Rectangle {
-                    id: credentialRectangle
-                    color: index % 2 == 0 ? "#00000000" : palette.alternateBase
-                    Layout.fillWidth: true
-                    Layout.minimumHeight: 70
-                    Layout.alignment: Qt.AlignTop
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            selectedCredential = modelData
-                            credentialMenu.popup()
-                        }
-                        acceptedButtons: Qt.RightButton
-                    }
-
-                    ColumnLayout {
-                        anchors.leftMargin: 10
-                        spacing: -15
-                        anchors.fill: parent
-                        Text {
-                            visible: hasIssuer(modelData.name)
-                            text: qsTr('') + parseIssuer(modelData.name)
-                            font.pointSize: 13
-                        }
-                        TextEdit {
-                            visible: modelData.code != null
-                            text: qsTr('') + modelData.code
-                            font.family: "Verdana"
-                            font.pointSize: 22
-                            readOnly: true
-                            selectByMouse: true
-                            selectByKeyboard: true
-                            selectionColor: "#9aca3c"
-                        }
-                        Text {
-                            text: hasIssuer(
-                                      modelData.name) ? qsTr('') + parseName(
-                                                            modelData.name) : modelData.name
-                            font.pointSize: 13
-                        }
-                    }
-                }
-            }
+        Label {
+            text: 'Search'
         }
     }
     MessageDialog {
