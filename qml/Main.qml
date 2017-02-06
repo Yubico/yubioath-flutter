@@ -110,9 +110,9 @@ ApplicationWindow {
             id: credentialsColumn
             spacing: 0
             visible: yk.hasDevice
-            anchors.right: parent.parent.right
-            anchors.left: parent.parent.left
-            anchors.top: parent.parent.top
+            anchors.right: parent.right
+            anchors.left: parent.left
+            anchors.top: parent.top
 
             ProgressBar {
                 id: progressBar
