@@ -26,7 +26,7 @@
 
 from PySide import QtGui, QtCore
 from .. import messages as m
-from ...core.standard import TYPE_HOTP
+from ...core.constants import TYPE_HOTP
 from yubioath.yubicommon.qt.utils import connect_once
 from time import time
 

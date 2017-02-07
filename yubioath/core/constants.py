@@ -24,49 +24,49 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from .constants import DEFAULT_DIGITS
-from .exc import CardError, InvalidSlotError, NeedsTouchError
-from .utils import (format_code, parse_full, time_challenge)
+YKOATH_AID = b'\xa0\x00\x00\x05\x27\x21\x01\x01'
+YKOATH_NO_SPACE = 0x6a84
 
-YKLEGACY_AID = b'\xa0\x00\x00\x05\x27\x20\x01'
+INS_PUT = 0x01
+INS_DELETE = 0x02
+INS_SET_CODE = 0x03
+INS_RESET = 0x04
+INS_LIST = 0xa1
+INS_CALCULATE = 0xa2
+INS_VALIDATE = 0xa3
+INS_CALC_ALL = 0xa4
+INS_SEND_REMAINING = 0xa5
 
-INS_CHALRESP = 0x01
+RESP_MORE_DATA = 0x61
 
-SLOTS = [
-    -1,
-    0x30,
-    0x38
-]
+TAG_NAME = 0x71
+TAG_NAME_LIST = 0x72
+TAG_KEY = 0x73
+TAG_CHALLENGE = 0x74
+TAG_RESPONSE = 0x75
+TAG_T_RESPONSE = 0x76
+TAG_NO_RESPONSE = 0x77
+TAG_PROPERTY = 0x78
+TAG_VERSION = 0x79
+TAG_IMF = 0x7a
+TAG_ALGO = 0x7b
+TAG_TOUCH_RESPONSE = 0x7c
 
+TYPE_MASK = 0xf0
+TYPE_HOTP = 0x10
+TYPE_TOTP = 0x20
 
-class LegacyOathCcid(object):
+DEFAULT_DIGITS = 6
+ALLOWED_DIGITS = [6, 7, 8]
 
-    """
-    CCID interface to a legacy OATH-enabled YubiKey.
-    """
+ALG_MASK = 0x0f
+ALG_SHA1 = 0x01
+ALG_SHA256 = 0x02
 
-    def __init__(self, device):
-        self._device = device
+PROP_ALWAYS_INC = 0x01
+PROP_REQUIRE_TOUCH = 0x02
 
-        self._select()
+SCHEME_STANDARD = 0x00
+SCHEME_STEAM = 0x01
 
-    def _send(self, ins, data='', p1=0, p2=0, expected=0x9000):
-        resp, status = self._device.send_apdu(0, ins, p1, p2, data)
-        if expected != status:
-            raise CardError(status)
-        return resp
-
-    def _select(self):
-        self._send(0xa4, YKLEGACY_AID, p1=0x04)
-
-    def calculate(self, slot, digits=DEFAULT_DIGITS, timestamp=None, mayblock=0):
-        data = time_challenge(timestamp)
-        try:
-            resp = self._send(INS_CHALRESP, data, p1=SLOTS[slot])
-        except CardError as e:
-            if e.status == 0x6985:
-                raise NeedsTouchError()
-            raise
-        if not resp:
-            raise InvalidSlotError()
-        return format_code(parse_full(resp), digits)
+STEAM_CHAR_TABLE = "23456789BCDFGHJKMNPQRTVWXY"

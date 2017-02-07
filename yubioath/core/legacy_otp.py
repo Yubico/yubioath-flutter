@@ -27,7 +27,7 @@
 from __future__ import print_function
 
 from .utils import time_challenge, parse_full, format_code
-from .standard import TYPE_TOTP
+from .constants import DEFAULT_DIGITS, TYPE_TOTP
 from .exc import InvalidSlotError, NeedsTouchError
 from yubioath.yubicommon.ctypes import CLibrary
 from hashlib import sha1
@@ -125,7 +125,7 @@ class LegacyOathOtp(object):
             bool(tl & CONFIG2_VALID == CONFIG2_VALID)
         )
 
-    def calculate(self, slot, digits=6, timestamp=None, mayblock=0):
+    def calculate(self, slot, digits=DEFAULT_DIGITS, timestamp=None, mayblock=0):
         challenge = time_challenge(timestamp)
         resp = create_string_buffer(64)
         status = ykpers.yk_challenge_response(

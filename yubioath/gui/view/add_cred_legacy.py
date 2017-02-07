@@ -29,6 +29,7 @@ from .add_cred import B32Validator
 from .. import messages as m
 from ..qrparse import parse_qr_codes
 from ..qrdecode import decode_qr_data
+from ...core.constants import ALLOWED_DIGITS
 from ...core.utils import parse_uri
 from PySide import QtGui
 from base64 import b32decode
@@ -72,7 +73,7 @@ class AddCredDialog(qt.Dialog):
         layout.addRow(self._touch)
 
         self._n_digits = QtGui.QComboBox()
-        self._n_digits.addItems(['6', '8'])
+        self._n_digits.addItems([str(d) for d in ALLOWED_DIGITS])
         layout.addRow(m.n_digits, self._n_digits)
 
         btns = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok |

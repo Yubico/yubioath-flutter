@@ -26,6 +26,7 @@
 
 from yubioath.yubicommon import qt
 from .. import messages as m
+from ...core.constants import ALLOWED_DIGITS
 from PySide import QtGui
 
 INDENT = 16
@@ -51,7 +52,7 @@ class SettingsDialog(qt.Dialog):
         self._slot1_enabled.setToolTip(m.tt_slot_enabled_1 % 1)
         layout.addRow(self._slot1_enabled)
         self._slot1_digits = QtGui.QComboBox()
-        self._slot1_digits.addItems(['6', '8'])
+        self._slot1_digits.addItems([str(d) for d in ALLOWED_DIGITS])
         self._slot1_enabled.stateChanged.connect(self._slot1_digits.setEnabled)
         self._slot1_digits.setEnabled(False)
         self._slot1_digits.setToolTip(m.tt_num_digits)
@@ -63,7 +64,7 @@ class SettingsDialog(qt.Dialog):
         self._slot2_enabled.setToolTip(m.tt_slot_enabled_1 % 2)
         layout.addRow(self._slot2_enabled)
         self._slot2_digits = QtGui.QComboBox()
-        self._slot2_digits.addItems(['6', '8'])
+        self._slot2_digits.addItems([str(d) for d in ALLOWED_DIGITS])
         self._slot2_enabled.stateChanged.connect(self._slot2_digits.setEnabled)
         self._slot2_digits.setEnabled(False)
         self._slot2_digits.setToolTip(m.tt_num_digits)

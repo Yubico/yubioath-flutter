@@ -27,6 +27,7 @@
 from __future__ import print_function
 
 from yubioath.yubicommon.compat import int2byte, byte2int
+from .constants import DEFAULT_DIGITS
 from Crypto.Hash import HMAC, SHA
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Random import get_random_bytes
@@ -71,7 +72,7 @@ def parse_truncated(resp):
     return struct.unpack('>I', resp)[0] & 0x7fffffff
 
 
-def format_code(code, digits=6):
+def format_code(code, digits=DEFAULT_DIGITS):
     return ('%%0%dd' % digits) % (code % 10 ** digits)
 
 
