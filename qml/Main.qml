@@ -16,6 +16,22 @@ ApplicationWindow {
     property int expiration: 0
     property var credentials: device.credentials
     property var selectedCredential
+    property bool validated: device.validated
+    property bool hasDevice: device.hasDevice
+
+    PasswordPrompt {
+        id: passwordPrompt
+    }
+
+     onHasDeviceChanged: {
+        if (device.hasDevice) {
+            if (!validated) {
+                    device.checkValidation(passwordPrompt.open)
+            }
+        } else {
+            device.validated = false
+        }
+    }
 
     onCredentialsChanged: {
         updateExpiration()
@@ -67,6 +83,8 @@ ApplicationWindow {
     AddCredential {
         id: addCredential
     }
+
+
 
     MouseArea {
         enabled: device.hasDevice

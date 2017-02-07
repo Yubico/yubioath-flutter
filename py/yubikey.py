@@ -63,11 +63,11 @@ class Controller(object):
 
         return self._dev_info
 
-    def refresh_credentials(self, timestamp):
-        return [c.to_dict() for c in self._calculate_all(timestamp)]
+    def refresh_credentials(self, timestamp, password):
+        return [c.to_dict() for c in self._calculate_all(timestamp, password)]
 
-    def calculate(self, credential, timestamp):
-        return self._calculate(Credential.from_dict(credential), timestamp).to_dict()
+    def calculate(self, credential, timestamp, password):
+        return self._calculate(Credential.from_dict(credential), timestamp, password).to_dict()
 
     def set_mode(self, connections):
         dev = self._descriptor.open_device()
@@ -77,26 +77,45 @@ class Controller(object):
         except ModeSwitchError as e:
             return str(e)
 
-    def add_credential(self, name, key, oath_type, digits, algo, touch):
+    def needs_validation(self):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
+        return controller.locked
+
+    def validate(self, password):
+        dev = self._descriptor.open_device(TRANSPORT.CCID)
+        controller = OathController(dev.driver)
+        if controller.locked:
+            controller.validate(password)
+
+    def add_credential(self, name, key, oath_type, digits, algo, touch, password):
+        dev = self._descriptor.open_device(TRANSPORT.CCID)
+        controller = OathController(dev.driver)
+        if controller.locked and password is not None:
+            controller.validate(password)
         key = self._parse_key(key)
         controller.put(key, name, oath_type, digits, algo=algo, require_touch=touch)
 
-    def delete_credential(self, credential):
+    def delete_credential(self, credential, password):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
+        if controller.locked and password is not None:
+            controller.validate(password)
         controller.delete(Credential.from_dict(credential))
 
-    def _calculate(self, credential, timestamp):
+    def _calculate(self, credential, timestamp, password):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
+        if controller.locked and password is not None:
+            controller.validate(password)
         cred = controller.calculate(credential, timestamp)
         return cred
 
-    def _calculate_all(self, timestamp):
+    def _calculate_all(self, timestamp, password):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
+        if controller.locked and password is not None:
+            controller.validate(password)
         creds = controller.calculate_all(timestamp)
         creds = [c for c in creds if not c.hidden]
         return creds

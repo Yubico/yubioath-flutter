@@ -18,6 +18,8 @@ Python {
     property var enabled: []
     property bool ready: false
     property var queue: []
+    property bool validated
+    property string password
 
     Component.onCompleted: {
         importModule('site', function () {
@@ -66,9 +68,8 @@ Python {
                     serial = dev ? dev.serial : ''
                     enabled = dev ? dev.enabled : []
                     connections = dev ? dev.connections : []
-
                     var now = Math.floor(Date.now() / 1000)
-                    if (nextRefresh < now) {
+                    if (validated && nextRefresh < now) {
                         refreshCredentials()
                     }
                 })
@@ -80,30 +81,31 @@ Python {
         })
     }
 
+    function checkValidation(cb) {
+        if (!validated) {
+            do_call('yubikey.controller.needs_validation', [], function(res) {
+                if (res === false) {
+                    validated = true
+                } else {
+                    cb()
+                }
+            })
+        }
+    }
+
+    function validate(providedPassword) {
+        do_call('yubikey.controller.validate', [providedPassword], function(err) {
+            if (!err){
+                password = providedPassword
+                validated = true
+            }
+        })
+    }
+
+
     function refreshCredentials() {
         var now = Math.floor(Date.now() / 1000)
-        if (enabled.indexOf('CCID') != -1) {
-            do_call('yubikey.controller.refresh_credentials', [now],
-                    handleCredentials)
-        }
-    }
-
-    function calculate(credential) {
-        var now = Math.floor(Date.now() / 1000)
-        do_call('yubikey.controller.calculate', [credential, now],
-                updateCredential)
-    }
-
-    function updateCredential(cred) {
-        var result = []
-        for (var i = 0; i < credentials.length; i++) {
-            if (credentials[i].name === cred.name) {
-                result.push(cred)
-            } else {
-                result.push(credentials[i])
-            }
-        }
-        credentials = result
+        do_call('yubikey.controller.refresh_credentials', [now, password], handleCredentials)
     }
 
     function handleCredentials(creds) {
@@ -151,16 +153,30 @@ Python {
         return false
     }
 
+    function calculate(credential) {
+        var now = Math.floor(Date.now() / 1000)
+        do_call('yubikey.controller.calculate', [credential, now, password], updateCredential)
+    }
+
+    function updateCredential(cred) {
+        var result = []
+        for (var i = 0; i < credentials.length; i++) {
+            if (credentials[i].name === cred.name) {
+                result.push(cred)
+            } else {
+                result.push(credentials[i])
+            }
+        }
+        credentials = result
+    }
+
+
     function addCredential(name, key, oathType, digits, algorithm, touch) {
         do_call('yubikey.controller.add_credential',
-                [name, key, oathType, digits, algorithm, touch])
+                [name, key, oathType, digits, algorithm, touch, password])
     }
 
     function deleteCredential(credential) {
-        do_call('yubikey.controller.delete_credential', [credential])
-    }
-
-    function set_mode(connections, cb) {
-        do_call('yubikey.controller.set_mode', [connections], cb)
+        do_call('yubikey.controller.delete_credential', [credential, password])
     }
 }
