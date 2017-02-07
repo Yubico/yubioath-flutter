@@ -27,7 +27,7 @@
 from __future__ import print_function
 
 from .utils import time_challenge, parse_full, format_code
-from .standard import DEFAULT_DIGITS, TYPE_TOTP
+from .constants import DEFAULT_DIGITS, TYPE_TOTP
 from .exc import InvalidSlotError, NeedsTouchError
 from yubioath.yubicommon.ctypes import CLibrary
 from hashlib import sha1

@@ -30,7 +30,7 @@ from __future__ import print_function
 
 from .. import __version__
 from ..core.ccid import open_scard
-from ..core.standard import DEFAULT_DIGITS, ALLOWED_DIGITS, ALG_SHA1, ALG_SHA256, TYPE_HOTP, TYPE_TOTP
+from ..core.constants import DEFAULT_DIGITS, ALLOWED_DIGITS, ALG_SHA1, ALG_SHA256, TYPE_HOTP, TYPE_TOTP
 from ..core.utils import parse_uri
 from ..core.exc import NoSpaceError
 from .keystore import get_keystore

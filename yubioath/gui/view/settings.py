@@ -26,7 +26,7 @@
 
 from yubioath.yubicommon import qt
 from .. import messages as m
-from ...core.standard import ALLOWED_DIGITS
+from ...core.constants import ALLOWED_DIGITS
 from PySide import QtGui
 
 INDENT = 16

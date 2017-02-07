@@ -29,7 +29,7 @@ from .add_cred import B32Validator
 from .. import messages as m
 from ..qrparse import parse_qr_codes
 from ..qrdecode import decode_qr_data
-from ...core.standard import ALLOWED_DIGITS
+from ...core.constants import ALLOWED_DIGITS
 from ...core.utils import parse_uri
 from PySide import QtGui
 from base64 import b32decode
