@@ -25,7 +25,7 @@
 # for the parts of OpenSSL used as well as that of the covered work.
 
 from yubioath.yubicommon import qt
-from ...core.standard import ALG_SHA1, ALG_SHA256, TYPE_TOTP, TYPE_HOTP
+from ...core.standard import ALLOWED_DIGITS, ALG_SHA1, ALG_SHA256, TYPE_TOTP, TYPE_HOTP
 from ...core.utils import parse_uri
 from .. import messages as m
 from ..qrparse import parse_qr_codes
@@ -96,7 +96,7 @@ class AddCredDialog(qt.Dialog):
         self._cred_totp.setChecked(True)
 
         self._n_digits = QtGui.QComboBox()
-        self._n_digits.addItems(['6', '8'])
+        self._n_digits.addItems([str(d) for d in ALLOWED_DIGITS])
         layout.addRow(m.n_digits, self._n_digits)
 
         self._algorithm = QtGui.QComboBox()
@@ -142,7 +142,7 @@ class AddCredDialog(qt.Dialog):
                     m.qr_invalid_type,
                     m.qr_invalid_type_desc)
                 return
-            if n_digits not in ['6', '8']:
+            if n_digits not in [str(d) for d in ALLOWED_DIGITS]:
                 QtGui.QMessageBox.warning(
                     self,
                     m.qr_invalid_digits,

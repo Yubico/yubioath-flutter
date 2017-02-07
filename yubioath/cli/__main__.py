@@ -30,7 +30,7 @@ from __future__ import print_function
 
 from .. import __version__
 from ..core.ccid import open_scard
-from ..core.standard import ALG_SHA1, ALG_SHA256, TYPE_HOTP, TYPE_TOTP
+from ..core.standard import DEFAULT_DIGITS, ALLOWED_DIGITS, ALG_SHA1, ALG_SHA256, TYPE_HOTP, TYPE_TOTP
 from ..core.utils import parse_uri
 from ..core.exc import NoSpaceError
 from .keystore import get_keystore
@@ -138,7 +138,7 @@ def show(ctx, query, slot1, slot2, timestamp):
 @click.option(
     '-A', '--oath-type', type=click.Choice(['totp', 'hotp']), default='totp',
     help='Specify whether this is a time or counter-based OATH credential.')
-@click.option('-D', '--digits', type=click.Choice(['6', '8']), default='6',
+@click.option('-D', '--digits', type=click.Choice([str(d) for d in ALLOWED_DIGITS]), default=str(DEFAULT_DIGITS),
               callback=lambda c, p, v: int(v), help='Number of digits.')
 @click.option(
     '-H', '--hmac-algorithm', type=click.Choice(['SHA1', 'SHA256']),
@@ -159,7 +159,7 @@ def put(
         name = parsed.get('name')
         oath_type = parsed.get('type')
         hmac_algorithm = parsed.get('algorithm', 'SHA1').upper()
-        digits = int(parsed.get('digits', '6'))
+        digits = int(parsed.get('digits', DEFAULT_DIGITS))
         imf = int(parsed.get('counter', '0'))
 
     if oath_type not in ['totp', 'hotp']:
@@ -177,10 +177,10 @@ def put(
         # URI to contain a 'digits' value of '5'.
         digits = 6
 
-    if digits not in [6, 8]:
+    if digits not in ALLOWED_DIGITS:
         ctx.fail('Invalid number of digits for OTP')
 
-    digits = digits or 6
+    digits = digits or DEFAULT_DIGITS
     unpadded = key.upper()
     key = b32decode(unpadded + '=' * (-len(unpadded) % 8))
 

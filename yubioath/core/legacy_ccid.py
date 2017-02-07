@@ -24,6 +24,7 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
+from .standard import DEFAULT_DIGITS
 from .exc import CardError, InvalidSlotError, NeedsTouchError
 from .utils import (format_code, parse_full, time_challenge)
 
@@ -58,7 +59,7 @@ class LegacyOathCcid(object):
     def _select(self):
         self._send(0xa4, YKLEGACY_AID, p1=0x04)
 
-    def calculate(self, slot, digits=6, timestamp=None, mayblock=0):
+    def calculate(self, slot, digits=DEFAULT_DIGITS, timestamp=None, mayblock=0):
         data = time_challenge(timestamp)
         try:
             resp = self._send(INS_CHALRESP, data, p1=SLOTS[slot])

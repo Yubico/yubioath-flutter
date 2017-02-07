@@ -67,6 +67,9 @@ TYPE_MASK = 0xf0
 TYPE_HOTP = 0x10
 TYPE_TOTP = 0x20
 
+DEFAULT_DIGITS = 6
+ALLOWED_DIGITS = [6, 7, 8]
+
 ALG_MASK = 0x0f
 ALG_SHA1 = 0x01
 ALG_SHA256 = 0x02
@@ -312,7 +315,7 @@ class YubiOathCcid(object):
         results.sort(key=lambda a: a[0].name.lower())
         return results
 
-    def put(self, name, key, oath_type=TYPE_TOTP, algo=ALG_SHA1, digits=6,
+    def put(self, name, key, oath_type=TYPE_TOTP, algo=ALG_SHA1, digits=DEFAULT_DIGITS,
             imf=0, always_increasing=False, require_touch=False):
         ensure_unlocked(self)
         key = hmac_shorten_key(key, algo)

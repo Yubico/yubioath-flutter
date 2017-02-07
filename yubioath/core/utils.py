@@ -27,6 +27,7 @@
 from __future__ import print_function
 
 from yubioath.yubicommon.compat import int2byte, byte2int
+# can't! circular dep # from .standard import DEFAULT_DIGITS
 from Crypto.Hash import HMAC, SHA
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Random import get_random_bytes
