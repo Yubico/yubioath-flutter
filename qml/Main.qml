@@ -12,8 +12,9 @@ ApplicationWindow {
     minimumWidth: 300
     visible: true
     title: qsTr("Yubico Authenticator")
+    property var device: yk
     property int expiration: 0
-    property var credentials: yk.credentials
+    property var credentials: device.credentials
     property var selectedCredential
 
     onCredentialsChanged: {
@@ -65,11 +66,10 @@ ApplicationWindow {
 
     AddCredential {
         id: addCredential
-        device: yk
     }
 
     MouseArea {
-        enabled: yk.hasDevice
+        enabled: device.hasDevice
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: contextMenu.popup()
@@ -135,7 +135,7 @@ ApplicationWindow {
                 width: scrollView.viewport.width
                 id: credentialsColumn
                 spacing: 0
-                visible: yk.hasDevice
+                visible: device.hasDevice
                 anchors.right: appWindow.right
                 anchors.left: appWindow.left
                 anchors.top: appWindow.top
@@ -214,8 +214,8 @@ ApplicationWindow {
         text: qsTr("Are you sure you want to delete the credential?")
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
-            yk.deleteCredential(selectedCredential)
-            yk.refreshCredentials()
+            device.deleteCredential(selectedCredential)
+            device.refreshCredentials()
         }
     }
 
@@ -234,7 +234,7 @@ ApplicationWindow {
         interval: 500
         repeat: true
         running: true
-        onTriggered: yk.refresh()
+        onTriggered: device.refresh()
     }
 
     Timer {
@@ -246,18 +246,18 @@ ApplicationWindow {
         onTriggered: {
             var timeLeft = expiration - (Date.now() / 1000)
             if (timeLeft <= 0 && progressBar.value > 0) {
-                yk.refresh()
+                device.refresh()
             }
             progressBar.value = timeLeft
         }
     }
 
     Text {
-        visible: !yk.hasDevice
+        visible: !device.hasDevice
         id: noLoadedDeviceMessage
-        text: if (yk.nDevices == 0) {
+        text: if (device.nDevices == 0) {
                   qsTr("No YubiKey detected")
-              } else if (yk.nDevices == 1) {
+              } else if (device.nDevices == 1) {
                   qsTr("Connecting to YubiKey...")
               } else {
                   qsTr("Multiple YubiKeys detected!")
@@ -299,7 +299,7 @@ ApplicationWindow {
     }
 
     function calculateCredential(credential) {
-        yk.calculate(credential)
+        device.calculate(credential)
         if (credential.touch) {
             touchYourYubikey.open()
         }

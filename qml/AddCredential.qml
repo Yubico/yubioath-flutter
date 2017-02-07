@@ -6,7 +6,6 @@ import QtQuick.Dialogs 1.2
 
 Dialog {
     title: qsTr("Add credential")
-    property var device
     standardButtons: StandardButton.Save | StandardButton.Cancel
     onAccepted: addCredential()
 
