@@ -20,6 +20,7 @@ Python {
     property var queue: []
     property bool validated
     property var passwordKey
+    signal wrongPassword
 
     Component.onCompleted: {
         importModule('site', function () {
@@ -81,27 +82,14 @@ Python {
         })
     }
 
-    function checkValidation(cb) {
-        if (!validated) {
-            do_call('yubikey.controller.needs_validation', [], function(res) {
-                if (res === false) {
-                    validated = true
-                } else {
-                    cb()
-                }
-            })
-        }
-    }
-
     function validate(providedPassword) {
         do_call('yubikey.controller.validate', [providedPassword], function(res) {
             if (res !== false) {
                 passwordKey = res
                 validated = true
             }
-            if (!res) {
-                passwordKey = null
-                validated = false
+            if (res === false) {
+                wrongPassword()
             }
         })
     }

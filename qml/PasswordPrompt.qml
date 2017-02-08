@@ -5,9 +5,13 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
 Dialog {
+    id: passwordPrompt
     title: qsTr("Enter password")
     standardButtons: StandardButton.Ok | StandardButton.Cancel
-    onAccepted: device.validate(password.text)
+    modality: Qt.ApplicationModal
+    onAccepted: {
+        device.validate(password.text);
+    }
     ColumnLayout {
         RowLayout {
             Label {

@@ -23,13 +23,11 @@ ApplicationWindow {
         id: passwordPrompt
     }
 
-     onHasDeviceChanged: {
+    onHasDeviceChanged: {
         if (device.hasDevice) {
-            if (!validated) {
-                    device.checkValidation(passwordPrompt.open)
+            if (!device.validated) {
+                passwordPrompt.open()
             }
-        } else {
-            device.validated = false
         }
     }
 
@@ -243,6 +241,9 @@ ApplicationWindow {
         onError: {
             errorBox.text = traceback
             errorBox.open()
+        }
+        onWrongPassword: {
+                passwordPrompt.open()
         }
     }
 
