@@ -19,7 +19,7 @@ Python {
     property bool ready: false
     property var queue: []
     property bool validated
-    property string password
+    property var passwordKey
 
     Component.onCompleted: {
         importModule('site', function () {
@@ -94,10 +94,14 @@ Python {
     }
 
     function validate(providedPassword) {
-        do_call('yubikey.controller.validate', [providedPassword], function(err) {
-            if (!err){
-                password = providedPassword
+        do_call('yubikey.controller.validate', [providedPassword], function(res) {
+            if (res !== false) {
+                passwordKey = res
                 validated = true
+            }
+            if (!res) {
+                passwordKey = null
+                validated = false
             }
         })
     }
@@ -105,7 +109,7 @@ Python {
 
     function refreshCredentials() {
         var now = Math.floor(Date.now() / 1000)
-        do_call('yubikey.controller.refresh_credentials', [now, password], handleCredentials)
+        do_call('yubikey.controller.refresh_credentials', [now, passwordKey], handleCredentials)
     }
 
     function handleCredentials(creds) {
@@ -155,7 +159,7 @@ Python {
 
     function calculate(credential) {
         var now = Math.floor(Date.now() / 1000)
-        do_call('yubikey.controller.calculate', [credential, now, password], updateCredential)
+        do_call('yubikey.controller.calculate', [credential, now, passwordKey], updateCredential)
     }
 
     function updateCredential(cred) {
@@ -173,10 +177,10 @@ Python {
 
     function addCredential(name, key, oathType, digits, algorithm, touch) {
         do_call('yubikey.controller.add_credential',
-                [name, key, oathType, digits, algorithm, touch, password])
+                [name, key, oathType, digits, algorithm, touch, passwordKey])
     }
 
     function deleteCredential(credential) {
-        do_call('yubikey.controller.delete_credential', [credential, password])
+        do_call('yubikey.controller.delete_credential', [credential, passwordKey])
     }
 }

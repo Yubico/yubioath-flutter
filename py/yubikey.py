@@ -6,11 +6,11 @@ import json
 import types
 import re
 from base64 import b32decode
-from binascii import a2b_hex
+from binascii import a2b_hex, b2a_hex
 
 from ykman.descriptor import get_descriptors
 from ykman.driver import ModeSwitchError
-from ykman.util import CAPABILITY, TRANSPORT, Mode
+from ykman.util import CAPABILITY, TRANSPORT, Mode, derive_key
 from ykman.oath import OathController, Credential
 
 
@@ -63,19 +63,11 @@ class Controller(object):
 
         return self._dev_info
 
-    def refresh_credentials(self, timestamp, password):
-        return [c.to_dict() for c in self._calculate_all(timestamp, password)]
+    def refresh_credentials(self, timestamp, password_key):
+        return [c.to_dict() for c in self._calculate_all(timestamp, a2b_hex(password_key))]
 
-    def calculate(self, credential, timestamp, password):
-        return self._calculate(Credential.from_dict(credential), timestamp, password).to_dict()
-
-    def set_mode(self, connections):
-        dev = self._descriptor.open_device()
-        try:
-            transports = sum([TRANSPORT[c] for c in connections])
-            dev.mode = Mode(transports & TRANSPORT.usb_transports())
-        except ModeSwitchError as e:
-            return str(e)
+    def calculate(self, credential, timestamp, password_key):
+        return self._calculate(Credential.from_dict(credential), timestamp, a2b_hex(password_key)).to_dict()
 
     def needs_validation(self):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
@@ -85,8 +77,12 @@ class Controller(object):
     def validate(self, password):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
-        if controller.locked:
-            controller.validate(password)
+        key = derive_key(controller.id, password)
+        try:
+            controller.validate(key)
+            return b2a_hex(key).decode('utf-8')
+        except:
+            return False
 
     def add_credential(self, name, key, oath_type, digits, algo, touch, password):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
@@ -96,26 +92,26 @@ class Controller(object):
         key = self._parse_key(key)
         controller.put(key, name, oath_type, digits, algo=algo, require_touch=touch)
 
-    def delete_credential(self, credential, password):
+    def delete_credential(self, credential, key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
         if controller.locked and password is not None:
             controller.validate(password)
         controller.delete(Credential.from_dict(credential))
 
-    def _calculate(self, credential, timestamp, password):
+    def _calculate(self, credential, timestamp, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
-        if controller.locked and password is not None:
-            controller.validate(password)
+        if controller.locked and password_key is not None:
+            controller.validate(a2b_hex(password_key))
         cred = controller.calculate(credential, timestamp)
         return cred
 
-    def _calculate_all(self, timestamp, password):
+    def _calculate_all(self, timestamp, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
-        if controller.locked and password is not None:
-            controller.validate(password)
+        if controller.locked and password_key is not None:
+            controller.validate(a2b_hex(password_key))
         creds = controller.calculate_all(timestamp)
         creds = [c for c in creds if not c.hidden]
         return creds
