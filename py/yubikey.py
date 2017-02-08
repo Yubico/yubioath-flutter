@@ -63,8 +63,11 @@ class Controller(object):
 
         return self._dev_info
 
-    def refresh_credentials(self, timestamp, password_key):
-        return [c.to_dict() for c in self._calculate_all(timestamp, a2b_hex(password_key))]
+    def refresh_credentials(self, timestamp, password_key=None):
+        if password_key != None:
+            password_key = a2b_hex(password_key)
+
+        return [c.to_dict() for c in self._calculate_all(timestamp, password_key)]
 
     def calculate(self, credential, timestamp, password_key):
         return self._calculate(Credential.from_dict(credential), timestamp, a2b_hex(password_key)).to_dict()
@@ -84,26 +87,26 @@ class Controller(object):
         except:
             return False
 
-    def add_credential(self, name, key, oath_type, digits, algo, touch, password):
+    def add_credential(self, name, key, oath_type, digits, algo, touch, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
-        if controller.locked and password is not None:
-            controller.validate(password)
+        if controller.locked and password_key is not None:
+            controller.validate(a2b_hex(password_key))
         key = self._parse_key(key)
         controller.put(key, name, oath_type, digits, algo=algo, require_touch=touch)
 
-    def delete_credential(self, credential, key):
+    def delete_credential(self, credential, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
-        if controller.locked and password is not None:
-            controller.validate(password)
+        if controller.locked and password_key is not None:
+            controller.validate(a2b_hex(password_key))
         controller.delete(Credential.from_dict(credential))
 
     def _calculate(self, credential, timestamp, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
         if controller.locked and password_key is not None:
-            controller.validate(a2b_hex(password_key))
+            controller.validate(password_key)
         cred = controller.calculate(credential, timestamp)
         return cred
 
@@ -111,7 +114,7 @@ class Controller(object):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
         if controller.locked and password_key is not None:
-            controller.validate(a2b_hex(password_key))
+            controller.validate(password_key)
         creds = controller.calculate_all(timestamp)
         creds = [c for c in creds if not c.hidden]
         return creds
