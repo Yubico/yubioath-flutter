@@ -113,6 +113,7 @@ class Controller(object):
     def _calculate_all(self, timestamp, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
+
         if controller.locked and password_key is not None:
             controller.validate(password_key)
         creds = controller.calculate_all(timestamp)

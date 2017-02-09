@@ -77,6 +77,8 @@ Python {
             } else if (hasDevice) {
                 hasDevice = false
                 credentials = null
+                validated = false
+                passwordKey = false
                 nextRefresh = 0
             }
         })
@@ -92,6 +94,17 @@ Python {
                 wrongPassword()
             }
         })
+    }
+
+    function promptOrSkip(prompt){
+         do_call('yubikey.controller.needs_validation', [], function(res) {
+            if (res === true) {
+                prompt.open()
+            }
+            if (res === false) {
+                validated = true
+            }
+         })
     }
 
 

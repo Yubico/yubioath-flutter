@@ -25,9 +25,7 @@ ApplicationWindow {
 
     onHasDeviceChanged: {
         if (device.hasDevice) {
-            if (!device.validated) {
-                passwordPrompt.open()
-            }
+            device.promptOrSkip(passwordPrompt)
         }
     }
 
