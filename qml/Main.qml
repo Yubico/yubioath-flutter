@@ -26,6 +26,9 @@ ApplicationWindow {
     onHasDeviceChanged: {
         if (device.hasDevice) {
             device.promptOrSkip(passwordPrompt)
+        } else {
+            passwordPrompt.close()
+            addCredential.close()
         }
     }
 
@@ -121,6 +124,7 @@ ApplicationWindow {
 
         ProgressBar {
             id: progressBar
+            visible: hasDevice
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
             Layout.maximumHeight: 10
             Layout.minimumHeight: 10
@@ -208,6 +212,7 @@ ApplicationWindow {
 
         TextField {
             id: search
+            visible: hasDevice
             placeholderText: 'Search...'
             Layout.fillWidth: true
         }

@@ -66,11 +66,10 @@ class Controller(object):
     def refresh_credentials(self, timestamp, password_key=None):
         if password_key != None:
             password_key = a2b_hex(password_key)
-
         return [c.to_dict() for c in self._calculate_all(timestamp, password_key)]
 
     def calculate(self, credential, timestamp, password_key):
-        return self._calculate(Credential.from_dict(credential), timestamp, a2b_hex(password_key)).to_dict()
+        return self._calculate(Credential.from_dict(credential), timestamp, password_key).to_dict()
 
     def needs_validation(self):
         dev = self._descriptor.open_device(TRANSPORT.CCID)

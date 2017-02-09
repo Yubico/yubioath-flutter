@@ -42,6 +42,11 @@ Python {
         })
     }
 
+    onHasDeviceChanged: {
+        device.passwordKey = null;
+        device.validated = false;
+    }
+
     onError: {
         console.log('Python error: ' + traceback)
     }
@@ -77,8 +82,6 @@ Python {
             } else if (hasDevice) {
                 hasDevice = false
                 credentials = null
-                validated = false
-                passwordKey = false
                 nextRefresh = 0
             }
         })

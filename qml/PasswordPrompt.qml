@@ -8,7 +8,6 @@ Dialog {
     id: passwordPrompt
     title: qsTr("Enter password")
     standardButtons: StandardButton.Ok | StandardButton.Cancel
-    modality: Qt.ApplicationModal
     onAccepted: {
         device.validate(password.text);
     }
