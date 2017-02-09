@@ -69,6 +69,10 @@ will be run automatically for you.
 NOTE: You may have to reboot your computer for the change to the libccid
 configuration to take effect!
 
+NOTE: On OS X CCID is not enabled as connection mode by default. The desktop 
+Authenticator needs CCID mode to be enabled in order to detect your Yubikey.
+Install the Yubikey NEO manager in order to enable CCID as connection mode.
+
 === Dependencies
 Yubico Authenticator requires click, PySide, yubikey-personalization, pyscard,
 and PyCrypto.
