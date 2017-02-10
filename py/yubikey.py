@@ -86,6 +86,18 @@ class Controller(object):
         except:
             return False
 
+    def set_password(self, new_password, password_key):
+        dev = self._descriptor.open_device(TRANSPORT.CCID)
+        controller = OathController(dev.driver)
+        if controller.locked and password_key is not None:
+            controller.validate(a2b_hex(password_key))
+        if new_password is not None:
+            key = derive_key(controller.id, new_password)
+            controller.set_password(key)
+        else:
+            controller.clear_password()
+
+
     def add_credential(self, name, key, oath_type, digits, algo, touch, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)

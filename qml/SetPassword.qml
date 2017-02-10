@@ -5,7 +5,7 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
 Dialog {
-    id: passwordPrompt
+    id: setPasswordPrompt
     title: qsTr("Set new password")
     standardButtons: StandardButton.NoButton
 
@@ -61,7 +61,8 @@ Dialog {
         if (newPassword.text !== confirmPassword.text) {
             noMatch.open()
         } else {
-            close()
+            device.setPassword(newPassword.text)
+            accept()
         }
     }
 }

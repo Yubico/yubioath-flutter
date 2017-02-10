@@ -89,7 +89,17 @@ ApplicationWindow {
 
     SetPassword {
         id: setPassword
+        onAccepted: passwordUpdated.open()
     }
+
+    MessageDialog {
+        id: passwordUpdated
+        icon: StandardIcon.Information
+        title: qsTr("Password set")
+        text: qsTr("A new password has been set.")
+        standardButtons: StandardButton.Ok
+    }
+
 
     MouseArea {
         enabled: device.hasDevice
