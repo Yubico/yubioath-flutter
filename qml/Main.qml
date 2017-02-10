@@ -57,8 +57,12 @@ ApplicationWindow {
         Menu {
             title: qsTr("File")
             MenuItem {
-                text: qsTr('Add...')
+                text: qsTr('Add credential...')
                 onTriggered: addCredential.open()
+            }
+            MenuItem {
+                text: qsTr('Set password...')
+                onTriggered: setPassword.open()
             }
             MenuItem {
                 text: qsTr("Exit")
@@ -83,7 +87,9 @@ ApplicationWindow {
         id: addCredential
     }
 
-
+    SetPassword {
+        id: setPassword
+    }
 
     MouseArea {
         enabled: device.hasDevice
@@ -246,7 +252,7 @@ ApplicationWindow {
             errorBox.open()
         }
         onWrongPassword: {
-                passwordPrompt.open()
+            passwordPrompt.open()
         }
     }
 

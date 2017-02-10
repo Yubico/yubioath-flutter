@@ -24,7 +24,6 @@ Dialog {
             }
             TextField {
                 id: name
-                Layout.fillHeight: false
                 Layout.fillWidth: true
             }
 
