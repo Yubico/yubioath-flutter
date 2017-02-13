@@ -7,6 +7,7 @@
 #ifndef Q_OS_DARWIN
 #include <QtSingleApplication>
 #endif
+#include "screenshot.h"
 
 int main(int argc, char *argv[])
 {
@@ -45,10 +46,12 @@ int main(int argc, char *argv[])
 
     app.setWindowIcon(QIcon(path_prefix + "/images/windowicon.png"));
 
+    ScreenShot screenshot;
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("appDir", app_dir);
     engine.rootContext()->setContextProperty("urlPrefix", url_prefix);
     engine.rootContext()->setContextProperty("appVersion", APP_VERSION);
+    engine.rootContext()->setContextProperty("ScreenShot", &screenshot);
 
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 
