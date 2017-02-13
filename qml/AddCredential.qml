@@ -33,6 +33,9 @@ Dialog {
             TextField {
                 id: key
                 Layout.fillWidth: true
+                validator: RegExpValidator {
+                    regExp: /[ 2-7a-zA-Z]+=*/
+                }
             }
         }
         GroupBox {
