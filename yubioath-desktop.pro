@@ -55,6 +55,9 @@ lupdate_only {
   qml/slot/*.qml
 }
 
+HEADERS += screenshot.h
+
 DISTFILES += \
-    py/yubikey.py \
+    py/* \
+    py/qr/* \
     resources/icons/yubioath.icns

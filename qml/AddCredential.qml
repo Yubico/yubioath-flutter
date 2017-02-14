@@ -16,7 +16,7 @@ Dialog {
                 Layout.columnSpan: 2
                 text: qsTr("Scan a QR code")
                 Layout.fillWidth: true
-                onClicked: console.log(ScreenShot.capture());
+                onClicked: device.parseQr(ScreenShot.capture());
             }
             Label {
                 text: qsTr("Name")

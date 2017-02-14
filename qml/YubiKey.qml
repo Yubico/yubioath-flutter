@@ -194,4 +194,10 @@ Python {
     function deleteCredential(credential) {
         do_call('yubikey.controller.delete_credential', [credential, passwordKey])
     }
+
+    function parseQr(image){
+        do_call('yubikey.controller.parse_qr', [image], function(res){
+            console.log(res)
+        })
+    }
 }
