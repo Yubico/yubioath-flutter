@@ -145,8 +145,9 @@ class Controller(object):
     def parse_qr(self, image):
         data = b64decode(image['data'])
         image = PixelImage(data, image['width'], image['height'])
-        x = qrparse.locate_finders(image, 2)
-        return x
+        for qr in qrparse.parse_qr_codes(image, 2):
+            return qrdecode.decode_qr_data(qr)
+        return ""
 
 
 class PixelImage(object):

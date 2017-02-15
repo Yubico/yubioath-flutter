@@ -48,20 +48,20 @@ def check_line(pixels):
         yield i - width, width
 
 
-def check_row(line, bpp, x_offs, x_width):
+def check_row(line, x_offs, x_width):
     return check_line(line[x_offs:x_offs+x_width])
 
 
-def check_col(image, bpp, x, y_offs, y_height):
+def check_col(image, x, y_offs, y_height):
     return check_line(bytes([image.get_line(i)[x]
                        for i in range(y_offs, y_offs + y_height)]))
 
 
-def read_line(line, bpp, x_offs, x_width):
-    matching_dark = not is_dark(line[x_offs*bpp:(x_offs+1)*bpp])
+def read_line(line, x_offs, x_width):
+    matching_dark = not is_dark(line[x_offs])
     matched = []
     for x in range(x_offs, x_offs + x_width):
-        pixel = line[x*bpp:(x+1)*bpp]
+        pixel = line[x]
         if is_dark(pixel):  # Dark pixel
             if matching_dark:
                 matched[-1] += 1
@@ -77,7 +77,7 @@ def read_line(line, bpp, x_offs, x_width):
     return matching_dark, matched
 
 
-def read_bits(image, bpp, img_x, img_y, img_w, img_h, size):
+def read_bits(image, img_x, img_y, img_w, img_h, size):
     qr_x_w = img_w / size
     qr_y_h = img_h / size
     qr_data = []
@@ -104,9 +104,6 @@ FINDER = [
 
 
 def parse_qr_codes(image, min_res=2):
-    size = image.size()
-    bpp = image.bytesPerLine() // size.width()
-
     finders = locate_finders(image, min_res)
 
     # Arrange finders into QR codes and extract data
@@ -117,27 +114,26 @@ def parse_qr_codes(image, min_res=2):
         height = bl.y + bl.h - min_y
 
         # Determine resolution by reading timing pattern
-        line = image.scanLine(min_y + int(6.5 / 7 * max(tl.h, tr.h)))
-        _, line_data = read_line(line, bpp, min_x, width)
+        line = image.get_line(min_y + int(6.5 / 7 * max(tl.h, tr.h)))
+        _, line_data = read_line(line, min_x, width)
         size = len(line_data) + 12
 
         # Read QR code data
-        yield read_bits(image, bpp, min_x, min_y, width, height, size)
+        yield read_bits(image, min_x, min_y, width, height, size)
 
 
 def locate_finders(image, min_res):
-    bpp = 1
     finders = set()
     for y in range(0, image.height, min_res * 3):
-        for (x, w) in check_row(image.get_line(y), bpp, 0, image.width):
+        for (x, w) in check_row(image.get_line(y), 0, image.width):
             x_offs = x + w // 2
             y_offs = max(0, y - w)
             y_height = min(image.height - y_offs, 2 * w)
-            match = next(check_col(image, bpp, x_offs, y_offs, y_height), None)
+            match = next(check_col(image, x_offs, y_offs, y_height), None)
             if match:
                 (pos, h) = match
                 y2 = y_offs + pos
-                if read_bits(image, bpp, x, y2, w, h, 7) == FINDER:
+                if read_bits(image, x, y2, w, h, 7) == FINDER:
                     finders.add(Box(x, y2, w, h))
 
     return list(finders)
