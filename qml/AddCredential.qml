@@ -7,6 +7,7 @@ import QtQuick.Dialogs 1.2
 Dialog {
     title: qsTr("Add credential")
     standardButtons: StandardButton.Save | StandardButton.Cancel
+    modality: Qt.ApplicationModal
     onAccepted: { addCredential(); clear(); }
     onRejected: clear()
 

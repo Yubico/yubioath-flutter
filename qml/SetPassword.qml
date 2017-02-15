@@ -8,6 +8,7 @@ Dialog {
     id: setPasswordPrompt
     title: qsTr("Set new password")
     standardButtons: StandardButton.NoButton
+    modality: Qt.ApplicationModal
 
     ColumnLayout {
         anchors.fill: parent

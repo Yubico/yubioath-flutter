@@ -203,15 +203,11 @@ ApplicationWindow {
                                 text: qsTr('') + parseIssuer(modelData.name)
                                 font.pointSize: 13
                             }
-                            TextEdit {
+                            Text {
                                 visible: modelData.code != null
                                 text: qsTr('') + modelData.code
                                 font.family: "Verdana"
                                 font.pointSize: 22
-                                readOnly: true
-                                selectByMouse: true
-                                selectByKeyboard: true
-                                selectionColor: "#9aca3c"
                             }
                             Text {
                                 text: hasIssuer(
