@@ -8,7 +8,7 @@ from base64 import b32decode, b64decode
 from binascii import a2b_hex, b2a_hex
 
 from ykman.descriptor import get_descriptors
-from ykman.util import CAPABILITY, TRANSPORT, derive_key
+from ykman.util import CAPABILITY, TRANSPORT, derive_key, parse_uri
 from ykman.oath import OathController, Credential
 from py.qr import qrparse
 from py.qr import qrdecode
@@ -146,7 +146,7 @@ class Controller(object):
         data = b64decode(image['data'])
         image = PixelImage(data, image['width'], image['height'])
         for qr in qrparse.parse_qr_codes(image, 2):
-            return qrdecode.decode_qr_data(qr)
+            return parse_uri(qrdecode.decode_qr_data(qr))
         return ""
 
 
