@@ -142,12 +142,12 @@ class Controller(object):
         return b32decode(key)
 
 
-    def parse_qr(self, image):
-        data = b64decode(image['data'])
-        image = PixelImage(data, image['width'], image['height'])
-        for qr in qrparse.parse_qr_codes(image, 2):
-            return parse_uri(qrdecode.decode_qr_data(qr))
-        return ""
+    def parse_qr(self, screenshots):
+        for s in screenshots:
+            data = b64decode(s['data'])
+            image = PixelImage(data, s['width'], s['height'])
+            for qr in qrparse.parse_qr_codes(image, 2):
+                return parse_uri(qrdecode.decode_qr_data(qr))
 
 
 class PixelImage(object):

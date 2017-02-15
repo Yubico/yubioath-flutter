@@ -195,7 +195,7 @@ Python {
         do_call('yubikey.controller.delete_credential', [credential, passwordKey])
     }
 
-    function parseQr(image, cb){
-        do_call('yubikey.controller.parse_qr', [image], cb)
+    function parseQr(screenShots, cb){
+        do_call('yubikey.controller.parse_qr', [screenShots], cb)
     }
 }
