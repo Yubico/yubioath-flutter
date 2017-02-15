@@ -1,18 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 import json
 import types
 import re
-from base64 import b32decode
+from base64 import b32decode, b64decode
 from binascii import a2b_hex, b2a_hex
 
 from ykman.descriptor import get_descriptors
-from ykman.driver import ModeSwitchError
-from ykman.util import CAPABILITY, TRANSPORT, Mode, derive_key
+from ykman.util import CAPABILITY, TRANSPORT, derive_key
 from ykman.oath import OathController, Credential
-
+from py.qr import qrparse
+from py.qr import qrdecode
 
 NON_FEATURE_CAPABILITIES = [CAPABILITY.CCID, CAPABILITY.NFC]
 
@@ -64,7 +63,7 @@ class Controller(object):
         return self._dev_info
 
     def refresh_credentials(self, timestamp, password_key=None):
-        if password_key != None:
+        if password_key is not None:
             password_key = a2b_hex(password_key)
         return [c.to_dict() for c in self._calculate_all(timestamp, password_key)]
 
@@ -96,7 +95,6 @@ class Controller(object):
             controller.set_password(key)
         else:
             controller.clear_password()
-
 
     def add_credential(self, name, key, oath_type, digits, algo, touch, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
@@ -143,5 +141,22 @@ class Controller(object):
         key += '=' * (-len(key) % 8)  # Support unpadded
         return b32decode(key)
 
+
+    def parse_qr(self, image):
+        data = b64decode(image['data'])
+        image = PixelImage(data, image['width'], image['height'])
+        x = qrparse.locate_finders(image, 2)
+        return x
+
+
+class PixelImage(object):
+
+    def __init__(self, data, width, height):
+        self.data = data
+        self.width = width
+        self.height = height
+
+    def get_line(self, line_number):
+        return self.data[self.width * line_number:self.width * (line_number + 1)]
 
 controller = Controller()

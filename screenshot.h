@@ -19,7 +19,7 @@ public:
         image = image.convertToFormat(QImage::Format_Mono, Qt::ThresholdDither);
 
         // Iterate over all pixels
-        QByteArray imageArray(4 + 4 + (image.width() * image.height()), 0);
+        QByteArray imageArray;
         for (int row = 0; row < image.height(); ++row) {
             for (int col = 0; col < image.width(); ++col) {
                 QRgb px = image.pixel(col, row);
