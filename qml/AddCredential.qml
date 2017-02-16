@@ -8,7 +8,10 @@ Dialog {
     title: qsTr("Add credential")
     standardButtons: StandardButton.Save | StandardButton.Cancel
     modality: Qt.ApplicationModal
-    onAccepted: { addCredential(); clear(); }
+    onAccepted: {
+        addCredential()
+        clear()
+    }
     onRejected: clear()
 
     ColumnLayout {
@@ -18,7 +21,7 @@ Dialog {
                 Layout.columnSpan: 2
                 text: qsTr("Scan a QR code")
                 Layout.fillWidth: true
-                onClicked: device.parseQr(ScreenShot.capture(), updateForm);
+                onClicked: device.parseQr(ScreenShot.capture(), updateForm)
             }
             Label {
                 text: qsTr("Name")
@@ -127,6 +130,14 @@ Dialog {
         standardButtons: StandardButton.Ok
     }
 
+    MessageDialog {
+        id: paddingError
+        icon: StandardIcon.Critical
+        title: qsTr("Wrong padding")
+        text: qsTr("The padding of the key is incorrect.")
+        standardButtons: StandardButton.Ok
+    }
+
     function clear() {
         name.text = ""
         key.text = ""
@@ -135,7 +146,6 @@ Dialog {
         algorithm.current = sha1
         touch.checked = false
     }
-
 
     function updateForm(uri) {
         if (uri) {
@@ -158,7 +168,11 @@ Dialog {
     function addCredential() {
         device.addCredential(name.text, key.text, oathType.current.name,
                              digits.current.digits, algorithm.current.name,
-                             touch.checked)
+                             touch.checked, function (error) {
+                                 if (error === 'Incorrect padding') {
+                                     paddingError.open()
+                                 }
+                             })
         device.refreshCredentials()
     }
 }

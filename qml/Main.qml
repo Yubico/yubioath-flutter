@@ -67,6 +67,7 @@ ApplicationWindow {
             MenuItem {
                 text: qsTr("Exit")
                 onTriggered: Qt.quit()
+                shortcut: StandardKey.Quit
             }
         }
 

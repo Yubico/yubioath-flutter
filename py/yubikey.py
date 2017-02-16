@@ -101,8 +101,12 @@ class Controller(object):
         controller = OathController(dev.driver)
         if controller.locked and password_key is not None:
             controller.validate(a2b_hex(password_key))
-        key = self._parse_key(key)
+        try:
+            key = self._parse_key(key)
+        except Exception as e:
+            return str(e)
         controller.put(key, name, oath_type, digits, algo=algo, require_touch=touch)
+
 
     def delete_credential(self, credential, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)

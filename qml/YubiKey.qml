@@ -43,8 +43,8 @@ Python {
     }
 
     onHasDeviceChanged: {
-        device.passwordKey = null;
-        device.validated = false;
+        device.passwordKey = null
+        device.validated = false
     }
 
     onError: {
@@ -88,39 +88,41 @@ Python {
     }
 
     function validate(providedPassword) {
-        do_call('yubikey.controller.validate', [providedPassword], function(res) {
-            if (res !== false) {
-                passwordKey = res
-                validated = true
-            }
-            if (res === false) {
-                wrongPassword()
-            }
-        })
+        do_call('yubikey.controller.validate', [providedPassword],
+                function (res) {
+                    if (res !== false) {
+                        passwordKey = res
+                        validated = true
+                    }
+                    if (res === false) {
+                        wrongPassword()
+                    }
+                })
     }
 
-    function promptOrSkip(prompt){
-         do_call('yubikey.controller.needs_validation', [], function(res) {
+    function promptOrSkip(prompt) {
+        do_call('yubikey.controller.needs_validation', [], function (res) {
             if (res === true) {
                 prompt.open()
             }
             if (res === false) {
                 validated = true
             }
-         })
+        })
     }
 
     function setPassword(password) {
         console.log('PROVIDED PW ', password)
-        do_call('yubikey.controller.set_password', [password, passwordKey], function() {
-                validate(password)
-            })
+        do_call('yubikey.controller.set_password', [password, passwordKey],
+                function () {
+                    validate(password)
+                })
     }
-
 
     function refreshCredentials() {
         var now = Math.floor(Date.now() / 1000)
-        do_call('yubikey.controller.refresh_credentials', [now, passwordKey], handleCredentials)
+        do_call('yubikey.controller.refresh_credentials', [now, passwordKey],
+                handleCredentials)
     }
 
     function handleCredentials(creds) {
@@ -170,7 +172,8 @@ Python {
 
     function calculate(credential) {
         var now = Math.floor(Date.now() / 1000)
-        do_call('yubikey.controller.calculate', [credential, now, passwordKey], updateCredential)
+        do_call('yubikey.controller.calculate', [credential, now, passwordKey],
+                updateCredential)
     }
 
     function updateCredential(cred) {
@@ -185,17 +188,18 @@ Python {
         credentials = result
     }
 
-
-    function addCredential(name, key, oathType, digits, algorithm, touch) {
+    function addCredential(name, key, oathType, digits, algorithm, touch, cb) {
         do_call('yubikey.controller.add_credential',
-                [name, key, oathType, digits, algorithm, touch, passwordKey])
+                [name, key, oathType, digits, algorithm, touch, passwordKey],
+                cb)
     }
 
     function deleteCredential(credential) {
-        do_call('yubikey.controller.delete_credential', [credential, passwordKey])
+        do_call('yubikey.controller.delete_credential',
+                [credential, passwordKey])
     }
 
-    function parseQr(screenShots, cb){
+    function parseQr(screenShots, cb) {
         do_call('yubikey.controller.parse_qr', [screenShots], cb)
     }
 }
