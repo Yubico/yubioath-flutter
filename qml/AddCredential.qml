@@ -6,15 +6,17 @@ import QtQuick.Dialogs 1.2
 
 Dialog {
     title: qsTr("Add credential")
-    standardButtons: StandardButton.Save | StandardButton.Cancel
+    standardButtons: StandardButton.NoButton
     modality: Qt.ApplicationModal
     onAccepted: {
-        addCredential()
-        clear()
+            addCredential()
+            clear()
     }
     onRejected: clear()
 
     ColumnLayout {
+        anchors.fill: parent
+
         GridLayout {
             columns: 2
             Button {
@@ -40,8 +42,9 @@ Dialog {
                 id: key
                 Layout.fillWidth: true
                 validator: RegExpValidator {
-                    regExp: /[ 2-7a-zA-Z]+=*/
+                    regExp: /[2-7a-zA-Z]+=*/
                 }
+
             }
         }
         GroupBox {
@@ -118,6 +121,20 @@ Dialog {
                                               '')) >= 426
                     }
                 }
+            }
+        }
+
+        RowLayout {
+            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+            Button {
+                text: qsTr("Add credential")
+                enabled: name.text.length !== 0 && key.text.length !== 0
+                Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                onClicked: accept()
+            }
+            Button {
+                text: qsTr("Cancel")
+                onClicked: close()
             }
         }
     }
