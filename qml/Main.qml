@@ -100,7 +100,6 @@ ApplicationWindow {
         standardButtons: StandardButton.Ok
     }
 
-
     MouseArea {
         enabled: device.hasDevice
         anchors.fill: parent
@@ -180,7 +179,17 @@ ApplicationWindow {
 
                     Rectangle {
                         id: credentialRectangle
-                        color: index % 2 == 0 ? "#00000000" : palette.alternateBase
+                        color: {
+                            if (selectedCredential != null) {
+                                if (selectedCredential.name == modelData.name) {
+                                    return palette.dark
+                                }
+                            }
+                            if (index % 2 == 0) {
+                                return "#00000000"
+                            }
+                            return palette.alternateBase
+                        }
                         Layout.fillWidth: true
                         Layout.minimumHeight: 70
                         Layout.alignment: Qt.AlignTop
@@ -188,10 +197,20 @@ ApplicationWindow {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                selectedCredential = modelData
-                                credentialMenu.popup()
+                                if (mouse.button & Qt.LeftButton) {
+                                    if (selectedCredential != null
+                                            && selectedCredential.name == modelData.name) {
+                                        selectedCredential = null
+                                    } else {
+                                        selectedCredential = modelData
+                                    }
+                                }
+                                if (mouse.button & Qt.RightButton) {
+                                    selectedCredential = modelData
+                                    credentialMenu.popup()
+                                }
                             }
-                            acceptedButtons: Qt.RightButton
+                            acceptedButtons: Qt.RightButton | Qt.LeftButton
                         }
 
                         ColumnLayout {
