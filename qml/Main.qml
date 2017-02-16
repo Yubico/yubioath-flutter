@@ -119,16 +119,24 @@ ApplicationWindow {
         id: credentialMenu
         MenuItem {
             text: qsTr('Copy')
-            onTriggered: clipboard.setClipboard(selectedCredential.code)
+            shortcut: StandardKey.Copy
+            onTriggered: {
+                if (selectedCredential != null) {
+                    clipboard.setClipboard(selectedCredential.code)
+                }
+            }
         }
         MenuItem {
             visible: selectedCredential != null
-                     && selectedCredential.code == null
+                     && (selectedCredential.oath_type === "hotp"
+                         || selectedCredential.touch === true)
             text: qsTr('Generate code')
+            shortcut: "Space"
             onTriggered: calculateCredential(selectedCredential)
         }
         MenuItem {
             text: qsTr('Delete')
+            shortcut: StandardKey.Delete
             onTriggered: confirmDeleteCredential.open()
         }
     }
