@@ -112,7 +112,6 @@ Python {
     }
 
     function setPassword(password) {
-        console.log('PROVIDED PW ', password)
         do_call('yubikey.controller.set_password', [password, passwordKey],
                 function () {
                     validate(password)

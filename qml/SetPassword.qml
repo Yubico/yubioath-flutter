@@ -9,6 +9,8 @@ Dialog {
     title: qsTr("Set new password")
     standardButtons: StandardButton.NoButton
     modality: Qt.ApplicationModal
+    property string newPassword: newPassword.text
+    property string confirmPassword: confirmPassword.text
 
     ColumnLayout {
         anchors.fill: parent
@@ -39,31 +41,12 @@ Dialog {
             Button {
                 text: qsTr("Set password")
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-                onClicked: verifyMatching()
+                onClicked: accept()
             }
             Button {
                 text: qsTr("Cancel")
-                enabled: true
-                isDefault: true
                 onClicked: close()
             }
-        }
-    }
-
-    MessageDialog {
-        id: noMatch
-        icon: StandardIcon.Critical
-        title: qsTr("Passwords does not match")
-        text: qsTr("Password confirmation does not match password.")
-        standardButtons: StandardButton.Ok
-    }
-
-    function verifyMatching() {
-        if (newPassword.text !== confirmPassword.text) {
-            noMatch.open()
-        } else {
-            device.setPassword(newPassword.text)
-            accept()
         }
     }
 }

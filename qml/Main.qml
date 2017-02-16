@@ -90,7 +90,28 @@ ApplicationWindow {
 
     SetPassword {
         id: setPassword
-        onAccepted: passwordUpdated.open()
+        onAccepted: {
+            if (setPassword.newPassword !== setPassword.confirmPassword) {
+                noMatch.open()
+            } else {
+                if (setPassword.newPassword != "") {
+                    device.setPassword(setPassword.newPassword)
+                } else {
+                    device.setPassword(null)
+                }
+                passwordUpdated.open()
+            }
+        }
+    }
+
+    MessageDialog {
+        id: noMatch
+        icon: StandardIcon.Critical
+        title: qsTr("Passwords does not match")
+        text: qsTr("Password confirmation does not match password.")
+        standardButtons: StandardButton.Ok
+        onAccepted: setPassword.open()
+
     }
 
     MessageDialog {
