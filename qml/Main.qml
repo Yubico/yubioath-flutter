@@ -59,6 +59,7 @@ ApplicationWindow {
             MenuItem {
                 text: qsTr('Add credential...')
                 onTriggered: addCredential.open()
+                shortcut: StandardKey.New
             }
             MenuItem {
                 text: qsTr('Set password...')
