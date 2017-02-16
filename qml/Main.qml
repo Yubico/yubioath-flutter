@@ -15,7 +15,6 @@ ApplicationWindow {
     property var device: yk
     property int expiration: 0
     property var credentials: device.credentials
-    property var selectedCredential
     property bool validated: device.validated
     property bool hasDevice: device.hasDevice
 
@@ -122,23 +121,40 @@ ApplicationWindow {
             text: qsTr('Copy')
             shortcut: StandardKey.Copy
             onTriggered: {
-                if (selectedCredential != null) {
-                    clipboard.setClipboard(selectedCredential.code)
+                if (repeater.selected != null) {
+                    clipboard.setClipboard(repeater.selected.code)
                 }
             }
         }
         MenuItem {
-            visible: selectedCredential != null
-                     && (selectedCredential.oath_type === "hotp"
-                         || selectedCredential.touch === true)
+            visible: repeater.selected != null
+                     && (repeater.selected.oath_type === "hotp"
+                         || repeater.selected.touch === true)
             text: qsTr('Generate code')
             shortcut: "Space"
-            onTriggered: calculateCredential(selectedCredential)
+            onTriggered: calculateCredential(repeater.selected)
         }
         MenuItem {
             text: qsTr('Delete')
             shortcut: StandardKey.Delete
             onTriggered: confirmDeleteCredential.open()
+        }
+    }
+
+    Item {
+        id: arrowKeys
+        focus: true
+        Keys.onUpPressed: {
+            if (repeater.selectedIndex > 0) {
+                repeater.selected = repeater.model[repeater.selectedIndex - 1]
+                repeater.selectedIndex = repeater.selectedIndex - 1
+            }
+        }
+        Keys.onDownPressed: {
+            if (repeater.selectedIndex < repeater.model.length - 1) {
+                repeater.selected = repeater.model[repeater.selectedIndex + 1]
+                repeater.selectedIndex = repeater.selectedIndex + 1
+            }
         }
     }
 
@@ -185,12 +201,15 @@ ApplicationWindow {
                 Repeater {
                     id: repeater
                     model: filteredCredentials(credentials, search.text)
+                    property var selected
+                    property var selectedIndex
 
                     Rectangle {
                         id: credentialRectangle
+                        focus: true
                         color: {
-                            if (selectedCredential != null) {
-                                if (selectedCredential.name == modelData.name) {
+                            if (repeater.selected != null) {
+                                if (repeater.selected.name == modelData.name) {
                                     return palette.dark
                                 }
                             }
@@ -206,16 +225,20 @@ ApplicationWindow {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
+                                arrowKeys.forceActiveFocus()
                                 if (mouse.button & Qt.LeftButton) {
-                                    if (selectedCredential != null
-                                            && selectedCredential.name == modelData.name) {
-                                        selectedCredential = null
+                                    if (repeater.selected != null
+                                            && repeater.selected.name == modelData.name) {
+                                        repeater.selected = null
+                                        repeater.selectedIndex = null
                                     } else {
-                                        selectedCredential = modelData
+                                        repeater.selected = modelData
+                                        repeater.selectedIndex = index
                                     }
                                 }
                                 if (mouse.button & Qt.RightButton) {
-                                    selectedCredential = modelData
+                                    repeater.selected = modelData
+                                    repeater.selectedIndex = index
                                     credentialMenu.popup()
                                 }
                             }
@@ -273,7 +296,7 @@ ApplicationWindow {
         text: qsTr("Are you sure you want to delete the credential?")
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
-            device.deleteCredential(selectedCredential)
+            device.deleteCredential(repeater.selected)
             device.refreshCredentials()
         }
     }
