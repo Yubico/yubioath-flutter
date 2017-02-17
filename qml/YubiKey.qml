@@ -201,4 +201,8 @@ Python {
     function parseQr(screenShots, cb) {
         do_call('yubikey.controller.parse_qr', [screenShots], cb)
     }
+
+    function reset() {
+        do_call('yubikey.controller.reset', [])
+    }
 }

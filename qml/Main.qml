@@ -65,6 +65,10 @@ ApplicationWindow {
                 onTriggered: setPassword.open()
             }
             MenuItem {
+                text: qsTr('Reset...')
+                onTriggered: reset.open()
+            }
+            MenuItem {
                 text: qsTr("Exit")
                 onTriggered: Qt.quit()
                 shortcut: StandardKey.Quit
@@ -111,7 +115,6 @@ ApplicationWindow {
         text: qsTr("Password confirmation does not match password.")
         standardButtons: StandardButton.Ok
         onAccepted: setPassword.open()
-
     }
 
     MessageDialog {
@@ -120,6 +123,18 @@ ApplicationWindow {
         title: qsTr("Password set")
         text: qsTr("A new password has been set.")
         standardButtons: StandardButton.Ok
+    }
+
+    MessageDialog {
+        id: reset
+        icon: StandardIcon.Critical
+        title: qsTr("Reset OATH functionality")
+        text: qsTr("This will delete all OATH credentials stored on the device, and reset the password. This action cannot be undone. Are you sure you want to reset the device?")
+        standardButtons: StandardButton.Ok | StandardButton.Cancel
+        onAccepted: {
+            device.reset()
+            device.refreshCredentials()
+        }
     }
 
     MouseArea {

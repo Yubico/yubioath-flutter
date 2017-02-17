@@ -127,7 +127,6 @@ class Controller(object):
     def _calculate_all(self, timestamp, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
-
         if controller.locked and password_key is not None:
             controller.validate(password_key)
         creds = controller.calculate_all(timestamp)
@@ -146,13 +145,17 @@ class Controller(object):
         key += '=' * (-len(key) % 8)  # Support unpadded
         return b32decode(key)
 
-
     def parse_qr(self, screenshots):
         for s in screenshots:
             data = b64decode(s['data'])
             image = PixelImage(data, s['width'], s['height'])
             for qr in qrparse.parse_qr_codes(image, 2):
                 return parse_uri(qrdecode.decode_qr_data(qr))
+
+    def reset(self):
+        dev = self._descriptor.open_device(TRANSPORT.CCID)
+        controller = OathController(dev.driver)
+        controller.reset()
 
 
 class PixelImage(object):
