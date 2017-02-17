@@ -17,7 +17,9 @@ ApplicationWindow {
     property var credentials: device.credentials
     property bool validated: device.validated
     property bool hasDevice: device.hasDevice
-    property var cooldowns: []
+    property var hotpCoolDowns: []
+    property var totpCoolDowns: []
+
     SystemPalette { id: palette }
 
     /*******
@@ -146,6 +148,7 @@ ApplicationWindow {
 
     onCredentialsChanged: {
         updateExpiration()
+        hotpTouchTimer.stop()
         touchYourYubikey.close()
     }
 
@@ -210,18 +213,20 @@ ApplicationWindow {
             }
         }
         MenuItem {
-            visible: repeater.selected != null
-                     && (repeater.selected.oath_type === "hotp"
-                         || repeater.selected.touch === true)
-            enabled: repeater.selected != null && !isInCoolDown(repeater.selected.name)
+            visible: allowManualGenerate(repeater.selected)
+            enabled: allowManualGenerate(repeater.selected) && !isInCoolDown(repeater.selected.name)
             text: qsTr('Generate code')
             shortcut: "Space"
             onTriggered: {
                 if (!isInCoolDown(repeater.selected.name)) {
+                    console.log("BEFORE ", JSON.stringify(repeater.selected))
+
                     calculateCredential(repeater.selected)
+                    console.log("AFTER ", JSON.stringify(repeater.selected))
+
                     if (repeater.selected.oath_type === "hotp") {
-                        cooldowns.push(repeater.selected.name)
-                        coolDownTimer.restart()
+                        hotpCoolDowns.push(repeater.selected.name)
+                        hotpCoolDownTimer.restart()
                     }
                 }
             }
@@ -231,6 +236,10 @@ ApplicationWindow {
             shortcut: StandardKey.Delete
             onTriggered: confirmDeleteCredential.open()
         }
+    }
+
+    function allowManualGenerate(cred) {
+        return cred != null && (cred.oath_type === "hotp" || repeater.selected.touch)
     }
 
     MessageDialog {
@@ -459,9 +468,15 @@ ApplicationWindow {
     }
 
     Timer {
-        id: coolDownTimer
+        id: hotpCoolDownTimer
         interval: 5000
-        onTriggered: cooldowns = []
+        onTriggered: hotpCoolDowns = []
+    }
+
+    Timer {
+        id: hotpTouchTimer
+        interval: 500
+        onTriggered: touchYourYubikey.open()
     }
 
 
@@ -486,7 +501,7 @@ ApplicationWindow {
     }
 
     function isInCoolDown(name) {
-        return cooldowns.indexOf(name) !== -1
+        return hotpCoolDowns.indexOf(name) !== -1 || totpCoolDowns.indexOf(name) !== -1
     }
     function hasIssuer(name) {
         return name.indexOf(':') !== -1
@@ -499,7 +514,11 @@ ApplicationWindow {
     }
 
     function calculateCredential(credential) {
+
         device.calculate(credential)
+        if (credential.oath_type === 'hotp') {
+            hotpTouchTimer.restart()
+        }
         if (credential.touch) {
             touchYourYubikey.open()
         }
