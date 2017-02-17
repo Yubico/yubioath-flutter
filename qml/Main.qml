@@ -148,7 +148,10 @@ ApplicationWindow {
 
     onCredentialsChanged: {
         updateExpiration()
+        hotpCoolDowns = []
+        totpCoolDowns = []
         hotpTouchTimer.stop()
+        hotpCoolDownTimer.stop()
         touchYourYubikey.close()
     }
 
@@ -219,14 +222,12 @@ ApplicationWindow {
             shortcut: "Space"
             onTriggered: {
                 if (!isInCoolDown(repeater.selected.name)) {
-                    console.log("BEFORE ", JSON.stringify(repeater.selected))
-
                     calculateCredential(repeater.selected)
-                    console.log("AFTER ", JSON.stringify(repeater.selected))
-
                     if (repeater.selected.oath_type === "hotp") {
                         hotpCoolDowns.push(repeater.selected.name)
                         hotpCoolDownTimer.restart()
+                    } else if(repeater.selected.touch) {
+                       totpCoolDowns.push(repeater.selected.name)
                     }
                 }
             }
@@ -462,6 +463,7 @@ ApplicationWindow {
             var timeLeft = expiration - (Date.now() / 1000)
             if (timeLeft <= 0 && progressBar.value > 0) {
                 device.refresh()
+                totpCoolDowns = []
             }
             progressBar.value = timeLeft
         }
