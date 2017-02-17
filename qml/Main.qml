@@ -18,38 +18,13 @@ ApplicationWindow {
     property bool validated: device.validated
     property bool hasDevice: device.hasDevice
     property var cooldowns: []
+    SystemPalette { id: palette }
 
-    PasswordPrompt {
-        id: passwordPrompt
-    }
+    /*******
 
-    onHasDeviceChanged: {
-        if (device.hasDevice) {
-            device.promptOrSkip(passwordPrompt)
-        } else {
-            passwordPrompt.close()
-            addCredential.close()
-        }
-    }
+        Main menu bar
 
-    onCredentialsChanged: {
-        updateExpiration()
-        touchYourYubikey.close()
-    }
-
-    SystemPalette {
-        id: palette
-    }
-
-    TextEdit {
-        id: clipboard
-        visible: false
-        function setClipboard(value) {
-            text = value
-            selectAll()
-            copy()
-        }
-    }
+    *******/
 
     menuBar: MenuBar {
 
@@ -92,6 +67,12 @@ ApplicationWindow {
         id: addCredential
     }
 
+    /*******
+
+        Set password dialog
+
+    *******/
+
     SetPassword {
         id: setPassword
         onAccepted: {
@@ -125,6 +106,12 @@ ApplicationWindow {
         standardButtons: StandardButton.Ok
     }
 
+    /*******
+
+        Reset dialog
+
+    *******/
+
     MessageDialog {
         id: reset
         icon: StandardIcon.Critical
@@ -137,20 +124,79 @@ ApplicationWindow {
         }
     }
 
-    MouseArea {
-        enabled: device.hasDevice
-        anchors.fill: parent
-        acceptedButtons: Qt.RightButton
-        onClicked: contextMenu.popup()
-    }
 
-    Menu {
-        id: contextMenu
-        MenuItem {
-            text: qsTr('Add...')
-            onTriggered: addCredential.open()
+    /*******
+
+        Device - prompt for password if needed
+
+    *******/
+
+    onHasDeviceChanged: {
+        if (device.hasDevice) {
+            device.promptOrSkip(passwordPrompt)
+        } else {
+            passwordPrompt.close()
+            addCredential.close()
         }
     }
+
+    PasswordPrompt {
+        id: passwordPrompt
+    }
+
+    onCredentialsChanged: {
+        updateExpiration()
+        touchYourYubikey.close()
+    }
+
+    // @disable-check M301
+    YubiKey {
+        id: yk
+        onError: {
+            console.log(error)
+        }
+        onWrongPassword: {
+            passwordPrompt.open()
+        }
+    }
+
+    Text {
+        visible: !device.hasDevice
+        id: noLoadedDeviceMessage
+        text: if (device.nDevices == 0) {
+                  qsTr("No YubiKey detected")
+              } else if (device.nDevices == 1) {
+                  qsTr("Connecting to YubiKey...")
+              } else {
+                  qsTr("Multiple YubiKeys detected!")
+              }
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
+
+    /*******
+
+        Clipboard
+
+    *******/
+
+    TextEdit {
+        id: clipboard
+        visible: false
+        function setClipboard(value) {
+            text = value
+            selectAll()
+            copy()
+        }
+    }
+
+
+    /*******
+
+        Right click menu for credentials
+
+    *******/
 
     Menu {
         id: credentialMenu
@@ -187,11 +233,33 @@ ApplicationWindow {
         }
     }
 
-    Timer {
-        id: coolDownTimer
-        interval: 5000
-        onTriggered: cooldowns = []
+    MessageDialog {
+        id: confirmDeleteCredential
+        icon: StandardIcon.Warning
+        title: qsTr("Delete credential?")
+        text: qsTr("Are you sure you want to delete the credential?")
+        standardButtons: StandardButton.Ok | StandardButton.Cancel
+        onAccepted: {
+            device.deleteCredential(repeater.selected)
+            device.refreshCredentials()
+        }
     }
+
+    MessageDialog {
+        id: touchYourYubikey
+        icon: StandardIcon.Information
+        title: qsTr("Touch your YubiKey")
+        text: qsTr("Touch your YubiKey to generate the code.")
+        standardButtons: StandardButton.NoButton
+    }
+
+
+    /*******
+
+        Arrow key navigation
+
+    *******/
+
 
     Item {
         id: arrowKeys
@@ -216,9 +284,16 @@ ApplicationWindow {
         }
     }
 
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
+
+        /*******
+
+            Time left bar
+
+        *******/
 
         ProgressBar {
             id: progressBar
@@ -255,6 +330,12 @@ ApplicationWindow {
                 anchors.right: appWindow.right
                 anchors.left: appWindow.left
                 anchors.top: appWindow.top
+
+                /*******
+
+                    Credential items
+
+                *******/
 
                 Repeater {
                     id: repeater
@@ -332,6 +413,12 @@ ApplicationWindow {
             }
         }
 
+        /*******
+
+            Search field
+
+        *******/
+
         TextField {
             id: search
             visible: hasDevice
@@ -340,37 +427,12 @@ ApplicationWindow {
         }
     }
 
-    MessageDialog {
-        id: touchYourYubikey
-        icon: StandardIcon.Information
-        title: qsTr("Touch your YubiKey")
-        text: qsTr("Touch your YubiKey to generate the code.")
-        standardButtons: StandardButton.NoButton
-    }
 
-    MessageDialog {
-        id: confirmDeleteCredential
-        icon: StandardIcon.Warning
-        title: qsTr("Delete credential?")
-        text: qsTr("Are you sure you want to delete the credential?")
-        standardButtons: StandardButton.Ok | StandardButton.Cancel
-        onAccepted: {
-            device.deleteCredential(repeater.selected)
-            device.refreshCredentials()
-        }
-    }
+    /*******
 
-    // @disable-check M301
-    YubiKey {
-        id: yk
-        onError: {
-            errorBox.text = traceback
-            errorBox.open()
-        }
-        onWrongPassword: {
-            passwordPrompt.open()
-        }
-    }
+        Timers
+
+    *******/
 
     Timer {
         id: ykTimer
@@ -396,27 +458,18 @@ ApplicationWindow {
         }
     }
 
-    Text {
-        visible: !device.hasDevice
-        id: noLoadedDeviceMessage
-        text: if (device.nDevices == 0) {
-                  qsTr("No YubiKey detected")
-              } else if (device.nDevices == 1) {
-                  qsTr("Connecting to YubiKey...")
-              } else {
-                  qsTr("Multiple YubiKeys detected!")
-              }
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+    Timer {
+        id: coolDownTimer
+        interval: 5000
+        onTriggered: cooldowns = []
     }
 
-    MessageDialog {
-        id: errorBox
-        icon: StandardIcon.Critical
-        title: qsTr("Error!")
-        text: ""
-        standardButtons: StandardButton.Ok
-    }
+
+    /*******
+
+        Utility functions
+
+    *******/
 
     function filteredCredentials(creds, search) {
         var result = []
