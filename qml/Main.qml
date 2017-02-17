@@ -17,6 +17,7 @@ ApplicationWindow {
     property var credentials: device.credentials
     property bool validated: device.validated
     property bool hasDevice: device.hasDevice
+    property var cooldowns: []
 
     PasswordPrompt {
         id: passwordPrompt
@@ -34,7 +35,6 @@ ApplicationWindow {
     onCredentialsChanged: {
         updateExpiration()
         touchYourYubikey.close()
-        console.log('CREDENTIALS    ', JSON.stringify(credentials))
     }
 
     SystemPalette {
@@ -167,15 +167,30 @@ ApplicationWindow {
             visible: repeater.selected != null
                      && (repeater.selected.oath_type === "hotp"
                          || repeater.selected.touch === true)
+            enabled: repeater.selected != null && !isInCoolDown(repeater.selected.name)
             text: qsTr('Generate code')
             shortcut: "Space"
-            onTriggered: calculateCredential(repeater.selected)
+            onTriggered: {
+                if (!isInCoolDown(repeater.selected.name)) {
+                    calculateCredential(repeater.selected)
+                    if (repeater.selected.oath_type === "hotp") {
+                        cooldowns.push(repeater.selected.name)
+                        coolDownTimer.restart()
+                    }
+                }
+            }
         }
         MenuItem {
             text: qsTr('Delete')
             shortcut: StandardKey.Delete
             onTriggered: confirmDeleteCredential.open()
         }
+    }
+
+    Timer {
+        id: coolDownTimer
+        interval: 5000
+        onTriggered: cooldowns = []
     }
 
     Item {
@@ -298,6 +313,7 @@ ApplicationWindow {
                                 font.pointSize: 13
                             }
                             Text {
+                                opacity: isInCoolDown(modelData.name) ? 0.6 : 1
                                 visible: modelData.code != null
                                 text: qsTr('') + modelData.code
                                 font.family: "Verdana"
@@ -416,6 +432,9 @@ ApplicationWindow {
         return result
     }
 
+    function isInCoolDown(name) {
+        return cooldowns.indexOf(name) !== -1
+    }
     function hasIssuer(name) {
         return name.indexOf(':') !== -1
     }
