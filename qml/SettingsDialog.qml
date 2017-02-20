@@ -7,6 +7,13 @@ import QtQuick.Dialogs 1.2
 Dialog {
    title: qsTr("Settings")
    modality: Qt.ApplicationModal
+   property var settings
+
+   property alias slotMode: slotMode.checked
+   property alias slot1: slot1.checked
+   property alias slot2: slot2.checked
+   property alias slot1digits: slot1digits.currentIndex
+   property alias slot2digits: slot2digits.currentIndex
 
     ColumnLayout {
         anchors.fill: parent
@@ -21,44 +28,49 @@ Dialog {
             RadioButton {
                 id: ccid
                 text: qsTr("CCID (Smart card)")
-                checked: true
+                checked: !settings.slotMode
                 exclusiveGroup: mode
             }
             RadioButton {
-                id: slot
+                id: slotMode
+                checked: settings.slotMode
                 text: qsTr("YubiKey Slots")
                 exclusiveGroup: mode
             }
             CheckBox {
                 id: slot1
-                enabled: mode.current == slot
+                enabled: mode.current == slotMode
+                checked: settings.slot1
                 text: qsTr("Slot 1")
             }
             RowLayout{
                 Label {
                     text: qsTr("Digits")
-                    enabled: mode.current == slot && slot1.checked
+                    enabled: mode.current == slotMode && slot1.checked
                 }
                 ComboBox {
                     id: slot1digits
-                    enabled: mode.current == slot && slot1.checked
+                    currentIndex: settings.slot1digits
+                    enabled: mode.current == slotMode && slot1.checked
                     model: [6, 8]
                 }
 
             }
             CheckBox {
                 id: slot2
-                enabled: mode.current == slot
+                enabled: mode.current == slotMode
+                checked: settings.slot2
                 text: qsTr("Slot 2")
             }
             RowLayout{
                 Label {
                     text: qsTr("Digits")
-                    enabled: mode.current == slot && slot2.checked
+                    enabled: mode.current == slotMode && slot2.checked
                 }
                 ComboBox {
                     id: slot2digits
-                    enabled: mode.current == slot && slot2.checked
+                    currentIndex: settings.slot2digits
+                    enabled: mode.current == slotMode && slot2.checked
                     model: [6, 8]
                 }
 

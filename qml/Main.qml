@@ -3,6 +3,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
+import Qt.labs.settings 1.0
 
 ApplicationWindow {
     id: appWindow
@@ -21,6 +22,22 @@ ApplicationWindow {
     property var totpCoolDowns: []
 
     SystemPalette { id: palette }
+
+    /*******
+
+        Settings
+
+    *******/
+
+    Settings {
+        id: settings
+        property bool slotMode
+        property bool slot1
+        property bool slot2
+        property var slot1digits
+        property var slot2digits
+    }
+
 
     /*******
 
@@ -50,7 +67,7 @@ ApplicationWindow {
             }
             MenuItem {
                 text: qsTr('Settings')
-                onTriggered: settings.open()
+                onTriggered: settingsDialog.open()
             }
             MenuItem {
                 text: qsTr("Exit")
@@ -82,8 +99,16 @@ ApplicationWindow {
 
     *******/
 
-    Settings {
-        id: settings
+    SettingsDialog {
+        id: settingsDialog
+        settings: settings
+        onAccepted: {
+            settings.slotMode = settingsDialog.slotMode
+            settings.slot1 = settingsDialog.slot1
+            settings.slot2 = settingsDialog.slot2
+            settings.slot1digits = settingsDialog.slot1digits
+            settings.slot2digits = settingsDialog.slot2digits
+        }
     }
 
 
@@ -183,6 +208,8 @@ ApplicationWindow {
             passwordPrompt.open()
         }
     }
+
+
 
     Text {
         visible: !device.hasDevice
