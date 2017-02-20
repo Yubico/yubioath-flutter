@@ -49,6 +49,10 @@ ApplicationWindow {
                 onTriggered: reset.open()
             }
             MenuItem {
+                text: qsTr('Settings')
+                onTriggered: settings.open()
+            }
+            MenuItem {
                 text: qsTr("Exit")
                 onTriggered: Qt.quit()
                 shortcut: StandardKey.Quit
@@ -71,6 +75,17 @@ ApplicationWindow {
     AddCredential {
         id: addCredential
     }
+
+    /*******
+
+        Settings dialog
+
+    *******/
+
+    Settings {
+        id: settings
+    }
+
 
     /*******
 
