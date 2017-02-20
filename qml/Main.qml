@@ -34,7 +34,10 @@ ApplicationWindow {
             title: qsTr("File")
             MenuItem {
                 text: qsTr('Add credential...')
-                onTriggered: addCredential.open()
+                onTriggered: {
+                    addCredential.clear();
+                    addCredential.open()
+                }
                 shortcut: StandardKey.New
             }
             MenuItem {

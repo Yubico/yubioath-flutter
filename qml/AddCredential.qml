@@ -8,11 +8,7 @@ Dialog {
     title: qsTr("Add credential")
     standardButtons: StandardButton.NoButton
     modality: Qt.ApplicationModal
-    onAccepted: {
-            addCredential()
-            clear()
-    }
-    onRejected: clear()
+    onAccepted:addCredential()
 
     ColumnLayout {
         anchors.fill: parent
