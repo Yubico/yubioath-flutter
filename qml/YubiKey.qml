@@ -63,7 +63,7 @@ Python {
         }
     }
 
-    function refresh() {
+    function refresh(refreshCredentialsOnMode) {
         do_call('yubikey.controller.count_devices', [], function (n) {
             nDevices = n
             if (nDevices == 1) {
@@ -74,18 +74,30 @@ Python {
                     serial = dev ? dev.serial : ''
                     enabled = dev ? dev.enabled : []
                     connections = dev ? dev.connections : []
-                    var now = Math.floor(Date.now() / 1000)
-                    if (validated && nextRefresh < now) {
-                        refreshCredentials()
-                    }
                 })
             } else if (hasDevice) {
                 hasDevice = false
                 credentials = null
                 nextRefresh = 0
             }
+            refreshCredentialsOnMode()
         })
     }
+
+    function refreshCCIDCredentials() {
+        var now = Math.floor(Date.now() / 1000)
+        if (validated && nextRefresh < now) {
+            refreshCredentials()
+        }
+    }
+
+    function refreshSlotCredentials(slots, digits) {
+        var now = Math.floor(Date.now() / 1000)
+        if (nextRefresh < now) {
+            do_call('yubikey.controller.refresh_slot_credentials', [slots, digits, now], handleCredentials)
+        }
+    }
+
 
     function validate(providedPassword) {
         do_call('yubikey.controller.validate', [providedPassword],
@@ -123,6 +135,7 @@ Python {
         do_call('yubikey.controller.refresh_credentials', [now, passwordKey],
                 handleCredentials)
     }
+
 
     function handleCredentials(creds) {
         var result = []

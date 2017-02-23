@@ -178,7 +178,9 @@ ApplicationWindow {
 
     onHasDeviceChanged: {
         if (device.hasDevice) {
-            device.promptOrSkip(passwordPrompt)
+            if(!settings.slotMode) {
+                device.promptOrSkip(passwordPrompt)
+            }
         } else {
             passwordPrompt.close()
             addCredential.close()
@@ -468,6 +470,11 @@ ApplicationWindow {
             }
         }
 
+        Text {
+            visible: settings.slotMode
+            text: "[Slot mode]"
+        }
+
         /*******
 
             Search field
@@ -495,8 +502,25 @@ ApplicationWindow {
         interval: 500
         repeat: true
         running: true
-        onTriggered: device.refresh()
+        onTriggered: device.refresh(refreshDependingOnMode)
     }
+
+    function refreshDependingOnMode() {
+        if (hasDevice) {
+            if (settings.slotMode) {
+                device.refreshSlotCredentials([settings.slot1, settings.slot2], getSlotDigitsSettings())
+            } else {
+                device.refreshCCIDCredentials()
+            }
+        }
+    }
+
+    function getSlotDigitsSettings() {
+        var slot1digits = settings.slot1digits === 1 ? 8 : 6
+        var slot2digits = settings.slot2digits === 1 ? 8 : 6
+        return [slot1digits, slot2digits]
+    }
+
 
     Timer {
         id: progressBarTimer

@@ -9,6 +9,7 @@ from binascii import a2b_hex, b2a_hex
 
 from ykman.descriptor import get_descriptors
 from ykman.util import CAPABILITY, TRANSPORT, derive_key, parse_uri
+from ykman.driver_otp import YkpersError
 from ykman.oath import OathController, Credential
 from py.qr import qrparse
 from py.qr import qrdecode
@@ -69,6 +70,30 @@ class Controller(object):
 
     def calculate(self, credential, timestamp, password_key):
         return self._calculate(Credential.from_dict(credential), timestamp, password_key).to_dict()
+
+    def refresh_slot_credentials(self, slots, digits, timestamp):
+        result = []
+        if slots[0]:
+            cred = self._read_slot_cred(1, digits[0], timestamp)
+            if cred:
+                result.append(cred)
+        if slots[1]:
+            cred = self._read_slot_cred(2, digits[1], timestamp)
+            if cred:
+                result.append(cred)
+        return [c.to_dict() for c in result]
+
+    def _read_slot_cred(self, slot, digits, timestamp):
+        expiration = ((timestamp + 30) // 30) * 30
+        credname = "YubiKey Slot {}".format(slot)
+        dev = self._descriptor.open_device(TRANSPORT.OTP)
+        try:
+            code = dev.driver.calculate(slot, challenge=timestamp, totp=True, digits=int(digits), wait_for_touch=False)
+            return Credential(credname, code=code, oath_type='totp', touch=False, algo='SHA1', expiration=expiration)
+        except YkpersError as e:
+                if e.errno == 11:
+                    return Credential(credname, oath_type='totp', touch=True, algo='SHA1')
+        return None
 
     def needs_validation(self):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
