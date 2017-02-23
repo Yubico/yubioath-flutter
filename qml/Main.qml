@@ -108,6 +108,7 @@ ApplicationWindow {
             settings.slot2 = settingsDialog.slot2
             settings.slot1digits = settingsDialog.slot1digits
             settings.slot2digits = settingsDialog.slot2digits
+            refreshDependingOnMode(true)
         }
     }
 
@@ -505,23 +506,6 @@ ApplicationWindow {
         onTriggered: device.refresh(refreshDependingOnMode)
     }
 
-    function refreshDependingOnMode() {
-        if (hasDevice) {
-            if (settings.slotMode) {
-                device.refreshSlotCredentials([settings.slot1, settings.slot2], getSlotDigitsSettings())
-            } else {
-                device.refreshCCIDCredentials()
-            }
-        }
-    }
-
-    function getSlotDigitsSettings() {
-        var slot1digits = settings.slot1digits === 1 ? 8 : 6
-        var slot2digits = settings.slot2digits === 1 ? 8 : 6
-        return [slot1digits, slot2digits]
-    }
-
-
     Timer {
         id: progressBarTimer
         interval: 100
@@ -531,7 +515,7 @@ ApplicationWindow {
         onTriggered: {
             var timeLeft = expiration - (Date.now() / 1000)
             if (timeLeft <= 0 && progressBar.value > 0) {
-                device.refresh()
+                device.refresh(refreshDependingOnMode)
                 totpCoolDowns = []
             }
             progressBar.value = timeLeft
@@ -556,6 +540,22 @@ ApplicationWindow {
         Utility functions
 
     *******/
+
+    function refreshDependingOnMode(force) {
+        if (hasDevice) {
+            if (settings.slotMode) {
+                device.refreshSlotCredentials([settings.slot1, settings.slot2], getSlotDigitsSettings(), force)
+            } else {
+                device.refreshCCIDCredentials(force)
+            }
+        }
+    }
+
+    function getSlotDigitsSettings() {
+        var slot1digits = settings.slot1digits === 1 ? 8 : 6
+        var slot2digits = settings.slot2digits === 1 ? 8 : 6
+        return [slot1digits, slot2digits]
+    }
 
     function filteredCredentials(creds, search) {
         var result = []

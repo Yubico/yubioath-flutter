@@ -84,16 +84,17 @@ Python {
         })
     }
 
-    function refreshCCIDCredentials() {
+    function refreshCCIDCredentials(force) {
         var now = Math.floor(Date.now() / 1000)
-        if (validated && nextRefresh < now) {
-            refreshCredentials()
+        if (force || (validated && nextRefresh < now)) {
+            do_call('yubikey.controller.refresh_credentials', [now, passwordKey],
+                    handleCredentials)
         }
     }
 
-    function refreshSlotCredentials(slots, digits) {
+    function refreshSlotCredentials(slots, digits, force) {
         var now = Math.floor(Date.now() / 1000)
-        if (nextRefresh < now) {
+        if (force || (nextRefresh < now)) {
             do_call('yubikey.controller.refresh_slot_credentials', [slots, digits, now], handleCredentials)
         }
     }
@@ -129,13 +130,6 @@ Python {
                     validate(password)
                 })
     }
-
-    function refreshCredentials() {
-        var now = Math.floor(Date.now() / 1000)
-        do_call('yubikey.controller.refresh_credentials', [now, passwordKey],
-                handleCredentials)
-    }
-
 
     function handleCredentials(creds) {
         var result = []
