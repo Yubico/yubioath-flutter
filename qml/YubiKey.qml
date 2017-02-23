@@ -211,6 +211,10 @@ Python {
                 [credential, passwordKey])
     }
 
+    function deleteSlotCredential(slot) {
+        do_call('yubikey.controller.delete_slot_credential',[slot])
+    }
+
     function parseQr(screenShots, cb) {
         do_call('yubikey.controller.parse_qr', [screenShots], cb)
     }

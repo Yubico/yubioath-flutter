@@ -300,8 +300,12 @@ ApplicationWindow {
         text: qsTr("Are you sure you want to delete the credential?")
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
-            device.deleteCredential(repeater.selected)
-            device.refreshCredentials()
+            if (settings.slotMode){
+                device.deleteSlotCredential(getSlot(repeater.selected['name']))
+            } else {
+                device.deleteCredential(repeater.selected)
+            }
+            refreshDependingOnMode(true)
         }
     }
 
@@ -588,7 +592,7 @@ ApplicationWindow {
 
     function calculateCredential(credential) {
         if (settings.slotMode) {
-            var slot = getSlot(credential)
+            var slot = getSlot(credential.name)
             var digits = getDigits(slot)
             device.calculateSlotMode(slot, digits)
         } else {
@@ -602,11 +606,11 @@ ApplicationWindow {
         }
     }
 
-    function getSlot(credential) {
-        if (credential.name.indexOf('1') !== -1) {
+    function getSlot(name) {
+        if (name.indexOf('1') !== -1) {
             return 1
         }
-        if (credential.name.indexOf('2') !== -1) {
+        if (name.indexOf('2') !== -1) {
             return 2
         }
     }

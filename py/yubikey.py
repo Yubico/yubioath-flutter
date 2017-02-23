@@ -143,6 +143,11 @@ class Controller(object):
         controller.put(key, name, oath_type, digits, algo=algo, require_touch=touch)
 
 
+    def delete_slot_credential(self, slot):
+        dev = self._descriptor.open_device(TRANSPORT.OTP)
+        dev.driver.zap_slot(slot)
+
+
     def delete_credential(self, credential, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
