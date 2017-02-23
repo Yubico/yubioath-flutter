@@ -59,10 +59,12 @@ ApplicationWindow {
             }
             MenuItem {
                 text: qsTr('Set password...')
+                enabled: !settings.slotMode
                 onTriggered: setPassword.open()
             }
             MenuItem {
                 text: qsTr('Reset...')
+                enabled: !settings.slotMode
                 onTriggered: reset.open()
             }
             MenuItem {
