@@ -7,8 +7,9 @@ import QtQuick.Dialogs 1.2
 Dialog {
    title: qsTr("Settings")
    modality: Qt.ApplicationModal
-   property var settings
+   standardButtons: StandardButton.NoButton
 
+   property var settings
    property alias slotMode: slotMode.checked
    property alias slot1: slot1.checked
    property alias slot2: slot2.checked
@@ -78,6 +79,24 @@ Dialog {
 
         }
 
+        RowLayout {
+            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+            Button {
+                text: qsTr("Save Settings")
+                enabled: shouldAccept()
+                Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                onClicked: accept()
+            }
+            Button {
+                text: qsTr("Cancel")
+                onClicked: close()
+            }
+        }
+
+    }
+
+    function shouldAccept() {
+        return ((mode.current == slotMode) && (slot1.checked || slot2.checked)) || mode.current == ccid
     }
 
 }
