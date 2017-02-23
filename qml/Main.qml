@@ -585,14 +585,32 @@ ApplicationWindow {
     }
 
     function calculateCredential(credential) {
-
-        device.calculate(credential)
+        if (settings.slotMode) {
+            var slot = getSlot(credential)
+            var digits = getDigits(slot)
+            device.calculateSlotMode(slot, digits)
+        } else {
+            device.calculate(credential)
+        }
         if (credential.oath_type === 'hotp') {
             hotpTouchTimer.restart()
         }
         if (credential.touch) {
             touchYourYubikey.open()
         }
+    }
+
+    function getSlot(credential) {
+        if (credential.name.indexOf('1') !== -1) {
+            return 1
+        }
+        if (credential.name.indexOf('2') !== -1) {
+            return 2
+        }
+    }
+
+    function getDigits(slot) {
+       return getSlotDigitsSettings()[slot -1]
     }
 
     function updateExpiration() {

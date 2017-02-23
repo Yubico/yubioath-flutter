@@ -71,6 +71,11 @@ class Controller(object):
     def calculate(self, credential, timestamp, password_key):
         return self._calculate(Credential.from_dict(credential), timestamp, password_key).to_dict()
 
+    def calculate_slot_mode(self, slot, digits, timestamp):
+        dev = self._descriptor.open_device(TRANSPORT.OTP)
+        code = dev.driver.calculate(slot, challenge=timestamp, totp=True, digits=int(digits), wait_for_touch=True)
+        return Credential(self._slot_name(slot), code=code, oath_type='totp', touch=True, algo='SHA1', expiration=self._expiration(timestamp)).to_dict()
+
     def refresh_slot_credentials(self, slots, digits, timestamp):
         result = []
         if slots[0]:
@@ -84,16 +89,20 @@ class Controller(object):
         return [c.to_dict() for c in result]
 
     def _read_slot_cred(self, slot, digits, timestamp):
-        expiration = ((timestamp + 30) // 30) * 30
-        credname = "YubiKey Slot {}".format(slot)
         dev = self._descriptor.open_device(TRANSPORT.OTP)
         try:
             code = dev.driver.calculate(slot, challenge=timestamp, totp=True, digits=int(digits), wait_for_touch=False)
-            return Credential(credname, code=code, oath_type='totp', touch=False, algo='SHA1', expiration=expiration)
+            return Credential(self._slot_name(slot), code=code, oath_type='totp', touch=False, algo='SHA1', expiration=self._expiration(timestamp))
         except YkpersError as e:
                 if e.errno == 11:
-                    return Credential(credname, oath_type='totp', touch=True, algo='SHA1')
+                    return Credential(self._slot_name(slot), oath_type='totp', touch=True, algo='SHA1')
         return None
+
+    def _slot_name(self, slot):
+        return "YubiKey Slot {}".format(slot)
+
+    def _expiration(self, timestamp):
+        return ((timestamp + 30) // 30) * 30
 
     def needs_validation(self):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
