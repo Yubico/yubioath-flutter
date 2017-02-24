@@ -186,6 +186,5 @@ Dialog {
                                      paddingError.open()
                                  }
                              })
-        device.refreshCredentials()
     }
 }

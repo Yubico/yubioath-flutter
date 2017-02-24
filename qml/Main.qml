@@ -93,6 +93,7 @@ ApplicationWindow {
 
     AddCredential {
         id: addCredential
+        onAccepted: refreshDependingOnMode(true)
     }
 
     /*******
