@@ -8,7 +8,7 @@ Dialog {
     title: qsTr("Add credential")
     standardButtons: StandardButton.NoButton
     modality: Qt.ApplicationModal
-    onAccepted:addCredential()
+    onAccepted: addCredential()
 
     ColumnLayout {
         anchors.fill: parent
@@ -23,11 +23,13 @@ Dialog {
             }
             Label {
                 text: qsTr("Name")
+                visible: !settings.slotMode
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 Layout.fillWidth: false
             }
             TextField {
                 id: name
+                visible: !settings.slotMode
                 Layout.fillWidth: true
             }
 
@@ -40,14 +42,47 @@ Dialog {
                 validator: RegExpValidator {
                     regExp: /[2-7a-zA-Z]+=*/
                 }
-
             }
         }
+
+
+            ColumnLayout {
+                Label {
+                    text: qsTr("YubiKey Slot")
+                    visible: settings.slotMode
+                }
+                ExclusiveGroup {
+                    id: slotSelected
+                }
+                RadioButton {
+                    id: slot1
+                    visible: settings.slotMode
+                    enabled: settings.slot1
+                    text: qsTr("Slot 1")
+                    checked: true
+                    exclusiveGroup: slotSelected
+                    property string name: "1"
+                }
+                RadioButton {
+                    id: slot2
+                    visible: settings.slotMode
+                    enabled: settings.slot2
+                    text: qsTr("Slot 2")
+                    exclusiveGroup: slotSelected
+                    property string name: "2"
+                }
+            }
+
+
         GroupBox {
             title: qsTr("Credential type")
+            Layout.fillWidth: true
+
             ColumnLayout {
+
                 RowLayout {
                     Label {
+                        visible: !settings.slotMode
                         text: "OATH Type"
                     }
                     ExclusiveGroup {
@@ -55,6 +90,7 @@ Dialog {
                     }
                     RadioButton {
                         id: totp
+                        visible: !settings.slotMode
                         text: qsTr("Time based (TOTP)")
                         checked: true
                         exclusiveGroup: oathType
@@ -62,6 +98,7 @@ Dialog {
                     }
                     RadioButton {
                         id: hotp
+                        visible: !settings.slotMode
                         text: qsTr("Counter based (HOTP)")
                         exclusiveGroup: oathType
                         property string name: "hotp"
@@ -82,6 +119,7 @@ Dialog {
                         property int digits: 6
                     }
                     RadioButton {
+                        id: eight
                         text: qsTr("8")
                         exclusiveGroup: digits
                         property int digits: 8
@@ -90,18 +128,21 @@ Dialog {
                 RowLayout {
                     Label {
                         text: "Algorithm"
+                        visible: !settings.slotMode
                     }
                     ExclusiveGroup {
                         id: algorithm
                     }
                     RadioButton {
                         id: sha1
+                        visible: !settings.slotMode
                         text: qsTr("SHA-1")
                         exclusiveGroup: algorithm
                         property string name: "SHA1"
                     }
                     RadioButton {
                         id: sha256
+                        visible: !settings.slotMode
                         text: qsTr("SHA-256")
                         checked: true
                         exclusiveGroup: algorithm
@@ -124,7 +165,7 @@ Dialog {
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             Button {
                 text: qsTr("Add credential")
-                enabled: name.text.length !== 0 && key.text.length !== 0
+                enabled: acceptableInput()
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
                 onClicked: accept()
             }
@@ -160,19 +201,34 @@ Dialog {
         touch.checked = false
     }
 
+    function acceptableInput(){
+        if (!settings.slotMode) {
+            return name.text.length !== 0 && key.text.length !== 0
+        }
+        if (settings.slotMode) {
+            return key.text.length !== 0 && slotSelected.current !== null
+        }
+    }
+
     function updateForm(uri) {
         if (uri) {
-            key.text = uri.secret
-            name.text = uri.name
-            if (uri.type === "hotp") {
-                oathType.current = hotp
+            if (!settings.slotMode) {
+                name.text = uri.name
+                if (uri.algorithm === 'SHA256') {
+                    algorithm.current = sha256
+                }
+                if (uri.type === "hotp") {
+                    oathType.current = hotp
+                }
             }
             if (uri.digits === "6") {
                 digits.current = six
             }
-            if (uri.algorithm === 'SHA256') {
-                algorithm.current = sha256
+            if (uri.digits === "8") {
+                digits.current = eight
             }
+            key.text = uri.secret
+
         } else {
             noQr.open()
         }
