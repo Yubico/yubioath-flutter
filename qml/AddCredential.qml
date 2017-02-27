@@ -77,7 +77,7 @@ Dialog {
         GroupBox {
             title: qsTr("Credential type")
             Layout.fillWidth: true
-
+            visible: !settings.slotMode
             ColumnLayout {
 
                 RowLayout {
@@ -107,12 +107,14 @@ Dialog {
                 RowLayout {
                     Label {
                         text: "Number of digits"
+                        visible: !settings.slotMode
                     }
                     ExclusiveGroup {
                         id: digits
                     }
                     RadioButton {
                         id: six
+                        visible: !settings.slotMode
                         text: qsTr("6")
                         checked: true
                         exclusiveGroup: digits
@@ -120,6 +122,7 @@ Dialog {
                     }
                     RadioButton {
                         id: eight
+                        visible: !settings.slotMode
                         text: qsTr("8")
                         exclusiveGroup: digits
                         property int digits: 8
@@ -154,8 +157,7 @@ Dialog {
                     CheckBox {
                         id: touch
                         text: "Require touch"
-                        enabled: parseInt(device.version.split('.').join(
-                                              '')) >= 426
+                        enabled: enableTouchOption()
                     }
                 }
             }
@@ -201,6 +203,15 @@ Dialog {
         touch.checked = false
     }
 
+    function enableTouchOption() {
+        if (settings.slotMode) {
+            return true
+        } else {
+            return parseInt(device.version.split('.').join('')) >= 426
+        }
+    }
+
+
     function acceptableInput(){
         if (!settings.slotMode) {
             return name.text.length !== 0 && key.text.length !== 0
@@ -220,13 +231,14 @@ Dialog {
                 if (uri.type === "hotp") {
                     oathType.current = hotp
                 }
+                if (uri.digits === "6") {
+                    digits.current = six
+                }
+                if (uri.digits === "8") {
+                    digits.current = eight
+                }
             }
-            if (uri.digits === "6") {
-                digits.current = six
-            }
-            if (uri.digits === "8") {
-                digits.current = eight
-            }
+
             key.text = uri.secret
 
         } else {
@@ -252,5 +264,6 @@ Dialog {
                                      paddingError.open()
                                  }
                              })
+        }
     }
 }
