@@ -194,12 +194,11 @@ class Controller(object):
         key += '=' * (-len(key) % 8)  # Support unpadded
         return b32decode(key)
 
-    def parse_qr(self, screenshots):
-        for s in screenshots:
-            data = b64decode(s['data'])
-            image = PixelImage(data, s['width'], s['height'])
-            for qr in qrparse.parse_qr_codes(image, 2):
-                return parse_uri(qrdecode.decode_qr_data(qr))
+    def parse_qr(self, screenshot):
+        data = b64decode(screenshot['data'])
+        image = PixelImage(data, screenshot['width'], screenshot['height'])
+        for qr in qrparse.parse_qr_codes(image, 2):
+            return parse_uri(qrdecode.decode_qr_data(qr))
 
     def reset(self):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
