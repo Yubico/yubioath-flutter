@@ -190,6 +190,7 @@ class Controller(object):
             return self._parse_b32_key(val)
 
     def _parse_b32_key(self, key):
+        key = key.upper()
         key += '=' * (-len(key) % 8)  # Support unpadded
         return b32decode(key)
 
