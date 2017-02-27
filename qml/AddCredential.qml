@@ -235,6 +235,16 @@ Dialog {
     }
 
     function addCredential() {
+        if (settings.slotMode) {
+            device.addSlotCredential(slotSelected.current.name, key.text, touch.checked, function(error) {
+                if (error === 'Incorrect padding') {
+                    paddingError.open()
+                }
+                if (error) {
+                    console.log(error)
+                }
+            })
+        } else {
         device.addCredential(name.text, key.text, oathType.current.name,
                              digits.current.digits, algorithm.current.name,
                              touch.checked, function (error) {

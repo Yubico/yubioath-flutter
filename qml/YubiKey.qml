@@ -206,6 +206,10 @@ Python {
                 cb)
     }
 
+    function addSlotCredential(slot, key, touch, cb) {
+        do_call('yubikey.controller.add_slot_credential', [slot, key, touch], cb)
+    }
+
     function deleteCredential(credential) {
         do_call('yubikey.controller.delete_credential',
                 [credential, passwordKey])

@@ -142,6 +142,15 @@ class Controller(object):
             return str(e)
         controller.put(key, name, oath_type, digits, algo=algo, require_touch=touch)
 
+    def add_slot_credential(self, slot, key, touch):
+        dev = self._descriptor.open_device(TRANSPORT.OTP)
+        key = self._parse_b32_key(key)
+        if len(key) > 64:  # Keys longer than 64 bytes are hashed.
+            key = hashlib.sha1(key).digest()
+        if len(key) > 20:
+            raise ValueError('YubiKey Slots cannot handle TOTP keys over 20 bytes.')
+        key += b'\x00' * (20 - len(key))  # Keys must be padded to 20 bytes.
+        code = dev.driver.program_chalresp(int(slot), key, touch)
 
     def delete_slot_credential(self, slot):
         dev = self._descriptor.open_device(TRANSPORT.OTP)
