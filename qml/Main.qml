@@ -18,6 +18,7 @@ ApplicationWindow {
     property var credentials: device.credentials
     property bool validated: device.validated
     property bool hasDevice: device.hasDevice
+    property bool canShowCredentials: hasDevice && (settings.slotMode && device.hasOTP) || (!settings.slotMode && device.hasCCID)
     property var hotpCoolDowns: []
     property var totpCoolDowns: []
 
@@ -319,7 +320,7 @@ ApplicationWindow {
 
         ProgressBar {
             id: progressBar
-            visible: hasDevice
+            visible: canShowCredentials
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
             Layout.maximumHeight: 10
             Layout.minimumHeight: 10
@@ -431,7 +432,7 @@ ApplicationWindow {
 
         TextField {
             id: search
-            visible: hasDevice
+            visible: canShowCredentials
             placeholderText: 'Search...'
             Layout.fillWidth: true
         }
