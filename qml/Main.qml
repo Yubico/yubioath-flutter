@@ -182,12 +182,13 @@ ApplicationWindow {
 
     onHasDeviceChanged: {
         if (device.hasDevice) {
-            if(!settings.slotMode) {
+            if(!settings.slotMode && device.hasCCID) {
                 device.promptOrSkip(passwordPrompt)
             }
         } else {
             passwordPrompt.close()
             addCredential.close()
+            expiration = 0
         }
     }
 
@@ -573,9 +574,9 @@ ApplicationWindow {
 
     function refreshDependingOnMode(force) {
         if (hasDevice) {
-            if (settings.slotMode) {
+            if (settings.slotMode && device.hasOTP) {
                 device.refreshSlotCredentials([settings.slot1, settings.slot2], getSlotDigitsSettings(), force)
-            } else {
+            } else if (!settings.slotMode && device.hasCCID) {
                 device.refreshCCIDCredentials(force)
             }
         }

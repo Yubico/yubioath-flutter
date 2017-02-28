@@ -89,13 +89,15 @@ class Controller(object):
         return [c.to_dict() for c in result]
 
     def _read_slot_cred(self, slot, digits, timestamp):
-        dev = self._descriptor.open_device(TRANSPORT.OTP)
         try:
+            dev = self._descriptor.open_device(TRANSPORT.OTP)
             code = dev.driver.calculate(slot, challenge=timestamp, totp=True, digits=int(digits), wait_for_touch=False)
             return Credential(self._slot_name(slot), code=code, oath_type='totp', touch=False, algo='SHA1', expiration=self._expiration(timestamp))
         except YkpersError as e:
                 if e.errno == 11:
                     return Credential(self._slot_name(slot), oath_type='totp', touch=True, algo='SHA1')
+        except:
+            pass
         return None
 
     def _slot_name(self, slot):
@@ -105,9 +107,12 @@ class Controller(object):
         return ((timestamp + 30) // 30) * 30
 
     def needs_validation(self):
-        dev = self._descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
-        return controller.locked
+        try:
+            dev = self._descriptor.open_device(TRANSPORT.CCID)
+            controller = OathController(dev.driver)
+            return controller.locked
+        except:
+            return False
 
     def validate(self, password):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
