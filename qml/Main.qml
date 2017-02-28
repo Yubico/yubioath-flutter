@@ -206,8 +206,10 @@ ApplicationWindow {
                   qsTr("Authenticator mode is set to YubiKey slots, but the OTP connection mode is not enabled.")
               } else if (!settings.slotMode && !device.hasCCID) {
                   qsTr("Authenticator mode is set to CCID, but the CCID connection mode is not enabled.")
+              } else if (credentials == null){
+                  qsTr("Reading credentials...")
               } else {
-                  ""
+                    ""
               }
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WordWrap
