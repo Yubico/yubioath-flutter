@@ -14,7 +14,6 @@ ApplicationWindow {
     visible: true
     title: settings.slotMode ? qsTr("Yubico Authenticator [Slot mode]") : qsTr("Yubico Authenticator")
     property var device: yk
-    property int expiration: 0
     property var credentials: device.credentials
     property bool validated: device.validated
     property bool hasDevice: device.hasDevice
@@ -152,7 +151,6 @@ ApplicationWindow {
         } else {
             passwordPrompt.close()
             addCredential.close()
-            expiration = 0
         }
     }
 
@@ -161,7 +159,6 @@ ApplicationWindow {
     }
 
     onCredentialsChanged: {
-        updateExpiration()
         hotpCoolDowns = []
         totpCoolDowns = []
         hotpTouchTimer.stop()
@@ -456,7 +453,7 @@ ApplicationWindow {
         running: true
         triggeredOnStart: true
         onTriggered: {
-            var timeLeft = expiration - (Date.now() / 1000)
+            var timeLeft = device.expiration - (Date.now() / 1000)
             if (timeLeft <= 0 && progressBar.value > 0) {
                 device.refresh(refreshDependingOnMode)
                 totpCoolDowns = []
@@ -551,16 +548,4 @@ ApplicationWindow {
         return getSlotDigitsSettings()[slot - 1]
     }
 
-    function updateExpiration() {
-        var maxExpiration = 0
-        if (credentials !== null) {
-            for (var i = 0; i < credentials.length; i++) {
-                var exp = credentials[i].expiration
-                if (exp !== null && exp > maxExpiration) {
-                    maxExpiration = exp
-                }
-            }
-            expiration = maxExpiration
-        }
-    }
 }

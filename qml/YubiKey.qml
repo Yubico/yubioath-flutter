@@ -22,6 +22,7 @@ Python {
     property bool hasCCID: enabled.indexOf('CCID') !== -1
     property bool validated
     property var passwordKey
+    property int expiration: 0
     signal wrongPassword
 
     Component.onCompleted: {
@@ -158,6 +159,7 @@ Python {
         }
         nextRefresh = minExpiration
         credentials = result
+        updateExpiration()
     }
 
     function getCredential(name) {
@@ -178,6 +180,19 @@ Python {
         }
         return false
     }
+
+    function updateExpiration() {
+            var maxExpiration = 0
+            if (credentials !== null) {
+                for (var i = 0; i < credentials.length; i++) {
+                    var exp = credentials[i].expiration
+                    if (exp !== null && exp > maxExpiration) {
+                        maxExpiration = exp
+                    }
+                }
+                expiration = maxExpiration
+            }
+        }
 
     function calculate(credential) {
         var now = Math.floor(Date.now() / 1000)
