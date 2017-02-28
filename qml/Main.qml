@@ -21,13 +21,9 @@ ApplicationWindow {
     property var hotpCoolDowns: []
     property var totpCoolDowns: []
 
-    SystemPalette { id: palette }
-
-    /*******
-
-        Settings
-
-    *******/
+    SystemPalette {
+        id: palette
+    }
 
     Settings {
         id: settings
@@ -38,13 +34,6 @@ ApplicationWindow {
         property var slot2digits
     }
 
-
-    /*******
-
-        Main menu bar
-
-    *******/
-
     menuBar: MenuBar {
 
         Menu {
@@ -52,7 +41,7 @@ ApplicationWindow {
             MenuItem {
                 text: qsTr('Add credential...')
                 onTriggered: {
-                    addCredential.clear();
+                    addCredential.clear()
                     addCredential.open()
                 }
                 shortcut: StandardKey.New
@@ -96,12 +85,6 @@ ApplicationWindow {
         onAccepted: refreshDependingOnMode(true)
     }
 
-    /*******
-
-        Settings dialog
-
-    *******/
-
     SettingsDialog {
         id: settingsDialog
         settings: settings
@@ -114,13 +97,6 @@ ApplicationWindow {
             refreshDependingOnMode(true)
         }
     }
-
-
-    /*******
-
-        Set password dialog
-
-    *******/
 
     SetPassword {
         id: setPassword
@@ -155,12 +131,6 @@ ApplicationWindow {
         standardButtons: StandardButton.Ok
     }
 
-    /*******
-
-        Reset dialog
-
-    *******/
-
     MessageDialog {
         id: reset
         icon: StandardIcon.Critical
@@ -173,16 +143,9 @@ ApplicationWindow {
         }
     }
 
-
-    /*******
-
-        Device - prompt for password if needed
-
-    *******/
-
     onHasDeviceChanged: {
         if (device.hasDevice) {
-            if(!settings.slotMode && device.hasCCID) {
+            if (!settings.slotMode && device.hasCCID) {
                 device.promptOrSkip(passwordPrompt)
             }
         } else {
@@ -216,8 +179,6 @@ ApplicationWindow {
         }
     }
 
-
-
     Text {
         visible: !device.hasDevice
         id: noLoadedDeviceMessage
@@ -235,17 +196,17 @@ ApplicationWindow {
         anchors.verticalCenter: parent.verticalCenter
     }
 
-
     Text {
         visible: device.hasDevice
-        text: if (credentials !== null && filteredCredentials(credentials).length === 0) {
-                qsTr("No credentials found.")
+        text: if (credentials !== null && filteredCredentials(
+                          credentials).length === 0) {
+                  qsTr("No credentials found.")
               } else if (settings.slotMode && !device.hasOTP) {
                   qsTr("Authenticator mode is set to YubiKey slots, but the OTP connection mode is not enabled.")
               } else if (!settings.slotMode && !device.hasCCID) {
                   qsTr("Authenticator mode is set to CCID, but the CCID connection mode is not enabled.")
               } else {
-                ""
+                  ""
               }
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WordWrap
@@ -253,14 +214,6 @@ ApplicationWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
     }
-
-
-
-    /*******
-
-        Clipboard
-
-    *******/
 
     TextEdit {
         id: clipboard
@@ -271,13 +224,6 @@ ApplicationWindow {
             copy()
         }
     }
-
-
-    /*******
-
-        Right click menu for credentials
-
-    *******/
 
     Menu {
         id: credentialMenu
@@ -292,7 +238,8 @@ ApplicationWindow {
         }
         MenuItem {
             visible: allowManualGenerate(repeater.selected)
-            enabled: allowManualGenerate(repeater.selected) && !isInCoolDown(repeater.selected.name)
+            enabled: allowManualGenerate(repeater.selected) && !isInCoolDown(
+                         repeater.selected.name)
             text: qsTr('Generate code')
             shortcut: "Space"
             onTriggered: {
@@ -301,8 +248,8 @@ ApplicationWindow {
                     if (repeater.selected.oath_type === "hotp") {
                         hotpCoolDowns.push(repeater.selected.name)
                         hotpCoolDownTimer.restart()
-                    } else if(repeater.selected.touch) {
-                       totpCoolDowns.push(repeater.selected.name)
+                    } else if (repeater.selected.touch) {
+                        totpCoolDowns.push(repeater.selected.name)
                     }
                 }
             }
@@ -315,7 +262,8 @@ ApplicationWindow {
     }
 
     function allowManualGenerate(cred) {
-        return cred != null && (cred.oath_type === "hotp" || repeater.selected.touch)
+        return cred != null && (cred.oath_type === "hotp"
+                                || repeater.selected.touch)
     }
 
     MessageDialog {
@@ -325,7 +273,7 @@ ApplicationWindow {
         text: qsTr("Are you sure you want to delete the credential?")
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
-            if (settings.slotMode){
+            if (settings.slotMode) {
                 device.deleteSlotCredential(getSlot(repeater.selected['name']))
             } else {
                 device.deleteCredential(repeater.selected)
@@ -341,14 +289,6 @@ ApplicationWindow {
         text: qsTr("Touch your YubiKey to generate the code.")
         standardButtons: StandardButton.NoButton
     }
-
-
-    /*******
-
-        Arrow key navigation
-
-    *******/
-
 
     Item {
         id: arrowKeys
@@ -373,16 +313,9 @@ ApplicationWindow {
         }
     }
 
-
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
-
-        /*******
-
-            Time left bar
-
-        *******/
 
         ProgressBar {
             id: progressBar
@@ -419,12 +352,6 @@ ApplicationWindow {
                 anchors.right: appWindow.right
                 anchors.left: appWindow.left
                 anchors.top: appWindow.top
-
-                /*******
-
-                    Credential items
-
-                *******/
 
                 Repeater {
                     id: repeater
@@ -507,12 +434,6 @@ ApplicationWindow {
             text: "[Slot mode]"
         }
 
-        /*******
-
-            Search field
-
-        *******/
-
         TextField {
             id: search
             visible: hasDevice
@@ -520,13 +441,6 @@ ApplicationWindow {
             Layout.fillWidth: true
         }
     }
-
-
-    /*******
-
-        Timers
-
-    *******/
 
     Timer {
         id: ykTimer
@@ -565,17 +479,11 @@ ApplicationWindow {
         onTriggered: touchYourYubikey.open()
     }
 
-
-    /*******
-
-        Utility functions
-
-    *******/
-
     function refreshDependingOnMode(force) {
         if (hasDevice) {
             if (settings.slotMode && device.hasOTP) {
-                device.refreshSlotCredentials([settings.slot1, settings.slot2], getSlotDigitsSettings(), force)
+                device.refreshSlotCredentials([settings.slot1, settings.slot2],
+                                              getSlotDigitsSettings(), force)
             } else if (!settings.slotMode && device.hasCCID) {
                 device.refreshCCIDCredentials(force)
             }
@@ -603,7 +511,8 @@ ApplicationWindow {
     }
 
     function isInCoolDown(name) {
-        return hotpCoolDowns.indexOf(name) !== -1 || totpCoolDowns.indexOf(name) !== -1
+        return hotpCoolDowns.indexOf(name) !== -1 || totpCoolDowns.indexOf(
+                    name) !== -1
     }
     function hasIssuer(name) {
         return name.indexOf(':') !== -1
@@ -641,7 +550,7 @@ ApplicationWindow {
     }
 
     function getDigits(slot) {
-       return getSlotDigitsSettings()[slot -1]
+        return getSlotDigitsSettings()[slot - 1]
     }
 
     function updateExpiration() {
