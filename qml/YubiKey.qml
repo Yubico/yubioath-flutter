@@ -18,6 +18,8 @@ Python {
     property var enabled: []
     property bool ready: false
     property var queue: []
+    property bool hasOTP: enabled.indexOf('OTP') !== -1
+    property bool hasCCID: enabled.indexOf('CCID') !== -1
     property bool validated
     property var passwordKey
     signal wrongPassword

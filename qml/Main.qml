@@ -227,20 +227,32 @@ ApplicationWindow {
               } else {
                   qsTr("Multiple YubiKeys detected!")
               }
+        horizontalAlignment: Text.AlignHCenter
+        wrapMode: Text.WordWrap
+        width: parent.width
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
     }
+
 
     Text {
         visible: device.hasDevice
         text: if (credentials !== null && filteredCredentials(credentials).length === 0) {
                 qsTr("No credentials found.")
+              } else if (settings.slotMode && !device.hasOTP) {
+                  qsTr("Authenticator mode is set to YubiKey slots, but the OTP connection mode is not enabled.")
+              } else if (!settings.slotMode && !device.hasCCID) {
+                  qsTr("Authenticator mode is set to CCID, but the CCID connection mode is not enabled.")
               } else {
                 ""
               }
+        horizontalAlignment: Text.AlignHCenter
+        wrapMode: Text.WordWrap
+        width: parent.width
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
     }
+
 
 
     /*******
