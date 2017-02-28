@@ -18,7 +18,7 @@ ApplicationWindow {
     property var credentials: device.credentials
     property bool validated: device.validated
     property bool hasDevice: device.hasDevice
-    property bool canShowCredentials: hasDevice && (settings.slotMode && device.hasOTP) || (!settings.slotMode && device.hasCCID)
+    property bool canShowCredentials: hasDevice && ((settings.slotMode && device.hasOTP) || (!settings.slotMode && device.hasCCID))
     property var hotpCoolDowns: []
     property var totpCoolDowns: []
 
