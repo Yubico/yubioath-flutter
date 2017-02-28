@@ -8,7 +8,7 @@ from base64 import b32decode, b64decode
 from binascii import a2b_hex, b2a_hex
 
 from ykman.descriptor import get_descriptors
-from ykman.util import CAPABILITY, TRANSPORT, derive_key, parse_uri
+from ykman.util import CAPABILITY, TRANSPORT, derive_key, parse_uri, parse_b32_key
 from ykman.driver_otp import YkpersError
 from ykman.oath import OathController, Credential
 from py.qr import qrparse
@@ -142,14 +142,14 @@ class Controller(object):
         if controller.locked and password_key is not None:
             controller.validate(a2b_hex(password_key))
         try:
-            key = self._parse_key(key)
+            key = parse_b32_key(key)
         except Exception as e:
             return str(e)
         controller.put(key, name, oath_type, digits, algo=algo, require_touch=touch)
 
     def add_slot_credential(self, slot, key, touch):
         dev = self._descriptor.open_device(TRANSPORT.OTP)
-        key = self._parse_b32_key(key)
+        key = parse_b32_key(key)
         if len(key) > 64:  # Keys longer than 64 bytes are hashed.
             key = hashlib.sha1(key).digest()
         if len(key) > 20:
@@ -160,7 +160,6 @@ class Controller(object):
     def delete_slot_credential(self, slot):
         dev = self._descriptor.open_device(TRANSPORT.OTP)
         dev.driver.zap_slot(slot)
-
 
     def delete_credential(self, credential, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
@@ -185,19 +184,6 @@ class Controller(object):
         creds = controller.calculate_all(timestamp)
         creds = [c for c in creds if not c.hidden]
         return creds
-
-    def _parse_key(self, val):
-        val = val.upper()
-        if re.match(r'^([0-9A-F]{2})+$', val):  # hex
-            return a2b_hex(val)
-        else:
-            # Key should be b32 encoded
-            return self._parse_b32_key(val)
-
-    def _parse_b32_key(self, key):
-        key = key.upper()
-        key += '=' * (-len(key) % 8)  # Support unpadded
-        return b32decode(key)
 
     def parse_qr(self, screenshot):
         data = b64decode(screenshot['data'])
