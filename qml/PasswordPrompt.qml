@@ -22,5 +22,11 @@ Dialog {
                 Layout.fillWidth: true
             }
         }
+        RowLayout {
+            CheckBox {
+                id: rememberPassword
+                text: qsTr("Remember password")
+            }
+        }
     }
 }
