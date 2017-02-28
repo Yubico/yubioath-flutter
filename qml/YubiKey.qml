@@ -105,16 +105,16 @@ Python {
 
 
     function validate(providedPassword) {
-        do_call('yubikey.controller.validate', [providedPassword],
-                function (res) {
-                    if (res !== false) {
-                        passwordKey = res
-                        validated = true
-                    }
-                    if (res === false) {
-                        wrongPassword()
-                    }
-                })
+        do_call('yubikey.controller.derive_key', [providedPassword], function(key) {
+            do_call('yubikey.controller.validate', [key], function(res) {
+                if (res !== false) {
+                    passwordKey = key
+                    validated = true
+                } else {
+                    wrongPassword()
+                }
+            })
+        })
     }
 
     function promptOrSkip(prompt) {

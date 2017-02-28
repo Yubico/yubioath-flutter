@@ -114,14 +114,21 @@ class Controller(object):
         except:
             return False
 
-    def validate(self, password):
+
+    def derive_key(self, password):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
-        if password is not None:
+        key = derive_key(controller.id, password)
+        return b2a_hex(key).decode('utf-8')
+
+
+    def validate(self, key):
+        dev = self._descriptor.open_device(TRANSPORT.CCID)
+        controller = OathController(dev.driver)
+        if key is not None:
             try:
-                key = derive_key(controller.id, password)
-                controller.validate(key)
-                return b2a_hex(key).decode('utf-8')
+                controller.validate(a2b_hex(key))
+                return True
             except:
                 return False
 
