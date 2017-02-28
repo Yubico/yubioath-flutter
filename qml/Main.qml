@@ -231,6 +231,17 @@ ApplicationWindow {
         anchors.verticalCenter: parent.verticalCenter
     }
 
+    Text {
+        visible: device.hasDevice
+        text: if (credentials !== null && filteredCredentials(credentials).length === 0) {
+                qsTr("No credentials found.")
+              } else {
+                ""
+              }
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
 
     /*******
 
@@ -404,7 +415,7 @@ ApplicationWindow {
 
                 Repeater {
                     id: repeater
-                    model: filteredCredentials(credentials, search.text)
+                    model: filteredCredentials(credentials)
                     property var selected
                     property var selectedIndex
 
@@ -564,12 +575,12 @@ ApplicationWindow {
         return [slot1digits, slot2digits]
     }
 
-    function filteredCredentials(creds, search) {
+    function filteredCredentials(creds) {
         var result = []
         if (creds != null) {
             for (var i = 0; i < creds.length; i++) {
                 var cred = creds[i]
-                if (cred.name.toLowerCase().indexOf(search.toLowerCase(
+                if (cred.name.toLowerCase().indexOf(search.text.toLowerCase(
                                                         )) !== -1) {
                     result.push(creds[i])
                 }
