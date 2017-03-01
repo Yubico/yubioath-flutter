@@ -12,12 +12,16 @@ ApplicationWindow {
     minimumHeight: 400
     minimumWidth: 300
     visible: true
-    title: settings.slotMode ? qsTr("Yubico Authenticator [Slot mode]") : qsTr("Yubico Authenticator")
+    title: settings.slotMode ? qsTr("Yubico Authenticator [Slot mode]") : qsTr(
+                                   "Yubico Authenticator")
     property var device: yk
     property var credentials: device.credentials
     property bool validated: device.validated
     property bool hasDevice: device.hasDevice
-    property bool canShowCredentials: hasDevice && ((settings.slotMode && device.hasOTP) || (!settings.slotMode && device.hasCCID))
+    property bool canShowCredentials: hasDevice && ((settings.slotMode
+                                                     && device.hasOTP)
+                                                    || (!settings.slotMode
+                                                        && device.hasCCID))
     property var hotpCoolDowns: []
     property var totpCoolDowns: []
 
@@ -32,6 +36,7 @@ ApplicationWindow {
         property bool slot2
         property var slot1digits
         property var slot2digits
+        property string savedPasswords
     }
 
     menuBar: MenuBar {
@@ -146,7 +151,7 @@ ApplicationWindow {
     onHasDeviceChanged: {
         if (device.hasDevice) {
             if (!settings.slotMode && device.hasCCID) {
-                device.promptOrSkip(passwordPrompt)
+                device.promptOrSkip(passwordPrompt, settings.savedPasswords)
             }
         } else {
             passwordPrompt.close()
@@ -156,6 +161,19 @@ ApplicationWindow {
 
     PasswordPrompt {
         id: passwordPrompt
+        onAccepted: {
+            if (passwordPrompt.remember) {
+                device.validate(passwordPrompt.password, rememberPassword)
+            } else {
+                device.validate(passwordPrompt.password)
+            }
+        }
+    }
+
+    function rememberPassword() {
+        var deviceId = device.oathId
+        settings.savedPasswords += deviceId + ':' + device.passwordKey + ';'
+        console.log(settings.savedPasswords)
     }
 
     onCredentialsChanged: {
@@ -203,10 +221,10 @@ ApplicationWindow {
                   qsTr("Authenticator mode is set to YubiKey slots, but the OTP connection mode is not enabled.")
               } else if (!settings.slotMode && !device.hasCCID) {
                   qsTr("Authenticator mode is set to CCID, but the CCID connection mode is not enabled.")
-              } else if (credentials == null){
+              } else if (credentials == null) {
                   qsTr("Reading credentials...")
               } else {
-                    ""
+                  ""
               }
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WordWrap
@@ -547,5 +565,4 @@ ApplicationWindow {
     function getDigits(slot) {
         return getSlotDigitsSettings()[slot - 1]
     }
-
 }

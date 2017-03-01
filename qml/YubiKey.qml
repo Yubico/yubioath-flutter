@@ -10,6 +10,7 @@ Python {
     property bool hasDevice
     property string name
     property string version
+    property string oathId
     property string serial
     property var features: []
     property var connections: []
@@ -77,7 +78,6 @@ Python {
                     enabled = dev ? dev.enabled : []
                     connections = dev ? dev.connections : []
                     hasDevice = dev !== undefined && dev !== null
-
                 })
             } else if (hasDevice) {
                 hasDevice = false
@@ -91,41 +91,72 @@ Python {
     function refreshCCIDCredentials(force) {
         var now = Math.floor(Date.now() / 1000)
         if (force || (validated && nextRefresh < now)) {
-            do_call('yubikey.controller.refresh_credentials', [now, passwordKey],
-                    handleCredentials)
+            do_call('yubikey.controller.refresh_credentials',
+                    [now, passwordKey], handleCredentials)
         }
     }
 
     function refreshSlotCredentials(slots, digits, force) {
         var now = Math.floor(Date.now() / 1000)
         if (force || (nextRefresh < now)) {
-            do_call('yubikey.controller.refresh_slot_credentials', [slots, digits, now], handleCredentials)
+            do_call('yubikey.controller.refresh_slot_credentials',
+                    [slots, digits, now], handleCredentials)
         }
     }
 
+    function validate(providedPassword, cb) {
+        do_call('yubikey.controller.derive_key', [providedPassword],
+                function (key) {
+                    validateFromKey(key, cb)
+                })
+    }
 
-    function validate(providedPassword) {
-        do_call('yubikey.controller.derive_key', [providedPassword], function(key) {
-            do_call('yubikey.controller.validate', [key], function(res) {
-                if (res !== false) {
-                    passwordKey = key
+    function validateFromKey(key, cb) {
+        do_call('yubikey.controller.validate', [key], function (res) {
+            if (res !== false) {
+                passwordKey = key
+                validated = true
+                if (cb != null) {
+                    cb()
+                }
+            } else {
+                wrongPassword()
+            }
+        })
+    }
+
+    function promptOrSkip(prompt, savedPasswords) {
+
+        do_call('yubikey.controller.get_oath_id', [], function (res) {
+
+            oathId = res
+
+            // Check if device id can be found in saved passwords
+            // and validate with that key if found.
+            if (savedPasswords.indexOf(oathId) !== -1) {
+                validateFromKey(getSavedKey(oathId, savedPasswords))
+                return
+            }
+
+            do_call('yubikey.controller.needs_validation', [], function (res) {
+                if (res === true) {
+                    prompt.open()
+                }
+                if (res === false) {
                     validated = true
-                } else {
-                    wrongPassword()
                 }
             })
         })
     }
 
-    function promptOrSkip(prompt) {
-        do_call('yubikey.controller.needs_validation', [], function (res) {
-            if (res === true) {
-                prompt.open()
+    function getSavedKey(id, savedPasswords) {
+        var pairs = savedPasswords.split(';')
+        for (var i = 0; i < pairs.length; i++) {
+            var pair = pairs[i].split(':')
+            if (pair[0] === id) {
+                return pair[1]
             }
-            if (res === false) {
-                validated = true
-            }
-        })
+        }
     }
 
     function setPassword(password) {
@@ -182,17 +213,17 @@ Python {
     }
 
     function updateExpiration() {
-            var maxExpiration = 0
-            if (credentials !== null) {
-                for (var i = 0; i < credentials.length; i++) {
-                    var exp = credentials[i].expiration
-                    if (exp !== null && exp > maxExpiration) {
-                        maxExpiration = exp
-                    }
+        var maxExpiration = 0
+        if (credentials !== null) {
+            for (var i = 0; i < credentials.length; i++) {
+                var exp = credentials[i].expiration
+                if (exp !== null && exp > maxExpiration) {
+                    maxExpiration = exp
                 }
-                expiration = maxExpiration
             }
+            expiration = maxExpiration
         }
+    }
 
     function calculate(credential) {
         var now = Math.floor(Date.now() / 1000)
@@ -225,7 +256,8 @@ Python {
     }
 
     function addSlotCredential(slot, key, touch, cb) {
-        do_call('yubikey.controller.add_slot_credential', [slot, key, touch], cb)
+        do_call('yubikey.controller.add_slot_credential',
+                [slot, key, touch], cb)
     }
 
     function deleteCredential(credential) {
@@ -234,7 +266,7 @@ Python {
     }
 
     function deleteSlotCredential(slot) {
-        do_call('yubikey.controller.delete_slot_credential',[slot])
+        do_call('yubikey.controller.delete_slot_credential', [slot])
     }
 
     function parseQr(screenShots, cb) {

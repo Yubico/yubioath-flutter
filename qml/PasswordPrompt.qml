@@ -8,9 +8,10 @@ Dialog {
     id: passwordPrompt
     title: qsTr("Enter password")
     standardButtons: StandardButton.Ok | StandardButton.Cancel
-    onAccepted: {
-        device.validate(password.text);
-    }
+
+    property string password: password.text
+    property bool remember: rememberPassword.checked
+
     ColumnLayout {
         RowLayout {
             Label {

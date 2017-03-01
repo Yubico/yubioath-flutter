@@ -115,12 +115,16 @@ class Controller(object):
             return False
 
 
+    def get_oath_id(self):
+        dev = self._descriptor.open_device(TRANSPORT.CCID)
+        controller = OathController(dev.driver)
+        return b2a_hex(controller.id).decode('utf-8')
+
     def derive_key(self, password):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
         key = derive_key(controller.id, password)
         return b2a_hex(key).decode('utf-8')
-
 
     def validate(self, key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
