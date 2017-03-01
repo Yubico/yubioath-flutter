@@ -1,5 +1,5 @@
 [submodule "vendor/qt-solutions"]
-	path = ykman-gui/vendor/qt-solutions
+	path = vendor/qt-solutions
 	url = https://github.com/qtproject/qt-solutions
 [submodule "vendor/yubikey-manager"]
 	path = vendor/yubikey-manager
