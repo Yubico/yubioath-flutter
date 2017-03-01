@@ -8,7 +8,8 @@ Dialog {
     title: qsTr("Add credential")
     standardButtons: StandardButton.NoButton
     modality: Qt.ApplicationModal
-    onAccepted: addCredential()
+    property var settings
+    property var device
 
     ColumnLayout {
         anchors.fill: parent
@@ -45,34 +46,32 @@ Dialog {
             }
         }
 
-
-            ColumnLayout {
-                Label {
-                    text: qsTr("YubiKey Slot")
-                    visible: settings.slotMode
-                }
-                ExclusiveGroup {
-                    id: slotSelected
-                }
-                RadioButton {
-                    id: slot1
-                    visible: settings.slotMode
-                    enabled: settings.slot1
-                    text: qsTr("Slot 1")
-                    checked: true
-                    exclusiveGroup: slotSelected
-                    property string name: "1"
-                }
-                RadioButton {
-                    id: slot2
-                    visible: settings.slotMode
-                    enabled: settings.slot2
-                    text: qsTr("Slot 2")
-                    exclusiveGroup: slotSelected
-                    property string name: "2"
-                }
+        ColumnLayout {
+            Label {
+                text: qsTr("YubiKey Slot")
+                visible: settings.slotMode
             }
-
+            ExclusiveGroup {
+                id: slotSelected
+            }
+            RadioButton {
+                id: slot1
+                visible: settings.slotMode
+                enabled: settings.slot1
+                text: qsTr("Slot 1")
+                checked: true
+                exclusiveGroup: slotSelected
+                property string name: "1"
+            }
+            RadioButton {
+                id: slot2
+                visible: settings.slotMode
+                enabled: settings.slot2
+                text: qsTr("Slot 2")
+                exclusiveGroup: slotSelected
+                property string name: "2"
+            }
+        }
 
         GroupBox {
             title: qsTr("Credential type")
@@ -169,7 +168,14 @@ Dialog {
                 text: qsTr("Add credential")
                 enabled: acceptableInput()
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-                onClicked: accept()
+                onClicked:  {
+                    if (device.credentialExists(name.text)
+                            && !settings.slotMode) {
+                        confirmOverWrite.open()
+                    } else {
+                        addCredential()
+                    }
+                }
             }
             Button {
                 text: qsTr("Cancel")
@@ -194,6 +200,15 @@ Dialog {
         standardButtons: StandardButton.Ok
     }
 
+    MessageDialog {
+        id: confirmOverWrite
+        icon: StandardIcon.Warning
+        title: qsTr("Overwrite credential?")
+        text: qsTr("A credential with this name already exists. Are you sure you want to overwrite this credential?")
+        standardButtons: StandardButton.Ok | StandardButton.Cancel
+        onAccepted: addCredential()
+    }
+
     function clear() {
         name.text = ""
         key.text = ""
@@ -211,8 +226,7 @@ Dialog {
         }
     }
 
-
-    function acceptableInput(){
+    function acceptableInput() {
         if (!settings.slotMode) {
             return name.text.length !== 0 && key.text.length !== 0
         }
@@ -240,7 +254,6 @@ Dialog {
             }
 
             key.text = uri.secret
-
         } else {
             noQr.open()
         }
@@ -248,22 +261,27 @@ Dialog {
 
     function addCredential() {
         if (settings.slotMode) {
-            device.addSlotCredential(slotSelected.current.name, key.text, touch.checked, function(error) {
-                if (error === 'Incorrect padding') {
-                    paddingError.open()
-                }
-                if (error) {
-                    console.log(error)
-                }
-            })
+            device.addSlotCredential(slotSelected.current.name, key.text,
+                                     touch.checked, function (error) {
+                                         if (error === 'Incorrect padding') {
+                                             paddingError.open()
+                                         }
+                                         if (error) {
+                                             console.log(error)
+                                         }
+                                         close()
+                                         refreshDependingOnMode(true)
+                                     })
         } else {
-        device.addCredential(name.text, key.text, oathType.current.name,
-                             digits.current.digits, algorithm.current.name,
-                             touch.checked, function (error) {
-                                 if (error === 'Incorrect padding') {
-                                     paddingError.open()
-                                 }
-                             })
+            device.addCredential(name.text, key.text, oathType.current.name,
+                                 digits.current.digits, algorithm.current.name,
+                                 touch.checked, function (error) {
+                                     if (error === 'Incorrect padding') {
+                                         paddingError.open()
+                                     }
+                                     close()
+                                     refreshDependingOnMode(true)
+                                 })
         }
     }
 }

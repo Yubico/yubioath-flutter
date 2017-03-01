@@ -91,7 +91,8 @@ ApplicationWindow {
 
     AddCredential {
         id: addCredential
-        onAccepted: refreshDependingOnMode(true)
+        settings: settings
+        device: yk
     }
 
     SettingsDialog {
