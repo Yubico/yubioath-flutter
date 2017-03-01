@@ -1,0 +1,8 @@
+- repo: local
+  hooks:
+  - id: qmllint
+    name: qmllint
+    entry: qmllint
+    language: system
+    files: \.qml$
+
