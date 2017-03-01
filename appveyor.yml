@@ -1,0 +1,92 @@
+# appveyor.yml
+
+# Building, testing and deployment for Windows
+
+# Syntax for this file:
+# https://www.appveyor.com/docs/appveyor-yml
+
+image: Visual Studio 2015
+
+init:
+  # Needed for jom to work.
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
+  # Add python, Qt, NSIS to PATH
+  - set PATH=%PATH%;C:\Python35\Scripts;C:\Qt\5.7\msvc2015\bin;C:\Qt\Tools\QtCreator\bin;C:\Program Files (x86)\NSIS
+
+install:
+  # Submodules are not cloned by default
+  - git submodule update --init --recursive
+  # Install nsProcess plugin for NSIS
+  - ps: wget https://s3.eu-central-1.amazonaws.com/yubico-deps/yubikey-manager-qt/nsProcess_1_6.7z -OutFile nsProcess_1_6.7z
+  - 7z e -o"C:\Program Files (x86)\NSIS\Include" nsProcess_1_6.7z Include\*.nsh
+  - 7z e -o"C:\Program Files (x86)\NSIS\Plugins\x86-ansi" nsProcess_1_6.7z Plugin\*.dll
+  - 7z e -o"C:\Program Files (x86)\NSIS\Plugins\x86-unicode" nsProcess_1_6.7z Plugin\*.dll
+  # Swig needed for pyscard
+  - ps: wget https://s3.eu-central-1.amazonaws.com/yubico-deps/yubikey-manager-qt/swigwin-3.0.10.zip -OutFile swigwin-3.0.10.zip
+  - 7z x swigwin-3.0.10.zip
+  - set PATH=%PATH%;%APPVEYOR_BUILD_FOLDER%\swigwin-3.0.10
+  # Build and install PyOtherSide 
+  # Reference: https://pyotherside.readthedocs.io/en/latest/#building-for-windows
+  - cd .\vendor\pyotherside
+  - ps: (Get-Content .\src\qmldir).replace('pyothersideplugin', 'pyothersideplugin1') | Set-Content .\src\qmldir
+  - ps: Clear-Content python.pri
+  - ps: Add-Content python.pri "PYTHON_CONFIG = python3-config`nQMAKE_LIBS += -LC:\Python35\libs -lpython35`nQMAKE_CXXFLAGS += -IC:\Python35\include`n"
+  - qmake
+  - jom
+  - jom install
+  - cd %APPVEYOR_BUILD_FOLDER%
+
+before_build:
+  # Fix problem with symbolic link
+  - rm .\vendor\yubikey-manager\ykman\yubicommon
+  - xcopy /i /e .\vendor\yubikey-manager\vendor\yubicommon\yubicommon .\vendor\yubikey-manager\ykman\yubicommon
+
+build_script:
+  - qmake yubioath-desktop.pro
+  - jom
+
+after_build:
+  # Add libu2f-host
+  - mkdir libu2f-host
+  - ps: wget https://developers.yubico.com/libu2f-host/Releases/libu2f-host-1.1.3-win32.zip -OutFile libu2f-host-1.1.3-win32.zip
+  - 7z x libu2f-host-1.1.3-win32.zip -o".\libu2f-host"
+  - ps: Copy-Item .\libu2f-host\bin\*.dll .\yubioath-desktop\release -Force
+  # Add ykpers
+  - mkdir ykpers
+  - ps: wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.17.3-win32.zip -OutFile ykpers-1.17.3-win32.zip  
+  - 7z x ykpers-1.17.3-win32.zip -o".\ykpers"
+  - ps: Copy-Item .\ykpers\bin\*.dll .\yubioath-desktop\release -Force 
+  # Add libusb
+  - mkdir libusb
+  - ps: wget https://s3.eu-central-1.amazonaws.com/yubico-deps/yubikey-manager-qt/libusb-1.0.20.7z -OutFile libusb-1.0.20.7z
+  - 7z x libusb-1.0.20.7z -o".\libusb"
+  - ps: Copy-Item .\libusb\MS32\dll\*.dll .\yubioath-desktop\release -Force 
+  # Add embedded python
+  - ps: wget https://www.python.org/ftp/python/3.5.2/python-3.5.2-embed-win32.zip -OutFile python-3.5.2-embed-win32.zip
+  - 7z x python-3.5.2-embed-win32.zip -o".\yubioath-desktop\release"
+  # Add msvcp140.dll
+  - copy "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\x86\Microsoft.VC140.CRT\msvcp140.dll" ".\yubioath-desktop\release"
+  # Add .dlls for redistrubution, see https://blogs.msdn.microsoft.com/vcblog/2015/03/03/introducing-the-universal-crt/
+  - xcopy "C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs\x86" ".\yubioath-desktop\release"
+  # Use Qt deployment tool on executable
+  - windeployqt .\yubioath-desktop\release\yubioath-desktop.exe -qmldir=.\yubioath-desktop\qml
+  # Add python dependencies to release folder
+  - ps: Copy-Item .\yubioath-desktop\pymodules .\yubioath-desktop\release -recurse
+  # Remove .pyc files from release folder
+  - ps: Get-ChildItem -File -Include *.pyc -Recurse | Remove-Item -Force
+  - ps: Get-ChildItem -Include __pycache__ -Recurse | Remove-Item -Force
+  # Create zip for deployment
+  - 7z a yubioath-desktopr-%APPVEYOR_REPO_BRANCH%-HEAD-win.zip .\yubioath-desktop\release\*
+  - cd %APPVEYOR_BUILD_FOLDER%
+
+artifacts:
+  - path: yubioath-desktop-%APPVEYOR_REPO_BRANCH%-HEAD-win.zip
+ 
+deploy:
+  - provider: S3
+    access_key_id: $(AWS_KEY_ID)
+    secret_access_key: $(AWS_SECRET_KEY)
+    bucket: $(AWS_BUCKET)
+    folder: "yubioath-desktop"
+    region: eu-west-1
+    set_public: true
