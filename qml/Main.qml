@@ -25,6 +25,10 @@ ApplicationWindow {
     property var hotpCoolDowns: []
     property var totpCoolDowns: []
 
+    // Don't refresh credentials when window is minimized or hidden
+    // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
+    property bool shouldRefresh: visibility != 3 && visibility != 0
+
     SystemPalette {
         id: palette
     }
@@ -173,7 +177,6 @@ ApplicationWindow {
     function rememberPassword() {
         var deviceId = device.oathId
         settings.savedPasswords += deviceId + ':' + device.passwordKey + ';'
-        console.log(settings.savedPasswords)
     }
 
     onCredentialsChanged: {
@@ -493,7 +496,7 @@ ApplicationWindow {
     }
 
     function refreshDependingOnMode(force) {
-        if (hasDevice) {
+        if (hasDevice && shouldRefresh) {
             if (settings.slotMode && device.hasOTP) {
                 device.refreshSlotCredentials([settings.slot1, settings.slot2],
                                               getSlotDigitsSettings(), force)
