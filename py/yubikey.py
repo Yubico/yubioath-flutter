@@ -64,8 +64,6 @@ class Controller(object):
         return self._dev_info
 
     def refresh_credentials(self, timestamp, password_key=None):
-        if password_key is not None:
-            password_key = a2b_hex(password_key)
         return [c.to_dict() for c in self._calculate_all(timestamp, password_key)]
 
     def calculate(self, credential, timestamp, password_key):
@@ -183,7 +181,7 @@ class Controller(object):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
         if controller.locked and password_key is not None:
-            controller.validate(password_key)
+            controller.validate(a2b_hex(password_key))
         cred = controller.calculate(credential, timestamp)
         return cred
 
@@ -191,7 +189,7 @@ class Controller(object):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
         if controller.locked and password_key is not None:
-            controller.validate(password_key)
+            controller.validate(a2b_hex(password_key))
         creds = controller.calculate_all(timestamp)
         creds = [c for c in creds if not c.hidden]
         return creds
