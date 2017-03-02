@@ -69,7 +69,7 @@ after_build:
   # Add .dlls for redistrubution, see https://blogs.msdn.microsoft.com/vcblog/2015/03/03/introducing-the-universal-crt/
   - xcopy "C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs\x86" ".\release"
   # Use Qt deployment tool on executable
-  - windeployqt .\release\yubioath-desktop.exe -qmldir=.\qml
+  - windeployqt .\release\yubioath-desktop.exe -qmldir=qml
   # Add python dependencies to release folder
   - ps: Copy-Item .\pymodules .\release -recurse
   # Remove .pyc files from release folder
