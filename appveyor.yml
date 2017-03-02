@@ -50,33 +50,33 @@ after_build:
   - mkdir libu2f-host
   - ps: wget https://developers.yubico.com/libu2f-host/Releases/libu2f-host-1.1.3-win32.zip -OutFile libu2f-host-1.1.3-win32.zip
   - 7z x libu2f-host-1.1.3-win32.zip -o".\libu2f-host"
-  - ps: Copy-Item .\libu2f-host\bin\*.dll .\yubioath-desktop\release -Force
+  - ps: Copy-Item .\libu2f-host\bin\*.dll .\release -Force
   # Add ykpers
   - mkdir ykpers
   - ps: wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.17.3-win32.zip -OutFile ykpers-1.17.3-win32.zip  
   - 7z x ykpers-1.17.3-win32.zip -o".\ykpers"
-  - ps: Copy-Item .\ykpers\bin\*.dll .\yubioath-desktop\release -Force 
+  - ps: Copy-Item .\ykpers\bin\*.dll .\release -Force 
   # Add libusb
   - mkdir libusb
   - ps: wget https://s3.eu-central-1.amazonaws.com/yubico-deps/yubikey-manager-qt/libusb-1.0.20.7z -OutFile libusb-1.0.20.7z
   - 7z x libusb-1.0.20.7z -o".\libusb"
-  - ps: Copy-Item .\libusb\MS32\dll\*.dll .\yubioath-desktop\release -Force 
+  - ps: Copy-Item .\libusb\MS32\dll\*.dll .\release -Force 
   # Add embedded python
   - ps: wget https://www.python.org/ftp/python/3.5.2/python-3.5.2-embed-win32.zip -OutFile python-3.5.2-embed-win32.zip
-  - 7z x python-3.5.2-embed-win32.zip -o".\yubioath-desktop\release"
+  - 7z x python-3.5.2-embed-win32.zip -o".\release"
   # Add msvcp140.dll
-  - copy "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\x86\Microsoft.VC140.CRT\msvcp140.dll" ".\yubioath-desktop\release"
+  - copy "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\x86\Microsoft.VC140.CRT\msvcp140.dll" ".\release"
   # Add .dlls for redistrubution, see https://blogs.msdn.microsoft.com/vcblog/2015/03/03/introducing-the-universal-crt/
-  - xcopy "C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs\x86" ".\yubioath-desktop\release"
+  - xcopy "C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs\x86" ".\release"
   # Use Qt deployment tool on executable
-  - windeployqt .\yubioath-desktop\release\yubioath-desktop.exe -qmldir=.\yubioath-desktop\qml
+  - windeployqt .\release\yubioath-desktop.exe -qmldir=.\qml
   # Add python dependencies to release folder
-  - ps: Copy-Item .\yubioath-desktop\pymodules .\yubioath-desktop\release -recurse
+  - ps: Copy-Item .\pymodules .\release -recurse
   # Remove .pyc files from release folder
   - ps: Get-ChildItem -File -Include *.pyc -Recurse | Remove-Item -Force
   - ps: Get-ChildItem -Include __pycache__ -Recurse | Remove-Item -Force
   # Create zip for deployment
-  - 7z a yubioath-desktopr-%APPVEYOR_REPO_BRANCH%-HEAD-win.zip .\yubioath-desktop\release\*
+  - 7z a yubioath-desktop-%APPVEYOR_REPO_BRANCH%-HEAD-win.zip .\release\*
   - cd %APPVEYOR_BUILD_FOLDER%
 
 artifacts:
