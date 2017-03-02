@@ -39,7 +39,7 @@ include(deployment.pri)
 }
 
 # Icon file
-RC_ICONS = resources/icons/ykman.ico
+RC_ICONS = resources/icons/yubioath.ico
 
 # Mac specific configuration
 macx {
