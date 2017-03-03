@@ -9,7 +9,7 @@
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleExecutable</key>
-        <string>yubioath</string>
+        <string>yubioath-desktop</string>
         <key>CFBundleIdentifier</key>
         <string>com.yubico.yubioath</string>
         <key>CFBundleName</key>
