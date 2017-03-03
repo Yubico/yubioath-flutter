@@ -39,9 +39,7 @@ install:
       make
       sudo make install
       cd ../../
-      # Move qr module to pymodules
-      mkdir pymodules
-      cp -a py/qr pymodules/
+      qmake
     fi
   # Install pre-commit
   - pip install pre-commit

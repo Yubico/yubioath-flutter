@@ -11,8 +11,8 @@ from ykman.descriptor import get_descriptors
 from ykman.util import CAPABILITY, TRANSPORT, derive_key, parse_uri, parse_b32_key
 from ykman.driver_otp import YkpersError
 from ykman.oath import OathController, Credential
-from qr import qrparse
-from qr import qrdecode
+from py.qr import qrparse
+from py.qr import qrdecode
 
 NON_FEATURE_CAPABILITIES = [CAPABILITY.CCID, CAPABILITY.NFC]
 
