@@ -1,1 +1,1 @@
-yubikey-manager
+vendor/yubikey-manager
