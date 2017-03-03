@@ -43,7 +43,7 @@ RC_ICONS = resources/icons/yubioath.ico
 
 # Mac specific configuration
 macx {
-    ICON =
+    ICON = resources/icons/yubioath.icns
     QMAKE_INFO_PLIST = resources/mac/Info.plist.in
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9 # Mavericks
     QMAKE_POST_LINK += cp -rnf pymodules yubioath-desktop.app/Contents/MacOS/
