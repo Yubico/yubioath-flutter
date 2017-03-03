@@ -1,1 +1,2 @@
 vendor/yubikey-manager
+py/qr
