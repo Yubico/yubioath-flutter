@@ -19,15 +19,20 @@ QMAKE_EXTRA_COMPILERS += buildqrc
 QRC_JSON = resources.json
 
 # Generate first time
-system(python build_qrc.py resources.json)
+#system(python build_qrc.py resources.json)
 
 # Install python dependencies with pip on mac and win
 win32|macx {
     pip.target = pymodules
-    pip.commands = pip3 install -r requirements.txt --target pymodules
     QMAKE_EXTRA_TARGETS += pip
     PRE_TARGETDEPS += pymodules
     QMAKE_CLEAN += -r pymodules
+}
+macx {
+    pip.commands = pip3 install -r requirements.txt --target pymodules
+}
+win32 {
+    pip.commands = pip3 install -r requirements-win.txt --target pymodules
 }
 
 # Default rules for deployment.
