@@ -50,8 +50,13 @@ ApplicationWindow {
             MenuItem {
                 text: qsTr('Add credential...')
                 onTriggered: {
-                    addCredential.clear()
-                    addCredential.open()
+                    if (settings.slotMode) {
+                        addCredentialSlot.clear()
+                        addCredentialSlot.open()
+                    } else {
+                        addCredential.clear()
+                        addCredential.open()
+                    }
                 }
                 shortcut: StandardKey.New
             }
@@ -91,6 +96,11 @@ ApplicationWindow {
 
     AddCredential {
         id: addCredential
+        device: yk
+    }
+
+    AddCredentialSlot {
+        id: addCredentialSlot
         settings: settings
         device: yk
     }
