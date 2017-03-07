@@ -356,7 +356,7 @@ ApplicationWindow {
                 }
 
                 background: Rectangle {
-                    color: palette.mid
+                    color: palette.alternateBase
                 }
             }
         }
