@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import io.thp.pyotherside 1.5
+import QtQuick 2.5
+import io.thp.pyotherside 1.4
 
 
 // @disable-check M300
