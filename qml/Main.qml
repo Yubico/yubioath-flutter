@@ -1,4 +1,4 @@
-import QtQuick 2.6
+import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
@@ -424,26 +424,28 @@ ApplicationWindow {
 
                         ColumnLayout {
                             anchors.leftMargin: 10
-                            spacing: -15
+                            anchors.topMargin: 5
+                            anchors.bottomMargin: 5
+                            spacing: 0
                             anchors.fill: parent
                             Text {
                                 visible: hasIssuer(modelData.name)
                                 text: qsTr('') + parseIssuer(modelData.name)
-                                font.pointSize: 13
+                                font.pointSize: 10
                             }
                             Text {
                                 opacity: isInCoolDown(modelData.name) ? 0.6 : 1
                                 visible: modelData.code != null
                                 text: qsTr('') + modelData.code
                                 font.family: "Verdana"
-                                font.pointSize: 22
+                                font.pointSize: 16
                             }
                             Text {
                                 text: hasIssuer(
                                           modelData.name) ? qsTr(
                                                                 '') + parseName(
                                                                 modelData.name) : modelData.name
-                                font.pointSize: 13
+                                font.pointSize: 10
                             }
                         }
                     }
