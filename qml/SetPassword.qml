@@ -4,10 +4,9 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
-Dialog {
+DefaultDialog {
     id: setPasswordPrompt
     title: qsTr("Set new password")
-    standardButtons: StandardButton.NoButton
     modality: Qt.ApplicationModal
     property string newPassword: newPassword.text
     property string confirmPassword: confirmPassword.text
@@ -41,7 +40,10 @@ Dialog {
             Button {
                 text: qsTr("Set password")
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-                onClicked: accept()
+                onClicked: {
+                    close()
+                    accepted()
+                }
             }
             Button {
                 text: qsTr("Cancel")

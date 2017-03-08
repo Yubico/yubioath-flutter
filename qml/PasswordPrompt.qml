@@ -4,10 +4,9 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
-Dialog {
+DefaultDialog {
     id: passwordPrompt
     title: qsTr("Enter password")
-    standardButtons: StandardButton.Ok | StandardButton.Cancel
 
     property string password: password.text
     property bool remember: rememberPassword.checked
@@ -27,6 +26,18 @@ Dialog {
             CheckBox {
                 id: rememberPassword
                 text: qsTr("Remember password")
+            }
+        }
+        RowLayout {
+            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+            Button {
+                text: qsTr("Ok")
+                Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                onClicked: {close(); accepted()}
+            }
+            Button {
+                text: qsTr("Cancel")
+                onClicked: close()
             }
         }
     }

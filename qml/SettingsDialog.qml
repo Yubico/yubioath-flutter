@@ -4,10 +4,9 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
-Dialog {
+DefaultDialog {
    title: qsTr("Settings")
    modality: Qt.ApplicationModal
-   standardButtons: StandardButton.NoButton
 
    property var settings
    property alias slotMode: slotMode.checked
@@ -85,7 +84,7 @@ Dialog {
                 text: qsTr("Save Settings")
                 enabled: shouldAccept()
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-                onClicked: accept()
+                onClicked: {close(); accepted()}
             }
             Button {
                 text: qsTr("Cancel")

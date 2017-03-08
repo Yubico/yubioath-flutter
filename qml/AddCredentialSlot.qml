@@ -4,9 +4,8 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
-Dialog {
+DefaultDialog {
     title: qsTr("Add credential")
-    standardButtons: StandardButton.NoButton
     modality: Qt.ApplicationModal
     property var settings
     property var device

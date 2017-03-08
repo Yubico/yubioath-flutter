@@ -39,6 +39,10 @@ ApplicationWindow {
         }
     }
 
+    function open() {
+        show()
+    }
+
     function resize() {
         setWidth(width)
     }
