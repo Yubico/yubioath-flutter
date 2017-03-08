@@ -55,16 +55,18 @@ Dialog {
                     ExclusiveGroup {
                         id: oathType
                     }
+                }
+                RowLayout {
                     RadioButton {
                         id: totp
-                        text: qsTr("Time based (TOTP)")
+                        text: qsTr("TOTP (Time based)")
                         checked: true
                         exclusiveGroup: oathType
                         property string name: "totp"
                     }
                     RadioButton {
                         id: hotp
-                        text: qsTr("Counter based (HOTP)")
+                        text: qsTr("HOTP (Counter based)")
                         exclusiveGroup: oathType
                         property string name: "hotp"
                     }
@@ -76,6 +78,8 @@ Dialog {
                     ExclusiveGroup {
                         id: digits
                     }
+                }
+                RowLayout {
                     RadioButton {
                         id: six
                         text: qsTr("6")
@@ -97,6 +101,8 @@ Dialog {
                     ExclusiveGroup {
                         id: algorithm
                     }
+                }
+                RowLayout {
                     RadioButton {
                         id: sha1
                         text: qsTr("SHA-1")
