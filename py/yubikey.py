@@ -205,6 +205,11 @@ class Controller(object):
         controller = OathController(dev.driver)
         controller.reset()
 
+    def slot_status(self):
+        dev = self._descriptor.open_device(TRANSPORT.OTP)
+        return list(dev.driver.slot_status)
+
+
 
 class PixelImage(object):
 

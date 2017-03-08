@@ -7,6 +7,7 @@ import QtQuick.Dialogs 1.2
 DefaultDialog {
     title: qsTr("Add credential")
     modality: Qt.ApplicationModal
+
     property var settings
     property var device
 
@@ -43,7 +44,7 @@ DefaultDialog {
             RadioButton {
                 id: slot1
                 enabled: settings.slot1
-                text: qsTr("Slot 1")
+                text: qsTr("Slot 1") + (device.slot1inUse ? qsTr(" (in use)") : '')
                 checked: true
                 exclusiveGroup: slotSelected
                 property string name: "1"
@@ -51,7 +52,7 @@ DefaultDialog {
             RadioButton {
                 id: slot2
                 enabled: settings.slot2
-                text: qsTr("Slot 2")
+                text: qsTr("Slot 2") + (device.slot2inUse ? qsTr(" (in use)") : '')
                 exclusiveGroup: slotSelected
                 property string name: "2"
             }

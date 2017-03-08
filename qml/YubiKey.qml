@@ -22,6 +22,8 @@ Python {
     property bool hasOTP: enabled.indexOf('OTP') !== -1
     property bool hasCCID: enabled.indexOf('CCID') !== -1
     property bool validated
+    property bool slot1inUse
+    property bool slot2inUse
     property var passwordKey
     property int expiration: 0
     signal wrongPassword
@@ -279,5 +281,13 @@ Python {
 
     function reset() {
         do_call('yubikey.controller.reset', [])
+    }
+
+    function getSlotStatus(cb) {
+        do_call('yubikey.controller.slot_status', [], function (res) {
+            slot1inUse = res[0]
+            slot2inUse = res[1]
+            cb()
+        })
     }
 }

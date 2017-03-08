@@ -51,7 +51,7 @@ ApplicationWindow {
                 onTriggered: {
                     if (settings.slotMode) {
                         addCredentialSlot.clear()
-                        addCredentialSlot.open()
+                        device.getSlotStatus(addCredentialSlot.open)
                     } else {
                         addCredential.clear()
                         addCredential.open()
