@@ -267,8 +267,8 @@ ApplicationWindow {
         }
         MenuItem {
             visible: allowManualGenerate(repeater.selected)
-            enabled: allowManualGenerate(repeater.selected) && !isInCoolDown(
-                         repeater.selected.name)
+            enabled: allowManualGenerate(repeater.selected)
+                     && enableManualGenerate(repeater.selected)
             text: qsTr('Generate code')
             shortcut: "Space"
             onTriggered: {
@@ -293,6 +293,14 @@ ApplicationWindow {
     function allowManualGenerate(cred) {
         return cred != null && (cred.oath_type === "hotp"
                                 || repeater.selected.touch)
+    }
+
+    function enableManualGenerate(cred) {
+        if (cred.oath_type !== 'hotp') {
+            return cred.code == null || isExpired(repeater.selected)
+        } else {
+            return !isInCoolDown(cred.name)
+        }
     }
 
     MessageDialog {
@@ -506,7 +514,7 @@ ApplicationWindow {
     }
 
     function isExpired(cred) {
-        return (cred.oath_type !== 'hotp')
+        return cred != null && (cred.oath_type !== 'hotp')
                 && (cred.expiration - (Date.now() / 1000) <= 0)
     }
 
