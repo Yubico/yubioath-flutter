@@ -159,7 +159,7 @@ ApplicationWindow {
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
             device.reset()
-            device.refreshCredentials()
+            device.refreshCCIDCredentials(true)
         }
     }
 
@@ -191,10 +191,7 @@ ApplicationWindow {
     }
 
     onCredentialsChanged: {
-        hotpCoolDowns = []
-        totpCoolDowns = []
         hotpTouchTimer.stop()
-        hotpCoolDownTimer.stop()
         touchYourYubikey.close()
     }
 
