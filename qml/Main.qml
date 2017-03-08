@@ -441,7 +441,7 @@ ApplicationWindow {
                                 font.pointSize: 10
                             }
                             Text {
-                                opacity: isInCoolDown(modelData.name) ? 0.6 : 1
+                                opacity: isExpired(modelData) ? 0.6 : 1
                                 visible: modelData.code != null
                                 text: qsTr('') + modelData.code
                                 font.family: "Verdana"
@@ -486,7 +486,7 @@ ApplicationWindow {
         onTriggered: {
             var timeLeft = device.expiration - (Date.now() / 1000)
             if (timeLeft <= 0 && progressBar.value > 0) {
-                device.refresh(refreshDependingOnMode)
+                refreshDependingOnMode(true)
                 totpCoolDowns = []
             }
             progressBar.value = timeLeft
@@ -503,6 +503,11 @@ ApplicationWindow {
         id: hotpTouchTimer
         interval: 500
         onTriggered: touchYourYubikey.open()
+    }
+
+    function isExpired(cred) {
+        return (cred.oath_type !== 'hotp')
+                && (cred.expiration - (Date.now() / 1000) <= 0)
     }
 
     function refreshDependingOnMode(force) {
