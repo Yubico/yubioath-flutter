@@ -74,13 +74,24 @@ DefaultDialog {
                 text: qsTr("Add credential")
                 enabled: acceptableInput()
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-                onClicked: addCredential()
+
+                onClicked: {
+                    if (slotIsUsed(slotSelected.current.name)) {
+                        confirmOverWrite.open()
+                    } else {
+                        addCredential()
+                    }
+                }
             }
             Button {
                 text: qsTr("Cancel")
                 onClicked: close()
             }
         }
+    }
+
+    function slotIsUsed(slot) {
+        return slot === "1" && device.slot1inUse || slot === "2" && device.slot2inUse
     }
 
     MessageDialog {
@@ -103,7 +114,7 @@ DefaultDialog {
         id: confirmOverWrite
         icon: StandardIcon.Warning
         title: qsTr("Overwrite credential?")
-        text: qsTr("A credential with this name already exists. Are you sure you want to overwrite this credential?")
+        text: qsTr("This slot seems to already be configured. Are you sure you want to overwrite the slot configuration?")
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: addCredential()
     }
