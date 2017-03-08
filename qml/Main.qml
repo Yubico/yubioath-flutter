@@ -23,7 +23,6 @@ ApplicationWindow {
                                                     || (!settings.slotMode
                                                         && device.hasCCID))
     property var hotpCoolDowns: []
-    property var totpCoolDowns: []
 
     // Don't refresh credentials when window is minimized or hidden
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
@@ -277,8 +276,6 @@ ApplicationWindow {
                     if (repeater.selected.oath_type === "hotp") {
                         hotpCoolDowns.push(repeater.selected.name)
                         hotpCoolDownTimer.restart()
-                    } else if (repeater.selected.touch) {
-                        totpCoolDowns.push(repeater.selected.name)
                     }
                 }
             }
@@ -495,7 +492,6 @@ ApplicationWindow {
             var timeLeft = device.expiration - (Date.now() / 1000)
             if (timeLeft <= 0 && progressBar.value > 0) {
                 refreshDependingOnMode(true)
-                totpCoolDowns = []
             }
             progressBar.value = timeLeft
         }
@@ -550,8 +546,7 @@ ApplicationWindow {
     }
 
     function isInCoolDown(name) {
-        return hotpCoolDowns.indexOf(name) !== -1 || totpCoolDowns.indexOf(
-                    name) !== -1
+        return hotpCoolDowns.indexOf(name) !== -1
     }
     function hasIssuer(name) {
         return name.indexOf(':') !== -1
