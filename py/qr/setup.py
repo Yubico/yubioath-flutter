@@ -1,6 +1,3 @@
 from setuptools import setup
 
-setup(name='qr',
-    version='0.1'
-    )
-
+setup(name='qr', version='0.1')

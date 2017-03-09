@@ -54,7 +54,7 @@ def check_row(line, x_offs, x_width):
 
 def check_col(image, x, y_offs, y_height):
     return check_line(bytes([image.get_line(i)[x]
-                       for i in range(y_offs, y_offs + y_height)]))
+                            for i in range(y_offs, y_offs + y_height)]))
 
 
 def read_line(line, x_offs, x_width):

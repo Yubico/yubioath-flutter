@@ -3,12 +3,13 @@
 
 import json
 import types
-import re
-from base64 import b32decode, b64decode
+import hashlib
+from base64 import b64decode
 from binascii import a2b_hex, b2a_hex
 
 from ykman.descriptor import get_descriptors
-from ykman.util import CAPABILITY, TRANSPORT, derive_key, parse_uri, parse_b32_key
+from ykman.util import (
+    CAPABILITY, TRANSPORT, derive_key, parse_uri, parse_b32_key)
 from ykman.driver_otp import YkpersError
 from ykman.oath import OathController, Credential
 from qr import qrparse
@@ -36,7 +37,8 @@ class Controller(object):
                     setattr(self, f, as_json(func))
 
     def get_features(self):
-        return [c.name for c in CAPABILITY if c not in NON_FEATURE_CAPABILITIES]
+        return [
+            c.name for c in CAPABILITY if c not in NON_FEATURE_CAPABILITIES]
 
     def count_devices(self):
         return len(list(get_descriptors()))
@@ -48,7 +50,8 @@ class Controller(object):
             return
 
         desc = descriptors[0]
-        if desc.fingerprint != (self._descriptor.fingerprint if self._descriptor else None):
+        if desc.fingerprint != (
+                self._descriptor.fingerprint if self._descriptor else None):
             dev = desc.open_device()
             if not dev:
                 return
@@ -58,21 +61,29 @@ class Controller(object):
                 'version': '.'.join(str(x) for x in dev.version),
                 'serial': dev.serial or '',
                 'enabled': [c.name for c in CAPABILITY if c & dev.enabled],
-                'connections': [t.name for t in TRANSPORT if t & dev.capabilities],
+                'connections': [
+                    t.name for t in TRANSPORT if t & dev.capabilities],
             }
 
         return self._dev_info
 
     def refresh_credentials(self, timestamp, password_key=None):
-        return [c.to_dict() for c in self._calculate_all(timestamp, password_key)]
+        return [
+            c.to_dict() for c in self._calculate_all(timestamp, password_key)]
 
     def calculate(self, credential, timestamp, password_key):
-        return self._calculate(Credential.from_dict(credential), timestamp, password_key).to_dict()
+        return self._calculate(
+            Credential.from_dict(
+                credential), timestamp, password_key).to_dict()
 
     def calculate_slot_mode(self, slot, digits, timestamp):
         dev = self._descriptor.open_device(TRANSPORT.OTP)
-        code = dev.driver.calculate(slot, challenge=timestamp, totp=True, digits=int(digits), wait_for_touch=True)
-        return Credential(self._slot_name(slot), code=code, oath_type='totp', touch=True, algo='SHA1', expiration=self._expiration(timestamp)).to_dict()
+        code = dev.driver.calculate(
+            slot, challenge=timestamp, totp=True, digits=int(digits),
+            wait_for_touch=True)
+        return Credential(
+            self._slot_name(slot), code=code, oath_type='totp', touch=True,
+            algo='SHA1', expiration=self._expiration(timestamp)).to_dict()
 
     def refresh_slot_credentials(self, slots, digits, timestamp):
         result = []
@@ -89,11 +100,18 @@ class Controller(object):
     def _read_slot_cred(self, slot, digits, timestamp):
         try:
             dev = self._descriptor.open_device(TRANSPORT.OTP)
-            code = dev.driver.calculate(slot, challenge=timestamp, totp=True, digits=int(digits), wait_for_touch=False)
-            return Credential(self._slot_name(slot), code=code, oath_type='totp', touch=False, algo='SHA1', expiration=self._expiration(timestamp))
+            code = dev.driver.calculate(
+                slot, challenge=timestamp, totp=True, digits=int(digits),
+                wait_for_touch=False)
+            return Credential(
+                self._slot_name(slot), code=code, oath_type='totp',
+                touch=False, algo='SHA1',
+                expiration=self._expiration(timestamp))
         except YkpersError as e:
                 if e.errno == 11:
-                    return Credential(self._slot_name(slot), oath_type='totp', touch=True, algo='SHA1')
+                    return Credential(
+                        self._slot_name(slot), oath_type='totp', touch=True,
+                        algo='SHA1')
         except:
             pass
         return None
@@ -111,7 +129,6 @@ class Controller(object):
             return controller.locked
         except:
             return False
-
 
     def get_oath_id(self):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
@@ -145,7 +162,8 @@ class Controller(object):
         else:
             controller.clear_password()
 
-    def add_credential(self, name, key, oath_type, digits, algo, touch, password_key):
+    def add_credential(
+            self, name, key, oath_type, digits, algo, touch, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
         if controller.locked and password_key is not None:
@@ -154,7 +172,8 @@ class Controller(object):
             key = parse_b32_key(key)
         except Exception as e:
             return str(e)
-        controller.put(key, name, oath_type, digits, algo=algo, require_touch=touch)
+        controller.put(
+            key, name, oath_type, digits, algo=algo, require_touch=touch)
 
     def add_slot_credential(self, slot, key, touch):
         dev = self._descriptor.open_device(TRANSPORT.OTP)
@@ -162,9 +181,10 @@ class Controller(object):
         if len(key) > 64:  # Keys longer than 64 bytes are hashed.
             key = hashlib.sha1(key).digest()
         if len(key) > 20:
-            raise ValueError('YubiKey Slots cannot handle TOTP keys over 20 bytes.')
+            raise ValueError(
+                'YubiKey Slots cannot handle TOTP keys over 20 bytes.')
         key += b'\x00' * (20 - len(key))  # Keys must be padded to 20 bytes.
-        code = dev.driver.program_chalresp(int(slot), key, touch)
+        dev.driver.program_chalresp(int(slot), key, touch)
 
     def delete_slot_credential(self, slot):
         dev = self._descriptor.open_device(TRANSPORT.OTP)
@@ -210,7 +230,6 @@ class Controller(object):
         return list(dev.driver.slot_status)
 
 
-
 class PixelImage(object):
 
     def __init__(self, data, width, height):
@@ -219,6 +238,8 @@ class PixelImage(object):
         self.height = height
 
     def get_line(self, line_number):
-        return self.data[self.width * line_number:self.width * (line_number + 1)]
+        return self.data[
+            self.width * line_number:self.width * (line_number + 1)]
+
 
 controller = Controller()
