@@ -443,21 +443,21 @@ ApplicationWindow {
                             Text {
                                 visible: hasIssuer(modelData.name)
                                 text: qsTr('') + parseIssuer(modelData.name)
-                                font.pointSize: 10
+                                font.pixelSize: 12
                             }
                             Text {
                                 opacity: isExpired(modelData) ? 0.6 : 1
                                 visible: modelData.code != null
                                 text: qsTr('') + modelData.code
                                 font.family: "Verdana"
-                                font.pointSize: 16
+                                font.pixelSize: 20
                             }
                             Text {
                                 text: hasIssuer(
                                           modelData.name) ? qsTr(
                                                                 '') + parseName(
                                                                 modelData.name) : modelData.name
-                                font.pointSize: 10
+                                font.pixelSize: 12
                             }
                         }
                     }
@@ -512,6 +512,7 @@ ApplicationWindow {
     function isExpired(cred) {
         return cred != null && (cred.oath_type !== 'hotp')
                 && (cred.expiration - (Date.now() / 1000) <= 0)
+
     }
 
     function refreshDependingOnMode(force) {
