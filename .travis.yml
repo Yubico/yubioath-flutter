@@ -41,8 +41,8 @@ install:
       cd ../../
       qmake
     fi
-  # Install pre-commit
-  - pip install pre-commit
+  # Install linting tools
+  - pip install pre-commit flake8
 
 before_script:
   - |
