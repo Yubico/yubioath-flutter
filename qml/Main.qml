@@ -183,11 +183,6 @@ ApplicationWindow {
         }
     }
 
-    function rememberPassword() {
-        var deviceId = device.oathId
-        settings.savedPasswords += deviceId + ':' + device.passwordKey + ';'
-    }
-
     onCredentialsChanged: {
         hotpTouchTimer.stop()
         touchYourYubikey.close()
@@ -283,19 +278,6 @@ ApplicationWindow {
             text: qsTr('Delete')
             shortcut: StandardKey.Delete
             onTriggered: confirmDeleteCredential.open()
-        }
-    }
-
-    function allowManualGenerate(cred) {
-        return cred != null && (cred.oath_type === "hotp"
-                                || repeater.selected.touch)
-    }
-
-    function enableManualGenerate(cred) {
-        if (cred.oath_type !== 'hotp') {
-            return cred.code == null || isExpired(repeater.selected)
-        } else {
-            return !isInCoolDown(cred.name)
         }
     }
 
@@ -508,10 +490,27 @@ ApplicationWindow {
         onTriggered: touchYourYubikey.open()
     }
 
+    function allowManualGenerate(cred) {
+        return cred != null && (cred.oath_type === "hotp"
+                                || repeater.selected.touch)
+    }
+
+    function enableManualGenerate(cred) {
+        if (cred.oath_type !== 'hotp') {
+            return cred.code == null || isExpired(repeater.selected)
+        } else {
+            return !isInCoolDown(cred.name)
+        }
+    }
+
     function isExpired(cred) {
         return cred != null && (cred.oath_type !== 'hotp')
                 && (cred.expiration - (Date.now() / 1000) <= 0)
+    }
 
+    function rememberPassword() {
+        var deviceId = device.oathId
+        settings.savedPasswords += deviceId + ':' + device.passwordKey + ';'
     }
 
     function refreshDependingOnMode(force) {
@@ -548,12 +547,15 @@ ApplicationWindow {
     function isInCoolDown(name) {
         return hotpCoolDowns.indexOf(name) !== -1
     }
+
     function hasIssuer(name) {
         return name.indexOf(':') !== -1
     }
+
     function parseName(name) {
         return name.split(":").slice(1).join(":")
     }
+
     function parseIssuer(name) {
         return name.split(":", 1)
     }

@@ -90,10 +90,6 @@ DefaultDialog {
         }
     }
 
-    function slotIsUsed(slot) {
-        return slot === "1" && device.slot1inUse || slot === "2" && device.slot2inUse
-    }
-
     MessageDialog {
         id: noQr
         icon: StandardIcon.Warning
@@ -117,6 +113,10 @@ DefaultDialog {
         text: qsTr("This slot seems to already be configured. Are you sure you want to overwrite the slot configuration?")
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: addCredential()
+    }
+
+    function slotIsUsed(slot) {
+        return slot === "1" && device.slot1inUse || slot === "2" && device.slot2inUse
     }
 
     function clear() {
