@@ -1,0 +1,3 @@
+#!/usr/bin/make -f
+%:
+	QT_SELECT=5 dh $@

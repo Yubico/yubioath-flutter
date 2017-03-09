@@ -1,0 +1,36 @@
+Source: yubioath-desktop
+Maintainer: Debian Authentication Maintainers <pkg-auth-maintainers@lists.alioth.debian.org>
+Uploaders: Dag Heyman <dag@yubico.com>,
+           Dain Nilsson <dain@yubico.com>
+Section: utils
+Priority: optional
+Standards-Version: 3.9.7
+Build-Depends: debhelper (>= 9),
+               python3-pip,
+               swig,
+               python,
+               libpcsclite-dev,
+               libssl-dev,
+               libffi-dev,
+               qtbase5-dev,
+               qtdeclarative5-dev,
+               qml-module-qtquick-controls,
+               qml-module-qtquick-dialogs,
+               qml-module-io-thp-pyotherside,
+               libqt5svg5-dev,
+               yubikey-manager
+Homepage: https://developers.yubico.com/yubioath-desktop/
+
+Package: yubioath-desktop
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         python3-yubikey-manager,
+         qml-module-io-thp-pyotherside,
+         qml-module-qtquick-controls,
+         qml-module-qtquick-dialogs,
+         pcscd
+Description: Graphical interface for displaying OATH codes with a Yubikey
+ The Yubico Authenticator is a graphical desktop tool for generating Open
+ AuTHentication (OATH) event-based HOTP and time-based TOTP one-time password
+ codes, with the help of a Yubikey that protects the shared secrets.
