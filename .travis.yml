@@ -9,8 +9,17 @@ sudo: required
 
 os:
   - osx
+  - linux
+
+services:
+  - docker
 
 before_install:
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]
+    then
+      docker build -t xenial docker/xenial
+    fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
@@ -93,6 +102,14 @@ after_success:
       # Copy .app to deploy dir
       tar -czf deploy/yubioath-desktop-$TRAVIS_BRANCH-HEAD.app.tar yubioath-desktop.app
     fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]
+    then
+      id=$(docker create xenial)
+      docker cp $id:/yubioath-desktop-debian-builds.tar.gz deploy/
+      mv deploy/yubioath-desktop-debian-builds.tar.gz deploy/yubioath-desktop-debian-builds-$TRAVIS_BRANCH-HEAD.tar.gz
+    fi
+
 
 deploy:
   provider: s3
