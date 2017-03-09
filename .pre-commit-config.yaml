@@ -5,4 +5,8 @@
     entry: qmllint
     language: system
     files: \.qml$
-
+  - id: flake8
+    name: flake8
+    language: system
+    entry: flake8 ./py
+    files: \.py
