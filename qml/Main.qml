@@ -12,8 +12,7 @@ ApplicationWindow {
     minimumHeight: 400
     minimumWidth: 300
     visible: true
-    title: settings.slotMode ? qsTr("Yubico Authenticator [Slot mode]") : qsTr(
-                                   "Yubico Authenticator")
+    title: qsTr("Yubico Authenticator") + (settings.slotMode ? qsTr(" [Slot mode]") : '')
     property var device: yk
     property var credentials: device.credentials
     property bool validated: device.validated
