@@ -95,6 +95,10 @@ FunctionEnd
 Var MYTMP
 Section "Yubico Authenticator"
   SectionIn RO
+
+  ; Delete any old installation
+  RMDir /r $INSTDIR
+
   SetOutPath $INSTDIR
   FILE /r "..\..\release\*"
   
