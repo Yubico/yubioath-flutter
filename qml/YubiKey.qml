@@ -217,6 +217,10 @@ Python {
         return false
     }
 
+    function hasAnyCredentials() {
+        return credentials != null && credentials.length > 0
+    }
+
     function updateExpiration() {
         var maxExpiration = 0
         if (credentials !== null) {

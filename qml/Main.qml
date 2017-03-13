@@ -449,7 +449,7 @@ ApplicationWindow {
 
         TextField {
             id: search
-            visible: canShowCredentials
+            visible: canShowCredentials && device.hasAnyCredentials()
             placeholderText: 'Search...'
             Layout.fillWidth: true
         }
