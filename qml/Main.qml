@@ -253,6 +253,8 @@ ApplicationWindow {
         MenuItem {
             text: qsTr('Copy')
             shortcut: StandardKey.Copy
+            enabled: (repeater.selected != null)
+                     && (repeater.selected.code != null)
             onTriggered: {
                 if (repeater.selected != null) {
                     clipboard.setClipboard(repeater.selected.code)
