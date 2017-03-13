@@ -19,7 +19,9 @@ DefaultDialog {
             TextField {
                 id: password
                 echoMode: TextInput.Password
+                focus: true
                 Layout.fillWidth: true
+                onAccepted: promptAccepted()
             }
         }
         RowLayout {
@@ -33,13 +35,18 @@ DefaultDialog {
             Button {
                 text: qsTr("Ok")
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-                onClicked: {close(); accepted()}
+                onClicked: promptAccepted()
             }
             Button {
                 text: qsTr("Cancel")
                 onClicked: close()
             }
         }
+    }
+
+    function promptAccepted() {
+        close();
+        accepted()
     }
 
     function clear() {
