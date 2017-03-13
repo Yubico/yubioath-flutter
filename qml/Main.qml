@@ -204,7 +204,7 @@ ApplicationWindow {
         visible: !device.hasDevice
         id: noLoadedDeviceMessage
         text: if (device.nDevices == 0) {
-                  qsTr("No YubiKey detected")
+                  qsTr("No YubiKey detected.")
               } else if (device.nDevices == 1) {
                   qsTr("Connecting to YubiKey...")
               } else {
