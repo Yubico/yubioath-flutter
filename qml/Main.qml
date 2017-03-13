@@ -47,6 +47,7 @@ ApplicationWindow {
             title: qsTr("File")
             MenuItem {
                 text: qsTr('Add credential...')
+                enabled: device.hasDevice
                 onTriggered: {
                     if (settings.slotMode) {
                         addCredentialSlot.clear()
@@ -60,12 +61,12 @@ ApplicationWindow {
             }
             MenuItem {
                 text: qsTr('Set password...')
-                enabled: !settings.slotMode
+                enabled: !settings.slotMode && device.hasDevice
                 onTriggered: setPassword.open()
             }
             MenuItem {
                 text: qsTr('Reset...')
-                enabled: !settings.slotMode
+                enabled: !settings.slotMode && device.hasDevice
                 onTriggered: reset.open()
             }
             MenuItem {
