@@ -79,6 +79,10 @@ after_build:
   # Remove .pyc files from release folder
   - ps: Get-ChildItem -File -Include *.pyc -Recurse | Remove-Item -Force
   - ps: Get-ChildItem -Include __pycache__ -Recurse | Remove-Item -Force
+  # Remove object files
+  - ps: Get-ChildItem -Include *.obj -Recurse | Remove-Item -Force
+  # Remove Visual C++ Redistributable Package (VCRedist)
+  - ps: Get-ChildItem -Include vcredist_x86.exe -Recurse | Remove-Item -Force
   # Create zip for deployment
   - 7z a yubioath-desktop-%APPVEYOR_REPO_BRANCH%-HEAD-win.zip .\release\*
   - cd %APPVEYOR_BUILD_FOLDER%
