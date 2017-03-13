@@ -41,4 +41,8 @@ DefaultDialog {
             }
         }
     }
+
+    function clear() {
+        password.text = ''
+    }
 }
