@@ -30,7 +30,7 @@ Var STARTMENU_FOLDER
   !system "$%TEMP%\tempinstaller.exe" = 2
  
   ; Sign real uninstaller.
-  !system "signtool.exe sign /fd SHA256 /t http://timestamp.verisign.com/scripts/timstamp.dll $%TEMP%\ykman-uninstall.exe" = 0
+  !system "signtool.exe sign /fd SHA256 /t http://timestamp.verisign.com/scripts/timstamp.dll $%TEMP%\yubioath-desktop-uninstall.exe" = 0
  
   ; The name of the installer
   Name "Yubico Authenticator"
