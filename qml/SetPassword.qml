@@ -33,6 +33,7 @@ DefaultDialog {
                 id: confirmPassword
                 echoMode: TextInput.Password
                 Layout.fillWidth: true
+                onAccepted: promptAccepted()
             }
         }
         RowLayout {
@@ -40,15 +41,16 @@ DefaultDialog {
             Button {
                 text: qsTr("Set password")
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-                onClicked: {
-                    close()
-                    accepted()
-                }
+                onClicked: promptAccepted()
             }
             Button {
                 text: qsTr("Cancel")
                 onClicked: close()
             }
         }
+    }
+    function promptAccepted() {
+        close()
+        accepted()
     }
 }

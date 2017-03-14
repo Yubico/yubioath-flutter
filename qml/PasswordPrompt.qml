@@ -45,7 +45,7 @@ DefaultDialog {
     }
 
     function promptAccepted() {
-        close();
+        close()
         accepted()
     }
 
