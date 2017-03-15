@@ -23,7 +23,7 @@ DefaultDialog {
                 onClicked: device.parseQr(ScreenShot.capture(), updateForm)
             }
             Label {
-                text: qsTr("Secret key (base32)")
+                text: qsTr("Secret key")
             }
             TextField {
                 id: key

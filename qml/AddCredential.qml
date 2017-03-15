@@ -31,7 +31,7 @@ DefaultDialog {
             }
 
             Label {
-                text: qsTr("Secret key (base32)")
+                text: qsTr("Secret key")
             }
             TextField {
                 id: key
