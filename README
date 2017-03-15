@@ -1,1 +1,24 @@
-== Yubico Authenticator QML Version
+== Yubico Authenticator
+
+Cross-platform application for generating Open Authentication (OATH) time-based TOTP and event-based HOTP one-time password codes, with the help of a YubiKey that protects the shared secrets.
+
+image:screenshot.png[]
+
+=== Features
+Store the secrets on a YubiKey and generate the codes with this application.
+
+* Add a credential by scanning a QR code on the screen.
+* Supports 6 or 8 digit codes.
+* Require touch on YubiKey to generate code.
+* Protect your credentials with a device password.
+
+=== Installation
+
+==== Windows and macOS
+Installers are available https://developers.yubico.com/yubioath-desktop/Releases/[here].
+
+=== Ubuntu
+
+    $ sudo apt-add-repository ppa:yubico/stable
+    $ sudo apt update
+    $ sudo apt install yubioath-desktop
