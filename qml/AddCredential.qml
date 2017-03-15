@@ -148,12 +148,8 @@ DefaultDialog {
         }
     }
 
-    MessageDialog {
+    NoQrDialog {
         id: noQr
-        icon: StandardIcon.Warning
-        title: qsTr("No QR code found")
-        text: qsTr("Could not find a QR code.")
-        standardButtons: StandardButton.Ok
     }
 
     MessageDialog {
