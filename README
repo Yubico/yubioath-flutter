@@ -17,7 +17,7 @@ Store the secrets on a YubiKey and generate the codes with this application.
 ==== Windows and macOS
 Installers are available https://developers.yubico.com/yubioath-desktop/Releases/[here].
 
-=== Ubuntu
+==== Ubuntu
 
     $ sudo apt-add-repository ppa:yubico/stable
     $ sudo apt update
