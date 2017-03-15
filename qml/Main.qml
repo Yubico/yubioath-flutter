@@ -455,6 +455,7 @@ ApplicationWindow {
             visible: canShowCredentials && device.hasAnyCredentials()
             placeholderText: 'Search...'
             Layout.fillWidth: true
+            KeyNavigation.tab: scrollView
         }
     }
 
