@@ -26,20 +26,6 @@ ApplicationWindow {
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
     property bool shouldRefresh: visibility != 3 && visibility != 0
 
-    SystemPalette {
-        id: palette
-    }
-
-    Settings {
-        id: settings
-        property bool slotMode
-        property bool slot1
-        property bool slot2
-        property var slot1digits
-        property var slot2digits
-        property string savedPasswords
-    }
-
     menuBar: MainMenuBar {
         slotMode: settings.slotMode
         hasDevice: device.hasDevice
@@ -48,6 +34,24 @@ ApplicationWindow {
         onOpenReset: reset.open()
         onOpenSettings: settingsDialog.open()
         onOpenAbout: aboutPage.open()
+    }
+
+    SystemPalette {
+        id: palette
+    }
+
+    // This information is stored in the system registry on Windows,
+    // and in XML preferences files on macOS. On other Unix systems,
+    // in the absence of a standard, INI text files are used.
+    // See http://doc.qt.io/qt-5/qml-qt-labs-settings-settings.html#details
+    Settings {
+        id: settings
+        property bool slotMode
+        property bool slot1
+        property bool slot2
+        property var slot1digits
+        property var slot2digits
+        property string savedPasswords
     }
 
     AboutPage {
