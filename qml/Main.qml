@@ -69,13 +69,17 @@ ApplicationWindow {
         id: settingsDialog
         settings: settings
         onAccepted: {
-            settings.slotMode = settingsDialog.slotMode
-            settings.slot1 = settingsDialog.slot1
-            settings.slot2 = settingsDialog.slot2
-            settings.slot1digits = settingsDialog.slot1digits
-            settings.slot2digits = settingsDialog.slot2digits
+            saveSettings()
             refreshDependingOnMode(true)
         }
+    }
+
+    function saveSettings() {
+        settings.slotMode = settingsDialog.slotMode
+        settings.slot1 = settingsDialog.slot1
+        settings.slot2 = settingsDialog.slot2
+        settings.slot1digits = settingsDialog.slot1digits
+        settings.slot2digits = settingsDialog.slot2digits
     }
 
     SetPassword {
