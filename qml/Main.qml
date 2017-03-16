@@ -15,7 +15,6 @@ ApplicationWindow {
     title: getTitle()
     property var device: yk
     property var credentials: device.credentials
-    property bool validated: device.validated
     property bool hasDevice: device.hasDevice
     property bool canShowCredentials: device.hasDevice && modeAndKeyMatch
     property bool modeAndKeyMatch: slotModeMatch || ccidModeMatch
