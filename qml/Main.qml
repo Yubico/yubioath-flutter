@@ -41,52 +41,22 @@ ApplicationWindow {
         property string savedPasswords
     }
 
-    menuBar: MenuBar {
-
-        Menu {
-            title: qsTr("File")
-            MenuItem {
-                text: qsTr('Add credential...')
-                enabled: device.hasDevice
-                onTriggered: {
-                    if (settings.slotMode) {
-                        addCredentialSlot.clear()
-                        device.getSlotStatus(addCredentialSlot.open)
-                    } else {
-                        addCredential.clear()
-                        addCredential.open()
-                    }
-                }
-                shortcut: StandardKey.New
-            }
-            MenuItem {
-                text: qsTr('Set password...')
-                enabled: !settings.slotMode && device.hasDevice
-                onTriggered: setPassword.open()
-            }
-            MenuItem {
-                text: qsTr('Reset...')
-                enabled: !settings.slotMode && device.hasDevice
-                onTriggered: reset.open()
-            }
-            MenuItem {
-                text: qsTr('Settings')
-                onTriggered: settingsDialog.open()
-            }
-            MenuItem {
-                text: qsTr("Exit")
-                onTriggered: Qt.quit()
-                shortcut: StandardKey.Quit
+    menuBar: MainMenuBar {
+        slotMode: settings.slotMode
+        hasDevice: device.hasDevice
+        onOpenAddCredential: {
+            if (settings.slotMode) {
+                addCredentialSlot.clear()
+                device.getSlotStatus(addCredentialSlot.open)
+            } else {
+                addCredential.clear()
+                addCredential.open()
             }
         }
-
-        Menu {
-            title: qsTr("Help")
-            MenuItem {
-                text: qsTr("About Yubico Authenticator")
-                onTriggered: aboutPage.show()
-            }
-        }
+        onOpenSetPassword: setPassword.open()
+        onOpenReset: reset.open()
+        onOpenSettings: settingsDialog.open()
+        onOpenAbout: aboutPage.open()
     }
 
     AboutPage {
@@ -289,7 +259,7 @@ ApplicationWindow {
         id: confirmDeleteCredential
         icon: StandardIcon.Warning
         title: qsTr("Delete credential?")
-        text: qsTr("Are you sure you want to delete the credential?")
+        text: qsTr("Are you sure you want to delete this credential?")
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
             if (settings.slotMode) {
