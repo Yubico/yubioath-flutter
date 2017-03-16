@@ -17,10 +17,10 @@ ApplicationWindow {
     property var credentials: device.credentials
     property bool validated: device.validated
     property bool hasDevice: device.hasDevice
-    property bool canShowCredentials: hasDevice && ((settings.slotMode
-                                                     && device.hasOTP)
-                                                    || (!settings.slotMode
-                                                        && device.hasCCID))
+    property bool canShowCredentials: device.hasDevice && modeAndKeyMatch
+    property bool modeAndKeyMatch: slotModeMatch || ccidModeMatch
+    property bool slotModeMatch: (settings.slotMode && device.hasOTP)
+    property bool ccidModeMatch: (!settings.slotMode && device.hasCCID)
     property var hotpCoolDowns: []
 
     // Don't refresh credentials when window is minimized or hidden
