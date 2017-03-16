@@ -9,7 +9,7 @@ DefaultDialog {
     title: qsTr("Set new password")
     modality: Qt.ApplicationModal
     property string newPassword: newPassword.text
-    property string confirmPassword: confirmPassword.text
+    property bool matchingPasswords: newPassword.text === confirmPassword.text
 
     ColumnLayout {
         anchors.fill: parent
@@ -40,6 +40,7 @@ DefaultDialog {
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             Button {
                 text: qsTr("Set password")
+                enabled: matchingPasswords
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
                 onClicked: promptAccepted()
             }
@@ -50,7 +51,9 @@ DefaultDialog {
         }
     }
     function promptAccepted() {
-        close()
-        accepted()
+        if (matchingPasswords) {
+            close()
+            accepted()
+        }
     }
 }

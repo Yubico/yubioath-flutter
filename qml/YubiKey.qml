@@ -164,7 +164,9 @@ Python {
     function setPassword(password) {
         do_call('yubikey.controller.set_password', [password, passwordKey],
                 function () {
-                    validate(password)
+                    if (password !== null) {
+                        validate(password)
+                    }
                 })
     }
 

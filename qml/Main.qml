@@ -78,37 +78,12 @@ ApplicationWindow {
         }
     }
 
-    function saveSettings() {
-        settings.slotMode = settingsDialog.slotMode
-        settings.slot1 = settingsDialog.slot1
-        settings.slot2 = settingsDialog.slot2
-        settings.slot1digits = settingsDialog.slot1digits
-        settings.slot2digits = settingsDialog.slot2digits
-    }
-
     SetPassword {
         id: setPassword
         onAccepted: {
-            if (setPassword.newPassword !== setPassword.confirmPassword) {
-                noMatch.open()
-            } else {
-                if (setPassword.newPassword != "") {
-                    device.setPassword(setPassword.newPassword)
-                } else {
-                    device.setPassword(null)
-                }
-                passwordUpdated.open()
-            }
+            trySetPassword()
+            passwordUpdated.open()
         }
-    }
-
-    MessageDialog {
-        id: noMatch
-        icon: StandardIcon.Critical
-        title: qsTr("Passwords does not match")
-        text: qsTr("Password confirmation does not match password.")
-        standardButtons: StandardButton.Ok
-        onAccepted: setPassword.open()
     }
 
     MessageDialog {
@@ -571,5 +546,21 @@ ApplicationWindow {
 
     function getTitle() {
         return qsTr("Yubico Authenticator") + (settings.slotMode ? qsTr(" [Slot mode]") : '')
+    }
+
+    function saveSettings() {
+        settings.slotMode = settingsDialog.slotMode
+        settings.slot1 = settingsDialog.slot1
+        settings.slot2 = settingsDialog.slot2
+        settings.slot1digits = settingsDialog.slot1digits
+        settings.slot2digits = settingsDialog.slot2digits
+    }
+
+    function trySetPassword() {
+        if (setPassword.newPassword.length > 0) {
+            device.setPassword(setPassword.newPassword)
+        } else {
+            device.setPassword(null)
+        }
     }
 }
