@@ -12,7 +12,7 @@ ApplicationWindow {
     minimumHeight: 400
     minimumWidth: 300
     visible: true
-    title: qsTr("Yubico Authenticator") + (settings.slotMode ? qsTr(" [Slot mode]") : '')
+    title: getTitle()
     property var device: yk
     property var credentials: device.credentials
     property bool validated: device.validated
@@ -560,5 +560,9 @@ ApplicationWindow {
             addCredential.clear()
             addCredential.open()
         }
+    }
+
+    function getTitle() {
+        return qsTr("Yubico Authenticator") + (settings.slotMode ? qsTr(" [Slot mode]") : '')
     }
 }
