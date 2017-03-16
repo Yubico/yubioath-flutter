@@ -301,12 +301,8 @@ ApplicationWindow {
         }
     }
 
-    MessageDialog {
+    TouchYubiKey {
         id: touchYourYubikey
-        icon: StandardIcon.Information
-        title: qsTr("Touch your YubiKey")
-        text: qsTr("Touch your YubiKey to generate the code.")
-        standardButtons: StandardButton.NoButton
     }
 
     Item {
