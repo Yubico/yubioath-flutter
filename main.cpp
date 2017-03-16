@@ -15,12 +15,8 @@ int main(int argc, char *argv[])
     // https://bugs.launchpad.net/ubuntu/+source/appmenu-qt5/+bug/1323853
     // This workaround enables a local menubar.
     qputenv("HELLO_TEST_ONE","1");
+    qputenv("UBUNTU_MENUPROXY","0");
     qputenv("HELLO_TEST_ZERO","0");
-
-    //qputenv("UBUNTU_MENUPROXY","0");
-
-    qunsetenv("UBUNTU_MENU_PROXY");
-
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 
     #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
