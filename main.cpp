@@ -55,6 +55,11 @@ int main(int argc, char *argv[])
 
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 
+    // Global menubar is broken for qt5 apps in Ubuntu Unity, see:
+    // https://bugs.launchpad.net/ubuntu/+source/appmenu-qt5/+bug/1323853
+    // This workaround enables a local menubar.
+    qputenv("UBUNTU_MENUPROXY", "");
+
     engine.load(QUrl(url_prefix + main_qml));
 
     #ifndef Q_OS_DARWIN
