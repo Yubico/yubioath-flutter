@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     // Global menubar is broken for qt5 apps in Ubuntu Unity, see:
     // https://bugs.launchpad.net/ubuntu/+source/appmenu-qt5/+bug/1323853
     // This workaround enables a local menubar.
-    qputenv("UBUNTU_MENUPROXY", "");
+    setenv("UBUNTU_MENUPROXY","0",1);
 
     #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
