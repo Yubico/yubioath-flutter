@@ -44,15 +44,7 @@ ApplicationWindow {
     menuBar: MainMenuBar {
         slotMode: settings.slotMode
         hasDevice: device.hasDevice
-        onOpenAddCredential: {
-            if (settings.slotMode) {
-                addCredentialSlot.clear()
-                device.getSlotStatus(addCredentialSlot.open)
-            } else {
-                addCredential.clear()
-                addCredential.open()
-            }
-        }
+        onOpenAddCredential: openClearAddCredential()
         onOpenSetPassword: setPassword.open()
         onOpenReset: reset.open()
         onOpenSettings: settingsDialog.open()
@@ -558,5 +550,15 @@ ApplicationWindow {
 
     function getDigits(slot) {
         return getSlotDigitsSettings()[slot - 1]
+    }
+
+    function openClearAddCredential() {
+        if (settings.slotMode) {
+            addCredentialSlot.clear()
+            device.getSlotStatus(addCredentialSlot.open)
+        } else {
+            addCredential.clear()
+            addCredential.open()
+        }
     }
 }
