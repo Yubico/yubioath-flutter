@@ -266,7 +266,7 @@ ApplicationWindow {
             visible: allowManualGenerate(repeater.selected)
             enabled: allowManualGenerate(repeater.selected)
                      && enableManualGenerate(repeater.selected)
-            text: qsTr('Generate code')
+            text: qsTr("Generate code")
             shortcut: "Space"
             onTriggered: {
                 if (!isInCoolDown(repeater.selected.name)) {
@@ -279,7 +279,7 @@ ApplicationWindow {
             }
         }
         MenuItem {
-            text: qsTr('Delete')
+            text: qsTr("Delete")
             shortcut: StandardKey.Delete
             onTriggered: confirmDeleteCredential.open()
         }
@@ -453,7 +453,7 @@ ApplicationWindow {
         TextField {
             id: search
             visible: canShowCredentials && device.hasAnyCredentials()
-            placeholderText: 'Search...'
+            placeholderText: qsTr("Search...")
             Layout.fillWidth: true
             KeyNavigation.tab: scrollView
         }

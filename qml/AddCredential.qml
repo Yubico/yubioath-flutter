@@ -49,7 +49,7 @@ DefaultDialog {
 
                 RowLayout {
                     Label {
-                        text: "OATH Type"
+                        text: qsTr("OATH Type")
                     }
                     ExclusiveGroup {
                         id: oathType
@@ -72,7 +72,7 @@ DefaultDialog {
                 }
                 RowLayout {
                     Label {
-                        text: "Number of digits"
+                        text: qsTr("Number of digits")
                     }
                     ExclusiveGroup {
                         id: digits
@@ -95,7 +95,7 @@ DefaultDialog {
                 }
                 RowLayout {
                     Label {
-                        text: "Algorithm"
+                        text: qsTr("Algorithm")
                     }
                     ExclusiveGroup {
                         id: algorithm
@@ -120,7 +120,7 @@ DefaultDialog {
 
                     CheckBox {
                         id: touch
-                        text: "Require touch"
+                        text: qsTr("Require touch")
                         enabled: enableTouchOption()
                     }
                 }
