@@ -60,10 +60,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("urlPrefix", url_prefix);
     engine.rootContext()->setContextProperty("appVersion", APP_VERSION);
     engine.rootContext()->setContextProperty("ScreenShot", &screenshot);
-
-
-
-
     engine.load(QUrl(url_prefix + main_qml));
 
     #ifndef Q_OS_DARWIN
