@@ -177,7 +177,6 @@ ApplicationWindow {
             ColumnLayout {
                 width: scrollView.viewport.width
                 id: credentialsColumn
-                spacing: 0
                 visible: device.hasDevice
                 anchors.right: appWindow.right
                 anchors.left: appWindow.left
@@ -186,23 +185,13 @@ ApplicationWindow {
                 Repeater {
                     id: repeater
                     model: filteredCredentials(credentials)
-                    property var selected
+                    property var selected: null
                     property var selectedIndex: null
 
                     Rectangle {
                         id: credentialRectangle
                         focus: true
-                        color: {
-                            if (repeater.selected != null) {
-                                if (repeater.selected.name == modelData.name) {
-                                    return palette.dark
-                                }
-                            }
-                            if (index % 2 == 0) {
-                                return "#00000000"
-                            }
-                            return palette.alternateBase
-                        }
+                        color: getCredentialColor(index, repeater.selected, modelData)
                         Layout.fillWidth: true
                         Layout.minimumHeight: 70
                         Layout.alignment: Qt.AlignTop
@@ -475,5 +464,15 @@ ApplicationWindow {
         } else {
             device.deleteCredential(repeater.selected)
         }
+    }
+
+    function getCredentialColor(index, selected, modelData) {
+        if (selected !== null && selected.name === modelData.name) {
+            return palette.dark
+        }
+        if (index % 2 == 0) {
+            return "#00000000"
+        }
+        return palette.alternateBase
     }
 }
