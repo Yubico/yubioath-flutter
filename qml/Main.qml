@@ -86,12 +86,8 @@ ApplicationWindow {
         }
     }
 
-    MessageDialog {
+    PasswordSetConfirmation {
         id: passwordUpdated
-        icon: StandardIcon.Information
-        title: qsTr("Password set")
-        text: qsTr("A new password has been set.")
-        standardButtons: StandardButton.Ok
     }
 
     MessageDialog {
