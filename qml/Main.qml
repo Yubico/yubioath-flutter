@@ -16,7 +16,7 @@ ApplicationWindow {
     property var device: yk
     property var credentials: device.credentials
     property bool hasDevice: device.hasDevice
-    property bool canShowCredentials: device.hasDevice && modeAndKeyMatch
+    property bool canShowCredentials: device.hasDevice && modeAndKeyMatch && device.validated
     property bool modeAndKeyMatch: slotModeMatch || ccidModeMatch
     property bool slotModeMatch: (settings.slotMode && device.hasOTP)
     property bool ccidModeMatch: (!settings.slotMode && device.hasCCID)
@@ -161,32 +161,12 @@ ApplicationWindow {
         credRepeater: repeater
     }
 
-
-
     ColumnLayout {
         anchors.fill: parent
-        spacing: 0
 
-        ProgressBar {
-            id: progressBar
-            visible: canShowCredentials
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            Layout.maximumHeight: 10
-            Layout.minimumHeight: 10
-            Layout.minimumWidth: 300
-            Layout.fillWidth: true
-            maximumValue: 30
-            minimumValue: 0
-
-            style: ProgressBarStyle {
-                progress: Rectangle {
-                    color: "#9aca3c"
-                }
-
-                background: Rectangle {
-                    color: palette.alternateBase
-                }
-            }
+        TimeLeftBar {
+            id: timeLeftBar
+            shouldBeVisible: canShowCredentials
         }
 
         ScrollView {
@@ -307,10 +287,10 @@ ApplicationWindow {
         triggeredOnStart: true
         onTriggered: {
             var timeLeft = device.expiration - (Date.now() / 1000)
-            if (timeLeft <= 0 && progressBar.value > 0) {
+            if (timeLeft <= 0 && timeLeftBar.value > 0) {
                 refreshDependingOnMode(true)
             }
-            progressBar.value = timeLeft
+            timeLeftBar.value = timeLeft
         }
     }
 

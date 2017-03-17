@@ -50,6 +50,7 @@ Python {
     onHasDeviceChanged: {
         device.passwordKey = null
         device.validated = false
+        device.expiration = 0
     }
 
     onError: {
