@@ -26,6 +26,8 @@ ApplicationWindow {
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
     property bool shouldRefresh: visibility != 3 && visibility != 0
 
+    onHasDeviceChanged: handleNewDevice()
+
     menuBar: MainMenuBar {
         slotMode: settings.slotMode
         hasDevice: device.hasDevice
@@ -95,17 +97,6 @@ ApplicationWindow {
         onAccepted: {
             device.reset()
             device.refreshCCIDCredentials(true)
-        }
-    }
-
-    onHasDeviceChanged: {
-        if (device.hasDevice) {
-            if (!settings.slotMode && device.hasCCID) {
-                device.promptOrSkip(passwordPrompt, settings.savedPasswords)
-            }
-        } else {
-            passwordPrompt.close()
-            addCredential.close()
         }
     }
 
@@ -553,6 +544,17 @@ ApplicationWindow {
             device.setPassword(setPassword.newPassword)
         } else {
             device.setPassword(null)
+        }
+    }
+
+    function handleNewDevice() {
+        if (device.hasDevice && ccidModeMatch) {
+            device.promptOrSkip(passwordPrompt, settings.savedPasswords)
+        } else {
+            passwordPrompt.close()
+            setPassword.close()
+            addCredential.close()
+            addCredentialSlot.close()
         }
     }
 }
