@@ -211,24 +211,23 @@ ApplicationWindow {
                             anchors.leftMargin: 10
                             anchors.topMargin: 5
                             anchors.bottomMargin: 5
-                            spacing: 0
                             anchors.fill: parent
                             Text {
                                 visible: hasIssuer(modelData.name)
-                                text: qsTr('') + parseIssuer(modelData.name)
+                                text: qsTr("") + parseIssuer(modelData.name)
                                 font.pixelSize: 12
                             }
                             Text {
                                 opacity: isExpired(modelData) ? 0.6 : 1
-                                visible: modelData.code != null
-                                text: qsTr('') + modelData.code
+                                visible: modelData.code !== null
+                                text: qsTr("") + modelData.code
                                 font.family: "Verdana"
                                 font.pixelSize: 20
                             }
                             Text {
                                 text: hasIssuer(
                                           modelData.name) ? qsTr(
-                                                                '') + parseName(
+                                                                "") + parseName(
                                                                 modelData.name) : modelData.name
                                 font.pixelSize: 12
                             }
@@ -257,18 +256,12 @@ ApplicationWindow {
     }
 
     Timer {
-        id: progressBarTimer
+        id: timeLeftTimer
         interval: 100
         repeat: true
         running: true
         triggeredOnStart: true
-        onTriggered: {
-            var timeLeft = device.expiration - (Date.now() / 1000)
-            if (timeLeft <= 0 && timeLeftBar.value > 0) {
-                refreshDependingOnMode(true)
-            }
-            timeLeftBar.value = timeLeft
-        }
+        onTriggered: checkTimeLeft()
     }
 
     Timer {
@@ -283,15 +276,23 @@ ApplicationWindow {
         onTriggered: touchYourYubikey.open()
     }
 
+    function checkTimeLeft() {
+        var timeLeft = device.expiration - (Date.now() / 1000)
+        if (timeLeft <= 0 && timeLeftBar.value > 0) {
+            refreshDependingOnMode(true)
+        }
+        timeLeftBar.value = timeLeft
+    }
+
     function allowManualGenerate(cred) {
-        return cred != null && (cred.oath_type === "hotp"
-                                || repeater.selected.touch)
+        return cred !== null && (cred.oath_type === "hotp"
+                                 || repeater.selected.touch)
     }
 
     function enableManualGenerate(cred) {
         if (allowManualGenerate(cred)) {
-            if (cred.oath_type !== 'hotp') {
-                return cred.code == null || isExpired(repeater.selected)
+            if (cred.oath_type !== "hotp") {
+                return cred.code === null || isExpired(repeater.selected)
             } else {
                 return !isInCoolDown(cred.name)
             }
@@ -301,7 +302,7 @@ ApplicationWindow {
     }
 
     function isExpired(cred) {
-        return cred != null && (cred.oath_type !== 'hotp')
+        return cred !== null && (cred.oath_type !== "hotp")
                 && (cred.expiration - (Date.now() / 1000) <= 0)
     }
 
@@ -329,7 +330,7 @@ ApplicationWindow {
 
     function filteredCredentials(creds) {
         var result = []
-        if (creds != null) {
+        if (creds !== null) {
             for (var i = 0; i < creds.length; i++) {
                 var cred = creds[i]
                 if (cred.name.toLowerCase().indexOf(search.text.toLowerCase(
@@ -365,7 +366,7 @@ ApplicationWindow {
         } else {
             device.calculate(credential)
         }
-        if (credential.oath_type === 'hotp') {
+        if (credential.oath_type === "hotp") {
             hotpTouchTimer.restart()
         }
         if (credential.touch) {
