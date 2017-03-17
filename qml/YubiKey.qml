@@ -1,6 +1,7 @@
 import QtQuick 2.5
 import io.thp.pyotherside 1.4
 
+
 // @disable-check M300
 Python {
     id: py
@@ -10,7 +11,6 @@ Python {
     property string name
     property string version
     property string oathId
-    property string serial
     property var features: []
     property var connections: []
     property var credentials: null
@@ -50,7 +50,6 @@ Python {
     onHasDeviceChanged: {
         device.passwordKey = null
         device.validated = false
-        device.expiration = 0
     }
 
     onError: {
@@ -76,7 +75,6 @@ Python {
                 do_call('yubikey.controller.refresh', [], function (dev) {
                     name = dev ? dev.name : ''
                     version = dev ? dev.version : ''
-                    serial = dev ? dev.serial : ''
                     enabled = dev ? dev.enabled : []
                     connections = dev ? dev.connections : []
                     hasDevice = dev !== undefined && dev !== null
