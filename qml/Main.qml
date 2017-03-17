@@ -144,18 +144,10 @@ ApplicationWindow {
         onCopy: clipboard.setClipboard(repeater.selected.code)
     }
 
-    MessageDialog {
+    DeleteCredentialConfirmation {
         id: confirmDeleteCredential
-        icon: StandardIcon.Warning
-        title: qsTr("Delete credential?")
-        text: qsTr("Are you sure you want to delete this credential?")
-        standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
-            if (settings.slotMode) {
-                device.deleteSlotCredential(getSlot(repeater.selected['name']))
-            } else {
-                device.deleteCredential(repeater.selected)
-            }
+            deleteSelectedCredential()
             refreshDependingOnMode(true)
         }
     }
@@ -511,5 +503,13 @@ ApplicationWindow {
             device.validate(passwordPrompt.password)
         }
         passwordPrompt.clear()
+    }
+
+    function deleteSelectedCredential() {
+        if (settings.slotMode) {
+            device.deleteSlotCredential(getSlot(repeater.selected.name))
+        } else {
+            device.deleteCredential(repeater.selected)
+        }
     }
 }
