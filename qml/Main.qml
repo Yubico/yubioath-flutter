@@ -107,14 +107,7 @@ ApplicationWindow {
 
     PasswordPrompt {
         id: passwordPrompt
-        onAccepted: {
-            if (passwordPrompt.remember) {
-                device.validate(passwordPrompt.password, rememberPassword)
-            } else {
-                device.validate(passwordPrompt.password)
-            }
-            passwordPrompt.clear()
-        }
+        onAccepted: handlePasswordEntered()
     }
 
     // @disable-check M301
@@ -141,40 +134,14 @@ ApplicationWindow {
         id: clipboard
     }
 
-    Menu {
+    CredentialMenu {
         id: credentialMenu
-        MenuItem {
-            text: qsTr('Copy')
-            shortcut: StandardKey.Copy
-            enabled: (repeater.selected != null)
-                     && (repeater.selected.code != null)
-            onTriggered: {
-                if (repeater.selected != null) {
-                    clipboard.setClipboard(repeater.selected.code)
-                }
-            }
-        }
-        MenuItem {
-            visible: allowManualGenerate(repeater.selected)
-            enabled: allowManualGenerate(repeater.selected)
-                     && enableManualGenerate(repeater.selected)
-            text: qsTr("Generate code")
-            shortcut: "Space"
-            onTriggered: {
-                if (!isInCoolDown(repeater.selected.name)) {
-                    calculateCredential(repeater.selected)
-                    if (repeater.selected.oath_type === "hotp") {
-                        hotpCoolDowns.push(repeater.selected.name)
-                        hotpCoolDownTimer.restart()
-                    }
-                }
-            }
-        }
-        MenuItem {
-            text: qsTr("Delete")
-            shortcut: StandardKey.Delete
-            onTriggered: confirmDeleteCredential.open()
-        }
+        credential: repeater.selected
+        showGenerate: allowManualGenerate(repeater.selected)
+        enableGenerate: enableManualGenerate(repeater.selected)
+        onGenerate: handleGenerate(repeater.selected)
+        onDeleteCredential: confirmDeleteCredential.open()
+        onCopy: clipboard.setClipboard(repeater.selected.code)
     }
 
     MessageDialog {
@@ -389,10 +356,14 @@ ApplicationWindow {
     }
 
     function enableManualGenerate(cred) {
-        if (cred.oath_type !== 'hotp') {
-            return cred.code == null || isExpired(repeater.selected)
+        if (allowManualGenerate(cred)) {
+            if (cred.oath_type !== 'hotp') {
+                return cred.code == null || isExpired(repeater.selected)
+            } else {
+                return !isInCoolDown(cred.name)
+            }
         } else {
-            return !isInCoolDown(cred.name)
+            return false
         }
     }
 
@@ -521,5 +492,24 @@ ApplicationWindow {
             addCredential.close()
             addCredentialSlot.close()
         }
+    }
+
+    function handleGenerate(cred) {
+        if (!isInCoolDown(cred.name)) {
+            calculateCredential(cred)
+            if (cred.oath_type === "hotp") {
+                hotpCoolDowns.push(cred.name)
+                hotpCoolDownTimer.restart()
+            }
+        }
+    }
+
+    function handlePasswordEntered() {
+        if (passwordPrompt.remember) {
+            device.validate(passwordPrompt.password, rememberPassword)
+        } else {
+            device.validate(passwordPrompt.password)
+        }
+        passwordPrompt.clear()
     }
 }
