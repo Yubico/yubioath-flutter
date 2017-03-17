@@ -90,12 +90,8 @@ ApplicationWindow {
         id: passwordUpdated
     }
 
-    MessageDialog {
+    Reset {
         id: reset
-        icon: StandardIcon.Critical
-        title: qsTr("Reset OATH functionality")
-        text: qsTr("This will delete all OATH credentials stored on the device, and reset the password. This action cannot be undone. Are you sure you want to reset the device?")
-        standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
             device.reset()
             device.refreshCCIDCredentials(true)
