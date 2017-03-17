@@ -163,6 +163,7 @@ ApplicationWindow {
     }
 
     ColumnLayout {
+
         anchors.fill: parent
 
         TimeLeftBar {
@@ -178,7 +179,7 @@ ApplicationWindow {
             ColumnLayout {
                 width: scrollView.viewport.width
                 id: credentialsColumn
-                visible: device.hasDevice
+                visible: device.hasDevice && (ccidModeMatch || slotModeMatch)
                 anchors.right: appWindow.right
                 anchors.left: appWindow.left
                 anchors.top: appWindow.top
