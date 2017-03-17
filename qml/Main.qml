@@ -129,25 +129,12 @@ ApplicationWindow {
         device: yk
     }
 
-    Text {
-        visible: device.hasDevice
-        text: if (credentials !== null && filteredCredentials(
-                          credentials).length === 0) {
-                  qsTr("No credentials found.")
-              } else if (settings.slotMode && !device.hasOTP) {
-                  qsTr("Authenticator mode is set to YubiKey slots, but the OTP connection mode is not enabled.")
-              } else if (!settings.slotMode && !device.hasCCID) {
-                  qsTr("Authenticator mode is set to CCID, but the CCID connection mode is not enabled.")
-              } else if (credentials == null) {
-                  qsTr("Reading credentials...")
-              } else {
-                  ""
-              }
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WordWrap
-        width: parent.width
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+    LoadedDeviceMessage {
+        id: loadedDeviceMessage
+        device: yk
+        nCredentials: filteredCredentials(credentials).length
+        readingCredentials: credentials === null
+        settings: settings
     }
 
     TextEdit {
