@@ -25,6 +25,7 @@ DefaultDialog {
                 id: newPassword
                 echoMode: TextInput.Password
                 Layout.fillWidth: true
+                Keys.onEscapePressed: close()
             }
             Label {
                 text: qsTr("Confirm password: ")
@@ -34,6 +35,7 @@ DefaultDialog {
                 echoMode: TextInput.Password
                 Layout.fillWidth: true
                 onAccepted: promptAccepted()
+                Keys.onEscapePressed: close()
             }
         }
         RowLayout {

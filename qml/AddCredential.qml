@@ -28,6 +28,7 @@ DefaultDialog {
             TextField {
                 id: name
                 Layout.fillWidth: true
+                Keys.onEscapePressed: close()
             }
 
             Label {
@@ -39,6 +40,7 @@ DefaultDialog {
                 validator: RegExpValidator {
                     regExp: /[2-7a-zA-Z]+=*/
                 }
+                Keys.onEscapePressed: close()
             }
         }
 

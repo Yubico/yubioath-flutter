@@ -5,6 +5,9 @@ import QtQuick.Window 2.2
 
 ApplicationWindow {
 
+
+
+
     SystemPalette {
         id: palette
     }
@@ -37,7 +40,12 @@ ApplicationWindow {
         Item {
             id: destruction_parent
         }
+        Item {
+            focus: true
+            Keys.onEscapePressed: close()
+        }
     }
+
 
     function open() {
         show()

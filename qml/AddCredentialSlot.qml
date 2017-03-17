@@ -31,6 +31,7 @@ DefaultDialog {
                 validator: RegExpValidator {
                     regExp: /[2-7a-zA-Z]+=*/
                 }
+                Keys.onEscapePressed: close()
             }
         }
 
