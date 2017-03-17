@@ -52,10 +52,6 @@ Python {
         device.validated = false
     }
 
-    onError: {
-        console.log('Python error: ' + traceback)
-    }
-
     function do_call(func, args, cb) {
         if (!ready) {
             queue.push([func, args, cb])
