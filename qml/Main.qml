@@ -28,6 +28,11 @@ ApplicationWindow {
 
     onHasDeviceChanged: handleNewDevice()
 
+    onCredentialsChanged: {
+        hotpTouchTimer.stop()
+        touchYourYubikey.close()
+    }
+
     menuBar: MainMenuBar {
         slotMode: settings.slotMode
         hasDevice: device.hasDevice
@@ -112,37 +117,16 @@ ApplicationWindow {
         }
     }
 
-    onCredentialsChanged: {
-        hotpTouchTimer.stop()
-        touchYourYubikey.close()
-    }
-
     // @disable-check M301
     YubiKey {
         id: yk
-        onError: {
-            console.log(error)
-        }
-        onWrongPassword: {
-            passwordPrompt.open()
-        }
+        onError: console.log(error)
+        onWrongPassword: passwordPrompt.open()
     }
 
-    Text {
-        visible: !device.hasDevice
+    NoLoadedDeviceMessage {
         id: noLoadedDeviceMessage
-        text: if (device.nDevices == 0) {
-                  qsTr("No YubiKey detected.")
-              } else if (device.nDevices == 1) {
-                  qsTr("Connecting to YubiKey...")
-              } else {
-                  qsTr("Multiple YubiKeys detected!")
-              }
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WordWrap
-        width: parent.width
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+        device: yk
     }
 
     Text {
