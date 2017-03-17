@@ -137,14 +137,8 @@ ApplicationWindow {
         settings: settings
     }
 
-    TextEdit {
+    ClipBoard {
         id: clipboard
-        visible: false
-        function setClipboard(value) {
-            text = value
-            selectAll()
-            copy()
-        }
     }
 
     Menu {
