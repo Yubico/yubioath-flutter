@@ -16,7 +16,8 @@ ApplicationWindow {
     property var device: yk
     property var credentials: device.credentials
     property bool hasDevice: device.hasDevice
-    property bool canShowCredentials: device.hasDevice && modeAndKeyMatch && device.validated
+    property bool canShowCredentials: device.hasDevice && modeAndKeyMatch
+                                      && device.validated
     property bool modeAndKeyMatch: slotModeMatch || ccidModeMatch
     property bool slotModeMatch: (settings.slotMode && device.hasOTP)
     property bool ccidModeMatch: (!settings.slotMode && device.hasCCID)
@@ -191,31 +192,18 @@ ApplicationWindow {
                     Rectangle {
                         id: credentialRectangle
                         focus: true
-                        color: getCredentialColor(index, repeater.selected, modelData)
+                        color: getCredentialColor(index, repeater.selected,
+                                                  modelData)
                         Layout.fillWidth: true
                         Layout.minimumHeight: 70
                         Layout.alignment: Qt.AlignTop
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: {
-                                arrowKeys.forceActiveFocus()
-                                if (mouse.button & Qt.LeftButton) {
-                                    if (repeater.selected != null
-                                            && repeater.selected.name == modelData.name) {
-                                        repeater.selected = null
-                                        repeater.selectedIndex = null
-                                    } else {
-                                        repeater.selected = modelData
-                                        repeater.selectedIndex = index
-                                    }
-                                }
-                                if (mouse.button & Qt.RightButton) {
-                                    repeater.selected = modelData
-                                    repeater.selectedIndex = index
-                                    credentialMenu.popup()
-                                }
-                            }
+                            onClicked: handleMouseClick(mouse, index,
+                                                        repeater.selected,
+                                                        repeater.selectedIndex,
+                                                        modelData)
                             acceptedButtons: Qt.RightButton | Qt.LeftButton
                         }
 
@@ -474,5 +462,27 @@ ApplicationWindow {
             return "#00000000"
         }
         return palette.alternateBase
+    }
+
+    function handleMouseClick(mouse, index, selected, selectedIndex, modelData) {
+
+        arrowKeys.forceActiveFocus()
+
+        if (mouse.button & Qt.LeftButton) {
+            if (selected !== null && selected.name === modelData.name) {
+                // Unselect
+                repeater.selected = null
+                repeater.selectedIndex = null
+            } else {
+                // Select
+                repeater.selected = modelData
+                repeater.selectedIndex = index
+            }
+        }
+        if (mouse.button & Qt.RightButton) {
+            repeater.selected = modelData
+            repeater.selectedIndex = index
+            credentialMenu.popup()
+        }
     }
 }
