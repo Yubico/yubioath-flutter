@@ -156,28 +156,12 @@ ApplicationWindow {
         id: touchYourYubikey
     }
 
-    Item {
+    ArrowKeysSelecter {
         id: arrowKeys
-        focus: true
-        Keys.onUpPressed: {
-            if (repeater.selectedIndex == null) {
-                repeater.selected = repeater.model[repeater.model.length - 1]
-                repeater.selectedIndex = repeater.model.length - 1
-            } else if (repeater.selectedIndex > 0) {
-                repeater.selected = repeater.model[repeater.selectedIndex - 1]
-                repeater.selectedIndex = repeater.selectedIndex - 1
-            }
-        }
-        Keys.onDownPressed: {
-            if (repeater.selectedIndex == null) {
-                repeater.selected = repeater.model[0]
-                repeater.selectedIndex = 0
-            } else if (repeater.selectedIndex < repeater.model.length - 1) {
-                repeater.selected = repeater.model[repeater.selectedIndex + 1]
-                repeater.selectedIndex = repeater.selectedIndex + 1
-            }
-        }
+        credRepeater: repeater
     }
+
+
 
     ColumnLayout {
         anchors.fill: parent
@@ -223,7 +207,7 @@ ApplicationWindow {
                     id: repeater
                     model: filteredCredentials(credentials)
                     property var selected
-                    property var selectedIndex
+                    property var selectedIndex: null
 
                     Rectangle {
                         id: credentialRectangle
