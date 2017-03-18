@@ -104,7 +104,12 @@ ApplicationWindow {
         onAccepted: {
             device.reset()
             device.refreshCCIDCredentials(true)
+            resetConfirmation.open()
         }
+    }
+
+    ResetConfirmation {
+        id: resetConfirmation
     }
 
     PasswordPrompt {
