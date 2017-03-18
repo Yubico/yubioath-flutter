@@ -17,10 +17,13 @@ DefaultDialog {
         GridLayout {
             columns: 2
             Button {
+                id: scanBtn
                 Layout.columnSpan: 2
                 text: qsTr("Scan a QR code")
                 Layout.fillWidth: true
                 onClicked: device.parseQr(ScreenShot.capture(), updateForm)
+                KeyNavigation.tab: key
+                Keys.onEscapePressed: close()
             }
             Label {
                 text: qsTr("Secret key")
@@ -31,6 +34,7 @@ DefaultDialog {
                 validator: RegExpValidator {
                     regExp: /[2-7a-zA-Z]+=*/
                 }
+                KeyNavigation.tab: slot1
                 Keys.onEscapePressed: close()
             }
         }
@@ -49,6 +53,8 @@ DefaultDialog {
                 checked: true
                 exclusiveGroup: slotSelected
                 property string name: "1"
+                KeyNavigation.tab: slot2
+                Keys.onEscapePressed: close()
             }
             RadioButton {
                 id: slot2
@@ -56,6 +62,8 @@ DefaultDialog {
                 text: qsTr("Slot 2") + (device.slot2inUse ? qsTr(" (in use)") : '')
                 exclusiveGroup: slotSelected
                 property string name: "2"
+                KeyNavigation.tab: touch
+                Keys.onEscapePressed: close()
             }
         }
 
@@ -65,6 +73,8 @@ DefaultDialog {
                 CheckBox {
                     id: touch
                     text: "Require touch"
+                    KeyNavigation.tab: addCredentialBtn
+                    Keys.onEscapePressed: close()
                 }
             }
         }
@@ -72,6 +82,7 @@ DefaultDialog {
         RowLayout {
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             Button {
+                id: addCredentialBtn
                 text: qsTr("Add credential")
                 enabled: acceptableInput()
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
@@ -83,10 +94,15 @@ DefaultDialog {
                         addCredential()
                     }
                 }
+                KeyNavigation.tab: cancelBtn
+                Keys.onEscapePressed: close()
             }
             Button {
+                id: cancelBtn
                 text: qsTr("Cancel")
                 onClicked: close()
+                KeyNavigation.tab: scanBtn
+                Keys.onEscapePressed: close()
             }
         }
     }

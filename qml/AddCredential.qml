@@ -15,10 +15,13 @@ DefaultDialog {
         GridLayout {
             columns: 2
             Button {
+                id: scanBtn
                 Layout.columnSpan: 2
                 text: qsTr("Scan a QR code")
                 Layout.fillWidth: true
                 onClicked: device.parseQr(ScreenShot.capture(), updateForm)
+                KeyNavigation.tab: name
+                Keys.onEscapePressed: close()
             }
             Label {
                 text: qsTr("Name")
@@ -28,6 +31,7 @@ DefaultDialog {
             TextField {
                 id: name
                 Layout.fillWidth: true
+                KeyNavigation.tab: key
                 Keys.onEscapePressed: close()
             }
 
@@ -40,6 +44,7 @@ DefaultDialog {
                 validator: RegExpValidator {
                     regExp: /[2-7a-zA-Z]+=*/
                 }
+                KeyNavigation.tab: totp
                 Keys.onEscapePressed: close()
             }
         }
@@ -64,12 +69,16 @@ DefaultDialog {
                         checked: true
                         exclusiveGroup: oathType
                         property string name: "totp"
+                        KeyNavigation.tab: hotp
+                        Keys.onEscapePressed: close()
                     }
                     RadioButton {
                         id: hotp
                         text: qsTr("HOTP (Counter based)")
                         exclusiveGroup: oathType
                         property string name: "hotp"
+                        KeyNavigation.tab: six
+                        Keys.onEscapePressed: close()
                     }
                 }
                 RowLayout {
@@ -87,12 +96,16 @@ DefaultDialog {
                         checked: true
                         exclusiveGroup: digits
                         property int digits: 6
+                        KeyNavigation.tab: eight
+                        Keys.onEscapePressed: close()
                     }
                     RadioButton {
                         id: eight
                         text: qsTr("8")
                         exclusiveGroup: digits
                         property int digits: 8
+                        KeyNavigation.tab: sha1
+                        Keys.onEscapePressed: close()
                     }
                 }
                 RowLayout {
@@ -109,6 +122,8 @@ DefaultDialog {
                         text: qsTr("SHA-1")
                         exclusiveGroup: algorithm
                         property string name: "SHA1"
+                        KeyNavigation.tab: sha256
+                        Keys.onEscapePressed: close()
                     }
                     RadioButton {
                         id: sha256
@@ -116,6 +131,8 @@ DefaultDialog {
                         checked: true
                         exclusiveGroup: algorithm
                         property string name: "SHA256"
+                        KeyNavigation.tab: touch
+                        Keys.onEscapePressed: close()
                     }
                 }
                 RowLayout {
@@ -124,6 +141,8 @@ DefaultDialog {
                         id: touch
                         text: qsTr("Require touch")
                         enabled: enableTouchOption()
+                        KeyNavigation.tab: addCredentialBtn
+                        Keys.onEscapePressed: close()
                     }
                 }
             }
@@ -132,6 +151,7 @@ DefaultDialog {
         RowLayout {
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             Button {
+                id: addCredentialBtn
                 text: qsTr("Add credential")
                 enabled: acceptableInput()
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
@@ -142,10 +162,15 @@ DefaultDialog {
                         addCredential()
                     }
                 }
+                KeyNavigation.tab: cancelBtn
+                Keys.onEscapePressed: close()
             }
             Button {
+                id: cancelBtn
                 text: qsTr("Cancel")
                 onClicked: close()
+                KeyNavigation.tab: scanBtn
+                Keys.onEscapePressed: close()
             }
         }
     }
