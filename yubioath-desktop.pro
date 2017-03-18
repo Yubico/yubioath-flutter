@@ -65,4 +65,4 @@ HEADERS += screenshot.h
 DISTFILES += \
     py/* \
     py/qr/* \
-    resources/icons/yubioath.icns
+    qml/*
