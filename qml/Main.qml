@@ -249,7 +249,7 @@ ApplicationWindow {
             visible: canShowCredentials && device.hasAnyCredentials()
             placeholderText: qsTr("Search...")
             Layout.fillWidth: true
-            KeyNavigation.tab: scrollView
+            KeyNavigation.tab: arrowKeys
         }
     }
 
