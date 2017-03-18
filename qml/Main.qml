@@ -91,6 +91,7 @@ ApplicationWindow {
         onAccepted: {
             trySetPassword()
             passwordUpdated.open()
+            setPassword.clear()
         }
     }
 

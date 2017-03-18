@@ -47,6 +47,7 @@ DefaultDialog {
             }
             Button {
                 text: qsTr("Cancel")
+                id: cancelBtn
                 onClicked: close()
                 KeyNavigation.tab: password
                 Keys.onEscapePressed: close()

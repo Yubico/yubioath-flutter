@@ -10,6 +10,7 @@ DefaultDialog {
     modality: Qt.ApplicationModal
     property string newPassword: newPassword.text
     property bool matchingPasswords: newPassword.text === confirmPassword.text
+    onClosing: clear()
 
     ColumnLayout {
         anchors.fill: parent
@@ -66,5 +67,10 @@ DefaultDialog {
             close()
             accepted()
         }
+    }
+
+    function clear() {
+        newPassword.text = ""
+        confirmPassword.text = ""
     }
 }
