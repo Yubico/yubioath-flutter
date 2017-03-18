@@ -22,24 +22,34 @@ DefaultDialog {
                 focus: true
                 Layout.fillWidth: true
                 onAccepted: promptAccepted()
+                KeyNavigation.tab: rememberPassword
+                Keys.onEscapePressed: close()
+
             }
         }
         RowLayout {
             CheckBox {
                 id: rememberPassword
                 text: qsTr("Remember password")
+                KeyNavigation.tab: okBtn
+                Keys.onEscapePressed: close()
             }
         }
         RowLayout {
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             Button {
+                id: okBtn
                 text: qsTr("Ok")
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
                 onClicked: promptAccepted()
+                KeyNavigation.tab: cancelBtn
+                Keys.onEscapePressed: close()
             }
             Button {
                 text: qsTr("Cancel")
                 onClicked: close()
+                KeyNavigation.tab: password
+                Keys.onEscapePressed: close()
             }
         }
     }

@@ -23,8 +23,10 @@ DefaultDialog {
             }
             TextField {
                 id: newPassword
+                focus: true
                 echoMode: TextInput.Password
                 Layout.fillWidth: true
+                KeyNavigation.tab: confirmPassword
                 Keys.onEscapePressed: close()
             }
             Label {
@@ -35,20 +37,27 @@ DefaultDialog {
                 echoMode: TextInput.Password
                 Layout.fillWidth: true
                 onAccepted: promptAccepted()
+                KeyNavigation.tab: setPasswordBtn
                 Keys.onEscapePressed: close()
             }
         }
         RowLayout {
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             Button {
+                id: setPasswordBtn
                 text: qsTr("Set password")
                 enabled: matchingPasswords
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
                 onClicked: promptAccepted()
+                KeyNavigation.tab: cancelBtn
+                Keys.onEscapePressed: close()
             }
             Button {
+                id: cancelBtn
                 text: qsTr("Cancel")
                 onClicked: close()
+                KeyNavigation.tab: newPassword
+                Keys.onEscapePressed: close()
             }
         }
     }

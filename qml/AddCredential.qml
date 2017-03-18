@@ -16,6 +16,7 @@ DefaultDialog {
             columns: 2
             Button {
                 id: scanBtn
+                focus: true
                 Layout.columnSpan: 2
                 text: qsTr("Scan a QR code")
                 Layout.fillWidth: true

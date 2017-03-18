@@ -18,6 +18,7 @@ DefaultDialog {
             columns: 2
             Button {
                 id: scanBtn
+                focus: true
                 Layout.columnSpan: 2
                 text: qsTr("Scan a QR code")
                 Layout.fillWidth: true
@@ -129,7 +130,8 @@ DefaultDialog {
     }
 
     function slotIsUsed(slot) {
-        return slot === "1" && device.slot1inUse || slot === "2" && device.slot2inUse
+        return slot === "1" && device.slot1inUse || slot === "2"
+                && device.slot2inUse
     }
 
     function clear() {

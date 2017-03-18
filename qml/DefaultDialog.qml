@@ -5,14 +5,12 @@ import QtQuick.Window 2.2
 
 ApplicationWindow {
 
-
-
-
     SystemPalette {
         id: palette
     }
 
-    flags: Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.MSWindowsFixedSizeDialogHint
+    flags: Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint
+           | Qt.WindowCloseButtonHint | Qt.MSWindowsFixedSizeDialogHint
     modality: Qt.ApplicationModal
     color: palette.window
 
@@ -40,12 +38,7 @@ ApplicationWindow {
         Item {
             id: destruction_parent
         }
-        Item {
-            focus: true
-            Keys.onEscapePressed: close()
-        }
     }
-
 
     function open() {
         show()
