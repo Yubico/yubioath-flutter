@@ -1,4 +1,4 @@
-* Version 4.0.0 (unreleased)
+* Version 4.0.0 (released 2017-03-20)
  ** The UI has been completely rewritten, to allow us to use a more modern technology stack.
     All main functionality and concepts are kept the same.
  ** CLI version has been removed from this porject, the functionality is now found in the YubiKey Manager (ykman) tool.
