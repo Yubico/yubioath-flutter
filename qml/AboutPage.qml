@@ -1,29 +1,30 @@
 import QtQuick 2.5
+import QtQuick.Controls 1.4
 
 DefaultDialog {
 
     id: aboutPage
     title: qsTr("About Yubico Authenticator")
 
-    Text {
+    Label {
         text: qsTr("Yubico Authenticator")
         font.bold: true
     }
 
-    Text {
+    Label {
         text: qsTr("Version: ") + appVersion
     }
 
-    Text {
+    Label {
         text: qsTr("Copyright © 2017, Yubico Inc. All rights reserved.")
     }
 
-    Text {
+    Label {
         text: qsTr("Need help?")
         font.bold: true
     }
 
-    Text {
+    Label {
         text: qsTr("Visit Yubico <a href='https://www.yubico.com/support/knowledge-base/'>Knowledge Base</a>")
         onLinkActivated: Qt.openUrlExternally(link)
 

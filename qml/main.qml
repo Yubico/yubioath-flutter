@@ -219,19 +219,19 @@ ApplicationWindow {
                             anchors.topMargin: 5
                             anchors.bottomMargin: 5
                             anchors.fill: parent
-                            Text {
+                            Label {
                                 visible: hasIssuer(modelData.name)
                                 text: qsTr("") + parseIssuer(modelData.name)
                                 font.pixelSize: 12
                             }
-                            Text {
+                            Label {
                                 opacity: isExpired(modelData) ? 0.6 : 1
                                 visible: modelData.code !== null
                                 text: qsTr("") + modelData.code
                                 font.family: "Verdana"
                                 font.pixelSize: 20
                             }
-                            Text {
+                            Label {
                                 text: hasIssuer(
                                           modelData.name) ? qsTr(
                                                                 "") + parseName(
