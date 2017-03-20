@@ -28,7 +28,7 @@ RUN apt-get install -qq \
     python3-dev \
     yubikey-manager
 RUN pip3 install --upgrade pip
-RUN git clone --recursive -b qml-rewrite https://github.com/Yubico/yubioath-desktop
+RUN git clone --recursive https://github.com/Yubico/yubioath-desktop
 RUN echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> yubioath-desktop/vendor/pyotherside/src/src.pro
 RUN cd yubioath-desktop/vendor/pyotherside && qmake -qt=qt5 && make && make install
 RUN cd yubioath-desktop && qmake -qt=qt5 && make
