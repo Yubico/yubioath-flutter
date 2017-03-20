@@ -1,3 +1,11 @@
+* Version 4.0.0 (unreleased)
+ ** The UI has been completely rewritten, to allow us to use a more modern technology stack.
+    All main functionality and concepts are kept the same.
+ ** CLI version has been removed from this porject, the functionality is now found in the YubiKey Manager (ykman) tool.
+ ** Slot mode and CCID mode are now kept separated, choose which mode to use under "Settings".
+ ** Added keyboard shortcuts for copy code, generate code, delete credential, add credential and settings.
+ ** Added support for reseting all OATH credentials and password.
+
 * Version 3.1.0b (released 2016-12-16)
  ** Fix crash on macOS related to how the application was built.
     New installer for macOS based on previous release.
@@ -42,7 +50,7 @@
 
 * Version 2.1.1 (released 2015-07-02)
  ** Added man pages.
- ** Fixed bug with non-CCID YubiKeys not displaying slot-bsed credentials.
+ ** Fixed bug with non-CCID YubiKeys not displaying slot-based credentials.
  ** Windows installer/uninstaller checks for running instance, and closes it.
 
 * Version 2.1.0 (released 2015-06-26)

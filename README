@@ -12,6 +12,14 @@ Store the secrets on a YubiKey and generate the codes with this application.
 * Require touch on YubiKey to generate code.
 * Protect your credentials with a device password.
 
+=== Supported devices
+Usage of this software requires a compatible YubiKey device. Yubico
+Authenticator is capable of provisioning and using both slot-based credentials
+(compatible with any YubiKey that supports OTP) as well as the more powerful
+standalone OATH functionality found on the NEO and YubiKey 4 series.
+To use the standalone OATH functionality your YubiKey must have the CCID mode enabled,
+which can be done by using the https://developers.yubico.com/yubikey-manager-qt/[YubiKey Manager].
+
 === Installation
 
 ==== Windows and macOS
