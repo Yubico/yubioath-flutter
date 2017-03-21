@@ -169,8 +169,8 @@ ApplicationWindow {
     }
 
     ColumnLayout {
-
         anchors.fill: parent
+        spacing: 0
 
         TimeLeftBar {
             id: timeLeftBar
@@ -189,6 +189,7 @@ ApplicationWindow {
                 anchors.right: appWindow.right
                 anchors.left: appWindow.left
                 anchors.top: appWindow.top
+                spacing: 0
 
                 Repeater {
                     id: repeater
@@ -219,6 +220,7 @@ ApplicationWindow {
                             anchors.topMargin: 5
                             anchors.bottomMargin: 5
                             anchors.fill: parent
+                            spacing: 0
                             Label {
                                 visible: hasIssuer(modelData.name)
                                 text: qsTr("") + parseIssuer(modelData.name)
