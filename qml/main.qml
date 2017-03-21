@@ -199,7 +199,6 @@ ApplicationWindow {
 
                     Rectangle {
                         id: credentialRectangle
-                        focus: true
                         color: getCredentialColor(index, repeater.selected,
                                                   modelData)
                         Layout.fillWidth: true
