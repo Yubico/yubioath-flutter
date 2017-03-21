@@ -24,6 +24,7 @@ RUN apt-get install -qq \
     qml-module-qtquick-controls \
     qml-module-qtquick-dialogs \
     qml-module-io-thp-pyotherside \
+    qml-module-qt-labs-settings \
     python3-pip \
     python3-dev \
     yubikey-manager

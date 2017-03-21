@@ -17,6 +17,7 @@ Build-Depends: debhelper (>= 9),
                qml-module-qtquick-controls,
                qml-module-qtquick-dialogs,
                qml-module-io-thp-pyotherside,
+               qml-module-qt-labs-settings,
                libqt5svg5-dev,
                yubikey-manager
 Homepage: https://developers.yubico.com/yubioath-desktop/
@@ -29,6 +30,7 @@ Depends: ${misc:Depends},
          qml-module-io-thp-pyotherside,
          qml-module-qtquick-controls,
          qml-module-qtquick-dialogs,
+         qml-module-qt-labs-settings,
          pcscd
 Description: Graphical interface for displaying OATH codes with a Yubikey
  The Yubico Authenticator is a graphical desktop tool for generating Open
