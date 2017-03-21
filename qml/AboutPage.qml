@@ -25,13 +25,12 @@ DefaultDialog {
     }
 
     Label {
-        text: qsTr("Visit Yubico <a href='https://www.yubico.com/support/knowledge-base/'>Knowledge Base</a>")
-        onLinkActivated: Qt.openUrlExternally(link)
-
+        text: qsTr("Visit <b>Yubico Knowledge Base</b>.")
         MouseArea {
            anchors.fill: parent
-           acceptedButtons: Qt.NoButton
-           cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+           acceptedButtons: Qt.LeftButton
+           cursorShape: Qt.PointingHandCursor
+           onClicked: Qt.openUrlExternally("https://www.yubico.com/support/knowledge-base/")
         }
     }
 }
