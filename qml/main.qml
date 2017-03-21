@@ -166,6 +166,7 @@ ApplicationWindow {
     ArrowKeysSelecter {
         id: arrowKeys
         credRepeater: repeater
+        KeyNavigation.tab: search
     }
 
     ColumnLayout {
