@@ -7,13 +7,8 @@ Menu {
     property bool showGenerate
     property bool enableGenerate
 
-    signal copy
-    signal generate
-    signal deleteCredential
-
     MenuItem {
         text: qsTr("\&Copy")
-        shortcut: StandardKey.Copy
         enabled: (credential != null) && (credential.code != null)
         onTriggered: copy()
     }
@@ -21,14 +16,12 @@ Menu {
     MenuItem {
         visible: showGenerate
         enabled: enableGenerate
-        text: qsTr("\&Generate code")
-        shortcut: "Space"
+        text: qsTr("Generate code")
         onTriggered: generate()
     }
 
     MenuItem {
-        text: qsTr("\&Delete")
-        shortcut: StandardKey.Delete
+        text: qsTr("Delete")
         onTriggered: deleteCredential()
     }
 }

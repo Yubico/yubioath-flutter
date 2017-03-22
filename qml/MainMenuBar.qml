@@ -6,6 +6,9 @@ MenuBar {
     property bool slotMode
     property bool hasDevice
 
+    property var credential
+    property bool enableGenerate
+
     signal openAddCredential
     signal openAbout
     signal openReset
@@ -42,10 +45,40 @@ MenuBar {
     }
 
     Menu {
+        title: qsTr("\&Edit")
+
+        MenuItem {
+            text: qsTr("\&Copy")
+            shortcut: StandardKey.Copy
+            enabled: (credential != null) && (credential.code != null)
+            onTriggered: copy()
+        }
+
+        MenuItem {
+            enabled: enableGenerate
+            text: qsTr("\&Generate code")
+            shortcut: "Space"
+            onTriggered: generate()
+        }
+
+        MenuItem {
+            text: qsTr("\&Delete")
+            shortcut: StandardKey.Delete
+            enabled: (credential != null)
+            onTriggered: deleteCredential()
+        }
+    }
+
+
+    Menu {
         title: qsTr("\&Help")
         MenuItem {
             text: qsTr("\&About Yubico Authenticator")
             onTriggered: openAbout()
         }
     }
+
+
+
+
 }

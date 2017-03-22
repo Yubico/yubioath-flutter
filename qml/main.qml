@@ -27,6 +27,14 @@ ApplicationWindow {
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
     property bool shouldRefresh: visibility != 3 && visibility != 0
 
+    signal copy
+    signal generate
+    signal deleteCredential
+
+    onDeleteCredential: confirmDeleteCredential.open()
+    onGenerate: handleGenerate(repeater.selected)
+    onCopy: clipboard.setClipboard(repeater.selected.code)
+
     onHasDeviceChanged: handleNewDevice()
 
     onCredentialsChanged: {
@@ -37,6 +45,8 @@ ApplicationWindow {
     menuBar: MainMenuBar {
         slotMode: settings.slotMode
         hasDevice: device.hasDevice
+        credential: repeater.selected
+        enableGenerate: enableManualGenerate(repeater.selected)
         onOpenAddCredential: openClearAddCredential()
         onOpenSetPassword: setPassword.open()
         onOpenReset: reset.open()
@@ -44,12 +54,10 @@ ApplicationWindow {
         onOpenAbout: aboutPage.open()
     }
 
-
     Shortcut {
         sequence: StandardKey.Close
         onActivated: close()
     }
-
 
     SystemPalette {
         id: palette
@@ -159,9 +167,6 @@ ApplicationWindow {
         credential: repeater.selected
         showGenerate: allowManualGenerate(repeater.selected)
         enableGenerate: enableManualGenerate(repeater.selected)
-        onGenerate: handleGenerate(repeater.selected)
-        onDeleteCredential: confirmDeleteCredential.open()
-        onCopy: clipboard.setClipboard(repeater.selected.code)
     }
 
     DeleteCredentialConfirmation {
