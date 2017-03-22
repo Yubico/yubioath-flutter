@@ -67,6 +67,12 @@ ApplicationWindow {
         property var slot1digits
         property var slot2digits
         property string savedPasswords
+
+        // Keep track of window position and dimensions.
+        property alias x: appWindow.x
+        property alias y: appWindow.y
+        property alias width: appWindow.width
+        property alias height: appWindow.height
     }
 
     AboutPage {
