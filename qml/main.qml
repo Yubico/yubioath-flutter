@@ -44,6 +44,13 @@ ApplicationWindow {
         onOpenAbout: aboutPage.open()
     }
 
+
+    Shortcut {
+        sequence: StandardKey.Close
+        onActivated: close()
+    }
+
+
     SystemPalette {
         id: palette
     }
