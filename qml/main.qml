@@ -252,6 +252,10 @@ ApplicationWindow {
             placeholderText: qsTr("Search...")
             Layout.fillWidth: true
             KeyNavigation.tab: arrowKeys
+            Shortcut {
+                sequence: StandardKey.Find
+                onActivated: search.focus = true
+            }
         }
     }
 
