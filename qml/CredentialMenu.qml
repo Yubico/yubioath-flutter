@@ -12,7 +12,7 @@ Menu {
     signal deleteCredential
 
     MenuItem {
-        text: qsTr('Copy')
+        text: qsTr("\&Copy")
         shortcut: StandardKey.Copy
         enabled: (credential != null) && (credential.code != null)
         onTriggered: copy()
@@ -21,13 +21,13 @@ Menu {
     MenuItem {
         visible: showGenerate
         enabled: enableGenerate
-        text: qsTr("Generate code")
+        text: qsTr("\&Generate code")
         shortcut: "Space"
         onTriggered: generate()
     }
 
     MenuItem {
-        text: qsTr("Delete")
+        text: qsTr("\&Delete")
         shortcut: StandardKey.Delete
         onTriggered: deleteCredential()
     }

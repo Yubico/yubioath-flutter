@@ -13,9 +13,9 @@ MenuBar {
     signal openSetPassword
 
     Menu {
-        title: qsTr("File")
+        title: qsTr("\&File")
         MenuItem {
-            text: qsTr("Add credential...")
+            text: qsTr("\&Add credential...")
             enabled: hasDevice
             onTriggered: openAddCredential()
             shortcut: StandardKey.New
@@ -31,20 +31,20 @@ MenuBar {
             onTriggered: openReset()
         }
         MenuItem {
-            text: qsTr("Settings")
+            text: qsTr("\&Settings")
             onTriggered: openSettings()
         }
         MenuItem {
-            text: qsTr("Exit")
+            text: qsTr("\&Exit")
             onTriggered: Qt.quit()
             shortcut: StandardKey.Quit
         }
     }
 
     Menu {
-        title: qsTr("Help")
+        title: qsTr("\&Help")
         MenuItem {
-            text: qsTr("About Yubico Authenticator")
+            text: qsTr("\&About Yubico Authenticator")
             onTriggered: openAbout()
         }
     }
