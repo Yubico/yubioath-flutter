@@ -38,6 +38,10 @@ int main(int argc, char *argv[])
     QString path_prefix;
     QString url_prefix;
 
+    app.setApplicationName("Yubico Authenticator");
+    app.setOrganizationName("Yubico");
+    app.setOrganizationDomain("com.yubico");
+
     if (QFileInfo::exists(":" + main_qml)) {
         // Embedded resources
         path_prefix = ":";
