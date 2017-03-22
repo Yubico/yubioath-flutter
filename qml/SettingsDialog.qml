@@ -56,7 +56,7 @@ DefaultDialog {
                 }
                 ComboBox {
                     id: slot1digits
-                    currentIndex: settings.slot1digits
+                    currentIndex: settings.slot1digits != null ? settings.slot1digits : 0
                     enabled: mode.current == slotMode && slot1.checked
                     model: [6, 8]
                     KeyNavigation.tab: slot2
@@ -78,7 +78,7 @@ DefaultDialog {
                 }
                 ComboBox {
                     id: slot2digits
-                    currentIndex: settings.slot2digits
+                    currentIndex: settings.slot2digits != null ? settings.slot2digits : 0
                     enabled: mode.current == slotMode && slot2.checked
                     model: [6, 8]
                     KeyNavigation.tab: saveSettingsBtn
