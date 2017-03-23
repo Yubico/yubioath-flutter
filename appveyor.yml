@@ -74,6 +74,10 @@ after_build:
   - ps: Get-ChildItem -Include *.cpp -Recurse | Remove-Item -Force
   # Remove object files
   - ps: Get-ChildItem -Include *.obj -Recurse | Remove-Item -Force
+  # Remove vcruntime140.dll and sqllite3.dll from python-embed
+  - ps: Get-ChildItem -Include vcruntime140.dll -Recurse | Remove-Item -Force
+  - ps: Get-ChildItem -Include sqllite3.dll -Recurse | Remove-Item -Force
+  - ps: Get-ChildItem -Include _sqllite3.pyd -Recurse | Remove-Item -Force
   # Create zip for deployment
   - 7z a yubioath-desktop-%APPVEYOR_REPO_BRANCH%-HEAD-win.zip .\release\*
   - cd %APPVEYOR_BUILD_FOLDER%
