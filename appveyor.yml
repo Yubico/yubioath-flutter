@@ -60,7 +60,7 @@ after_build:
   - ps: wget https://www.python.org/ftp/python/3.5.2/python-3.5.2-embed-win32.zip -OutFile python-3.5.2-embed-win32.zip
   - 7z x python-3.5.2-embed-win32.zip -o".\release"
   # Use Qt deployment tool on executable
-  - windeployqt .\release\yubioath-desktop.exe --qmldir=qml --no-compiler-runtimer
+  - windeployqt .\release\yubioath-desktop.exe --qmldir=qml --no-compiler-runtime
   # Workaround:
   # Manually add pyotherside plugin to release folder.
   # Should be handled by windeployqt, but doesn't seem to be when QML Settings are used (?).
