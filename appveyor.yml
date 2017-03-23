@@ -11,7 +11,7 @@ init:
   # Needed for jom to work.
   - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
   # Add python and Qtto PATH
-  - set PATH=%PATH%;C:\Python35\Scripts;C:\Qt\5.8\msvc2015\bin;C:\Qt\Tools\QtCreator\bin;
+  - set PATH=%PATH%;C:\Python36\Scripts;C:\Qt\5.8\msvc2015\bin;C:\Qt\Tools\QtCreator\bin;
 
 install:
   # Submodules are not cloned by default
@@ -25,7 +25,7 @@ install:
   - cd .\vendor\pyotherside
   - ps: (Get-Content .\src\qmldir).replace('pyothersideplugin', 'pyothersideplugin1') | Set-Content .\src\qmldir
   - ps: Clear-Content python.pri
-  - ps: Add-Content python.pri "PYTHON_CONFIG = python3-config`nQMAKE_LIBS += -LC:\Python35\libs -lpython35`nQMAKE_CXXFLAGS += -IC:\Python35\include`n"
+  - ps: Add-Content python.pri "PYTHON_CONFIG = python3-config`nQMAKE_LIBS += -LC:\Python36\libs -lpython36`nQMAKE_CXXFLAGS += -IC:\Python36\include`n"
   - qmake
   - jom
   - jom install
