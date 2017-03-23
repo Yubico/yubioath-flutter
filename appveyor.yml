@@ -59,10 +59,6 @@ after_build:
   # Add embedded python
   - ps: wget https://www.python.org/ftp/python/3.5.2/python-3.5.2-embed-win32.zip -OutFile python-3.5.2-embed-win32.zip
   - 7z x python-3.5.2-embed-win32.zip -o".\release"
-  # Add msvcp140.dll
-  - copy "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\x86\Microsoft.VC140.CRT\msvcp140.dll" ".\release"
-  # Add .dlls for redistrubution, see https://blogs.msdn.microsoft.com/vcblog/2015/03/03/introducing-the-universal-crt/
-  - xcopy "C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs\x86" ".\release"
   # Use Qt deployment tool on executable
   - windeployqt .\release\yubioath-desktop.exe -qmldir=qml
   # Workaround:
@@ -76,8 +72,6 @@ after_build:
   - ps: Get-ChildItem -Include __pycache__ -Recurse | Remove-Item -Force
   # Remove object files
   - ps: Get-ChildItem -Include *.obj -Recurse | Remove-Item -Force
-  # Remove Visual C++ Redistributable Package (VCRedist)
-  - ps: Get-ChildItem -Include vcredist_x86.exe -Recurse | Remove-Item -Force
   # Create zip for deployment
   - 7z a yubioath-desktop-%APPVEYOR_REPO_BRANCH%-HEAD-win.zip .\release\*
   - cd %APPVEYOR_BUILD_FOLDER%
