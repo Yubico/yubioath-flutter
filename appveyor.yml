@@ -10,17 +10,12 @@ image: Visual Studio 2015
 init:
   # Needed for jom to work.
   - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
-  # Add python, Qt, NSIS to PATH
-  - set PATH=%PATH%;C:\Python35\Scripts;C:\Qt\5.8\msvc2015\bin;C:\Qt\Tools\QtCreator\bin;C:\Program Files (x86)\NSIS
+  # Add python and Qtto PATH
+  - set PATH=%PATH%;C:\Python35\Scripts;C:\Qt\5.8\msvc2015\bin;C:\Qt\Tools\QtCreator\bin;
 
 install:
   # Submodules are not cloned by default
   - git submodule update --init --recursive
-  # Install nsProcess plugin for NSIS
-  - ps: wget https://s3.eu-central-1.amazonaws.com/yubico-deps/yubikey-manager-qt/nsProcess_1_6.7z -OutFile nsProcess_1_6.7z
-  - 7z e -o"C:\Program Files (x86)\NSIS\Include" nsProcess_1_6.7z Include\*.nsh
-  - 7z e -o"C:\Program Files (x86)\NSIS\Plugins\x86-ansi" nsProcess_1_6.7z Plugin\*.dll
-  - 7z e -o"C:\Program Files (x86)\NSIS\Plugins\x86-unicode" nsProcess_1_6.7z Plugin\*.dll
   # Swig needed for pyscard
   - ps: wget https://s3.eu-central-1.amazonaws.com/yubico-deps/yubikey-manager-qt/swigwin-3.0.10.zip -OutFile swigwin-3.0.10.zip
   - 7z x swigwin-3.0.10.zip
