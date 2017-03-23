@@ -70,6 +70,8 @@ after_build:
   # Remove .pyc files from release folder
   - ps: Get-ChildItem -File -Include *.pyc -Recurse | Remove-Item -Force
   - ps: Get-ChildItem -Include __pycache__ -Recurse | Remove-Item -Force
+  # Remove .cpp source files
+  - ps: Get-ChildItem -Include *.cpp -Recurse | Remove-Item -Force
   # Remove object files
   - ps: Get-ChildItem -Include *.obj -Recurse | Remove-Item -Force
   # Create zip for deployment
