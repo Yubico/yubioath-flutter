@@ -57,8 +57,8 @@ after_build:
   - 7z x libusb-1.0.20.7z -o".\libusb"
   - ps: Copy-Item .\libusb\MS32\dll\*.dll .\release -Force 
   # Add embedded python
-  - ps: wget https://www.python.org/ftp/python/3.5.2/python-3.5.2-embed-win32.zip -OutFile python-3.5.2-embed-win32.zip
-  - 7z x python-3.5.2-embed-win32.zip -o".\release"
+  - ps: wget https://www.python.org/ftp/python/3.6.1/python-3.6.1-embed-win32.zip -OutFile python-3.6.1-embed-win32.zip
+  - 7z x python-3.6.1-embed-win32.zip -o".\release"
   # Use Qt deployment tool on executable
   - windeployqt .\release\yubioath-desktop.exe --qmldir=qml --no-system-d3d-compiler --release
   # Workaround:
