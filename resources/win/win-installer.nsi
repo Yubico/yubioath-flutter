@@ -10,7 +10,7 @@
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
 !define MUI_ABORTWARNING
 
-;Checkbox on finish page, "Run YubiKey Manager"
+;Checkbox on finish page, "Run Yubico Authenticator"
 !define MUI_FINISHPAGE_RUN "$INSTDIR\yubioath-desktop.exe"
 
 Var STARTMENU_FOLDER
@@ -107,7 +107,7 @@ Section "Yubico Authenticator"
   
   ; Windows Add/Remove Programs support
   StrCpy $MYTMP "Software\Microsoft\Windows\CurrentVersion\Uninstall\yubioath-desktop"
-  WriteRegStr       HKLM $MYTMP "DisplayName"     "YubiKey Manager"
+  WriteRegStr       HKLM $MYTMP "DisplayName"     "Yubico Authenticator"
   WriteRegExpandStr HKLM $MYTMP "UninstallString" '"$INSTDIR\yubioath-desktop-uninstall.exe"'
   WriteRegExpandStr HKLM $MYTMP "InstallLocation" "$INSTDIR"
   WriteRegStr       HKLM $MYTMP "DisplayVersion"  "${VERSION}"
