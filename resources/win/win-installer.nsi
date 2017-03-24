@@ -115,7 +115,12 @@ Section "Yubico Authenticator"
   WriteRegStr       HKLM $MYTMP "URLInfoAbout"    "https://www.yubico.com"
   WriteRegDWORD     HKLM $MYTMP "NoModify"        "1"
   WriteRegDWORD     HKLM $MYTMP "NoRepair"        "1"
+
+  ; Install Visual C++ Redistrubutable Packages if needed
+  ExecWait "$INSTDIR\vcredist_x86.exe /q /norestart"
+
 SectionEnd
+
  
 Section  
   !ifndef INNER
