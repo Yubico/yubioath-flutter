@@ -141,7 +141,7 @@ ApplicationWindow {
     // @disable-check M301
     YubiKey {
         id: yk
-        onError: console.log(error)
+        onError: console.log(traceback)
         onWrongPassword: passwordPrompt.open()
     }
 
