@@ -1,8 +1,8 @@
-* Version 4.0.1 (unreleased)
+* Version 4.0.1 (released 2017-03-27)
  ** Bugfix: Follow color schemes better.
- ** Removed some spacing which caused the layout to be slightly off.
- ** Improved focus switching betweeen Search and credentials.
- ** Added keyboard shortcut for focus on the search bar.
+ ** Removed some spacing thath caused the layout to be slightly off.
+ ** Improved focus switching betweeen search bar and credentials.
+ ** Added keyboard shortcut (Ctrl/Cmd + F) for focus on the search bar.
  ** Select the top credential during search.
  ** Remember window location and dimensions between launches.
  ** Add a Edit menu in the menu bar for credentials.
