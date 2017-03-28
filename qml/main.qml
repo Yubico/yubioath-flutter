@@ -195,68 +195,76 @@ ApplicationWindow {
             id: timeLeftBar
             shouldBeVisible: canShowCredentials
         }
-
         ScrollView {
             id: scrollView
             Layout.fillHeight: true
             Layout.fillWidth: true
+            Flickable {
+                id: flickable
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                contentWidth: credentialsColumn.width;
+                contentHeight: credentialsColumn.height
+                clip: true
+                boundsBehavior: Flickable.StopAtBounds
 
-            ColumnLayout {
-                width: scrollView.viewport.width
-                id: credentialsColumn
-                visible: device.hasDevice && (ccidModeMatch || slotModeMatch)
-                anchors.right: appWindow.right
-                anchors.left: appWindow.left
-                anchors.top: appWindow.top
-                spacing: 0
+                ColumnLayout {
+                    width: flickable.width
+                    id: credentialsColumn
+                    visible: device.hasDevice && (ccidModeMatch || slotModeMatch)
+                    anchors.right: appWindow.right
+                    anchors.left: appWindow.left
+                    anchors.top: appWindow.top
+                    spacing: 0
 
-                Repeater {
-                    id: repeater
-                    model: filteredCredentials(credentials)
-                    property var selected: null
-                    property var selectedIndex: null
+                    Repeater {
+                        id: repeater
+                        model: filteredCredentials(credentials)
+                        property var selected: null
+                        property var selectedIndex: null
 
-                    Rectangle {
-                        id: credentialRectangle
-                        color: getCredentialColor(index, repeater.selected,
-                                                  modelData)
-                        Layout.fillWidth: true
-                        Layout.minimumHeight: 70
-                        Layout.alignment: Qt.AlignTop
+                        Rectangle {
+                            id: credentialRectangle
+                            color: getCredentialColor(index, repeater.selected,
+                                                      modelData)
+                            Layout.fillWidth: true
+                            Layout.minimumHeight: 70
+                            Layout.alignment: Qt.AlignTop
 
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: handleMouseClick(mouse, index,
-                                                        repeater.selected,
-                                                        repeater.selectedIndex,
-                                                        modelData)
-                            acceptedButtons: Qt.RightButton | Qt.LeftButton
-                        }
-
-                        ColumnLayout {
-                            anchors.leftMargin: 10
-                            anchors.topMargin: 5
-                            anchors.bottomMargin: 5
-                            anchors.fill: parent
-                            spacing: 0
-                            Label {
-                                visible: hasIssuer(modelData.name)
-                                text: qsTr("") + parseIssuer(modelData.name)
-                                font.pixelSize: 12
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: handleMouseClick(mouse, index,
+                                                            repeater.selected,
+                                                            repeater.selectedIndex,
+                                                            modelData)
+                                acceptedButtons: Qt.RightButton | Qt.LeftButton
                             }
-                            Label {
-                                opacity: isExpired(modelData) ? 0.6 : 1
-                                visible: modelData.code !== null
-                                text: qsTr("") + modelData.code
-                                font.family: "Verdana"
-                                font.pixelSize: 20
-                            }
-                            Label {
-                                text: hasIssuer(
-                                          modelData.name) ? qsTr(
-                                                                "") + parseName(
-                                                                modelData.name) : modelData.name
-                                font.pixelSize: 12
+
+                            ColumnLayout {
+                                anchors.leftMargin: 10
+                                anchors.topMargin: 5
+                                anchors.bottomMargin: 5
+                                anchors.fill: parent
+                                spacing: 0
+                                Label {
+                                    visible: hasIssuer(modelData.name)
+                                    text: qsTr("") + parseIssuer(modelData.name)
+                                    font.pixelSize: 12
+                                }
+                                Label {
+                                    opacity: isExpired(modelData) ? 0.6 : 1
+                                    visible: modelData.code !== null
+                                    text: qsTr("") + modelData.code
+                                    font.family: "Verdana"
+                                    font.pixelSize: 20
+                                }
+                                Label {
+                                    text: hasIssuer(
+                                              modelData.name) ? qsTr(
+                                                                    "") + parseName(
+                                                                    modelData.name) : modelData.name
+                                    font.pixelSize: 12
+                                }
                             }
                         }
                     }

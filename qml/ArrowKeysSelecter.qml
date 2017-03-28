@@ -19,7 +19,9 @@ Item {
         } else if (!lastCredSelected) {
             credRepeater.selected = credRepeater.model[credRepeater.selectedIndex + 1]
             credRepeater.selectedIndex = credRepeater.selectedIndex + 1
+            flickable.flick(0, -300)
         }
+
     }
 
     Keys.onUpPressed: {
@@ -29,6 +31,7 @@ Item {
         } else if (!firstCredSeleced) {
             credRepeater.selected = credRepeater.model[credRepeater.selectedIndex - 1]
             credRepeater.selectedIndex = credRepeater.selectedIndex - 1
+            flickable.flick(0, 300)
         }
     }
 
