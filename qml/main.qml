@@ -370,6 +370,13 @@ ApplicationWindow {
                 }
             }
         }
+
+        // Sort credentials based on the
+        // full name, including the issuer prefix
+        result.sort(function (a, b) {
+            return a.name.localeCompare(b.name)
+         })
+
         // If the search gave some results,
         // the top credential should be selected.
         if (result[0] !== null && search.text.length > 0) {
