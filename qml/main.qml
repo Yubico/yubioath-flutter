@@ -143,6 +143,7 @@ ApplicationWindow {
         id: yk
         onError: console.log(traceback)
         onWrongPassword: passwordPrompt.open()
+        onCredentialsRefreshed: flickable.restoreScrollPosition()
     }
 
     NoLoadedDeviceMessage {
@@ -199,14 +200,24 @@ ApplicationWindow {
             id: scrollView
             Layout.fillHeight: true
             Layout.fillWidth: true
+
             Flickable {
                 id: flickable
+                property double savedScrollPosition
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 contentWidth: credentialsColumn.width;
                 contentHeight: credentialsColumn.height
                 clip: true
                 boundsBehavior: Flickable.StopAtBounds
+
+                function restoreScrollPosition() {
+                    contentY = flickable.savedScrollPosition
+                }
+
+                function saveScrollPosition() {
+                    savedScrollPosition = flickable.contentY
+                }
 
                 ColumnLayout {
                     width: flickable.width
@@ -318,6 +329,7 @@ ApplicationWindow {
     function checkTimeLeft() {
         var timeLeft = device.expiration - (Date.now() / 1000)
         if (timeLeft <= 0 && timeLeftBar.value > 0) {
+            flickable.saveScrollPosition()
             refreshDependingOnMode(true)
         }
         timeLeftBar.value = timeLeft

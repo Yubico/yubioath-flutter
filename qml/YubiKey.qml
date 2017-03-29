@@ -26,6 +26,7 @@ Python {
     property var passwordKey
     property int expiration: 0
     signal wrongPassword
+    signal credentialsRefreshed
 
     Component.onCompleted: {
         importModule('site', function () {
@@ -192,6 +193,7 @@ Python {
         credentials = []
         credentials = result
         updateExpiration()
+        credentialsRefreshed()
     }
 
     function getCredential(name) {
