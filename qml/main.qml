@@ -386,7 +386,7 @@ ApplicationWindow {
                 var cred = creds[i]
                 if (cred.name.toLowerCase().indexOf(search.text.toLowerCase(
                                                         )) !== -1) {
-                    result.push(creds[i])
+                    result.push(cred)
                 }
             }
         }
