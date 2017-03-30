@@ -89,7 +89,7 @@ Python {
         var now = Math.floor(Date.now() / 1000)
         if (force || (validated && nextRefresh < now)) {
             do_call('yubikey.controller.refresh_credentials',
-                    [now, passwordKey], handleCredentials)
+                    [now, passwordKey], updateAllCredentials)
         }
     }
 
@@ -97,7 +97,7 @@ Python {
         var now = Math.floor(Date.now() / 1000)
         if (force || (nextRefresh < now)) {
             do_call('yubikey.controller.refresh_slot_credentials',
-                    [slots, digits, now], handleCredentials)
+                    [slots, digits, now], updateAllCredentials)
         }
     }
 
@@ -165,7 +165,7 @@ Python {
                 })
     }
 
-    function handleCredentials(creds) {
+    function updateAllCredentials(creds) {
         var result = []
         var minExpiration = (Date.now() / 1000) + 10000
         for (var i = 0; i < creds.length; i++) {
