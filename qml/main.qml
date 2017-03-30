@@ -52,6 +52,11 @@ ApplicationWindow {
         onOpenAbout: aboutPage.open()
     }
 
+    Component.onCompleted: {
+        SysTrayIcon
+        updateTrayVisability()
+    }
+
     Shortcut {
         sequence: StandardKey.Close
         onActivated: close()
@@ -73,12 +78,21 @@ ApplicationWindow {
         property var slot1digits
         property var slot2digits
         property string savedPasswords
+        property bool closeToTray
 
         // Keep track of window position and dimensions.
         property alias x: appWindow.x
         property alias y: appWindow.y
         property alias width: appWindow.width
         property alias height: appWindow.height
+
+        onCloseToTrayChanged: {
+            updateTrayVisability()
+        }
+    }
+
+    function updateTrayVisability() {
+        SysTrayIcon.visible = settings.closeToTray
     }
 
     AboutPage {
@@ -475,6 +489,7 @@ ApplicationWindow {
         settings.slot2 = settingsDialog.slot2
         settings.slot1digits = settingsDialog.slot1digits
         settings.slot2digits = settingsDialog.slot2digits
+        settings.closeToTray = settingsDialog.closeToTray
     }
 
     function trySetPassword() {

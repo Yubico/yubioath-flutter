@@ -14,6 +14,8 @@ DefaultDialog {
     property alias slot2: slot2.checked
     property alias slot1digits: slot1digits.currentIndex
     property alias slot2digits: slot2digits.currentIndex
+    property alias closeToTray: closeToTray.checked
+
     ColumnLayout {
         anchors.fill: parent
         Label {
@@ -81,9 +83,22 @@ DefaultDialog {
                     currentIndex: settings.slot2digits != null ? settings.slot2digits : 0
                     enabled: mode.current == slotMode && slot2.checked
                     model: [6, 8]
-                    KeyNavigation.tab: saveSettingsBtn
+                    KeyNavigation.tab: closeToTray
                     Keys.onEscapePressed: close()
                 }
+            }
+        }
+        Label {
+            text: qsTr("System tray")
+            font.bold: true
+        }
+        RowLayout {
+            CheckBox {
+                id: closeToTray
+                checked: settings.closeToTray
+                text: qsTr("Close to system tray")
+                KeyNavigation.tab: saveSettingsBtn
+                Keys.onEscapePressed: close()
             }
         }
 

@@ -60,10 +60,16 @@ int main(int argc, char *argv[])
 
     ScreenShot screenshot;
     QQmlApplicationEngine engine;
+
+    QSystemTrayIcon *trayIcon = new QSystemTrayIcon();
+    trayIcon->setToolTip("Yubico Authenticator");
+    trayIcon->setIcon(QIcon(path_prefix + "/images/windowicon.png"));
+
     engine.rootContext()->setContextProperty("appDir", app_dir);
     engine.rootContext()->setContextProperty("urlPrefix", url_prefix);
     engine.rootContext()->setContextProperty("appVersion", APP_VERSION);
     engine.rootContext()->setContextProperty("ScreenShot", &screenshot);
+    engine.rootContext()->setContextProperty("SysTrayIcon", trayIcon);
     engine.load(QUrl(url_prefix + main_qml));
 
     #ifndef Q_OS_DARWIN
