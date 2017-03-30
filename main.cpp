@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <QtGlobal>
 #include <QtWidgets>
+#include <QQuickWindow>
 #ifndef Q_OS_DARWIN
 #include <QtSingleApplication>
 #endif
@@ -62,7 +63,6 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon();
-    trayIcon->setToolTip("Yubico Authenticator");
     trayIcon->setIcon(QIcon(path_prefix + "/images/windowicon.png"));
 
     engine.rootContext()->setContextProperty("appDir", app_dir);
@@ -71,6 +71,22 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("ScreenShot", &screenshot);
     engine.rootContext()->setContextProperty("SysTrayIcon", trayIcon);
     engine.load(QUrl(url_prefix + main_qml));
+
+    // This is the current system tray icon.
+    // Should probably be replaced by QML when all supported platforms are on > Qt 5.8
+    // See http://doc-snapshots.qt.io/qt5-5.8/qml-qt-labs-platform-systemtrayicon.html
+    QObject *root = engine.rootObjects().first();
+    QQuickWindow *qmlWindow = qobject_cast<QQuickWindow *>(root);
+    QAction *showAction = new QAction(QObject::tr("&Show credentials"), qmlWindow);
+    root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::raise);
+    QAction *quitAction = new QAction(QObject::tr("&Quit"), qmlWindow);
+    root->connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);
+    QMenu *trayIconMenu = new QMenu();
+    trayIconMenu->addAction(showAction);
+    trayIconMenu->addSeparator();
+    trayIconMenu->addAction(quitAction);
+    trayIcon->setContextMenu(trayIconMenu);
+    trayIcon->setToolTip("Yubico Authenticator");
 
     #ifndef Q_OS_DARWIN
     // Wake up the root window on a message from new instance.

@@ -53,7 +53,6 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        SysTrayIcon
         updateTrayVisability()
     }
 
