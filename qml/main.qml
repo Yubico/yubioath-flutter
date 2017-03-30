@@ -399,9 +399,11 @@ ApplicationWindow {
         // If the search gave some results,
         // the top credential should be selected.
         if (result[0] !== null && search.text.length > 0) {
-            repeater.selected = result[0]
-        } else {
-            repeater.selected = null
+            selected = result[0]
+        } else if (search.text.length > 0) {
+            // If search was started but no result,
+            // reset selected to avoid hidden selected creds.
+            selected = null
         }
         return result
     }
