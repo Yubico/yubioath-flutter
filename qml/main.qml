@@ -23,6 +23,9 @@ ApplicationWindow {
     property bool ccidModeMatch: (!settings.slotMode && device.hasCCID)
     property var hotpCoolDowns: []
 
+    property var selected: null
+    property var selectedIndex: null
+
     // Don't refresh credentials when window is minimized or hidden
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
     property bool shouldRefresh: visibility != 3 && visibility != 0
@@ -32,16 +35,16 @@ ApplicationWindow {
     signal deleteCredential
 
     onDeleteCredential: confirmDeleteCredential.open()
-    onGenerate: handleGenerate(repeater.selected)
-    onCopy: clipboard.setClipboard(repeater.selected.code)
+    onGenerate: handleGenerate(selected)
+    onCopy: clipboard.setClipboard(selected.code)
 
     onHasDeviceChanged: handleNewDevice()
 
     menuBar: MainMenuBar {
         slotMode: settings.slotMode
         hasDevice: device.hasDevice
-        credential: repeater.selected
-        enableGenerate: enableManualGenerate(repeater.selected)
+        credential: selected
+        enableGenerate: enableManualGenerate(selected)
         onOpenAddCredential: openClearAddCredential()
         onOpenSetPassword: setPassword.open()
         onOpenReset: reset.open()
@@ -164,9 +167,9 @@ ApplicationWindow {
 
     CredentialMenu {
         id: credentialMenu
-        credential: repeater.selected
-        showGenerate: allowManualGenerate(repeater.selected)
-        enableGenerate: enableManualGenerate(repeater.selected)
+        credential: selected
+        showGenerate: allowManualGenerate(selected)
+        enableGenerate: enableManualGenerate(selected)
     }
 
     DeleteCredentialConfirmation {
@@ -230,13 +233,12 @@ ApplicationWindow {
                     Repeater {
                         id: repeater
                         model: filteredCredentials(credentials)
-                        property var selected: null
-                        property var selectedIndex: null
+
+
 
                         Rectangle {
                             id: credentialRectangle
-                            color: getCredentialColor(index, repeater.selected,
-                                                      modelData)
+                            color: getCredentialColor(index, modelData)
                             Layout.fillWidth: true
                             Layout.minimumHeight: 70
                             Layout.alignment: Qt.AlignTop
@@ -244,8 +246,6 @@ ApplicationWindow {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: handleMouseClick(mouse, index,
-                                                            repeater.selected,
-                                                            repeater.selectedIndex,
                                                             modelData)
                                 acceptedButtons: Qt.RightButton | Qt.LeftButton
                             }
@@ -336,13 +336,13 @@ ApplicationWindow {
 
     function allowManualGenerate(cred) {
         return cred != null && (cred.oath_type === "hotp"
-                                || repeater.selected.touch)
+                                || selected.touch)
     }
 
     function enableManualGenerate(cred) {
         if (allowManualGenerate(cred)) {
             if (cred.oath_type !== "hotp") {
-                return cred.code === null || isExpired(repeater.selected)
+                return cred.code === null || isExpired(selected)
             } else {
                 return !isInCoolDown(cred.name)
             }
@@ -515,13 +515,13 @@ ApplicationWindow {
 
     function deleteSelectedCredential() {
         if (settings.slotMode) {
-            device.deleteSlotCredential(getSlot(repeater.selected.name))
+            device.deleteSlotCredential(getSlot(selected.name))
         } else {
-            device.deleteCredential(repeater.selected)
+            device.deleteCredential(selected)
         }
     }
 
-    function getCredentialColor(index, selected, modelData) {
+    function getCredentialColor(index, modelData) {
         if (selected != null && selected.name === modelData.name) {
             return palette.dark
         }
@@ -531,24 +531,24 @@ ApplicationWindow {
         return palette.alternateBase
     }
 
-    function handleMouseClick(mouse, index, selected, selectedIndex, modelData) {
+    function handleMouseClick(mouse, index, modelData) {
 
         arrowKeys.forceActiveFocus()
 
         if (mouse.button & Qt.LeftButton) {
             if (selected !== null && selected.name === modelData.name) {
                 // Unselect
-                repeater.selected = null
-                repeater.selectedIndex = null
+                selected = null
+                selectedIndex = null
             } else {
                 // Select
-                repeater.selected = modelData
-                repeater.selectedIndex = index
+                selected = modelData
+                selectedIndex = index
             }
         }
         if (mouse.button & Qt.RightButton) {
-            repeater.selected = modelData
-            repeater.selectedIndex = index
+            selected = modelData
+            selectedIndex = index
             credentialMenu.popup()
         }
     }

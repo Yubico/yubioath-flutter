@@ -6,20 +6,20 @@ Item {
 
     property var credRepeater
     property int nCreds: credRepeater.model.length
-    property bool nothingSelected: credRepeater.selectedIndex === null
+    property bool nothingSelected: selectedIndex === null
     property var firstCred: credRepeater.model[0]
     property var lastCred: credRepeater.model[nCreds - 1]
-    property bool lastCredSelected: credRepeater.selectedIndex === nCreds - 1
-    property bool firstCredSeleced: credRepeater.selectedIndex === 0
+    property bool lastCredSelected: selectedIndex === nCreds - 1
+    property bool firstCredSeleced: selectedIndex === 0
 
     Keys.onDownPressed: {
         flickable.flick(0, -300)
         if (nothingSelected) {
-            credRepeater.selected = firstCred
-            credRepeater.selectedIndex = 0
+            selected = firstCred
+            selectedIndex = 0
         } else if (!lastCredSelected) {
-            credRepeater.selected = credRepeater.model[credRepeater.selectedIndex + 1]
-            credRepeater.selectedIndex = credRepeater.selectedIndex + 1
+            selected = credRepeater.model[selectedIndex + 1]
+            selectedIndex = selectedIndex + 1
         }
 
     }
@@ -27,11 +27,11 @@ Item {
     Keys.onUpPressed: {
         flickable.flick(0, 300)
         if (nothingSelected) {
-            credRepeater.selected = lastCred
-            credRepeater.selectedIndex = nCreds - 1
+            selected = lastCred
+            selectedIndex = nCreds - 1
         } else if (!firstCredSeleced) {
-            credRepeater.selected = credRepeater.model[credRepeater.selectedIndex - 1]
-            credRepeater.selectedIndex = credRepeater.selectedIndex - 1
+            selected = credRepeater.model[selectedIndex - 1]
+            selectedIndex = selectedIndex - 1
         }
     }
 
