@@ -37,11 +37,6 @@ ApplicationWindow {
 
     onHasDeviceChanged: handleNewDevice()
 
-    onCredentialsChanged: {
-        hotpTouchTimer.stop()
-        touchYourYubikey.close()
-    }
-
     menuBar: MainMenuBar {
         slotMode: settings.slotMode
         hasDevice: device.hasDevice
@@ -143,7 +138,11 @@ ApplicationWindow {
         id: yk
         onError: console.log(traceback)
         onWrongPassword: passwordPrompt.open()
-        onCredentialsRefreshed: flickable.restoreScrollPosition()
+        onCredentialsRefreshed: {
+            flickable.restoreScrollPosition()
+            hotpTouchTimer.stop()
+            touchYourYubikey.close()
+        }
     }
 
     NoLoadedDeviceMessage {
@@ -424,6 +423,8 @@ ApplicationWindow {
     }
 
     function calculateCredential(credential) {
+        flickable.saveScrollPosition()
+
         if (settings.slotMode) {
             var slot = getSlot(credential.name)
             var digits = getDigits(slot)

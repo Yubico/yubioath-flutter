@@ -255,6 +255,7 @@ Python {
         }
         credentials = result
         updateExpiration()
+        credentialsRefreshed()
     }
 
     function addCredential(name, key, oathType, digits, algorithm, touch, cb) {
