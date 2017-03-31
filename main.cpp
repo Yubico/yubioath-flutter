@@ -78,6 +78,7 @@ int main(int argc, char *argv[])
     QObject *root = engine.rootObjects().first();
     QQuickWindow *qmlWindow = qobject_cast<QQuickWindow *>(root);
     QAction *showAction = new QAction(QObject::tr("&Show credentials"), qmlWindow);
+    root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::show);
     root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::raise);
     QAction *quitAction = new QAction(QObject::tr("&Quit"), qmlWindow);
     root->connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);
