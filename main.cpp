@@ -101,6 +101,6 @@ int main(int argc, char *argv[])
         }
     }
     #endif
-
+    app.setQuitOnLastWindowClosed(false);
     return app.exec();
 }
