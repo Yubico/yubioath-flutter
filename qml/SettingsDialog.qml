@@ -96,7 +96,7 @@ DefaultDialog {
             CheckBox {
                 id: closeToTray
                 checked: settings.closeToTray
-                text: qsTr("Close to system tray")
+                text: qsTr("Show in system tray")
                 KeyNavigation.tab: saveSettingsBtn
                 Keys.onEscapePressed: close()
             }
