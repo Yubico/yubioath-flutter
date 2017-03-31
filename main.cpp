@@ -79,8 +79,11 @@ int main(int argc, char *argv[])
     QObject *root = engine.rootObjects().first();
     QQuickWindow *qmlWindow = qobject_cast<QQuickWindow *>(root);
     QAction *showAction = new QAction(QObject::tr("&Show credentials"), qmlWindow);
+    // The call to hide doesn't make much sense but makes it work on macOS when hidden from the dock.
+    root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::hide);
     root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::show);
     root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::raise);
+    root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::requestActivate);
     QAction *quitAction = new QAction(QObject::tr("&Quit"), qmlWindow);
     root->connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);
     QMenu *trayIconMenu = new QMenu();
