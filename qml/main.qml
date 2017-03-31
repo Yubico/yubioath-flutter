@@ -90,10 +90,6 @@ ApplicationWindow {
         }
     }
 
-    function updateTrayVisability() {
-        SysTrayIcon.visible = settings.closeToTray
-    }
-
     AboutPage {
         id: aboutPage
     }
@@ -567,5 +563,12 @@ ApplicationWindow {
             selectedIndex = index
             credentialMenu.popup()
         }
+    }
+
+    function updateTrayVisability() {
+        SysTrayIcon.visible = settings.closeToTray
+        // When the tray option is enabled, closing the last window
+        // doesn't actually close the application.
+        app.quitOnLastWindowClosed = !settings.closeToTray
     }
 }

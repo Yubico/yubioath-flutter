@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("appVersion", APP_VERSION);
     engine.rootContext()->setContextProperty("ScreenShot", &screenshot);
     engine.rootContext()->setContextProperty("SysTrayIcon", trayIcon);
+    engine.rootContext()->setContextProperty("app", &app);
     engine.load(QUrl(url_prefix + main_qml));
 
     // This is the current system tray icon.
@@ -101,6 +102,5 @@ int main(int argc, char *argv[])
         }
     }
     #endif
-    app.setQuitOnLastWindowClosed(false);
     return app.exec();
 }
