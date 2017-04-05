@@ -307,6 +307,10 @@ ApplicationWindow {
                 sequence: StandardKey.Find
                 onActivated: search.focus = true
             }
+            Shortcut {
+                sequence: StandardKey.Cancel
+                onActivated: search.text = qsTr("")
+            }
         }
     }
 
