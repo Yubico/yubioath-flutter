@@ -38,7 +38,7 @@ MenuBar {
             onTriggered: openSettings()
         }
         MenuItem {
-            text: qsTr("\&Exit")
+            text: qsTr("E\&xit")
             onTriggered: Qt.quit()
             shortcut: StandardKey.Quit
         }
