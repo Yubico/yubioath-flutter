@@ -16,6 +16,7 @@ ApplicationWindow {
     title: getTitle()
     property var device: yk
     property var credentials: device.credentials
+    property bool isRefreshing: false
     property bool hasDevice: device.hasDevice
     property bool canShowCredentials: device.hasDevice && modeAndKeyMatch
                                       && device.validated
@@ -167,6 +168,9 @@ ApplicationWindow {
         onError: console.log(traceback)
         onWrongPassword: passwordPrompt.open()
         onCredentialsRefreshed: {
+            var timeLeft = device.expiration - (Date.now() / 1000)
+            timeLeftBar.value = timeLeft
+            isRefreshing = false
             flickable.restoreScrollPosition()
             hotpTouchTimer.stop()
             touchYourYubikey.close()
@@ -287,7 +291,7 @@ ApplicationWindow {
                                     color: getCredentialTextColor(modelData)
                                 }
                                 Label {
-                                    opacity: isExpired(modelData) ? 0.6 : 1
+                                    opacity: isRefreshing ? 0.6 : 1
                                     visible: modelData.code !== null
                                     text: qsTr("") + modelData.code
                                     font.pixelSize: 20
@@ -370,11 +374,11 @@ ApplicationWindow {
 
     function checkTimeLeft() {
         var timeLeft = device.expiration - (Date.now() / 1000)
+        timeLeftBar.value = timeLeft
         if (timeLeft <= 0 && timeLeftBar.value > 0) {
             flickable.saveScrollPosition()
             refreshDependingOnMode(true)
         }
-        timeLeftBar.value = timeLeft
     }
 
     function allowManualGenerate(cred) {
@@ -408,10 +412,10 @@ ApplicationWindow {
     function refreshDependingOnMode(force) {
         if (hasDevice && shouldRefresh) {
             if (settings.slotMode && device.hasOTP) {
-                device.refreshSlotCredentials([settings.slot1, settings.slot2],
-                                              getSlotDigitsSettings(), force)
+                isRefreshing = device.refreshSlotCredentials([settings.slot1, settings.slot2],
+                                                             getSlotDigitsSettings(), force)
             } else if (!settings.slotMode && device.hasCCID) {
-                device.refreshCCIDCredentials(force)
+                isRefreshing = device.refreshCCIDCredentials(force)
             }
         }
     }
