@@ -60,6 +60,16 @@ ApplicationWindow {
 
     Component.onDestruction: saveScreenLayout()
 
+    onClosing: {
+        ykTimer.running = false
+        timeLeftTimer.running = false
+    }
+
+    onActiveChanged: {
+        ykTimer.running = appWindow.visible
+        timeLeftTimer.running = appWindow.visible
+    }
+
     Shortcut {
         sequence: StandardKey.Close
         onActivated: close()
