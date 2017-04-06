@@ -87,7 +87,7 @@ Python {
 
     function refreshCCIDCredentials(force) {
         var now = Math.floor(Date.now() / 1000)
-        if (force || (validated && nextRefresh < now)) {
+        if (force || (validated && nextRefresh <= now)) {
             do_call('yubikey.controller.refresh_credentials',
                     [now, passwordKey], updateAllCredentials)
             return true;
@@ -97,7 +97,7 @@ Python {
 
     function refreshSlotCredentials(slots, digits, force) {
         var now = Math.floor(Date.now() / 1000)
-        if (force || (nextRefresh < now)) {
+        if (force || (nextRefresh <= now)) {
             do_call('yubikey.controller.refresh_slot_credentials',
                     [slots, digits, now], updateAllCredentials)
             return true;
