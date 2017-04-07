@@ -217,7 +217,7 @@ ApplicationWindow {
                 property double savedScrollPosition
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                contentWidth: credentialsColumn.width;
+                contentWidth: credentialsColumn.width
                 contentHeight: credentialsColumn.height
                 clip: true
                 boundsBehavior: Flickable.StopAtBounds
@@ -233,7 +233,8 @@ ApplicationWindow {
                 ColumnLayout {
                     width: flickable.width
                     id: credentialsColumn
-                    visible: device.hasDevice && (ccidModeMatch || slotModeMatch)
+                    visible: device.hasDevice && (ccidModeMatch
+                                                  || slotModeMatch)
                     anchors.right: appWindow.right
                     anchors.left: appWindow.left
                     anchors.top: appWindow.top
@@ -242,8 +243,6 @@ ApplicationWindow {
                     Repeater {
                         id: repeater
                         model: filteredCredentials(credentials)
-
-
 
                         Rectangle {
                             id: credentialRectangle
@@ -279,8 +278,7 @@ ApplicationWindow {
                                 }
                                 Label {
                                     text: hasIssuer(
-                                              modelData.name) ? qsTr(
-                                                                    "") + parseName(
+                                              modelData.name) ? qsTr("") + parseName(
                                                                     modelData.name) : modelData.name
                                     font.pixelSize: 12
                                 }
@@ -344,8 +342,7 @@ ApplicationWindow {
     }
 
     function allowManualGenerate(cred) {
-        return cred != null && (cred.oath_type === "hotp"
-                                || selected.touch)
+        return cred != null && (cred.oath_type === "hotp" || selected.touch)
     }
 
     function enableManualGenerate(cred) {
@@ -403,7 +400,7 @@ ApplicationWindow {
         // full name, including the issuer prefix
         result.sort(function (a, b) {
             return a.name.localeCompare(b.name)
-         })
+        })
 
         // If the search gave some results,
         // the top credential should be selected.
