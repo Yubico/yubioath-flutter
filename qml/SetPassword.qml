@@ -10,7 +10,14 @@ DefaultDialog {
     modality: Qt.ApplicationModal
     property string newPassword: newPassword.text
     property bool matchingPasswords: newPassword.text === confirmPassword.text
-    onClosing: clear()
+
+    onVisibilityChanged: {
+        // Clear the password from old canceled entries
+        // when a new dialog is shown.
+        if (visible) {
+            clear()
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
