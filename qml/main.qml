@@ -268,19 +268,21 @@ ApplicationWindow {
                                     visible: hasIssuer(modelData.name)
                                     text: qsTr("") + parseIssuer(modelData.name)
                                     font.pixelSize: 12
+                                    color: getCredentialTextColor(modelData)
                                 }
                                 Label {
                                     opacity: isExpired(modelData) ? 0.6 : 1
                                     visible: modelData.code !== null
                                     text: qsTr("") + modelData.code
-                                    font.family: "Verdana"
                                     font.pixelSize: 20
+                                    color: getCredentialTextColor(modelData)
                                 }
                                 Label {
                                     text: hasIssuer(
                                               modelData.name) ? qsTr("") + parseName(
                                                                     modelData.name) : modelData.name
                                     font.pixelSize: 12
+                                    color: getCredentialTextColor(modelData)
                                 }
                             }
                         }
@@ -532,12 +534,20 @@ ApplicationWindow {
 
     function getCredentialColor(index, modelData) {
         if (selected != null && selected.name === modelData.name) {
-            return palette.dark
+            return palette.highlight
         }
         if (index % 2 == 0) {
-            return "#00000000"
+            return palette.window
         }
-        return palette.alternateBase
+        return palette.midlight
+    }
+
+    function getCredentialTextColor(modelData) {
+        if (selected != null && selected.name === modelData.name) {
+            return palette.highlightedText
+        } else {
+            return palette.windowText
+        }
     }
 
     function handleMouseClick(mouse, index, modelData) {

@@ -15,14 +15,4 @@ ProgressBar {
     Layout.fillWidth: true
     maximumValue: 30
     minimumValue: 0
-
-    style: ProgressBarStyle {
-        progress: Rectangle {
-            color: "#9aca3c"
-        }
-
-        background: Rectangle {
-            color: palette.alternateBase
-        }
-    }
 }
