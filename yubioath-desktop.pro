@@ -5,7 +5,7 @@ SOURCES += main.cpp
 
 # This is the verson number for the application,
 # will be in info.plist file, about page etc.
-VERSION = 4.0.1
+VERSION = 4.1.0
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 buildqrc.commands = python build_qrc.py ${QMAKE_FILE_IN}
