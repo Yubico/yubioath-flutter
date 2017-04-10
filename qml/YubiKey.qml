@@ -122,7 +122,7 @@ Python {
         })
     }
 
-    function promptOrSkip(prompt, savedPasswords) {
+    function promptOrSkip(prompt) {
 
         do_call('yubikey.controller.get_oath_id', [], function (res) {
 
@@ -130,8 +130,9 @@ Python {
 
             // Check if device id can be found in saved passwords
             // and validate with that key if found.
-            if (savedPasswords.indexOf(oathId) !== -1) {
-                validateFromKey(getSavedKey(oathId, savedPasswords))
+            var savedKey = getSavedKey(oathId)
+            if (savedKey != null) {
+                validateFromKey(savedKey)
                 return
             }
 
@@ -146,14 +147,10 @@ Python {
         })
     }
 
-    function getSavedKey(id, savedPasswords) {
-        var pairs = savedPasswords.split(';')
-        for (var i = 0; i < pairs.length; i++) {
-            var pair = pairs[i].split(':')
-            if (pair[0] === id) {
-                return pair[1]
-            }
-        }
+    function getSavedKey(id) {
+        // Read a saved password key, else return null.
+        var entries = getPasswordEntries()
+        return (entries[id] != null) ? entries[id] : null
     }
 
     function setPassword(password) {

@@ -366,7 +366,9 @@ ApplicationWindow {
 
     function rememberPassword() {
         var deviceId = device.oathId
-        settings.savedPasswords += deviceId + ':' + device.passwordKey + ';'
+        var entries = getPasswordEntries()
+        entries[deviceId] = device.passwordKey
+        savePasswordEntries(entries)
     }
 
     function refreshDependingOnMode(force) {
@@ -496,7 +498,7 @@ ApplicationWindow {
 
     function handleNewDevice() {
         if (device.hasDevice && ccidModeMatch) {
-            device.promptOrSkip(passwordPrompt, settings.savedPasswords)
+            device.promptOrSkip(passwordPrompt)
         } else {
             passwordPrompt.close()
             setPassword.close()
@@ -576,5 +578,25 @@ ApplicationWindow {
         // When the tray option is enabled, closing the last window
         // doesn't actually close the application.
         app.quitOnLastWindowClosed = !settings.closeToTray
+    }
+
+    function getPasswordEntries() {
+        // Try to parse the saved password from the settings.
+        // If the format is wrong, just return an empty object.
+        var entries = {}
+        try {
+            entries = JSON.parse(settings.savedPasswords)
+        } catch (e) {
+            console.log("Could not read passwords.", e)
+        }
+        return entries
+    }
+
+    function savePasswordEntries(entries) {
+        try {
+            settings.savedPasswords = JSON.stringify(entries)
+        } catch (e) {
+            console.log("Could not save password.", e)
+        }
     }
 }
