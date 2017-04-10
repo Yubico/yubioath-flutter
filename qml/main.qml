@@ -521,7 +521,6 @@ ApplicationWindow {
         } else {
             device.validate(passwordPrompt.password)
         }
-        passwordPrompt.clear()
     }
 
     function deleteSelectedCredential() {

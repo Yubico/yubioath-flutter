@@ -11,6 +11,14 @@ DefaultDialog {
     property string password: password.text
     property bool remember: rememberPassword.checked
 
+    onVisibilityChanged: {
+        // Clear the password from old canceled entries
+        // when a new dialog is shown.
+        if (visible) {
+            clear()
+        }
+    }
+
     ColumnLayout {
         RowLayout {
             Label {
@@ -62,5 +70,6 @@ DefaultDialog {
 
     function clear() {
         password.text = ''
+        rememberPassword.checked = false
     }
 }
