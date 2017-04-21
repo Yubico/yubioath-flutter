@@ -39,7 +39,7 @@ install:
       brew link qt5 -f
       brew install ykpers libyubikey hidapi libu2f-host libusb
       # Build Python 3 with --enable-framework, to be able to distribute it in a .app bundle
-      brew install pyenv
+      brew upgrade pyenv
       eval "$(pyenv init -)"
       env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" pyenv install 3.6.1
       pyenv global system 3.6.1
