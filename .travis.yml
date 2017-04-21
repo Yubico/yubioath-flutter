@@ -44,7 +44,7 @@ install:
       env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" pyenv install 3.6.1
       pyenv global system 3.6.1
       # Upgrade pip
-      pip3 install --upgrade pip
+      pip install --upgrade pip
       # Build and install PyOtherside
       cd vendor/pyotherside
       qmake
