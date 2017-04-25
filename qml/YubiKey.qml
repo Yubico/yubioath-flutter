@@ -186,7 +186,7 @@ Python {
         }
         nextRefresh = minExpiration
         // Credentials is cleared so that
-        // the view w refresh even if objects are the same
+        // the view will refresh even if objects are the same
         credentials = []
         credentials = result
         updateExpiration()
