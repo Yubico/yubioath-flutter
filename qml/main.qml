@@ -556,7 +556,7 @@ ApplicationWindow {
         arrowKeys.forceActiveFocus()
 
         if (mouse.button & Qt.LeftButton) {
-            if (selected !== null && selected.name === modelData.name) {
+            if (selected != null && selected.name === modelData.name) {
                 // Unselect
                 selected = null
                 selectedIndex = null

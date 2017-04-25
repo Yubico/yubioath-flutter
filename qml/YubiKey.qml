@@ -186,7 +186,7 @@ Python {
         }
         nextRefresh = minExpiration
         // Credentials is cleared so that
-        // the view w refresh even if objects are the same
+        // the view will refresh even if objects are the same
         credentials = []
         credentials = result
         updateExpiration()
@@ -241,6 +241,10 @@ Python {
                 updateCredential)
     }
 
+    /**
+      Put a credential coming from the YubiKey in the
+      right position in the credential list.
+      */
     function updateCredential(cred) {
         var result = []
         for (var i = 0; i < credentials.length; i++) {
@@ -253,6 +257,10 @@ Python {
         credentials = result
         updateExpiration()
         credentialsRefreshed()
+        // Update the selected credential
+        // after update, since the code now
+        // might be available.
+        selected = cred
     }
 
     function addCredential(name, key, oathType, digits, algorithm, touch, cb) {
