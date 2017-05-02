@@ -87,6 +87,7 @@ after_success:
       find /usr/local/Cellar/hidapi/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       find /usr/local/Cellar/libu2f-host/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       find /usr/local/Cellar/libusb/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+      find /usr/local/Cellar/openssl/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       # Copy Python framework
       cp -a ~/.pyenv/versions/3.6.1/Python.framework yubioath-desktop.app/Contents/Frameworks/
       sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '*.pyc' -delete
