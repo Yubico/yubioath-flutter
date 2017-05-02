@@ -99,6 +99,9 @@ after_success:
       sudo python macdeployqtfix/macdeployqtfix.py yubioath-desktop.app/Contents/MacOS/yubioath-desktop /usr/local
       # Fix linking for PyOtherSide
       sudo install_name_tool -change /Users/travis/.pyenv/versions/3.6.1/Python.framework/Versions/3.6/Python @executable_path/../Frameworks/Python.framework/Versions/3.6/Python yubioath-desktop.app/Contents/Resources/qml/io/thp/pyotherside/libpyothersideplugin.dylib
+      # Fix linking for Python _ssl
+      sudo install_name_tool -change /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib /Users/yubico/Desktop/yubioath-desktop_maybe.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_ssl.cpython-36m-darwin.so
+      sudo install_name_tool -change /usr/local/opt/openssl/lib/libssl.1.0.0.dylib @executable_path/../Frameworks/libssl.1.0.0.dylib /Users/yubico/Desktop/yubioath-desktop_maybe.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_ssl.cpython-36m-darwin.so
       # Create .pkg
       pkgbuild --install-location /Applications --component yubioath-desktop.app yubioath-desktop-$TRAVIS_BRANCH-HEAD-mac.pkg
       # Copy to deploy dir
