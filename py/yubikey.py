@@ -29,7 +29,6 @@ class Controller(object):
     _dev_info = None
 
     def __init__(self):
-        print("[DEBUG] call derive_key" + str(derive_key(b'', "")))
         # Wrap all args and return values as JSON.
         for f in dir(self):
             if not f.startswith('_'):
