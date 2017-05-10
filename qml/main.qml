@@ -521,7 +521,7 @@ ApplicationWindow {
         if (passwordPrompt.remember) {
             device.validate(passwordPrompt.password, rememberPassword)
         } else {
-            device.validate(passwordPrompt.password)
+            device.validate(passwordPrompt.password, null)
         }
     }
 

@@ -132,7 +132,7 @@ Python {
             // and validate with that key if found.
             var savedKey = getSavedKey(oathId)
             if (savedKey != null) {
-                validateFromKey(savedKey)
+                validateFromKey(savedKey, null)
                 return
             }
 
