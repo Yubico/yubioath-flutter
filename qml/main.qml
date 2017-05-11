@@ -3,6 +3,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
+import QtQuick.Window 2.2
 import Qt.labs.settings 1.0
 
 ApplicationWindow {
@@ -54,7 +55,10 @@ ApplicationWindow {
 
     Component.onCompleted: {
         updateTrayVisability()
+        ensureWindowInValidPosition()
     }
+
+    Component.onDestruction: saveScreenLayout()
 
     Shortcut {
         sequence: StandardKey.Close
@@ -79,11 +83,13 @@ ApplicationWindow {
         property string savedPasswords
         property bool closeToTray
 
-        // Keep track of window position and dimensions.
-        property alias x: appWindow.x
-        property alias y: appWindow.y
+        // Keep track of window and desktop dimensions.
         property alias width: appWindow.width
         property alias height: appWindow.height
+        property alias x: appWindow.x
+        property alias y: appWindow.y
+        property var desktopAvailableWidth
+        property var desktopAvailableHeight
 
         onCloseToTrayChanged: {
             updateTrayVisability()
@@ -332,6 +338,20 @@ ApplicationWindow {
         id: hotpTouchTimer
         interval: 500
         onTriggered: touchYourYubikey.open()
+    }
+
+    function saveScreenLayout() {
+        settings.desktopAvailableWidth = Screen.desktopAvailableWidth
+        settings.desktopAvailableHeight = Screen.desktopAvailableHeight
+    }
+
+    function ensureWindowInValidPosition() {
+        // If we have the same desktop(s) dimensions as last time, use the saved position.
+        // If not, put the window in the middle of the screen.
+        var savedScreenLayout = (settings.desktopAvailableWidth === Screen.desktopAvailableWidth)
+                && (settings.desktopAvailableHeight === Screen.desktopAvailableHeight)
+        appWindow.x = (savedScreenLayout) ? settings.x : Screen.width / 2 - appWindow.width / 2
+        appWindow.y = (savedScreenLayout) ? settings.y : Screen.height / 2 - appWindow.height / 2
     }
 
     function checkTimeLeft() {
@@ -583,7 +603,9 @@ ApplicationWindow {
     function getPasswordEntries() {
         // Try to parse the saved password from the settings.
         // If the format is wrong, just return an empty object.
-        var entries = {}
+        var entries = {
+
+        }
         try {
             entries = JSON.parse(settings.savedPasswords)
         } catch (e) {
