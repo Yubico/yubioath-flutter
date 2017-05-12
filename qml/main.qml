@@ -55,7 +55,7 @@ ApplicationWindow {
 
     Component.onCompleted: {
         updateTrayVisability()
-        ensureWindowInValidPosition()
+        ensureValidWindowPosition()
     }
 
     Component.onDestruction: saveScreenLayout()
@@ -345,8 +345,8 @@ ApplicationWindow {
         settings.desktopAvailableHeight = Screen.desktopAvailableHeight
     }
 
-    function ensureWindowInValidPosition() {
-        // If we have the same desktop(s) dimensions as last time, use the saved position.
+    function ensureValidWindowPosition() {
+        // If we have the same desktop dimensions as last time, use the saved position.
         // If not, put the window in the middle of the screen.
         var savedScreenLayout = (settings.desktopAvailableWidth === Screen.desktopAvailableWidth)
                 && (settings.desktopAvailableHeight === Screen.desktopAvailableHeight)
