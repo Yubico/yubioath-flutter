@@ -1,3 +1,7 @@
+* Version 4.1.2 (released 2017-05-12)
+ ** Ubuntu: Fixed crash after entering password on Ubuntu 17.04
+ ** Windows: Fixed issue with window spawning outside desktop.
+
 * Version 4.1.1 (released 2017-05-09)
  ** Windows: Fixed issue with missing OpenGL drivers, include ANGLE in windows build.
  ** macOS: Fixed issue with incorrect linking to OpenSSL, causing the application to freeze when reading credentials.
