@@ -12,9 +12,14 @@ Vagrant.configure("2") do |config|
   # Sync repository to /vagrant
   config.vm.synced_folder '../..', '/vagrant'
 
-  # GUI enabled in VirtualBox
+  # VirtualBox configuration
   config.vm.provider "virtualbox" do |vb|
+    # Enable GUI
     vb.gui = true
+    # Enable shared clipboard
+    vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+    # Enable drag-n-drop
+    vb.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
   end
 
   # Uncomment this to add a USB filter for YubiKeys.
