@@ -1,0 +1,54 @@
+== Project outline
+
+Yubico Authenticator is a Qt5 application written in QML that uses the plugin PyOtherSide to enable 
+the backend logic to be written in Python 3. The python library yubikey-manager is needed to communicate with the YubiKey,
+and is included as a submodule in the repository. It can also be installed through pip and some other package managers.
+
+== Setting up a development environment on Ubuntu 16.04 (Xenial)
+
+Install development dependencies:
+
+    $ sudo add-apt-repository -y ppa:yubico/stable
+    $ sudo apt update
+    $ sudo apt install yubikey-manager qml-module-qt-labs-settings qml-module-qtquick-dialogs \
+      qml-module-qtquick-controls qt5-default libqt5svg5-dev qtdeclarative5-dev qtbase5-dev
+
+Setup the repository:
+
+    $ git clone --recursive https://github.com/Yubico/yubioath-desktop.git
+    $ cd yubioath-desktop
+
+Compile the app:
+
+    $ qmake
+    $ make
+
+Run the app:
+
+    $ yubioath-desktop
+
+To update once installed, just make sure the repo is up to date:
+
+    $ git pull
+    $ git submodule update
+
+=== Code Style & Linting
+
+This project uses http://flake8.pycqa.org/[Flake8] (for the python parts) and qmllint 
+(for the QML parts) for code style with a http://pre-commit.com/[pre-commit] hook.
+
+To use these:
+
+    $ pip install pre-commit flake8
+    $ pre-commit install
+
+== Using vagrant for development
+
+A Vagrantfile with a development environment based on Ubuntu 16.04 is included in the repository.
+It comes with Xfce4 as a desktop environment. To start the vagrant environment:
+
+    $ cd vagrant/development
+    $ vagrant up
+
+The default root login credentials are root:root. The repository can be found as a synced folder under `/vagrant`.
+Modify the provision.sh script to set up a USB filter to capture the device with VirtualBox.
