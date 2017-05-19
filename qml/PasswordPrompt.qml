@@ -48,6 +48,7 @@ DefaultDialog {
             Button {
                 id: okBtn
                 text: qsTr("Ok")
+                isDefault: true
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
                 onClicked: promptAccepted()
                 KeyNavigation.tab: cancelBtn
