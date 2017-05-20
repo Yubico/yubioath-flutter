@@ -223,11 +223,15 @@ def parse_bits(bits, version):
         while l > 0:
             if l >= 3:
                 num, bits = bits_to_int(bits[:10]), bits[10:]
+                l -= 3
             elif l >= 2:
                 num, bits = bits_to_int(bits[:7]), bits[7:]
+                l -= 2
             else:
                 num, bits = bits_to_int(bits[:3]), bits[3:]
+                l -= 1
             buf += str(num)
+        return buf, bits
     elif enc == 2:  # Alphanumeric
         n_l = 9 if version < 10 else 11 if version < 27 else 13
         l, bits = bits_to_int(bits[:n_l]), bits[n_l:]
