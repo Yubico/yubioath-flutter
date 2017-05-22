@@ -26,7 +26,8 @@ sudo apt-get install -qq \
     python3-pip \
     python3-dev \
     yubikey-manager \
-    xfce4
+    xfce4 \
+    firefox
 pip3 install --upgrade pip
 
 # Install flake8 for linting
