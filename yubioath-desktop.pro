@@ -29,7 +29,7 @@ win32|macx {
     QMAKE_CLEAN += -r pymodules
 }
 macx {
-    pip.commands = pip3 install -r requirements.txt --target pymodules
+    pip.commands = python3 -m venv pymodules && source pymodules/bin/activate && pip3 install -r requirements.txt && deactivate
 }
 win32 {
     pip.commands = pip3 install -r requirements-win.txt --target pymodules
@@ -51,7 +51,7 @@ macx {
     ICON = resources/icons/yubioath.icns
     QMAKE_INFO_PLIST = resources/mac/Info.plist.in
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9 # Mavericks
-    QMAKE_POST_LINK += cp -rnf pymodules yubioath-desktop.app/Contents/MacOS/
+    QMAKE_POST_LINK += cp -rnf pymodules/lib/python3*/site-packages/ yubioath-desktop.app/Contents/MacOS/
 }
 
 # For generating a XML file with all strings.
