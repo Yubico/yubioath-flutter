@@ -51,7 +51,7 @@ macx {
     ICON = resources/icons/yubioath.icns
     QMAKE_INFO_PLIST = resources/mac/Info.plist.in
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9 # Mavericks
-    QMAKE_POST_LINK += cp -rnf pymodules/lib/python3*/site-packages/ yubioath-desktop.app/Contents/MacOS/
+    QMAKE_POST_LINK += cp -rnf pymodules/lib/python3*/site-packages/ yubioath-desktop.app/Contents/MacOS/pymodules/
 }
 
 # For generating a XML file with all strings.
