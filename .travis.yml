@@ -51,7 +51,6 @@ install:
       make
       sudo make install
       cd ../../
-      qmake
     fi
   # Install linting tools
   - pip install pre-commit flake8
