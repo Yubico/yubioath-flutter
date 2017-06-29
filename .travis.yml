@@ -93,7 +93,7 @@ after_success:
       sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '__pycache__' -delete
       # Move pymodules from app bundle to site-packages, to be accepted by codesign
       mv yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/
-      rm -d yubioath-desktop.app/Contents/MacOS/pymodules
+      rm -rf yubioath-desktop.app/Contents/MacOS/pymodules
       # Fix stuff that macdeployqt does incorrectly.
       sudo python macdeployqtfix/macdeployqtfix.py yubioath-desktop.app/Contents/MacOS/yubioath-desktop /usr/local
       # Fix linking for PyOtherSide
