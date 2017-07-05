@@ -601,15 +601,18 @@ ApplicationWindow {
     }
 
     function getPasswordEntries() {
-        // Try to parse the saved password from the settings.
-        // If the format is wrong, just return an empty object.
+        // Try to parse the saved password (if any) from the settings.
+        // If no saved passwords or the format is wrong,
+        // just return an empty object.
         var entries = {
 
         }
-        try {
-            entries = JSON.parse(settings.savedPasswords)
-        } catch (e) {
-            console.log("Could not read passwords.", e)
+        if (settings.savedPasswords.length !== 0) {
+            try {
+                entries = JSON.parse(settings.savedPasswords)
+            } catch (e) {
+                console.log("Could not read passwords.", e)
+            }
         }
         return entries
     }
