@@ -61,6 +61,9 @@ MenuBar {
             onTriggered: generate()
         }
 
+        MenuSeparator {
+        }
+
         MenuItem {
             text: qsTr("\&Delete")
             shortcut: StandardKey.Delete
@@ -68,7 +71,6 @@ MenuBar {
             onTriggered: deleteCredential()
         }
     }
-
 
     Menu {
         title: qsTr("\&Help")

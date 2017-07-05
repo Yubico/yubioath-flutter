@@ -20,6 +20,9 @@ Menu {
         onTriggered: generate()
     }
 
+    MenuSeparator {
+    }
+
     MenuItem {
         text: qsTr("Delete")
         onTriggered: deleteCredential()
