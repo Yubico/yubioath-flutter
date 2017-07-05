@@ -181,6 +181,14 @@ Python {
                 result.push(getCredential(cred.name))
                 continue
             }
+            // The selected credential should still be selected,
+            // with an updated code.
+            if (selected != null) {
+                if (selected.name === cred.name) {
+                    selected = cred
+                }
+            }
+
             // TOTP credentials should be updated
             result.push(cred)
         }
