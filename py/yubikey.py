@@ -11,7 +11,8 @@ from ykman.descriptor import get_descriptors
 from ykman.util import (
     CAPABILITY, TRANSPORT, derive_key, parse_uri, parse_b32_key)
 from ykman.driver_otp import YkpersError
-from ykman.oath import OathController, Credential
+from ykman.driver_ccid import APDUError
+from ykman.oath import OathController, Credential, SW
 from qr import qrparse
 from qr import qrdecode
 
@@ -172,8 +173,17 @@ class Controller(object):
             key = parse_b32_key(key)
         except Exception as e:
             return str(e)
-        controller.put(
-            key, name, oath_type, digits, algo=algo, require_touch=touch)
+        try:
+            controller.put(
+                key, name, oath_type, digits, algo=algo, require_touch=touch)
+        except APDUError as e:
+            # NEO doesn't return a no space error if full,
+            # but a command aborted error. Assume it's because of
+            # no space in this context.
+            if e.sw == SW.NO_SPACE or e.sw == SW.COMMAND_ABORTED:
+                return 'No space'
+            else:
+                raise
 
     def add_slot_credential(self, slot, key, touch):
         dev = self._descriptor.open_device(TRANSPORT.OTP)

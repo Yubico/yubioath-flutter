@@ -189,6 +189,14 @@ DefaultDialog {
     }
 
     MessageDialog {
+        id: spaceError
+        icon: StandardIcon.Critical
+        title: qsTr("No space")
+        text: qsTr("There is no storage space left on the device, so the credential can not be added.")
+        standardButtons: StandardButton.Ok
+    }
+
+    MessageDialog {
         id: confirmOverWrite
         icon: StandardIcon.Warning
         title: qsTr("Overwrite credential?")
@@ -243,6 +251,9 @@ DefaultDialog {
                              touch.checked, function (error) {
                                  if (error === 'Incorrect padding') {
                                      paddingError.open()
+                                 }
+                                 if (error === 'No space') {
+                                    spaceError.open()
                                  }
                                  close()
                                  refreshDependingOnMode(true)
