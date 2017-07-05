@@ -47,6 +47,7 @@ DefaultDialog {
                 }
                 KeyNavigation.tab: totp
                 Keys.onEscapePressed: close()
+                onAccepted: tryAddCredential()
             }
         }
 
@@ -156,15 +157,10 @@ DefaultDialog {
                 text: qsTr("Add credential")
                 enabled: acceptableInput()
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-                onClicked: {
-                    if (device.credentialExists(name.text)) {
-                        confirmOverWrite.open()
-                    } else {
-                        addCredential()
-                    }
-                }
+                onClicked: tryAddCredential()
                 KeyNavigation.tab: cancelBtn
                 Keys.onEscapePressed: close()
+                isDefault: true
             }
             Button {
                 id: cancelBtn
@@ -212,6 +208,14 @@ DefaultDialog {
         digits.current = six
         algorithm.current = sha1
         touch.checked = false
+    }
+
+    function tryAddCredential() {
+        if (device.credentialExists(name.text)) {
+            confirmOverWrite.open()
+        } else {
+            addCredential()
+        }
     }
 
     function enableTouchOption() {

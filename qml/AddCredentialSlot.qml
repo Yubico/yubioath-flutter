@@ -37,6 +37,7 @@ DefaultDialog {
                 }
                 KeyNavigation.tab: slot1
                 Keys.onEscapePressed: close()
+                onAccepted: tryAddCredential()
             }
         }
 
@@ -87,16 +88,10 @@ DefaultDialog {
                 text: qsTr("Add credential")
                 enabled: acceptableInput()
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-
-                onClicked: {
-                    if (slotIsUsed(slotSelected.current.name)) {
-                        confirmOverWrite.open()
-                    } else {
-                        addCredential()
-                    }
-                }
+                onClicked: tryAddCredential()
                 KeyNavigation.tab: cancelBtn
                 Keys.onEscapePressed: close()
+                isDefault: true
             }
             Button {
                 id: cancelBtn
@@ -127,6 +122,14 @@ DefaultDialog {
         text: qsTr("This slot seems to already be configured. Are you sure you want to overwrite the slot configuration?")
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: addCredential()
+    }
+
+    function tryAddCredential() {
+        if (slotIsUsed(slotSelected.current.name)) {
+            confirmOverWrite.open()
+        } else {
+            addCredential()
+        }
     }
 
     function slotIsUsed(slot) {
