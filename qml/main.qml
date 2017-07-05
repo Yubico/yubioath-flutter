@@ -394,6 +394,7 @@ ApplicationWindow {
     function refreshDependingOnMode(force) {
         if (hasDevice && shouldRefresh) {
             if (settings.slotMode && device.hasOTP) {
+                device.validated = true // Slot side has no password function
                 device.refreshSlotCredentials([settings.slot1, settings.slot2],
                                               getSlotDigitsSettings(), force)
             } else if (!settings.slotMode && device.hasCCID) {
