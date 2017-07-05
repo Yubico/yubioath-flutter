@@ -48,7 +48,7 @@ MenuBar {
         title: qsTr("\&Edit")
 
         MenuItem {
-            text: qsTr("\&Copy")
+            text: qsTr("\&Copy to clipboard")
             shortcut: StandardKey.Copy
             enabled: (credential != null) && (credential.code != null)
             onTriggered: copy()
@@ -77,8 +77,4 @@ MenuBar {
             onTriggered: openAbout()
         }
     }
-
-
-
-
 }

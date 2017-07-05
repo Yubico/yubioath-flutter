@@ -8,7 +8,7 @@ Menu {
     property bool enableGenerate
 
     MenuItem {
-        text: qsTr("\&Copy")
+        text: qsTr("\&Copy to clipboard")
         enabled: (credential != null) && (credential.code != null)
         onTriggered: copy()
     }
