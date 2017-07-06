@@ -218,6 +218,13 @@ ApplicationWindow {
             Layout.fillHeight: true
             Layout.fillWidth: true
 
+            MouseArea {
+                // A mouse area to allow a click
+                // outside search bar to remove focus from it.
+                anchors.fill: parent
+                onClicked: arrowKeys.focus = true
+            }
+
             Flickable {
                 id: flickable
                 property double savedScrollPosition
