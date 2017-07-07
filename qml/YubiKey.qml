@@ -240,20 +240,20 @@ Python {
     function calculate(credential) {
         var now = Math.floor(Date.now() / 1000)
         do_call('yubikey.controller.calculate', [credential, now, passwordKey],
-                updateCredential)
+                updateSingleCredential)
     }
 
     function calculateSlotMode(slot, digits) {
         var now = Math.floor(Date.now() / 1000)
         do_call('yubikey.controller.calculate_slot_mode', [slot, digits, now],
-                updateCredential)
+                updateSingleCredential)
     }
 
     /**
       Put a credential coming from the YubiKey in the
       right position in the credential list.
       */
-    function updateCredential(cred) {
+    function updateSingleCredential(cred) {
         var result = []
         for (var i = 0; i < credentials.length; i++) {
             if (credentials[i].name === cred.name) {
