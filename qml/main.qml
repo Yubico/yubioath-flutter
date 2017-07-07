@@ -268,6 +268,8 @@ ApplicationWindow {
                                 anchors.fill: parent
                                 onClicked: handleMouseClick(mouse, index,
                                                             modelData)
+                                onDoubleClicked: handleCredentialDoubleClick(mouse, index,
+                                                                             modelData)
                                 acceptedButtons: Qt.RightButton | Qt.LeftButton
                             }
 
@@ -599,6 +601,21 @@ ApplicationWindow {
             selected = modelData
             selectedIndex = index
             credentialMenu.popup()
+        }
+    }
+
+    function handleCredentialDoubleClick(mouse, index, modelData) {
+
+        arrowKeys.forceActiveFocus()
+
+        // A double-click should select the credential,
+        // then generate if needed and copy the code.
+        selected = modelData
+        selectedIndex = index
+        if (selected.code == null || isExpired(selected)) {
+            generate()
+        } else {
+            copy()
         }
     }
 

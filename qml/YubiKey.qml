@@ -269,6 +269,10 @@ Python {
         // after update, since the code now
         // might be available.
         selected = cred
+        // When a single credential is updated,
+        // it is manually triggered and therefore
+        // should be copied to the clipboard.
+        copy()
     }
 
     function addCredential(name, key, oathType, digits, algorithm, touch, cb) {
