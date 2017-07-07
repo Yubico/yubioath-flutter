@@ -211,7 +211,7 @@ ApplicationWindow {
 
         TimeLeftBar {
             id: timeLeftBar
-            shouldBeVisible: canShowCredentials
+            visible: canShowCredentials && device.hasAnyCredentials()
         }
         ScrollView {
             id: scrollView

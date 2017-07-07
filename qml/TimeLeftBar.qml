@@ -4,10 +4,6 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
 
 ProgressBar {
-
-    property bool shouldBeVisible
-
-    visible: shouldBeVisible
     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
     Layout.maximumHeight: 10
     Layout.minimumHeight: 10
