@@ -579,21 +579,22 @@ ApplicationWindow {
         }
     }
 
-    function handleMouseClick(mouse, index, modelData) {
+    function handleCredentialSingleClick(mouse, index, modelData) {
 
         arrowKeys.forceActiveFocus()
 
+        // Left click, select or deselect credential.
         if (mouse.button & Qt.LeftButton) {
             if (selected != null && selected.name === modelData.name) {
-                // Unselect
                 selected = null
                 selectedIndex = null
             } else {
-                // Select
                 selected = modelData
                 selectedIndex = index
             }
         }
+
+        // Right-click, select credential and open popup menu.
         if (mouse.button & Qt.RightButton) {
             selected = modelData
             selectedIndex = index
