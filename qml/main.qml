@@ -266,7 +266,7 @@ ApplicationWindow {
 
                             MouseArea {
                                 anchors.fill: parent
-                                onClicked: handleMouseClick(mouse, index,
+                                onClicked: handleCredentialSingleClick(mouse, index,
                                                             modelData)
                                 onDoubleClicked: handleCredentialDoubleClick(mouse, index,
                                                                              modelData)
