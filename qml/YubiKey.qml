@@ -237,23 +237,27 @@ Python {
         }
     }
 
-    function calculate(credential) {
+    function calculate(credential, copyAfterUpdate) {
         var now = Math.floor(Date.now() / 1000)
         do_call('yubikey.controller.calculate', [credential, now, passwordKey],
-                updateSingleCredential)
+                function(cred) {
+                    updateSingleCredential(cred, copyAfterUpdate)
+                })
     }
 
-    function calculateSlotMode(slot, digits) {
+    function calculateSlotMode(slot, digits, copyAfterUpdate) {
         var now = Math.floor(Date.now() / 1000)
         do_call('yubikey.controller.calculate_slot_mode', [slot, digits, now],
-                updateSingleCredential)
+                function(cred) {
+                    updateSingleCredential(cred, copyAfterUpdate)
+                })
     }
 
     /**
       Put a credential coming from the YubiKey in the
       right position in the credential list.
       */
-    function updateSingleCredential(cred) {
+    function updateSingleCredential(cred, copyAfterUpdate) {
         var result = []
         for (var i = 0; i < credentials.length; i++) {
             if (credentials[i].name === cred.name) {
@@ -269,10 +273,9 @@ Python {
         // after update, since the code now
         // might be available.
         selected = cred
-        // When a single credential is updated,
-        // it is manually triggered and therefore
-        // should be copied to the clipboard.
-        copy()
+        if (copyAfterUpdate) {
+            copy()
+        }
     }
 
     function addCredential(name, key, oathType, digits, algorithm, touch, cb) {

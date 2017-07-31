@@ -32,11 +32,11 @@ ApplicationWindow {
     property bool shouldRefresh: visibility != 3 && visibility != 0
 
     signal copy
-    signal generate
+    signal generate(bool copyAfterGenerate)
     signal deleteCredential
 
     onDeleteCredential: confirmDeleteCredential.open()
-    onGenerate: handleGenerate(selected)
+    onGenerate: handleGenerate(selected, copyAfterGenerate)
     onCopy: clipboard.setClipboard(selected.code)
 
     onHasDeviceChanged: handleNewDevice()
@@ -464,15 +464,15 @@ ApplicationWindow {
         return name.split(":", 1)
     }
 
-    function calculateCredential(credential) {
+    function calculateCredential(credential, copyAfterUpdate) {
         flickable.saveScrollPosition()
 
         if (settings.slotMode) {
             var slot = getSlot(credential.name)
             var digits = getDigits(slot)
-            device.calculateSlotMode(slot, digits)
+            device.calculateSlotMode(slot, digits, copyAfterUpdate)
         } else {
-            device.calculate(credential)
+            device.calculate(credential, copyAfterUpdate)
         }
         if (credential.oath_type === "hotp") {
             hotpTouchTimer.restart()
@@ -537,9 +537,9 @@ ApplicationWindow {
         }
     }
 
-    function handleGenerate(cred) {
+    function handleGenerate(cred, copyAfterUpdate) {
         if (!isInCoolDown(cred.name)) {
-            calculateCredential(cred)
+            calculateCredential(cred, copyAfterUpdate)
             if (cred.oath_type === "hotp") {
                 hotpCoolDowns.push(cred.name)
                 hotpCoolDownTimer.restart()
@@ -613,7 +613,7 @@ ApplicationWindow {
         selected = modelData
         selectedIndex = index
         if (selected.code == null || isExpired(selected)) {
-            generate()
+            generate(true)
         } else {
             copy()
         }

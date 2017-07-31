@@ -58,7 +58,7 @@ MenuBar {
             enabled: enableGenerate
             text: qsTr("\&Generate code")
             shortcut: "Space"
-            onTriggered: generate()
+            onTriggered: generate(false)
         }
 
         MenuSeparator {

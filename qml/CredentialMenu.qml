@@ -17,7 +17,7 @@ Menu {
         visible: showGenerate
         enabled: enableGenerate
         text: qsTr("Generate code")
-        onTriggered: generate()
+        onTriggered: generate(false)
     }
 
     MenuSeparator {
