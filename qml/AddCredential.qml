@@ -34,6 +34,7 @@ DefaultDialog {
                 Layout.fillWidth: true
                 KeyNavigation.tab: key
                 Keys.onEscapePressed: close()
+                maximumLength: 64
             }
 
             Label {
