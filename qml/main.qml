@@ -316,6 +316,14 @@ ApplicationWindow {
                 sequence: StandardKey.Find
                 onActivated: search.focus = true
             }
+            Keys.onEscapePressed: {
+                search.text = ""
+                arrowKeys.focus = true
+                selected = null
+                selectedIndex = null
+            }
+            Keys.onReturnPressed: generateOrCopy()
+            Keys.onEnterPressed: generateOrCopy()
         }
     }
 
@@ -612,6 +620,10 @@ ApplicationWindow {
         // then generate if needed and copy the code.
         selected = modelData
         selectedIndex = index
+        generateOrCopy()
+    }
+
+    function generateOrCopy() {
         if (selected.code == null || isExpired(selected)) {
             generate(true)
         } else {

@@ -35,4 +35,6 @@ Item {
         }
     }
 
+    Keys.onReturnPressed: generateOrCopy()
+    Keys.onEnterPressed: generateOrCopy()
 }
