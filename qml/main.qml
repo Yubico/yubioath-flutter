@@ -171,7 +171,6 @@ ApplicationWindow {
         id: loadedDeviceMessage
         device: yk
         nCredentials: filteredCredentials(credentials).length
-        readingCredentials: credentials === null
         settings: settings
     }
 
