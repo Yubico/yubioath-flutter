@@ -7,6 +7,11 @@
 
 image: Visual Studio 2015
 
+environment:
+  LIBU2F_HOST_VERSION: "1.1.3"
+  YKPERS_VERSION: "1.18.0"
+  LIBUSB_VERSION: "1.0.21"
+
 init:
   # Needed for jom to work.
   - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
@@ -16,10 +21,10 @@ init:
 install:
   # Submodules are not cloned by default
   - git submodule update --init --recursive
-  # Swig needed for pyscard
-  - ps: wget https://s3.eu-central-1.amazonaws.com/yubico-deps/yubikey-manager-qt/swigwin-3.0.10.zip -OutFile swigwin-3.0.10.zip
-  - 7z x swigwin-3.0.10.zip
-  - set PATH=%PATH%;%APPVEYOR_BUILD_FOLDER%\swigwin-3.0.10
+
+  - choco install swig -y
+  - choco upgrade swig 
+
   # Build and install PyOtherSide 
   # Reference: https://pyotherside.readthedocs.io/en/latest/#building-for-windows
   - cd .\vendor\pyotherside
@@ -41,22 +46,19 @@ build_script:
   - jom
 
 after_build:
-  # Add libu2f-host
-  - mkdir libu2f-host
-  - ps: wget https://developers.yubico.com/libu2f-host/Releases/libu2f-host-1.1.3-win32.zip -OutFile libu2f-host-1.1.3-win32.zip
-  - 7z x libu2f-host-1.1.3-win32.zip -o".\libu2f-host"
+
+  - ps: wget "https://developers.yubico.com/libu2f-host/Releases/libu2f-host-$env:LIBU2F_HOST_VERSION-win32.zip" -OutFile "libu2f-host-$env:LIBU2F_HOST_VERSION-win32.zip"
+  - 7z x libu2f-host-%LIBU2F_HOST_VERSION%-win32.zip -o".\libu2f-host" 
   - ps: Copy-Item .\libu2f-host\bin\*.dll .\release -Force
-  # Add ykpers
-  - mkdir ykpers
-  - ps: wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.17.3-win32.zip -OutFile ykpers-1.17.3-win32.zip  
-  - 7z x ykpers-1.17.3-win32.zip -o".\ykpers"
+
+  - ps: wget "https://developers.yubico.com/yubikey-personalization/Releases/ykpers-$env:YKPERS_VERSION-win32.zip" -OutFile "ykpers-$env:YKPERS_VERSION-win32.zip"
+  - 7z x ykpers-%YKPERS_VERSION%-win32.zip -o".\ykpers"
   - ps: Copy-Item .\ykpers\bin\*.dll .\release -Force 
-  # Add libusb
-  - mkdir libusb
-  - ps: wget https://s3.eu-central-1.amazonaws.com/yubico-deps/yubikey-manager-qt/libusb-1.0.20.7z -OutFile libusb-1.0.20.7z
-  - 7z x libusb-1.0.20.7z -o".\libusb"
+
+  - ps: Invoke-WebRequest "http://prdownloads.sourceforge.net/libusb/libusb-$env:LIBUSB_VERSION.7z" -OutFile "libusb-$env:LIBUSB_VERSION.7z" -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome
+  - 7z x libusb-%LIBUSB_VERSION%.7z -o".\libusb"
   - ps: Copy-Item .\libusb\MS32\dll\*.dll .\release -Force 
-  # Add embedded python
+
   - ps: wget https://www.python.org/ftp/python/3.6.1/python-3.6.1-embed-win32.zip -OutFile python-3.6.1-embed-win32.zip
   - 7z x python-3.6.1-embed-win32.zip -o".\release"
   # Use Qt deployment tool on executable
