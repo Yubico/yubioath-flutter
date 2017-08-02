@@ -13,7 +13,7 @@ Python {
     property string oathId
     property var features: []
     property var connections: []
-    property var credentials: null
+    property var credentials: []
     property int nextRefresh: 0
     property var enabled: []
     property bool ready: false
