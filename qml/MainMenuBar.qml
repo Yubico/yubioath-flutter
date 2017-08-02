@@ -6,7 +6,6 @@ MenuBar {
     property bool slotMode
     property bool hasDevice
 
-    property var credential
     property bool enableGenerate
 
     signal openAddCredential
@@ -50,8 +49,8 @@ MenuBar {
         MenuItem {
             text: qsTr("\&Copy to clipboard")
             shortcut: StandardKey.Copy
-            enabled: (credential != null) && (credential.code != null)
-            onTriggered: copy()
+            enabled: (selected != null) && (selected.code != null)
+            onTriggered:copy()
         }
 
         MenuItem {
@@ -67,7 +66,7 @@ MenuBar {
         MenuItem {
             text: qsTr("\&Delete")
             shortcut: StandardKey.Delete
-            enabled: (credential != null)
+            enabled: (selected != null)
             onTriggered: deleteCredential()
         }
     }

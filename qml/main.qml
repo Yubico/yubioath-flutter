@@ -44,7 +44,6 @@ ApplicationWindow {
     menuBar: MainMenuBar {
         slotMode: settings.slotMode
         hasDevice: device.hasDevice
-        credential: selected
         enableGenerate: enableManualGenerate(selected)
         onOpenAddCredential: openClearAddCredential()
         onOpenSetPassword: setPassword.open()
