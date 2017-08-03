@@ -116,6 +116,14 @@ DefaultDialog {
     }
 
     MessageDialog {
+        id: tooLargeKeyError
+        icon: StandardIcon.Critical
+        title: qsTr("Too large key")
+        text: qsTr("YubiKey Slots cannot handle TOTP keys over 20 bytes.")
+        standardButtons: StandardButton.Ok
+    }
+
+    MessageDialog {
         id: confirmOverWrite
         icon: StandardIcon.Warning
         title: qsTr("Overwrite credential?")
@@ -159,6 +167,9 @@ DefaultDialog {
                                  touch.checked, function (error) {
                                      if (error === 'Incorrect padding') {
                                          paddingError.open()
+                                     }
+                                     if (error === 'Over 20 bytes') {
+                                         tooLargeKeyError.open()
                                      }
                                      if (error) {
                                          console.log(error)

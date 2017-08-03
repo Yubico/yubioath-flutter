@@ -191,8 +191,7 @@ class Controller(object):
         if len(key) > 64:  # Keys longer than 64 bytes are hashed.
             key = hashlib.sha1(key).digest()
         if len(key) > 20:
-            raise ValueError(
-                'YubiKey Slots cannot handle TOTP keys over 20 bytes.')
+            return 'Over 20 bytes'
         key += b'\x00' * (20 - len(key))  # Keys must be padded to 20 bytes.
         dev.driver.program_chalresp(int(slot), key, touch)
 
