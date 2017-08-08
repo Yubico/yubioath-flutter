@@ -20,6 +20,11 @@ int main(int argc, char *argv[])
     // Don't write .pyc files.
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 
+    // Use ANGLE on WIndows
+    #ifdef Q_OS_WIN
+    qputenv("QT_OPENGL", "angle");
+    #endif
+
     #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     #endif
