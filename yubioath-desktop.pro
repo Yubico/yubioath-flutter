@@ -1,7 +1,8 @@
 TEMPLATE = app
 QT += qml quick widgets
 CONFIG += c++11
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    systemtray.cpp
 
 # This is the verson number for the application,
 # will be in info.plist file, about page etc.
@@ -60,7 +61,8 @@ lupdate_only {
   qml/slot/*.qml
 }
 
-HEADERS += screenshot.h
+HEADERS += screenshot.h \
+    systemtray.h
 
 DISTFILES += \
     py/* \

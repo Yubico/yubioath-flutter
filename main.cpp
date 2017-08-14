@@ -9,6 +9,7 @@
 #include <QtSingleApplication>
 #endif
 #include "screenshot.h"
+#include "systemtray.h"
 
 int main(int argc, char *argv[])
 {
@@ -65,7 +66,7 @@ int main(int argc, char *argv[])
     ScreenShot screenshot;
     QQmlApplicationEngine engine;
 
-    QSystemTrayIcon *trayIcon = new QSystemTrayIcon();
+    SystemTray *trayIcon = new SystemTray();
     trayIcon->setIcon(QIcon(path_prefix + "/images/windowicon.png"));
 
     engine.rootContext()->setContextProperty("appDir", app_dir);
@@ -95,6 +96,12 @@ int main(int argc, char *argv[])
     trayIconMenu->addAction(quitAction);
     trayIcon->setContextMenu(trayIconMenu);
     trayIcon->setToolTip("Yubico Authenticator");
+    // Double-click have same behavior as show credentials.
+    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(hide()));
+    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(show()));
+    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(raise()));
+    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(requestActivate());
+
 
     #ifndef Q_OS_DARWIN
     // Wake up the root window on a message from new instance.
