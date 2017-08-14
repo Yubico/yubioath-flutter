@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(hide()));
     root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(show()));
     root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(raise()));
-    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(requestActivate());
+    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(requestActivate()));
 
 
     #ifndef Q_OS_DARWIN
