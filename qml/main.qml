@@ -286,7 +286,7 @@ ApplicationWindow {
                                 Label {
                                     opacity: isExpired(modelData) ? 0.6 : 1
                                     visible: modelData.code !== null
-                                    text: qsTr("") + modelData.code
+                                    text: qsTr("") + getSpacedCredential(modelData.code)
                                     font.pixelSize: 20
                                     color: getCredentialTextColor(modelData)
                                 }
@@ -353,6 +353,26 @@ ApplicationWindow {
         id: hotpTouchTimer
         interval: 500
         onTriggered: touchYourYubikey.open()
+    }
+
+
+    function getSpacedCredential(code) {
+        // Add a space in the code for easier reading.
+        if (code != null) {
+            switch (code.length) {
+                case 6:
+                    // 123 123
+                    return code.slice(0, 3) + " " + code.slice(3)
+                case 7:
+                    // 1234 123
+                    return code.slice(0, 4) + " " + code.slice(4)
+                case 8:
+                    // 1234 1234
+                    return code.slice(0, 4) + " " + code.slice(4)
+                default:
+                    return code
+            }
+        }
     }
 
     function saveScreenLayout() {
