@@ -96,12 +96,13 @@ int main(int argc, char *argv[])
     trayIconMenu->addAction(quitAction);
     trayIcon->setContextMenu(trayIconMenu);
     trayIcon->setToolTip("Yubico Authenticator");
-    // Double-click have same behavior as show credentials.
-    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(hide()));
+    #ifndef Q_OS_DARWIN
+    // Double-click should show credentials.
+    // Double-click in systemtray icons is not supported on macOS.
     root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(show()));
     root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(raise()));
     root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(requestActivate()));
-
+    #endif
 
     #ifndef Q_OS_DARWIN
     // Wake up the root window on a message from new instance.
