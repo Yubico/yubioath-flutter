@@ -261,8 +261,8 @@ ApplicationWindow {
                         Rectangle {
                             id: credentialRectangle
                             color: getCredentialColor(index, modelData)
+                            Layout.minimumHeight: issuerLbl.height + codeLbl.height + nameLbl.height + 10
                             Layout.fillWidth: true
-                            Layout.minimumHeight: 70
                             Layout.alignment: Qt.AlignTop
 
                             MouseArea {
@@ -281,12 +281,14 @@ ApplicationWindow {
                                 anchors.fill: parent
                                 spacing: 0
                                 Label {
+                                    id: issuerLbl
                                     visible: hasIssuer(modelData.name)
                                     text: qsTr("") + parseIssuer(modelData.name)
                                     font.pointSize: 12
                                     color: getCredentialTextColor(modelData)
                                 }
                                 Label {
+                                    id: codeLbl
                                     opacity: isExpired(modelData) ? 0.6 : 1
                                     visible: modelData.code !== null
                                     text: qsTr("") + getSpacedCredential(modelData.code)
@@ -294,6 +296,7 @@ ApplicationWindow {
                                     color: getCredentialTextColor(modelData)
                                 }
                                 Label {
+                                    id: nameLbl
                                     text: hasIssuer(
                                               modelData.name) ? qsTr("") + parseName(
                                                                     modelData.name) : modelData.name
