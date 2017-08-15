@@ -283,21 +283,21 @@ ApplicationWindow {
                                 Label {
                                     visible: hasIssuer(modelData.name)
                                     text: qsTr("") + parseIssuer(modelData.name)
-                                    font.pixelSize: 12
+                                    font.pointSize: 12
                                     color: getCredentialTextColor(modelData)
                                 }
                                 Label {
                                     opacity: isExpired(modelData) ? 0.6 : 1
                                     visible: modelData.code !== null
                                     text: qsTr("") + getSpacedCredential(modelData.code)
-                                    font.pixelSize: 20
+                                    font.pointSize: 20
                                     color: getCredentialTextColor(modelData)
                                 }
                                 Label {
                                     text: hasIssuer(
                                               modelData.name) ? qsTr("") + parseName(
                                                                     modelData.name) : modelData.name
-                                    font.pixelSize: 12
+                                    font.pointSize: 12
                                     color: getCredentialTextColor(modelData)
                                 }
                             }
