@@ -37,4 +37,5 @@ Item {
 
     Keys.onReturnPressed: generateOrCopy()
     Keys.onEnterPressed: generateOrCopy()
+    Keys.onEscapePressed: deselectCredential()
 }

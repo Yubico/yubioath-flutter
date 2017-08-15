@@ -220,7 +220,10 @@ ApplicationWindow {
                 // A mouse area to allow a click
                 // outside search bar to remove focus from it.
                 anchors.fill: parent
-                onClicked: arrowKeys.focus = true
+                onClicked: {
+                    arrowKeys.focus = true;
+                    deselectCredential()
+                }
             }
 
             Flickable {
@@ -317,8 +320,7 @@ ApplicationWindow {
             Keys.onEscapePressed: {
                 search.text = ""
                 arrowKeys.focus = true
-                selected = null
-                selectedIndex = null
+                deselectCredential()
             }
             Keys.onReturnPressed: generateOrCopy()
             Keys.onEnterPressed: generateOrCopy()
@@ -353,6 +355,11 @@ ApplicationWindow {
         id: hotpTouchTimer
         interval: 500
         onTriggered: touchYourYubikey.open()
+    }
+
+    function deselectCredential() {
+        selected = null;
+        selectedIndex = null;
     }
 
 
@@ -469,7 +476,7 @@ ApplicationWindow {
         } else if (search.text.length > 0) {
             // If search was started but no result,
             // reset selected to avoid hidden selected creds.
-            selected = null
+            deselectCredential()
         }
         return result
     }
@@ -614,8 +621,7 @@ ApplicationWindow {
         // Left click, select or deselect credential.
         if (mouse.button & Qt.LeftButton) {
             if (selected != null && selected.name === modelData.name) {
-                selected = null
-                selectedIndex = null
+                deselectCredential()
             } else {
                 selected = modelData
                 selectedIndex = index
