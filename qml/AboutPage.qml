@@ -6,6 +6,11 @@ DefaultDialog {
     id: aboutPage
     title: qsTr("About Yubico Authenticator")
 
+    Item {
+        focus:true
+        Keys.onEscapePressed: close()
+    }
+
     Label {
         text: qsTr("Yubico Authenticator")
         font.bold: true
