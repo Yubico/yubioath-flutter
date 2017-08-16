@@ -291,7 +291,7 @@ ApplicationWindow {
                                     opacity: isExpired(modelData) ? 0.6 : 1
                                     visible: modelData.code !== null
                                     text: qsTr("") + getSpacedCredential(modelData.code)
-                                    font.pointSize: issuerLbl.font.pointSize * 1.6
+                                    font.pointSize: issuerLbl.font.pointSize * 1.8
                                     color: getCredentialTextColor(modelData)
                                 }
                                 Label {
