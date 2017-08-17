@@ -13,6 +13,9 @@
 ;Checkbox on finish page, "Run Yubico Authenticator"
 !define MUI_FINISHPAGE_RUN "$INSTDIR\yubioath-desktop.exe"
 
+;Support High DPI displays.
+ManifestDPIAware true
+
 Var STARTMENU_FOLDER
 
 !ifdef INNER
