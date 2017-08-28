@@ -61,8 +61,6 @@ int main(int argc, char *argv[])
         url_prefix = ".";
     }
 
-    app.setWindowIcon(QIcon(path_prefix + "/images/windowicon.png"));
-
     ScreenShot screenshot;
     QQmlApplicationEngine engine;
 
@@ -82,6 +80,10 @@ int main(int argc, char *argv[])
     // See http://doc-snapshots.qt.io/qt5-5.8/qml-qt-labs-platform-systemtrayicon.html
     QObject *root = engine.rootObjects().first();
     QQuickWindow *qmlWindow = qobject_cast<QQuickWindow *>(root);
+
+    // Set icon in the window, doesn't effect desktop icons.
+    qmlWindow->setIcon(QIcon(path_prefix + "/images/windowicon.png"));
+
     QAction *showAction = new QAction(QObject::tr("&Show credentials"), qmlWindow);
     // The call to hide doesn't make much sense but makes it work on macOS when hidden from the dock.
     root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::hide);
