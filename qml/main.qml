@@ -282,8 +282,8 @@ ApplicationWindow {
                                 spacing: 0
                                 Label {
                                     id: issuerLbl
-                                    visible: hasIssuer(modelData.name)
-                                    text: qsTr("") + parseIssuer(modelData.name)
+                                    visible: modelData.issuer != null
+                                    text: qsTr("") + modelData.issuer
                                     color: getCredentialTextColor(modelData)
                                 }
                                 Label {
@@ -296,9 +296,7 @@ ApplicationWindow {
                                 }
                                 Label {
                                     id: nameLbl
-                                    text: hasIssuer(
-                                              modelData.name) ? qsTr("") + parseName(
-                                                                    modelData.name) : modelData.name
+                                    text: modelData.name
                                     color: getCredentialTextColor(modelData)
                                 }
                             }
@@ -484,18 +482,6 @@ ApplicationWindow {
 
     function isInCoolDown(name) {
         return hotpCoolDowns.indexOf(name) !== -1
-    }
-
-    function hasIssuer(name) {
-        return name.indexOf(':') !== -1
-    }
-
-    function parseName(name) {
-        return name.split(":").slice(1).join(":")
-    }
-
-    function parseIssuer(name) {
-        return name.split(":", 1)
     }
 
     function calculateCredential(credential, copyAfterUpdate) {
