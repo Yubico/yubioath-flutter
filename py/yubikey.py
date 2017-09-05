@@ -220,7 +220,7 @@ class Controller(object):
         if controller.locked and password_key is not None:
             controller.validate(a2b_hex(password_key))
         creds = controller.calculate_all(timestamp)
-        creds = [c for c in creds if not c.hidden]
+        creds = [c for c in creds if not c.is_hidden()]
         return creds
 
     def parse_qr(self, screenshot):
