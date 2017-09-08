@@ -44,8 +44,19 @@ int main(int argc, char *argv[])
     app.setOrganizationName("Yubico");
     app.setOrganizationDomain("com.yubico");
 
-    // Use ANGLE on Windows
-    app.setAttribute(Qt::AA_UseOpenGLES);
+
+    // What OpenGL implementation to use on Windows.
+    // Use ANGLE library on Windows 8 & 10
+    // Use software opengl on Windows 7, because of issues with ANGLE.
+    // More reading: http://doc.qt.io/qt-5/windows-requirements.html#graphics-drivers
+    #ifdef Q_OS_WIN
+    if (QString("7") == QSysInfo::productVersion()) {
+        app.setAttribute(Qt::AA_UseSoftwareOpenGL);
+    } else {
+        app.setAttribute(Qt::AA_UseOpenGLES);
+    }
+    #endif
+
 
     if (QFileInfo::exists(":" + main_qml)) {
         // Embedded resources
