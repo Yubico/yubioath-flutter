@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     // Use software opengl on Windows 7, because of issues with ANGLE.
     // More reading: http://doc.qt.io/qt-5/windows-requirements.html#graphics-drivers
     #ifdef Q_OS_WIN
-    if (QString("7") == QSysInfo::productVersion()) {
+    if (QSysInfo::productVersion().contains("7")) {
         app.setAttribute(Qt::AA_UseSoftwareOpenGL);
     } else {
         app.setAttribute(Qt::AA_UseOpenGLES);
