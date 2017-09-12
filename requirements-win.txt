@@ -1,2 +1,2 @@
-yubikey-manager
+.\vendor\yubikey-manager
 .\py\qr

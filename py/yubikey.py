@@ -164,7 +164,8 @@ class Controller(object):
             controller.clear_password()
 
     def add_credential(
-            self, name, key, oath_type, digits, algo, touch, password_key):
+            self, name, key, issuer, oath_type, algo, digits,
+            period, touch, password_key):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
         if controller.locked and password_key is not None:
@@ -175,7 +176,9 @@ class Controller(object):
             return str(e)
         try:
             controller.put(
-                key, name, oath_type, digits, algo=algo, require_touch=touch)
+                key, name, issuer=issuer, oath_type=oath_type,
+                algo=algo, digits=int(digits), period=int(period),
+                require_touch=touch)
         except APDUError as e:
             # NEO doesn't return a no space error if full,
             # but a command aborted error. Assume it's because of

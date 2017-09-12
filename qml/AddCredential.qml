@@ -5,27 +5,31 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
 DefaultDialog {
-    title: qsTr("Add credential")
+    id: newCredentialDialog
+    title: qsTr("New credential")
     modality: Qt.ApplicationModal
     property var device
+    visible: false
 
     ColumnLayout {
         anchors.fill: parent
 
         GridLayout {
             columns: 2
-            Button {
-                id: scanBtn
-                focus: true
-                Layout.columnSpan: 2
-                text: qsTr("Scan a QR code")
+            Label {
+                text: qsTr("Issuer")
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
+            }
+            TextField {
+                id: issuer
                 Layout.fillWidth: true
-                onClicked: device.parseQr(ScreenShot.capture(), updateForm)
+                focus:true
                 KeyNavigation.tab: name
                 Keys.onEscapePressed: close()
             }
             Label {
-                text: qsTr("Name")
+                text: qsTr("Account name")
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 Layout.fillWidth: false
             }
@@ -34,11 +38,11 @@ DefaultDialog {
                 Layout.fillWidth: true
                 KeyNavigation.tab: key
                 Keys.onEscapePressed: close()
-                maximumLength: 64
             }
 
             Label {
                 text: qsTr("Secret key")
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             }
             TextField {
                 id: key
@@ -46,116 +50,96 @@ DefaultDialog {
                 validator: RegExpValidator {
                     regExp: /[2-7a-zA-Z]+=*/
                 }
-                KeyNavigation.tab: totp
                 Keys.onEscapePressed: close()
                 onAccepted: tryAddCredential()
+                KeyNavigation.tab: oathType
             }
-        }
-
-        GroupBox {
-            title: qsTr("Credential type")
-            Layout.fillWidth: true
-            ColumnLayout {
-
-                RowLayout {
-                    Label {
-                        text: qsTr("OATH Type")
-                    }
-                    ExclusiveGroup {
-                        id: oathType
-                    }
+            Label {
+                text: qsTr("Type")
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            }
+            GridLayout {
+                columns: 3
+                ComboBox {
+                    id: oathType
+                    Layout.fillWidth: true
+                    currentIndex: 0
+                    model: ['Time based', 'Counter based']
+                    KeyNavigation.tab: algorithm
+                    Keys.onEscapePressed: close()
                 }
-                RowLayout {
-                    RadioButton {
-                        id: totp
-                        text: qsTr("TOTP (Time based)")
-                        checked: true
-                        exclusiveGroup: oathType
-                        property string name: "totp"
-                        KeyNavigation.tab: hotp
-                        Keys.onEscapePressed: close()
-                    }
-                    RadioButton {
-                        id: hotp
-                        text: qsTr("HOTP (Counter based)")
-                        exclusiveGroup: oathType
-                        property string name: "hotp"
-                        KeyNavigation.tab: six
-                        Keys.onEscapePressed: close()
-                    }
+                Label {
+                    text: qsTr("Algorithm")
                 }
-                RowLayout {
-                    Label {
-                        text: qsTr("Number of digits")
-                    }
-                    ExclusiveGroup {
-                        id: digits
-                    }
+                ComboBox {
+                    id: algorithm
+                    currentIndex: 0
+                    Layout.fillWidth: true
+                    model: ['SHA-1', 'SHA-256']
+                    KeyNavigation.tab: period
+                    Keys.onEscapePressed: close()
                 }
-                RowLayout {
-                    RadioButton {
-                        id: six
-                        text: qsTr("6")
-                        checked: true
-                        exclusiveGroup: digits
-                        property int digits: 6
-                        KeyNavigation.tab: eight
-                        Keys.onEscapePressed: close()
-                    }
-                    RadioButton {
-                        id: eight
-                        text: qsTr("8")
-                        exclusiveGroup: digits
-                        property int digits: 8
-                        KeyNavigation.tab: sha1
-                        Keys.onEscapePressed: close()
-                    }
+            }
+            Label {
+                text: qsTr("Period")
+                enabled: oathType.currentIndex === 0
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            }
+            GridLayout {
+                columns: 3
+                id: grid
+                SpinBox {
+                    Layout.fillWidth: false
+                    id: period
+                    enabled: oathType.currentIndex === 0
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: oathType.width
+                    value: 30
+                    maximumValue: 99
+                    minimumValue: 1
+                    KeyNavigation.tab: digits
+                    Keys.onEscapePressed: close()
                 }
-                RowLayout {
-                    Label {
-                        text: qsTr("Algorithm")
-                    }
-                    ExclusiveGroup {
-                        id: algorithm
-                    }
+                Label {
+                    text: qsTr("Digits")
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
                 }
-                RowLayout {
-                    RadioButton {
-                        id: sha1
-                        text: qsTr("SHA-1")
-                        exclusiveGroup: algorithm
-                        property string name: "SHA1"
-                        KeyNavigation.tab: sha256
-                        Keys.onEscapePressed: close()
-                    }
-                    RadioButton {
-                        id: sha256
-                        text: qsTr("SHA-256")
-                        checked: true
-                        exclusiveGroup: algorithm
-                        property string name: "SHA256"
-                        KeyNavigation.tab: touch
-                        Keys.onEscapePressed: close()
-                    }
+                ComboBox {
+                    id: digits
+                    Layout.preferredWidth: algorithm.width
+                    currentIndex: 0
+                    model: ['6', '7', '8']
+                    KeyNavigation.tab: touch
+                    Keys.onEscapePressed: close()
                 }
-                RowLayout {
-
-                    CheckBox {
-                        id: touch
-                        text: qsTr("Require touch")
-                        enabled: enableTouchOption()
-                        KeyNavigation.tab: addCredentialBtn
-                        Keys.onEscapePressed: close()
-                    }
-                }
+            }
+            Label {
+                text: qsTr("Require touch")
+                enabled: enableTouchOption()
+                Layout.alignment: Qt.AlignRight
+            }
+            CheckBox {
+                id: touch
+                enabled: enableTouchOption()
+                KeyNavigation.tab: addCredentialBtn
+                Keys.onEscapePressed: close()
             }
         }
 
         RowLayout {
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             Button {
+                id: cancelBtn
+                text: qsTr("Cancel")
+                onClicked: close()
+                Keys.onEscapePressed: close()
+                KeyNavigation.tab: issuer
+            }
+            Button {
                 id: addCredentialBtn
-                text: qsTr("Add credential")
+                text: qsTr("Save credential")
                 enabled: acceptableInput()
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
                 onClicked: tryAddCredential()
@@ -163,18 +147,7 @@ DefaultDialog {
                 Keys.onEscapePressed: close()
                 isDefault: true
             }
-            Button {
-                id: cancelBtn
-                text: qsTr("Cancel")
-                onClicked: close()
-                KeyNavigation.tab: scanBtn
-                Keys.onEscapePressed: close()
-            }
         }
-    }
-
-    NoQrDialog {
-        id: noQr
     }
 
     MessageDialog {
@@ -203,11 +176,13 @@ DefaultDialog {
     }
 
     function clear() {
+        issuer.text = ""
         name.text = ""
         key.text = ""
-        oathType.current = totp
-        digits.current = six
-        algorithm.current = sha1
+        oathType.currentIndex = 0
+        algorithm.currentIndex = 0
+        period.value = 30
+        digits.currentIndex = 0
         touch.checked = false
     }
 
@@ -224,44 +199,77 @@ DefaultDialog {
     }
 
     function acceptableInput() {
-        return name.text.length !== 0 && key.text.length !== 0
+        var nameAndKey = name.text.length !== 0 && key.text.length !== 0
+        var toLong = name.text.length + issuer.text.length > 60
+        return nameAndKey && !toLong
+    }
+
+    function getAlgoIndex(algo) {
+        if (algo === 'SHA1') {
+            return 0
+        }
+        if (algo === 'SHA256') {
+            return 1
+        }
+        return false
+    }
+
+    function getTypeIndex(type) {
+        if (type === 'totp') {
+            return 0
+        }
+        if (type === 'hotp') {
+            return 1
+        }
+        return false
+    }
+
+    function getDigitsIndex(digits) {
+        if (digits === '6') {
+            return 0
+        }
+        if (digits === '7') {
+            return 1
+        }
+        if (digits === '8') {
+            return 2
+        }
+        return false
     }
 
     function updateForm(uri) {
-        if (uri) {
-
-            name.text = uri.name
-            if (uri.algorithm === 'SHA256') {
-                algorithm.current = sha256
-            }
-            if (uri.type === "hotp") {
-                oathType.current = hotp
-            }
-            if (uri.digits === "6") {
-                digits.current = six
-            }
-            if (uri.digits === "8") {
-                digits.current = eight
-            }
-
-            key.text = uri.secret
-        } else {
-            noQr.open()
-        }
+        name.text = uri.name
+        key.text = uri.secret
+        issuer.text = uri.issuer || ''
+        period.value = uri.period || 30
+        oathType.currentIndex = getTypeIndex(uri.type) || 0
+        algorithm.currentIndex = getAlgoIndex(uri.algorithm) || 0
+        digits.currentIndex = getDigitsIndex(uri.digits) || 6
     }
 
     function addCredential() {
-        device.addCredential(name.text, key.text, oathType.current.name,
-                             digits.current.digits, algorithm.current.name,
-                             touch.checked, function (error) {
-                                 if (error === 'Incorrect padding') {
-                                     paddingError.open()
-                                 }
-                                 if (error === 'No space') {
-                                    spaceError.open()
-                                 }
-                                 close()
-                                 refreshDependingOnMode(true)
-                             })
+
+        function errorHandling(error) {
+            if (error === 'Incorrect padding') {
+                paddingError.open()
+            }
+            if (error === 'No space') {
+                spaceError.open()
+            }
+            close()
+            refreshDependingOnMode(true)
+        }
+
+        var _name = name.text
+        var _key = key.text
+        var _issuer = issuer.text
+        var _oathType = oathType.currentIndex === 0 ? 'totp' : 'hotp'
+        var _algo = algorithm.currentIndex === 0 ? 'SHA1' : 'SHA256'
+        var _digits = digits.currentText
+        var _period = period.value
+        var _touch = touch.checked
+
+        device.addCredential(_name, _key, _issuer, _oathType, _algo, _digits,
+                             _period, _touch, errorHandling)
     }
 }

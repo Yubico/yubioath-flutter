@@ -168,23 +168,23 @@ Python {
         for (var i = 0; i < creds.length; i++) {
             var cred = creds[i]
             // Update min expiration
-            if (cred.expiration && cred.expiration < minExpiration) {
+            if (cred.expiration && cred.expiration < minExpiration && cred.period === 30) {
                 minExpiration = cred.expiration
             }
             // Touch credentials should only be replaced by user
-            if (credentialExists(cred.name) && cred.touch) {
-                result.push(getCredential(cred.name))
+            if (credentialExists(cred.long_name) && cred.touch) {
+                result.push(getCredential(cred.long_name))
                 continue
             }
             // HOTP credentials should only be replaced by user
-            if (credentialExists(cred.name) && cred.oath_type === 'hotp') {
-                result.push(getCredential(cred.name))
+            if (credentialExists(cred.long_name) && cred.oath_type === 'hotp') {
+                result.push(getCredential(cred.long_name))
                 continue
             }
             // The selected credential should still be selected,
             // with an updated code.
             if (selected != null) {
-                if (selected.name === cred.name) {
+                if (selected.long_name === cred.long_name) {
                     selected = cred
                 }
             }
@@ -201,18 +201,19 @@ Python {
         credentialsRefreshed()
     }
 
-    function getCredential(name) {
+    function getCredential(longName) {
         for (var i = 0; i < credentials.length; i++) {
-            if (credentials[i].name === name) {
+            if (credentials[i].long_name === longName) {
                 return credentials[i]
             }
         }
+
     }
 
-    function credentialExists(name) {
+    function credentialExists(longName) {
         if (credentials != null) {
             for (var i = 0; i < credentials.length; i++) {
-                if (credentials[i].name === name) {
+                if (credentials[i].long_name === longName) {
                     return true
                 }
             }
@@ -228,9 +229,11 @@ Python {
         var maxExpiration = 0
         if (credentials !== null) {
             for (var i = 0; i < credentials.length; i++) {
-                var exp = credentials[i].expiration
-                if (exp !== null && exp > maxExpiration) {
-                    maxExpiration = exp
+                if (credentials[i].period === 30) {
+                    var exp = credentials[i].expiration
+                    if (exp !== null && exp > maxExpiration) {
+                        maxExpiration = exp
+                    }
                 }
             }
             expiration = maxExpiration
@@ -260,7 +263,7 @@ Python {
     function updateSingleCredential(cred, copyAfterUpdate) {
         var result = []
         for (var i = 0; i < credentials.length; i++) {
-            if (credentials[i].name === cred.name) {
+            if (credentials[i].long_name === cred.long_name) {
                 result.push(cred)
             } else {
                 result.push(credentials[i])
@@ -278,9 +281,9 @@ Python {
         }
     }
 
-    function addCredential(name, key, oathType, digits, algorithm, touch, cb) {
+    function addCredential(name, key, issuer, oathType, algo, digits, period, touch, cb) {
         do_call('yubikey.controller.add_credential',
-                [name, key, oathType, digits, algorithm, touch, passwordKey],
+                [name, key, issuer, oathType, algo, digits, period, touch, passwordKey],
                 cb)
     }
 

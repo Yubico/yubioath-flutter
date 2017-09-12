@@ -68,6 +68,13 @@ ApplicationWindow {
         id: palette
     }
 
+    BusyIndicator {
+        id: busy
+        z: 1
+        running: false
+        anchors.centerIn: parent
+    }
+
     // This information is stored in the system registry on Windows,
     // and in XML preferences files on macOS. On other Unix systems,
     // in the absence of a standard, INI text files are used.
@@ -211,6 +218,7 @@ ApplicationWindow {
             id: timeLeftBar
             visible: canShowCredentials && device.hasAnyCredentials()
         }
+
         ScrollView {
             id: scrollView
             Layout.fillHeight: true
@@ -221,7 +229,7 @@ ApplicationWindow {
                 // outside search bar to remove focus from it.
                 anchors.fill: parent
                 onClicked: {
-                    arrowKeys.focus = true;
+                    arrowKeys.focus = true
                     deselectCredential()
                 }
             }
@@ -261,21 +269,28 @@ ApplicationWindow {
                         Rectangle {
                             id: credentialRectangle
                             color: getCredentialColor(index, modelData)
-                            Layout.minimumHeight: issuerLbl.height + codeLbl.height + nameLbl.height + 10
+                            Layout.minimumHeight: {
+                                var baseHeight = issuerLbl.height
+                                        + codeLbl.height + nameLbl.height + 10
+                                return hasCustomTimeBar(
+                                            modelData) ? baseHeight
+                                                         + customTimeLeftBar.height : baseHeight
+                            }
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignTop
 
                             MouseArea {
                                 anchors.fill: parent
-                                onClicked: handleCredentialSingleClick(mouse, index,
-                                                            modelData)
-                                onDoubleClicked: handleCredentialDoubleClick(mouse, index,
-                                                                             modelData)
+                                onClicked: handleCredentialSingleClick(
+                                               mouse, index, modelData)
+                                onDoubleClicked: handleCredentialDoubleClick(
+                                                     mouse, index, modelData)
                                 acceptedButtons: Qt.RightButton | Qt.LeftButton
                             }
 
                             ColumnLayout {
                                 anchors.leftMargin: 10
+                                anchors.rightMargin: 10
                                 anchors.topMargin: 5
                                 anchors.bottomMargin: 5
                                 anchors.fill: parent
@@ -283,6 +298,7 @@ ApplicationWindow {
                                 Label {
                                     id: issuerLbl
                                     visible: modelData.issuer != null
+                                             && modelData.issuer.length > 0
                                     text: qsTr("") + modelData.issuer
                                     color: getCredentialTextColor(modelData)
                                 }
@@ -290,7 +306,8 @@ ApplicationWindow {
                                     id: codeLbl
                                     opacity: isExpired(modelData) ? 0.6 : 1
                                     visible: modelData.code !== null
-                                    text: qsTr("") + getSpacedCredential(modelData.code)
+                                    text: qsTr("") + getSpacedCredential(
+                                              modelData.code)
                                     font.pointSize: issuerLbl.font.pointSize * 1.8
                                     color: getCredentialTextColor(modelData)
                                 }
@@ -298,6 +315,30 @@ ApplicationWindow {
                                     id: nameLbl
                                     text: modelData.name
                                     color: getCredentialTextColor(modelData)
+                                }
+                                Timer {
+                                    id: customTimer
+                                    interval: 100
+                                    repeat: true
+                                    running: hasCustomTimeBar(modelData)
+                                    triggeredOnStart: true
+                                    onTriggered: {
+                                        var timeLeft = modelData.expiration - (Date.now() / 1000)
+                                        if (timeLeft <= 0
+                                                && customTimeLeftBar.value > 0) {
+                                            refreshDependingOnMode(true)
+                                        }
+                                        customTimeLeftBar.value = timeLeft
+                                    }
+                                }
+                                ProgressBar {
+                                    id: customTimeLeftBar
+                                    visible: hasCustomTimeBar(modelData)
+                                    Layout.fillWidth: true
+                                    Layout.minimumHeight: 7
+                                    Layout.maximumHeight: 7
+                                    Layout.alignment: Qt.AlignBottom
+                                    maximumValue: modelData.period
                                 }
                             }
                         }
@@ -356,27 +397,34 @@ ApplicationWindow {
         onTriggered: touchYourYubikey.open()
     }
 
-    function deselectCredential() {
-        selected = null;
-        selectedIndex = null;
+    NoQrDialog {
+        id: noQr
     }
 
+    function deselectCredential() {
+        selected = null
+        selectedIndex = null
+    }
+
+    function hasCustomTimeBar(modelData) {
+        return modelData.period !== 30 && modelData.oath_type === 'totp'
+    }
 
     function getSpacedCredential(code) {
         // Add a space in the code for easier reading.
         if (code != null) {
             switch (code.length) {
-                case 6:
-                    // 123 123
-                    return code.slice(0, 3) + " " + code.slice(3)
-                case 7:
-                    // 1234 123
-                    return code.slice(0, 4) + " " + code.slice(4)
-                case 8:
-                    // 1234 1234
-                    return code.slice(0, 4) + " " + code.slice(4)
-                default:
-                    return code
+            case 6:
+                // 123 123
+                return code.slice(0, 3) + " " + code.slice(3)
+            case 7:
+                // 1234 123
+                return code.slice(0, 4) + " " + code.slice(4)
+            case 8:
+                // 1234 1234
+                return code.slice(0, 4) + " " + code.slice(4)
+            default:
+                return code
             }
         }
     }
@@ -445,8 +493,20 @@ ApplicationWindow {
     }
 
     function getSlotDigitsSettings() {
-        var slot1digits = settings.slot1digits === 1 ? 8 : 6
-        var slot2digits = settings.slot2digits === 1 ? 8 : 6
+        var slot1digits = 6
+        if (settings.slot1digits === 1) {
+            slot1digits = 7
+        }
+        if (settings.slot1digits === 2) {
+            slot1digits = 8
+        }
+        var slot2digits = 6
+        if (settings.slot2digits === 1) {
+            slot2digits = 7
+        }
+        if (settings.slot2digits === 2) {
+            slot2digits = 8
+        }
         return [slot1digits, slot2digits]
     }
 
@@ -465,7 +525,7 @@ ApplicationWindow {
         // Sort credentials based on the
         // full name, including the issuer prefix
         result.sort(function (a, b) {
-            return a.name.localeCompare(b.name)
+            return a.long_name.localeCompare(b.long_name)
         })
 
         // If the search gave some results,
@@ -584,7 +644,7 @@ ApplicationWindow {
     }
 
     function getCredentialColor(index, modelData) {
-        if (selected != null && selected.name === modelData.name) {
+        if (selected != null && selected.long_name === modelData.long_name) {
             return palette.highlight
         }
         if (index % 2 == 0) {
@@ -672,5 +732,21 @@ ApplicationWindow {
         } catch (e) {
             console.log("Could not save password.", e)
         }
+    }
+
+    function scanQr() {
+        busy.running = true
+        device.parseQr(ScreenShot.capture(), function (uri) {
+            busy.running = false
+            if (settings.slotMode && uri) {
+                addCredentialSlot.updateForm(uri)
+                device.getSlotStatus(addCredentialSlot.open)
+            } else if (!settings.slotMode && uri) {
+                addCredential.updateForm(uri)
+                addCredential.open()
+            } else {
+                noQr.open()
+            }
+        })
     }
 }

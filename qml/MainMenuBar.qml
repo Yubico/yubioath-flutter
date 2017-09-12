@@ -17,7 +17,13 @@ MenuBar {
     Menu {
         title: qsTr("\&File")
         MenuItem {
-            text: qsTr("\&Add credential...")
+            text: qsTr("\&Scan QR code...")
+            enabled: hasDevice
+            onTriggered: scanQr()
+            shortcut: StandardKey.Open
+        }
+        MenuItem {
+            text: qsTr("\&New credential...")
             enabled: hasDevice
             onTriggered: openAddCredential()
             shortcut: StandardKey.New

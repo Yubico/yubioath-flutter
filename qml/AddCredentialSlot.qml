@@ -5,7 +5,7 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 
 DefaultDialog {
-    title: qsTr("Add credential")
+    title: qsTr("New credential")
     modality: Qt.ApplicationModal
 
     property var settings
@@ -16,18 +16,9 @@ DefaultDialog {
 
         GridLayout {
             columns: 2
-            Button {
-                id: scanBtn
-                focus: true
-                Layout.columnSpan: 2
-                text: qsTr("Scan a QR code")
-                Layout.fillWidth: true
-                onClicked: device.parseQr(ScreenShot.capture(), updateForm)
-                KeyNavigation.tab: key
-                Keys.onEscapePressed: close()
-            }
             Label {
                 text: qsTr("Secret key")
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             }
             TextField {
                 id: key
@@ -35,57 +26,55 @@ DefaultDialog {
                 validator: RegExpValidator {
                     regExp: /[2-7a-zA-Z]+=*/
                 }
-                KeyNavigation.tab: slot1
+                focus:true
                 Keys.onEscapePressed: close()
                 onAccepted: tryAddCredential()
             }
-        }
-
-        ColumnLayout {
             Label {
                 text: qsTr("YubiKey Slot")
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             }
-            ExclusiveGroup {
+            ComboBox {
                 id: slotSelected
-            }
-            RadioButton {
-                id: slot1
-                enabled: settings.slot1
-                text: qsTr("Slot 1") + (device.slot1inUse ? qsTr(" (in use)") : '')
-                checked: true
-                exclusiveGroup: slotSelected
-                property string name: "1"
-                KeyNavigation.tab: slot2
-                Keys.onEscapePressed: close()
-            }
-            RadioButton {
-                id: slot2
-                enabled: settings.slot2
-                text: qsTr("Slot 2") + (device.slot2inUse ? qsTr(" (in use)") : '')
-                exclusiveGroup: slotSelected
-                property string name: "2"
-                KeyNavigation.tab: touch
-                Keys.onEscapePressed: close()
-            }
-        }
+                Layout.fillWidth: true
+                currentIndex: 0
+                model: ListModel {
+                    id: slotItems
 
-        ColumnLayout {
-
-            RowLayout {
-                CheckBox {
-                    id: touch
-                    text: "Require touch"
-                    KeyNavigation.tab: addCredentialBtn
-                    Keys.onEscapePressed: close()
+                    ListElement {
+                        text: qsTr("Slot 1")
+                        slotNumber: 1
+                    }
+                    ListElement {
+                        text: qsTr("Slot 2")
+                        slotNumber: 2
+                    }
                 }
             }
+            Label {
+                text: qsTr("Require touch")
+                Layout.alignment: Qt.AlignRight
+            }
+            CheckBox {
+                id: touch
+                KeyNavigation.tab: addCredentialBtn
+                Keys.onEscapePressed: close()
+            }
         }
+
 
         RowLayout {
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             Button {
+                id: cancelBtn
+                text: qsTr("Cancel")
+                onClicked: close()
+                KeyNavigation.tab: key
+                Keys.onEscapePressed: close()
+            }
+            Button {
                 id: addCredentialBtn
-                text: qsTr("Add credential")
+                text: qsTr("Save credential")
                 enabled: acceptableInput()
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
                 onClicked: tryAddCredential()
@@ -93,19 +82,9 @@ DefaultDialog {
                 Keys.onEscapePressed: close()
                 isDefault: true
             }
-            Button {
-                id: cancelBtn
-                text: qsTr("Cancel")
-                onClicked: close()
-                KeyNavigation.tab: scanBtn
-                Keys.onEscapePressed: close()
-            }
         }
     }
 
-    NoQrDialog {
-        id: noQr
-    }
 
     MessageDialog {
         id: paddingError
@@ -132,8 +111,12 @@ DefaultDialog {
         onAccepted: addCredential()
     }
 
+    function getSelectedSlotNumber() {
+        return slotItems.get(slotSelected.currentIndex).slotNumber
+    }
+
     function tryAddCredential() {
-        if (slotIsUsed(slotSelected.current.name)) {
+        if (slotIsUsed(getSelectedSlotNumber())) {
             confirmOverWrite.open()
         } else {
             addCredential()
@@ -151,7 +134,7 @@ DefaultDialog {
     }
 
     function acceptableInput() {
-        return key.text.length !== 0 && slotSelected.current !== null
+        return key.text.length !== 0 && getSelectedSlotNumber() !== null
     }
 
     function updateForm(uri) {
@@ -163,7 +146,7 @@ DefaultDialog {
     }
 
     function addCredential() {
-        device.addSlotCredential(slotSelected.current.name, key.text,
+        device.addSlotCredential(getSelectedSlotNumber(), key.text,
                                  touch.checked, function (error) {
                                      if (error === 'Incorrect padding') {
                                          paddingError.open()

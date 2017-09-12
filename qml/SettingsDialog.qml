@@ -9,7 +9,7 @@ DefaultDialog {
     modality: Qt.ApplicationModal
 
     property var settings
-    property alias slotMode: slotMode.checked
+    property bool slotMode: authenticatorMode.currentIndex == 1
     property alias slot1: slot1.checked
     property alias slot2: slot2.checked
     property alias slot1digits: slot1digits.currentIndex
@@ -18,85 +18,85 @@ DefaultDialog {
 
     ColumnLayout {
         anchors.fill: parent
-        Label {
-            text: qsTr("Authenticator Mode")
-            font.bold: true
-        }
-        ColumnLayout {
-            ExclusiveGroup {
-                id: mode
+
+        GridLayout {
+            columns: 2
+            Label {
+                text: qsTr("Authenticator Mode")
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
             }
-            RadioButton {
+            ComboBox {
+                id: authenticatorMode
+                Layout.fillWidth: true
                 focus: true
-                id: ccid
-                text: qsTr("CCID (Smart card)")
-                checked: !settings.slotMode
-                exclusiveGroup: mode
-                KeyNavigation.tab: slotMode
-                Keys.onEscapePressed: close()
-            }
-            RadioButton {
-                id: slotMode
-                checked: settings.slotMode
-                text: qsTr("YubiKey Slots")
-                exclusiveGroup: mode
+                currentIndex: settings.slotMode ? 1 : 0
+                model: [qsTr('CCID (Smart card)'), qsTr('YubiKey Slots')]
                 KeyNavigation.tab: slot1
                 Keys.onEscapePressed: close()
             }
-            CheckBox {
-                id: slot1
-                enabled: mode.current == slotMode
-                checked: settings.slot1
-                text: qsTr("Slot 1")
-                KeyNavigation.tab: slot1digits
-                Keys.onEscapePressed: close()
+            Label {
+                text: qsTr("Read from Slot 1")
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
+                enabled: slotMode
             }
-            RowLayout {
+            GridLayout {
+                CheckBox {
+                    id: slot1
+                    checked: settings.slot1
+                    enabled: slotMode
+                    KeyNavigation.tab: slot1digits
+                    Keys.onEscapePressed: close()
+                }
                 Label {
                     text: qsTr("Digits")
-                    enabled: mode.current == slotMode && slot1.checked
+                    enabled: slot1.checked
                 }
                 ComboBox {
                     id: slot1digits
+                    model: [6, 7, 8]
+                    enabled: slot1.checked && slotMode
                     currentIndex: settings.slot1digits != null ? settings.slot1digits : 0
-                    enabled: mode.current == slotMode && slot1.checked
-                    model: [6, 8]
                     KeyNavigation.tab: slot2
                     Keys.onEscapePressed: close()
                 }
             }
-            CheckBox {
-                id: slot2
-                enabled: mode.current == slotMode
-                checked: settings.slot2
-                text: qsTr("Slot 2")
-                KeyNavigation.tab: slot2digits
-                Keys.onEscapePressed: close()
+            Label {
+                text: qsTr("Read from Slot 2")
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
+                enabled: slotMode
             }
-            RowLayout {
+            GridLayout {
+                CheckBox {
+                    id: slot2
+                    enabled: slotMode
+                    checked: settings.slot2
+                    KeyNavigation.tab: slot2digits
+                    Keys.onEscapePressed: close()
+                }
                 Label {
                     text: qsTr("Digits")
-                    enabled: mode.current == slotMode && slot2.checked
+                    enabled: slot2.checked
                 }
                 ComboBox {
                     id: slot2digits
                     currentIndex: settings.slot2digits != null ? settings.slot2digits : 0
-                    enabled: mode.current == slotMode && slot2.checked
-                    model: [6, 8]
+                    model: [6, 7, 8]
+                    enabled: slot2.checked && slotMode
                     KeyNavigation.tab: closeToTray
                     Keys.onEscapePressed: close()
                 }
             }
-        }
-        Label {
-            text: qsTr("System tray")
-            font.bold: true
-        }
-        RowLayout {
+            Label {
+                text: qsTr("Show in system tray")
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
+            }
             CheckBox {
                 id: closeToTray
                 checked: settings.closeToTray
-                text: qsTr("Show in system tray")
                 KeyNavigation.tab: saveSettingsBtn
                 Keys.onEscapePressed: close()
             }
@@ -104,6 +104,14 @@ DefaultDialog {
 
         RowLayout {
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+
+            Button {
+                id: cancelBtn
+                text: qsTr("Cancel")
+                onClicked: close()
+                KeyNavigation.tab: authenticatorMode
+                Keys.onEscapePressed: close()
+            }
             Button {
                 id: saveSettingsBtn
                 text: qsTr("Save Settings")
@@ -116,18 +124,10 @@ DefaultDialog {
                 KeyNavigation.tab: cancelBtn
                 Keys.onEscapePressed: close()
             }
-            Button {
-                id: cancelBtn
-                text: qsTr("Cancel")
-                onClicked: close()
-                KeyNavigation.tab: ccid
-                Keys.onEscapePressed: close()
-            }
         }
     }
 
     function shouldAccept() {
-        return ((mode.current == slotMode) && (slot1.checked || slot2.checked))
-                || mode.current == ccid
+        return ((slotMode) && (slot1.checked || slot2.checked)) || !slotMode
     }
 }
