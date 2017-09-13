@@ -407,7 +407,7 @@ ApplicationWindow {
     }
 
     function hasCustomTimeBar(modelData) {
-        return modelData.period !== 30 && modelData.oath_type === 'totp'
+        return modelData.period !== 30 && (modelData.oath_type === 'totp' || modelData.touch)
     }
 
     function getSpacedCredential(code) {
