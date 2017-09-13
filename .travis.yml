@@ -75,7 +75,7 @@ after_success:
   - mkdir deploy/
   # Exctract all user facing strings and create a textfile with them for deployment.
   - lupdate yubioath-desktop.pro -ts yubioath-desktop.ts
-  - cp yubioath-desktop.ts deploy/yubioath-desktop-$TRAVIS_BRANCH-HEAD-strings.xml
+  - cp yubioath-desktop.ts deploy/yubioath-desktop-$TRAVIS_BRANCH-strings.xml
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
@@ -105,19 +105,15 @@ after_success:
       # Fix linking for Python _hashlib
       sudo install_name_tool -change /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_hashlib.cpython-36m-darwin.so
       sudo install_name_tool -change /usr/local/opt/openssl/lib/libssl.1.0.0.dylib @executable_path/../Frameworks/libssl.1.0.0.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_hashlib.cpython-36m-darwin.so
-      # Create .pkg
-      pkgbuild --install-location /Applications --component yubioath-desktop.app yubioath-desktop-$TRAVIS_BRANCH-HEAD-mac.pkg
-      # Copy to deploy dir
-      cp yubioath-desktop-$TRAVIS_BRANCH-HEAD-mac.pkg deploy/
       # Copy .app to deploy dir
-      tar -czf deploy/yubioath-desktop-$TRAVIS_BRANCH-HEAD.app.tar yubioath-desktop.app
+      tar -czf deploy/yubioath-desktop-$TRAVIS_BRANCH.app.tar yubioath-desktop.app
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
       id=$(docker create xenial)
       docker cp $id:/yubioath-desktop-debian-builds.tar.gz deploy/
-      mv deploy/yubioath-desktop-debian-builds.tar.gz deploy/yubioath-desktop-debian-builds-$TRAVIS_BRANCH-HEAD.tar.gz
+      mv deploy/yubioath-desktop-debian-builds.tar.gz deploy/yubioath-desktop-$TRAVIS_BRANCH-deb.tar.gz
     fi
 
 
