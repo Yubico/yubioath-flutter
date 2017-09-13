@@ -695,7 +695,7 @@ ApplicationWindow {
     }
 
     function generateOrCopy() {
-        if (selected.code == null || isExpired(selected)) {
+        if (selected.code == null || isExpired(selected) || selected.oath_type === 'hotp') {
             generate(true)
         } else {
             copy()
