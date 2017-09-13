@@ -511,33 +511,33 @@ ApplicationWindow {
     }
 
     function filteredCredentials(creds) {
-        var result = []
+        var searchResult = []
         if (creds !== null) {
             for (var i = 0; i < creds.length; i++) {
                 var cred = creds[i]
-                if (cred.name.toLowerCase().indexOf(search.text.toLowerCase(
+                if (cred.long_name.toLowerCase().indexOf(search.text.toLowerCase(
                                                         )) !== -1) {
-                    result.push(cred)
+                    searchResult.push(cred)
                 }
             }
         }
 
         // Sort credentials based on the
         // full name, including the issuer prefix
-        result.sort(function (a, b) {
+        searchResult.sort(function (a, b) {
             return a.long_name.localeCompare(b.long_name)
         })
 
         // If the search gave some results,
         // the top credential should be selected.
-        if (result[0] !== null && search.text.length > 0) {
-            selected = result[0]
+        if (searchResult[0] !== null && search.text.length > 0) {
+            selected = searchResult[0]
         } else if (search.text.length > 0) {
             // If search was started but no result,
             // reset selected to avoid hidden selected creds.
             deselectCredential()
         }
-        return result
+        return searchResult
     }
 
     function isInCoolDown(name) {
