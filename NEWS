@@ -1,3 +1,9 @@
+* Version 4.2.0 (unreleased)
+ ** Added support for 7 digit credentials.
+ ** Added support for credentials with a non 30-second period.
+ ** Moved QR-scan out of new credential dialog, available directly from main view.
+ ** Win 7: Fixed issue with OpenGL rendering.
+
 * Version 4.1.4 (released 2017-08-17)
  ** Double-click on system tray icon now shows the credentials. Not supported on macOS.
  ** Windows: An issue with the video drivers on some machines have been resolved.
