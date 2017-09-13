@@ -80,14 +80,13 @@ after_build:
   - ps: Get-ChildItem -Include vcruntime140.dll -Recurse | Remove-Item -Force
   - ps: Get-ChildItem -Include sqlite3.dll -Recurse | Remove-Item -Force
   - ps: Get-ChildItem -Include _sqlite3.pyd -Recurse | Remove-Item -Force
-  - set DEPLOYNAME=%APPVEYOR_REPO_BRANCH%-%APPVEYOR_REPO_TAG_NAME%
   # Create zip for deployment
-  - 7z a yubioath-desktop-%DEPLOYNAME%-HEAD-win.zip .\release\*
+  - 7z a yubioath-desktop-%APPVEYOR_REPO_BRANCH%-win.zip .\release\*
   - cd %APPVEYOR_BUILD_FOLDER%
 
 artifacts:
-  - path: yubioath-desktop-%DEPLOYNAME%-HEAD-win.zip
- 
+  - path: yubioath-desktop-%APPVEYOR_REPO_BRANCH%-win.zip
+
 deploy:
   - provider: S3
     access_key_id: $(AWS_KEY_ID)
