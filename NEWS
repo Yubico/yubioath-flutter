@@ -1,8 +1,11 @@
 * Version 4.2.0 (unreleased)
  ** Added support for 7 digit credentials.
  ** Added support for credentials with a non 30-second period.
- ** Moved QR-scan out of new credential dialog, available directly from main view.
+ ** Moved "Scan QR code" functionality, now available directly from main view.
+ ** Flip moving direction of the time left indicator.
  ** Win 7: Fixed issue with OpenGL rendering.
+ ** macOS: Allow OpenGL to use integrated GPU.
+ ** Bugfix: Issuer was not displayed correctly on Ubuntu.
 
 * Version 4.1.4 (released 2017-08-17)
  ** Double-click on system tray icon now shows the credentials. Not supported on macOS.
