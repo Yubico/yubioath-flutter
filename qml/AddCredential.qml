@@ -238,9 +238,19 @@ DefaultDialog {
     }
 
     function updateForm(uri) {
-        name.text = uri.name
+        var hasIssuerInName = uri.name.indexOf(':') !== -1
+        if (hasIssuerInName) {
+            var parsedName = uri.name.split(":").slice(1).join(":")
+            var parsedIssuer = uri.name.split(":", 1)[0]
+        }
+        var hasIssuerSameAsParsed = uri.issuer && uri.issuer === parsedIssuer
+        if (hasIssuerInName && (hasIssuerSameAsParsed || !uri.issuer)) {
+            name.text = parsedName
+        } else {
+            name.text = uri.name
+        }
+        issuer.text = uri.issuer || parsedIssuer || ''
         key.text = uri.secret
-        issuer.text = uri.issuer || ''
         period.value = uri.period || 30
         oathType.currentIndex = getTypeIndex(uri.type) || 0
         algorithm.currentIndex = getAlgoIndex(uri.algorithm) || 0
