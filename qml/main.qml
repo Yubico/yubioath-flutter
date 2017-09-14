@@ -461,7 +461,7 @@ ApplicationWindow {
             if (cred.oath_type !== "hotp") {
                 return cred.code === null || isExpired(selected)
             } else {
-                return !isInCoolDown(cred.name)
+                return !isInCoolDown(cred.long_name)
             }
         } else {
             return false
@@ -540,8 +540,8 @@ ApplicationWindow {
         return searchResult
     }
 
-    function isInCoolDown(name) {
-        return hotpCoolDowns.indexOf(name) !== -1
+    function isInCoolDown(longName) {
+        return hotpCoolDowns.indexOf(longName) !== -1
     }
 
     function calculateCredential(credential, copyAfterUpdate) {
@@ -618,10 +618,10 @@ ApplicationWindow {
     }
 
     function handleGenerate(cred, copyAfterUpdate) {
-        if (!isInCoolDown(cred.name)) {
+        if (!isInCoolDown(cred.long_name)) {
             calculateCredential(cred, copyAfterUpdate)
             if (cred.oath_type === "hotp") {
-                hotpCoolDowns.push(cred.name)
+                hotpCoolDowns.push(cred.long_name)
                 hotpCoolDownTimer.restart()
             }
         }
@@ -654,7 +654,7 @@ ApplicationWindow {
     }
 
     function getCredentialTextColor(modelData) {
-        if (selected != null && selected.name === modelData.name) {
+        if (selected != null && selected.long_name === modelData.long_name) {
             return palette.highlightedText
         } else {
             return palette.windowText
@@ -667,7 +667,7 @@ ApplicationWindow {
 
         // Left click, select or deselect credential.
         if (mouse.button & Qt.LeftButton) {
-            if (selected != null && selected.name === modelData.name) {
+            if (selected != null && selected.long_name === modelData.long_name) {
                 deselectCredential()
             } else {
                 selected = modelData
