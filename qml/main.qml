@@ -274,7 +274,7 @@ ApplicationWindow {
                                         + codeLbl.height + nameLbl.height + 10
                                 return hasCustomTimeBar(
                                             modelData) ? baseHeight
-                                                         + customTimeLeftBar.height : baseHeight
+                                                         + 10 : baseHeight
                             }
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignTop
@@ -334,6 +334,7 @@ ApplicationWindow {
                                 ProgressBar {
                                     id: customTimeLeftBar
                                     visible: hasCustomTimeBar(modelData)
+                                    Layout.topMargin: 3
                                     Layout.fillWidth: true
                                     Layout.minimumHeight: 7
                                     Layout.maximumHeight: 7
