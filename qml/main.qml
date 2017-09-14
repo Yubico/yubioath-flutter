@@ -340,6 +340,7 @@ ApplicationWindow {
                                     Layout.maximumHeight: 7
                                     Layout.alignment: Qt.AlignBottom
                                     maximumValue: modelData.period
+                                    rotation: 180
                                 }
                             }
                         }

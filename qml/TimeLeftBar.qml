@@ -11,4 +11,5 @@ ProgressBar {
     Layout.fillWidth: true
     maximumValue: 30
     minimumValue: 0
+    rotation: 180
 }
