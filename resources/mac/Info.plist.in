@@ -24,5 +24,7 @@
         <string>NSApplication</string>
         <key>NSHighResolutionCapable</key>
         <string>True</string>
+        <key>NSSupportsAutomaticGraphicsSwitching</key>
+        <true/>
 </dict>
 </plist>
