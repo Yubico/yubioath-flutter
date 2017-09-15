@@ -18,7 +18,7 @@ before_install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
-      docker build -t xenial docker/xenial
+      docker build -t xenial -f docker/xenial/Dockerfile .
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
@@ -112,8 +112,7 @@ after_success:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
       id=$(docker create xenial)
-      docker cp $id:/yubioath-desktop-debian-builds.tar.gz deploy/
-      mv deploy/yubioath-desktop-debian-builds.tar.gz deploy/yubioath-desktop-$TRAVIS_BRANCH-deb.tar.gz
+      docker cp $id:/yubioath-desktop-debian-packages.tar.gz deploy/yubioath-desktop-$TRAVIS_BRANCH-deb.tar.gz
     fi
 
 
