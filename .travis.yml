@@ -31,6 +31,7 @@ before_install:
       # Patch PyOtherSide to not be built with debug output
       echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> vendor/pyotherside/src/src.pro
     fi
+  - pip install --upgrade pip
 
 install:
   - |
@@ -45,7 +46,6 @@ install:
       eval "$(pyenv init -)"
       env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" pyenv install $PY_VERSION
       pyenv global system $PY_VERSION
-      # Upgrade pip
       pip install --upgrade pip
       # Build and install PyOtherside
       cd vendor/pyotherside
@@ -55,7 +55,6 @@ install:
       cd ../../
     fi
   # Install linting tools
-  - pip install --upgrade pip
   - sudo pip install pre-commit flake8
 
 before_script:
