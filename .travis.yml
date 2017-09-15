@@ -33,7 +33,7 @@ install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
-      git clone https://github.com/iltommi/macdeployqtfix.git
+      git clone https://github.com/aurelien-rainone/macdeployqtfix.git
       brew install qt5 swig
       brew link qt5 -f
       brew install ykpers libyubikey hidapi libu2f-host libusb
