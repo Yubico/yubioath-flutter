@@ -7,6 +7,9 @@
 language: cpp
 sudo: required
 
+env:
+  - PY_VERSION="3.6.2"
+
 os:
   - osx
   - linux
@@ -40,8 +43,8 @@ install:
       # Build Python 3 with --enable-framework, to be able to distribute it in a .app bundle
       brew upgrade pyenv
       eval "$(pyenv init -)"
-      env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" pyenv install 3.6.1
-      pyenv global system 3.6.1
+      env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" pyenv install $PY_VERSION
+      pyenv global system $PY_VERSION
       # Upgrade pip
       pip install --upgrade pip
       # Build and install PyOtherside
@@ -88,7 +91,7 @@ after_success:
       find /usr/local/Cellar/libusb/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       find /usr/local/Cellar/openssl/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       # Copy Python framework
-      cp -a ~/.pyenv/versions/3.6.1/Python.framework yubioath-desktop.app/Contents/Frameworks/
+      cp -a ~/.pyenv/versions/$PY_VERSION/Python.framework yubioath-desktop.app/Contents/Frameworks/
       sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '*.pyc' -delete
       sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '__pycache__' -delete
       # Move pymodules from app bundle to site-packages, to be accepted by codesign
@@ -97,7 +100,7 @@ after_success:
       # Fix stuff that macdeployqt does incorrectly.
       sudo python macdeployqtfix/macdeployqtfix.py yubioath-desktop.app/Contents/MacOS/yubioath-desktop /usr/local
       # Fix linking for PyOtherSide
-      sudo install_name_tool -change /Users/travis/.pyenv/versions/3.6.1/Python.framework/Versions/3.6/Python @executable_path/../Frameworks/Python.framework/Versions/3.6/Python yubioath-desktop.app/Contents/Resources/qml/io/thp/pyotherside/libpyothersideplugin.dylib
+      sudo install_name_tool -change /Users/travis/.pyenv/versions/$PY_VERSION/Python.framework/Versions/3.6/Python @executable_path/../Frameworks/Python.framework/Versions/3.6/Python yubioath-desktop.app/Contents/Resources/qml/io/thp/pyotherside/libpyothersideplugin.dylib
       # Fix linking for Python _ssl
       sudo install_name_tool -change /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_ssl.cpython-36m-darwin.so
       sudo install_name_tool -change /usr/local/opt/openssl/lib/libssl.1.0.0.dylib @executable_path/../Frameworks/libssl.1.0.0.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_ssl.cpython-36m-darwin.so
