@@ -1,3 +1,5 @@
+test
+
 == Yubico Authenticator
 image:https://travis-ci.org/Yubico/yubioath-desktop.svg?branch=master["Build Status", link="https://travis-ci.org/Yubico/yubioath-desktop"]
 image:https://ci.appveyor.com/api/projects/status/8jisffiq9j9ajn7y?svg=true["Appveyor Status", link="https://ci.appveyor.com/project/Yubico53275/yubioath-desktop"]
