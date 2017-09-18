@@ -9,7 +9,8 @@ image:screenshot.png[]
 === Features
 * Keep your OATH secrets safe by storing them on a YubiKey and generate the codes with this application.
 * Add a credential by scanning a QR code on the screen.
-* Supports 6 or 8 digit codes.
+* Supports 6, 7 or 8 digit codes.
+* Supports TOTP credentials with any time period.
 * Require touch on YubiKey to generate code.
 * Protect your credentials with a device password.
 
