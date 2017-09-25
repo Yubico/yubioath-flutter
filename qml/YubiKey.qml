@@ -11,7 +11,6 @@ Python {
     property string name
     property string version
     property string oathId
-    property var features: []
     property var connections: []
     property var credentials: []
     property int nextRefresh: 0
@@ -34,15 +33,10 @@ Python {
                 addImportPath(urlPrefix + '/py')
                 importModule('yubikey', function () {
                     ready = true
-                    do_call('yubikey.controller.get_features', [],
-                            function (res) {
-                                features = res
-                                for (var i in queue) {
-                                    do_call(queue[i][0], queue[i][1],
-                                            queue[i][2])
-                                }
-                                queue = []
-                            })
+                    for (var i in queue) {
+                        do_call(queue[i][0], queue[i][1], queue[i][2])
+                    }
+                    queue = []
                 })
             })
         })
@@ -168,7 +162,8 @@ Python {
         for (var i = 0; i < creds.length; i++) {
             var cred = creds[i]
             // Update min expiration
-            if (cred.expiration && cred.expiration < minExpiration && cred.period === 30) {
+            if (cred.expiration && cred.expiration < minExpiration
+                    && cred.period === 30) {
                 minExpiration = cred.expiration
             }
             // Touch credentials should only be replaced by user
@@ -207,7 +202,6 @@ Python {
                 return credentials[i]
             }
         }
-
     }
 
     function credentialExists(longName) {
@@ -243,7 +237,7 @@ Python {
     function calculate(credential, copyAfterUpdate) {
         var now = Math.floor(Date.now() / 1000)
         do_call('yubikey.controller.calculate', [credential, now, passwordKey],
-                function(cred) {
+                function (cred) {
                     updateSingleCredential(cred, copyAfterUpdate)
                 })
     }
@@ -251,7 +245,7 @@ Python {
     function calculateSlotMode(slot, digits, copyAfterUpdate) {
         var now = Math.floor(Date.now() / 1000)
         do_call('yubikey.controller.calculate_slot_mode', [slot, digits, now],
-                function(cred) {
+                function (cred) {
                     updateSingleCredential(cred, copyAfterUpdate)
                 })
     }

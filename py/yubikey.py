@@ -16,8 +16,6 @@ from ykman.oath import OathController, Credential, SW
 from qr import qrparse
 from qr import qrdecode
 
-NON_FEATURE_CAPABILITIES = [CAPABILITY.CCID, CAPABILITY.NFC]
-
 
 def as_json(f):
     def wrapped(*args):
@@ -36,10 +34,6 @@ class Controller(object):
                 func = getattr(self, f)
                 if isinstance(func, types.MethodType):
                     setattr(self, f, as_json(func))
-
-    def get_features(self):
-        return [
-            c.name for c in CAPABILITY if c not in NON_FEATURE_CAPABILITIES]
 
     def count_devices(self):
         return len(list(get_descriptors()))
