@@ -22,7 +22,7 @@ init:
 install:
   # Submodules are not cloned by default
   - git submodule update --init --recursive
-  - choco update -y all
+  - choco upgrade -y all
   - choco install swig -y
   - choco upgrade swig 
 
