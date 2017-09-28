@@ -71,6 +71,7 @@ Python {
                     hasDevice = dev !== undefined && dev !== null
                 })
             } else if (hasDevice) {
+                // No longer has device
                 hasDevice = false
                 credentials = null
                 nextRefresh = 0
@@ -119,6 +120,11 @@ Python {
     function promptOrSkip(prompt) {
 
         do_call('yubikey.controller.get_oath_id', [], function (res) {
+            if (res == null) {
+                // No device there?
+                hasDevice = false
+                return
+            }
 
             oathId = res
 

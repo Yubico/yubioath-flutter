@@ -42,14 +42,15 @@ class Controller(object):
         descriptors = list(get_descriptors())
         if len(descriptors) != 1:
             self._descriptor = None
-            return
+            return None
 
         desc = descriptors[0]
         if desc.fingerprint != (
                 self._descriptor.fingerprint if self._descriptor else None):
-            dev = desc.open_device()
-            if not dev:
-                return
+            try:
+                dev = desc.open_device()
+            except:
+                return None
             self._descriptor = desc
             self._dev_info = {
                 'name': dev.device_name,
@@ -63,13 +64,26 @@ class Controller(object):
         return self._dev_info
 
     def refresh_credentials(self, timestamp, password_key=None):
-        return [
-            c.to_dict() for c in self._calculate_all(timestamp, password_key)]
+        try:
+            dev = self._descriptor.open_device(TRANSPORT.CCID)
+            controller = OathController(dev.driver)
+            if controller.locked and password_key is not None:
+                controller.validate(a2b_hex(password_key))
+            creds = controller.calculate_all(timestamp)
+            return [c.to_dict() for c in creds if not c.is_hidden()]
+        except:
+            return []
 
     def calculate(self, credential, timestamp, password_key):
-        return self._calculate(
-            Credential.from_dict(
-                credential), timestamp, password_key).to_dict()
+        try:
+            dev = self._descriptor.open_device(TRANSPORT.CCID)
+            controller = OathController(dev.driver)
+            if controller.locked and password_key is not None:
+                controller.validate(a2b_hex(password_key))
+        except:
+            return None
+        return controller.calculate(
+            Credential.from_dict(credential), timestamp).to_dict()
 
     def calculate_slot_mode(self, slot, digits, timestamp):
         dev = self._descriptor.open_device(TRANSPORT.OTP)
@@ -126,8 +140,11 @@ class Controller(object):
             return False
 
     def get_oath_id(self):
-        dev = self._descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
+        try:
+            dev = self._descriptor.open_device(TRANSPORT.CCID)
+            controller = OathController(dev.driver)
+        except:
+            return None
         return b2a_hex(controller.id).decode('utf-8')
 
     def derive_key(self, password):
@@ -202,23 +219,6 @@ class Controller(object):
         if controller.locked and password_key is not None:
             controller.validate(a2b_hex(password_key))
         controller.delete(Credential.from_dict(credential))
-
-    def _calculate(self, credential, timestamp, password_key):
-        dev = self._descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
-        if controller.locked and password_key is not None:
-            controller.validate(a2b_hex(password_key))
-        cred = controller.calculate(credential, timestamp)
-        return cred
-
-    def _calculate_all(self, timestamp, password_key):
-        dev = self._descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
-        if controller.locked and password_key is not None:
-            controller.validate(a2b_hex(password_key))
-        creds = controller.calculate_all(timestamp)
-        creds = [c for c in creds if not c.is_hidden()]
-        return creds
 
     def parse_qr(self, screenshot):
         data = b64decode(screenshot['data'])
