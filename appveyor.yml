@@ -23,7 +23,7 @@ install:
   # Submodules are not cloned by default
   - git submodule update --init --recursive
   - choco upgrade -y all
-  - choco install swig -y
+  - choco install swig -y --allow-empty-checksums
   - choco upgrade swig 
 
   # Build and install PyOtherSide 
