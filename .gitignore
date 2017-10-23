@@ -17,5 +17,6 @@ qrc_*.cpp
 moc_*.cpp
 moc_*.h
 yubioath-desktop.app/
+yubioath-desktop
 pymodules
 .vagrant/

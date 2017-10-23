@@ -12,7 +12,6 @@ ApplicationWindow {
     height: 400
     minimumHeight: 400
     minimumWidth: 300
-    visible: true
     title: getTitle()
     property var device: yk
     property var credentials: device.credentials
@@ -30,6 +29,8 @@ ApplicationWindow {
     // Don't refresh credentials when window is minimized or hidden
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
     property bool shouldRefresh: visibility != 3 && visibility != 0
+
+    property bool hideOnLaunch: settings.hideOnLaunch
 
     signal copy
     signal generate(bool copyAfterGenerate)
@@ -88,6 +89,7 @@ ApplicationWindow {
         property var slot2digits
         property string savedPasswords
         property bool closeToTray
+        property bool hideOnLaunch
 
         // Keep track of window and desktop dimensions.
         property alias width: appWindow.width
@@ -598,6 +600,7 @@ ApplicationWindow {
         settings.slot1digits = settingsDialog.slot1digits
         settings.slot2digits = settingsDialog.slot2digits
         settings.closeToTray = settingsDialog.closeToTray
+        settings.hideOnLaunch = settingsDialog.hideOnLaunch
     }
 
     function trySetPassword() {

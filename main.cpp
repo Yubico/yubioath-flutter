@@ -94,6 +94,11 @@ int main(int argc, char *argv[])
 
     // Set icon in the window, doesn't effect desktop icons.
     qmlWindow->setIcon(QIcon(path_prefix + "/images/windowicon.png"));
+    // Show root window unless explicitly hidden in settings.
+    auto hideOnLaunch = qmlWindow->property("hideOnLaunch");
+    if (!hideOnLaunch.toBool()) {
+        qmlWindow->show();
+    }
 
     QAction *showAction = new QAction(QObject::tr("&Show credentials"), qmlWindow);
     // The call to hide doesn't make much sense but makes it work on macOS when hidden from the dock.
