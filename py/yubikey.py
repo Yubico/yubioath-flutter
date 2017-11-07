@@ -9,12 +9,13 @@ from binascii import a2b_hex, b2a_hex
 
 from ykman.descriptor import get_descriptors
 from ykman.util import (
-    CAPABILITY, TRANSPORT, derive_key, parse_uri, parse_b32_key)
+    CAPABILITY, TRANSPORT, parse_b32_key)
 from ykman.driver_otp import YkpersError
 from ykman.driver_ccid import APDUError
-from ykman.oath import OathController, Credential, SW
-from qr import qrparse
-from qr import qrdecode
+from ykman.oath import (ALGO, OATH_TYPE, OathController, CredentialData,
+        Credential, Code, SW)
+from ykman.settings import Settings
+from qr import qrparse, qrdecode
 
 
 def as_json(f):
@@ -23,11 +24,48 @@ def as_json(f):
     return wrapped
 
 
+def cred_to_dict(cred):
+    return {
+        'key': cred.key.decode('utf8'),
+        'issuer': cred.issuer,
+        'name': cred.name,
+        'oath_type': cred.oath_type.name,
+        'period': cred.period,
+        'touch': cred.touch
+    }
+
+
+def cred_from_dict(data):
+    return Credential(
+        data['key'].encode('utf-8'),
+        OATH_TYPE[data['oath_type']],
+        data['touch']
+    )
+
+
+def code_to_dict(code):
+    return {
+        'value': code.value,
+        'valid_from': code.valid_from,
+        'valid_to': min(code.valid_to, 9999999999)  # No Inf in JSON.
+    } if code else None
+
+
+def pair_to_dict(cred, code):
+    return {
+        'credential': cred_to_dict(cred),
+        'code': code_to_dict(code)
+    }
+
+
 class Controller(object):
     _descriptor = None
     _dev_info = None
+    _key = None
 
     def __init__(self):
+        self.settings = Settings('oath')
+
         # Wrap all args and return values as JSON.
         for f in dir(self):
             if not f.startswith('_'):
@@ -36,10 +74,10 @@ class Controller(object):
                     setattr(self, f, as_json(func))
 
     def count_devices(self):
-        return len(list(get_descriptors()))
+        return len(get_descriptors())
 
-    def refresh(self):
-        descriptors = list(get_descriptors())
+    def refresh(self, otp_mode=False):
+        descriptors = get_descriptors()
         if len(descriptors) != 1:
             self._descriptor = None
             return None
@@ -48,7 +86,7 @@ class Controller(object):
         if desc.fingerprint != (
                 self._descriptor.fingerprint if self._descriptor else None):
             try:
-                dev = desc.open_device()
+                dev = desc.open_device(TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
             except:
                 return None
             self._descriptor = desc
@@ -63,36 +101,46 @@ class Controller(object):
 
         return self._dev_info
 
-    def refresh_credentials(self, timestamp, password_key=None):
+    def _unlock(self, controller):
+        if controller.locked:
+            keys = self.settings.get('keys', {})
+            if self._key is not None:
+                controller.validate(self._key)
+            elif controller.id in keys:
+                controller.validate(a2b_hex(keys[controller.id]))
+            else:
+                return False
+        return True
+
+    def refresh_credentials(self, timestamp):
         try:
             dev = self._descriptor.open_device(TRANSPORT.CCID)
             controller = OathController(dev.driver)
-            if controller.locked and password_key is not None:
-                controller.validate(a2b_hex(password_key))
-            creds = controller.calculate_all(timestamp)
-            return [c.to_dict() for c in creds if not c.is_hidden()]
+            self._unlock(controller)
+            entries = controller.calculate_all(timestamp)
+            return [pair_to_dict(cred, code) for (cred, code) in entries if not cred.is_hidden]
         except:
             return []
 
-    def calculate(self, credential, timestamp, password_key):
+    def calculate(self, credential, timestamp):
         try:
             dev = self._descriptor.open_device(TRANSPORT.CCID)
             controller = OathController(dev.driver)
-            if controller.locked and password_key is not None:
-                controller.validate(a2b_hex(password_key))
+            self._unlock(controller)
         except:
             return None
-        return controller.calculate(
-            Credential.from_dict(credential), timestamp).to_dict()
+        code = controller.calculate(cred_from_dict(credential), timestamp)
+        return code_to_dict(code)
 
     def calculate_slot_mode(self, slot, digits, timestamp):
         dev = self._descriptor.open_device(TRANSPORT.OTP)
         code = dev.driver.calculate(
             slot, challenge=timestamp, totp=True, digits=int(digits),
             wait_for_touch=True)
-        return Credential(
-            self._slot_name(slot), code=code, oath_type='totp', touch=True,
-            algo='SHA1', expiration=self._expiration(timestamp)).to_dict()
+        valid_from = timestamp - (timestamp % 30)
+        valid_to = valid_from + 30
+        code = Code(code, valid_from, valid_to)
+        return pair_to_dict(Credential(self._slot_name(slot), OATH_TYPE.TOTP, True), code)
 
     def refresh_slot_credentials(self, slots, digits, timestamp):
         result = []
@@ -104,7 +152,7 @@ class Controller(object):
             cred = self._read_slot_cred(2, digits[1], timestamp)
             if cred:
                 result.append(cred)
-        return [c.to_dict() for c in result]
+        return [pair_to_dict(cred, code) for (cred, code) in result]
 
     def _read_slot_cred(self, slot, digits, timestamp):
         try:
@@ -112,21 +160,19 @@ class Controller(object):
             code = dev.driver.calculate(
                 slot, challenge=timestamp, totp=True, digits=int(digits),
                 wait_for_touch=False)
-            return Credential(
-                self._slot_name(slot), code=code, oath_type='totp',
-                touch=False, algo='SHA1',
-                expiration=self._expiration(timestamp))
+            valid_from = timestamp - (timestamp % 30)
+            valid_to = valid_from + 30
+            code = Code(code, valid_from, valid_to)
+            return (Credential(self._slot_name(slot), OATH_TYPE.TOTP, False), code)
         except YkpersError as e:
-                if e.errno == 11:
-                    return Credential(
-                        self._slot_name(slot), oath_type='totp', touch=True,
-                        algo='SHA1')
-        except:
-            pass
+            if e.errno == 11:
+                return (Credential(self._slot_name(slot), OATH_TYPE.TOTP, True), None)
+        except Exception as e:
+            return (Credential(str(e).encode(), OATH_TYPE.TOTP, True), None)
         return None
 
     def _slot_name(self, slot):
-        return "YubiKey Slot {}".format(slot)
+        return "YubiKey Slot {}".format(slot).encode('utf-8')
 
     def _expiration(self, timestamp):
         return ((timestamp + 30) // 30) * 30
@@ -134,67 +180,67 @@ class Controller(object):
     def needs_validation(self):
         try:
             dev = self._descriptor.open_device(TRANSPORT.CCID)
-            controller = OathController(dev.driver)
-            return controller.locked
+            return not self._unlock(OathController(dev.driver))
         except:
-            return False
+            return True
 
     def get_oath_id(self):
         try:
             dev = self._descriptor.open_device(TRANSPORT.CCID)
-            controller = OathController(dev.driver)
+            return OathController(dev.driver).id
         except:
             return None
-        return b2a_hex(controller.id).decode('utf-8')
 
-    def derive_key(self, password):
+    def provide_password(self, password, remember=False):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
-        key = derive_key(controller.id, password)
-        return b2a_hex(key).decode('utf-8')
+        self._key = controller.derive_key(password)
+        try:
+            controller.validate(self._key)
+        except:
+            return False
+        if remember:
+            keys = self.settings.setdefault('keys', {})
+            keys[controller.id] = b2a_hex(self._key).decode()
+            self.settings.write()
+        return True
 
-    def validate(self, key):
+    def set_password(self, new_password, remember=False):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
-        if key is not None:
-            try:
-                controller.validate(a2b_hex(key))
-                return True
-            except:
-                return False
-
-    def set_password(self, new_password, password_key):
-        dev = self._descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
-        if controller.locked and password_key is not None:
-            controller.validate(a2b_hex(password_key))
+        self._unlock(controller)
+        keys = self.settings.setdefault('keys', {})
         if new_password is not None:
-            key = derive_key(controller.id, new_password)
-            controller.set_password(key)
+            self._key = controller.set_password(new_password)
+            if remember:
+                keys[controller.id] = b2a_hex(self._key).decode()
+            elif controller.id in keys:
+                del keys[controller.id]
         else:
             controller.clear_password()
+            del keys[controller.id]
+            self._key = None
+        self.settings.write()
 
     def add_credential(
-            self, name, key, issuer, oath_type, algo, digits,
-            period, touch, password_key):
+            self, name, secret, issuer, oath_type, algo, digits,
+            period, touch):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
-        if controller.locked and password_key is not None:
-            controller.validate(a2b_hex(password_key))
+        self._unlock(controller)
         try:
-            key = parse_b32_key(key)
+            secret = parse_b32_key(secret)
         except Exception as e:
             return str(e)
         try:
-            controller.put(
-                key, name, issuer=issuer, oath_type=oath_type,
-                algo=algo, digits=int(digits), period=int(period),
-                require_touch=touch)
+            controller.put(CredentialData(secret, issuer, name,
+                OATH_TYPE[oath_type], ALGO[algo], int(digits), int(period), 0,
+                touch))
         except APDUError as e:
             # NEO doesn't return a no space error if full,
             # but a command aborted error. Assume it's because of
             # no space in this context.
-            if e.sw == SW.NO_SPACE or e.sw == SW.COMMAND_ABORTED:
+            if e.sw in (SW.NO_SPACE, SW.COMMAND_ABORTED):
                 return 'No space'
             else:
                 raise
@@ -202,29 +248,26 @@ class Controller(object):
     def add_slot_credential(self, slot, key, touch):
         dev = self._descriptor.open_device(TRANSPORT.OTP)
         key = parse_b32_key(key)
-        if len(key) > 64:  # Keys longer than 64 bytes are hashed.
-            key = hashlib.sha1(key).digest()
-        if len(key) > 20:
-            return 'Over 20 bytes'
-        key += b'\x00' * (20 - len(key))  # Keys must be padded to 20 bytes.
-        dev.driver.program_chalresp(int(slot), key, touch)
+        try:
+            dev.driver.program_chalresp(int(slot), key, touch)
+        except Exception as e:
+            return str(e)
 
     def delete_slot_credential(self, slot):
         dev = self._descriptor.open_device(TRANSPORT.OTP)
         dev.driver.zap_slot(slot)
 
-    def delete_credential(self, credential, password_key):
+    def delete_credential(self, credential):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
-        if controller.locked and password_key is not None:
-            controller.validate(a2b_hex(password_key))
-        controller.delete(Credential.from_dict(credential))
+        self._unlock(controller)
+        controller.delete(cred_from_dict(credential))
 
     def parse_qr(self, screenshot):
         data = b64decode(screenshot['data'])
         image = PixelImage(data, screenshot['width'], screenshot['height'])
         for qr in qrparse.parse_qr_codes(image, 2):
-            return parse_uri(qrdecode.decode_qr_data(qr))
+            return CredentialData.from_uri(qrdecode.decode_qr_data(qr))
 
     def reset(self):
         dev = self._descriptor.open_device(TRANSPORT.CCID)

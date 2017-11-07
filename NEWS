@@ -1,3 +1,6 @@
+* Version 4.3.0 (unreleased)
+ ** Remembered passwords are now shared with ykman.
+
 * Version 4.2.0 (released 2017-09-14)
  ** Added support for 7 digit credentials.
  ** Added support for credentials with a non 30-second period.

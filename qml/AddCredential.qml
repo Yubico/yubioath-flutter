@@ -215,10 +215,10 @@ DefaultDialog {
     }
 
     function getTypeIndex(type) {
-        if (type === 'totp') {
+        if (type === 'TOTP') {
             return 0
         }
-        if (type === 'hotp') {
+        if (type === 'HOTP') {
             return 1
         }
         return false
@@ -273,7 +273,7 @@ DefaultDialog {
         var _name = name.text
         var _key = key.text
         var _issuer = issuer.text
-        var _oathType = oathType.currentIndex === 0 ? 'totp' : 'hotp'
+        var _oathType = oathType.currentIndex === 0 ? 'TOTP' : 'HOTP'
         var _algo = algorithm.currentIndex === 0 ? 'SHA1' : 'SHA256'
         var _digits = digits.currentText
         var _period = period.value
