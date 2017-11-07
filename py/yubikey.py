@@ -147,13 +147,13 @@ class Controller(object):
     def refresh_slot_credentials(self, slots, digits, timestamp):
         result = []
         if slots[0]:
-            cred = self._read_slot_cred(1, digits[0], timestamp)
-            if cred:
-                result.append(cred)
+            entry = self._read_slot_cred(1, digits[0], timestamp)
+            if entry:
+                result.append(entry)
         if slots[1]:
-            cred = self._read_slot_cred(2, digits[1], timestamp)
-            if cred:
-                result.append(cred)
+            entry = self._read_slot_cred(2, digits[1], timestamp)
+            if entry:
+                result.append(entry)
         return [pair_to_dict(cred, code) for (cred, code) in result]
 
     def _read_slot_cred(self, slot, digits, timestamp):
