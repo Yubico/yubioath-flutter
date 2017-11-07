@@ -3,7 +3,6 @@
 
 import json
 import types
-import hashlib
 from base64 import b64decode
 from binascii import a2b_hex, b2a_hex
 
@@ -13,7 +12,7 @@ from ykman.util import (
 from ykman.driver_otp import YkpersError
 from ykman.driver_ccid import APDUError
 from ykman.oath import (ALGO, OATH_TYPE, OathController, CredentialData,
-        Credential, Code, SW)
+                        Credential, Code, SW)
 from ykman.settings import Settings
 from qr import qrparse, qrdecode
 
@@ -86,8 +85,9 @@ class Controller(object):
         if desc.fingerprint != (
                 self._descriptor.fingerprint if self._descriptor else None):
             try:
-                dev = desc.open_device(TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
-            except:
+                dev = desc.open_device(TRANSPORT.OTP if otp_mode
+                                       else TRANSPORT.CCID)
+            except Exception:
                 return None
             self._descriptor = desc
             self._dev_info = {
@@ -118,8 +118,9 @@ class Controller(object):
             controller = OathController(dev.driver)
             self._unlock(controller)
             entries = controller.calculate_all(timestamp)
-            return [pair_to_dict(cred, code) for (cred, code) in entries if not cred.is_hidden]
-        except:
+            return [pair_to_dict(cred, code) for (cred, code) in entries
+                    if not cred.is_hidden]
+        except Exception:
             return []
 
     def calculate(self, credential, timestamp):
@@ -127,7 +128,7 @@ class Controller(object):
             dev = self._descriptor.open_device(TRANSPORT.CCID)
             controller = OathController(dev.driver)
             self._unlock(controller)
-        except:
+        except Exception:
             return None
         code = controller.calculate(cred_from_dict(credential), timestamp)
         return code_to_dict(code)
@@ -140,7 +141,8 @@ class Controller(object):
         valid_from = timestamp - (timestamp % 30)
         valid_to = valid_from + 30
         code = Code(code, valid_from, valid_to)
-        return pair_to_dict(Credential(self._slot_name(slot), OATH_TYPE.TOTP, True), code)
+        return pair_to_dict(Credential(self._slot_name(slot),
+                                       OATH_TYPE.TOTP, True), code)
 
     def refresh_slot_credentials(self, slots, digits, timestamp):
         result = []
@@ -163,10 +165,12 @@ class Controller(object):
             valid_from = timestamp - (timestamp % 30)
             valid_to = valid_from + 30
             code = Code(code, valid_from, valid_to)
-            return (Credential(self._slot_name(slot), OATH_TYPE.TOTP, False), code)
+            return (Credential(self._slot_name(slot), OATH_TYPE.TOTP, False),
+                    code)
         except YkpersError as e:
             if e.errno == 11:
-                return (Credential(self._slot_name(slot), OATH_TYPE.TOTP, True), None)
+                return (Credential(self._slot_name(slot), OATH_TYPE.TOTP, True
+                                   ), None)
         except Exception as e:
             return (Credential(str(e).encode(), OATH_TYPE.TOTP, True), None)
         return None
@@ -181,14 +185,14 @@ class Controller(object):
         try:
             dev = self._descriptor.open_device(TRANSPORT.CCID)
             return not self._unlock(OathController(dev.driver))
-        except:
+        except Exception:
             return True
 
     def get_oath_id(self):
         try:
             dev = self._descriptor.open_device(TRANSPORT.CCID)
             return OathController(dev.driver).id
-        except:
+        except Exception:
             return None
 
     def provide_password(self, password, remember=False):
@@ -197,7 +201,7 @@ class Controller(object):
         self._key = controller.derive_key(password)
         try:
             controller.validate(self._key)
-        except:
+        except Exception:
             return False
         if remember:
             keys = self.settings.setdefault('keys', {})
@@ -233,9 +237,10 @@ class Controller(object):
         except Exception as e:
             return str(e)
         try:
-            controller.put(CredentialData(secret, issuer, name,
-                OATH_TYPE[oath_type], ALGO[algo], int(digits), int(period), 0,
-                touch))
+            controller.put(CredentialData(
+                secret, issuer, name, OATH_TYPE[oath_type], ALGO[algo],
+                int(digits), int(period), 0, touch
+            ))
         except APDUError as e:
             # NEO doesn't return a no space error if full,
             # but a command aborted error. Assume it's because of
