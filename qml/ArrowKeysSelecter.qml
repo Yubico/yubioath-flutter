@@ -12,7 +12,13 @@ Item {
     property bool lastCredSelected: selectedIndex === nCreds - 1
     property bool firstCredSeleced: selectedIndex === 0
 
-    Keys.onDownPressed: {
+    signal goDown()
+    signal goUp()
+
+    Keys.onDownPressed: goDown()
+    Keys.onUpPressed: goUp()
+
+    onGoDown: {
         flickable.flick(0, -300)
         if (nothingSelected) {
             selected = firstCred
@@ -24,7 +30,7 @@ Item {
 
     }
 
-    Keys.onUpPressed: {
+    onGoUp: {
         flickable.flick(0, 300)
         if (nothingSelected) {
             selected = lastCred

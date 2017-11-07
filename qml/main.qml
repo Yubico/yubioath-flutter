@@ -337,6 +337,8 @@ ApplicationWindow {
             }
             Keys.onReturnPressed: generateOrCopy()
             Keys.onEnterPressed: generateOrCopy()
+            Keys.onDownPressed: arrowKeys.goDown()
+            Keys.onUpPressed: arrowKeys.goUp()
         }
     }
 
