@@ -26,12 +26,14 @@ RUN apt-get install -qq \
     qml-module-io-thp-pyotherside \
     qml-module-qt-labs-settings \
     python3-pip \
-    python3-dev \
-    yubikey-manager
+    python3-dev
 RUN pip3 install --upgrade pip
 COPY . yubioath-desktop
+RUN tar xfa yubioath-desktop/ykman-deb.tar.gz
+RUN dpkg -i /deb/python3-yubikey-manager_*.deb; exit 0
+RUN dpkg -i /deb/yubikey-manager_*.deb; exit 0
+RUN apt-get install -f -qq
 RUN cd yubioath-desktop && qmake -qt=qt5 && make
 RUN cd yubioath-desktop && debuild -us -uc
-RUN mkdir /deb
 RUN mv /yubioath-desktop_* /deb
 RUN cd / && tar czf yubioath-desktop-debian-packages.tar.gz deb

@@ -21,7 +21,10 @@ before_install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
-      docker build -t xenial -f docker/xenial/Dockerfile .
+      cd vendor/yubikey-manager && docker build -t ykman-xenial -f docker/xenial/Dockerfile .
+      id=$(docker create ykman-xenial)
+      docker cp $id:/yubikey-manager-debian-packages.tar.gz ykman-deb.tar.gz
+      docker build -t yubioath-xenial -f docker/xenial/Dockerfile .
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
