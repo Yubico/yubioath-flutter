@@ -1,0 +1,48 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "fedora/26-cloud-base"
+
+  config.vm.provision "shell", path: "provision.sh"
+
+  # Sync repository to /vagrant
+  config.vm.synced_folder '../..', '/vagrant'
+
+  # VirtualBox configuration
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "yubioath-desktop:fedora"
+
+    # Enable GUI
+    vb.gui = true
+    # Set memory
+    vb.memory = 2048
+    # Enable shared clipboard
+    vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+    # Enable drag-n-drop
+    vb.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
+  end
+
+  # This will connect the YubiKey to the VM when re-inserted.
+  # This filter uses VirtualBox as provider.
+  # Modify the paramters as needed depending on the device.
+
+  FILTER_NAME="YubiKey"
+  MANUFACTURER="Yubico"
+  VENDOR_ID="0x1050"
+  PRODUCT_ID="0x0407"
+  PRODUCT="Yubikey 4 OTP+U2F+CCID"
+
+  config.vm.provider "virtualbox" do |vb|
+   vb.customize ['modifyvm', :id, '--usb', 'on']
+   vb.customize ['usbfilter', 'add', '0',
+     '--target', :id,
+     '--name', FILTER_NAME,
+     '--manufacturer', MANUFACTURER,
+     '--vendorid', VENDOR_ID,
+     '--productid', PRODUCT_ID,
+     '--product', PRODUCT]
+  end
+
+end
