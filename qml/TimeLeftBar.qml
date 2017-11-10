@@ -12,4 +12,9 @@ ProgressBar {
     maximumValue: 30
     minimumValue: 0
     rotation: 180
+    style: ProgressBarStyle {
+        background: Rectangle {
+            color: palette.alternateBase
+        }
+    }
 }
