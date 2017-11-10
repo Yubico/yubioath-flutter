@@ -223,6 +223,9 @@ ApplicationWindow {
 
         ScrollView {
             id: scrollView
+            style: ScrollViewStyle {
+                transientScrollBars: true
+            }
             Layout.fillHeight: true
             Layout.fillWidth: true
 
