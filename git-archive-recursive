@@ -1,0 +1,66 @@
+#!/bin/bash
+# Similar to git-archive(1), but recurses into currently checked out submodules.
+#
+# Usage: git-archive-recursive [ARCHIVE_NAME]
+#
+# If ARCHIVE_NAME is not given, it defaults to "$(basename $(pwd))-$(git
+# rev-parse --short HEAD).tar.gz".
+#
+# NOTE: Submodules' state is not checked. You should ensure that all submodules
+# are checked out to the commits specified in .gitmodules .
+
+PROJECT_NAME="${1:-$(basename $(pwd))}"
+TMP_DIR=$(mktemp -d "git-archive-recursive-${PROJECT_NAME}-XXXXXX")
+SUBMODULES_DIR="${TMP_DIR}/submodules/"
+OUTPUT_DIR="${TMP_DIR}/dist"
+
+cleanup() {
+  rm -rf "${TMP_DIR}"
+}
+
+die() {
+  echo "Error occurred - exiting!" >&2
+  cleanup
+}
+
+# Exit on error
+trap die ERR
+
+
+commit=$(git rev-parse --short HEAD)
+archive_name="archive-${commit}.tar.gz"
+
+mkdir -p "${SUBMODULES_DIR}"
+mkdir -p "${OUTPUT_DIR}"
+
+# Create sources archive for root repo
+git archive "$commit" > "${TMP_DIR}/${archive_name}"
+# Unpack sources into output directory
+tar xf "${TMP_DIR}/${archive_name}" -C "${OUTPUT_DIR}"
+
+IFS='
+'
+for submodule_line in $(git submodule status --recursive); do
+  submodule_commit=$(echo "$submodule_line" | cut -d ' ' -f 2)
+  submodule_dir=$(echo "$submodule_line" | cut -d ' ' -f 3)
+  submodule_name=$(basename "$submodule_dir")
+
+  short_commit=$(git -C "$submodule_dir" rev-parse --short "$submodule_commit")
+  submodule_archive="${SUBMODULES_DIR}/${submodule_name}-${short_commit}.tar.gz"
+
+  # Create sources archive for submodule
+  git -C "$submodule_dir" archive "$submodule_commit" > "${submodule_archive}"
+
+  # Unpack sources into output directory
+  mkdir -p "${OUTPUT_DIR}/${submodule_dir}"
+  if [[ "$submodule_name" == "qt-solutions" ]]; then
+    tar xf "${submodule_archive}" -C "${OUTPUT_DIR}/${submodule_dir}" qtsingleapplication/src
+  else
+    tar xf "${submodule_archive}" -C "${OUTPUT_DIR}/${submodule_dir}"
+  fi
+done
+
+# Bundle all sources together
+tar cf "${PROJECT_NAME}-${commit}.tar.gz" -C "${OUTPUT_DIR}" .
+
+cleanup
