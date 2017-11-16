@@ -1,6 +1,6 @@
 TEMPLATE = app
 QT += qml quick widgets
-CONFIG += c++11
+CONFIG += c++11 qtsingleapplication
 SOURCES += main.cpp \
     systemtray.cpp
 
