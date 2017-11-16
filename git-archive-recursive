@@ -3,13 +3,13 @@
 #
 # Usage: git-archive-recursive [ARCHIVE_NAME]
 #
-# If ARCHIVE_NAME is not given, it defaults to "$(basename $(pwd))-$(git
-# rev-parse --short HEAD).tar.gz".
+# If ARCHIVE_NAME is not given, it defaults to
+# "$(basename $(pwd))-$(git rev-parse --short HEAD).tar.gz".
 #
 # NOTE: Submodules' state is not checked. You should ensure that all submodules
 # are checked out to the commits specified in .gitmodules .
 
-PROJECT_NAME="${1:-$(basename $(pwd))}"
+PROJECT_NAME="$(basename $(pwd))"
 TMP_DIR=$(mktemp -d "git-archive-recursive-${PROJECT_NAME}-XXXXXX")
 SUBMODULES_DIR="${TMP_DIR}/submodules/"
 OUTPUT_DIR="${TMP_DIR}/dist"
@@ -29,6 +29,7 @@ trap die ERR
 
 commit=$(git rev-parse --short HEAD)
 archive_name="archive-${commit}.tar.gz"
+output_archive_name="${1:-${PROJECT_NAME}-${commit}.tar.gz}"
 
 mkdir -p "${SUBMODULES_DIR}"
 mkdir -p "${OUTPUT_DIR}"
@@ -61,6 +62,8 @@ for submodule_line in $(git submodule status --recursive); do
 done
 
 # Bundle all sources together
-tar cf "${PROJECT_NAME}-${commit}.tar.gz" -C "${OUTPUT_DIR}" .
+tar cf "${output_archive_name}" -C "${OUTPUT_DIR}" .
+
+echo "Wrote ${output_archive_name}"
 
 cleanup
