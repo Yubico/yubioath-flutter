@@ -30,7 +30,7 @@ ApplicationWindow {
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
     property bool shouldRefresh: visibility != 3 && visibility != 0
 
-    property bool hideOnLaunch: settings.hideOnLaunch
+    property bool hideOnLaunch: settings.closeToTray && settings.hideOnLaunch
 
     signal copy
     signal generate(bool copyAfterGenerate)
@@ -600,7 +600,7 @@ ApplicationWindow {
         settings.slot1digits = settingsDialog.slot1digits
         settings.slot2digits = settingsDialog.slot2digits
         settings.closeToTray = settingsDialog.closeToTray
-        settings.hideOnLaunch = settingsDialog.hideOnLaunch
+        settings.hideOnLaunch = settingsDialog.closeToTray && settingsDialog.hideOnLaunch
     }
 
     function trySetPassword() {
