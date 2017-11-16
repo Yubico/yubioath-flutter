@@ -41,7 +41,7 @@ include(deployment.pri)
 
 # Mac doesn't use qSingleApplication
 !macx {
-    include(vendor/qt-solutions/qtsingleapplication/src/qtsingleapplication.pri)
+    CONFIG += qtsingleapplication
 }
 
 # Icon file
