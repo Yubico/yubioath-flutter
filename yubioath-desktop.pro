@@ -1,6 +1,6 @@
 TEMPLATE = app
 QT += qml quick widgets
-CONFIG += c++11 qtsingleapplication
+CONFIG += c++11
 SOURCES += main.cpp \
     systemtray.cpp
 
@@ -41,7 +41,7 @@ include(deployment.pri)
 
 # Mac doesn't use qSingleApplication
 !macx {
-    include(vendor/qt-solutions/qtsingleapplication/src/qtsingleapplication.pri)
+    CONFIG += qtsingleapplication
 }
 
 # Icon file
