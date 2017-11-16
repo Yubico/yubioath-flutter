@@ -95,8 +95,7 @@ int main(int argc, char *argv[])
     // Set icon in the window, doesn't effect desktop icons.
     qmlWindow->setIcon(QIcon(path_prefix + "/images/windowicon.png"));
     // Show root window unless explicitly hidden in settings.
-    auto hideOnLaunch = qmlWindow->property("hideOnLaunch");
-    if (!hideOnLaunch.toBool()) {
+    if (qmlWindow->property("hideOnLaunch").toBool() == false) {
         qmlWindow->show();
     }
 
