@@ -29,7 +29,7 @@ and is included as a submodule in the repository. It can also be installed throu
 
 === Run the app:
 
-    $ yubioath-desktop
+    $ PYTHONPATH="$(pwd)/vendor/yubikey-manager:${PYTHONPATH}" yubioath-desktop
 
 == Code Style & Linting
 
