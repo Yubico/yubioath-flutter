@@ -1,6 +1,9 @@
 * Version 4.3.0 (unreleased)
  ** Remembered passwords are now shared with ykman.
 
+* Version 4.2.0+deps (released 2017-11-17)
+ ** Identical to release 4.2.0b, but renamed to a valid Semantic Versioning version number
+
 * Version 4.2.0b (released 2017-11-16)
  ** Source re-release with dependencies bundled in the archive
 
