@@ -32,6 +32,8 @@ ApplicationWindow {
 
     property bool hideOnLaunch: settings.closeToTray && settings.hideOnLaunch
 
+    property bool displayTimersRunning: device.hasDevice && appWindow.visible
+
     signal copy
     signal generate(bool copyAfterGenerate)
     signal deleteCredential
@@ -324,7 +326,7 @@ ApplicationWindow {
                                     id: customTimer
                                     interval: 100
                                     repeat: true
-                                    running: hasCustomTimeBar(modelData.credential)
+                                    running: displayTimersRunning && hasCustomTimeBar(modelData.credential)
                                     triggeredOnStart: true
                                     onTriggered: {
                                         var timeLeft = modelData.code.valid_to - (Date.now() / 1000)
@@ -378,7 +380,7 @@ ApplicationWindow {
         triggeredOnStart: true
         interval: 500
         repeat: true
-        running: true
+        running: appWindow.visible
         onTriggered: device.refresh(settings.slotMode, refreshDependingOnMode)
     }
 
@@ -386,7 +388,7 @@ ApplicationWindow {
         id: timeLeftTimer
         interval: 100
         repeat: true
-        running: true
+        running: displayTimersRunning
         triggeredOnStart: true
         onTriggered: checkTimeLeft()
     }
@@ -394,12 +396,14 @@ ApplicationWindow {
     Timer {
         id: hotpCoolDownTimer
         interval: 5000
+        running: displayTimersRunning
         onTriggered: hotpCoolDowns = []
     }
 
     Timer {
         id: hotpTouchTimer
         interval: 500
+        running: displayTimersRunning
         onTriggered: touchYourYubikey.open()
     }
 
