@@ -31,21 +31,21 @@ Vagrant.configure("2") do |config|
   # This filter usess VirtualBox as provider. 
   # Modify the paramters as needed depending on the device.
 
-  # FILTER_NAME="YubiKey"
-  # MANUFACTURER="Yubico"
-  # VENDOR_ID="0x1050"
-  # PRODUCT_ID="0x0407"
-  # PRODUCT="Yubikey 4 OTP+U2F+CCID"
+  FILTER_NAME="YubiKey"
+  MANUFACTURER="Yubico"
+  VENDOR_ID="0x1050"
+  PRODUCT_ID="0x0407"
+  PRODUCT="Yubikey 4 OTP+U2F+CCID"
 
-  # config.vm.provider "virtualbox" do |vb|
-  #  vb.customize ['modifyvm', :id, '--usb', 'on']
-  #  vb.customize ['usbfilter', 'add', '0', 
-  #    '--target', :id, 
-  #    '--name', FILTER_NAME, 
-  #    '--manufacturer', MANUFACTURER,
-  #    '--vendorid', VENDOR_ID, 
-  #    '--productid', PRODUCT_ID, 
-  #    '--product', PRODUCT]
-  # end
+  config.vm.provider "virtualbox" do |vb|
+    vb.customize ['modifyvm', :id, '--usb', 'on']
+    vb.customize ['usbfilter', 'add', '0',
+      '--target', :id,
+      '--name', FILTER_NAME,
+      '--manufacturer', MANUFACTURER,
+      '--vendorid', VENDOR_ID,
+      '--productid', PRODUCT_ID,
+      '--product', PRODUCT]
+  end
 
 end
