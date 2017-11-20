@@ -9,7 +9,7 @@ Python {
     property int nDevices
     property bool hasDevice
     property string name
-    property string version
+    property var version
     property string oathId
     property var connections: []
     property var entries: []
@@ -67,7 +67,7 @@ Python {
             if (nDevices == 1) {
                 do_call('yubikey.controller.refresh', [slotMode], function (dev) {
                     name = dev ? dev.name : ''
-                    version = dev ? dev.version : ''
+                    version = dev ? dev.version : null
                     enabled = dev ? dev.enabled : []
                     connections = dev ? dev.connections : []
                     hasDevice = dev !== undefined && dev !== null
@@ -228,7 +228,7 @@ Python {
         for (var i = 0; i < entries.length; i++) {
             if (entries[i].credential.key === cred.key) {
                 entry = entries[i]
-		entry.code = code
+                entry.code = code
             }
         }
         updateExpiration()

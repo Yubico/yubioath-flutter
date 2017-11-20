@@ -109,6 +109,8 @@ ApplicationWindow {
 
     AboutPage {
         id: aboutPage
+        device: yk
+        slotMode: settings.slotMode
     }
 
     AddCredential {

@@ -59,7 +59,7 @@ def pair_to_dict(cred, code):
 
 class Controller(object):
     _descriptor = None
-    _dev_info = None
+    _dev_info = {}
     _key = None
 
     def __init__(self):
@@ -83,20 +83,26 @@ class Controller(object):
 
         desc = descriptors[0]
         if desc.fingerprint != (
-                self._descriptor.fingerprint if self._descriptor else None):
+                self._descriptor.fingerprint if self._descriptor else None) \
+                or not otp_mode and not self._dev_info.get('version'):
             try:
                 dev = desc.open_device(TRANSPORT.OTP if otp_mode
                                        else TRANSPORT.CCID)
+                if otp_mode:
+                    version = None
+                else:
+                    controller = OathController(dev.driver)
+                    version = controller.version
             except Exception:
                 return None
             self._descriptor = desc
             self._dev_info = {
                 'name': dev.device_name,
-                'version': '.'.join(str(x) for x in dev.version),
+                'version': version,
                 'serial': dev.serial or '',
                 'enabled': [c.name for c in CAPABILITY if c & dev.enabled],
                 'connections': [
-                    t.name for t in TRANSPORT if t & dev.capabilities],
+                    t.name for t in TRANSPORT if t & dev.capabilities]
             }
 
         return self._dev_info

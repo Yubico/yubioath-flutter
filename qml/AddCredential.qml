@@ -3,6 +3,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
+import "utils.js" as Utils
 
 DefaultDialog {
     id: newCredentialDialog
@@ -195,7 +196,7 @@ DefaultDialog {
     }
 
     function enableTouchOption() {
-        return parseInt(device.version.split('.').join('')) >= 426
+        return Utils.versionGE(device.version, 4, 2, 6)
     }
 
     function acceptableInput() {
