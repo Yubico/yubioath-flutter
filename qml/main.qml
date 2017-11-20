@@ -398,14 +398,12 @@ ApplicationWindow {
     Timer {
         id: hotpCoolDownTimer
         interval: 5000
-        running: displayTimersRunning
         onTriggered: hotpCoolDowns = []
     }
 
     Timer {
         id: hotpTouchTimer
         interval: 500
-        running: displayTimersRunning
         onTriggered: touchYourYubikey.open()
     }
 
