@@ -205,7 +205,8 @@ Python {
 
     function calculate(entry, copyAfterUpdate) {
         var now = Math.floor(Date.now() / 1000)
-        do_call('yubikey.controller.calculate', [entry.credential, now],
+        var margin = entry.credential.touch ? 10 : 0;
+        do_call('yubikey.controller.calculate', [entry.credential, now + margin],
                 function (code) {
                     updateSingleCredential(entry.credential, code, copyAfterUpdate)
                 })
@@ -213,7 +214,8 @@ Python {
 
     function calculateSlotMode(slot, digits, copyAfterUpdate) {
         var now = Math.floor(Date.now() / 1000)
-        do_call('yubikey.controller.calculate_slot_mode', [slot, digits, now],
+        var margin = entry.credential.touch ? 10 : 0;
+        do_call('yubikey.controller.calculate_slot_mode', [slot, digits, now + margin],
                 function (entry) {
                     updateSingleCredential(entry.credential, entry.code, copyAfterUpdate)
                 })
