@@ -22,13 +22,10 @@ Rectangle {
     signal doubleClick(var mouse)
     signal refresh(bool force)
 
-    color: {
-        if (isSelected) {
-            return palette.highlight
-        } else {
-            return unselectedColor
-        }
-    }
+    color: (isSelected
+        ? palette.highlight
+        : unselectedColor
+    )
 
     Layout.minimumHeight: (
         10 + issuerLbl.height + codeLbl.height + nameLbl.height
