@@ -6,21 +6,22 @@ Rectangle {
     property var code
     property var credential
     property bool isExpired: true
-    property bool hasCustomTimeBar: (
-        credential.period !== 30
-            && (credential.oath_type === 'TOTP' || credential.touch)
-    )
     property bool isSelected: false
-    property color textColor: (isSelected
-        ? palette.highlightedText
-        : palette.windowText
-    )
     property bool timerRunning: false
     property color unselectedColor
 
     signal singleClick(var mouse)
     signal doubleClick(var mouse)
     signal refresh(bool force)
+
+    readonly property bool hasCustomTimeBar: (
+        credential.period !== 30
+            && (credential.oath_type === 'TOTP' || credential.touch)
+    )
+    readonly property color textColor: (isSelected
+        ? palette.highlightedText
+        : palette.windowText
+    )
 
     color: (isSelected
         ? palette.highlight
