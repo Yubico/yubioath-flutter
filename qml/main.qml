@@ -275,9 +275,10 @@ ApplicationWindow {
                         model: filteredCredentials(credentials)
 
                         CredentialItem {
+                            code: modelData.code
+                            credential: modelData.credential
                             expired: isExpired(modelData)
                             isSelected: selected != null && selected.credential.key === modelData.credential.key
-                            model: modelData
                             timerRunning: displayTimersRunning
                             unselectedColor: {
                                 if (index % 2 == 0) {
@@ -292,7 +293,7 @@ ApplicationWindow {
 
                                 // A double-click should select the credential,
                                 // then generate if needed and copy the code.
-                                selectCredential(entry, index)
+                                selectCredential(modelData, index)
                                 generateOrCopy()
                             }
 
@@ -303,16 +304,16 @@ ApplicationWindow {
 
                                 // Left click, select or deselect credential.
                                 if (mouse.button & Qt.LeftButton) {
-                                    if (selected != null && selected.credential.key === entry.credential.key) {
+                                    if (selected != null && selected.credential.key === credential.key) {
                                         deselectCredential()
                                     } else {
-                                        selectCredential(entry, index)
+                                        selectCredential(modelData, index)
                                     }
                                 }
 
                                 // Right-click, select credential and open popup menu.
                                 if (mouse.button & Qt.RightButton) {
-                                    selectCredential(entry, index)
+                                    selectCredential(modelData, index)
                                     credentialMenu.popup()
                                 }
                             }

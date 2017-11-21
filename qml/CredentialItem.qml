@@ -3,9 +3,10 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 
 Rectangle {
+    property var code
+    property var credential
     property bool expired: true
     property bool isSelected: false
-    property var model
     property color textColor: (isSelected
         ? palette.highlightedText
         : palette.windowText
@@ -13,8 +14,8 @@ Rectangle {
     property bool timerRunning: false
     property color unselectedColor
 
-    signal singleClick(var mouse, var entry)
-    signal doubleClick(var mouse, var entry)
+    signal singleClick(var mouse)
+    signal doubleClick(var mouse)
     signal refresh(bool force)
 
     color: {
@@ -27,15 +28,15 @@ Rectangle {
 
     Layout.minimumHeight: (
         10 + issuerLbl.height + codeLbl.height + nameLbl.height
-            + (hasCustomTimeBar(model.credential) ? 10 : 0)
+            + (hasCustomTimeBar(credential) ? 10 : 0)
     )
     Layout.fillWidth: true
     Layout.alignment: Qt.AlignTop
 
     MouseArea {
         anchors.fill: parent
-        onClicked: singleClick(mouse, model)
-        onDoubleClicked: doubleClick(mouse, model)
+        onClicked: singleClick(mouse)
+        onDoubleClicked: doubleClick(mouse)
         acceptedButtons: Qt.RightButton | Qt.LeftButton
     }
 
@@ -48,31 +49,31 @@ Rectangle {
         spacing: 0
         Label {
             id: issuerLbl
-            visible: model.credential.issuer != null
-                     && model.credential.issuer.length > 0
-            text: qsTr("") + model.credential.issuer
+            visible: credential.issuer != null
+                     && credential.issuer.length > 0
+            text: qsTr("") + credential.issuer
             color: textColor
         }
         Label {
             id: codeLbl
             opacity: expired ? 0.6 : 1
-            visible: model.code !== null
-            text: qsTr("") + getSpacedCredential(model.code && model.code.value)
+            visible: code !== null
+            text: qsTr("") + getSpacedCredential(code && code.value)
             font.pointSize: issuerLbl.font.pointSize * 1.8
             color: textColor
         }
         Label {
             id: nameLbl
-            text: model.credential.name
+            text: credential.name
             color: textColor
         }
         Timer {
             interval: 100
             repeat: true
-            running: timerRunning && hasCustomTimeBar(model.credential)
+            running: timerRunning && hasCustomTimeBar(credential)
             triggeredOnStart: true
             onTriggered: {
-                var timeLeft = model.code.valid_to - (Date.now() / 1000)
+                var timeLeft = code.valid_to - (Date.now() / 1000)
                 if (timeLeft <= 0 && customTimeLeftBar.value > 0) {
                     refresh(true)
                 }
@@ -81,13 +82,13 @@ Rectangle {
         }
         ProgressBar {
             id: customTimeLeftBar
-            visible: hasCustomTimeBar(model.credential)
+            visible: hasCustomTimeBar(credential)
             Layout.topMargin: 3
             Layout.fillWidth: true
             Layout.minimumHeight: 7
             Layout.maximumHeight: 7
             Layout.alignment: Qt.AlignBottom
-            maximumValue: model.credential.period || 0
+            maximumValue: credential.period || 0
             rotation: 180
         }
     }
