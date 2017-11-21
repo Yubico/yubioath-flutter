@@ -278,6 +278,7 @@ ApplicationWindow {
                             expired: isExpired(modelData)
                             model: modelData
                             repeaterIndex: index
+                            timerRunning: displayTimersRunning
 
                             onDoubleClick: {
                                 arrowKeys.forceActiveFocus()

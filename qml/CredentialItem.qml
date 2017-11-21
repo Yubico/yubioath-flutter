@@ -6,6 +6,7 @@ Rectangle {
     property bool expired
     property var model
     property int repeaterIndex
+    property bool timerRunning: false
 
     signal singleClick(var mouse, var entry)
     signal doubleClick(var mouse, var entry)
@@ -59,7 +60,7 @@ Rectangle {
         Timer {
             interval: 100
             repeat: true
-            running: displayTimersRunning && hasCustomTimeBar(model.credential)
+            running: timerRunning && hasCustomTimeBar(model.credential)
             triggeredOnStart: true
             onTriggered: {
                 var timeLeft = model.code.valid_to - (Date.now() / 1000)
