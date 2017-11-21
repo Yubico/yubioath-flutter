@@ -6,6 +6,10 @@ Rectangle {
     property bool expired: true
     property bool isSelected: false
     property var model
+    property color textColor: (isSelected
+        ? palette.highlightedText
+        : palette.windowText
+    )
     property bool timerRunning: false
     property color unselectedColor
 
@@ -47,7 +51,7 @@ Rectangle {
             visible: model.credential.issuer != null
                      && model.credential.issuer.length > 0
             text: qsTr("") + model.credential.issuer
-            color: getCredentialTextColor(model)
+            color: textColor
         }
         Label {
             id: codeLbl
@@ -55,12 +59,12 @@ Rectangle {
             visible: model.code !== null
             text: qsTr("") + getSpacedCredential(model.code && model.code.value)
             font.pointSize: issuerLbl.font.pointSize * 1.8
-            color: getCredentialTextColor(model)
+            color: textColor
         }
         Label {
             id: nameLbl
             text: model.credential.name
-            color: getCredentialTextColor(model)
+            color: textColor
         }
         Timer {
             interval: 100
@@ -90,14 +94,6 @@ Rectangle {
 
     function hasCustomTimeBar(cred) {
         return cred.period !== 30 && (cred.oath_type === 'TOTP' || cred.touch)
-    }
-
-    function getCredentialTextColor(entry) {
-        if (isSelected) {
-            return palette.highlightedText
-        } else {
-            return palette.windowText
-        }
     }
 
     function getSpacedCredential(code) {
