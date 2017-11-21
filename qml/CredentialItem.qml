@@ -21,13 +21,10 @@ Rectangle {
         }
     }
 
-    Layout.minimumHeight: {
-        var baseHeight = issuerLbl.height
-                + codeLbl.height + nameLbl.height + 10
-        return hasCustomTimeBar(
-                    model.credential) ? baseHeight
-                                 + 10 : baseHeight
-    }
+    Layout.minimumHeight: (
+        10 + issuerLbl.height + codeLbl.height + nameLbl.height
+            + (hasCustomTimeBar(model.credential) ? 10 : 0)
+    )
     Layout.fillWidth: true
     Layout.alignment: Qt.AlignTop
 
