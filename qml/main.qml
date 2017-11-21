@@ -275,10 +275,11 @@ ApplicationWindow {
                         model: filteredCredentials(credentials)
 
                         CredentialItem {
-                            _arrowKeys: arrowKeys
                             expired: isExpired(modelData)
                             model: modelData
                             repeaterIndex: index
+
+                            onForceActiveFocus: arrowKeys.forceActiveFocus()
                         }
                     }
                 }

@@ -3,10 +3,11 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 
 Rectangle {
-    property var _arrowKeys
     property bool expired
     property var model
     property int repeaterIndex
+
+    signal forceActiveFocus()
 
     color: getCredentialColor(index, model)
     Layout.minimumHeight: {
@@ -87,7 +88,7 @@ Rectangle {
 
     function handleCredentialSingleClick(mouse, index, entry) {
 
-        _arrowKeys.forceActiveFocus()
+        forceActiveFocus()
 
         // Left click, select or deselect credential.
         if (mouse.button & Qt.LeftButton) {
@@ -109,7 +110,7 @@ Rectangle {
 
     function handleCredentialDoubleClick(mouse, index, entry) {
 
-        _arrowKeys.forceActiveFocus()
+        forceActiveFocus()
 
         // A double-click should select the credential,
         // then generate if needed and copy the code.
