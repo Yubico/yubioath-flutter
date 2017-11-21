@@ -53,8 +53,7 @@ Rectangle {
             id: codeLbl
             opacity: expired ? 0.6 : 1
             visible: model.code !== null
-            text: qsTr("") + getSpacedCredential(
-                      model.code && model.code.value)
+            text: qsTr("") + getSpacedCredential(model.code && model.code.value)
             font.pointSize: issuerLbl.font.pointSize * 1.8
             color: getCredentialTextColor(model)
         }
@@ -70,8 +69,7 @@ Rectangle {
             triggeredOnStart: true
             onTriggered: {
                 var timeLeft = model.code.valid_to - (Date.now() / 1000)
-                if (timeLeft <= 0
-                        && customTimeLeftBar.value > 0) {
+                if (timeLeft <= 0 && customTimeLeftBar.value > 0) {
                     refresh(true)
                 }
                 customTimeLeftBar.value = timeLeft
