@@ -10,6 +10,7 @@ Rectangle {
 
     signal singleClick(var mouse, var entry)
     signal doubleClick(var mouse, var entry)
+    signal refresh(bool force)
 
     color: getCredentialColor(index, model)
     Layout.minimumHeight: {
@@ -66,7 +67,7 @@ Rectangle {
                 var timeLeft = model.code.valid_to - (Date.now() / 1000)
                 if (timeLeft <= 0
                         && customTimeLeftBar.value > 0) {
-                    refreshDependingOnMode(true)
+                    refresh(true)
                 }
                 customTimeLeftBar.value = timeLeft
             }

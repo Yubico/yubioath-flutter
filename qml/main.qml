@@ -290,6 +290,8 @@ ApplicationWindow {
                                 generateOrCopy()
                             }
 
+                            onRefresh: refreshDependingOnMode(force)
+
                             onSingleClick: {
                                 arrowKeys.forceActiveFocus()
 
