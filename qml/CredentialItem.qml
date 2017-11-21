@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.1
 Rectangle {
     property var code
     property var credential
-    property bool expired: true
+    property bool isExpired: true
     property bool hasCustomTimeBar: (
         credential.period !== 30
             && (credential.oath_type === 'TOTP' || credential.touch)
@@ -60,7 +60,7 @@ Rectangle {
         }
         Label {
             id: codeLbl
-            opacity: expired ? 0.6 : 1
+            opacity: isExpired ? 0.6 : 1
             visible: code !== null
             text: qsTr("") + getSpacedCredential(code && code.value)
             font.pointSize: issuerLbl.font.pointSize * 1.8
