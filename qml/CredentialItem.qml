@@ -3,16 +3,24 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 
 Rectangle {
-    property bool expired
+    property bool expired: true
+    property bool isSelected: false
     property var model
-    property int repeaterIndex
     property bool timerRunning: false
+    property color unselectedColor
 
     signal singleClick(var mouse, var entry)
     signal doubleClick(var mouse, var entry)
     signal refresh(bool force)
 
-    color: getCredentialColor(index, model)
+    color: {
+        if (isSelected) {
+            return palette.highlight
+        } else {
+            return unselectedColor
+        }
+    }
+
     Layout.minimumHeight: {
         var baseHeight = issuerLbl.height
                 + codeLbl.height + nameLbl.height + 10
@@ -90,7 +98,7 @@ Rectangle {
     }
 
     function getCredentialTextColor(entry) {
-        if (selected != null && selected.credential.key === entry.credential.key) {
+        if (isSelected) {
             return palette.highlightedText
         } else {
             return palette.windowText

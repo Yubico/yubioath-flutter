@@ -276,9 +276,16 @@ ApplicationWindow {
 
                         CredentialItem {
                             expired: isExpired(modelData)
+                            isSelected: selected != null && selected.credential.key === modelData.credential.key
                             model: modelData
-                            repeaterIndex: index
                             timerRunning: displayTimersRunning
+                            unselectedColor: {
+                                if (index % 2 == 0) {
+                                    return palette.window
+                                } else {
+                                    return palette.midlight
+                                }
+                            }
 
                             onDoubleClick: {
                                 arrowKeys.forceActiveFocus()
@@ -581,16 +588,6 @@ ApplicationWindow {
         } else {
             device.deleteCredential(selected.credential)
         }
-    }
-
-    function getCredentialColor(index, entry) {
-        if (selected != null && selected.credential.key === entry.credential.key) {
-            return palette.highlight
-        }
-        if (index % 2 == 0) {
-            return palette.window
-        }
-        return palette.midlight
     }
 
     function generateOrCopy() {
