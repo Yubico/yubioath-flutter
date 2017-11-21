@@ -6,6 +6,10 @@ Rectangle {
     property var code
     property var credential
     property bool expired: true
+    property bool hasCustomTimeBar: (
+        credential.period !== 30
+            && (credential.oath_type === 'TOTP' || credential.touch)
+    )
     property bool isSelected: false
     property color textColor: (isSelected
         ? palette.highlightedText
@@ -28,7 +32,7 @@ Rectangle {
 
     Layout.minimumHeight: (
         10 + issuerLbl.height + codeLbl.height + nameLbl.height
-            + (hasCustomTimeBar(credential) ? 10 : 0)
+            + (hasCustomTimeBar ? 10 : 0)
     )
     Layout.fillWidth: true
     Layout.alignment: Qt.AlignTop
@@ -70,7 +74,7 @@ Rectangle {
         Timer {
             interval: 100
             repeat: true
-            running: timerRunning && hasCustomTimeBar(credential)
+            running: timerRunning && hasCustomTimeBar
             triggeredOnStart: true
             onTriggered: {
                 var timeLeft = code.valid_to - (Date.now() / 1000)
@@ -82,7 +86,7 @@ Rectangle {
         }
         ProgressBar {
             id: customTimeLeftBar
-            visible: hasCustomTimeBar(credential)
+            visible: hasCustomTimeBar
             Layout.topMargin: 3
             Layout.fillWidth: true
             Layout.minimumHeight: 7
@@ -91,10 +95,6 @@ Rectangle {
             maximumValue: credential.period || 0
             rotation: 180
         }
-    }
-
-    function hasCustomTimeBar(cred) {
-        return cred.period !== 30 && (cred.oath_type === 'TOTP' || cred.touch)
     }
 
     function getSpacedCredential(code) {
