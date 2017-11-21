@@ -292,8 +292,7 @@ ApplicationWindow {
 
                                 // A double-click should select the credential,
                                 // then generate if needed and copy the code.
-                                selected = entry
-                                selectedIndex = index
+                                selectCredential(entry, index)
                                 generateOrCopy()
                             }
 
@@ -307,15 +306,13 @@ ApplicationWindow {
                                     if (selected != null && selected.credential.key === entry.credential.key) {
                                         deselectCredential()
                                     } else {
-                                        selected = entry
-                                        selectedIndex = index
+                                        selectCredential(entry, index)
                                     }
                                 }
 
                                 // Right-click, select credential and open popup menu.
                                 if (mouse.button & Qt.RightButton) {
-                                    selected = entry
-                                    selectedIndex = index
+                                    selectCredential(entry, index)
                                     credentialMenu.popup()
                                 }
                             }
@@ -377,6 +374,11 @@ ApplicationWindow {
 
     NoQrDialog {
         id: noQr
+    }
+
+    function selectCredential(entry, index) {
+        selected = entry
+        selectedIndex = index
     }
 
     function deselectCredential() {
