@@ -280,13 +280,10 @@ ApplicationWindow {
                             expired: isExpired(modelData)
                             isSelected: selected != null && selected.credential.key === modelData.credential.key
                             timerRunning: displayTimersRunning
-                            unselectedColor: {
-                                if (index % 2 == 0) {
-                                    return palette.window
-                                } else {
-                                    return palette.midlight
-                                }
-                            }
+                            unselectedColor: (index % 2 == 0
+                                ? palette.window
+                                : palette.midlight
+                            )
 
                             onDoubleClick: {
                                 arrowKeys.forceActiveFocus()
