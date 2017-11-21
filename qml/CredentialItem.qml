@@ -7,7 +7,8 @@ Rectangle {
     property var model
     property int repeaterIndex
 
-    signal forceActiveFocus()
+    signal singleClick(var mouse, var entry)
+    signal doubleClick(var mouse, var entry)
 
     color: getCredentialColor(index, model)
     Layout.minimumHeight: {
@@ -22,8 +23,8 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: handleCredentialSingleClick(mouse, repeaterIndex, model)
-        onDoubleClicked: handleCredentialDoubleClick(mouse, repeaterIndex, model)
+        onClicked: singleClick(mouse, model)
+        onDoubleClicked: doubleClick(mouse, model)
         acceptedButtons: Qt.RightButton | Qt.LeftButton
     }
 
@@ -84,39 +85,6 @@ Rectangle {
 
     function hasCustomTimeBar(cred) {
         return cred.period !== 30 && (cred.oath_type === 'TOTP' || cred.touch)
-    }
-
-    function handleCredentialSingleClick(mouse, index, entry) {
-
-        forceActiveFocus()
-
-        // Left click, select or deselect credential.
-        if (mouse.button & Qt.LeftButton) {
-            if (selected != null && selected.credential.key === entry.credential.key) {
-                deselectCredential()
-            } else {
-                selected = entry
-                selectedIndex = index
-            }
-        }
-
-        // Right-click, select credential and open popup menu.
-        if (mouse.button & Qt.RightButton) {
-            selected = entry
-            selectedIndex = index
-            credentialMenu.popup()
-        }
-    }
-
-    function handleCredentialDoubleClick(mouse, index, entry) {
-
-        forceActiveFocus()
-
-        // A double-click should select the credential,
-        // then generate if needed and copy the code.
-        selected = entry
-        selectedIndex = index
-        generateOrCopy()
     }
 
     function getCredentialTextColor(entry) {

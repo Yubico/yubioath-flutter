@@ -279,7 +279,36 @@ ApplicationWindow {
                             model: modelData
                             repeaterIndex: index
 
-                            onForceActiveFocus: arrowKeys.forceActiveFocus()
+                            onDoubleClick: {
+                                arrowKeys.forceActiveFocus()
+
+                                // A double-click should select the credential,
+                                // then generate if needed and copy the code.
+                                selected = entry
+                                selectedIndex = index
+                                generateOrCopy()
+                            }
+
+                            onSingleClick: {
+                                arrowKeys.forceActiveFocus()
+
+                                // Left click, select or deselect credential.
+                                if (mouse.button & Qt.LeftButton) {
+                                    if (selected != null && selected.credential.key === entry.credential.key) {
+                                        deselectCredential()
+                                    } else {
+                                        selected = entry
+                                        selectedIndex = index
+                                    }
+                                }
+
+                                // Right-click, select credential and open popup menu.
+                                if (mouse.button & Qt.RightButton) {
+                                    selected = entry
+                                    selectedIndex = index
+                                    credentialMenu.popup()
+                                }
+                            }
                         }
                     }
                 }
