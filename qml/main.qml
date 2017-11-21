@@ -274,83 +274,11 @@ ApplicationWindow {
                         id: repeater
                         model: filteredCredentials(credentials)
 
-                        Rectangle {
-                            id: credentialRectangle
-                            color: getCredentialColor(index, modelData)
-                            Layout.minimumHeight: {
-                                var baseHeight = issuerLbl.height
-                                        + codeLbl.height + nameLbl.height + 10
-                                return hasCustomTimeBar(
-                                            modelData.credential) ? baseHeight
-                                                         + 10 : baseHeight
-                            }
-                            Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignTop
-
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: handleCredentialSingleClick(
-                                               mouse, index, modelData)
-                                onDoubleClicked: handleCredentialDoubleClick(
-                                                     mouse, index, modelData)
-                                acceptedButtons: Qt.RightButton | Qt.LeftButton
-                            }
-
-                            ColumnLayout {
-                                anchors.leftMargin: 10
-                                anchors.rightMargin: 10
-                                anchors.topMargin: 5
-                                anchors.bottomMargin: 5
-                                anchors.fill: parent
-                                spacing: 0
-                                Label {
-                                    id: issuerLbl
-                                    visible: modelData.credential.issuer != null
-                                             && modelData.credential.issuer.length > 0
-                                    text: qsTr("") + modelData.credential.issuer
-                                    color: getCredentialTextColor(modelData)
-                                }
-                                Label {
-                                    id: codeLbl
-                                    opacity: isExpired(modelData) ? 0.6 : 1
-                                    visible: modelData.code !== null
-                                    text: qsTr("") + getSpacedCredential(
-                                              modelData.code && modelData.code.value)
-                                    font.pointSize: issuerLbl.font.pointSize * 1.8
-                                    color: getCredentialTextColor(modelData)
-                                }
-                                Label {
-                                    id: nameLbl
-                                    text: modelData.credential.name
-                                    color: getCredentialTextColor(modelData)
-                                }
-                                Timer {
-                                    id: customTimer
-                                    interval: 100
-                                    repeat: true
-                                    running: displayTimersRunning && hasCustomTimeBar(modelData.credential)
-                                    triggeredOnStart: true
-                                    onTriggered: {
-                                        var timeLeft = modelData.code.valid_to - (Date.now() / 1000)
-                                        if (timeLeft <= 0
-                                                && customTimeLeftBar.value > 0) {
-                                            refreshDependingOnMode(true)
-                                        }
-                                        customTimeLeftBar.value = timeLeft
-                                    }
-                                }
-                                ProgressBar {
-                                    id: customTimeLeftBar
-                                    visible: hasCustomTimeBar(modelData.credential)
-                                    Layout.topMargin: 3
-                                    Layout.fillWidth: true
-                                    Layout.minimumHeight: 7
-                                    Layout.maximumHeight: 7
-                                    Layout.alignment: Qt.AlignBottom
-                                    maximumValue: modelData.credential.period || 0
-                                    rotation: 180
-                                }
-                            }
+                        CredentialItem {
+                            _arrowKeys: arrowKeys
+                            expired: isExpired(modelData)
+                            model: modelData
+                            repeaterIndex: index
                         }
                     }
                 }
@@ -414,29 +342,6 @@ ApplicationWindow {
     function deselectCredential() {
         selected = null
         selectedIndex = null
-    }
-
-    function hasCustomTimeBar(cred) {
-        return cred.period !== 30 && (cred.oath_type === 'TOTP' || cred.touch)
-    }
-
-    function getSpacedCredential(code) {
-        // Add a space in the code for easier reading.
-        if (code != null) {
-            switch (code.length) {
-            case 6:
-                // 123 123
-                return code.slice(0, 3) + " " + code.slice(3)
-            case 7:
-                // 1234 123
-                return code.slice(0, 4) + " " + code.slice(4)
-            case 8:
-                // 1234 1234
-                return code.slice(0, 4) + " " + code.slice(4)
-            default:
-                return code
-            }
-        }
     }
 
     function saveScreenLayout() {
@@ -653,47 +558,6 @@ ApplicationWindow {
             return palette.window
         }
         return palette.midlight
-    }
-
-    function getCredentialTextColor(entry) {
-        if (selected != null && selected.credential.key === entry.credential.key) {
-            return palette.highlightedText
-        } else {
-            return palette.windowText
-        }
-    }
-
-    function handleCredentialSingleClick(mouse, index, entry) {
-
-        arrowKeys.forceActiveFocus()
-
-        // Left click, select or deselect credential.
-        if (mouse.button & Qt.LeftButton) {
-            if (selected != null && selected.credential.key === entry.credential.key) {
-                deselectCredential()
-            } else {
-                selected = entry
-                selectedIndex = index
-            }
-        }
-
-        // Right-click, select credential and open popup menu.
-        if (mouse.button & Qt.RightButton) {
-            selected = entry
-            selectedIndex = index
-            credentialMenu.popup()
-        }
-    }
-
-    function handleCredentialDoubleClick(mouse, index, entry) {
-
-        arrowKeys.forceActiveFocus()
-
-        // A double-click should select the credential,
-        // then generate if needed and copy the code.
-        selected = entry
-        selectedIndex = index
-        generateOrCopy()
     }
 
     function generateOrCopy() {
