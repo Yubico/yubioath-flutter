@@ -133,5 +133,8 @@ int main(int argc, char *argv[])
         }
     }
     #endif
-    return app.exec();
+
+    const int status = app.exec();
+    trayIcon->hide();
+    return status;
 }
