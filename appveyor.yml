@@ -68,7 +68,7 @@ after_build:
   # Workaround:
   # Manually add pyotherside plugin to release folder.
   # Should be handled by windeployqt, but doesn't seem to be when QML Settings are used (?).
-  - ps: Copy-Item C:\Qt\5.9\msvc2015\qml\io .\release -recurse
+  - ps: Copy-Item C:\Qt\5.9\msvc2015\qml\io .\release -recurse -Force
   # Add python dependencies to release folder
   - ps: Copy-Item .\pymodules .\release -recurse
   # Remove .pyc files from release folder
