@@ -4,6 +4,7 @@ __pycache__/
 dist/
 lib/
 yubioath-desktop.app/
+/vagrant/*/*.log
 
 *.autosave
 *.dll
