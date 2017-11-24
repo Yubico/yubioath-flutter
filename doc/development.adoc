@@ -51,3 +51,30 @@ It comes with Xfce4 as a desktop environment. To start the vagrant environment:
 
 The default root login credentials are root:root. The repository can be found as a synced folder under `/vagrant`.
 Modify the provision.sh script to set up a USB filter to capture the device with VirtualBox.
+
+
+== Building from source
+
+=== Windows
+
+First of all, set up the environment as described in the
+../vagrant/windows/README.md[Vagrant VM README].
+
+In the following, replace `VERSION` with the version you want to build, e.g.,
+`4.2.0`.
+
+To build the project:
+
+    $ git clone --recurse-submodules https://github.com/Yubico/yubioath-desktop.git
+    $ cd yubioath-desktop
+    $ vagrant\windows\build.bat
+
+The `build.bat` script will output the build version number near the beginning.
+Use that as the `<VERSION>` in the next series of commands. If you missed it,
+you can find it as the `APP_VERSION=` variable in the `DEFINES` in
+`Makefile.Release`.
+
+To build the installer, plug in the code signing YubiKey and run:
+
+    $ cd yubioath-desktop
+    $ vagrant\windows\release.bat <VERSION>
