@@ -233,7 +233,9 @@ Python {
                 entry.code = code
             }
         }
-        updateExpiration()
+        if (!cred.touch) {
+          updateExpiration()
+        }
         credentialsRefreshed()
         // Update the selected credential
         // after update, since the code now

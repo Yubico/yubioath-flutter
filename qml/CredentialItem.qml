@@ -15,8 +15,7 @@ Rectangle {
     signal refresh(bool force)
 
     readonly property bool hasCustomTimeBar: (
-        credential.period !== 30
-            && (credential.oath_type === 'TOTP' || credential.touch)
+        credential.period !== 30 || (credential.touch && code && !isExpired)
     )
     readonly property color textColor: (isSelected
         ? palette.highlightedText
