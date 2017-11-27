@@ -17,6 +17,7 @@ yubioath-desktop.app/
 .ropeproject
 
 Makefile*
+/VERSION
 moc_*.cpp
 moc_*.h
 qrc_*.cpp

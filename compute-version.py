@@ -23,6 +23,8 @@
 #   - If the "-dirty" suffix was present, append ".0".
 #   - If the "-dirty" suffix was not present, append ".1".
 
+import argparse
+import os
 import re
 import subprocess
 import sys
@@ -74,6 +76,20 @@ def compute_version(tag_prefix=None):
 
 
 if __name__ == '__main__':
-    print(compute_version(
-        tag_prefix=sys.argv[1] if len(sys.argv) > 1 else None
-    ))
+    parser = argparse.ArgumentParser(
+        description='Compute version number from Git tags',
+        add_help=True
+    )
+    parser.add_argument('-f', '--version-file',
+                        action='store', dest='version_file',
+                        help='Read version from VERSION_FILE if it exists')
+    parser.add_argument('tag_prefix',
+                        action='store',
+                        help='Prefix for git tags eligible as version tags')
+    args = parser.parse_args()
+
+    if args.version_file is not None and os.path.isfile(args.version_file):
+        with open(args.version_file) as f:
+            sys.stdout.write(f.read())
+    else:
+        print(compute_version(tag_prefix=args.tag_prefix))
