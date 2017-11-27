@@ -58,7 +58,7 @@ for submodule_line in $(git submodule status --recursive); do
   # Unpack sources into output directory
   mkdir -p "${output_archive_dir}/${submodule_dir}"
   if [[ "$submodule_name" == "qt-solutions" ]]; then
-    tar xf "${submodule_archive}" -C "${output_archive_dir}/${submodule_dir}" qtsingleapplication/src
+    tar xf "${submodule_archive}" -C "${output_archive_dir}/${submodule_dir}" qtsingleapplication/common.pri qtsingleapplication/src
   else
     tar xf "${submodule_archive}" -C "${output_archive_dir}/${submodule_dir}"
   fi
