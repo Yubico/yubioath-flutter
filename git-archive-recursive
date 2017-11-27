@@ -13,6 +13,7 @@ PROJECT_NAME="$(basename $(pwd))"
 TMP_DIR=$(mktemp -d "git-archive-recursive-${PROJECT_NAME}-XXXXXX")
 SUBMODULES_DIR="${TMP_DIR}/submodules/"
 OUTPUT_DIR="${TMP_DIR}/dist"
+VERSION_FILE=VERSION
 
 cleanup() {
   rm -rf "${TMP_DIR}"
@@ -62,6 +63,10 @@ for submodule_line in $(git submodule status --recursive); do
     tar xf "${submodule_archive}" -C "${output_archive_dir}/${submodule_dir}"
   fi
 done
+
+if [[ -f "${VERSION_FILE}" ]]; then
+    cp "${VERSION_FILE}" "${output_archive_dir}"
+fi
 
 # Bundle all sources together
 tar cf "${output_archive_name}" -C "${OUTPUT_DIR}" .
