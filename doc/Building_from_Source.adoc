@@ -42,7 +42,7 @@ With these installed, you can just run the program:
     $ ./yubioath-desktop
 
 
-==== Packaging
+=== Packaging
 
 The files you need to include in a distribution package are:
 
