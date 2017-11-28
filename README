@@ -32,3 +32,57 @@ Installers are available https://developers.yubico.com/yubioath-desktop/Releases
     $ sudo apt-add-repository ppa:yubico/stable
     $ sudo apt update
     $ sudo apt install yubioath-desktop
+
+
+==== Other Linux/Unix - Build from source
+
+To build from source, you need the following tools and dependencies:
+
+
+- `g++`
+- `make`
+- Python 3
+- Qt 5 development tools, including `qmake`
+- Qt QML development tools
+
+With these installed, the build procedure is:
+
+    $ git clone --recurse-submodules https://github.com/Yubico/yubioath-desktop.git
+    $ cd yubioath-desktop
+    $ qmake && make
+
+From version 4.3.0 forward, you can also use the source tarball which now also
+bundles source dependencies:
+
+    $ wget https://developers.yubico.com/yubioath-desktop/Releases/yubioath-desktop-4.3.0.tar.gz,.sig}
+    $ gpg --verify yubioath-desktop-4.3.0.tar.gz.sig
+    $ tar xf yubioath-desktop-4.3.0.tar.gz
+    $ cd yubioath-desktop-4.3.0
+    $ qmake && make
+
+The runtime dependencies are:
+
+- QML modules:
+  - PyOtherSide
+  - Qt Labs Settings
+  - Qt Quick Controls
+  - Qt Quick Dialogs
+
+With these installed, you can just run the program:
+
+    $ ./yubioath-desktop
+
+
+==== Packaging
+
+The files you need to include in a distribution package are:
+
+- The `yubioath-desktop` binary
+- The icon `resources/icons/yubioath.png`, installed as `yubioath.png` somewhere
+  on the
+  https://standards.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html#directory_layout[Qt]
+  or
+  https://doc.qt.io/qt-5/appicon.html#setting-the-application-icon-on-common-linux-desktops[Freedesktop]
+  icons search path, for example as `/usr/share/pixmaps/yubioath.png`
+- (Optional) The Desktop Application descriptor
+  `resources/yubioath-desktop.desktop`
