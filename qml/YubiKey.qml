@@ -161,6 +161,10 @@ Python {
         // Credentials is cleared so that
         // the view will refresh even if objects are the same
         entries = result
+        entries.sort(function (a, b) {
+            return a.credential.key.localeCompare(b.credential.key)
+        })
+
         updateExpiration()
         credentialsRefreshed()
     }

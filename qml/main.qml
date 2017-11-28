@@ -474,12 +474,6 @@ ApplicationWindow {
             }
         }
 
-        // Sort credentials based on the
-        // full name, including the issuer prefix
-        searchResult.sort(function (a, b) {
-            return a.credential.key.localeCompare(b.credential.key)
-        })
-
         // If the search gave some results,
         // the top credential should be selected.
         if (searchResult[0] !== null && search.text.length > 0) {
