@@ -54,7 +54,7 @@ With these installed, the build procedure is:
 From version 4.3.0 forward, you can also use the source tarball which now also
 bundles source dependencies:
 
-    $ wget https://developers.yubico.com/yubioath-desktop/Releases/yubioath-desktop-4.3.0.tar.gz,.sig}
+    $ wget https://developers.yubico.com/yubioath-desktop/Releases/yubioath-desktop-4.3.0.tar.gz{,.sig}
     $ gpg --verify yubioath-desktop-4.3.0.tar.gz.sig
     $ tar xf yubioath-desktop-4.3.0.tar.gz
     $ cd yubioath-desktop-4.3.0
