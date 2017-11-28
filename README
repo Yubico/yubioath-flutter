@@ -62,12 +62,12 @@ bundles source dependencies:
 
 The runtime dependencies are:
 
-- QML modules:
-    - PyOtherSide
-    - Qt Labs Settings
-    - Qt Quick Controls
-    - Qt Quick Dialogs
-- The https://developers.yubico.com/yubikey-manager/[YubiKey Manager] Python
+* QML modules:
+ ** PyOtherSide
+ ** Qt Labs Settings
+ ** Qt Quick Controls
+ ** Qt Quick Dialogs
+* The https://developers.yubico.com/yubikey-manager/[YubiKey Manager] Python
   library
 
 With these installed, you can just run the program:
