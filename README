@@ -63,7 +63,7 @@ bundles source dependencies:
 The runtime dependencies are:
 
 * QML modules:
- ** PyOtherSide
+ ** https://github.com/thp/pyotherside[PyOtherSide]
  ** Qt Labs Settings
  ** Qt Quick Controls
  ** Qt Quick Dialogs
