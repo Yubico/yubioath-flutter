@@ -58,7 +58,7 @@ Modify the provision.sh script to set up a USB filter to capture the device with
 === Windows
 
 First of all, set up the environment as described in the
-../vagrant/windows/README.md[Vagrant VM README].
+link:../vagrant/windows/README.md[Vagrant VM README].
 
 In the following, replace `VERSION` with the version you want to build, e.g.,
 `4.2.0`.
