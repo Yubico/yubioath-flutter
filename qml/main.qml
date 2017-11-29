@@ -481,7 +481,7 @@ ApplicationWindow {
         // If the search gave some results,
         // the top credential should be selected.
         if (searchResult[0] !== null && search.text.length > 0) {
-            selected = searchResult[0]
+            selectCredential(searchResult[0], 0)
         } else if (search.text.length > 0) {
             // If search was started but no result,
             // reset selected to avoid hidden selected creds.
