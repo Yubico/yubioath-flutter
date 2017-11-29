@@ -22,20 +22,20 @@ Item {
     }
 
     onGoDown: {
-        flickable.flick(0, -300)
         if (nothingSelected) {
             selectedKey = firstCred.credential.key
         } else if (!lastCredSelected) {
+            flickable.flick(0, -300)
             selectedKey = credRepeater.model[findSelectedIndex() + 1].credential.key
         }
 
     }
 
     onGoUp: {
-        flickable.flick(0, 300)
         if (nothingSelected) {
             selectedKey = lastCred.credential.key
         } else if (!firstCredSeleced) {
+            flickable.flick(0, 300)
             selectedKey = credRepeater.model[findSelectedIndex() - 1].credential.key
         }
     }
