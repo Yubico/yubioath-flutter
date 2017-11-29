@@ -148,9 +148,9 @@ Python {
             }
             // The selected credential should still be selected,
             // with an updated code.
-            if (selected != null) {
-                if (selected.credential.key === entry.credential.key) {
-                    selected = entry
+            if (getSelected() != null) {
+                if (getSelected().credential.key === entry.credential.key) {
+                    selectCredential(entry)
                 }
             }
 
@@ -248,7 +248,7 @@ Python {
         // Update the selected credential
         // after update, since the code now
         // might be available.
-        selected = entry
+        selectCredential(entry)
         if (copyAfterUpdate) {
             copy()
         }

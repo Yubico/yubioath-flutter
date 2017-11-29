@@ -55,7 +55,7 @@ MenuBar {
         MenuItem {
             text: qsTr("\&Copy to clipboard")
             shortcut: StandardKey.Copy
-            enabled: (selected != null) && (selected.code != null)
+            enabled: (getSelected() != null) && (getSelected().code != null)
             onTriggered:copy()
         }
 
@@ -72,7 +72,7 @@ MenuBar {
         MenuItem {
             text: qsTr("\&Delete")
             shortcut: StandardKey.Delete
-            enabled: (selected != null)
+            enabled: (getSelected() != null)
             onTriggered: deleteCredential()
         }
     }

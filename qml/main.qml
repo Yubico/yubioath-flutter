@@ -23,8 +23,7 @@ ApplicationWindow {
     property bool ccidModeMatch: (!settings.slotMode && device.hasCCID)
     property var hotpCoolDowns: []
 
-    property var selected: null
-    property var selectedIndex: null
+    property var selectedKey: null
 
     // Don't refresh credentials when window is minimized or hidden
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
@@ -39,15 +38,15 @@ ApplicationWindow {
     signal deleteCredential
 
     onDeleteCredential: confirmDeleteCredential.open()
-    onGenerate: handleGenerate(selected, copyAfterGenerate)
-    onCopy: clipboard.setClipboard(selected.code.value)
+    onGenerate: handleGenerate(getSelected(), copyAfterGenerate)
+    onCopy: clipboard.setClipboard(getSelected().code.value)
 
     onHasDeviceChanged: handleNewDevice()
 
     menuBar: MainMenuBar {
         slotMode: settings.slotMode
         hasDevice: device.hasDevice
-        enableGenerate: enableManualGenerate(selected)
+        enableGenerate: enableManualGenerate(getSelected())
         onOpenAddCredential: openClearAddCredential()
         onOpenSetPassword: setPassword.open()
         onOpenReset: reset.open()
@@ -195,9 +194,9 @@ ApplicationWindow {
 
     CredentialMenu {
         id: credentialMenu
-        credential: selected
-        showGenerate: allowManualGenerate(selected)
-        enableGenerate: enableManualGenerate(selected)
+        credential: getSelected()
+        showGenerate: allowManualGenerate(credential)
+        enableGenerate: enableManualGenerate(credential)
     }
 
     DeleteCredentialConfirmation {
@@ -290,7 +289,7 @@ ApplicationWindow {
 
                                 // A double-click should select the credential,
                                 // then generate if needed and copy the code.
-                                selectCredential(modelData, index)
+                                selectCredential(modelData)
                                 generateOrCopy()
                             }
 
@@ -304,13 +303,13 @@ ApplicationWindow {
                                     if (appWindow.isSelected(modelData.credential)) {
                                         deselectCredential()
                                     } else {
-                                        selectCredential(modelData, index)
+                                        selectCredential(modelData)
                                     }
                                 }
 
                                 // Right-click, select credential and open popup menu.
                                 if (mouse.button & Qt.RightButton) {
-                                    selectCredential(modelData, index)
+                                    selectCredential(modelData)
                                     credentialMenu.popup()
                                 }
                             }
@@ -377,17 +376,22 @@ ApplicationWindow {
         id: noQr
     }
 
-    function selectCredential(entry, index) {
-        selected = entry
-        selectedIndex = index
+    function selectCredential(entry) {
+        selectedKey = entry.credential.key
     }
 
     function deselectCredential() {
-        selected = null
-        selectedIndex = null
+        selectedKey = null
+    }
+
+    function getSelected() {
+        return credentials.find(function(entry) {
+            return entry.credential.key === selectedKey
+        }) || null
     }
 
     function isSelected(credential) {
+        var selected = getSelected()
         return selected != null && selected.credential.key === credential.key
     }
 
@@ -491,10 +495,10 @@ ApplicationWindow {
                     // reset selected to avoid hidden selected creds.
                     deselectCredential()
                 }
-                if (selected === null) {
+                if (selectedKey === null) {
                     // If the search gave some results, and nothing is currently selected,
                     // the top credential should be selected.
-                    selectCredential(searchResult[0], 0)
+                    selectCredential(searchResult[0])
                 }
             } else {
                 // If search was started but no result,
@@ -598,13 +602,14 @@ ApplicationWindow {
 
     function deleteSelectedCredential() {
         if (settings.slotMode) {
-            device.deleteSlotCredential(getSlot(selected.credential.name))
+            device.deleteSlotCredential(getSlot(getSelected().credential.name))
         } else {
-            device.deleteCredential(selected.credential)
+            device.deleteCredential(getSelected().credential)
         }
     }
 
     function generateOrCopy() {
+        var selected = getSelected()
         if (selected.code == null || isExpired(selected) || selected.credential.oath_type === 'HOTP') {
             generate(true)
         } else {
