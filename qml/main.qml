@@ -213,7 +213,7 @@ ApplicationWindow {
 
     ArrowKeysSelecter {
         id: arrowKeys
-        credRepeater: repeater
+        credentials: repeater.model
         KeyNavigation.tab: search
     }
 

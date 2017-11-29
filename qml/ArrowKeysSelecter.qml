@@ -1,11 +1,11 @@
 import QtQuick 2.5
 
 Item {
-    property var credRepeater
-    property int nCreds: credRepeater.model.length
+    property var credentials
+    property int nCreds: credentials.length
     property bool nothingSelected: selectedKey === null
-    property var firstCred: credRepeater.model[0]
-    property var lastCred: credRepeater.model[nCreds - 1]
+    property var firstCred: credentials[0]
+    property var lastCred: credentials[nCreds - 1]
     property bool lastCredSelected: lastCred !== undefined && selectedKey === lastCred.credential.key
     property bool firstCredSeleced: firstCred !== undefined && selectedKey === firstCred.credential.key
 
@@ -16,7 +16,7 @@ Item {
     Keys.onUpPressed: goUp()
 
     function findSelectedIndex() {
-        return credRepeater.model.findIndex(function(entry) {
+        return credentials.findIndex(function(entry) {
             return entry.credential.key === selectedKey
         }) || null
     }
@@ -26,7 +26,7 @@ Item {
             selectedKey = firstCred.credential.key
         } else if (!lastCredSelected) {
             flickable.flick(0, -300)
-            selectedKey = credRepeater.model[findSelectedIndex() + 1].credential.key
+            selectedKey = credentials[findSelectedIndex() + 1].credential.key
         }
 
     }
@@ -36,7 +36,7 @@ Item {
             selectedKey = lastCred.credential.key
         } else if (!firstCredSeleced) {
             flickable.flick(0, 300)
-            selectedKey = credRepeater.model[findSelectedIndex() - 1].credential.key
+            selectedKey = credentials[findSelectedIndex() - 1].credential.key
         }
     }
 
