@@ -162,11 +162,15 @@ Python {
         // the view will refresh even if objects are the same
         entries = result
         entries.sort(function (a, b) {
-            return a.credential.key.localeCompare(b.credential.key)
+            return getSortableName(a.credential).localeCompare(getSortableName(b.credential))
         })
 
         updateExpiration()
         credentialsRefreshed()
+    }
+
+    function getSortableName(credential) {
+        return (credential.issuer || '') + (credential.name || '') + '/' + (credential.period || '')
     }
 
     function getEntry(key) {
