@@ -236,7 +236,6 @@ ApplicationWindow {
                 // outside search bar to remove focus from it.
                 anchors.fill: parent
                 onClicked: {
-                    arrowKeys.focus = true
                     deselectCredential()
                 }
             }
@@ -285,8 +284,6 @@ ApplicationWindow {
                             )
 
                             onDoubleClick: {
-                                arrowKeys.forceActiveFocus()
-
                                 // A double-click should select the credential,
                                 // then generate if needed and copy the code.
                                 selectCredential(modelData)
@@ -296,8 +293,6 @@ ApplicationWindow {
                             onRefresh: refreshDependingOnMode(force)
 
                             onSingleClick: {
-                                arrowKeys.forceActiveFocus()
-
                                 // Left click, select or deselect credential.
                                 if (mouse.button & Qt.LeftButton) {
                                     if (appWindow.isSelected(modelData.credential)) {
@@ -333,7 +328,6 @@ ApplicationWindow {
             onTextChanged: selectFirstSearchResult()
             Keys.onEscapePressed: {
                 search.text = ""
-                arrowKeys.focus = true
                 deselectCredential()
             }
             Keys.onReturnPressed: generateOrCopy()
