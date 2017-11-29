@@ -278,7 +278,7 @@ ApplicationWindow {
                             code: modelData.code
                             credential: modelData.credential
                             isExpired: appWindow.isExpired(modelData)
-                            isSelected: selected != null && selected.credential.key === modelData.credential.key
+                            isSelected: appWindow.isSelected(modelData.credential)
                             timerRunning: displayTimersRunning
                             unselectedColor: (index % 2 == 0
                                 ? palette.window
@@ -301,7 +301,7 @@ ApplicationWindow {
 
                                 // Left click, select or deselect credential.
                                 if (mouse.button & Qt.LeftButton) {
-                                    if (selected != null && selected.credential.key === credential.key) {
+                                    if (appWindow.isSelected(modelData.credential)) {
                                         deselectCredential()
                                     } else {
                                         selectCredential(modelData, index)
@@ -384,6 +384,10 @@ ApplicationWindow {
     function deselectCredential() {
         selected = null
         selectedIndex = null
+    }
+
+    function isSelected(credential) {
+        return selected != null && selected.credential.key === credential.key
     }
 
     function saveScreenLayout() {
