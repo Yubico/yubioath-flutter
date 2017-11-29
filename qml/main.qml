@@ -327,7 +327,7 @@ ApplicationWindow {
             }
             onTextChanged: selectFirstSearchResult()
             Keys.onEscapePressed: {
-                search.text = ""
+                search.clear()
                 deselectCredential()
             }
             Keys.onReturnPressed: generateOrCopy()
