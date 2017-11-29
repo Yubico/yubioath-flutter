@@ -321,13 +321,14 @@ ApplicationWindow {
 
         TextField {
             id: search
+            focus: true
             visible: canShowCredentials && device.hasAnyCredentials()
             placeholderText: qsTr("Search...")
             Layout.fillWidth: true
             KeyNavigation.tab: arrowKeys
             Shortcut {
                 sequence: StandardKey.Find
-                onActivated: search.focus = true
+                onActivated: search.forceActiveFocus()
             }
             onTextChanged: selectFirstSearchResult()
             Keys.onEscapePressed: {

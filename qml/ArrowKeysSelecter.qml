@@ -1,9 +1,6 @@
 import QtQuick 2.5
 
 Item {
-
-    focus: true
-
     property var credRepeater
     property int nCreds: credRepeater.model.length
     property bool nothingSelected: selectedKey === null
