@@ -330,6 +330,7 @@ ApplicationWindow {
                 sequence: StandardKey.Find
                 onActivated: search.focus = true
             }
+            onTextChanged: selectFirstSearchResult()
             Keys.onEscapePressed: {
                 search.text = ""
                 arrowKeys.focus = true
@@ -478,16 +479,29 @@ ApplicationWindow {
             }
         }
 
-        // If the search gave some results,
-        // the top credential should be selected.
-        if (searchResult[0] !== null && search.text.length > 0) {
-            selectCredential(searchResult[0], 0)
-        } else if (search.text.length > 0) {
-            // If search was started but no result,
-            // reset selected to avoid hidden selected creds.
-            deselectCredential()
-        }
         return searchResult
+    }
+
+    function selectFirstSearchResult() {
+        var searchResult = filteredCredentials(credentials)
+        if (search.text.length > 0) {
+            if (searchResult[0] != null) {
+                if (false === searchResult.some(function(entry) { return isSelected(entry.credential) })) {
+                    // If search does not include current selection,
+                    // reset selected to avoid hidden selected creds.
+                    deselectCredential()
+                }
+                if (selected === null) {
+                    // If the search gave some results, and nothing is currently selected,
+                    // the top credential should be selected.
+                    selectCredential(searchResult[0], 0)
+                }
+            } else {
+                // If search was started but no result,
+                // reset selected to avoid hidden selected creds.
+                deselectCredential()
+            }
+        }
     }
 
     function isInCoolDown(longName) {
