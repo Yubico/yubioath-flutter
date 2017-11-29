@@ -386,13 +386,12 @@ ApplicationWindow {
 
     function getSelected() {
         return credentials.find(function(entry) {
-            return entry.credential.key === selectedKey
+            return isSelected(entry.credential)
         }) || null
     }
 
     function isSelected(credential) {
-        var selected = getSelected()
-        return selected != null && selected.credential.key === credential.key
+        return credential.key === selectedKey
     }
 
     function saveScreenLayout() {
