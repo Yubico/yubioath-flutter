@@ -90,6 +90,11 @@ int main(int argc, char *argv[])
     // Should probably be replaced by QML when all supported platforms are on > Qt 5.8
     // See http://doc-snapshots.qt.io/qt5-5.8/qml-qt-labs-platform-systemtrayicon.html
     QObject *root = engine.rootObjects().first();
+
+    if (argc > 2 && strcmp(argv[1], "--log-level") == 0) {
+        QMetaObject::invokeMethod(root, "enableLogging", Q_ARG(QVariant, argv[2]));
+    }
+
     QQuickWindow *qmlWindow = qobject_cast<QQuickWindow *>(root);
 
     // Set icon in the window, doesn't effect desktop icons.

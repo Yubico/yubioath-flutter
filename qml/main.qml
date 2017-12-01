@@ -633,4 +633,9 @@ ApplicationWindow {
             }
         })
     }
+
+    function enableLogging(logLevel) {
+      yk.enableLogging(logLevel)
+    }
+
 }
