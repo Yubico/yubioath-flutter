@@ -15,7 +15,9 @@ Python {
     property var entries: []
     property int nextRefresh: 0
     property var enabled: []
-    property bool ready: false
+    property bool yubikeyReady: false
+    property bool loggingReady: false
+    readonly property bool ready: yubikeyReady && loggingReady
     property var queue: []
     property bool hasOTP: enabled.indexOf('OTP') !== -1
     property bool hasCCID: enabled.indexOf('CCID') !== -1
@@ -25,17 +27,18 @@ Python {
     property int expiration: 0
     signal wrongPassword
     signal credentialsRefreshed
+    signal enableLogging(string log_level)
 
     Component.onCompleted: {
         importModule('site', function () {
             call('site.addsitedir', [appDir + '/pymodules'], function () {
                 addImportPath(urlPrefix + '/py')
+
                 importModule('yubikey', function () {
-                    ready = true
-                    for (var i in queue) {
-                        do_call(queue[i][0], queue[i][1], queue[i][2])
-                    }
-                    queue = []
+                    yubikeyReady = true
+                })
+                importModule('logging_setup', function() {
+                    loggingReady = true
                 })
             })
         })
@@ -43,6 +46,19 @@ Python {
 
     onHasDeviceChanged: {
         device.validated = false
+    }
+
+    onEnableLogging: {
+        do_call('logging_setup.setup', [log_level || 'DEBUG'])
+    }
+
+    onReadyChanged: {
+        if (ready) {
+            for (var i in queue) {
+                do_call(queue[i][0], queue[i][1], queue[i][2])
+            }
+            queue = []
+        }
     }
 
     function do_call(func, args, cb) {
