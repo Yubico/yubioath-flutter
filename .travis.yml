@@ -65,10 +65,7 @@ install:
 
 before_script:
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]
-    then
-       pre-commit run --all-files
-    fi
+   pre-commit run --all-files
 
 script:
   - |
