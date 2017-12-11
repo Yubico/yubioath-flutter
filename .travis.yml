@@ -116,7 +116,7 @@ after_success:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
-      id=$(docker create xenial)
+      id=$(docker create yubioath-xenial)
       docker cp $id:/yubioath-desktop-debian-packages.tar.gz deploy/yubioath-desktop-$TRAVIS_BRANCH-deb.tar.gz
     fi
 
