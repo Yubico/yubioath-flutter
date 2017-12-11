@@ -6,7 +6,7 @@ set -e
 # Add qmake to PATH
 export PATH="/usr/local/opt/qt/bin:$PATH"
 PY_VERSION="3.6.3"
-APP_DIR=ykman-gui/ykman-gui.app
+APP_DIR=yubioath-desktop.app
 
 VERSION=${1:-$TRAVIS_BRANCH}
 
@@ -16,9 +16,9 @@ make
 mkdir -p deploy/
 
 # Exctract all user facing strings and create a textfile with them for deployment.
-lupdate ykman-gui/ykman-gui.pro -ts ykman-gui.ts
-cp ykman-gui.ts deploy/yubikey-manager-qt-$VERSION-strings.xml
-macdeployqt "${APP_DIR}"/ -qmldir=ykman-gui/qml/
+lupdate yubioath-desktop.pro -ts yubioath-desktop.ts
+cp yubioath-desktop.ts deploy/yubioath-desktop-$VERSION-strings.xml
+macdeployqt "${APP_DIR}"/ -qmldir=qml/
 
 # Copy needed dylibs
 find /usr/local/Cellar/json-c/ -name '*.dylib' -exec cp '{}' "${APP_DIR}"/Contents/Frameworks/ ';'
@@ -38,13 +38,6 @@ find "${APP_DIR}"/Contents/Frameworks/Python.framework -name '__pycache__' -dele
 mv "${APP_DIR}"/Contents/MacOS/pymodules/* "${APP_DIR}"/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/ || echo 'Failure, but continuing anyway...'
 rm -rf "${APP_DIR}"/Contents/MacOS/pymodules
 
-# Add cli executable
-cp ykman-cli/ykman "${APP_DIR}"/Contents/MacOS/
-
-# Add pymodules from cli
-cp -rn ykman-cli/pymodules/ "${APP_DIR}"/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/
-
-
 # Fix Python library path (macdeployqtfix fails to do this when running locally)
 install_name_tool -change /usr/local/opt/python3/Frameworks/Python.framework/Versions/3.6/Python @executable_path/../Frameworks/Python.framework/Versions/3.6/Python "${APP_DIR}"/Contents/PlugIns/quick/libpyothersideplugin.dylib
 
@@ -52,8 +45,9 @@ install_name_tool -change /usr/local/opt/python3/Frameworks/Python.framework/Ver
 find "${APP_DIR}" -name '*.dylib' -exec chmod u+w {} \;
 
 # Fix stuff that macdeployqt does incorrectly.
-python macdeployqtfix/macdeployqtfix.py "${APP_DIR}"/Contents/MacOS/ykman-gui /usr/local/Cellar/python3/$PY_VERSION/Frameworks
-python macdeployqtfix/macdeployqtfix.py "${APP_DIR}"/Contents/MacOS/ykman /usr/local/Cellar/python3/$PY_VERSION/Frameworks
+python macdeployqtfix/macdeployqtfix.py "${APP_DIR}"/Contents/MacOS/yubioath-desktop /usr/local
+#python macdeployqtfix/macdeployqtfix.py "${APP_DIR}"/Contents/MacOS/ykman-gui /usr/local/Cellar/python3/$PY_VERSION/Frameworks
+#python macdeployqtfix/macdeployqtfix.py "${APP_DIR}"/Contents/MacOS/ykman /usr/local/Cellar/python3/$PY_VERSION/Frameworks
 
 # Fix linking for PyOtherSide
 install_name_tool -change ~/.pyenv/versions/$PY_VERSION/Python.framework/Versions/3.6/Python @executable_path/../Frameworks/Python.framework/Versions/3.6/Python "${APP_DIR}"/Contents/Resources/qml/io/thp/pyotherside/libpyothersideplugin.dylib
@@ -67,8 +61,4 @@ install_name_tool -change /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib @exec
 install_name_tool -change /usr/local/opt/openssl/lib/libssl.1.0.0.dylib @executable_path/../Frameworks/libssl.1.0.0.dylib "${APP_DIR}"/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_hashlib.cpython-36m-darwin.so
 
 # Copy .app to deploy dir
-tar -czf deploy/yubikey-manager-qt-$VERSION.app.tar "${APP_DIR}"
-
-# Test ykman-cli in .app bundle
-cp ykman-cli/test.py "${APP_DIR}"/Contents/MacOS/
-(cd "${APP_DIR}"/Contents/MacOS && ./test.py)
+tar -czf deploy/yubioath-desktop-$VERSION.app.tar "${APP_DIR}"
