@@ -35,6 +35,7 @@ def compute_version(tag_prefix=None):
         ['git', 'describe',
             '--tags',
             '--dirty=-dirty',
+            '--always',
          ] + (
            ['--match=%s*' % tag_prefix] if tag_prefix else []
          ),
@@ -69,6 +70,12 @@ def compute_version(tag_prefix=None):
     # If version is plain 'X.Y', append '.0'
     git_version = re.sub(
         r'^([0-9]+\.[0-9]+)(-dirty)?$', r'\1.0\2',
+        git_version
+    )
+
+    # If version is raw abbreviated commit ID, prepend '0.0.0-'
+    git_version = re.sub(
+        r'^([0-9a-f]{7}(-dirty)?)$', r'0.0.0-\1',
         git_version
     )
 
