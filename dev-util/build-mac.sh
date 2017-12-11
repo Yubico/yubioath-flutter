@@ -8,7 +8,7 @@ export PATH="/usr/local/opt/qt/bin:$PATH"
 PY_VERSION="3.6.3"
 APP_DIR=yubioath-desktop.app
 
-VERSION=${1:-$TRAVIS_BRANCH}
+VERSION=${TRAVIS_BRANCH:-$(python3 compute-version.py yubioath-desktop-)}
 
 qmake
 make
