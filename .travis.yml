@@ -66,10 +66,7 @@ install:
 before_script:
   - |
     pre-commit run --all-files
-    until python3 compute-version.py yubioath-desktop- 2>/dev/null
-    do
-      git fetch --deepen=50
-    done
+    git fetch --unshallow
 
 script:
   - |
