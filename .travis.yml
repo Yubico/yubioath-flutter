@@ -28,7 +28,6 @@ before_install:
       docker build -t ykman-xenial -f vendor/yubikey-manager/docker/xenial/Dockerfile vendor/yubikey-manager
       id=$(docker create ykman-xenial)
       docker cp $id:/yubikey-manager-debian-packages.tar.gz ykman-deb.tar.gz
-      docker build -t yubioath-xenial -f docker/xenial/Dockerfile .
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
@@ -69,6 +68,11 @@ before_script:
     git fetch --unshallow
 
 script:
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]
+    then
+      docker build -t yubioath-xenial -f docker/xenial/Dockerfile .
+    fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
