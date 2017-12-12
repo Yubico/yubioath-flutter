@@ -11,7 +11,7 @@ environment:
   LIBU2F_HOST_VERSION: "1.1.3"
   YKPERS_VERSION: "1.18.0"
   LIBUSB_VERSION: "1.0.21"
-  PY_VERSION: "3.6.2"
+  PY_VERSION: "3.6.3"
 
 init:
   # Needed for jom to work.
