@@ -27,6 +27,9 @@ install:
   - choco install swig -y --allow-empty-checksums
   - choco upgrade swig 
 
+  # Compute version before dirtying directory with PyOtherSide build
+  - python compute-version.py yubioath-desktop- > VERSION
+
   # Build and install PyOtherSide 
   # Reference: https://pyotherside.readthedocs.io/en/latest/#building-for-windows
   - cd .\vendor\pyotherside
