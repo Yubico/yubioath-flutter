@@ -30,6 +30,9 @@ RUN apt-get install -qq \
 RUN pip3 install --upgrade pip
 COPY . yubioath-desktop
 RUN tar xfa yubioath-desktop/ykman-deb.tar.gz
+# Make sure .deb files exist
+RUN ls /deb/python3-yubikey-manager_*.deb
+RUN ls /deb/yubikey-manager_*.deb
 RUN dpkg -i /deb/python3-yubikey-manager_*.deb; exit 0
 RUN dpkg -i /deb/yubikey-manager_*.deb; exit 0
 RUN apt-get install -f -qq
