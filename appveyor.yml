@@ -17,7 +17,7 @@ init:
   # Needed for jom to work.
   - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
   # Add python and Qt to PATH
-  - set PATH=%PATH%;C:\Python36\Scripts;C:\Qt\5.9\msvc2015\bin;C:\Qt\Tools\QtCreator\bin;
+  - set PATH=C:\Python36;C:\Python36\Scripts;C:\Qt\5.9\msvc2015\bin;C:\Qt\Tools\QtCreator\bin;%PATH%
   - python --version
 
 install:
