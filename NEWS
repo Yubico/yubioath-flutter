@@ -1,5 +1,20 @@
 * Version 4.3.0 (unreleased)
- ** Remembered passwords are now shared with ykman.
+ ** Now requires ykman version >= 0.5.0 (unreleased)
+ ** Feature: Remembered passwords are now shared with ykman.
+ ** Feature: Added option to hide window on launch
+  *** Thanks to Steven Stallion for contributing!
+ ** Feature: "About" dialog now shows OATH applet version instead of overall firmware version
+ ** Feature: Touch credentials generate a code for the next period if current period ends in less than 10s
+ ** Feature: Arrow keys now navigate the list while search field has focus
+  *** Thanks to Arthur Burkart for contributing!
+ ** Feature: Focus now starts on the search field, and ESC no longer removes focus from search field
+ ** Feature: Added `--log-level` CLI option with same function as `--log-level` option to `ykman` version 0.5.0; see `ykman --help` for usage
+ ** Bugfix: Reduced idle CPU usage
+ ** Bugfix: Improved error handling to prevent hanging UI
+ ** Bugfix: Fixed tray icon remaining after exit on Windows
+ ** Bugfix: Fixed sorting when some credentials have nonstandard periods
+ ** Bugfix: Selection now stable across refreshes and searches
+ ** Bugfix: Arrow keys now scroll the view only if the selection changes
 
 * Version 4.2.0+deps.2 (de-published)
  ** Identical to release 4.2.0+deps except it unpacks to a directory with the same name as the archive
