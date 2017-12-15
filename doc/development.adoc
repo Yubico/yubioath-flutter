@@ -77,3 +77,22 @@ To build the installer, plug in the code signing YubiKey and run:
 
     $ cd yubioath-desktop
     $ vagrant\windows\release.bat <VERSION>
+
+
+== Publishing to Ubuntu PPA
+
+ 1. Update version number and signoff in `debian/changelog`.
+ 2. Build and upload package.
+
+For (2) you can use the Vagrant VM in `vagrant/ppa`. You'll need to set up the
+VM to capture the YubiKey containing your signing key. If you use VirtualBox,
+you can do this by uncommenting the USB filter included in the `Vagrantfile`.
+Then:
+
+    alice@work $ cd yubioath-desktop/vagrant/ppa
+    alice@work $ vagrant up
+    alice@work $ vagrant ssh
+    ubuntu@ubuntu-xenial $ gpg2 --recv-keys ABCDEF78
+    ubuntu@ubuntu-xenial $ gpg2 --card-status
+    ubuntu@ubuntu-xenial $ cd yubioath-desktop
+    ubuntu@ubuntu-xenial $ ~/scripts/make-ppa -k ABCDEF78 -p gpg2
