@@ -92,7 +92,9 @@ Then:
     alice@work $ cd yubioath-desktop/vagrant/ppa
     alice@work $ vagrant up
     alice@work $ vagrant ssh
+    ubuntu@ubuntu-xenial $ gpg --recv-keys ABCDEF78
     ubuntu@ubuntu-xenial $ gpg2 --recv-keys ABCDEF78
     ubuntu@ubuntu-xenial $ gpg2 --card-status
     ubuntu@ubuntu-xenial $ cd yubioath-desktop
+    ubuntu@ubuntu-xenial $ python3 compute-version.py yubioath-desktop- > VERSION
     ubuntu@ubuntu-xenial $ ~/scripts/make-ppa -k ABCDEF78 -p gpg2
