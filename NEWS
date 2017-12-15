@@ -1,5 +1,5 @@
-* Version 4.3.0 (unreleased)
- ** Now requires ykman version >= 0.5.0 (unreleased)
+* Version 4.3.0
+ ** Now requires ykman version >= 0.5.0
  ** Feature: Remembered passwords are now shared with ykman.
  ** Feature: Added option to hide window on launch
   *** Thanks to Steven Stallion for contributing!
