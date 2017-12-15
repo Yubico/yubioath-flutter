@@ -60,11 +60,13 @@ Modify the provision.sh script to set up a USB filter to capture the device with
 First of all, set up the environment as described in the
 link:../vagrant/windows/README.md[Vagrant VM README].
 
-To build the project:
+To build the project, run in command prompt (skip the `git checkout` step to build the latest commit):
 
-    $ git clone --recurse-submodules https://github.com/Yubico/yubioath-desktop.git
-    $ cd yubioath-desktop
-    $ vagrant\windows\build.bat
+    > git clone --recurse-submodules https://github.com/Yubico/yubioath-desktop.git
+    > cd yubioath-desktop
+    > git checkout yubioath-desktop-<VERSION>
+    > git show --show-signature
+    > vagrant\windows\build.bat
 
 The `build.bat` script will output the build version number near the beginning.
 Use that as the `<VERSION>` in the next series of commands. If you missed it,
