@@ -37,4 +37,4 @@ sudo apt-get install -qq \
     devscripts \
     dh-make
 
-git clone https://github.com/dainnilsson/scripts
+sudo -u ubuntu git clone https://github.com/dainnilsson/scripts
