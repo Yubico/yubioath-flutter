@@ -39,3 +39,6 @@ cd /vagrant && chown -R ubuntu . && pre-commit install
 # Set a root password to enable login from GUI
 # Do startx after login to launch xfce4
 sudo echo "root:root" | sudo chpasswd
+
+# Make ubuntu user passwordless
+sudo passwd -d ubuntu

@@ -1,10 +1,13 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
+import "utils.js" as Utils
 
 DefaultDialog {
 
     id: aboutPage
     title: qsTr("About Yubico Authenticator")
+    property var device
+    property bool slotMode
 
     Item {
         focus:true
@@ -12,12 +15,13 @@ DefaultDialog {
     }
 
     Label {
-        text: qsTr("Yubico Authenticator")
+        text: qsTr("Yubico Authenticator ") + appVersion
         font.bold: true
     }
 
     Label {
-        text: qsTr("Version: ") + appVersion
+        visible: !slotMode
+        text: qsTr("YubiKey OATH Version: ") + (!slotMode && device.hasDevice ? Utils.versionString(device.version) : qsTr("<i>No device</i>"))
     }
 
     Label {

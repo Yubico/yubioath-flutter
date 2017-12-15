@@ -1,6 +1,6 @@
 == Yubico Authenticator
 image:https://travis-ci.org/Yubico/yubioath-desktop.svg?branch=master["Build Status", link="https://travis-ci.org/Yubico/yubioath-desktop"]
-image:https://ci.appveyor.com/api/projects/status/8jisffiq9j9ajn7y?svg=true["Appveyor Status", link="https://ci.appveyor.com/project/Yubico53275/yubioath-desktop"]
+image:https://ci.appveyor.com/api/projects/status/tddss2exet3ysypt?svg=true["Appveyor Status", link="https://ci.appveyor.com/project/Yubico53275/yubioath-desktop-xfr6h/"]
 
 Cross-platform application for generating Open Authentication (OATH) time-based TOTP and event-based HOTP one-time password codes, with the help of a YubiKey that protects the shared secrets.
 
@@ -9,7 +9,8 @@ image:screenshot.png[]
 === Features
 * Keep your OATH secrets safe by storing them on a YubiKey and generate the codes with this application.
 * Add a credential by scanning a QR code on the screen.
-* Supports 6 or 8 digit codes.
+* Supports 6, 7 or 8 digit codes.
+* Supports TOTP credentials with any time period.
 * Require touch on YubiKey to generate code.
 * Protect your credentials with a device password.
 
@@ -31,3 +32,8 @@ Installers are available https://developers.yubico.com/yubioath-desktop/Releases
     $ sudo apt-add-repository ppa:yubico/stable
     $ sudo apt update
     $ sudo apt install yubioath-desktop
+
+
+==== Other Linux/Unix - Build from source
+
+See the https://developers.yubico.com/yubioath-desktop/Building_from_Source.html[build documentation].

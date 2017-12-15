@@ -9,48 +9,56 @@ Python {
     property int nDevices
     property bool hasDevice
     property string name
-    property string version
+    property var version
     property string oathId
-    property var features: []
     property var connections: []
-    property var credentials: []
+    property var entries: []
     property int nextRefresh: 0
     property var enabled: []
-    property bool ready: false
+    property bool yubikeyReady: false
+    property bool loggingReady: false
+    readonly property bool ready: yubikeyReady && loggingReady
     property var queue: []
     property bool hasOTP: enabled.indexOf('OTP') !== -1
     property bool hasCCID: enabled.indexOf('CCID') !== -1
     property bool validated
     property bool slot1inUse
     property bool slot2inUse
-    property var passwordKey
     property int expiration: 0
     signal wrongPassword
     signal credentialsRefreshed
+    signal enableLogging(string log_level)
 
     Component.onCompleted: {
         importModule('site', function () {
             call('site.addsitedir', [appDir + '/pymodules'], function () {
                 addImportPath(urlPrefix + '/py')
+
                 importModule('yubikey', function () {
-                    ready = true
-                    do_call('yubikey.controller.get_features', [],
-                            function (res) {
-                                features = res
-                                for (var i in queue) {
-                                    do_call(queue[i][0], queue[i][1],
-                                            queue[i][2])
-                                }
-                                queue = []
-                            })
+                    yubikeyReady = true
+                })
+                importModule('logging_setup', function() {
+                    loggingReady = true
                 })
             })
         })
     }
 
     onHasDeviceChanged: {
-        device.passwordKey = null
         device.validated = false
+    }
+
+    onEnableLogging: {
+        do_call('logging_setup.setup', [log_level || 'DEBUG'])
+    }
+
+    onReadyChanged: {
+        if (ready) {
+            for (var i in queue) {
+                do_call(queue[i][0], queue[i][1], queue[i][2])
+            }
+            queue = []
+        }
     }
 
     function do_call(func, args, cb) {
@@ -59,26 +67,31 @@ Python {
         } else {
             call(func, args.map(JSON.stringify), function (json) {
                 if (cb) {
-                    cb(json ? JSON.parse(json) : undefined)
+                    try {
+                        cb(json ? JSON.parse(json) : undefined)
+                    } catch(err) {
+                        console.log(err, json)
+                    }
                 }
             })
         }
     }
 
-    function refresh(refreshCredentialsOnMode) {
+    function refresh(slotMode, refreshCredentialsOnMode) {
         do_call('yubikey.controller.count_devices', [], function (n) {
             nDevices = n
             if (nDevices == 1) {
-                do_call('yubikey.controller.refresh', [], function (dev) {
+                do_call('yubikey.controller.refresh', [slotMode], function (dev) {
                     name = dev ? dev.name : ''
-                    version = dev ? dev.version : ''
+                    version = dev ? dev.version : null
                     enabled = dev ? dev.enabled : []
                     connections = dev ? dev.connections : []
                     hasDevice = dev !== undefined && dev !== null
                 })
             } else if (hasDevice) {
+                // No longer has device
                 hasDevice = false
-                credentials = null
+                entries = null
                 nextRefresh = 0
             }
             refreshCredentialsOnMode()
@@ -89,7 +102,7 @@ Python {
         var now = Math.floor(Date.now() / 1000)
         if (force || (validated && nextRefresh <= now)) {
             do_call('yubikey.controller.refresh_credentials',
-                    [now, passwordKey], updateAllCredentials)
+                    [now], updateAllCredentials)
         }
     }
 
@@ -101,119 +114,93 @@ Python {
         }
     }
 
-    function validate(providedPassword, cb) {
-        do_call('yubikey.controller.derive_key', [providedPassword],
-                function (key) {
-                    validateFromKey(key, cb)
-                })
-    }
-
-    function validateFromKey(key, cb) {
-        do_call('yubikey.controller.validate', [key], function (res) {
-            if (res !== false) {
-                passwordKey = key
-                validated = true
-                if (cb != null) {
-                    cb()
-                }
-            } else {
-                wrongPassword()
-            }
-        })
-    }
-
-    function promptOrSkip(prompt) {
-
-        do_call('yubikey.controller.get_oath_id', [], function (res) {
-
-            oathId = res
-
-            // Check if device id can be found in saved passwords
-            // and validate with that key if found.
-            var savedKey = getSavedKey(oathId)
-            if (savedKey != null) {
-                validateFromKey(savedKey, null)
-                return
-            }
-
-            do_call('yubikey.controller.needs_validation', [], function (res) {
-                if (res === true) {
-                    prompt.open()
-                }
-                if (res === false) {
-                    validated = true
-                }
-            })
-        })
-    }
-
-    function getSavedKey(id) {
-        // Read a saved password key, else return null.
-        var entries = getPasswordEntries()
-        return (entries[id] != null) ? entries[id] : null
-    }
-
-    function setPassword(password) {
-        do_call('yubikey.controller.set_password', [password, passwordKey],
-                function () {
-                    if (password != null) {
-                        validate(password, null)
+    function validate(password, remember) {
+        do_call('yubikey.controller.provide_password', [password, remember],
+                function (res) {
+                    if (res) {
+                        validated = true
+                    } else {
+                        wrongPassword()
                     }
                 })
     }
 
-    function updateAllCredentials(creds) {
+    function promptOrSkip(prompt) {
+        do_call('yubikey.controller.needs_validation', [], function (res) {
+	    if (res === true) {
+	        prompt.open()
+            } else {
+                validated = true
+            }
+        })
+    }
+
+    function setPassword(password, remember) {
+        do_call('yubikey.controller.set_password', [password, remember],
+                function () {
+                    validated = true
+                })
+    }
+
+    function updateAllCredentials(newEntries) {
         var result = []
-        var minExpiration = (Date.now() / 1000) + 10000
-        for (var i = 0; i < creds.length; i++) {
-            var cred = creds[i]
+        var minExpiration = (Date.now() / 1000) + 60
+        for (var i = 0; i < newEntries.length; i++) {
+            var entry = newEntries[i]
             // Update min expiration
-            if (cred.expiration && cred.expiration < minExpiration && cred.period === 30) {
-                minExpiration = cred.expiration
+            if (entry.code && entry.code.valid_to < minExpiration
+                    && entry.credential.period === 30) {
+                minExpiration = entry.code.valid_to
             }
             // Touch credentials should only be replaced by user
-            if (credentialExists(cred.long_name) && cred.touch) {
-                result.push(getCredential(cred.long_name))
+            if (credentialExists(entry.credential.key) && entry.credential.touch) {
+                result.push(getEntry(entry.credential.key))
                 continue
             }
             // HOTP credentials should only be replaced by user
-            if (credentialExists(cred.long_name) && cred.oath_type === 'hotp') {
-                result.push(getCredential(cred.long_name))
+            if (credentialExists(entry.credential.key) && entry.credential.oath_type === 'HOTP') {
+                result.push(getEntry(entry.credential.key))
                 continue
             }
             // The selected credential should still be selected,
             // with an updated code.
-            if (selected != null) {
-                if (selected.long_name === cred.long_name) {
-                    selected = cred
+            if (getSelected() != null) {
+                if (getSelected().credential.key === entry.credential.key) {
+                    selectCredential(entry)
                 }
             }
 
             // TOTP credentials should be updated
-            result.push(cred)
+            result.push(entry)
         }
         nextRefresh = minExpiration
         // Credentials is cleared so that
         // the view will refresh even if objects are the same
-        credentials = []
-        credentials = result
+        entries = result
+        entries.sort(function (a, b) {
+            return getSortableName(a.credential).localeCompare(getSortableName(b.credential))
+        })
+
         updateExpiration()
         credentialsRefreshed()
     }
 
-    function getCredential(longName) {
-        for (var i = 0; i < credentials.length; i++) {
-            if (credentials[i].long_name === longName) {
-                return credentials[i]
-            }
-        }
-
+    function getSortableName(credential) {
+        return (credential.issuer || '') + (credential.name || '') + '/' + (credential.period || '')
     }
 
-    function credentialExists(longName) {
-        if (credentials != null) {
-            for (var i = 0; i < credentials.length; i++) {
-                if (credentials[i].long_name === longName) {
+    function getEntry(key) {
+        for (var i = 0; i < entries.length; i++) {
+            if (entries[i].credential.key === key) {
+                return entries[i]
+            }
+        }
+    }
+
+    function credentialExists(key) {
+        if (entries != null) {
+            for (var i = 0; i < entries.length; i++) {
+                if (entries[i].credential.key === key) {
                     return true
                 }
             }
@@ -222,15 +209,15 @@ Python {
     }
 
     function hasAnyCredentials() {
-        return credentials != null && credentials.length > 0
+        return entries != null && entries.length > 0
     }
 
     function updateExpiration() {
         var maxExpiration = 0
-        if (credentials !== null) {
-            for (var i = 0; i < credentials.length; i++) {
-                if (credentials[i].period === 30) {
-                    var exp = credentials[i].expiration
+        if (entries !== null) {
+            for (var i = 0; i < entries.length; i++) {
+                if (entries[i].credential.period === 30) {
+                    var exp = entries[i].code && entries[i].code.valid_to
                     if (exp !== null && exp > maxExpiration) {
                         maxExpiration = exp
                     }
@@ -240,19 +227,21 @@ Python {
         }
     }
 
-    function calculate(credential, copyAfterUpdate) {
+    function calculate(entry, copyAfterUpdate) {
         var now = Math.floor(Date.now() / 1000)
-        do_call('yubikey.controller.calculate', [credential, now, passwordKey],
-                function(cred) {
-                    updateSingleCredential(cred, copyAfterUpdate)
+        var margin = entry.credential.touch ? 10 : 0;
+        do_call('yubikey.controller.calculate', [entry.credential, now + margin],
+                function (code) {
+                    updateSingleCredential(entry.credential, code, copyAfterUpdate)
                 })
     }
 
     function calculateSlotMode(slot, digits, copyAfterUpdate) {
         var now = Math.floor(Date.now() / 1000)
-        do_call('yubikey.controller.calculate_slot_mode', [slot, digits, now],
-                function(cred) {
-                    updateSingleCredential(cred, copyAfterUpdate)
+        var margin = entry.credential.touch ? 10 : 0;
+        do_call('yubikey.controller.calculate_slot_mode', [slot, digits, now + margin],
+                function (entry) {
+                    updateSingleCredential(entry.credential, entry.code, copyAfterUpdate)
                 })
     }
 
@@ -260,22 +249,22 @@ Python {
       Put a credential coming from the YubiKey in the
       right position in the credential list.
       */
-    function updateSingleCredential(cred, copyAfterUpdate) {
-        var result = []
-        for (var i = 0; i < credentials.length; i++) {
-            if (credentials[i].long_name === cred.long_name) {
-                result.push(cred)
-            } else {
-                result.push(credentials[i])
+    function updateSingleCredential(cred, code, copyAfterUpdate) {
+        var entry = null;
+        for (var i = 0; i < entries.length; i++) {
+            if (entries[i].credential.key === cred.key) {
+                entry = entries[i]
+                entry.code = code
             }
         }
-        credentials = result
-        updateExpiration()
+        if (!cred.touch) {
+          updateExpiration()
+        }
         credentialsRefreshed()
         // Update the selected credential
         // after update, since the code now
         // might be available.
-        selected = cred
+        selectCredential(entry)
         if (copyAfterUpdate) {
             copy()
         }
@@ -283,7 +272,7 @@ Python {
 
     function addCredential(name, key, issuer, oathType, algo, digits, period, touch, cb) {
         do_call('yubikey.controller.add_credential',
-                [name, key, issuer, oathType, algo, digits, period, touch, passwordKey],
+                [name, key, issuer, oathType, algo, digits, period, touch],
                 cb)
     }
 
@@ -294,7 +283,7 @@ Python {
 
     function deleteCredential(credential) {
         do_call('yubikey.controller.delete_credential',
-                [credential, passwordKey])
+                [credential])
     }
 
     function deleteSlotCredential(slot) {

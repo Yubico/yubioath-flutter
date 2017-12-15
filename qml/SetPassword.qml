@@ -10,6 +10,7 @@ DefaultDialog {
     modality: Qt.ApplicationModal
     property string newPassword: newPassword.text
     property bool matchingPasswords: newPassword.text === confirmPassword.text
+    property bool remember: rememberPassword.checked
 
     onVisibilityChanged: {
         // Clear the password from old canceled entries
@@ -45,6 +46,14 @@ DefaultDialog {
                 echoMode: TextInput.Password
                 Layout.fillWidth: true
                 onAccepted: promptAccepted()
+                KeyNavigation.tab: rememberPassword
+                Keys.onEscapePressed: close()
+            }
+        }
+        RowLayout {
+            CheckBox {
+                id: rememberPassword
+                text: qsTr("Remember password")
                 KeyNavigation.tab: setPasswordBtn
                 Keys.onEscapePressed: close()
             }

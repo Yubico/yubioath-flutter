@@ -3,6 +3,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
+import "utils.js" as Utils
 
 DefaultDialog {
     id: newCredentialDialog
@@ -195,7 +196,7 @@ DefaultDialog {
     }
 
     function enableTouchOption() {
-        return parseInt(device.version.split('.').join('')) >= 426
+        return Utils.versionGE(device.version, 4, 2, 6)
     }
 
     function acceptableInput() {
@@ -215,10 +216,10 @@ DefaultDialog {
     }
 
     function getTypeIndex(type) {
-        if (type === 'totp') {
+        if (type === 'TOTP') {
             return 0
         }
-        if (type === 'hotp') {
+        if (type === 'HOTP') {
             return 1
         }
         return false
@@ -273,7 +274,7 @@ DefaultDialog {
         var _name = name.text
         var _key = key.text
         var _issuer = issuer.text
-        var _oathType = oathType.currentIndex === 0 ? 'totp' : 'hotp'
+        var _oathType = oathType.currentIndex === 0 ? 'TOTP' : 'HOTP'
         var _algo = algorithm.currentIndex === 0 ? 'SHA1' : 'SHA256'
         var _digits = digits.currentText
         var _period = period.value

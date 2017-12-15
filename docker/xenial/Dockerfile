@@ -26,14 +26,17 @@ RUN apt-get install -qq \
     qml-module-io-thp-pyotherside \
     qml-module-qt-labs-settings \
     python3-pip \
-    python3-dev \
-    yubikey-manager
+    python3-dev
 RUN pip3 install --upgrade pip
-RUN git clone --recursive https://github.com/Yubico/yubioath-desktop
-RUN echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> yubioath-desktop/vendor/pyotherside/src/src.pro
-RUN cd yubioath-desktop/vendor/pyotherside && qmake -qt=qt5 && make && make install
+COPY . yubioath-desktop
+RUN tar xfa yubioath-desktop/ykman-deb.tar.gz
+# Make sure .deb files exist
+RUN ls /deb/python3-yubikey-manager_*.deb
+RUN ls /deb/yubikey-manager_*.deb
+RUN dpkg -i /deb/python3-yubikey-manager_*.deb; exit 0
+RUN dpkg -i /deb/yubikey-manager_*.deb; exit 0
+RUN apt-get install -f -qq
 RUN cd yubioath-desktop && qmake -qt=qt5 && make
 RUN cd yubioath-desktop && debuild -us -uc
-RUN mkdir /deploy
-RUN mv /yubioath-desktop_* /deploy
-RUN cd / && tar czf yubioath-desktop-debian-builds.tar.gz deploy
+RUN mv /yubioath-desktop_* /deb
+RUN cd / && tar czf yubioath-desktop-debian-packages.tar.gz deb

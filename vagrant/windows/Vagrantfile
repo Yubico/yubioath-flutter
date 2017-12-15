@@ -3,18 +3,23 @@
 
 Vagrant.configure("2") do |config|
 
-  # Use Ubuntu 16.04 Xenial as a base box.
-  config.vm.box = "ubuntu/xenial64"
+  # Use Windows 10 as a base box.
+  config.vm.box = "senglin/win-10-enterprise-vs2015community"
+  config.vm.box_version = "1.0.0"
+
 
   # Install dependencies needed for yubioath-desktop development.
-  config.vm.provision "shell", path: "provision.sh"
+  # config.vm.provision "file", source: "qt-installer-noninteractive.qs", destination: "C:\Users\vagrant\qt-installer-noninteractive.qs"
+  config.vm.provision "shell", path: "provision.bat"
 
   # Sync repository to /vagrant
   config.vm.synced_folder '../..', '/vagrant'
 
+  config.vm.communicator = "winrm"
+
   # VirtualBox configuration
   config.vm.provider "virtualbox" do |vb|
-    vb.name = "yubioath-desktop:development"
+    vb.name = "yubioath-desktop:windows"
 
     # Enable GUI
     vb.gui = true
@@ -26,9 +31,8 @@ Vagrant.configure("2") do |config|
     vb.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
   end
 
-  # Uncomment this to add a USB filter for YubiKeys.
   # This will connect the YubiKey to the VM when re-inserted.
-  # This filter usess VirtualBox as provider. 
+  # This filter uses VirtualBox as provider.
   # Modify the paramters as needed depending on the device.
 
   FILTER_NAME="YubiKey"
@@ -38,14 +42,14 @@ Vagrant.configure("2") do |config|
   PRODUCT="Yubikey 4 OTP+U2F+CCID"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.customize ['modifyvm', :id, '--usb', 'on']
-    vb.customize ['usbfilter', 'add', '0',
-      '--target', :id,
-      '--name', FILTER_NAME,
-      '--manufacturer', MANUFACTURER,
-      '--vendorid', VENDOR_ID,
-      '--productid', PRODUCT_ID,
-      '--product', PRODUCT]
+   vb.customize ['modifyvm', :id, '--usb', 'on']
+   vb.customize ['usbfilter', 'add', '0',
+     '--target', :id,
+     '--name', FILTER_NAME,
+     '--manufacturer', MANUFACTURER,
+     '--vendorid', VENDOR_ID,
+     '--productid', PRODUCT_ID,
+     '--product', PRODUCT]
   end
 
 end

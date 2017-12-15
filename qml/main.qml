@@ -12,10 +12,9 @@ ApplicationWindow {
     height: 400
     minimumHeight: 400
     minimumWidth: 300
-    visible: true
     title: getTitle()
     property var device: yk
-    property var credentials: device.credentials
+    property var credentials: device.entries
     property bool hasDevice: device.hasDevice
     property bool canShowCredentials: device.hasDevice && modeAndKeyMatch
                                       && device.validated
@@ -24,27 +23,30 @@ ApplicationWindow {
     property bool ccidModeMatch: (!settings.slotMode && device.hasCCID)
     property var hotpCoolDowns: []
 
-    property var selected: null
-    property var selectedIndex: null
+    property var selectedKey: null
 
     // Don't refresh credentials when window is minimized or hidden
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
     property bool shouldRefresh: visibility != 3 && visibility != 0
+
+    property bool hideOnLaunch: settings.closeToTray && settings.hideOnLaunch
+
+    property bool displayTimersRunning: device.hasDevice && appWindow.visible
 
     signal copy
     signal generate(bool copyAfterGenerate)
     signal deleteCredential
 
     onDeleteCredential: confirmDeleteCredential.open()
-    onGenerate: handleGenerate(selected, copyAfterGenerate)
-    onCopy: clipboard.setClipboard(selected.code)
+    onGenerate: handleGenerate(getSelected(), copyAfterGenerate)
+    onCopy: clipboard.setClipboard(getSelected().code.value)
 
     onHasDeviceChanged: handleNewDevice()
 
     menuBar: MainMenuBar {
         slotMode: settings.slotMode
         hasDevice: device.hasDevice
-        enableGenerate: enableManualGenerate(selected)
+        enableGenerate: enableManualGenerate(getSelected())
         onOpenAddCredential: openClearAddCredential()
         onOpenSetPassword: setPassword.open()
         onOpenReset: reset.open()
@@ -53,6 +55,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
+        settings.savedPasswords = ""  //No longer used.
         updateTrayVisability()
         ensureValidWindowPosition()
     }
@@ -88,6 +91,7 @@ ApplicationWindow {
         property var slot2digits
         property string savedPasswords
         property bool closeToTray
+        property bool hideOnLaunch
 
         // Keep track of window and desktop dimensions.
         property alias width: appWindow.width
@@ -104,6 +108,8 @@ ApplicationWindow {
 
     AboutPage {
         id: aboutPage
+        device: yk
+        slotMode: settings.slotMode
     }
 
     AddCredential {
@@ -163,6 +169,7 @@ ApplicationWindow {
         onError: console.log(traceback)
         onWrongPassword: passwordPrompt.open()
         onCredentialsRefreshed: {
+            credentials = device.entries
             flickable.restoreScrollPosition()
             hotpTouchTimer.stop()
             touchYourYubikey.close()
@@ -187,9 +194,9 @@ ApplicationWindow {
 
     CredentialMenu {
         id: credentialMenu
-        credential: selected
-        showGenerate: allowManualGenerate(selected)
-        enableGenerate: enableManualGenerate(selected)
+        credential: getSelected()
+        showGenerate: allowManualGenerate(credential)
+        enableGenerate: enableManualGenerate(credential)
     }
 
     DeleteCredentialConfirmation {
@@ -206,7 +213,7 @@ ApplicationWindow {
 
     ArrowKeysSelecter {
         id: arrowKeys
-        credRepeater: repeater
+        credentials: repeater.model
         KeyNavigation.tab: search
     }
 
@@ -229,7 +236,6 @@ ApplicationWindow {
                 // outside search bar to remove focus from it.
                 anchors.fill: parent
                 onClicked: {
-                    arrowKeys.focus = true
                     deselectCredential()
                 }
             }
@@ -266,81 +272,40 @@ ApplicationWindow {
                         id: repeater
                         model: filteredCredentials(credentials)
 
-                        Rectangle {
-                            id: credentialRectangle
-                            color: getCredentialColor(index, modelData)
-                            Layout.minimumHeight: {
-                                var baseHeight = issuerLbl.height
-                                        + codeLbl.height + nameLbl.height + 10
-                                return hasCustomTimeBar(
-                                            modelData) ? baseHeight
-                                                         + 10 : baseHeight
-                            }
-                            Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignTop
+                        CredentialItem {
+                            code: modelData.code
+                            credential: modelData.credential
+                            isExpired: appWindow.isExpired(modelData)
+                            isSelected: appWindow.isSelected(modelData.credential)
+                            timerRunning: displayTimersRunning
+                            unselectedColor: (index % 2 == 0
+                                ? palette.window
+                                : palette.midlight
+                            )
 
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: handleCredentialSingleClick(
-                                               mouse, index, modelData)
-                                onDoubleClicked: handleCredentialDoubleClick(
-                                                     mouse, index, modelData)
-                                acceptedButtons: Qt.RightButton | Qt.LeftButton
+                            onDoubleClick: {
+                                // A double-click should select the credential,
+                                // then generate if needed and copy the code.
+                                selectCredential(modelData)
+                                generateOrCopy()
                             }
 
-                            ColumnLayout {
-                                anchors.leftMargin: 10
-                                anchors.rightMargin: 10
-                                anchors.topMargin: 5
-                                anchors.bottomMargin: 5
-                                anchors.fill: parent
-                                spacing: 0
-                                Label {
-                                    id: issuerLbl
-                                    visible: modelData.issuer != null
-                                             && modelData.issuer.length > 0
-                                    text: qsTr("") + modelData.issuer
-                                    color: getCredentialTextColor(modelData)
-                                }
-                                Label {
-                                    id: codeLbl
-                                    opacity: isExpired(modelData) ? 0.6 : 1
-                                    visible: modelData.code !== null
-                                    text: qsTr("") + getSpacedCredential(
-                                              modelData.code)
-                                    font.pointSize: issuerLbl.font.pointSize * 1.8
-                                    color: getCredentialTextColor(modelData)
-                                }
-                                Label {
-                                    id: nameLbl
-                                    text: modelData.name
-                                    color: getCredentialTextColor(modelData)
-                                }
-                                Timer {
-                                    id: customTimer
-                                    interval: 100
-                                    repeat: true
-                                    running: hasCustomTimeBar(modelData)
-                                    triggeredOnStart: true
-                                    onTriggered: {
-                                        var timeLeft = modelData.expiration - (Date.now() / 1000)
-                                        if (timeLeft <= 0
-                                                && customTimeLeftBar.value > 0) {
-                                            refreshDependingOnMode(true)
-                                        }
-                                        customTimeLeftBar.value = timeLeft
+                            onRefresh: refreshDependingOnMode(force)
+
+                            onSingleClick: {
+                                // Left click, select or deselect credential.
+                                if (mouse.button & Qt.LeftButton) {
+                                    if (appWindow.isSelected(modelData.credential)) {
+                                        deselectCredential()
+                                    } else {
+                                        selectCredential(modelData)
                                     }
                                 }
-                                ProgressBar {
-                                    id: customTimeLeftBar
-                                    visible: hasCustomTimeBar(modelData)
-                                    Layout.topMargin: 3
-                                    Layout.fillWidth: true
-                                    Layout.minimumHeight: 7
-                                    Layout.maximumHeight: 7
-                                    Layout.alignment: Qt.AlignBottom
-                                    maximumValue: modelData.period
-                                    rotation: 180
+
+                                // Right-click, select credential and open popup menu.
+                                if (mouse.button & Qt.RightButton) {
+                                    selectCredential(modelData)
+                                    credentialMenu.popup()
                                 }
                             }
                         }
@@ -351,21 +316,24 @@ ApplicationWindow {
 
         TextField {
             id: search
+            focus: true
             visible: canShowCredentials && device.hasAnyCredentials()
             placeholderText: qsTr("Search...")
             Layout.fillWidth: true
             KeyNavigation.tab: arrowKeys
             Shortcut {
                 sequence: StandardKey.Find
-                onActivated: search.focus = true
+                onActivated: search.forceActiveFocus()
             }
+            onTextChanged: selectFirstSearchResult()
             Keys.onEscapePressed: {
-                search.text = ""
-                arrowKeys.focus = true
+                search.clear()
                 deselectCredential()
             }
             Keys.onReturnPressed: generateOrCopy()
             Keys.onEnterPressed: generateOrCopy()
+            Keys.onDownPressed: arrowKeys.goDown()
+            Keys.onUpPressed: arrowKeys.goUp()
         }
     }
 
@@ -374,15 +342,15 @@ ApplicationWindow {
         triggeredOnStart: true
         interval: 500
         repeat: true
-        running: true
-        onTriggered: device.refresh(refreshDependingOnMode)
+        running: appWindow.visible
+        onTriggered: device.refresh(settings.slotMode, refreshDependingOnMode)
     }
 
     Timer {
         id: timeLeftTimer
         interval: 100
         repeat: true
-        running: true
+        running: displayTimersRunning
         triggeredOnStart: true
         onTriggered: checkTimeLeft()
     }
@@ -403,32 +371,22 @@ ApplicationWindow {
         id: noQr
     }
 
+    function selectCredential(entry) {
+        selectedKey = entry.credential.key
+    }
+
     function deselectCredential() {
-        selected = null
-        selectedIndex = null
+        selectedKey = null
     }
 
-    function hasCustomTimeBar(modelData) {
-        return modelData.period !== 30 && (modelData.oath_type === 'totp' || modelData.touch)
+    function getSelected() {
+        return credentials.find(function(entry) {
+            return isSelected(entry.credential)
+        }) || null
     }
 
-    function getSpacedCredential(code) {
-        // Add a space in the code for easier reading.
-        if (code != null) {
-            switch (code.length) {
-            case 6:
-                // 123 123
-                return code.slice(0, 3) + " " + code.slice(3)
-            case 7:
-                // 1234 123
-                return code.slice(0, 4) + " " + code.slice(4)
-            case 8:
-                // 1234 1234
-                return code.slice(0, 4) + " " + code.slice(4)
-            default:
-                return code
-            }
-        }
+    function isSelected(credential) {
+        return credential.key === selectedKey
     }
 
     function saveScreenLayout() {
@@ -448,42 +406,37 @@ ApplicationWindow {
     function checkTimeLeft() {
         var timeLeft = device.expiration - (Date.now() / 1000)
         if (timeLeft <= 0 && timeLeftBar.value > 0) {
-            flickable.saveScrollPosition()
             refreshDependingOnMode(true)
         }
         timeLeftBar.value = timeLeft
     }
 
-    function allowManualGenerate(cred) {
-        return cred != null && (cred.oath_type === "hotp" || selected.touch)
+    function allowManualGenerate(entry) {
+        var cred = entry && entry.credential
+        return cred != null && (cred.oath_type === "HOTP" || cred.touch)
     }
 
-    function enableManualGenerate(cred) {
-        if (allowManualGenerate(cred)) {
-            if (cred.oath_type !== "hotp") {
-                return cred.code === null || isExpired(selected)
+    function enableManualGenerate(entry) {
+        var cred = entry && entry.credential
+        if (allowManualGenerate(entry)) {
+            if (cred.oath_type !== "HOTP") {
+                return entry.code === null || isExpired(entry)
             } else {
-                return !isInCoolDown(cred.long_name)
+                return !isInCoolDown(cred.key)
             }
         } else {
             return false
         }
     }
 
-    function isExpired(cred) {
-        return cred !== null && (cred.oath_type !== "hotp")
-                && (cred.expiration - (Date.now() / 1000) <= 0)
-    }
-
-    function rememberPassword() {
-        var deviceId = device.oathId
-        var entries = getPasswordEntries()
-        entries[deviceId] = device.passwordKey
-        savePasswordEntries(entries)
+    function isExpired(entry) {
+        return entry !== null && entry.code !== null && (entry.credential.oath_type !== "HOTP")
+                && (entry.code.valid_to - (Date.now() / 1000) <= 0)
     }
 
     function refreshDependingOnMode(force) {
         if (hasDevice && shouldRefresh) {
+            flickable.saveScrollPosition()
             if (settings.slotMode && device.hasOTP) {
                 device.validated = true // Slot side has no password function
                 device.refreshSlotCredentials([settings.slot1, settings.slot2],
@@ -512,54 +465,61 @@ ApplicationWindow {
         return [slot1digits, slot2digits]
     }
 
-    function filteredCredentials(creds) {
+    function filteredCredentials(entries) {
         var searchResult = []
-        if (creds !== null) {
-            for (var i = 0; i < creds.length; i++) {
-                var cred = creds[i]
-                if (cred.long_name.toLowerCase().indexOf(search.text.toLowerCase(
+        if (entries !== null) {
+            for (var i = 0; i < entries.length; i++) {
+                var entry = entries[i]
+                if (entry.credential.key.toLowerCase().indexOf(search.text.toLowerCase(
                                                         )) !== -1) {
-                    searchResult.push(cred)
+                    searchResult.push(entry)
                 }
             }
         }
 
-        // Sort credentials based on the
-        // full name, including the issuer prefix
-        searchResult.sort(function (a, b) {
-            return a.long_name.localeCompare(b.long_name)
-        })
-
-        // If the search gave some results,
-        // the top credential should be selected.
-        if (searchResult[0] !== null && search.text.length > 0) {
-            selected = searchResult[0]
-        } else if (search.text.length > 0) {
-            // If search was started but no result,
-            // reset selected to avoid hidden selected creds.
-            deselectCredential()
-        }
         return searchResult
+    }
+
+    function selectFirstSearchResult() {
+        var searchResult = filteredCredentials(credentials)
+        if (search.text.length > 0) {
+            if (searchResult[0] != null) {
+                if (false === searchResult.some(function(entry) { return isSelected(entry.credential) })) {
+                    // If search does not include current selection,
+                    // reset selected to avoid hidden selected creds.
+                    deselectCredential()
+                }
+                if (selectedKey === null) {
+                    // If the search gave some results, and nothing is currently selected,
+                    // the top credential should be selected.
+                    selectCredential(searchResult[0])
+                }
+            } else {
+                // If search was started but no result,
+                // reset selected to avoid hidden selected creds.
+                deselectCredential()
+            }
+        }
     }
 
     function isInCoolDown(longName) {
         return hotpCoolDowns.indexOf(longName) !== -1
     }
 
-    function calculateCredential(credential, copyAfterUpdate) {
+    function calculateCredential(entry, copyAfterUpdate) {
         flickable.saveScrollPosition()
 
         if (settings.slotMode) {
-            var slot = getSlot(credential.name)
+            var slot = getSlot(entry.credential.name)
             var digits = getDigits(slot)
             device.calculateSlotMode(slot, digits, copyAfterUpdate)
         } else {
-            device.calculate(credential, copyAfterUpdate)
+            device.calculate(entry, copyAfterUpdate)
         }
-        if (credential.oath_type === "hotp") {
+        if (entry.credential.oath_type === "HOTP") {
             hotpTouchTimer.restart()
         }
-        if (credential.touch) {
+        if (entry.credential.touch) {
             touchYourYubikey.open()
         }
     }
@@ -598,13 +558,14 @@ ApplicationWindow {
         settings.slot1digits = settingsDialog.slot1digits
         settings.slot2digits = settingsDialog.slot2digits
         settings.closeToTray = settingsDialog.closeToTray
+        settings.hideOnLaunch = settingsDialog.closeToTray && settingsDialog.hideOnLaunch
     }
 
     function trySetPassword() {
         if (setPassword.newPassword.length > 0) {
-            device.setPassword(setPassword.newPassword)
+            device.setPassword(setPassword.newPassword, setPassword.remember)
         } else {
-            device.setPassword(null)
+            device.setPassword(null, true)
         }
     }
 
@@ -619,85 +580,31 @@ ApplicationWindow {
         }
     }
 
-    function handleGenerate(cred, copyAfterUpdate) {
-        if (!isInCoolDown(cred.long_name)) {
-            calculateCredential(cred, copyAfterUpdate)
-            if (cred.oath_type === "hotp") {
-                hotpCoolDowns.push(cred.long_name)
+    function handleGenerate(entry, copyAfterUpdate) {
+        if (!isInCoolDown(entry.credential.key)) {
+            calculateCredential(entry, copyAfterUpdate)
+            if (entry.credential.oath_type === "HOTP") {
+                hotpCoolDowns.push(entry.credential.key)
                 hotpCoolDownTimer.restart()
             }
         }
     }
 
     function handlePasswordEntered() {
-        if (passwordPrompt.remember) {
-            device.validate(passwordPrompt.password, rememberPassword)
-        } else {
-            device.validate(passwordPrompt.password, null)
-        }
+        device.validate(passwordPrompt.password, passwordPrompt.remember)
     }
 
     function deleteSelectedCredential() {
         if (settings.slotMode) {
-            device.deleteSlotCredential(getSlot(selected.name))
+            device.deleteSlotCredential(getSlot(getSelected().credential.name))
         } else {
-            device.deleteCredential(selected)
+            device.deleteCredential(getSelected().credential)
         }
-    }
-
-    function getCredentialColor(index, modelData) {
-        if (selected != null && selected.long_name === modelData.long_name) {
-            return palette.highlight
-        }
-        if (index % 2 == 0) {
-            return palette.window
-        }
-        return palette.midlight
-    }
-
-    function getCredentialTextColor(modelData) {
-        if (selected != null && selected.long_name === modelData.long_name) {
-            return palette.highlightedText
-        } else {
-            return palette.windowText
-        }
-    }
-
-    function handleCredentialSingleClick(mouse, index, modelData) {
-
-        arrowKeys.forceActiveFocus()
-
-        // Left click, select or deselect credential.
-        if (mouse.button & Qt.LeftButton) {
-            if (selected != null && selected.long_name === modelData.long_name) {
-                deselectCredential()
-            } else {
-                selected = modelData
-                selectedIndex = index
-            }
-        }
-
-        // Right-click, select credential and open popup menu.
-        if (mouse.button & Qt.RightButton) {
-            selected = modelData
-            selectedIndex = index
-            credentialMenu.popup()
-        }
-    }
-
-    function handleCredentialDoubleClick(mouse, index, modelData) {
-
-        arrowKeys.forceActiveFocus()
-
-        // A double-click should select the credential,
-        // then generate if needed and copy the code.
-        selected = modelData
-        selectedIndex = index
-        generateOrCopy()
     }
 
     function generateOrCopy() {
-        if (selected.code == null || isExpired(selected) || selected.oath_type === 'hotp') {
+        var selected = getSelected()
+        if (selected.code == null || isExpired(selected) || selected.credential.oath_type === 'HOTP') {
             generate(true)
         } else {
             copy()
@@ -709,31 +616,6 @@ ApplicationWindow {
         // When the tray option is enabled, closing the last window
         // doesn't actually close the application.
         app.quitOnLastWindowClosed = !settings.closeToTray
-    }
-
-    function getPasswordEntries() {
-        // Try to parse the saved password (if any) from the settings.
-        // If no saved passwords or the format is wrong,
-        // just return an empty object.
-        var entries = {
-
-        }
-        if (settings.savedPasswords.length !== 0) {
-            try {
-                entries = JSON.parse(settings.savedPasswords)
-            } catch (e) {
-                console.log("Could not read passwords.", e)
-            }
-        }
-        return entries
-    }
-
-    function savePasswordEntries(entries) {
-        try {
-            settings.savedPasswords = JSON.stringify(entries)
-        } catch (e) {
-            console.log("Could not save password.", e)
-        }
     }
 
     function scanQr() {
@@ -751,4 +633,9 @@ ApplicationWindow {
             }
         })
     }
+
+    function enableLogging(logLevel) {
+      yk.enableLogging(logLevel)
+    }
+
 }

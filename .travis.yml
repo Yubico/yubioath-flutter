@@ -7,6 +7,13 @@
 language: cpp
 sudo: required
 
+env:
+  - PY_VERSION="3.6.2"
+
+python:
+  - '3.5'
+  - '3.6'
+
 os:
   - osx
   - linux
@@ -18,7 +25,9 @@ before_install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
-      docker build -t xenial docker/xenial
+      docker build -t ykman-xenial -f vendor/yubikey-manager/docker/xenial/Dockerfile vendor/yubikey-manager
+      id=$(docker create ykman-xenial)
+      docker cp $id:/yubikey-manager-debian-packages.tar.gz ykman-deb.tar.gz
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
@@ -33,18 +42,15 @@ install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
-      git clone https://github.com/iltommi/macdeployqtfix.git
-      brew update
+      git clone https://github.com/aurelien-rainone/macdeployqtfix.git
       brew install qt5 swig
       brew link qt5 -f
       brew install ykpers libyubikey hidapi libu2f-host libusb
       # Build Python 3 with --enable-framework, to be able to distribute it in a .app bundle
       brew upgrade pyenv
       eval "$(pyenv init -)"
-      env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" pyenv install 3.6.1
-      pyenv global system 3.6.1
-      # Upgrade pip
-      pip install --upgrade pip
+      env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" pyenv install $PY_VERSION
+      pyenv global system $PY_VERSION
       # Build and install PyOtherside
       cd vendor/pyotherside
       qmake
@@ -52,18 +58,21 @@ install:
       sudo make install
       cd ../../
     fi
-  # Install linting tools
   - pip install --upgrade pip
+  # Install linting tools
   - sudo pip install pre-commit flake8
 
 before_script:
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]
-    then
-       pre-commit run --all-files
-    fi
+    pre-commit run --all-files
+    git fetch --unshallow
 
 script:
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]
+    then
+      docker build -t yubioath-xenial -f docker/xenial/Dockerfile .
+    fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
@@ -89,7 +98,7 @@ after_success:
       find /usr/local/Cellar/libusb/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       find /usr/local/Cellar/openssl/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       # Copy Python framework
-      cp -a ~/.pyenv/versions/3.6.1/Python.framework yubioath-desktop.app/Contents/Frameworks/
+      cp -a ~/.pyenv/versions/$PY_VERSION/Python.framework yubioath-desktop.app/Contents/Frameworks/
       sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '*.pyc' -delete
       sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '__pycache__' -delete
       # Move pymodules from app bundle to site-packages, to be accepted by codesign
@@ -98,7 +107,7 @@ after_success:
       # Fix stuff that macdeployqt does incorrectly.
       sudo python macdeployqtfix/macdeployqtfix.py yubioath-desktop.app/Contents/MacOS/yubioath-desktop /usr/local
       # Fix linking for PyOtherSide
-      sudo install_name_tool -change /Users/travis/.pyenv/versions/3.6.1/Python.framework/Versions/3.6/Python @executable_path/../Frameworks/Python.framework/Versions/3.6/Python yubioath-desktop.app/Contents/Resources/qml/io/thp/pyotherside/libpyothersideplugin.dylib
+      sudo install_name_tool -change /Users/travis/.pyenv/versions/$PY_VERSION/Python.framework/Versions/3.6/Python @executable_path/../Frameworks/Python.framework/Versions/3.6/Python yubioath-desktop.app/Contents/Resources/qml/io/thp/pyotherside/libpyothersideplugin.dylib
       # Fix linking for Python _ssl
       sudo install_name_tool -change /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_ssl.cpython-36m-darwin.so
       sudo install_name_tool -change /usr/local/opt/openssl/lib/libssl.1.0.0.dylib @executable_path/../Frameworks/libssl.1.0.0.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_ssl.cpython-36m-darwin.so
@@ -111,9 +120,8 @@ after_success:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
-      id=$(docker create xenial)
-      docker cp $id:/yubioath-desktop-debian-builds.tar.gz deploy/
-      mv deploy/yubioath-desktop-debian-builds.tar.gz deploy/yubioath-desktop-$TRAVIS_BRANCH-deb.tar.gz
+      id=$(docker create yubioath-xenial)
+      docker cp $id:/yubioath-desktop-debian-packages.tar.gz deploy/yubioath-desktop-$TRAVIS_BRANCH-deb.tar.gz
     fi
 
 

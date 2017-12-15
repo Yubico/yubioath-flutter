@@ -218,39 +218,39 @@ def parse_bits(bits, version):
         return '', []
     elif enc == 1:  # Number
         n_l = 10 if version < 10 else 12 if version < 27 else 14
-        l, bits = bits_to_int(bits[:n_l]), bits[n_l:]
+        ln, bits = bits_to_int(bits[:n_l]), bits[n_l:]
         buf = ''
-        while l > 0:
-            if l >= 3:
+        while ln > 0:
+            if ln >= 3:
                 num, bits = bits_to_int(bits[:10]), bits[10:]
-                l -= 3
-            elif l >= 2:
+                ln -= 3
+            elif ln >= 2:
                 num, bits = bits_to_int(bits[:7]), bits[7:]
-                l -= 2
+                ln -= 2
             else:
                 num, bits = bits_to_int(bits[:3]), bits[3:]
-                l -= 1
+                ln -= 1
             buf += str(num)
         return buf, bits
     elif enc == 2:  # Alphanumeric
         n_l = 9 if version < 10 else 11 if version < 27 else 13
-        l, bits = bits_to_int(bits[:n_l]), bits[n_l:]
+        ln, bits = bits_to_int(bits[:n_l]), bits[n_l:]
         buf = ''
-        while l > 0:
-            if l >= 2:
+        while ln > 0:
+            if ln >= 2:
                 num, bits = bits_to_int(bits[:11]), bits[11:]
                 buf += ALPHANUM[num // 45]
                 buf += ALPHANUM[num % 45]
-                l -= 2
+                ln -= 2
             else:
                 num, bits = bits_to_int(bits[:6]), bits[6:]
                 buf += ALPHANUM[num]
-                l -= 1
+                ln -= 1
         return buf, bits
     elif enc == 4:  # Bytes
         n_l = 8 if version < 10 else 16
-        l, bits = bits_to_int(bits[:n_l]), bits[n_l:]
-        return bits_to_bytes(bits[:l*8]), bits[l*8:]
+        ln, bits = bits_to_int(bits[:n_l]), bits[n_l:]
+        return bits_to_bytes(bits[:ln*8]), bits[ln*8:]
     else:
         raise ValueError('Unsupported encoding: %d' % enc)
 

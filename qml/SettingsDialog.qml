@@ -15,6 +15,7 @@ DefaultDialog {
     property alias slot1digits: slot1digits.currentIndex
     property alias slot2digits: slot2digits.currentIndex
     property alias closeToTray: closeToTray.checked
+    property alias hideOnLaunch: hideOnLaunch.checked
 
     ColumnLayout {
         anchors.fill: parent
@@ -97,6 +98,23 @@ DefaultDialog {
             CheckBox {
                 id: closeToTray
                 checked: settings.closeToTray
+                onCheckedChanged: {
+                    if (!checked) {
+                        hideOnLaunch.checked = false
+                    }
+                }
+                KeyNavigation.tab: saveSettingsBtn
+                Keys.onEscapePressed: close()
+            }
+            Label {
+                text: qsTr("Hide on launch")
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
+            }
+            CheckBox {
+                id: hideOnLaunch
+                enabled: closeToTray.checked
+                checked: settings.hideOnLaunch
                 KeyNavigation.tab: saveSettingsBtn
                 Keys.onEscapePressed: close()
             }
