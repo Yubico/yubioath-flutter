@@ -22,21 +22,24 @@ Item {
     }
 
     onGoDown: {
-        if (nothingSelected) {
-            selectedKey = firstCred.credential.key
-        } else if (!lastCredSelected) {
-            flickable.flick(0, -300)
-            selectedKey = credentials[findSelectedIndex() + 1].credential.key
+        if (nCreds > 0) {
+            if (nothingSelected) {
+                selectedKey = firstCred.credential.key
+            } else if (!lastCredSelected) {
+                flickable.flick(0, -300)
+                selectedKey = credentials[findSelectedIndex() + 1].credential.key
+            }
         }
-
     }
 
     onGoUp: {
-        if (nothingSelected) {
-            selectedKey = lastCred.credential.key
-        } else if (!firstCredSeleced) {
-            flickable.flick(0, 300)
-            selectedKey = credentials[findSelectedIndex() - 1].credential.key
+        if (nCreds > 0) {
+            if (nothingSelected) {
+                selectedKey = lastCred.credential.key
+            } else if (!firstCredSeleced) {
+                flickable.flick(0, 300)
+                selectedKey = credentials[findSelectedIndex() - 1].credential.key
+            }
         }
     }
 
