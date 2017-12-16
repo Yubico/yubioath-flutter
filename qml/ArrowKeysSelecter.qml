@@ -16,7 +16,7 @@ Item {
     Keys.onUpPressed: goUp()
 
     function findSelectedIndex() {
-        return credentials.findIndex(function(entry) {
+        return util.findIndex(credentials, function(entry) {
             return entry.credential.key === selectedKey
         }) || null
     }

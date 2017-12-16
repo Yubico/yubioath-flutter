@@ -371,6 +371,10 @@ ApplicationWindow {
         id: noQr
     }
 
+    Util {
+        id: util
+    }
+
     function selectCredential(entry) {
         selectedKey = entry.credential.key
     }
@@ -380,7 +384,7 @@ ApplicationWindow {
     }
 
     function getSelected() {
-        return credentials.find(function(entry) {
+        return util.find(credentials, function(entry) {
             return isSelected(entry.credential)
         }) || null
     }
