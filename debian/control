@@ -19,7 +19,7 @@ Build-Depends: debhelper (>= 9),
                qml-module-io-thp-pyotherside,
                qml-module-qt-labs-settings,
                libqt5svg5-dev,
-               yubikey-manager (>= 0.5.0~pre1)
+               yubikey-manager (>= 0.5.0~)
 Homepage: https://developers.yubico.com/yubioath-desktop/
 
 Package: yubioath-desktop
