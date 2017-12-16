@@ -1,3 +1,6 @@
+* Version 4.3.1
+ ** Bugfix: Removed references to QML Array prototype methods added in Qt 5.9 (unavailable in Ubuntu Zesty and earlier)
+
 * Version 4.3.0
  ** Now requires ykman version >= 0.5.0
  ** Feature: Remembered passwords are now shared with ykman.
