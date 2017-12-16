@@ -60,11 +60,13 @@ Modify the provision.sh script to set up a USB filter to capture the device with
 First of all, set up the environment as described in the
 link:../vagrant/windows/README.md[Vagrant VM README].
 
-To build the project:
+To build the project, run in command prompt (skip the `git checkout` step to build the latest commit):
 
-    $ git clone --recurse-submodules https://github.com/Yubico/yubioath-desktop.git
-    $ cd yubioath-desktop
-    $ vagrant\windows\build.bat
+    > git clone --recurse-submodules https://github.com/Yubico/yubioath-desktop.git
+    > cd yubioath-desktop
+    > git checkout yubioath-desktop-<VERSION>
+    > git show --show-signature
+    > vagrant\windows\build.bat
 
 The `build.bat` script will output the build version number near the beginning.
 Use that as the `<VERSION>` in the next series of commands. If you missed it,
@@ -75,3 +77,24 @@ To build the installer, plug in the code signing YubiKey and run:
 
     $ cd yubioath-desktop
     $ vagrant\windows\release.bat <VERSION>
+
+
+== Publishing to Ubuntu PPA
+
+ 1. Update version number and signoff in `debian/changelog`.
+ 2. Build and upload package.
+
+For (2) you can use the Vagrant VM in `vagrant/ppa`. You'll need to set up the
+VM to capture the YubiKey containing your signing key. If you use VirtualBox,
+you can do this by uncommenting the USB filter included in the `Vagrantfile`.
+Then:
+
+    alice@work $ cd yubioath-desktop/vagrant/ppa
+    alice@work $ vagrant up
+    alice@work $ vagrant ssh
+    ubuntu@ubuntu-xenial $ gpg --recv-keys ABCDEF78
+    ubuntu@ubuntu-xenial $ gpg2 --recv-keys ABCDEF78
+    ubuntu@ubuntu-xenial $ gpg2 --card-status
+    ubuntu@ubuntu-xenial $ cd yubioath-desktop
+    ubuntu@ubuntu-xenial $ python3 compute-version.py yubioath-desktop- > VERSION
+    ubuntu@ubuntu-xenial $ ~/scripts/make-ppa -k ABCDEF78 -p gpg2

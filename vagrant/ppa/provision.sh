@@ -32,9 +32,11 @@ sudo apt-get install -qq \
     python-enum34 \
     libykpers-1-1 \
     libu2f-host0 \
-    pcscd \
     debhelper \
     devscripts \
-    dh-make
+    dh-make \
+    gnupg2 \
+    gnupg-agent \
+    scdaemon
 
-git clone https://github.com/dainnilsson/scripts
+sudo -u ubuntu git clone https://github.com/dainnilsson/scripts
