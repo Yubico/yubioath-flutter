@@ -1,5 +1,5 @@
-yubioath-desktop (4.3.1) xenial; urgency=low
+yubioath-desktop (4.3.1-2) xenial; urgency=low
 
   * Build for ppa
 
- -- Emil Lundberg <emil@yubico.com>  Sun, 17 Dec 2017 00:42:45 +0100
+ -- Emil Lundberg <emil@yubico.com>  Sun, 17 Dec 2017 15:18:03 +0100
