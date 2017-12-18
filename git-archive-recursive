@@ -1,15 +1,10 @@
 #!/bin/bash
 # Similar to git-archive(1), but recurses into currently checked out submodules.
 #
-# Usage: git-archive-recursive [ARCHIVE_NAME]
-#
-# If ARCHIVE_NAME is not given, it defaults to
-# "$(basename $(pwd))-$(git rev-parse --short HEAD).tar.gz".
-#
 # NOTE: Submodules' state is not checked. You should ensure that all submodules
 # are checked out to the commits specified in .gitmodules .
 
-PROJECT_NAME="$(basename $(pwd))"
+PROJECT_NAME="yubioath-desktop"
 TMP_DIR=$(mktemp -d "git-archive-recursive-${PROJECT_NAME}-XXXXXX")
 SUBMODULES_DIR="${TMP_DIR}/submodules/"
 OUTPUT_DIR="${TMP_DIR}/dist"
@@ -28,14 +23,20 @@ die() {
 trap die ERR
 
 
+version=$(python3 compute-version.py "${PROJECT_NAME}"-)
 commit=$(git rev-parse --short HEAD)
 archive_name="archive-${commit}.tar.gz"
-output_archive_base_name="${1:-${PROJECT_NAME}-${commit}}"
+output_archive_base_name="${1:-${PROJECT_NAME}}"
 output_archive_dir="${OUTPUT_DIR}/${output_archive_base_name}"
-output_archive_name="${output_archive_base_name}.tar.gz"
+output_archive_name="${output_archive_base_name}-${version}.tar.gz"
 
 mkdir -p "${SUBMODULES_DIR}"
 mkdir -p "${output_archive_dir}"
+
+python3 compute-version.py "${PROJECT_NAME}"- > "${output_archive_dir}/${VERSION_FILE}"
+echo "Embedded ${VERSION_FILE} file:"
+cat "${output_archive_dir}/${VERSION_FILE}"
+echo
 
 # Create sources archive for root repo
 git archive "$commit" > "${TMP_DIR}/${archive_name}"
@@ -63,10 +64,6 @@ for submodule_line in $(git submodule status --recursive); do
     tar xf "${submodule_archive}" -C "${output_archive_dir}/${submodule_dir}"
   fi
 done
-
-if [[ -f "${VERSION_FILE}" ]]; then
-    cp "${VERSION_FILE}" "${output_archive_dir}"
-fi
 
 # Bundle all sources together
 tar cf "${output_archive_name}" -C "${OUTPUT_DIR}" .
