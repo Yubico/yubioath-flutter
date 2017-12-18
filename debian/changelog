@@ -1,3 +1,10 @@
+yubioath-desktop (4.3.1-3) xenial; urgency=low
+
+  * Tidy up yubikey-manager dependency version constraints
+
+ -- Emil Lundberg <emil@yubico.com>  Mon, 18 Dec 2017 16:17:26 +0100
+
+
 yubioath-desktop (4.3.1-2) xenial; urgency=low
 
   * Build for ppa
