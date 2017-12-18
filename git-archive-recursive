@@ -17,6 +17,7 @@ cleanup() {
 die() {
   echo "Error occurred - exiting!" >&2
   cleanup
+  exit 1
 }
 
 # Exit on error
