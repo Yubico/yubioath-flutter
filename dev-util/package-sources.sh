@@ -1,8 +1,10 @@
 #!/bin/bash
-# Similar to git-archive(1), but recurses into currently checked out submodules.
+# Similar to git-archive(1), but recurses into currently checked out
+# submodules. Also generates a VERSION file, and has some special handling of
+# submodules named `qt-solutions`.
 #
 # NOTE: Submodules' state is not checked. You should ensure that all submodules
-# are checked out to the commits specified in .gitmodules .
+# are checked out to the commits specified in `.gitmodules`.
 
 PROJECT_NAME="yubioath-desktop"
 TMP_DIR=$(mktemp -d "git-archive-recursive-${PROJECT_NAME}-XXXXXX")
