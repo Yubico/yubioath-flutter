@@ -87,9 +87,6 @@ def compute_version(tag_prefix=None):
         # Remove tag prefix
         git_version = re.sub(r'^' + tag_prefix, '', git_version)
 
-    git_version = promote_commit_distance_to_patch_version(git_version)
-    git_version = replace_zero_patch_version_with_commit_distance(git_version)
-    git_version = append_missing_patch_version(git_version)
     git_version = prepend_zero_version_to_raw_commit_id(git_version)
 
     return git_version
