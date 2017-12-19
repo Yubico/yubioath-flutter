@@ -236,9 +236,9 @@ Python {
                 })
     }
 
-    function calculateSlotMode(slot, digits, copyAfterUpdate) {
+    function calculateSlotMode(slot, digits, copyAfterUpdate, touch) {
         var now = Math.floor(Date.now() / 1000)
-        var margin = entry.credential.touch ? 10 : 0;
+        var margin = touch ? 10 : 0;
         do_call('yubikey.controller.calculate_slot_mode', [slot, digits, now + margin],
                 function (entry) {
                     updateSingleCredential(entry.credential, entry.code, copyAfterUpdate)
