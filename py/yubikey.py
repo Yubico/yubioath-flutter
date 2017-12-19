@@ -3,7 +3,7 @@
 
 import json
 import types
-from base64 import b64decode
+from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
 
 from ykman.descriptor import get_descriptors
@@ -54,6 +54,13 @@ def pair_to_dict(cred, code):
     return {
         'credential': cred_to_dict(cred),
         'code': code_to_dict(code)
+    }
+
+
+def credential_data_to_dict(credentialData):
+    return {
+        k: b32encode(v).decode('utf8') if type(v) == bytes else v
+        for k, v in credentialData.__dict__.items()
     }
 
 
@@ -278,7 +285,8 @@ class Controller(object):
         data = b64decode(screenshot['data'])
         image = PixelImage(data, screenshot['width'], screenshot['height'])
         for qr in qrparse.parse_qr_codes(image, 2):
-            return CredentialData.from_uri(qrdecode.decode_qr_data(qr))
+            return credential_data_to_dict(
+                CredentialData.from_uri(qrdecode.decode_qr_data(qr)))
 
     def reset(self):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
