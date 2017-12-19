@@ -1,3 +1,7 @@
+* Version 4.3.2
+ ** Bugfix: Fixed crash on attempt to generate code for touch credential in YubiKey Slots mode
+ ** Bugfix: Fixed crash in QR scan
+
 * Version 4.3.1
  ** Bugfix: Removed references to QML Array prototype methods added in Qt 5.9 (unavailable in Ubuntu Zesty and earlier)
 
