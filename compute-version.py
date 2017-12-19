@@ -30,6 +30,40 @@ import subprocess
 import sys
 
 
+def promote_commit_distance_to_patch_version(version):
+    '''If version starts with `X.Y-Z-g*`, and X, Y and Z are numeric, reformat
+    it to `X.Y.Z-g*`'''
+    return re.sub(
+        r'^([0-9]+\.[0-9]+)-([0-9]+)(-g.*)$', r'\1.\2\3',
+        version
+    )
+
+
+def replace_zero_patch_version_with_commit_distance(version):
+    '''If version starts with `X.Y.0-Z-g*`, and X, Y and Z are numeric,
+    reformat it to `X.Y.Z-g*`'''
+    return re.sub(
+        r'^([0-9]+\.[0-9]+)\.0-([0-9]+)(-g.*)$', r'\1.\2\3',
+        version
+    )
+
+
+def append_missing_patch_version(version):
+    '''If version is plain `X.Y`, append `.0`'''
+    return re.sub(
+        r'^([0-9]+\.[0-9]+)(-dirty)?$', r'\1.0\2',
+        version
+    )
+
+
+def prepend_zero_version_to_raw_commit_id(version):
+    '''If version is raw abbreviated commit ID, prepend `0.0.0-`'''
+    return re.sub(
+        r'^([0-9a-f]{7}(-dirty)?)$', r'0.0.0-\1',
+        version
+    )
+
+
 def compute_version(tag_prefix=None):
     git_result = subprocess.run(
         ['git', 'describe',
@@ -53,31 +87,10 @@ def compute_version(tag_prefix=None):
         # Remove tag prefix
         git_version = re.sub(r'^' + tag_prefix, '', git_version)
 
-    # If version starts with 'X.Y-Z-g*', and X, Y and Z are numeric, reformat
-    # it to 'X.Y.Z-g*'
-    git_version = re.sub(
-        r'^([0-9]+\.[0-9]+)-([0-9]+)(-g.*)$', r'\1.\2\3',
-        git_version
-    )
-
-    # If version starts with 'X.Y.0-Z-g*', and X, Y and Z are numeric, reformat
-    # it to 'X.Y.Z-g*'
-    git_version = re.sub(
-        r'^([0-9]+\.[0-9]+)\.0-([0-9]+)(-g.*)$', r'\1.\2\3',
-        git_version
-    )
-
-    # If version is plain 'X.Y', append '.0'
-    git_version = re.sub(
-        r'^([0-9]+\.[0-9]+)(-dirty)?$', r'\1.0\2',
-        git_version
-    )
-
-    # If version is raw abbreviated commit ID, prepend '0.0.0-'
-    git_version = re.sub(
-        r'^([0-9a-f]{7}(-dirty)?)$', r'0.0.0-\1',
-        git_version
-    )
+    git_version = promote_commit_distance_to_patch_version(git_version)
+    git_version = replace_zero_patch_version_with_commit_distance(git_version)
+    git_version = append_missing_patch_version(git_version)
+    git_version = prepend_zero_version_to_raw_commit_id(git_version)
 
     return git_version
 
