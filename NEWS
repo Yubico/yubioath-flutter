@@ -1,8 +1,13 @@
+* Version 4.3.2
+ ** Bugfix: Fixed crash on attempt to generate code for touch credential in YubiKey Slots mode
+ ** Bugfix: Fixed crash in QR scan
+
 * Version 4.3.1
  ** Bugfix: Removed references to QML Array prototype methods added in Qt 5.9 (unavailable in Ubuntu Zesty and earlier)
 
 * Version 4.3.0
  ** Now requires ykman version >= 0.5.0
+ ** Feature: New icon
  ** Feature: Remembered passwords are now shared with ykman.
  ** Feature: Added option to hide window on launch
   *** Thanks to Steven Stallion for contributing!

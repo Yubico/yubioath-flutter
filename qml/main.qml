@@ -516,7 +516,7 @@ ApplicationWindow {
         if (settings.slotMode) {
             var slot = getSlot(entry.credential.name)
             var digits = getDigits(slot)
-            device.calculateSlotMode(slot, digits, copyAfterUpdate)
+            device.calculateSlotMode(slot, digits, copyAfterUpdate, entry.credential.touch)
         } else {
             device.calculate(entry, copyAfterUpdate)
         }
