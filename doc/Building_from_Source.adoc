@@ -49,9 +49,9 @@ The files you need to include in a distribution package are:
 - The `yubioath-desktop` binary
 - The icon `resources/icons/yubioath.png`, installed as `yubioath.png` somewhere
   on the
-  https://standards.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html#directory_layout[Qt]
+  https://standards.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html#directory_layout[Freedesktop]
   or
-  https://doc.qt.io/qt-5/appicon.html#setting-the-application-icon-on-common-linux-desktops[Freedesktop]
+  https://doc.qt.io/qt-5/appicon.html#setting-the-application-icon-on-common-linux-desktops[Qt]
   icons search path, for example as `/usr/share/pixmaps/yubioath.png`
 - (Optional) The Desktop Application descriptor
   `resources/yubioath-desktop.desktop`
