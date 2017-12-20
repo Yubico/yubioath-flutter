@@ -1,3 +1,9 @@
+* Version 4.3.2+1 (released 2017-12-20)
+ ** Re-release of 4.3.2 for Mac, because package signature was missing from 4.3.2 release
+
+* Version 4.3.1+1 (released 2017-12-20)
+ ** Re-release of 4.3.1 for Mac, because package signature was missing from 4.3.1 release
+
 * Version 4.3.2 (released 2017-12-19)
  ** Bugfix: Fixed crash on attempt to generate code for touch credential in YubiKey Slots mode
  ** Bugfix: Fixed crash in QR scan
