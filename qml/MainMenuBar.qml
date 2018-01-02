@@ -53,10 +53,7 @@ MenuBar {
         title: qsTr("\&Edit")
 
         MenuItem {
-            text: qsTr("\&Copy to clipboard")
-            shortcut: StandardKey.Copy
-            enabled: (getSelected() != null) && (getSelected().code != null)
-            onTriggered:copy()
+            action: copyAction
         }
 
         MenuItem {

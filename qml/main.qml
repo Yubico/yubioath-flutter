@@ -334,12 +334,29 @@ ApplicationWindow {
             Keys.onEnterPressed: generateOrCopy()
             Keys.onDownPressed: arrowKeys.goDown()
             Keys.onUpPressed: arrowKeys.goUp()
+
+            // Override the copy action,
+            // since this is a TextField.
+            Keys.onPressed: {
+                if(event.matches(StandardKey.Copy)) {
+                    copyAction.trigger()
+                }
+            }
+
             function clear() {
                 search.text = ""
                 arrowKeys.forceActiveFocus()
                 deselectCredential()
             }
         }
+    }
+
+    Action {
+        id: copyAction
+        text: qsTr("\&Copy to clipboard")
+        shortcut: StandardKey.Copy
+        enabled: (getSelected() != null) && (getSelected().code != null)
+        onTriggered: copy()
     }
 
     Timer {
