@@ -329,14 +329,16 @@ ApplicationWindow {
                 onActivated: search.forceActiveFocus()
             }
             onTextChanged: selectFirstSearchResult()
-            Keys.onEscapePressed: {
-                search.clear()
-                deselectCredential()
-            }
+            Keys.onEscapePressed: search.clear()
             Keys.onReturnPressed: generateOrCopy()
             Keys.onEnterPressed: generateOrCopy()
             Keys.onDownPressed: arrowKeys.goDown()
             Keys.onUpPressed: arrowKeys.goUp()
+            function clear() {
+                search.text = ""
+                arrowKeys.forceActiveFocus()
+                deselectCredential()
+            }
         }
     }
 
