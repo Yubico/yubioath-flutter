@@ -147,10 +147,13 @@ class Controller(object):
         return code_to_dict(code)
 
     def calculate_slot_mode(self, slot, digits, timestamp):
-        dev = self._descriptor.open_device(TRANSPORT.OTP)
-        code = dev.driver.calculate(
-            slot, challenge=timestamp, totp=True, digits=int(digits),
-            wait_for_touch=True)
+        try:
+            dev = self._descriptor.open_device(TRANSPORT.OTP)
+            code = dev.driver.calculate(
+                slot, challenge=timestamp, totp=True, digits=int(digits),
+                wait_for_touch=True)
+        except Exception:
+            return None
         valid_from = timestamp - (timestamp % 30)
         valid_to = valid_from + 30
         code = Code(code, valid_from, valid_to)

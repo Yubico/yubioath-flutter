@@ -241,8 +241,10 @@ Python {
         var margin = touch ? 10 : 0;
         do_call('yubikey.controller.calculate_slot_mode', [slot, digits, now + margin],
                 function (entry) {
-                    updateSingleCredential(entry.credential, entry.code, copyAfterUpdate)
-                })
+                    if (entry !== null) {
+                        updateSingleCredential(entry.credential, entry.code, copyAfterUpdate)
+                    }
+               })
     }
 
     /**
