@@ -1,5 +1,5 @@
 function versionString(version) {
-  return version.join('.')
+    return version ? version.join('.') : ''
 }
 
 function versionGE(version, major, minor, micro) {
