@@ -577,10 +577,14 @@ ApplicationWindow {
         if (device.hasDevice && ccidModeMatch) {
             device.promptOrSkip(passwordPrompt)
         } else {
+            // Device is removed, cleanup.
             passwordPrompt.close()
             setPassword.close()
             addCredential.close()
             addCredentialSlot.close()
+            touchYourYubikey.close()
+            credentials = null
+            selectedKey = null
         }
     }
 
