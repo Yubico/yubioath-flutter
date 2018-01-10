@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import logging
 import types
 from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
@@ -15,6 +16,9 @@ from ykman.oath import (ALGO, OATH_TYPE, OathController, CredentialData,
                         Credential, Code, SW)
 from ykman.settings import Settings
 from qr import qrparse, qrdecode
+
+
+logger = logging.getLogger(__name__)
 
 
 def as_json(f):
@@ -147,10 +151,15 @@ class Controller(object):
         return code_to_dict(code)
 
     def calculate_slot_mode(self, slot, digits, timestamp):
-        dev = self._descriptor.open_device(TRANSPORT.OTP)
-        code = dev.driver.calculate(
-            slot, challenge=timestamp, totp=True, digits=int(digits),
-            wait_for_touch=True)
+        try:
+            dev = self._descriptor.open_device(TRANSPORT.OTP)
+            code = dev.driver.calculate(
+                slot, challenge=timestamp, totp=True, digits=int(digits),
+                wait_for_touch=True)
+        except Exception as e:
+            logger.error('Failed to calculate code in slot mode', exc_info=e)
+            return None
+
         valid_from = timestamp - (timestamp % 30)
         valid_to = valid_from + 30
         code = Code(code, valid_from, valid_to)
