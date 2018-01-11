@@ -236,6 +236,7 @@ ApplicationWindow {
                 // outside search bar to remove focus from it.
                 anchors.fill: parent
                 onClicked: {
+                    arrowKeys.forceActiveFocus()
                     deselectCredential()
                 }
             }
@@ -286,6 +287,7 @@ ApplicationWindow {
                             onDoubleClick: {
                                 // A double-click should select the credential,
                                 // then generate if needed and copy the code.
+                                arrowKeys.forceActiveFocus()
                                 selectCredential(modelData)
                                 generateOrCopy()
                             }
@@ -293,6 +295,7 @@ ApplicationWindow {
                             onRefresh: refreshDependingOnMode(force)
 
                             onSingleClick: {
+                                arrowKeys.forceActiveFocus()
                                 // Left click, select or deselect credential.
                                 if (mouse.button & Qt.LeftButton) {
                                     if (appWindow.isSelected(modelData.credential)) {
@@ -326,15 +329,34 @@ ApplicationWindow {
                 onActivated: search.forceActiveFocus()
             }
             onTextChanged: selectFirstSearchResult()
-            Keys.onEscapePressed: {
-                search.clear()
-                deselectCredential()
-            }
+            Keys.onEscapePressed: search.clear()
             Keys.onReturnPressed: generateOrCopy()
             Keys.onEnterPressed: generateOrCopy()
             Keys.onDownPressed: arrowKeys.goDown()
             Keys.onUpPressed: arrowKeys.goUp()
+
+            // Override the copy action,
+            // since this is a TextField.
+            Keys.onPressed: {
+                if(event.matches(StandardKey.Copy)) {
+                    copyAction.trigger()
+                }
+            }
+
+            function clear() {
+                search.text = ""
+                arrowKeys.forceActiveFocus()
+                deselectCredential()
+            }
         }
+    }
+
+    Action {
+        id: copyAction
+        text: qsTr("\&Copy to clipboard")
+        shortcut: StandardKey.Copy
+        enabled: (getSelected() != null) && (getSelected().code != null)
+        onTriggered: copy()
     }
 
     Timer {
