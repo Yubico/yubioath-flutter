@@ -1,5 +1,6 @@
 import QtQuick 2.5
 import io.thp.pyotherside 1.4
+import "utils.js" as Utils
 
 
 // @disable-check M300
@@ -215,7 +216,7 @@ Python {
     }
 
     function hasAnyNonTouchTotpCredential() {
-        return util.find(entries, function (entry) {
+        return Utils.find(entries, function (entry) {
             return !entry.credential.touch
                     && entry.credential.oath_type === 'TOTP'
         }) || false
