@@ -223,7 +223,7 @@ ApplicationWindow {
 
         TimeLeftBar {
             id: timeLeftBar
-            visible: canShowCredentials && device.hasAnyCredentials()
+            visible: canShowCredentials && device.hasAnyCredentials() && device.hasAnyNonTouchTotpCredential()
         }
 
         ScrollView {

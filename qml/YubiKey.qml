@@ -208,6 +208,13 @@ Python {
         return false
     }
 
+    function hasAnyNonTouchTotpCredential() {
+        return util.find(entries, function (entry) {
+            return !entry.credential.touch
+                    && entry.credential.oath_type === 'TOTP'
+        }) || false
+    }
+
     function hasAnyCredentials() {
         return entries != null && entries.length > 0
     }
