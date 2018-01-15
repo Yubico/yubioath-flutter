@@ -21,10 +21,6 @@ int main(int argc, char *argv[])
     // Don't write .pyc files.
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 
-    #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    #endif
-
     // Non Darwin platforms uses QSingleApplication to ensure only one running instance.
     #ifndef Q_OS_DARWIN
     QtSingleApplication app(argc, argv);
@@ -43,20 +39,6 @@ int main(int argc, char *argv[])
     app.setApplicationName("Yubico Authenticator");
     app.setOrganizationName("Yubico");
     app.setOrganizationDomain("com.yubico");
-
-
-    // What OpenGL implementation to use on Windows.
-    // Use ANGLE library on Windows 8 & 10
-    // Use software opengl on Windows 7, because of issues with ANGLE.
-    // More reading: http://doc.qt.io/qt-5/windows-requirements.html#graphics-drivers
-    #ifdef Q_OS_WIN
-    if (QSysInfo::productVersion().contains("7")) {
-        app.setAttribute(Qt::AA_UseSoftwareOpenGL);
-    } else {
-        app.setAttribute(Qt::AA_UseOpenGLES);
-    }
-    #endif
-
 
     if (QFileInfo::exists(":" + main_qml)) {
         // Embedded resources
