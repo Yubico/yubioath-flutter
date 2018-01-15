@@ -14,23 +14,17 @@ Rectangle {
     signal doubleClick(var mouse)
     signal refresh(bool force)
 
-    readonly property bool hasCustomTimeBar: (
-        code && ((credential.period && credential.period !== 30) || (credential.touch && !isExpired))
-    )
-    readonly property color textColor: (isSelected
-        ? palette.highlightedText
-        : palette.windowText
-    )
+    readonly property bool hasCustomTimeBar: (code
+                                              && ((credential.period
+                                                   && credential.period !== 30)
+                                                  || (credential.touch
+                                                      && !isExpired)))
+    readonly property color textColor: (isSelected ? palette.highlightedText : palette.windowText)
 
-    color: (isSelected
-        ? palette.highlight
-        : unselectedColor
-    )
+    color: (isSelected ? palette.highlight : unselectedColor)
 
-    Layout.minimumHeight: (
-        10 + issuerLbl.height + codeLbl.height + nameLbl.height
-            + (hasCustomTimeBar ? 10 : 0)
-    )
+    Layout.minimumHeight: (10 + issuerLbl.height + codeLbl.height
+                           + nameLbl.height + (hasCustomTimeBar ? 10 : 0))
     Layout.fillWidth: true
     Layout.alignment: Qt.AlignTop
 
@@ -50,8 +44,7 @@ Rectangle {
         spacing: 0
         Label {
             id: issuerLbl
-            visible: credential.issuer != null
-                     && credential.issuer.length > 0
+            visible: credential.issuer != null && credential.issuer.length > 0
             text: qsTr("") + credential.issuer
             color: textColor
         }
@@ -112,5 +105,4 @@ Rectangle {
             }
         }
     }
-
 }

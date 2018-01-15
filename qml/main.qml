@@ -55,7 +55,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        settings.savedPasswords = ""  //No longer used.
+        settings.savedPasswords = "" //No longer used.
         updateTrayVisability()
         ensureValidWindowPosition()
     }
@@ -277,12 +277,10 @@ ApplicationWindow {
                             code: modelData.code
                             credential: modelData.credential
                             isExpired: appWindow.isExpired(modelData)
-                            isSelected: appWindow.isSelected(modelData.credential)
+                            isSelected: appWindow.isSelected(
+                                            modelData.credential)
                             timerRunning: displayTimersRunning
-                            unselectedColor: (index % 2 == 0
-                                ? palette.window
-                                : palette.midlight
-                            )
+                            unselectedColor: (index % 2 == 0 ? palette.window : palette.midlight)
 
                             onDoubleClick: {
                                 // A double-click should select the credential,
@@ -298,7 +296,8 @@ ApplicationWindow {
                                 arrowKeys.forceActiveFocus()
                                 // Left click, select or deselect credential.
                                 if (mouse.button & Qt.LeftButton) {
-                                    if (appWindow.isSelected(modelData.credential)) {
+                                    if (appWindow.isSelected(
+                                                modelData.credential)) {
                                         deselectCredential()
                                     } else {
                                         selectCredential(modelData)
@@ -338,7 +337,7 @@ ApplicationWindow {
             // Override the copy action,
             // since this is a TextField.
             Keys.onPressed: {
-                if(event.matches(StandardKey.Copy)) {
+                if (event.matches(StandardKey.Copy)) {
                     copyAction.trigger()
                 }
             }
@@ -406,7 +405,7 @@ ApplicationWindow {
     }
 
     function getSelected() {
-        return util.find(credentials, function(entry) {
+        return util.find(credentials, function (entry) {
             return isSelected(entry.credential)
         }) || null
     }
@@ -456,7 +455,8 @@ ApplicationWindow {
     }
 
     function isExpired(entry) {
-        return entry !== null && entry.code !== null && (entry.credential.oath_type !== "HOTP")
+        return entry !== null && entry.code !== null
+                && (entry.credential.oath_type !== "HOTP")
                 && (entry.code.valid_to - (Date.now() / 1000) <= 0)
     }
 
@@ -496,8 +496,8 @@ ApplicationWindow {
         if (entries !== null) {
             for (var i = 0; i < entries.length; i++) {
                 var entry = entries[i]
-                if (entry.credential.key.toLowerCase().indexOf(search.text.toLowerCase(
-                                                        )) !== -1) {
+                if (entry.credential.key.toLowerCase().indexOf(
+                            search.text.toLowerCase()) !== -1) {
                     searchResult.push(entry)
                 }
             }
@@ -510,7 +510,9 @@ ApplicationWindow {
         var searchResult = filteredCredentials(credentials)
         if (search.text.length > 0) {
             if (searchResult[0] != null) {
-                if (false === searchResult.some(function(entry) { return isSelected(entry.credential) })) {
+                if (false === searchResult.some(function (entry) {
+                    return isSelected(entry.credential)
+                })) {
                     // If search does not include current selection,
                     // reset selected to avoid hidden selected creds.
                     deselectCredential()
@@ -538,7 +540,8 @@ ApplicationWindow {
         if (settings.slotMode) {
             var slot = getSlot(entry.credential.name)
             var digits = getDigits(slot)
-            device.calculateSlotMode(slot, digits, copyAfterUpdate, entry.credential.touch)
+            device.calculateSlotMode(slot, digits, copyAfterUpdate,
+                                     entry.credential.touch)
         } else {
             device.calculate(entry, copyAfterUpdate)
         }
@@ -584,7 +587,8 @@ ApplicationWindow {
         settings.slot1digits = settingsDialog.slot1digits
         settings.slot2digits = settingsDialog.slot2digits
         settings.closeToTray = settingsDialog.closeToTray
-        settings.hideOnLaunch = settingsDialog.closeToTray && settingsDialog.hideOnLaunch
+        settings.hideOnLaunch = settingsDialog.closeToTray
+                && settingsDialog.hideOnLaunch
     }
 
     function trySetPassword() {
@@ -634,7 +638,8 @@ ApplicationWindow {
 
     function generateOrCopy() {
         var selected = getSelected()
-        if (selected.code == null || isExpired(selected) || selected.credential.oath_type === 'HOTP') {
+        if (selected.code == null || isExpired(selected)
+                || selected.credential.oath_type === 'HOTP') {
             generate(true)
         } else {
             copy()
@@ -665,7 +670,6 @@ ApplicationWindow {
     }
 
     function enableLogging(logLevel) {
-      yk.enableLogging(logLevel)
+        yk.enableLogging(logLevel)
     }
-
 }

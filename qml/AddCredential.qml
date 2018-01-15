@@ -25,7 +25,7 @@ DefaultDialog {
             TextField {
                 id: issuer
                 Layout.fillWidth: true
-                focus:true
+                focus: true
                 KeyNavigation.tab: name
                 Keys.onEscapePressed: close()
             }

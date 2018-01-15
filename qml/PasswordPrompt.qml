@@ -32,7 +32,6 @@ DefaultDialog {
                 onAccepted: promptAccepted()
                 KeyNavigation.tab: rememberPassword
                 Keys.onEscapePressed: close()
-
             }
         }
         RowLayout {

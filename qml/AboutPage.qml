@@ -10,7 +10,7 @@ DefaultDialog {
     property bool slotMode
 
     Item {
-        focus:true
+        focus: true
         Keys.onEscapePressed: close()
     }
 
@@ -21,7 +21,10 @@ DefaultDialog {
 
     Label {
         visible: !slotMode
-        text: qsTr("YubiKey OATH Version: ") + (!slotMode && device.hasDevice ? Utils.versionString(device.version) : qsTr("<i>No device</i>"))
+        text: qsTr("YubiKey OATH Version: ")
+              + (!slotMode && device.hasDevice ? Utils.versionString(
+                                                     device.version) : qsTr(
+                                                     "<i>No device</i>"))
     }
 
     Label {
@@ -36,10 +39,11 @@ DefaultDialog {
     Label {
         text: qsTr("Visit <b>Yubico Knowledge Base</b>.")
         MouseArea {
-           anchors.fill: parent
-           acceptedButtons: Qt.LeftButton
-           cursorShape: Qt.PointingHandCursor
-           onClicked: Qt.openUrlExternally("https://www.yubico.com/support/knowledge-base/")
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton
+            cursorShape: Qt.PointingHandCursor
+            onClicked: Qt.openUrlExternally(
+                           "https://www.yubico.com/support/knowledge-base/")
         }
     }
 }
