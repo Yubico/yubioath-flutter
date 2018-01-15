@@ -5,6 +5,7 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
 import Qt.labs.settings 1.0
+import "utils.js" as Utils
 
 ApplicationWindow {
     id: appWindow
@@ -392,10 +393,6 @@ ApplicationWindow {
         id: noQr
     }
 
-    Util {
-        id: util
-    }
-
     function selectCredential(entry) {
         selectedKey = entry.credential.key
     }
@@ -405,7 +402,7 @@ ApplicationWindow {
     }
 
     function getSelected() {
-        return util.find(credentials, function (entry) {
+        return Utils.find(credentials, function(entry) {
             return isSelected(entry.credential)
         }) || null
     }

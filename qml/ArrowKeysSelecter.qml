@@ -1,4 +1,5 @@
 import QtQuick 2.5
+import "utils.js" as Utils
 
 Item {
     property var credentials
@@ -16,7 +17,7 @@ Item {
     Keys.onUpPressed: goUp()
 
     function findSelectedIndex() {
-        return util.findIndex(credentials, function(entry) {
+        return Utils.findIndex(credentials, function(entry) {
             return entry.credential.key === selectedKey
         }) || null
     }
