@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QtWidgets>
 #include <QVariant>
+
 class ScreenShot: public QObject
 {
     Q_OBJECT
@@ -16,16 +17,18 @@ public:
         // Dimensions of output image
         int outputHeight = 0;
         int outputWidth = 0;
-        for (QScreen *screen : QGuiApplication::screens()) {
-            outputWidth = std::max(outputWidth, screen->geometry().width());
+
+        const QList<QScreen*> screens = QGuiApplication::screens();
+        QImage screenshots[screens.length()];
+
+        std::transform(screens.begin(), screens.end(), screenshots, &ScreenShot::takeScreenshot);
+
+        for (QImage image : screenshots) {
+            outputWidth = std::max(outputWidth, image.width());
         }
 
-        for (QScreen *screen : QGuiApplication::screens()) {
-            QRect g = screen->geometry();
-            QPixmap screenShot = screen->grabWindow(0, g.x(), g.y(), g.width(), g.height());
-
+        for (QImage image : screenshots) {
             // Monochrome, no dither
-            QImage image = screenShot.toImage();
             image = image.convertToFormat(QImage::Format_Mono, Qt::ThresholdDither);
 
             // Stack screens vertically in output image
@@ -53,6 +56,21 @@ public:
         map.insert("data", QString(imageArray.toBase64()));
         return map;
     }
+
+private:
+    static QImage takeScreenshot(QScreen *screen) {
+        QRect g = screen->geometry();
+        return screen->grabWindow(
+            0,
+#ifdef Q_OS_MACOS
+            g.x(), g.y(),
+#else
+            0, 0,
+#endif
+            g.width(), g.height()
+        ).toImage();
+    }
+
 };
 
 #endif // SCREENSHOT_H
