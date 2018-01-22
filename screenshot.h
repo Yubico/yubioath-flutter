@@ -22,7 +22,7 @@ public:
 
         for (QScreen *screen : QGuiApplication::screens()) {
             QRect g = screen->geometry();
-            QPixmap screenShot = screen->grabWindow(0, 0, 0, g.width(), g.height());
+            QPixmap screenShot = screen->grabWindow(0, g.x(), g.y(), g.width(), g.height());
 
             // Monochrome, no dither
             QImage image = screenShot.toImage();
