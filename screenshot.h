@@ -19,9 +19,8 @@ public:
         int outputWidth = 0;
 
         const QList<QScreen*> screens = QGuiApplication::screens();
-        QImage screenshots[screens.length()];
-
-        std::transform(screens.begin(), screens.end(), screenshots, &ScreenShot::takeScreenshot);
+        std::vector<QImage> screenshots(screens.length());
+        std::transform(screens.begin(), screens.end(), screenshots.begin(), &ScreenShot::takeScreenshot);
 
         for (QImage image : screenshots) {
             outputWidth = std::max(outputWidth, image.width());
