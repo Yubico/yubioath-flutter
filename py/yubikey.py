@@ -203,9 +203,6 @@ class Controller(object):
     def _slot_name(self, slot):
         return "YubiKey Slot {}".format(slot).encode('utf-8')
 
-    def _expiration(self, timestamp):
-        return ((timestamp + 30) // 30) * 30
-
     def needs_validation(self):
         try:
             dev = self._descriptor.open_device(TRANSPORT.CCID)
