@@ -156,15 +156,18 @@ class Controller(object):
             code = dev.driver.calculate(
                 slot, challenge=timestamp, totp=True, digits=int(digits),
                 wait_for_touch=True)
+            valid_from = timestamp - (timestamp % 30)
+            valid_to = valid_from + 30
+            code = Code(code, valid_from, valid_to)
+            return pair_to_dict(Credential(self._slot_name(slot),
+                                           OATH_TYPE.TOTP, True), code)
+        except YkpersError as e:
+            if e.errno == 4:
+                logger.debug(
+                    'Time out error, user probably did not touch the device.')
         except Exception as e:
             logger.error('Failed to calculate code in slot mode', exc_info=e)
-            return None
-
-        valid_from = timestamp - (timestamp % 30)
-        valid_to = valid_from + 30
-        code = Code(code, valid_from, valid_to)
-        return pair_to_dict(Credential(self._slot_name(slot),
-                                       OATH_TYPE.TOTP, True), code)
+        return None
 
     def refresh_slot_credentials(self, slots, digits, timestamp):
         result = []
