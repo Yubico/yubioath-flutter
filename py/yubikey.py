@@ -152,13 +152,8 @@ class Controller(object):
 
     def calculate_slot_mode(self, slot, digits, timestamp):
         try:
-            dev = self._descriptor.open_device(TRANSPORT.OTP)
-            code = dev.driver.calculate(
-                slot, challenge=timestamp, totp=True, digits=int(digits),
-                wait_for_touch=True)
-            valid_from = timestamp - (timestamp % 30)
-            valid_to = valid_from + 30
-            code = Code(code, valid_from, valid_to)
+            code = self._read_slot_code(
+                slot, digits, timestamp, wait_for_touch=True)
             return pair_to_dict(Credential(self._slot_name(slot),
                                            OATH_TYPE.TOTP, True), code)
         except YkpersError as e:
@@ -183,13 +178,8 @@ class Controller(object):
 
     def _read_slot_cred(self, slot, digits, timestamp):
         try:
-            dev = self._descriptor.open_device(TRANSPORT.OTP)
-            code = dev.driver.calculate(
-                slot, challenge=timestamp, totp=True, digits=int(digits),
-                wait_for_touch=False)
-            valid_from = timestamp - (timestamp % 30)
-            valid_to = valid_from + 30
-            code = Code(code, valid_from, valid_to)
+            code = self._read_slot_code(
+                slot, digits, timestamp, wait_for_touch=False)
             return (Credential(self._slot_name(slot), OATH_TYPE.TOTP, False),
                     code)
         except YkpersError as e:
@@ -199,6 +189,15 @@ class Controller(object):
         except Exception as e:
             return (Credential(str(e).encode(), OATH_TYPE.TOTP, True), None)
         return None
+
+    def _read_slot_code(self, slot, digits, timestamp, wait_for_touch):
+        dev = self._descriptor.open_device(TRANSPORT.OTP)
+        code = dev.driver.calculate(
+            slot, challenge=timestamp, totp=True, digits=int(digits),
+            wait_for_touch=wait_for_touch)
+        valid_from = timestamp - (timestamp % 30)
+        valid_to = valid_from + 30
+        return Code(code, valid_from, valid_to)
 
     def _slot_name(self, slot):
         return "YubiKey Slot {}".format(slot).encode('utf-8')
