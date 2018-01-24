@@ -74,3 +74,18 @@ For example, these installation paths are likely to work:
 - `/usr/bin/yubioath-desktop`
 - `/usr/share/applications/yubioath-desktop.desktop`
 - `/usr/share/pixmaps/yubioath.png`
+
+
+==== Debian based distributions
+
+On Debian based distributions, it might be enough to use the included package
+definition files for Ubuntu:
+
+    $ debuild -us -uc
+
+If your distribution does not provide a package with the YubiKey Manager Python
+library, you can build that as well from the bundled dependency:
+
+    $ cd vendor/yubikey-manager
+    $ debuild -us -uc
+    $ sudo dpkg -i ../python3-yubikey-manager_VERSION_all.deb
