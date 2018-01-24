@@ -160,6 +160,9 @@ class Controller(object):
             if e.errno == 4:
                 logger.debug(
                     'Time out error, user probably did not touch the device.')
+            else:
+                logger.error(
+                    'Failed to calculate code in slot mode', exc_info=e)
         except Exception as e:
             logger.error('Failed to calculate code in slot mode', exc_info=e)
         return None
