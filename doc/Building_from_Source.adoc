@@ -12,6 +12,11 @@ To build from source, you need the following tools and dependencies:
 - Qt 5 development tools, including `qmake`
 - Qt QML development tools
 
+You can use the `Build-Depends` field in the
+https://github.com/Yubico/yubioath-desktop/blob/master/debian/control[Ubuntu
+package control file] as a guide to identifying which of your distribution's
+packages you need.
+
 With these installed, the build procedure is:
 
     $ git clone --recurse-submodules https://github.com/Yubico/yubioath-desktop.git
@@ -36,6 +41,11 @@ The runtime dependencies are:
  ** Qt Quick Dialogs
 * The https://developers.yubico.com/yubikey-manager/[YubiKey Manager] Python
   library
+
+You can use the `Depends` field in the
+https://github.com/Yubico/yubioath-desktop/blob/master/debian/control[Ubuntu
+package control file] as a guide to identifying which of your distribution's
+packages you need.
 
 With these installed, you can just run the program:
 
