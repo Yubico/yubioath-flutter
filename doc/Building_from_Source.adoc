@@ -12,6 +12,11 @@ To build from source, you need the following tools and dependencies:
 - Qt 5 development tools, including `qmake`
 - Qt QML development tools
 
+You can use the `Build-Depends` field in the
+https://github.com/Yubico/yubioath-desktop/blob/master/debian/control[Ubuntu
+package control file] as a guide to identifying which of your distribution's
+packages you need.
+
 With these installed, the build procedure is:
 
     $ git clone --recurse-submodules https://github.com/Yubico/yubioath-desktop.git
@@ -37,21 +42,50 @@ The runtime dependencies are:
 * The https://developers.yubico.com/yubikey-manager/[YubiKey Manager] Python
   library
 
+You can use the `Depends` field in the
+https://github.com/Yubico/yubioath-desktop/blob/master/debian/control[Ubuntu
+package control file] as a guide to identifying which of your distribution's
+packages you need.
+
 With these installed, you can just run the program:
 
     $ ./yubioath-desktop
 
 
-=== Packaging
+=== Installation and packaging
 
-The files you need to include in a distribution package are:
+The files you need to install in your system, or include in a distribution
+package, are:
 
-- The `yubioath-desktop` binary
+- The `yubioath-desktop` binary, installed somewhere on the `$PATH`
 - The icon `resources/icons/yubioath.png`, installed as `yubioath.png` somewhere
   on the
   https://standards.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html#directory_layout[Freedesktop]
   or
   https://doc.qt.io/qt-5/appicon.html#setting-the-application-icon-on-common-linux-desktops[Qt]
-  icons search path, for example as `/usr/share/pixmaps/yubioath.png`
+  icons search path
 - (Optional) The Desktop Application descriptor
-  `resources/yubioath-desktop.desktop`
+  `resources/yubioath-desktop.desktop`, installed somewhere on the
+  https://standards.freedesktop.org/menu-spec/latest/ar01s02.html[Freedesktop
+  applications search path]
+
+For example, these installation paths are likely to work:
+
+- `/usr/bin/yubioath-desktop`
+- `/usr/share/applications/yubioath-desktop.desktop`
+- `/usr/share/pixmaps/yubioath.png`
+
+
+==== Debian based distributions
+
+On Debian based distributions, it might be enough to use the included package
+definition files for Ubuntu:
+
+    $ debuild -us -uc
+
+If your distribution does not provide a package with the YubiKey Manager Python
+library, you can build that as well from the bundled dependency:
+
+    $ cd vendor/yubikey-manager
+    $ debuild -us -uc
+    $ sudo dpkg -i ../python3-yubikey-manager_VERSION_all.deb
