@@ -8,10 +8,10 @@
 image: Visual Studio 2015
 
 environment:
-  LIBU2F_HOST_VERSION: "1.1.3"
-  YKPERS_VERSION: "1.18.0"
+  LIBU2F_HOST_VERSION: "1.1.4"
+  YKPERS_VERSION: "1.18.1"
   LIBUSB_VERSION: "1.0.21"
-  PY_VERSION: "3.6.3"
+  PY_VERSION: "3.6.4"
 
 init:
   # Needed for jom to work.
