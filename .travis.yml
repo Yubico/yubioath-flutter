@@ -8,7 +8,7 @@ language: cpp
 sudo: required
 
 env:
-  - PY_VERSION="3.6.2"
+  - PY_VERSION="3.6.4"
 
 python:
   - '3.5'
