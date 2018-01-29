@@ -246,8 +246,12 @@ Python {
         var margin = entry.credential.touch ? 10 : 0
         do_call('yubikey.controller.calculate',
                 [entry.credential, now + margin], function (code) {
-                    updateSingleCredential(entry.credential, code,
-                                           copyAfterUpdate)
+                    if (code) {
+                        updateSingleCredential(entry.credential, code,
+                                               copyAfterUpdate)
+                    } else {
+                        touchYourYubikey.close()
+                    }
                 })
     }
 
