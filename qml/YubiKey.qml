@@ -18,6 +18,7 @@ Python {
     property var enabled: []
     property bool yubikeyReady: false
     property bool loggingReady: false
+    property bool yubikeyBusy: false
     readonly property bool ready: yubikeyReady && loggingReady
     property var queue: []
     property bool hasOTP: enabled.indexOf('OTP') !== -1
@@ -102,7 +103,8 @@ Python {
 
     function refreshCCIDCredentials(force) {
         var now = Math.floor(Date.now() / 1000)
-        if (force || (validated && nextRefresh <= now)) {
+        if ((force || (validated && nextRefresh <= now)) && !yubikeyBusy) {
+            yubikeyBusy = true
             do_call('yubikey.controller.refresh_credentials', [now],
                     updateAllCredentials)
         }
@@ -110,7 +112,8 @@ Python {
 
     function refreshSlotCredentials(slots, digits, force) {
         var now = Math.floor(Date.now() / 1000)
-        if (force || (nextRefresh <= now)) {
+        if ((force || (nextRefresh <= now)) && !yubikeyBusy) {
+            yubikeyBusy = true
             do_call('yubikey.controller.refresh_slot_credentials',
                     [slots, digits, now], updateAllCredentials)
         }
@@ -145,6 +148,7 @@ Python {
     }
 
     function updateAllCredentials(newEntries) {
+        device.yubikeyBusy = false
         var result = []
         var minExpiration = (Date.now() / 1000) + 60
         for (var i = 0; i < newEntries.length; i++) {
