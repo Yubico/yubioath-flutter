@@ -1,6 +1,3 @@
-Thank you for opening an issue! If this is a bug report, please include the
-following information:
-
 - Yubico Authenticator version: 
 - Operating system and version: 
 - YubiKey model and version: 
