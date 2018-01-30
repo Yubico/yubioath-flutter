@@ -5,7 +5,6 @@ import QtQuick.Layouts 1.1
 Rectangle {
     property var code
     property var credential
-    property bool isExpired: true
     property bool isSelected: false
     property int timeLeft: 0
     property bool timerRunning: false
@@ -20,6 +19,7 @@ Rectangle {
                                                    && credential.period !== 30)
                                                   || (credential.touch
                                                       && !isExpired)))
+    readonly property bool isExpired: timeLeft < 0
     readonly property color textColor: (isSelected ? palette.highlightedText : palette.windowText)
 
     color: (isSelected ? palette.highlight : unselectedColor)
