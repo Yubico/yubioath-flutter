@@ -206,36 +206,33 @@ DefaultDialog {
     }
 
     function getAlgoIndex(algo) {
-        if (algo === 'SHA1') {
+        if (algo === null || algo === 'SHA1') {
             return 0
         }
         if (algo === 'SHA256') {
             return 1
         }
-        return false
     }
 
     function getTypeIndex(type) {
-        if (type === 'TOTP') {
+        if (type === null || type === 'TOTP') {
             return 0
         }
         if (type === 'HOTP') {
             return 1
         }
-        return false
     }
 
     function getDigitsIndex(digits) {
-        if (digits === '6') {
+        if (digits === null || digits === 6) {
             return 0
         }
-        if (digits === '7') {
+        if (digits === 7) {
             return 1
         }
-        if (digits === '8') {
+        if (digits === 8) {
             return 2
         }
-        return false
     }
 
     function updateForm(uri) {
@@ -253,9 +250,9 @@ DefaultDialog {
         issuer.text = uri.issuer || parsedIssuer || ''
         key.text = uri.secret
         period.value = uri.period || 30
-        oathType.currentIndex = getTypeIndex(uri.type) || 0
-        algorithm.currentIndex = getAlgoIndex(uri.algorithm) || 0
-        digits.currentIndex = getDigitsIndex(uri.digits) || 6
+        oathType.currentIndex = getTypeIndex(uri.oath_type)
+        algorithm.currentIndex = getAlgoIndex(uri.algorithm)
+        digits.currentIndex = getDigitsIndex(uri.digits)
     }
 
     function addCredential() {
