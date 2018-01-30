@@ -19,7 +19,7 @@ Rectangle {
                                                    && credential.period !== 30)
                                                   || (credential.touch
                                                       && !isExpired)))
-    readonly property bool isExpired: timeLeft < 0
+    readonly property bool isExpired: timeLeft <= 0
     readonly property color textColor: (isSelected ? palette.highlightedText : palette.windowText)
 
     color: (isSelected ? palette.highlight : unselectedColor)
