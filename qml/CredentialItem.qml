@@ -7,6 +7,7 @@ Rectangle {
     property var credential
     property bool isExpired: true
     property bool isSelected: false
+    property int timeLeft: 0
     property bool timerRunning: false
     property color unselectedColor
 
@@ -67,15 +68,15 @@ Rectangle {
             running: timerRunning && hasCustomTimeBar
             triggeredOnStart: true
             onTriggered: {
-                var timeLeft = code.valid_to - (Date.now() / 1000)
+                timeLeft = code.valid_to * 1000 - Date.now()
                 if (timeLeft <= 0 && customTimeLeftBar.value > 0) {
                     refresh(true)
                 }
-                customTimeLeftBar.value = timeLeft
             }
         }
         ProgressBar {
             id: customTimeLeftBar
+            value: timeLeft / 1000
             visible: hasCustomTimeBar
             Layout.topMargin: 3
             Layout.fillWidth: true
