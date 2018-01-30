@@ -63,8 +63,15 @@ def pair_to_dict(cred, code):
 
 def credential_data_to_dict(credentialData):
     return {
-        k: b32encode(v).decode('utf8') if type(v) == bytes else v
-        for k, v in credentialData.__dict__.items()
+        'secret': b32encode(credentialData.secret).decode(),
+        'issuer': credentialData.issuer,
+        'name': credentialData.name,
+        'oath_type': credentialData.oath_type.name,
+        'algorithm': credentialData.algorithm.name,
+        'digits': credentialData.digits,
+        'period': credentialData.period,
+        'counter': credentialData.counter,
+        'touch': credentialData.touch
     }
 
 
