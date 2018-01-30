@@ -76,7 +76,7 @@ Rectangle {
         }
         ProgressBar {
             id: customTimeLeftBar
-            value: timeLeft / 1000
+            value: Math.min(timeLeft / 1000, credential.period)
             visible: showCustomTimeBar
             Layout.topMargin: 3
             Layout.fillWidth: true
