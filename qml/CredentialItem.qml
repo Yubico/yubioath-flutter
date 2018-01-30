@@ -17,8 +17,8 @@ Rectangle {
     readonly property bool hasCustomTimeBar: (code
                                               && ((credential.period
                                                    && credential.period !== 30)
-                                                  || (credential.touch
-                                                      && !isExpired)))
+                                                  || credential.touch))
+    readonly property bool showCustomTimeBar: hasCustomTimeBar && !isExpired
     readonly property bool isExpired: timeLeft <= 0
     readonly property color textColor: (isSelected ? palette.highlightedText : palette.windowText)
 
@@ -77,7 +77,7 @@ Rectangle {
         ProgressBar {
             id: customTimeLeftBar
             value: timeLeft / 1000
-            visible: hasCustomTimeBar
+            visible: showCustomTimeBar
             Layout.topMargin: 3
             Layout.fillWidth: true
             Layout.minimumHeight: 7
