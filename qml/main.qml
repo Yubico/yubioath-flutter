@@ -291,7 +291,10 @@ ApplicationWindow {
                                 generateOrCopy()
                             }
 
-                            onRefresh: refreshDependingOnMode(force)
+                            onRefresh: {
+                                refreshDependingOnMode(force)
+                                isExpired = appWindow.isExpired(modelData)
+                            }
 
                             onSingleClick: {
                                 arrowKeys.forceActiveFocus()
