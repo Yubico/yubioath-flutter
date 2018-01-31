@@ -57,10 +57,15 @@ Python {
 
     onReadyChanged: {
         if (ready) {
-            for (var i in queue) {
-                do_call(queue[i][0], queue[i][1], queue[i][2])
-            }
-            queue = []
+            runQueue()
+        }
+    }
+
+    function runQueue() {
+        var oldQueue = queue
+        queue = []
+        for (var i in oldQueue) {
+            do_call(oldQueue[i][0], oldQueue[i][1], oldQueue[i][2])
         }
     }
 
