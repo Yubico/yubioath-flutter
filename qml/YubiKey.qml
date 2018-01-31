@@ -32,15 +32,16 @@ Python {
     signal enableLogging(string log_level)
 
     Component.onCompleted: {
+        importModule('ykman.logging_setup', function () {
+            loggingReady = true
+        })
+
         importModule('site', function () {
             call('site.addsitedir', [appDir + '/pymodules'], function () {
                 addImportPath(urlPrefix + '/py')
 
                 importModule('yubikey', function () {
                     yubikeyReady = true
-                })
-                importModule('logging_setup', function () {
-                    loggingReady = true
                 })
             })
         })
@@ -51,7 +52,7 @@ Python {
     }
 
     onEnableLogging: {
-        do_call('logging_setup.setup', [log_level || 'DEBUG'])
+        do_call('ykman.logging_setup.setup', [log_level || 'DEBUG'])
     }
 
     onReadyChanged: {
