@@ -75,6 +75,8 @@ int main(int argc, char *argv[])
 
     if (argc > 2 && strcmp(argv[1], "--log-level") == 0) {
         QMetaObject::invokeMethod(root, "enableLogging", Q_ARG(QVariant, argv[2]));
+    } else {
+        QMetaObject::invokeMethod(root, "disableLogging");
     }
 
     QQuickWindow *qmlWindow = qobject_cast<QQuickWindow *>(root);
