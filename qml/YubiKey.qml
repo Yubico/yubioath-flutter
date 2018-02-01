@@ -61,7 +61,7 @@ Python {
     }
 
     onEnableLogging: {
-        do_call('logging_setup.setup', [log_level || 'DEBUG', log_file || undefined], function() {
+        do_call('logging_setup.setup', [log_level || 'DEBUG', log_file || null], function() {
             loggingConfigured = true
         })
     }
