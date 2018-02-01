@@ -33,8 +33,14 @@ Python {
     signal disableLogging()
 
     Component.onCompleted: {
-        importModule('ykman.logging_setup', function () {
-            loggingModuleLoaded = true
+        importModule('site', function () {
+            call('site.addsitedir', [appDir + '/pymodules'], function () {
+                addImportPath(urlPrefix + '/py')
+
+                importModule('logging_setup', function () {
+                    loggingModuleLoaded = true
+                })
+            })
         })
     }
 
@@ -55,7 +61,7 @@ Python {
     }
 
     onEnableLogging: {
-        do_call('ykman.logging_setup.setup', [log_level || 'DEBUG', log_file || undefined], function() {
+        do_call('logging_setup.setup', [log_level || 'DEBUG', log_file || undefined], function() {
             loggingConfigured = true
         })
     }
@@ -77,7 +83,7 @@ Python {
     }
 
     function isModuleLoaded(funcName) {
-        if (funcName.startsWith("ykman.logging_setup.")) {
+        if (funcName.startsWith("logging_setup.")) {
             return loggingModuleLoaded
         } else {
             return yubikeyReady
