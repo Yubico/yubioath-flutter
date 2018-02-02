@@ -46,37 +46,27 @@ Python {
             loggingModuleLoaded = true
         })
     }
-
-    function loadYubikeyModule() {
-        importModule('yubikey', function () {
-            yubikeyReady = true
-        })
-    }
-
-    onHasDeviceChanged: {
-        device.validated = false
-    }
+    onLoggingModuleLoadedChanged: runQueue()
 
     onEnableLogging: {
         do_call('logging_setup.setup', [log_level || 'DEBUG', log_file || null], function() {
             loggingConfigured = true
         })
     }
-
     onDisableLogging: {
         loggingConfigured = true
     }
+    onLoggingConfiguredChanged: loadYubikeyModule()
 
-    onYubikeyReadyChanged: {
-        runQueue()
+    function loadYubikeyModule() {
+        importModule('yubikey', function () {
+            yubikeyReady = true
+        })
     }
+    onYubikeyReadyChanged: runQueue()
 
-    onLoggingModuleLoadedChanged: {
-        runQueue()
-    }
-
-    onLoggingConfiguredChanged: {
-        loadYubikeyModule()
+    onHasDeviceChanged: {
+        device.validated = false
     }
 
     function isModuleLoaded(funcName) {
