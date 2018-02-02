@@ -36,23 +36,20 @@ Python {
         importModule('site', function () {
             call('site.addsitedir', [appDir + '/pymodules'], function () {
                 addImportPath(urlPrefix + '/py')
-
-                importModule('logging_setup', function () {
-                    loggingModuleLoaded = true
-                })
+                loadLoggingModule()
             })
         })
     }
 
-    function loadYubikeyModule() {
-        importModule('site', function () {
-            call('site.addsitedir', [appDir + '/pymodules'], function () {
-                addImportPath(urlPrefix + '/py')
+    function loadLoggingModule() {
+        importModule('logging_setup', function () {
+            loggingModuleLoaded = true
+        })
+    }
 
-                importModule('yubikey', function () {
-                    yubikeyReady = true
-                })
-            })
+    function loadYubikeyModule() {
+        importModule('yubikey', function () {
+            yubikeyReady = true
         })
     }
 
