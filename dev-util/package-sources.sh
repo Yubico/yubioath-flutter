@@ -70,7 +70,7 @@ for submodule_line in $(git submodule status --recursive); do
 done
 
 # Bundle all sources together
-tar cf "${output_archive_file_name}" -C "${OUTPUT_DIR}" .
+tar cf "${output_archive_file_name}" -C "${OUTPUT_DIR}" -a .
 
 echo "Wrote ${output_archive_file_name}"
 
