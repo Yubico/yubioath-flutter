@@ -41,12 +41,6 @@ install:
   - jom install
   - cd %APPVEYOR_BUILD_FOLDER%
 
-before_build:
-  # Fix problem with symbolic link
-  - rm .\vendor\yubikey-manager\ykman\yubicommon
-  - rm -rf .\release
-  - xcopy /i /e .\vendor\yubikey-manager\vendor\yubicommon\yubicommon .\vendor\yubikey-manager\ykman\yubicommon
-
 build_script:
   - qmake yubioath-desktop.pro
   - jom

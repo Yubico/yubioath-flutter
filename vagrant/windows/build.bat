@@ -21,9 +21,6 @@ mkdir "%RELEASE_DIR%"
 REM Build
 qmake
 
-rm -rf .\vendor\yubikey-manager\ykman\yubicommon
-xcopy /i /e .\vendor\yubikey-manager\vendor\yubicommon\yubicommon .\vendor\yubikey-manager\ykman\yubicommon
-
 jom
 
 REM Package
