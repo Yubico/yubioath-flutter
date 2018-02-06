@@ -5,8 +5,8 @@ import QtQuick.Layouts 1.1
 Rectangle {
     property var code
     property var credential
-    property bool isExpired: true
     property bool isSelected: false
+    property int timeLeft: 0
     property bool timerRunning: false
     property color unselectedColor
 
@@ -17,8 +17,9 @@ Rectangle {
     readonly property bool hasCustomTimeBar: (code
                                               && ((credential.period
                                                    && credential.period !== 30)
-                                                  || (credential.touch
-                                                      && !isExpired)))
+                                                  || credential.touch))
+    readonly property bool showCustomTimeBar: hasCustomTimeBar && !isExpired
+    readonly property bool isExpired: timeLeft < 0
     readonly property color textColor: (isSelected ? palette.highlightedText : palette.windowText)
 
     color: (isSelected ? palette.highlight : unselectedColor)
@@ -67,16 +68,16 @@ Rectangle {
             running: timerRunning && hasCustomTimeBar
             triggeredOnStart: true
             onTriggered: {
-                var timeLeft = code.valid_to - (Date.now() / 1000)
+                timeLeft = code.valid_to * 1000 - Date.now()
                 if (timeLeft <= 0 && customTimeLeftBar.value > 0) {
                     refresh(true)
                 }
-                customTimeLeftBar.value = timeLeft
             }
         }
         ProgressBar {
             id: customTimeLeftBar
-            visible: hasCustomTimeBar
+            value: Math.min(timeLeft / 1000, credential.period)
+            visible: showCustomTimeBar
             Layout.topMargin: 3
             Layout.fillWidth: true
             Layout.minimumHeight: 7

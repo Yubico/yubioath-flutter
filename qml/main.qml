@@ -277,7 +277,6 @@ ApplicationWindow {
                         CredentialItem {
                             code: modelData.code
                             credential: modelData.credential
-                            isExpired: appWindow.isExpired(modelData)
                             isSelected: appWindow.isSelected(
                                             modelData.credential)
                             timerRunning: displayTimersRunning
