@@ -55,6 +55,7 @@ Python {
     }
 
     onYubikeyModuleLoadedChanged: runQueue()
+    onYubikeyReadyChanged: runQueue()
 
     onHasDeviceChanged: {
         device.validated = false
