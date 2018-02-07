@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import json
 import logging
 import types
 import ykman.logging_setup
@@ -17,10 +18,15 @@ from ykman.oath import (ALGO, OATH_TYPE, OathController, CredentialData,
                         Credential, Code, SW)
 from ykman.settings import Settings
 from qr import qrparse, qrdecode
-from json_util import as_json
 
 
 logger = logging.getLogger(__name__)
+
+
+def as_json(f):
+    def wrapped(*args):
+        return json.dumps(f(*(json.loads(a) for a in args)))
+    return wrapped
 
 
 def cred_to_dict(cred):
