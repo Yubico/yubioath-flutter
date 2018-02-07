@@ -333,7 +333,7 @@ class PixelImage(object):
 controller = None
 
 
-def initWithLogging(log_level, log_file=None):
+def init_with_logging(log_level, log_file=None):
     logging_setup = as_json(ykman.logging_setup.setup)
     logging_setup(log_level, log_file)
 
