@@ -19,6 +19,8 @@ Rectangle {
                                                    && credential.period !== 30)
                                                   || credential.touch))
     readonly property bool showCustomTimeBar: hasCustomTimeBar && !isExpired
+    readonly property bool shouldAutoRefresh: hasCustomTimeBar
+                                              && !credential.touch
     readonly property bool isExpired: timeLeft < 0
     readonly property color textColor: (isSelected ? palette.highlightedText : palette.windowText)
 
@@ -69,7 +71,7 @@ Rectangle {
             triggeredOnStart: true
             onTriggered: {
                 timeLeft = code.valid_to * 1000 - Date.now()
-                if (timeLeft <= 0 && customTimeLeftBar.value > 0) {
+                if (timeLeft <= 0 && shouldAutoRefresh) {
                     refresh(true)
                 }
             }
