@@ -3,6 +3,8 @@
 
 import logging
 import types
+import ykman.logging_setup
+
 from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
 
@@ -322,4 +324,16 @@ class PixelImage(object):
             self.width * line_number:self.width * (line_number + 1)]
 
 
-controller = Controller()
+controller = None
+
+
+def initWithLogging(log_level, log_file=None):
+    logging_setup = as_json(ykman.logging_setup.setup)
+    logging_setup(log_level, log_file)
+
+    init()
+
+
+def init():
+    global controller
+    controller = Controller()
