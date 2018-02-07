@@ -205,6 +205,7 @@ ApplicationWindow {
         onAccepted: {
             deleteSelectedCredential()
             refreshDependingOnMode(true)
+            deselectCredential()
         }
     }
 
