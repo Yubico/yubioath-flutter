@@ -12,6 +12,7 @@ environment:
   YKPERS_VERSION: "1.18.1"
   LIBUSB_VERSION: "1.0.21"
   PY_VERSION: "3.6.4"
+  PYOTHERSIDE_VERSION: "1.5.3"
 
 init:
   # Needed for jom to work.
@@ -32,7 +33,9 @@ install:
 
   # Build and install PyOtherSide 
   # Reference: https://pyotherside.readthedocs.io/en/latest/#building-for-windows
-  - cd .\vendor\pyotherside
+  - ps: wget "https://github.com/thp/pyotherside/archive/$env:PYOTHERSIDE_VERSION.zip" -OutFile "pyotherside-$env:PYOTHERSIDE_VERSION.zip"
+  - 7z x pyotherside-%PYOTHERSIDE_VERSION%.zip
+  - cd .\pyotherside-%PYOTHERSIDE_VERSION%
   - ps: (Get-Content .\src\qmldir).replace('pyothersideplugin', 'pyothersideplugin1') | Set-Content .\src\qmldir
   - ps: Clear-Content python.pri
   - ps: Add-Content python.pri "PYTHON_CONFIG = python3-config`nQMAKE_LIBS += -LC:\Python36\libs -lpython36`nQMAKE_CXXFLAGS += -IC:\Python36\include`n"
