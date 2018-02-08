@@ -21,7 +21,9 @@ and is included as a submodule in the repository. It can also be installed throu
 === Install dependencies on macOS 10.12 (Sierra)
 
     $ brew install python3 swig ykpers libu2f-host libusb qt5
-    $ cd vendor/pyotherside && qmake && make && make install && cd ../..
+    $ wget https://github.com/thp/pyotherside/archive/1.5.3.tar.gz
+    $ tar -xzvf 1.5.3.tar.gz
+    $ cd pyotherside-1.5.3 && qmake && make && make install && cd ..
 
 === Compile the app:
 
