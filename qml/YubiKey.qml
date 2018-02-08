@@ -16,9 +16,8 @@ Python {
     property var entries: []
     property int nextRefresh: 0
     property var enabled: []
+    property bool yubikeyModuleLoaded: false
     property bool yubikeyReady: false
-    property bool loggingModuleLoaded: false
-    property bool loggingConfigured: false
     property bool yubikeyBusy: false
     property var queue: []
     property bool hasOTP: enabled.indexOf('OTP') !== -1
@@ -29,49 +28,42 @@ Python {
     property int expiration: 0
     signal wrongPassword
     signal credentialsRefreshed
-    signal enableLogging(string log_level, string log_file)
+    signal enableLogging(string logLevel, string logFile)
     signal disableLogging()
 
     Component.onCompleted: {
         importModule('site', function () {
             call('site.addsitedir', [appDir + '/pymodules'], function () {
                 addImportPath(urlPrefix + '/py')
-                loadLoggingModule()
+
+                importModule('yubikey', function () {
+                    yubikeyModuleLoaded = true
+                })
             })
         })
     }
 
-    function loadLoggingModule() {
-        importModule('logging_setup', function () {
-            loggingModuleLoaded = true
-        })
-    }
-    onLoggingModuleLoadedChanged: runQueue()
-
     onEnableLogging: {
-        do_call('logging_setup.setup', [log_level || 'DEBUG', log_file || null], function() {
-            loggingConfigured = true
-        })
-    }
-    onDisableLogging: {
-        loggingConfigured = true
-    }
-    onLoggingConfiguredChanged: loadYubikeyModule()
-
-    function loadYubikeyModule() {
-        importModule('yubikey', function () {
+        do_call('yubikey.init_with_logging', [logLevel || 'DEBUG', logFile || null], function() {
             yubikeyReady = true
         })
     }
+    onDisableLogging: {
+        do_call('yubikey.init', [], function() {
+            yubikeyReady = true
+        })
+    }
+
+    onYubikeyModuleLoadedChanged: runQueue()
     onYubikeyReadyChanged: runQueue()
 
     onHasDeviceChanged: {
         device.validated = false
     }
 
-    function isModuleLoaded(funcName) {
-        if (funcName.startsWith("logging_setup.")) {
-            return loggingModuleLoaded
+    function isPythonReady(funcName) {
+        if (funcName.startsWith("yubikey.init")) {
+            return yubikeyModuleLoaded
         } else {
             return yubikeyReady
         }
@@ -86,7 +78,7 @@ Python {
     }
 
     function do_call(func, args, cb) {
-        if (!isModuleLoaded(func)) {
+        if (!isPythonReady(func)) {
             queue.push([func, args, cb])
         } else {
             call(func, args.map(JSON.stringify), function (json) {

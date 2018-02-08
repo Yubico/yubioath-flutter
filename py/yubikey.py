@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import json
 import logging
 import types
+import ykman.logging_setup
+
 from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
 
@@ -15,10 +18,15 @@ from ykman.oath import (ALGO, OATH_TYPE, OathController, CredentialData,
                         Credential, Code, SW)
 from ykman.settings import Settings
 from qr import qrparse, qrdecode
-from json_util import as_json
 
 
 logger = logging.getLogger(__name__)
+
+
+def as_json(f):
+    def wrapped(*args):
+        return json.dumps(f(*(json.loads(a) for a in args)))
+    return wrapped
 
 
 def cred_to_dict(cred):
@@ -322,4 +330,16 @@ class PixelImage(object):
             self.width * line_number:self.width * (line_number + 1)]
 
 
-controller = Controller()
+controller = None
+
+
+def init_with_logging(log_level, log_file=None):
+    logging_setup = as_json(ykman.logging_setup.setup)
+    logging_setup(log_level, log_file)
+
+    init()
+
+
+def init():
+    global controller
+    controller = Controller()
