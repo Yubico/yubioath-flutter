@@ -33,7 +33,9 @@ install:
 
   # Build and install PyOtherSide 
   # Reference: https://pyotherside.readthedocs.io/en/latest/#building-for-windows
-  - ps: wget "https://github.com/thp/pyotherside/archive/$env:PYOTHERSIDE_VERSION.zip" -OutFile "pyotherside-$env:PYOTHERSIDE_VERSION.zip"
+  - mkdir lib
+  - ps: wget "https://github.com/thp/pyotherside/archive/$env:PYOTHERSIDE_VERSION.zip" -OutFile ".\lib\pyotherside-$env:PYOTHERSIDE_VERSION.zip"
+  - cd .\lib
   - 7z x pyotherside-%PYOTHERSIDE_VERSION%.zip
   - cd .\pyotherside-%PYOTHERSIDE_VERSION%
   - ps: (Get-Content .\src\qmldir).replace('pyothersideplugin', 'pyothersideplugin1') | Set-Content .\src\qmldir

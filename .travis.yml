@@ -37,10 +37,12 @@ before_install:
     then
       export MACOSX_DEPLOYMENT_TARGET=10.9
       brew update
-      wget https://github.com/thp/pyotherside/archive/$PYOTHERSIDE_VERSION.tar.gz
+      wget https://github.com/thp/pyotherside/archive/$PYOTHERSIDE_VERSION.tar.gz -P ./lib
+      cd lib
       tar -xzvf $PYOTHERSIDE_VERSION.tar.gz
       # Patch PyOtherSide to not be built with debug output
       echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-$PYOTHERSIDE_VERSION/src/src.pro
+      cd ..
     fi
 
 install:
@@ -57,11 +59,11 @@ install:
       env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" pyenv install $PY_VERSION
       pyenv global system $PY_VERSION
       # Build and install PyOtherside
-      cd pyotherside-$PYOTHERSIDE_VERSION
+      cd lib/pyotherside-$PYOTHERSIDE_VERSION
       qmake
       make
       sudo make install
-      cd ..
+      cd ../..
     fi
   - pip install --upgrade pip
   # Install linting tools
