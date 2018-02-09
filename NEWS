@@ -1,3 +1,16 @@
+* Version 4.3.3 (unreleased)
+ ** Focus is no locked on the search field.
+ ** Pressing ESC now clears the search field and deselects all credentials.
+ ** Copying the code with a keyboard shortcut now works even if the search field has focus.
+ ** The top progress bar is now only displayed when needed.
+ ** Scanning QR codes should now work better on some multiple monitor setups.
+ ** Improve the handling of touch credentials when the YubiKey is never touched.
+ ** The application should no longer refresh credentials to often on slower systems.
+ ** Credentials with a custom time period should now autorefresh correctly.
+ ** Logging: The command line option --log-file is now supported, which writes the log to a file.
+ ** Bugfix: The arrow key navigation is no longer broken after deleting a credential.
+ ** Windows: OpenGL rendering is now chosen dynamically. It's possible to override it with the QT_OPENGL environment variable.
+
 * Version 4.3.2+1 (released 2017-12-20)
  ** Re-release of 4.3.2 for Mac, because package signature was missing from 4.3.2 release
 
