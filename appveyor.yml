@@ -86,11 +86,13 @@ after_build:
   - ps: Get-ChildItem -Include sqlite3.dll -Recurse | Remove-Item -Force
   - ps: Get-ChildItem -Include _sqlite3.pyd -Recurse | Remove-Item -Force
   # Create zip for deployment
-  - 7z a yubioath-desktop-%APPVEYOR_REPO_BRANCH%%APPVEYOR_REPO_TAG_NAME%-win.zip .\release\*
+  - set ARTIFACT_NAME=%APPVEYOR_REPO_BRANCH%
+  - if defined APPVEYOR_REPO_TAG_NAME set ARTIFACT_NAME=%APPVEYOR_REPO_TAG_NAME%
+  - 7z a yubioath-desktop-%ARTIFACT_NAME%-win.zip .\release\*
   - cd %APPVEYOR_BUILD_FOLDER%
 
 artifacts:
-  - path: yubioath-desktop-%APPVEYOR_REPO_BRANCH%%APPVEYOR_REPO_TAG_NAME%-win.zip
+  - path: yubioath-desktop-$(ARTIFACT_NAME)-win.zip
 
 deploy:
   - provider: S3
