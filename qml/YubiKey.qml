@@ -62,7 +62,7 @@ Python {
     }
 
     function isPythonReady(funcName) {
-        if (funcName.startsWith("yubikey.init")) {
+        if (Utils.startsWith(funcName, "yubikey.init")) {
             return yubikeyModuleLoaded
         } else {
             return yubikeyReady
