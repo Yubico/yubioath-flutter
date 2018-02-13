@@ -1,5 +1,5 @@
 * Version 4.3.3 (unreleased)
- ** Focus is no locked on the search field.
+ ** Focus is not locked on the search field.
  ** Pressing ESC now clears the search field and deselects all credentials.
  ** Copying the code with a keyboard shortcut now works even if the search field has focus.
  ** The top progress bar is now only displayed when needed.
