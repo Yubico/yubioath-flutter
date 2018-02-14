@@ -21,13 +21,11 @@ DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 win32|win64 {
   # Strip suffixes from version number
-  # Append ".0" if "-dirty"
-  # Otherwise if suffix starts with "-X", where X is numeric, replace suffix with ".X"
-  # Otherwise replace suffix with ".1"
   # Because rc compiler requires only numerals in the version number
-  VERSION ~= s/^([0-9]+\.[0-9]+\.[0-9]+).*-dirty$/\1.0
-  VERSION ~= s/^([0-9]+\.[0-9]+\.[0-9]+)-([0-9]+).*/\1.\2
-  VERSION ~= s/^([0-9]+\.[0-9]+\.[0-9]+)$/\1.1
+  # If version contains "-", output version (0, 0, 0, 0)
+  # Otherwise assume version is "X.Y.Z", where X, Y, Z are all numeric. Output version (X, Y, Z, 0).
+  VERSION ~= s/^.*-.*$/0.0.0.0
+  VERSION ~= s/^([0-9]+\.[0-9]+\.[0-9]+)$/\1.0
   message(Version tweaked for Windows build: $$VERSION)
 }
 
