@@ -106,7 +106,7 @@ Python {
                             connections = dev ? dev.connections : []
                             hasDevice = dev !== undefined && dev !== null
                         })
-            } else if (hasDevice) {
+            } else {
                 // No longer has device
                 hasDevice = false
                 entries = null
