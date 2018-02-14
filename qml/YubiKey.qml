@@ -9,6 +9,7 @@ Python {
 
     property int nDevices
     property bool hasDevice
+    property var unusableDeviceDescription
     property string name
     property var version
     property string oathId
@@ -100,17 +101,21 @@ Python {
             if (nDevices == 1) {
                 do_call('yubikey.controller.refresh', [slotMode],
                         function (dev) {
-                            name = dev ? dev.name : ''
-                            version = dev ? dev.version : null
-                            enabled = dev ? dev.enabled : []
-                            connections = dev ? dev.connections : []
-                            hasDevice = dev !== undefined && dev !== null
+                            var usable = dev && dev.usable
+
+                            name = usable ? dev.name : ''
+                            version = usable ? dev.version : null
+                            enabled = usable ? dev.enabled : []
+                            connections = usable ? dev.connections : (dev ? dev.transports : [])
+                            hasDevice = !!usable
+                            unusableDeviceDescription = usable ? null : dev
                         })
             } else {
                 // No longer has device
                 hasDevice = false
                 entries = null
                 nextRefresh = 0
+                unusableDeviceDescription = null
             }
             refreshCredentialsOnMode()
         })

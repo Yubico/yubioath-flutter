@@ -180,13 +180,13 @@ ApplicationWindow {
     NoLoadedDeviceMessage {
         id: noLoadedDeviceMessage
         device: yk
+        settings: settings
     }
 
     LoadedDeviceMessage {
         id: loadedDeviceMessage
         device: yk
         nCredentials: filteredCredentials(credentials).length
-        settings: settings
     }
 
     ClipBoard {

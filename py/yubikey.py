@@ -102,6 +102,23 @@ class Controller(object):
             return None
 
         desc = descriptors[0]
+
+        unmatched_otp_mode = otp_mode and not desc.mode.has_transport(
+            TRANSPORT.OTP)
+        unmatched_ccid_mode = not otp_mode and not desc.mode.has_transport(
+            TRANSPORT.CCID)
+
+        if unmatched_otp_mode or unmatched_ccid_mode:
+            return {
+                'fingerprint': desc.fingerprint,
+                'pid': desc.pid,
+                'transports': [
+                    t.name for t in TRANSPORT.split(desc.mode.transports)
+                ],
+                'type': desc.key_type.value,
+                'usable': False,
+            }
+
         if desc.fingerprint != (
                 self._descriptor.fingerprint if self._descriptor else None) \
                 or not otp_mode and not self._dev_info.get('version'):
@@ -116,8 +133,10 @@ class Controller(object):
             except Exception as e:
                 logger.debug('Failed to refresh YubiKey', exc_info=e)
                 return None
+
             self._descriptor = desc
             self._dev_info = {
+                'usable': True,
                 'name': dev.device_name,
                 'version': version,
                 'serial': dev.serial or '',
