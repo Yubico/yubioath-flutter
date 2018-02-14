@@ -110,12 +110,9 @@ class Controller(object):
 
         if unmatched_otp_mode or unmatched_ccid_mode:
             return {
-                'fingerprint': desc.fingerprint,
-                'pid': desc.pid,
                 'transports': [
                     t.name for t in TRANSPORT.split(desc.mode.transports)
                 ],
-                'type': desc.key_type.value,
                 'usable': False,
             }
 
