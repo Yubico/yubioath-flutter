@@ -113,7 +113,8 @@ class Controller(object):
                 else:
                     controller = OathController(dev.driver)
                     version = controller.version
-            except Exception:
+            except Exception as e:
+                logger.debug('Failed to refresh YubiKey', exc_info=e)
                 return None
             self._descriptor = desc
             self._dev_info = {
