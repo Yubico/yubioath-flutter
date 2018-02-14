@@ -29,7 +29,7 @@ Python {
     signal wrongPassword
     signal credentialsRefreshed
     signal enableLogging(string logLevel, string logFile)
-    signal disableLogging()
+    signal disableLogging
 
     Component.onCompleted: {
         importModule('site', function () {
@@ -44,12 +44,13 @@ Python {
     }
 
     onEnableLogging: {
-        do_call('yubikey.init_with_logging', [logLevel || 'DEBUG', logFile || null], function() {
-            yubikeyReady = true
-        })
+        do_call('yubikey.init_with_logging',
+                [logLevel || 'DEBUG', logFile || null], function () {
+                    yubikeyReady = true
+                })
     }
     onDisableLogging: {
-        do_call('yubikey.init', [], function() {
+        do_call('yubikey.init', [], function () {
             yubikeyReady = true
         })
     }

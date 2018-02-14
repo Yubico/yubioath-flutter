@@ -225,7 +225,8 @@ ApplicationWindow {
 
         TimeLeftBar {
             id: timeLeftBar
-            visible: canShowCredentials && device.hasAnyCredentials() && device.hasAnyNonTouchTotpCredential()
+            visible: canShowCredentials && device.hasAnyCredentials()
+                     && device.hasAnyNonTouchTotpCredential()
         }
 
         ScrollView {
@@ -402,7 +403,7 @@ ApplicationWindow {
     }
 
     function getSelected() {
-        return Utils.find(credentials, function(entry) {
+        return Utils.find(credentials, function (entry) {
             return isSelected(entry.credential)
         }) || null
     }
