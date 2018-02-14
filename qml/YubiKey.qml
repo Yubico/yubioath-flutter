@@ -9,7 +9,6 @@ Python {
 
     property int nDevices
     property bool hasDevice
-    property var unusableDeviceDescription
     property string name
     property var version
     property string oathId
@@ -108,14 +107,12 @@ Python {
                             enabled = usable ? dev.enabled : []
                             connections = usable ? dev.connections : (dev ? dev.transports : [])
                             hasDevice = !!usable
-                            unusableDeviceDescription = usable ? null : dev
                         })
             } else {
                 // No longer has device
                 hasDevice = false
                 entries = null
                 nextRefresh = 0
-                unusableDeviceDescription = null
             }
             refreshCredentialsOnMode()
         })
