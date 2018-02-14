@@ -19,6 +19,22 @@ function startsWith(string, search, pos) {
 }
 
 /*
+ * @param items: array
+ * @param sought: any
+ * @return True if and only if any `x === sought` for any `x` in `items`.
+ */
+function contains(items, sought) {
+    if (items) {
+        for (var i = 0; i < items.length; ++i) {
+            if (items[i] === sought) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
+/*
  * Quick and dirty shim for Array.find added in Qt 5.9
  *
  * @param items: array
