@@ -7,7 +7,7 @@
  ** Improve the handling of touch credentials when the YubiKey is never touched.
  ** The application should no longer refresh credentials to often on slower systems.
  ** Credentials with a custom time period should now autorefresh correctly.
- ** Logging: The command line option --log-file is now supported, which writes the log to a file.
+ ** Logging: The command line option --log-file is now supported, which writes the log to a file. The --log-file option is ignored unless preceded by the --log-level option.
  ** Bugfix: The arrow key navigation is no longer broken after deleting a credential.
  ** Windows: OpenGL rendering is now chosen dynamically. It's possible to override it with the QT_OPENGL environment variable.
 
