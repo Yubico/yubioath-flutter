@@ -29,7 +29,7 @@ RUN apt-get install -qq \
     python3-dev
 RUN pip3 install --upgrade pip
 COPY . yubioath-desktop
-RUN pip3 install -r yubioath-desktop/requirements.txt
+RUN cd yubioath-desktop && pip3 install -r requirements.txt
 RUN cd yubioath-desktop && qmake -qt=qt5 && make
 RUN cd yubioath-desktop && debuild -us -uc
 RUN mkdir /deb && mv /yubioath-desktop_* /deb
