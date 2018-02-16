@@ -1,7 +1,9 @@
 TEMPLATE = app
 QT += qml quick widgets
 CONFIG += c++11
-QMAKE_CXXFLAGS += -pedantic-errors
+unix {
+  QMAKE_CXXFLAGS += -pedantic-errors
+}
 SOURCES += main.cpp \
     systemtray.cpp
 
