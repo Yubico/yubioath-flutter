@@ -1,7 +1,7 @@
 TEMPLATE = app
 QT += qml quick widgets
 CONFIG += c++11
-unix|macx {
+unix {
   QMAKE_CXXFLAGS += -pedantic-errors
 }
 SOURCES += main.cpp \
