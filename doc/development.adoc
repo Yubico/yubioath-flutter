@@ -1,8 +1,9 @@
 == Project outline
 
 Yubico Authenticator is a Qt5 application written in QML that uses the plugin PyOtherSide to enable 
-the backend logic to be written in Python 3. The python library yubikey-manager is needed to communicate with the YubiKey,
-and is included as a submodule in the repository. It can also be installed through pip and some other package managers.
+the backend logic to be written in Python 3.  The python library yubikey-manager is needed to communicate with the YubiKey,
+and may be installed from pip or other package managers. If a specific version, (or branch or commit) is needed for development,
+point to that version in requirements.txt.
 
 == Setting up a development environment 
 
@@ -15,15 +16,15 @@ and is included as a submodule in the repository. It can also be installed throu
 
     $ sudo add-apt-repository -y ppa:yubico/stable
     $ sudo apt update
-    $ sudo apt install yubikey-manager qml-module-qt-labs-settings qml-module-qtquick-dialogs \
+    $ sudo apt install python3-yubikey-manager qml-module-qt-labs-settings qml-module-qtquick-dialogs \
       qml-module-qtquick-controls qt5-default libqt5svg5-dev qtdeclarative5-dev qtbase5-dev
 
 === Install dependencies on macOS 10.12 (Sierra)
 
     $ brew install python3 swig ykpers libu2f-host libusb qt5
-    $ wget https://github.com/thp/pyotherside/archive/1.5.3.tar.gz
-    $ tar -xzvf 1.5.3.tar.gz
-    $ cd pyotherside-1.5.3 && qmake && make && make install && cd ..
+    $ brew link qt5 --force
+
+Build and install the Qt5 plugin http://pyotherside.readthedocs.io/en/latest/#building-pyotherside[PyOtherSide].
 
 === Compile the app:
 

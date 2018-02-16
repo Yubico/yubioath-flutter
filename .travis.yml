@@ -26,13 +26,6 @@ services:
 
 before_install:
   - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]]
-    then
-      docker build -t ykman-xenial -f vendor/yubikey-manager/docker/xenial/Dockerfile vendor/yubikey-manager
-      id=$(docker create ykman-xenial)
-      docker cp $id:/yubikey-manager-debian-packages.tar.gz ykman-deb.tar.gz
-    fi
-  - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
       export MACOSX_DEPLOYMENT_TARGET=10.9
