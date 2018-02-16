@@ -4,6 +4,8 @@ import QtQuick.Controls 1.4
 Label {
 
     property var device
+    property var settings
+    property bool ccidMode: !settings.slotMode
 
     visible: !device.hasDevice
     text: getText()
@@ -17,8 +19,14 @@ Label {
         if (device.nDevices === 0) {
             return qsTr("No YubiKey detected.")
         } else if (device.nDevices === 1) {
-            return qsTr("Connecting to YubiKey...")
-        } else if (device.nDevices > 1){
+            if (settings.slotMode && !device.hasOTP) {
+                return qsTr("Authenticator mode is set to YubiKey slots, but the OTP connection mode is not enabled.")
+            } else if (ccidMode && !device.hasCCID) {
+                return qsTr("Authenticator mode is set to CCID, but the CCID connection mode is not enabled.")
+            } else {
+                return qsTr("Connecting to YubiKey...")
+            }
+        } else if (device.nDevices > 1) {
             return qsTr("Multiple YubiKeys detected!")
         }
     }
