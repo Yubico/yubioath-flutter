@@ -24,9 +24,9 @@ DefaultDialog {
                 id: key
                 Layout.fillWidth: true
                 validator: RegExpValidator {
-                    regExp: /[2-7a-zA-Z]+=*/
+                    regExp: /[2-7a-zA-Z ]+=*/
                 }
-                focus:true
+                focus: true
                 Keys.onEscapePressed: close()
                 onAccepted: tryAddCredential()
             }
@@ -62,7 +62,6 @@ DefaultDialog {
             }
         }
 
-
         RowLayout {
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             Button {
@@ -84,7 +83,6 @@ DefaultDialog {
             }
         }
     }
-
 
     MessageDialog {
         id: paddingError

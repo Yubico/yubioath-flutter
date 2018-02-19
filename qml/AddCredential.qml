@@ -49,7 +49,7 @@ DefaultDialog {
                 id: key
                 Layout.fillWidth: true
                 validator: RegExpValidator {
-                    regExp: /[2-7a-zA-Z]+=*/
+                    regExp: /[2-7a-zA-Z ]+=*/
                 }
                 Keys.onEscapePressed: close()
                 onAccepted: tryAddCredential()
