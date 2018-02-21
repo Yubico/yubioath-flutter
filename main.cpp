@@ -18,7 +18,18 @@ int main(int argc, char *argv[])
     // Don't write .pyc files.
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 
+    QString tmpDir = QDir::tempPath();
+    QLockFile lockFile(tmpDir + "/yubioath-desktop.lock");
     QApplication app(argc, argv);
+
+    if(!lockFile.tryLock(100)){
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setText("Yubico Authenticator is already running."
+                        "\r\nOnly one instance is allowed.");
+        msgBox.exec();
+        return 1;
+    }
 
     QString app_dir = app.applicationDirPath();
     QString main_qml = "/qml/main.qml";
