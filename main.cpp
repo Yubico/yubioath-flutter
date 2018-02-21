@@ -5,9 +5,6 @@
 #include <QtGlobal>
 #include <QtWidgets>
 #include <QQuickWindow>
-#ifndef Q_OS_DARWIN
-#include <QtSingleApplication>
-#endif
 #include "screenshot.h"
 #include "systemtray.h"
 
@@ -21,15 +18,7 @@ int main(int argc, char *argv[])
     // Don't write .pyc files.
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 
-    // Non Darwin platforms uses QSingleApplication to ensure only one running instance.
-    #ifndef Q_OS_DARWIN
-    QtSingleApplication app(argc, argv);
-    if (app.sendMessage("")) {
-        return 0;
-    }
-    #else
     QApplication app(argc, argv);
-    #endif
 
     QString app_dir = app.applicationDirPath();
     QString main_qml = "/qml/main.qml";
@@ -68,9 +57,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("app", &app);
     engine.load(QUrl(url_prefix + main_qml));
 
-    // This is the current system tray icon.
-    // Should probably be replaced by QML when all supported platforms are on > Qt 5.8
-    // See http://doc-snapshots.qt.io/qt5-5.8/qml-qt-labs-platform-systemtrayicon.html
+
     QObject *root = engine.rootObjects().first();
 
     if (argc > 2 && strcmp(argv[1], "--log-level") == 0) {
@@ -92,6 +79,9 @@ int main(int argc, char *argv[])
         qmlWindow->show();
     }
 
+    // This is the current system tray icon.
+    // Should probably be replaced by QML when all supported platforms are on > Qt 5.8
+    // See http://doc-snapshots.qt.io/qt5-5.8/qml-qt-labs-platform-systemtrayicon.html
     QAction *showAction = new QAction(QObject::tr("&Show credentials"), qmlWindow);
     // The call to hide doesn't make much sense but makes it work on macOS when hidden from the dock.
     root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::hide);
@@ -114,19 +104,7 @@ int main(int argc, char *argv[])
     root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(requestActivate()));
     #endif
 
-    #ifndef Q_OS_DARWIN
-    // Wake up the root window on a message from new instance.
-    for (auto object : engine.rootObjects()) {
-        if (QWindow *window = qobject_cast<QWindow*>(object)) {
-            QObject::connect(&app, &QtSingleApplication::messageReceived, [window]() {
-                window->show();
-                window->raise();
-                window->requestActivate();
-            });
-        }
-    }
-    #endif
-
+    // Explicitly hide trayIcon on exit
     const int status = app.exec();
     trayIcon->hide();
     return status;
