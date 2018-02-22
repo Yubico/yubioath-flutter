@@ -18,15 +18,18 @@ int main(int argc, char *argv[])
     // Don't write .pyc files.
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 
+    QApplication app(argc, argv);
+    app.setApplicationName("Yubico Authenticator");
+    app.setOrganizationName("Yubico");
+    app.setOrganizationDomain("com.yubico");
+
+    // A lock file is used, to ensure only one running instance at the time.
     QString tmpDir = QDir::tempPath();
     QLockFile lockFile(tmpDir + "/yubioath-desktop.lock");
-    QApplication app(argc, argv);
-
     if(!lockFile.tryLock(100)){
         QMessageBox msgBox;
         msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setText("Yubico Authenticator is already running."
-                        "\r\nOnly one instance is allowed.");
+        msgBox.setText("Yubico Authenticator is already running.");
         msgBox.exec();
         return 1;
     }
@@ -35,10 +38,6 @@ int main(int argc, char *argv[])
     QString main_qml = "/qml/main.qml";
     QString path_prefix;
     QString url_prefix;
-
-    app.setApplicationName("Yubico Authenticator");
-    app.setOrganizationName("Yubico");
-    app.setOrganizationDomain("com.yubico");
 
     if (QFileInfo::exists(":" + main_qml)) {
         // Embedded resources
