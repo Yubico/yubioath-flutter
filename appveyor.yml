@@ -13,13 +13,31 @@ environment:
   LIBUSB_VERSION: "1.0.21"
   PY_VERSION: "3.6.4"
   PYOTHERSIDE_VERSION: "1.5.3"
+  LIBU2FHOST_BASEURL: https://developers.yubico.com/libu2f-host/Releases
+  YKPERS_BASEURL: https://developers.yubico.com/yubikey-personalization/Releases
+
+  matrix:
+    - platform: x86
+      QT_VERSION: 5.10.0\msvc2015
+      PYTHON: C:\Python36
+      PY_ARCH: win32
+      WIN_ARCH: win32
+      LIBUSB_DLL_FOLDER: MS32
+      VCVARSALL: x86
+
+    - platform: x64
+      QT_VERSION: 5.10.0\msvc2015_64
+      PYTHON: C:\Python36-x64
+      PY_ARCH: amd64
+      WIN_ARCH: win64
+      LIBUSB_DLL_FOLDER: MS64
+      VCVARSALL: x64
 
 init:
   # Needed for jom to work.
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %VCVARSALL%
   # Add python and Qt to PATH
-  - set PATH=C:\Python36;C:\Python36\Scripts;C:\Qt\5.9\msvc2015\bin;C:\Qt\Tools\QtCreator\bin;%PATH%
-  - python --version
+  - set PATH=%PYTHON%;%PYTHON%\Scripts;C:\Qt\%QT_VERSION%\bin;C:\Qt\Tools\QtCreator\bin;%PATH%
 
 install:
   - choco upgrade -y all
@@ -38,7 +56,7 @@ install:
   - cd .\pyotherside-%PYOTHERSIDE_VERSION%
   - ps: (Get-Content .\src\qmldir).replace('pyothersideplugin', 'pyothersideplugin1') | Set-Content .\src\qmldir
   - ps: Clear-Content python.pri
-  - ps: Add-Content python.pri "PYTHON_CONFIG = python3-config`nQMAKE_LIBS += -LC:\Python36\libs -lpython36`nQMAKE_CXXFLAGS += -IC:\Python36\include`n"
+  - ps: Add-Content python.pri "PYTHON_CONFIG = python3-config`nQMAKE_LIBS += -L$env:PYTHON\libs -lpython36`nQMAKE_CXXFLAGS += -I$env:PYTHON\include`n"
   - qmake
   - jom
   - jom install
@@ -50,26 +68,22 @@ build_script:
 
 after_build:
 
-  - ps: wget "https://developers.yubico.com/libu2f-host/Releases/libu2f-host-$env:LIBU2F_HOST_VERSION-win32.zip" -OutFile "libu2f-host-$env:LIBU2F_HOST_VERSION-win32.zip"
-  - 7z x libu2f-host-%LIBU2F_HOST_VERSION%-win32.zip -o".\libu2f-host" 
+  - ps: wget "$env:LIBU2FHOST_BASEURL/libu2f-host-$env:LIBU2F_HOST_VERSION-$env:WIN_ARCH.zip" -OutFile "libu2f-host-$env:LIBU2F_HOST_VERSION-$env:WIN_ARCH.zip"
+  - 7z x libu2f-host-%LIBU2F_HOST_VERSION%-%WIN_ARCH%.zip -o".\libu2f-host"
   - ps: Copy-Item .\libu2f-host\bin\*.dll .\release -Force
 
-  - ps: wget "https://developers.yubico.com/yubikey-personalization/Releases/ykpers-$env:YKPERS_VERSION-win32.zip" -OutFile "ykpers-$env:YKPERS_VERSION-win32.zip"
-  - 7z x ykpers-%YKPERS_VERSION%-win32.zip -o".\ykpers"
+  - ps: wget "$env:YKPERS_BASEURL/ykpers-$env:YKPERS_VERSION-$env:WIN_ARCH.zip" -OutFile "ykpers-$env:YKPERS_VERSION-$env:WIN_ARCH.zip"
+  - 7z x ykpers-%YKPERS_VERSION%-%WIN_ARCH%.zip -o".\ykpers"
   - ps: Copy-Item .\ykpers\bin\*.dll .\release -Force 
 
   - ps: Invoke-WebRequest "http://prdownloads.sourceforge.net/libusb/libusb-$env:LIBUSB_VERSION.7z" -OutFile "libusb-$env:LIBUSB_VERSION.7z" -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome
   - 7z x libusb-%LIBUSB_VERSION%.7z -o".\libusb"
-  - ps: Copy-Item .\libusb\MS32\dll\*.dll .\release -Force 
+  - ps: Copy-Item ".\libusb\$env:LIBUSB_DLL_FOLDER\dll\*.dll" .\ykman-gui\release -Force
 
-  - ps: wget https://www.python.org/ftp/python/$env:PY_VERSION/python-$env:PY_VERSION-embed-win32.zip -OutFile python-$env:PY_VERSION-embed-win32.zip
-  - 7z x python-%PY_VERSION%-embed-win32.zip -o".\release"
+  - ps: wget https://www.python.org/ftp/python/$env:PY_VERSION/python-$env:PY_VERSION-embed-$env:PY_ARCH.zip -OutFile python-$env:PY_VERSION-embed-$env:PY_ARCH.zip
+  - 7z x python-%PY_VERSION%-embed-%PY_ARCH%.zip -o".\ykman-gui\release"
   # Use Qt deployment tool on executable
   - windeployqt .\release\yubioath-desktop.exe --qmldir=qml --no-translations --angle --release
-  # Workaround:
-  # Manually add pyotherside plugin to release folder.
-  # Should be handled by windeployqt, but doesn't seem to be when QML Settings are used (?).
-  - ps: Copy-Item C:\Qt\5.9\msvc2015\qml\io .\release -recurse -Force
   # Add python dependencies to release folder
   - ps: Copy-Item .\pymodules .\release -recurse
   # Remove .pyc files from release folder
@@ -84,8 +98,8 @@ after_build:
   - ps: Get-ChildItem -Include sqlite3.dll -Recurse | Remove-Item -Force
   - ps: Get-ChildItem -Include _sqlite3.pyd -Recurse | Remove-Item -Force
   # Create zip for deployment
-  - set ARTIFACT_NAME=%APPVEYOR_REPO_BRANCH%
-  - if defined APPVEYOR_REPO_TAG_NAME set ARTIFACT_NAME=%APPVEYOR_REPO_TAG_NAME%
+  - set ARTIFACT_NAME=%APPVEYOR_REPO_BRANCH%-%WIN_ARCH%
+  - if defined APPVEYOR_REPO_TAG_NAME set ARTIFACT_NAME=%APPVEYOR_REPO_TAG_NAME%-%WIN_ARCH%
   - 7z a yubioath-desktop-%ARTIFACT_NAME%-win.zip .\release\*
   - cd %APPVEYOR_BUILD_FOLDER%
 
