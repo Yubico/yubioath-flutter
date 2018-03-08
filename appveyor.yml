@@ -78,10 +78,10 @@ after_build:
 
   - ps: Invoke-WebRequest "http://prdownloads.sourceforge.net/libusb/libusb-$env:LIBUSB_VERSION.7z" -OutFile "libusb-$env:LIBUSB_VERSION.7z" -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome
   - 7z x libusb-%LIBUSB_VERSION%.7z -o".\libusb"
-  - ps: Copy-Item ".\libusb\$env:LIBUSB_DLL_FOLDER\dll\*.dll" .\ykman-gui\release -Force
+  - ps: Copy-Item ".\libusb\$env:LIBUSB_DLL_FOLDER\dll\*.dll" .\release -Force
 
   - ps: wget https://www.python.org/ftp/python/$env:PY_VERSION/python-$env:PY_VERSION-embed-$env:PY_ARCH.zip -OutFile python-$env:PY_VERSION-embed-$env:PY_ARCH.zip
-  - 7z x python-%PY_VERSION%-embed-%PY_ARCH%.zip -o".\ykman-gui\release"
+  - 7z x python-%PY_VERSION%-embed-%PY_ARCH%.zip -o".\release"
   # Use Qt deployment tool on executable
   - windeployqt .\release\yubioath-desktop.exe --qmldir=qml --no-translations --angle --release
   # Add python dependencies to release folder
