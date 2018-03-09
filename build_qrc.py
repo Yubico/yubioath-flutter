@@ -18,6 +18,8 @@ def build_qrc(resources):
     yield '<qresource>'
     for d in resources:
         for root, dirs, files in os.walk(d):
+            dirs.sort()
+            files.sort()
             for f in files:
                 yield '<file>{}</file>'.format(os.path.join(root, f))
     yield '</qresource>'
