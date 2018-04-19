@@ -29,7 +29,7 @@ environment:
       PYTHON: C:\Python36-x64
       PY_ARCH: amd64
       WIN_ARCH: win64
-      LIBUSB_DLL_FOLDER: MS6
+      LIBUSB_DLL_FOLDER: MS64
       VCVARSALLPATH: C:\"Program Files (x86)\Microsoft Visual Studio"\2017\Community\VC\Auxiliary\Build\vcvarsall.bat
       VCVARSALL: x64
 
