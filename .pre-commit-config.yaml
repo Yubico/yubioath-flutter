@@ -8,5 +8,5 @@
   - id: flake8
     name: flake8
     language: system
-    entry: python3 -m flake8 ./py
+    entry: flake8 ./py
     files: \.py
