@@ -79,7 +79,7 @@ def compute_version(tag_prefix=None):
     )
 
     if git_result.returncode is not 0:
-        raise ChildProcessError(git_result.stderr)
+        raise ChildProcessError(git_result.stderr)  # noqa: F821
 
     git_version = git_result.stdout.strip()
 
