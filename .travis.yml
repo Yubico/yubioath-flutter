@@ -8,11 +8,7 @@ language: cpp
 sudo: required
 
 env:
-  - PY_VERSION="3.6.4" PYOTHERSIDE_VERSION="1.5.3"
-
-python:
-  - '3.5'
-  - '3.6'
+  - PY_VERSION="3.6.5" PYOTHERSIDE_VERSION="1.5.3"
 
 os:
   - osx
@@ -45,7 +41,7 @@ install:
       git clone https://github.com/aurelien-rainone/macdeployqtfix.git
       brew install qt5 swig
       brew link qt5 -f
-      brew install ykpers libyubikey hidapi libu2f-host libusb
+      brew install ykpers libyubikey hidapi libusb
       # Build Python 3 with --enable-framework, to be able to distribute it in a .app bundle
       brew upgrade pyenv
       eval "$(pyenv init -)"
@@ -58,14 +54,16 @@ install:
       sudo make install
       cd ../..
     fi
-  - pip install --upgrade pip
   # Install linting tools
+  - sudo pip install --upgrade pip
   - sudo pip install pre-commit flake8
 
 before_script:
   - |
-    pre-commit run --all-files
-    git fetch --unshallow
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]
+    then
+        pre-commit run --all-files
+    fi
 
 script:
   - |
@@ -94,7 +92,6 @@ after_success:
       find /usr/local/Cellar/ykpers/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       find /usr/local/Cellar/libyubikey/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       find /usr/local/Cellar/hidapi/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
-      find /usr/local/Cellar/libu2f-host/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       find /usr/local/Cellar/libusb/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       find /usr/local/Cellar/openssl/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       # Copy Python framework
@@ -114,8 +111,11 @@ after_success:
       # Fix linking for Python _hashlib
       sudo install_name_tool -change /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_hashlib.cpython-36m-darwin.so
       sudo install_name_tool -change /usr/local/opt/openssl/lib/libssl.1.0.0.dylib @executable_path/../Frameworks/libssl.1.0.0.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_hashlib.cpython-36m-darwin.so
+      # Rename app bundle
+      mv yubioath-desktop.app Yubico\ Authenticator.app
       # Copy .app to deploy dir
-      tar -czf deploy/yubioath-desktop-$TRAVIS_BRANCH.app.tar yubioath-desktop.app
+      tar -czf yubioath-desktop-$TRAVIS_BRANCH.app.tar.gz Yubico\ Authenticator.app
+      mv yubioath-desktop-$TRAVIS_BRANCH.app.tar.gz deploy
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
@@ -123,7 +123,6 @@ after_success:
       id=$(docker create yubioath-xenial)
       docker cp $id:/yubioath-desktop-debian-packages.tar.gz deploy/yubioath-desktop-$TRAVIS_BRANCH-deb.tar.gz
     fi
-
 
 deploy:
   provider: s3
