@@ -13,7 +13,7 @@ Python {
     property var version
     property string oathId
     property var connections: []
-    property var entries: []
+    property var entries: null
     property int nextRefresh: 0
     property var enabled: []
     property bool yubikeyModuleLoaded: false
