@@ -21,7 +21,7 @@ Label {
         } else if (device.nDevices === 1) {
             if (settings.slotMode && device.enabled && !device.hasOTP) {
                 return qsTr("Authenticator mode is set to YubiKey slots, but the OTP connection mode is not enabled.")
-            } else if (ccidMode && device.enabled && device.hasCCID) {
+            } else if (ccidMode && device.enabled && !device.hasCCID) {
                 return qsTr("Authenticator mode is set to CCID, but the CCID connection mode is not enabled.")
             } else {
                 return qsTr("Connecting to YubiKey...")
