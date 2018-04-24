@@ -20,8 +20,8 @@ Python {
     property bool yubikeyReady: false
     property bool yubikeyBusy: false
     property var queue: []
-    property bool hasOTP: enabled.indexOf('OTP') !== -1
-    property bool hasCCID: enabled.indexOf('CCID') !== -1
+    readonly property bool hasOTP: enabled.indexOf('OTP') !== -1
+    readonly property bool hasCCID: enabled.indexOf('CCID') !== -1
     property bool validated
     property bool slot1inUse
     property bool slot2inUse
