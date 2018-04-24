@@ -15,7 +15,7 @@ Python {
     property var connections: []
     property var entries: null
     property int nextRefresh: 0
-    property var enabled: []
+    property var enabled: null
     property bool yubikeyModuleLoaded: false
     property bool yubikeyReady: false
     property bool yubikeyBusy: false
