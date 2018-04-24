@@ -18,7 +18,7 @@ Label {
     function getText() {
         if (credentials === null) {
             return qsTr("Reading credentials...")
-        } else if (nCredentials === 0 && credentials !== null) {
+        } else if (nCredentials === 0) {
             return qsTr("No credentials found.")
         } else {
             return ""
