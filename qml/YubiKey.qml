@@ -13,15 +13,15 @@ Python {
     property var version
     property string oathId
     property var connections: []
-    property var entries: []
+    property var entries: null
     property int nextRefresh: 0
-    property var enabled: []
+    property var enabled: null
     property bool yubikeyModuleLoaded: false
     property bool yubikeyReady: false
     property bool yubikeyBusy: false
     property var queue: []
-    property bool hasOTP: enabled.indexOf('OTP') !== -1
-    property bool hasCCID: enabled.indexOf('CCID') !== -1
+    readonly property bool hasOTP: enabled.indexOf('OTP') !== -1
+    readonly property bool hasCCID: enabled.indexOf('CCID') !== -1
     property bool validated
     property bool slot1inUse
     property bool slot2inUse
