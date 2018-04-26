@@ -12,16 +12,16 @@ Python {
     property string name
     property var version
     property string oathId
-    property var connections: []
+    property var supportedUsbInterfaces: []
+    property var enabledUsbInterfaces: []
     property var entries: null
     property int nextRefresh: 0
-    property var enabled: null
     property bool yubikeyModuleLoaded: false
     property bool yubikeyReady: false
     property bool yubikeyBusy: false
     property var queue: []
-    readonly property bool hasOTP: enabled.indexOf('OTP') !== -1
-    readonly property bool hasCCID: enabled.indexOf('CCID') !== -1
+    readonly property bool hasOTP: enabledUsbInterfaces.indexOf('OTP') !== -1
+    readonly property bool hasCCID: enabledUsbInterfaces.indexOf('CCID') !== -1
     property bool validated
     property bool slot1inUse
     property bool slot2inUse
@@ -101,11 +101,10 @@ Python {
                 do_call('yubikey.controller.refresh', [slotMode],
                         function (dev) {
                             var usable = dev && dev.usable
-
                             name = usable ? dev.name : ''
                             version = usable ? dev.version : null
-                            enabled = usable ? dev.enabled : []
-                            connections = usable ? dev.connections : (dev ? dev.transports : [])
+                            enabledUsbInterfaces = usable ? dev.usb_interfaces_enabled : []
+                            supportedUsbInterfaces = usable ? dev.usb_interfaces_supported : []
                             hasDevice = !!usable
                         })
             } else {

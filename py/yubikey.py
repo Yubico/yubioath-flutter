@@ -10,8 +10,7 @@ from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
 
 from ykman.descriptor import get_descriptors
-from ykman.util import (
-    CAPABILITY, TRANSPORT, parse_b32_key)
+from ykman.util import (TRANSPORT, parse_b32_key)
 from ykman.driver_otp import YkpersError
 from ykman.driver_ccid import APDUError
 from ykman.oath import (ALGO, OATH_TYPE, OathController, CredentialData,
@@ -137,9 +136,10 @@ class Controller(object):
                 'name': dev.device_name,
                 'version': version,
                 'serial': dev.serial or '',
-                'enabled': [c.name for c in CAPABILITY if c & dev.enabled],
-                'connections': [
-                    t.name for t in TRANSPORT if t & dev.capabilities]
+                'usb_interfaces_supported': [
+                    t.name for t in TRANSPORT
+                    if t & dev.config.usb_supported],
+                'usb_interfaces_enabled': str(dev.mode).split('+')
             }
 
         return self._dev_info
