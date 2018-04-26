@@ -12,6 +12,7 @@ from binascii import a2b_hex, b2a_hex
 from ykman.descriptor import get_descriptors
 from ykman.util import (TRANSPORT, parse_b32_key)
 from ykman.driver_otp import YkpersError
+from ykman.otp import OtpController
 from ykman.driver_ccid import APDUError
 from ykman.oath import (ALGO, OATH_TYPE, OathController, CredentialData,
                         Credential, Code, SW)
@@ -220,13 +221,14 @@ class Controller(object):
         return None
 
     def _read_slot_code(self, slot, digits, timestamp, wait_for_touch):
-        dev = self._descriptor.open_device(TRANSPORT.OTP)
-        code = dev.driver.calculate(
-            slot, challenge=timestamp, totp=True, digits=int(digits),
-            wait_for_touch=wait_for_touch)
-        valid_from = timestamp - (timestamp % 30)
-        valid_to = valid_from + 30
-        return Code(code, valid_from, valid_to)
+        with self._descriptor.open_device(TRANSPORT.OTP) as dev:
+            controller = OtpController(dev.driver)
+            code = controller.calculate(
+                slot, challenge=timestamp, totp=True, digits=int(digits),
+                wait_for_touch=wait_for_touch)
+            valid_from = timestamp - (timestamp % 30)
+            valid_to = valid_from + 30
+            return Code(code, valid_from, valid_to)
 
     def _slot_name(self, slot):
         return "YubiKey Slot {}".format(slot).encode('utf-8')
@@ -301,16 +303,18 @@ class Controller(object):
                 raise
 
     def add_slot_credential(self, slot, key, touch):
-        dev = self._descriptor.open_device(TRANSPORT.OTP)
         key = parse_b32_key(key)
-        try:
-            dev.driver.program_chalresp(int(slot), key, touch)
-        except Exception as e:
-            return str(e)
+        with self._descriptor.open_device(TRANSPORT.OTP) as dev:
+            controller = OtpController(dev.driver)
+            try:
+                controller.program_chalresp(int(slot), key, touch)
+            except Exception as e:
+                return str(e)
 
     def delete_slot_credential(self, slot):
-        dev = self._descriptor.open_device(TRANSPORT.OTP)
-        dev.driver.zap_slot(slot)
+        with self._descriptor.open_device(TRANSPORT.OTP) as dev:
+            controller = OtpController(dev.driver)
+            controller.zap_slot(slot)
 
     def delete_credential(self, credential):
         dev = self._descriptor.open_device(TRANSPORT.CCID)
@@ -331,8 +335,9 @@ class Controller(object):
         controller.reset()
 
     def slot_status(self):
-        dev = self._descriptor.open_device(TRANSPORT.OTP)
-        return list(dev.driver.slot_status)
+        with self._descriptor.open_device(TRANSPORT.OTP) as dev:
+            controller = OtpController(dev.driver)
+            return list(controller.slot_status)
 
 
 class PixelImage(object):
