@@ -1,3 +1,9 @@
+* Version 4.3.4 (unreleased)
+ ** Windows: 64-bit version added.
+ ** Support YubiKey Preview
+ ** Add credential: allow space in secret key
+ ** Bugfix: Don't show "No credentials found..." incorrectly.
+
 * Version 4.3.3 (released 2018-02-15)
  ** Focus is not locked on the search field.
  ** Pressing ESC now clears the search field and deselects all credentials.
