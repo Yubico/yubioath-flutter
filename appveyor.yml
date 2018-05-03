@@ -6,8 +6,8 @@
 # https://www.appveyor.com/docs/appveyor-yml
 
 environment:
-  YKPERS_VERSION: "1.18.1"
-  LIBUSB_VERSION: "1.0.21"
+  YKPERS_VERSION: "1.19.0"
+  LIBUSB_VERSION: "1.0.22"
   PY_VERSION: "3.6.5"
   PYOTHERSIDE_VERSION: "1.5.3"
   YKPERS_BASEURL: https://developers.yubico.com/yubikey-personalization/Releases
