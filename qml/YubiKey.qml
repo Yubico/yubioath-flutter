@@ -59,6 +59,7 @@ Python {
     onYubikeyReadyChanged: runQueue()
 
     onHasDeviceChanged: {
+        clearKey()
         device.validated = false
     }
 
@@ -338,6 +339,10 @@ Python {
 
     function reset() {
         do_call('yubikey.controller.reset', [])
+    }
+
+    function clearKey() {
+        do_call('yubikey.controller.clear_key', [])
     }
 
     function getSlotStatus(cb) {

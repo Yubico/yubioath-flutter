@@ -156,6 +156,9 @@ class Controller(object):
                 return False
         return True
 
+    def clear_key(self):
+        self._key = None
+
     def refresh_credentials(self, timestamp):
         try:
             dev = self._descriptor.open_device(TRANSPORT.CCID)
