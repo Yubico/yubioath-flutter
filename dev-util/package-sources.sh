@@ -30,9 +30,8 @@ version=$(python3 compute-version.py "${PROJECT_NAME}"-)
 commit=$(git rev-parse --short HEAD)
 archive_name="archive-${commit}.tar.gz"
 output_archive_base_name="${1:-${PROJECT_NAME}}"
-output_archive_name="${output_archive_base_name}-${version}"
-output_archive_dir="${OUTPUT_DIR}/${output_archive_name}"
-output_archive_file_name="${output_archive_name}.tar.gz"
+output_archive_dir="${OUTPUT_DIR}/${output_archive_base_name}"
+output_archive_name="${output_archive_base_name}-${version}.tar.gz"
 
 mkdir -p "${SUBMODULES_DIR}"
 mkdir -p "${output_archive_dir}"
@@ -70,8 +69,8 @@ for submodule_line in $(git submodule status --recursive); do
 done
 
 # Bundle all sources together
-tar cf "${output_archive_file_name}" -C "${OUTPUT_DIR}" --auto-compress .
+tar cf "${output_archive_name}" -C "${OUTPUT_DIR}" .
 
-echo "Wrote ${output_archive_file_name}"
+echo "Wrote ${output_archive_name}"
 
 cleanup
