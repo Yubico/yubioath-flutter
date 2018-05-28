@@ -200,6 +200,7 @@ DefaultDialog {
 
     function tryAddCredential() {
         if (acceptableInput()) {
+            showValidationError = false
             if (device.credentialExists(name.text)) {
                 confirmOverWrite.open()
             } else {
