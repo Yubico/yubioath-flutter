@@ -30,6 +30,7 @@ DefaultDialog {
                 focus: true
                 KeyNavigation.tab: name
                 Keys.onEscapePressed: close()
+                onAccepted: tryAddCredential()
             }
             Label {
                 text: qsTr("Account name")
@@ -41,6 +42,7 @@ DefaultDialog {
                 Layout.fillWidth: true
                 KeyNavigation.tab: key
                 Keys.onEscapePressed: close()
+                onAccepted: tryAddCredential()
             }
 
             Label {
