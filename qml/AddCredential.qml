@@ -12,6 +12,8 @@ DefaultDialog {
     property var device
     visible: false
 
+    property bool showValidationError: false
+
     ColumnLayout {
         anchors.fill: parent
 
@@ -28,6 +30,7 @@ DefaultDialog {
                 focus: true
                 KeyNavigation.tab: name
                 Keys.onEscapePressed: close()
+                onAccepted: tryAddCredential()
             }
             Label {
                 text: qsTr("Account name")
@@ -39,6 +42,7 @@ DefaultDialog {
                 Layout.fillWidth: true
                 KeyNavigation.tab: key
                 Keys.onEscapePressed: close()
+                onAccepted: tryAddCredential()
             }
 
             Label {
@@ -149,6 +153,13 @@ DefaultDialog {
                 isDefault: true
             }
         }
+
+        Label {
+            color: 'red'
+            font.italic: true
+            text: getValidationErrorMessage() || ''
+            visible: showValidationError
+        }
     }
 
     MessageDialog {
@@ -188,10 +199,15 @@ DefaultDialog {
     }
 
     function tryAddCredential() {
-        if (device.credentialExists(name.text)) {
-            confirmOverWrite.open()
+        if (acceptableInput()) {
+            showValidationError = false
+            if (device.credentialExists(name.text)) {
+                confirmOverWrite.open()
+            } else {
+                addCredential()
+            }
         } else {
-            addCredential()
+            showValidationError = true
         }
     }
 
@@ -199,10 +215,18 @@ DefaultDialog {
         return Utils.versionGE(device.version, 4, 2, 6)
     }
 
+    function getValidationErrorMessage() {
+        if (name.text.length === 0) {
+            return 'Account name must not be empty.'
+        } else if (key.text.length === 0) {
+            return 'Secret key must not be empty.'
+        } else if (name.text.length + issuer.text.length > 60) {
+            return 'Issuer and account name combined must be 60 characters or shorter.'
+        }
+    }
+
     function acceptableInput() {
-        var nameAndKey = name.text.length !== 0 && key.text.length !== 0
-        var toLong = name.text.length + issuer.text.length > 60
-        return nameAndKey && !toLong
+        return getValidationErrorMessage() === undefined
     }
 
     function getAlgoIndex(algo) {
