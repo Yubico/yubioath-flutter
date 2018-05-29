@@ -188,10 +188,12 @@ DefaultDialog {
     }
 
     function tryAddCredential() {
-        if (device.credentialExists(name.text)) {
-            confirmOverWrite.open()
-        } else {
-            addCredential()
+        if (acceptableInput()) {
+            if (device.credentialExists(name.text)) {
+                confirmOverWrite.open()
+            } else {
+                addCredential()
+            }
         }
     }
 
