@@ -28,6 +28,7 @@ DefaultDialog {
                 focus: true
                 KeyNavigation.tab: name
                 Keys.onEscapePressed: close()
+                onAccepted: tryAddCredential()
             }
             Label {
                 text: qsTr("Account name")
@@ -39,6 +40,7 @@ DefaultDialog {
                 Layout.fillWidth: true
                 KeyNavigation.tab: key
                 Keys.onEscapePressed: close()
+                onAccepted: tryAddCredential()
             }
 
             Label {
@@ -188,10 +190,12 @@ DefaultDialog {
     }
 
     function tryAddCredential() {
-        if (device.credentialExists(name.text)) {
-            confirmOverWrite.open()
-        } else {
-            addCredential()
+        if (acceptableInput()) {
+            if (device.credentialExists(name.text)) {
+                confirmOverWrite.open()
+            } else {
+                addCredential()
+            }
         }
     }
 
