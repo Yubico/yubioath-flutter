@@ -5,6 +5,9 @@
 #include <QtGlobal>
 #include <QtWidgets>
 #include <QQuickWindow>
+
+#include <singleapplication.h>
+
 #include "screenshot.h"
 #include "systemtray.h"
 
@@ -18,21 +21,10 @@ int main(int argc, char *argv[])
     // Don't write .pyc files.
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 
-    QApplication app(argc, argv);
+    SingleApplication app(argc, argv);
     app.setApplicationName("Yubico Authenticator");
     app.setOrganizationName("Yubico");
     app.setOrganizationDomain("com.yubico");
-
-    // A lock file is used, to ensure only one running instance at the time.
-    QString tmpDir = QDir::tempPath();
-    QLockFile lockFile(tmpDir + "/yubioath-desktop.lock");
-    if(!lockFile.tryLock(100)){
-        QMessageBox msgBox;
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setText("Yubico Authenticator is already running.");
-        msgBox.exec();
-        return 1;
-    }
 
     QString app_dir = app.applicationDirPath();
     QString main_qml = "/qml/main.qml";
@@ -113,6 +105,12 @@ int main(int argc, char *argv[])
     root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(raise()));
     root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(requestActivate()));
     #endif
+
+    // Starting a second instance application should raise the qmlWindow. Replicated steps as above
+    root->connect(&app, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::hide);
+    root->connect(&app, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::show);
+    root->connect(&app, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::raise);
+    root->connect(&app, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::requestActivate);
 
     // Explicitly hide trayIcon on exit
     const int status = app.exec();

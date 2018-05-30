@@ -4,6 +4,10 @@ CONFIG += c++11
 unix {
   QMAKE_CXXFLAGS += -pedantic-errors
 }
+
+include(singleapplication/singleapplication.pri)
+DEFINES += QAPPLICATION_CLASS=QApplication
+
 SOURCES += main.cpp \
     systemtray.cpp
 
