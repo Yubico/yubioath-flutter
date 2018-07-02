@@ -37,3 +37,7 @@ Installers are available https://developers.yubico.com/yubioath-desktop/Releases
 ==== Other Linux/Unix - Build from source
 
 See the https://developers.yubico.com/yubioath-desktop/Building_from_Source.html[build documentation].
+
+=== CLI
+
+Looking for a command line option? That is available in https://developers.yubico.com/yubikey-manager/[YubiKey Manager CLI] with the `ykman oath` commands.
