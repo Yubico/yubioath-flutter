@@ -56,7 +56,7 @@ RUN mkdir -p yubioath-desktop/appDir/usr \
     && unset QT_PLUGIN_PATH \
     && unset LD_LIBRARY_PATH
 CMD cd yubioath-desktop \
-    && ./linuxdeployqt*.AppImage appDir/usr/bin/yubioath-desktop -qmldir=./yubioath-desktop/qml -bundle-non-qt-libs \
+    && ./linuxdeployqt*.AppImage appDir/usr/bin/yubioath-desktop -qmldir=./qml -bundle-non-qt-libs \
     && rm appDir/AppRun \
     && cp ./resources/linux/AppRun appDir/ \
     && chmod a+x appDir/AppRun \
