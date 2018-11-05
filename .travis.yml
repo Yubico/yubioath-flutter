@@ -69,7 +69,7 @@ script:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
-      docker build -t yubioath-xenial -f docker/xenial/Dockerfile .
+      docker build -t xenial-deb -f docker/xenial-deb/Dockerfile .
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
@@ -119,7 +119,7 @@ after_success:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
-      id=$(docker create yubioath-xenial)
+      id=$(docker create xenial-deb)
       docker cp $id:/yubioath-desktop-debian-packages.tar.gz deploy/yubioath-desktop-$TRAVIS_BRANCH-deb.tar.gz
     fi
 
