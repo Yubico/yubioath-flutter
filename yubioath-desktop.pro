@@ -1,35 +1,19 @@
 TEMPLATE = app
 QT += qml quick widgets
 CONFIG += c++11
-unix {
-  QMAKE_CXXFLAGS += -pedantic-errors
-}
-SOURCES += main.cpp \
-    systemtray.cpp
+SOURCES += main.cpp systemtray.cpp
+HEADERS += screenshot.h systemtray.h
 
-# This is the verson number for the application,
-# will be in info.plist file, about page etc.
-
-PYTHON3_BINARY_NAME=python3
+# This is the internal verson number, Windows requires 4 digits.
 win32|win64 {
-  PYTHON3_BINARY_NAME=python
+    VERSION = 4.3.5.0
+} else {
+    VERSION = 4.3.5
 }
-
-VERSION = $$system($$PYTHON3_BINARY_NAME compute-version.py -f VERSION yubioath-desktop-)
+# This is the version shown on the About page
+DEFINES += APP_VERSION=\\\"4.3.5\\\"
 
 message(Version of this build: $$VERSION)
-
-DEFINES += APP_VERSION=\\\"$$VERSION\\\"
-
-win32|win64 {
-  # Strip suffixes from version number
-  # Because rc compiler requires only numerals in the version number
-  # If version contains "-", output version (0, 0, 0, 0)
-  # Otherwise assume version is "X.Y.Z", where X, Y, Z are all numeric. Output version (X, Y, Z, 0).
-  VERSION ~= s/^.*-.*$/0.0.0.0
-  VERSION ~= s/^([0-9]+\.[0-9]+\.[0-9]+)$/\1.0
-  message(Version tweaked for Windows build: $$VERSION)
-}
 
 buildqrc.commands = python build_qrc.py ${QMAKE_FILE_IN}
 buildqrc.input = QRC_JSON
@@ -78,8 +62,6 @@ lupdate_only {
   qml/slot/*.qml
 }
 
-HEADERS += screenshot.h \
-    systemtray.h
 
 DISTFILES += \
     py/* \
