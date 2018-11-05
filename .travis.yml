@@ -70,6 +70,7 @@ script:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
       docker build -t xenial-deb -f docker/xenial-deb/Dockerfile .
+      docker build -t xenial-appimage -f docker/xenial-appimage/Dockerfile .
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
@@ -120,7 +121,11 @@ after_success:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
       id=$(docker create xenial-deb)
+      docker start --attach $id
       docker cp $id:/yubioath-desktop-debian-packages.tar.gz deploy/yubioath-desktop-$TRAVIS_BRANCH-deb.tar.gz
+      id=$(docker create --privileged xenial-appimage)
+      docker start --attach $id
+      docker cp $id:/yubioath-desktop/Yubico_Authenticator-x86_64.AppImage deploy/yubioath-desktop-$TRAVIS_BRANCH.AppImage
     fi
 
 deploy:
