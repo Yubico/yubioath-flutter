@@ -12,7 +12,8 @@ DefaultDialog {
     property var device
 
     ColumnLayout {
-        anchors.fill: parent
+        Layout.fillHeight: true
+        Layout.fillWidth: true
 
         GridLayout {
             columns: 2
