@@ -86,6 +86,13 @@ DefaultDialog {
     }
 
     MessageDialog {
+        id: generalError
+        icon: StandardIcon.Critical
+        title: qsTr("Error")
+        standardButtons: StandardButton.Ok
+    }
+
+    MessageDialog {
         id: paddingError
         icon: StandardIcon.Critical
         title: qsTr("Wrong padding")
@@ -146,15 +153,18 @@ DefaultDialog {
 
     function addCredential() {
         device.addSlotCredential(getSelectedSlotNumber(), key.text,
-                                 touch.checked, function (error) {
-                                     if (error === 'Incorrect padding') {
-                                         paddingError.open()
-                                     }
-                                     if (error === 'Over 20 bytes') {
-                                         tooLargeKeyError.open()
-                                     }
-                                     if (error) {
-                                         console.log(error)
+                                 touch.checked, function (resp) {
+                                     if (!resp.success) {
+                                         if (resp.error === 'Incorrect padding') {
+                                             paddingError.open()
+                                         } else if (resp.error
+                                                    === 'key lengths >20 bytes not supported') {
+                                             tooLargeKeyError.open()
+                                         } else {
+                                             generalError.text
+                                                     = resp.error ? resp.error : 'Unknown error.'
+                                             generalError.open()
+                                         }
                                      }
                                      close()
                                      refreshDependingOnMode(true)

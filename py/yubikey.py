@@ -306,13 +306,14 @@ class Controller(object):
                 raise
 
     def add_slot_credential(self, slot, key, touch):
-        key = parse_b32_key(key)
-        with self._descriptor.open_device(TRANSPORT.OTP) as dev:
-            controller = OtpController(dev.driver)
-            try:
+        try:
+            key = parse_b32_key(key)
+            with self._descriptor.open_device(TRANSPORT.OTP) as dev:
+                controller = OtpController(dev.driver)
                 controller.program_chalresp(int(slot), key, touch)
-            except Exception as e:
-                return str(e)
+                return {'success': True, 'error': None}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
 
     def delete_slot_credential(self, slot):
         with self._descriptor.open_device(TRANSPORT.OTP) as dev:
