@@ -126,7 +126,7 @@
  ** CLI version has been removed from this project, the functionality is now found in the YubiKey Manager (ykman) tool.
  ** Slot mode and CCID mode are now kept separated, choose which mode to use under "Settings".
  ** Added keyboard shortcuts for copy code, generate code, delete credential, add credential and settings.
- ** Added support for reseting all OATH credentials and password.
+ ** Added support for resetting all OATH credentials and password.
 
 * Version 3.1.0b (released 2016-12-16)
  ** Fix crash on macOS related to how the application was built.
