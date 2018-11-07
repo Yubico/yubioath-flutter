@@ -171,7 +171,7 @@ def zero_region(data, x, y, w, h):
 
 
 def bits_to_int(bits):
-    """Convers a list of bits into an integer"""
+    """Converts a list of bits into an integer"""
     val = 0
     for bit in bits:
         val = (val << 1) | bit
