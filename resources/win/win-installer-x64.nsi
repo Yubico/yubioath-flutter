@@ -169,7 +169,7 @@ SectionEnd
     Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall Yubico Authenticator.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Yubico Authenticator.lnk"
 
-    ;Delete empty start menu parent diretories
+    ;Delete empty start menu parent directories
     StrCpy $MUI_TEMP "$SMPROGRAMS\$MUI_TEMP"
 
     startMenuDeleteLoop:
