@@ -119,7 +119,7 @@ Section "Yubico Authenticator"
   WriteRegDWORD     HKLM $MYTMP "NoModify"        "1"
   WriteRegDWORD     HKLM $MYTMP "NoRepair"        "1"
 
-  ; Install Visual C++ Redistrubutable Packages
+  ; Install Visual C++ Redistributable Packages
   ; will do nothing if already installed
   ExecWait "$INSTDIR\vcredist_x86.exe /q /norestart"
   ; Delete redist packages
