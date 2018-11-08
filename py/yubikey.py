@@ -313,7 +313,12 @@ class Controller(object):
                 controller.program_chalresp(int(slot), key, touch)
                 return {'success': True, 'error': None}
         except Exception as e:
+            if str(e) == 'Incorrect padding':
+                return {'success': False, 'error': 'wrong padding'}
+            if str(e) == 'key lengths >20 bytes not supported':
+                return {'success': False, 'error': 'too large key'}
             return {'success': False, 'error': str(e)}
+
 
     def delete_slot_credential(self, slot):
         with self._descriptor.open_device(TRANSPORT.OTP) as dev:

@@ -155,10 +155,9 @@ DefaultDialog {
         device.addSlotCredential(getSelectedSlotNumber(), key.text,
                                  touch.checked, function (resp) {
                                      if (!resp.success) {
-                                         if (resp.error === 'Incorrect padding') {
+                                         if (resp.error === 'wrong padding') {
                                              paddingError.open()
-                                         } else if (resp.error
-                                                    === 'key lengths >20 bytes not supported') {
+                                         } else if (resp.error === 'too large key') {
                                              tooLargeKeyError.open()
                                          } else {
                                              generalError.text
