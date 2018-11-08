@@ -319,7 +319,6 @@ class Controller(object):
                 return {'success': False, 'error': 'too large key'}
             return {'success': False, 'error': str(e)}
 
-
     def delete_slot_credential(self, slot):
         with self._descriptor.open_device(TRANSPORT.OTP) as dev:
             controller = OtpController(dev.driver)
