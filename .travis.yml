@@ -81,7 +81,7 @@ script:
 
 after_success:
   - mkdir deploy/
-  # Exctract all user facing strings and create a textfile with them for deployment.
+  # Extract all user facing strings and create a textfile with them for deployment.
   - lupdate yubioath-desktop.pro -ts yubioath-desktop.ts
   - cp yubioath-desktop.ts deploy/yubioath-desktop-$TRAVIS_BRANCH-strings.xml
   - |

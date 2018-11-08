@@ -111,7 +111,7 @@
 * Version 4.0.1 (released 2017-03-27)
  ** Bugfix: Follow color schemes better.
  ** Removed some spacing thath caused the layout to be slightly off.
- ** Improved focus switching betweeen search bar and credentials.
+ ** Improved focus switching between search bar and credentials.
  ** Added keyboard shortcut (Ctrl/Cmd + F) for focus on the search bar.
  ** Select the top credential during search.
  ** Remember window location and dimensions between launches.
@@ -123,10 +123,10 @@
 * Version 4.0.0 (released 2017-03-20)
  ** The UI has been completely rewritten, to allow us to use a more modern technology stack.
     All main functionality and concepts are kept the same.
- ** CLI version has been removed from this porject, the functionality is now found in the YubiKey Manager (ykman) tool.
+ ** CLI version has been removed from this project, the functionality is now found in the YubiKey Manager (ykman) tool.
  ** Slot mode and CCID mode are now kept separated, choose which mode to use under "Settings".
  ** Added keyboard shortcuts for copy code, generate code, delete credential, add credential and settings.
- ** Added support for reseting all OATH credentials and password.
+ ** Added support for resetting all OATH credentials and password.
 
 * Version 3.1.0b (released 2016-12-16)
  ** Fix crash on macOS related to how the application was built.
