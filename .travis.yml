@@ -39,9 +39,10 @@ install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
       git clone https://github.com/aurelien-rainone/macdeployqtfix.git
-      brew install qt5 swig
-      brew link qt5 -f
-      brew install ykpers libyubikey libusb
+      brew install swig ykpers libyubikey libusb
+      # Qt 5.10.1 needed on macOS because of https://bugreports.qt.io/browse/QTBUG-67663
+      brew install -v https://raw.githubusercontent.com/Homebrew/homebrew-core/8d4d48f0bb552b7b107119aeef59f141ce1f72c3/Formula/qt.rb
+      brew link qt -f
       # Build Python 3 with --enable-framework, to be able to distribute it in a .app bundle
       brew upgrade pyenv
       eval "$(pyenv init -)"
