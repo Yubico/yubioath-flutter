@@ -54,8 +54,8 @@ install:
       make
       sudo make install
       cd ../..
-      sudo pip install --upgrade pip
-      sudo pip install pre-commit flake8
+      sudo pip3 install --upgrade pip
+      sudo pip3 install pre-commit flake8
     fi
 
 before_script:
