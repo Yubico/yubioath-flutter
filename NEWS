@@ -1,5 +1,6 @@
-* Version 4.3.5 (unreleased)
- ** Improve error handling
+* Version 4.3.5 (released 2019-01-02)
+ ** Bugfix: Show correct message when YubiKey doesn't have the correct transport enabled.
+ ** Improve error handling in Slot Mode.
  ** Linux: Add experimental support for .AppImage
 
 * Version 4.3.4 (released 2018-05-07)
