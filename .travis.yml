@@ -125,7 +125,7 @@ after_success:
       docker cp $id:/yubioath-desktop-debian-packages.tar.gz deploy/yubioath-desktop-$TRAVIS_BRANCH-deb.tar.gz
       id=$(docker create --privileged xenial-appimage)
       docker start --attach $id
-      docker cp $id:Yubico_Authenticator-x86_64.AppImage deploy/yubioath-desktop-$TRAVIS_BRANCH.AppImage
+      docker cp $id:/yubioath-desktop/Yubico_Authenticator-x86_64.AppImage deploy/yubioath-desktop-$TRAVIS_BRANCH.AppImage
     fi
 
 deploy:
