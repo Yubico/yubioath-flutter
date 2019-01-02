@@ -26,7 +26,7 @@ Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          python3-yubikey-manager (>= 0.7.0~dev),
-         python3-yubikey-manager (< 2),
+         python3-yubikey-manager (< 3),
          qml-module-io-thp-pyotherside,
          qml-module-qtquick-controls,
          qml-module-qtquick-dialogs,
