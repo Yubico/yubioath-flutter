@@ -2,7 +2,7 @@ FROM ubuntu:xenial
 RUN apt-get update -qq \
     && apt-get install -qq software-properties-common \
     && add-apt-repository -y ppa:yubico/stable \
-    && add-apt-repository -y ppa:beineri/opt-qt-5.11.1-xenial \
+    && add-apt-repository -y ppa:beineri/opt-qt-5.11.2-xenial \
     && apt-get -qq update \
     && apt-get -qq upgrade
 RUN apt-get install -y git make build-essential libssl-dev zlib1g-dev libbz2-dev \
