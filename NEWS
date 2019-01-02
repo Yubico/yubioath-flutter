@@ -1,3 +1,7 @@
+* Version 4.3.5 (unreleased)
+ ** Improve error handling
+ ** Linux: Add experimental support for .AppImage
+
 * Version 4.3.4 (released 2018-05-07)
  ** Support YubiKey Preview
  ** Add credential: allow space in secret key.
