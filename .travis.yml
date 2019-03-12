@@ -24,7 +24,6 @@ before_install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
-      export MACOSX_DEPLOYMENT_TARGET=10.9
       brew update
       wget https://github.com/thp/pyotherside/archive/$PYOTHERSIDE_VERSION.tar.gz -P ./lib
       cd lib
