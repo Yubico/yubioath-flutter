@@ -14,8 +14,8 @@ os:
   - osx
   - linux
 
-# Build on Sierra
-osx_image: xcode9.2
+# Try build on mojave
+osx_image: xcode10.2
 
 services:
   - docker
