@@ -31,6 +31,7 @@ ApplicationWindow {
                 horizontalAlignment: Qt.AlignHCenter
                 verticalAlignment: Qt.AlignVCenter
                 Layout.fillWidth: true
+                background.width: width
             }
 
             ToolButton {
@@ -41,10 +42,21 @@ ApplicationWindow {
 
     StackView {
         anchors.fill: parent
-        Column {
-            Button {
-                text: "toggle theme"
-                onClicked: toggleTheme()
+        Pane {
+            GridLayout {
+                anchors.fill: parent
+                columnSpacing: 20
+                rowSpacing: 20
+                CredentialCard {
+                }
+                CredentialCard {
+                }
+                CredentialCard {
+                }
+                Button {
+                    text: "toggle theme"
+                    onClicked: toggleTheme()
+                }
             }
         }
     }
