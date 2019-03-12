@@ -5,6 +5,7 @@
 #include <QtGlobal>
 #include <QtWidgets>
 #include <QQuickWindow>
+#include <QQuickStyle>
 #include "screenshot.h"
 #include "systemtray.h"
 
@@ -22,6 +23,8 @@ int main(int argc, char *argv[])
     app.setApplicationName("Yubico Authenticator");
     app.setOrganizationName("Yubico");
     app.setOrganizationDomain("com.yubico");
+
+     QQuickStyle::setStyle("Material");
 
     // A lock file is used, to ensure only one running instance at the time.
     QString tmpDir = QDir::tempPath();
