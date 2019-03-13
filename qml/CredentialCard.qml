@@ -23,24 +23,23 @@ Pane {
         }
 
         ColumnLayout {
+            spacing: 2
             Label {
                 text: "Google"
             }
             Label {
                 font.pixelSize: 36
                 text: qsTr("783 234")
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 anchors.centerIn: parent
             }
             Label {
                 text: "My account"
             }
         }
-        Rectangle {
-            width: 12
-            height: 12
-            color: Material.primary
-            radius: width * 0.5
-            Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
+        CredentialCardTimer {
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+            colorCircle: yubicoGreen
         }
     }
 }

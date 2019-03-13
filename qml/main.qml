@@ -47,11 +47,11 @@ ApplicationWindow {
                 anchors.fill: parent
                 columnSpacing: 20
                 rowSpacing: 20
-                CredentialCard {
-                }
-                CredentialCard {
-                }
-                CredentialCard {
+                columns: app.width / 300
+                Repeater {
+                    model: 14
+                    CredentialCard {
+                    }
                 }
                 Button {
                     text: "toggle theme"
