@@ -11,11 +11,6 @@
 
 int main(int argc, char *argv[])
 {
-    // Global menubar is broken for qt5 apps in Ubuntu Unity, see:
-    // https://bugs.launchpad.net/ubuntu/+source/appmenu-qt5/+bug/1323853
-    // This workaround enables a local menubar.
-    qputenv("UBUNTU_MENUPROXY","0");
-
     // Don't write .pyc files.
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 
@@ -24,7 +19,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("Yubico");
     app.setOrganizationDomain("com.yubico");
 
-     QQuickStyle::setStyle("Material");
+    QQuickStyle::setStyle("Material");
 
     // A lock file is used, to ensure only one running instance at the time.
     QString tmpDir = QDir::tempPath();
