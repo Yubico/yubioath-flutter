@@ -6,7 +6,8 @@ import QtQuick.Controls.Material 2.2
 ApplicationWindow {
 
     id: app
-    width: 300
+
+    width: 800
     height: 400
     visible: true
 
@@ -15,17 +16,22 @@ ApplicationWindow {
     readonly property string yubicoWhite: "#FFFFFF"
     readonly property string yubicoGrey: "#939598"
 
-    Material.theme: Material.System
+    readonly property string defaultDark: "#303030"
+    readonly property string defaultLight: "#FAFAFA"
 
+    Material.theme: Material.System
     Material.primary: yubicoGreen
     Material.accent: yubicoBlue
 
     header: ToolBar {
+
         RowLayout {
             anchors.fill: parent
+
             ToolButton {
                 text: qsTr("‹")
             }
+
             TextField {
                 placeholderText: "Search.."
                 horizontalAlignment: Qt.AlignHCenter
@@ -41,18 +47,25 @@ ApplicationWindow {
     }
 
     StackView {
+        id: stackView
         anchors.fill: parent
         Pane {
             GridLayout {
-                anchors.fill: parent
                 columnSpacing: 20
                 rowSpacing: 20
                 columns: app.width / 300
+
                 Repeater {
-                    model: 14
+                    model: 10
                     CredentialCard {
                     }
                 }
+
+                CredentialCard {
+                    issuer: ""
+                    name: "i only have name!"
+                }
+
                 Button {
                     text: "toggle theme"
                     onClicked: toggleTheme()
@@ -61,8 +74,12 @@ ApplicationWindow {
         }
     }
 
+    function isDark() {
+        return app.Material.theme === Material.Dark
+    }
+
     function toggleTheme() {
-        if (app.Material.theme === Material.Dark) {
+        if (isDark()) {
             app.Material.theme = Material.Light
         } else {
             app.Material.theme = Material.Dark

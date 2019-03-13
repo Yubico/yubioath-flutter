@@ -11,9 +11,9 @@ Item {
         id: time
         repeat: true
         running: true
-        interval: 500
+        interval: 250
         onTriggered: {
-            root.arcBegin = root.arcBegin + 6
+            root.arcBegin = root.arcBegin + 3
             if (root.arcBegin == 360) {
                 root.arcBegin = 0
             }
