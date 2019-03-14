@@ -23,27 +23,7 @@ ApplicationWindow {
     Material.primary: yubicoGreen
     Material.accent: yubicoBlue
 
-    header: ToolBar {
-
-        RowLayout {
-            anchors.fill: parent
-
-            ToolButton {
-                text: qsTr("‹")
-            }
-
-            TextField {
-                placeholderText: "Search.."
-                horizontalAlignment: Qt.AlignHCenter
-                verticalAlignment: Qt.AlignVCenter
-                Layout.fillWidth: true
-                background.width: width
-            }
-
-            ToolButton {
-                text: qsTr("⋮")
-            }
-        }
+    header: StyledToolBar {
     }
 
     StackView {
