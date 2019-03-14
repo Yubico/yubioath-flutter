@@ -24,34 +24,7 @@ ApplicationWindow {
     Material.accent: yubicoBlue
 
     header: StyledToolBar {
-    }
-
-    StackView {
-        id: stackView
-        anchors.fill: parent
-        Pane {
-            GridLayout {
-                columnSpacing: 20
-                rowSpacing: 20
-                columns: app.width / 300
-
-                Repeater {
-                    model: 10
-                    CredentialCard {
-                    }
-                }
-
-                CredentialCard {
-                    issuer: ""
-                    name: "i only have name!"
-                }
-
-                Button {
-                    text: "toggle theme"
-                    onClicked: toggleTheme()
-                }
-            }
-        }
+        id: toolBar
     }
 
     function isDark() {
@@ -63,6 +36,31 @@ ApplicationWindow {
             app.Material.theme = Material.Light
         } else {
             app.Material.theme = Material.Dark
+        }
+    }
+
+    function goToSettings() {
+        if (stackView.currentItem.objectName !== 'settingsView') {
+            stackView.push(settingsView)
+        }
+    }
+
+    StackView {
+        id: stackView
+        anchors.fill: parent
+        initialItem: credentialsView
+    }
+
+    Component {
+        id: credentialsView
+        CredentialsView {
+        }
+    }
+
+    Component {
+        id: settingsView
+        SettingsView {
+            objectName: 'settingsView'
         }
     }
 }

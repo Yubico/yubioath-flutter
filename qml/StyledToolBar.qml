@@ -8,12 +8,11 @@ ToolBar {
     id: toolBar
 
     property bool showSearch: true
-    property bool showBackBtn: false
+    property bool showBackBtn: stackView.depth > 1
     property bool showAddCredentialBtn: true
     property bool showSettingsBtn: true
 
     RowLayout {
-        id: row
         spacing: 0
         anchors.leftMargin: 20
         anchors.fill: parent
@@ -21,7 +20,21 @@ ToolBar {
         ToolButton {
             id: backBtn
             visible: showBackBtn
-            text: qsTr("‹")
+            onClicked: stackView.pop()
+
+            Image {
+                id: backIcon
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                Layout.maximumWidth: 150
+                fillMode: Image.PreserveAspectFit
+                source: "../images/back.svg"
+                ColorOverlay {
+                    source: backIcon
+                    color: yubicoWhite
+                    anchors.fill: backIcon
+                }
+            }
         }
 
         TextField {
@@ -63,6 +76,8 @@ ToolBar {
                 anchors.right: parent.right
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: showSettingsBtn
+                onClicked: app.goToSettings()
+
                 Image {
                     id: settingsIcon
                     anchors.horizontalCenter: parent.horizontalCenter
