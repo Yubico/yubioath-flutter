@@ -45,10 +45,16 @@ ApplicationWindow {
         }
     }
 
+    function goToCredentials() {
+        if (stackView.currentItem.objectName !== 'credentialsView') {
+            stackView.push(credentialsView)
+        }
+    }
+
     StackView {
         id: stackView
         anchors.fill: parent
-        initialItem: credentialsView
+        initialItem: noYubiKeyView
     }
 
     Component {
@@ -60,7 +66,12 @@ ApplicationWindow {
     Component {
         id: settingsView
         SettingsView {
-            objectName: 'settingsView'
+        }
+    }
+
+    Component {
+        id: noYubiKeyView
+        NoYubiKeyView {
         }
     }
 }
