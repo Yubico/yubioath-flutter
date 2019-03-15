@@ -70,6 +70,11 @@ ToolBar {
                 visible: showAddCredentialBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: app.goToCredentials()
+
+                ToolTip.text: "Add a new credential"
+                ToolTip.delay: 1000
+                ToolTip.visible: hovered
+
                 Image {
                     id: addIcon
                     anchors.horizontalCenter: parent.horizontalCenter

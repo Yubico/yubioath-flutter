@@ -8,9 +8,9 @@ ApplicationWindow {
     id: app
 
     width: 360
-    height: 496
+    height: 540
     minimumWidth: 360
-    minimumHeight: 144
+    minimumHeight: 540
     visible: true
 
     readonly property string yubicoGreen: "#9aca3c"
@@ -65,7 +65,7 @@ ApplicationWindow {
     StackView {
         id: stackView
         anchors.fill: parent
-        initialItem: enterPasswordView
+        initialItem: multipleYubiKeysView
     }
 
     Component {
@@ -89,6 +89,12 @@ ApplicationWindow {
     Component {
         id: enterPasswordView
         EnterPasswordView {
+        }
+    }
+
+    Component {
+        id: multipleYubiKeysView
+        MultipleYubiKeysView {
         }
     }
 }
