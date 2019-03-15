@@ -14,6 +14,9 @@ int main(int argc, char *argv[])
     // Don't write .pyc files.
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 
+    // Use Material "Dense" variant, recommended for Desktop
+    qputenv("QT_QUICK_CONTROLS_MATERIAL_VARIANT", "Dense");
+
     QApplication app(argc, argv);
     app.setApplicationName("Yubico Authenticator");
     app.setOrganizationName("Yubico");
