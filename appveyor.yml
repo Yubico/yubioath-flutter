@@ -6,26 +6,26 @@
 # https://www.appveyor.com/docs/appveyor-yml
 
 environment:
-  YKPERS_VERSION: "1.19.0"
+  YKPERS_VERSION: "1.19.3"
   LIBUSB_VERSION: "1.0.22"
-  PY_VERSION: "3.6.5"
+  PY_VERSION: "3.6.8"
   PYOTHERSIDE_VERSION: "1.5.3"
   YKPERS_BASEURL: https://developers.yubico.com/yubikey-personalization/Releases
 
   matrix:
     - platform: x86
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      QT_VERSION: 5.11\msvc2015
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      QT_VERSION: 5.12\msvc2017
       PYTHON: C:\Python36
       PY_ARCH: win32
       WIN_ARCH: win32
       LIBUSB_DLL_FOLDER: MS32
-      VCVARSALLPATH: C:\"Program Files (x86)\Microsoft Visual Studio 14.0"\VC\vcvarsall.bat
+      VCVARSALLPATH: C:\"Program Files (x86)\Microsoft Visual Studio"\2017\Community\VC\Auxiliary\Build\vcvarsall.bat
       VCVARSALL: x86
 
     - platform: x64
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QT_VERSION: 5.11\msvc2017_64
+      QT_VERSION: 5.12\msvc2017_64
       PYTHON: C:\Python36-x64
       PY_ARCH: amd64
       WIN_ARCH: win64
