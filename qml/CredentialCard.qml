@@ -14,8 +14,8 @@ Pane {
     property string code: "159 789"
 
     background: Rectangle {
-            color: "#383838"
-        }
+        color: app.isDark() ? app.defaultDarkLighter : app.defaultLightDarker
+    }
 
     RowLayout {
         spacing: 0
@@ -33,7 +33,7 @@ Pane {
                 id: issuerLbl
                 text: issuer
                 visible: issuer
-                font.pointSize: 12
+                font.pixelSize: 12
             }
             Label {
                 id: codLbl
@@ -44,7 +44,7 @@ Pane {
             Label {
                 id: nameLbl
                 text: name
-                font.pointSize: 12
+                font.pixelSize: 12
             }
         }
 

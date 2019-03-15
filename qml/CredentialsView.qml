@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 
 Pane {
+    padding: 0
+    topPadding: 8
     objectName: 'credentialsView'
 
     property string title: ""

@@ -19,7 +19,10 @@ ApplicationWindow {
     readonly property string yubicoGrey: "#939598"
 
     readonly property string defaultDark: "#303030"
+    readonly property string defaultDarkLighter: "#383838"
+
     readonly property string defaultLight: "#FAFAFA"
+    readonly property string defaultLightDarker: "#EAEAEA"
 
     Material.theme: Material.System
     Material.primary: yubicoGreen
@@ -62,8 +65,6 @@ ApplicationWindow {
     Component {
         id: credentialsView
         CredentialsView {
-            padding: 0
-            topPadding: 8
         }
     }
 
