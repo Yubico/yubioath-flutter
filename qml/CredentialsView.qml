@@ -16,14 +16,39 @@ Pane {
         columns: app.width / 360
 
         Repeater {
-            model: 10
+            model: 5
             CredentialCard {
             }
         }
 
         CredentialCard {
+            issuer: "TouchyIssuer"
+            name: "touch credential"
+            code: ""
+            touch: true
+        }
+
+        CredentialCard {
+            issuer: ""
+            name: "touch credential"
+            code: ""
+            touch: true
+        }
+
+        CredentialCard {
             issuer: ""
             name: "i only have name!"
+        }
+
+        CredentialCard {
+            issuer: ""
+            name: "eightCharacters"
+            code: "91283746"
+        }
+        CredentialCard {
+            issuer: ""
+            name: "seveneleven"
+            code: "9128741"
         }
     }
 }
