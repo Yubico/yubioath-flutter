@@ -30,7 +30,7 @@ Pane {
             }
             Label {
                 text: "Insert your YubiKey"
-                font.pixelSize: 16
+                font.pixelSize: 12
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             }
         }

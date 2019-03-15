@@ -9,9 +9,9 @@ Pane {
     property string title: ""
 
     GridLayout {
-        columnSpacing: 20
-        rowSpacing: 20
-        columns: app.width / 300
+        columnSpacing: 8
+        rowSpacing: 8
+        columns: app.width / 360
 
         Repeater {
             model: 10

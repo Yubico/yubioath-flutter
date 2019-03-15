@@ -24,7 +24,7 @@ Item {
     width: size
     height: size
 
-    property int size: 20 // The size of the circle in pixel
+    property int size: 12 // The size of the circle in pixel
     property real arcBegin: 0 // start arc angle in degree
     property real arcEnd: 0 // end arc angle in degree
     property bool isPie: true // paint a pie instead of an arc
