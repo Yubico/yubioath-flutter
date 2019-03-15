@@ -9,7 +9,7 @@ ToolBar {
 
     property bool showSearch: stackView.currentItem.objectName == 'credentialsView'
     property bool showBackBtn: stackView.depth > 1
-    property bool showAddCredentialBtn: true
+    property bool showAddCredentialBtn: true // TODO: should be shown when there is a yubikey and authenticated
     property bool showSettingsBtn: true
     property bool showTitleLbl: stackView.currentItem.title.length > 1
 
