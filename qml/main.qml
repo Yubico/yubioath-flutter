@@ -7,8 +7,10 @@ ApplicationWindow {
 
     id: app
 
-    width: 800
-    height: 400
+    width: 360
+    height: 496
+    minimumWidth: 360
+    minimumHeight: 144
     visible: true
 
     readonly property string yubicoGreen: "#9aca3c"
@@ -60,6 +62,8 @@ ApplicationWindow {
     Component {
         id: credentialsView
         CredentialsView {
+            padding: 0
+            topPadding: 8
         }
     }
 

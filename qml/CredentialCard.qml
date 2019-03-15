@@ -4,20 +4,26 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 
 Pane {
-    implicitWidth: 320
-    implicitHeight: 100
+    implicitWidth: 360
+    implicitHeight: 80
 
-    Material.elevation: 1
+    Material.elevation: 0
 
     property string issuer: "Google"
     property string name: "mr.smith@gmail.com"
     property string code: "159 789"
 
+    background: Rectangle {
+            color: "#383838"
+        }
+
     RowLayout {
+        spacing: 0
         anchors.fill: parent
 
         CredentialCardIcon {
-            size: 60
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            size: 40
             letter: issuer ? issuer.charAt(0) : name.charAt(0)
         }
 
@@ -27,17 +33,18 @@ Pane {
                 id: issuerLbl
                 text: issuer
                 visible: issuer
-                font.pointSize: 10
+                font.pointSize: 12
             }
             Label {
                 id: codLbl
-                font.pixelSize: 37
+                font.pixelSize: 24
+                color: yubicoGreen
                 text: code
             }
             Label {
                 id: nameLbl
                 text: name
-                font.pointSize: 10
+                font.pointSize: 12
             }
         }
 

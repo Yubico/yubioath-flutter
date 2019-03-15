@@ -5,15 +5,16 @@ import QtQuick.Controls.Material 2.2
 Rectangle {
 
     property string letter: "A"
-    property int size: 60
+    property int size: 40
     width: size
     height: size
     radius: width * 0.5
-    color: Material.accent
+    color: yubicoGreen
 
     Label {
         text: letter.toUpperCase()
-        font.pixelSize: 32
+        font.bold: true
+        font.pixelSize: 24
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         color: yubicoWhite

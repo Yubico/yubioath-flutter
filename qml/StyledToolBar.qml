@@ -56,7 +56,7 @@ ToolBar {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             visible: showSearch
             placeholderText: "Search..."
-            horizontalAlignment: Qt.AlignHCenter
+            horizontalAlignment: Qt.AlignLeft
             verticalAlignment: Qt.AlignVCenter
             background.width: width
         }
