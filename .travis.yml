@@ -14,8 +14,8 @@ os:
   - osx
   - linux
 
-# Build on El Capitan
-osx_image: xcode7.3
+# Build on Sierra
+osx_image: xcode9.2
 
 services:
   - docker
@@ -39,9 +39,10 @@ install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
       git clone https://github.com/aurelien-rainone/macdeployqtfix.git
-      brew install qt5 swig
-      brew link qt5 -f
-      brew install ykpers libyubikey hidapi libusb
+      brew install swig ykpers libyubikey libusb
+      # Qt 5.10.1 needed on macOS because of https://bugreports.qt.io/browse/QTBUG-67663
+      brew install -v https://raw.githubusercontent.com/Homebrew/homebrew-core/8d4d48f0bb552b7b107119aeef59f141ce1f72c3/Formula/qt.rb
+      brew link qt -f
       # Build Python 3 with --enable-framework, to be able to distribute it in a .app bundle
       brew upgrade pyenv
       eval "$(pyenv init -)"
@@ -53,10 +54,9 @@ install:
       make
       sudo make install
       cd ../..
+      sudo pip3 install --upgrade pip
+      sudo pip3 install pre-commit flake8
     fi
-  # Install linting tools
-  - sudo pip install --upgrade pip
-  - sudo pip install pre-commit flake8
 
 before_script:
   - |
@@ -69,7 +69,8 @@ script:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
-      docker build -t yubioath-xenial -f docker/xenial/Dockerfile .
+      docker build -t xenial-deb -f docker/xenial-deb/Dockerfile .
+      docker build -t xenial-appimage -f docker/xenial-appimage/Dockerfile .
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
@@ -80,7 +81,7 @@ script:
 
 after_success:
   - mkdir deploy/
-  # Exctract all user facing strings and create a textfile with them for deployment.
+  # Extract all user facing strings and create a textfile with them for deployment.
   - lupdate yubioath-desktop.pro -ts yubioath-desktop.ts
   - cp yubioath-desktop.ts deploy/yubioath-desktop-$TRAVIS_BRANCH-strings.xml
   - |
@@ -91,7 +92,6 @@ after_success:
       find /usr/local/Cellar/json-c/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       find /usr/local/Cellar/ykpers/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       find /usr/local/Cellar/libyubikey/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
-      find /usr/local/Cellar/hidapi/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       find /usr/local/Cellar/libusb/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       find /usr/local/Cellar/openssl/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
       # Copy Python framework
@@ -120,8 +120,12 @@ after_success:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
     then
-      id=$(docker create yubioath-xenial)
+      id=$(docker create xenial-deb)
+      docker start --attach $id
       docker cp $id:/yubioath-desktop-debian-packages.tar.gz deploy/yubioath-desktop-$TRAVIS_BRANCH-deb.tar.gz
+      id=$(docker create --privileged xenial-appimage)
+      docker start --attach $id
+      docker cp $id:/yubioath-desktop/Yubico_Authenticator-x86_64.AppImage deploy/yubioath-desktop-$TRAVIS_BRANCH.AppImage
     fi
 
 deploy:

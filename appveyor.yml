@@ -15,7 +15,7 @@ environment:
   matrix:
     - platform: x86
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      QT_VERSION: 5.10\msvc2015
+      QT_VERSION: 5.11\msvc2015
       PYTHON: C:\Python36
       PY_ARCH: win32
       WIN_ARCH: win32
@@ -25,7 +25,7 @@ environment:
 
     - platform: x64
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QT_VERSION: 5.9\msvc2017_64
+      QT_VERSION: 5.11\msvc2017_64
       PYTHON: C:\Python36-x64
       PY_ARCH: amd64
       WIN_ARCH: win64
@@ -68,7 +68,7 @@ after_build:
   - 7z x ykpers-%YKPERS_VERSION%-%WIN_ARCH%.zip -o".\ykpers"
   - ps: Copy-Item .\ykpers\bin\*.dll .\release -Force 
 
-  - ps: Invoke-WebRequest "http://prdownloads.sourceforge.net/libusb/libusb-$env:LIBUSB_VERSION.7z" -OutFile "libusb-$env:LIBUSB_VERSION.7z" -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome
+  - ps: wget "https://github.com/libusb/libusb/releases/download/v$env:LIBUSB_VERSION/libusb-$env:LIBUSB_VERSION.7z" -OutFile "libusb-$env:LIBUSB_VERSION.7z"
   - 7z x libusb-%LIBUSB_VERSION%.7z -o".\libusb"
   - ps: Copy-Item ".\libusb\$env:LIBUSB_DLL_FOLDER\dll\*.dll" .\release -Force
 

@@ -8,7 +8,7 @@ Item {
     property var firstCred: credentials[0]
     property var lastCred: credentials[nCreds - 1]
     property bool lastCredSelected: lastCred !== undefined && selectedKey === lastCred.credential.key
-    property bool firstCredSeleced: firstCred !== undefined && selectedKey === firstCred.credential.key
+    property bool firstCredSelected: firstCred !== undefined && selectedKey === firstCred.credential.key
 
     signal goDown()
     signal goUp()
@@ -37,7 +37,7 @@ Item {
         if (nCreds > 0) {
             if (nothingSelected) {
                 selectedKey = lastCred.credential.key
-            } else if (!firstCredSeleced) {
+            } else if (!firstCredSelected) {
                 flickable.flick(0, 300)
                 selectedKey = credentials[findSelectedIndex() - 1].credential.key
             }

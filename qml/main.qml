@@ -57,7 +57,7 @@ ApplicationWindow {
 
     Component.onCompleted: {
         settings.savedPasswords = "" //No longer used.
-        updateTrayVisability()
+        updateTrayVisibility()
         ensureValidWindowPosition()
     }
 
@@ -103,7 +103,7 @@ ApplicationWindow {
         property var desktopAvailableHeight
 
         onCloseToTrayChanged: {
-            updateTrayVisability()
+            updateTrayVisibility()
         }
     }
 
@@ -644,7 +644,7 @@ ApplicationWindow {
         }
     }
 
-    function updateTrayVisability() {
+    function updateTrayVisibility() {
         SysTrayIcon.visible = settings.closeToTray
         // When the tray option is enabled, closing the last window
         // doesn't actually close the application.
