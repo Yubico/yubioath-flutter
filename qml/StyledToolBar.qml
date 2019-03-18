@@ -52,7 +52,7 @@ ToolBar {
 
         ToolButton {
             id: searchBtn
-            visible: showBackBtn
+            visible: showSearch
             Layout.minimumWidth: 200
             Layout.maximumWidth: 500
             Layout.minimumHeight: 30
