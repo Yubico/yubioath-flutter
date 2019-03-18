@@ -50,15 +50,54 @@ ToolBar {
             color: yubicoWhite
         }
 
-        TextField {
-            id: searchField
+        ToolButton {
+            id: searchBtn
+            visible: showBackBtn
+            Layout.minimumWidth: 200
+            Layout.maximumWidth: 500
+            Layout.minimumHeight: 30
+            Layout.maximumHeight: 30
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            visible: showSearch
-            placeholderText: "Search..."
-            horizontalAlignment: Qt.AlignLeft
-            verticalAlignment: Qt.AlignVCenter
-            background.width: width
+            background: Rectangle {
+                color: searchBtn.hovered ? "#a6d14c" : "transparent"
+                height: 30
+                radius: 4
+            }
+
+            TextField {
+                id: searchField
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                visible: showSearch
+                placeholderText: "Quick Find"
+                placeholderTextColor: "#f0f0f0"
+                padding: 28
+                width: searchBtn.width
+                horizontalAlignment: Qt.AlignLeft
+                verticalAlignment: Qt.AlignVCenter
+                color: yubicoWhite
+                background: Rectangle {
+                    color: searchField.focus ? "#a6d14c" : "transparent"
+                    height: 30
+                    radius: 4
+                }
+
+                Image {
+                    id: searchIcon
+                    x: 5
+                    y: 6
+                    height: 20
+                    width: 20
+                    fillMode: Image.PreserveAspectFit
+                    source: "../images/search.svg"
+                    ColorOverlay {
+                        source: searchIcon
+                        color: yubicoWhite
+                        anchors.fill: searchIcon
+                    }
+                }
+            }
         }
 
         RowLayout {
@@ -92,7 +131,7 @@ ToolBar {
 
             ToolButton {
                 id: settingsButton
-                anchors.right: parent.right
+//                anchors.right: parent.right
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: showSettingsBtn
                 onClicked: app.goToSettings()

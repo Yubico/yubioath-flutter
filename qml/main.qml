@@ -21,8 +21,8 @@ ApplicationWindow {
     readonly property string defaultDark: "#303030"
     readonly property string defaultDarkLighter: "#383838"
 
-    readonly property string defaultLight: "#f8f8f8"
-    readonly property string defaultLightDarker: "#fcfcfc"
+    readonly property string defaultLight: "#fafafa"
+    readonly property string defaultLightDarker: "#ffffff"
 
     Material.theme: Material.System
     Material.primary: yubicoGreen
@@ -39,7 +39,6 @@ ApplicationWindow {
     function toggleTheme() {
         if (isDark()) {
             app.Material.theme = Material.Light
-            Material.background = defaultLight
         } else {
             app.Material.theme = Material.Dark
         }
