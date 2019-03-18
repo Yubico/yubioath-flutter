@@ -8,9 +8,9 @@ ApplicationWindow {
     id: app
 
     width: 360
-    height: 540
+    height: 498
     minimumWidth: 360
-    minimumHeight: 540
+    minimumHeight: 498
     visible: true
 
     readonly property string yubicoGreen: "#9aca3c"
@@ -21,8 +21,8 @@ ApplicationWindow {
     readonly property string defaultDark: "#303030"
     readonly property string defaultDarkLighter: "#383838"
 
-    readonly property string defaultLight: "#FAFAFA"
-    readonly property string defaultLightDarker: "#EAEAEA"
+    readonly property string defaultLight: "#f8f8f8"
+    readonly property string defaultLightDarker: "#fcfcfc"
 
     Material.theme: Material.System
     Material.primary: yubicoGreen
@@ -39,6 +39,7 @@ ApplicationWindow {
     function toggleTheme() {
         if (isDark()) {
             app.Material.theme = Material.Light
+            Material.background = defaultLight
         } else {
             app.Material.theme = Material.Dark
         }

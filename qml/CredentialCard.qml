@@ -2,6 +2,7 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
+import QtGraphicalEffects 1.0
 
 Pane {
     implicitWidth: 360
@@ -63,9 +64,9 @@ Pane {
             Label {
                 id: codLbl
                 font.pixelSize: 24
-                color: yubicoGreen
-                text: formattedCode(code)
-                visible: code
+                color: !touch ? yubicoGreen : yubicoGrey
+                text: !touch ? formattedCode(code) : "Requires touch"
+                visible: code || touch
             }
             Label {
                 id: nameLbl
@@ -79,6 +80,19 @@ Pane {
             anchors.right: parent.right
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             colorCircle: Material.primary
+            visible: !touch
         }
+
+        Image {
+            id: touchIcon
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            width: 16
+            height: 16
+            fillMode: Image.PreserveAspectFit
+            source: "../images/touch.png"
+            visible: touch
+        }
+
     }
 }
