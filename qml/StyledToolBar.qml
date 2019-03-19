@@ -66,12 +66,13 @@ ToolBar {
 
             TextField {
                 id: searchField
+                Material.accent: yubicoWhite
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 visible: showSearch
                 placeholderText: "Quick Find"
-                placeholderTextColor: "#f0f0f0"
+//                placeholderTextColor: "#f0f0f0"       // Qt5.12 requirement, hold for now?
                 padding: 28
                 width: searchBtn.width
                 horizontalAlignment: Qt.AlignLeft
