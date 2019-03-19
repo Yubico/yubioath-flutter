@@ -32,6 +32,16 @@ ApplicationWindow {
         id: toolBar
     }
 
+    function enableLogging(logLevel) {
+        yubiKey.enableLogging(logLevel, null)
+    }
+    function enableLoggingToFile(logLevel, logFile) {
+        yubiKey.enableLogging(logLevel, logFile)
+    }
+    function disableLogging() {
+        yubiKey.disableLogging()
+    }
+
     function isDark() {
         return app.Material.theme === Material.Dark
     }
@@ -60,6 +70,14 @@ ApplicationWindow {
         if (stackView.currentItem.objectName !== 'credentialsView') {
             stackView.push(credentialsView)
         }
+    }
+
+    YubiKeyPoller {
+    }
+
+    YubiKey {
+        id: yubiKey
+        onError: console.log(traceback)
     }
 
     StackView {

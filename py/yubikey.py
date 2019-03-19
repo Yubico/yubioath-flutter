@@ -9,11 +9,12 @@ import ykman.logging_setup
 from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
 
-from ykman.descriptor import get_descriptors
+from ykman.device import YubiKey
+from ykman.descriptor import get_descriptors, Descriptor
 from ykman.util import (TRANSPORT, parse_b32_key)
 from ykman.driver_otp import YkpersError
 from ykman.otp import OtpController
-from ykman.driver_ccid import APDUError
+from ykman.driver_ccid import APDUError, open_devices as open_ccid
 from ykman.oath import (ALGO, OATH_TYPE, OathController, CredentialData,
                         Credential, Code, SW)
 from ykman.settings import Settings
@@ -77,6 +78,40 @@ def credential_data_to_dict(credentialData):
     }
 
 
+def success(result={}):
+    result['success'] = True
+    return result
+
+
+def failure(err_id, result={}):
+    result['success'] = False
+    result['error_id'] = err_id
+    return result
+
+
+def unknown_failure(exception):
+    return failure(None, {'error_message': str(exception)})
+
+
+def catch_error(f):
+    def wrapped(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except YkpersError as e:
+            if e.errno == 3:
+                return failure('write error')
+            if e.errno == 4:
+                return failure('timeout')
+            logger.error('Uncaught exception', exc_info=e)
+            return unknown_failure(e)
+        except FailedOpeningDeviceException:
+            return failure('open_device_failed')
+        except Exception as e:
+            logger.error('Uncaught exception', exc_info=e)
+            return unknown_failure(e)
+    return wrapped
+
+
 class Controller(object):
     _descriptor = None
     _dev_info = {}
@@ -90,7 +125,21 @@ class Controller(object):
             if not f.startswith('_'):
                 func = getattr(self, f)
                 if isinstance(func, types.MethodType):
-                    setattr(self, f, as_json(func))
+                    setattr(self, f, as_json(catch_error(func)))
+
+    def calculate_all(self, timestamp, filter=''):
+        readers = list(open_ccid(filter))
+        if not readers:
+            return failure('no_readers_found')
+        if len(readers) == 1:
+            dev = YubiKey(Descriptor.from_driver(readers[0]), readers[0])
+            controller = OathController(dev.driver)
+            entries = controller.calculate_all(timestamp)
+            return success({
+                'entries': [pair_to_dict(cred, code) for (cred, code) in entries if not cred.is_hidden]
+            })
+        else:
+            return failure('too_many_readers_found')
 
     def count_devices(self):
         return len(get_descriptors())
