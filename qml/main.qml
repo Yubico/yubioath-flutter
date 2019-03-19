@@ -58,19 +58,19 @@ ApplicationWindow {
 
     function goToSettings() {
         if (stackView.currentItem.objectName !== 'settingsView') {
-            stackView.push(settingsView)
+            stackView.push(settingsView, StackView.Immediate)
         }
     }
 
     function goToNoYubiKeyView() {
         if (stackView.currentItem.objectName !== 'noYubiKeyView') {
-            stackView.push(noYubiKeyView)
+            stackView.push(noYubiKeyView, StackView.Immediate)
         }
     }
 
     function goToCredentials() {
         if (stackView.currentItem.objectName !== 'credentialsView') {
-            stackView.push(credentialsView)
+            stackView.push(credentialsView, StackView.Immediate)
         }
     }
 
