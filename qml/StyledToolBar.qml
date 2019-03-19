@@ -12,6 +12,7 @@ ToolBar {
     property bool showAddCredentialBtn: true // TODO: should be shown when there is a yubikey and authenticated
     property bool showSettingsBtn: true
     property bool showTitleLbl: stackView.currentItem.title.length > 1
+    property alias searchField: searchField
 
     RowLayout {
         spacing: 0
@@ -66,15 +67,17 @@ ToolBar {
 
             TextField {
                 id: searchField
+                visible: showSearch
                 Material.accent: yubicoWhite
+                selectByMouse: true
+                selectedTextColor: yubicoGreen
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                visible: showSearch
                 placeholderText: "Quick Find"
 //                placeholderTextColor: "#f0f0f0"       // Qt5.12 requirement, hold for now?
                 padding: 28
-                width: searchBtn.width
+                width: parent.width
                 horizontalAlignment: Qt.AlignLeft
                 verticalAlignment: Qt.AlignVCenter
                 color: yubicoWhite
@@ -132,7 +135,6 @@ ToolBar {
 
             ToolButton {
                 id: settingsButton
-//                anchors.right: parent.right
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: showSettingsBtn
                 onClicked: app.goToSettings()

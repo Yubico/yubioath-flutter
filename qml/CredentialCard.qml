@@ -17,6 +17,8 @@ Pane {
     property string code: entry.code ? entry.code.value : ''
     property bool touch: entry.credential.touch
 
+    visible: toolBar.searchField.text.length < 1 || (issuer + " " + name).toLowerCase().indexOf(toolBar.searchField.text.toLowerCase()) > -1 ? true : false
+
     background: Rectangle {
         color: app.isDark() ? app.defaultDarkLighter : app.defaultLightDarker
     }
@@ -40,6 +42,15 @@ Pane {
         }
     }
 
+    function formattedName(issuer, name) {
+        if (issuer !== "") {
+            return issuer + " (" + name + ")"
+        } else {
+            return name
+        }
+
+    }
+
     Item {
         anchors.fill: parent
 
@@ -58,12 +69,6 @@ Pane {
             anchors.verticalCenter: parent.verticalCenter
             spacing: 0
             Label {
-                id: issuerLbl
-                text: issuer
-                visible: issuer
-                font.pixelSize: 12
-            }
-            Label {
                 id: codLbl
                 font.pixelSize: 24
                 color: !touch ? yubicoGreen : yubicoGrey
@@ -72,8 +77,11 @@ Pane {
             }
             Label {
                 id: nameLbl
-                text: name
+                text: formattedName(issuer, name)
+                Layout.maximumWidth: 265
                 font.pixelSize: 12
+                maximumLineCount: 3
+                wrapMode: Text.Wrap
             }
         }
 
