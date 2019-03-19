@@ -5,6 +5,9 @@ import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
 Pane {
+
+    id: credentialCard
+
     implicitWidth: 360
     implicitHeight: 80
 
@@ -15,7 +18,11 @@ Pane {
     property string issuer: entry.credential.issuer || ''
     property string name: entry.credential.name
     property string code: entry.code ? entry.code.value : ''
+    property int validFrom: entry.code ? entry.code.valid_from : 0
+    property int validTo: entry.code ? entry.code.valid_to : 0
+    property int period: entry.credential.period
     property bool touch: entry.credential.touch
+    property string oathType: entry.credential.oath_type
 
     visible: toolBar.searchField.text.length < 1 || (issuer + " " + name).toLowerCase().indexOf(toolBar.searchField.text.toLowerCase()) > -1 ? true : false
 
@@ -86,6 +93,7 @@ Pane {
         }
 
         CredentialCardTimer {
+            period: credentialCard.period
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom

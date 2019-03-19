@@ -7,13 +7,15 @@ import QtQuick.Controls.Material 2.2
 // Heavily based on http://www.bytebau.com/progress-circle-with-qml-and-javascript/
 Item {
 
+    property int period
+
     Timer {
         id: time
         repeat: true
         running: true
         interval: 250
         onTriggered: {
-            root.arcBegin = root.arcBegin + 3
+            root.arcBegin = root.arcBegin + (360 / period / (1000 / interval))
             if (root.arcBegin == 360) {
                 root.arcBegin = 0
             }

@@ -79,7 +79,6 @@ ApplicationWindow {
 
     YubiKey {
         id: yubiKey
-        onError: console.log(traceback)
     }
 
     StackView {
