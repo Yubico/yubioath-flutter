@@ -10,10 +10,12 @@ Pane {
 
     Material.elevation: 0
 
-    property string issuer: "Google"
-    property string name: "mr.smith@gmail.com"
-    property string code: "159789"
-    property bool touch: false
+    property var entry
+
+    property string issuer: entry.credential.issuer || ''
+    property string name: entry.credential.name
+    property string code: entry.code ? entry.code.value : ''
+    property bool touch: entry.credential.touch
 
     background: Rectangle {
         color: app.isDark() ? app.defaultDarkLighter : app.defaultLightDarker
@@ -93,6 +95,5 @@ Pane {
             source: "../images/touch.png"
             visible: touch
         }
-
     }
 }

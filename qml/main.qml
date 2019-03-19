@@ -28,6 +28,8 @@ ApplicationWindow {
     Material.primary: yubicoGreen
     Material.accent: yubicoBlue
 
+    property var entries: []
+
     header: StyledToolBar {
         id: toolBar
     }

@@ -10,7 +10,9 @@ Timer {
         yubiKey.calculateAll(function (resp) {
             if (resp.success) {
                 console.log(JSON.stringify(resp.entries))
+                app.entries = resp.entries
             } else {
+                app.entries = []
                 console.log(resp.error_id)
             }
         })

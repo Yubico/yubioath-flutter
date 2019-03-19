@@ -127,7 +127,7 @@ class Controller(object):
                 if isinstance(func, types.MethodType):
                     setattr(self, f, as_json(catch_error(func)))
 
-    def calculate_all(self, timestamp, filter=''):
+    def calculate_all(self, timestamp, filter='yubico'):
         readers = list(open_ccid(filter))
         if not readers:
             return failure('no_readers_found')
