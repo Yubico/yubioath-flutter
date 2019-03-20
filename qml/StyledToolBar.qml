@@ -6,6 +6,14 @@ import QtGraphicalEffects 1.0
 
 ToolBar {
     id: toolBar
+    background: Rectangle {
+        color: yubicoGreen
+        layer.effect: DropShadow {
+                verticalOffset: 0
+                horizontalOffset: 0
+                spread: 0
+            }
+    }
 
     property bool showSearch: stackView.currentItem.objectName == 'credentialsView'
     property bool showBackBtn: stackView.depth > 1
@@ -22,7 +30,7 @@ ToolBar {
         ToolButton {
             id: backBtn
             visible: showBackBtn
-            onClicked: stackView.pop()
+            onClicked: stackView.pop(StackView.Immediate)
 
             Image {
                 id: backIcon
