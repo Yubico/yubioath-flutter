@@ -13,18 +13,23 @@ Pane {
 
     Material.elevation: 0
 
-    property var entry
+    property var codeObject
+    property var credentialObject
 
-    property string issuer: entry.credential.issuer || ''
-    property string name: entry.credential.name
-    property string code: entry.code ? entry.code.value : ''
-    property int validFrom: entry.code ? entry.code.valid_from : 0
-    property int validTo: entry.code ? entry.code.valid_to : 0
-    property int period: entry.credential.period
-    property bool touch: entry.credential.touch
-    property string oathType: entry.credential.oath_type
+    property string issuer: credentialObject.issuer || ''
+    property string name: credentialObject.name
+    property string codeValue: codeObject ? codeObject.value : ''
+    property int validFrom: codeObject ? codeObject.valid_from : 0
+    property int validTo: codeObject ? codeObject.valid_to : 0
+    property int period: credentialObject.period
+    property bool touch: credentialObject.touch
+    property string oathType: credentialObject.oath_type
 
-    visible: toolBar.searchField.text.length < 1 || (issuer + " " + name).toLowerCase().indexOf(toolBar.searchField.text.toLowerCase()) > -1 ? true : false
+    property bool continuousCalculation: oathType === "TOTP" && !touch
+
+    visible: toolBar.searchField.text.length < 1
+             || (issuer + " " + name).toLowerCase().indexOf(
+                 toolBar.searchField.text.toLowerCase()) > -1 ? true : false
 
     background: Rectangle {
         color: app.isDark() ? app.defaultDarkLighter : app.defaultLightDarker
@@ -55,7 +60,6 @@ Pane {
         } else {
             return name
         }
-
     }
 
     Item {
@@ -79,8 +83,8 @@ Pane {
                 id: codLbl
                 font.pixelSize: 24
                 color: !touch ? yubicoGreen : yubicoGrey
-                text: !touch ? formattedCode(code) : "Requires touch"
-                visible: code || touch
+                text: !touch ? formattedCode(codeValue) : "Requires touch"
+                visible: codeValue || touch
             }
             Label {
                 id: nameLbl

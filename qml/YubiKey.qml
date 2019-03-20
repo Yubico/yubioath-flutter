@@ -100,6 +100,13 @@ Python {
         doCall('yubikey.controller.calculate_all', [now], cb)
     }
 
+    function calculate(entry, cb) {
+        var margin = entry.credential.touch ? 10 : 0
+        var nowAndMargin = Utils.getNow() + margin
+        doCall('yubikey.controller.calculate',
+               [entry.credential, nowAndMargin], cb)
+    }
+
     function refresh(slotMode, refreshCredentialsOnMode) {
         doCall('yubikey.controller.count_devices', [], function (n) {
             nDevices = n
@@ -268,7 +275,7 @@ Python {
         }
     }
 
-    function calculate(entry, copyAfterUpdate) {
+    function _calculate(entry, copyAfterUpdate) {
         var now = Math.floor(Date.now() / 1000)
         var margin = entry.credential.touch ? 10 : 0
         doCall('yubikey.controller.calculate',

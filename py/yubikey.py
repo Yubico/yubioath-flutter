@@ -10,7 +10,7 @@ from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
 
 from ykman.device import YubiKey
-from ykman.descriptor import get_descriptors, Descriptor
+from ykman.descriptor import get_descriptors, Descriptor, FailedOpeningDeviceException
 from ykman.util import (TRANSPORT, parse_b32_key)
 from ykman.driver_otp import YkpersError
 from ykman.otp import OtpController
@@ -54,7 +54,7 @@ def code_to_dict(code):
         'value': code.value,
         'valid_from': code.valid_from,
         'valid_to': min(code.valid_to, 9999999999)  # No Inf in JSON.
-    } if code else None
+    } if code else ''
 
 
 def pair_to_dict(cred, code):
@@ -141,6 +141,21 @@ class Controller(object):
         else:
             return failure('too_many_readers_found')
 
+    def calculate(self, credential, timestamp, filter='yubico'):
+        readers = list(open_ccid(filter))
+        if not readers:
+            return failure('no_readers_found')
+        if len(readers) == 1:
+            dev = YubiKey(Descriptor.from_driver(readers[0]), readers[0])
+            controller = OathController(dev.driver)
+            code = controller.calculate(cred_from_dict(credential), timestamp)
+            return success({
+                'credential': credential,
+                'code': code_to_dict(code)
+            })
+        else:
+            return failure('too_many_readers_found')
+
     def count_devices(self):
         return len(get_descriptors())
 
@@ -219,7 +234,7 @@ class Controller(object):
         except Exception:
             return []
 
-    def calculate(self, credential, timestamp):
+    def _calculate(self, credential, timestamp):
         try:
             dev = self._descriptor.open_device(TRANSPORT.CCID)
             controller = OathController(dev.driver)

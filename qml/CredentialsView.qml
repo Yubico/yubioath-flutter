@@ -10,16 +10,17 @@ Pane {
 
     property string title: ""
 
-    GridLayout {
-        columnSpacing: 8
-        rowSpacing: 8
-        columns: app.width / 360
-
-        Repeater {
-            model: app.entries
-            CredentialCard {
-                entry: modelData
-            }
+    GridView {
+        boundsBehavior: Flickable.StopAtBounds
+        flickableDirection: Flickable.VerticalFlick
+        interactive: true
+        anchors.fill: parent
+        model: entries
+        cellWidth: 372
+        cellHeight: 88
+        delegate: CredentialCard {
+            credentialObject: credential
+            codeObject: code
         }
     }
 }
