@@ -28,26 +28,24 @@ Timer {
     function calculateAll() {
         yubiKey.calculateAll(function (resp) {
             if (resp.success) {
-                var newEntries = resp.entries
-                for (var i = 0; i < newEntries.length; i++) {
-                    var entry = newEntries[i]
-                    if (entries.hasEntry(entry)) {
-                        entries.updateEntry(entry)
-                    } else {
-                        entries.addEntry(entry)
-                    }
-                    updateNextCalculateAll(entry)
-                }
+                entries.clear()
+                entries.append(resp.entries)
+                updateNextCalculateAll()
             } else {
                 console.log(resp.error_id)
             }
         })
     }
 
-    function updateNextCalculateAll(entry) {
-        if (entry.code && entry.code.valid_to > nextCalculateAll
-                && entry.credential.period === 30) {
-            nextCalculateAll = entry.code.valid_to
+    function updateNextCalculateAll() {
+        // Next calculateAll should be when one a default TOTP cred expires.
+        // TODO: This should probably expiration of the TOTP cred with the shortest period expires.
+        for (var i = 0; i < entries.count; i++) {
+            var entry = entries.get(i)
+            if (entry.code && entry.code.valid_to > nextCalculateAll
+                    && entry.credential.period === 30) {
+                nextCalculateAll = entry.code.valid_to
+            }
         }
     }
 

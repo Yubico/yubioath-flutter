@@ -18,7 +18,7 @@ Pane {
 
     property string issuer: credential.issuer || ''
     property string name: credential.name
-    property int period: credential.period
+    property int period: credential.period || 0
     property bool touch: credential.touch
     property string oathType: credential.oath_type
 
@@ -80,8 +80,9 @@ Pane {
                 id: codLbl
                 font.pixelSize: 24
                 color: !touch ? yubicoGreen : yubicoGrey
-                text: !touch ? formattedCode(code.value) : "Requires touch"
-                visible: code !== null || touch
+                text: code && code.value ? formattedCode(
+                                               code.value) : "Requires touch"
+                visible: code || touch
             }
             Label {
                 id: nameLbl
