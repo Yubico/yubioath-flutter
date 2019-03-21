@@ -3,6 +3,10 @@ import QtQuick.Controls 2.2
 import "utils.js" as Utils
 
 Timer {
+
+    // Timestamp in seconds for when it's time for the next calculateAll call.
+    property int nextCalculateAll: 0
+
     triggeredOnStart: true
     interval: 500
     repeat: true
@@ -27,12 +31,12 @@ Timer {
                 var newEntries = resp.entries
                 for (var i = 0; i < newEntries.length; i++) {
                     var entry = newEntries[i]
-                    console.log(JSON.stringify(entry))
                     if (entries.hasEntry(entry)) {
-                        updateEntry(entry)
+                        entries.updateEntry(entry)
                     } else {
                         entries.addEntry(entry)
                     }
+                    updateNextCalculateAll(entry)
                 }
             } else {
                 console.log(resp.error_id)
@@ -40,9 +44,14 @@ Timer {
         })
     }
 
-    function timeToRefresh() {
-        return true
+    function updateNextCalculateAll(entry) {
+        if (entry.code && entry.code.valid_to > nextCalculateAll
+                && entry.credential.period === 30) {
+            nextCalculateAll = entry.code.valid_to
+        }
     }
 
-
+    function timeToRefresh() {
+        return nextCalculateAll <= Utils.getNow()
+    }
 }
