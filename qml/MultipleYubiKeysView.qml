@@ -25,7 +25,7 @@ Pane {
 
                 ColorOverlay {
                     source: warning
-                    color: app.yubicoGrey
+                    color: app.isDark() ? app.defaultDarkOverlay : app.defaultLightOverlay
                     anchors.fill: warning
                 }
             }
