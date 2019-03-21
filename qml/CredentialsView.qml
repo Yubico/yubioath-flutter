@@ -19,8 +19,8 @@ Pane {
         cellWidth: 372
         cellHeight: 88
         delegate: CredentialCard {
-            credentialObject: credential
-            codeObject: code
+            credential: model.credential
+            code: model.code
         }
     }
 }

@@ -28,7 +28,7 @@ ApplicationWindow {
     Material.primary: yubicoGreen
     Material.accent: yubicoBlue
 
-    ListModel {
+    EntriesModel {
         id: entries
     }
 

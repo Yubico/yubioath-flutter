@@ -13,17 +13,14 @@ Pane {
 
     Material.elevation: 0
 
-    property var codeObject
-    property var credentialObject
+    property var code
+    property var credential
 
-    property string issuer: credentialObject.issuer || ''
-    property string name: credentialObject.name
-    property string codeValue: codeObject ? codeObject.value : ''
-    property int validFrom: codeObject ? codeObject.valid_from : 0
-    property int validTo: codeObject ? codeObject.valid_to : 0
-    property int period: credentialObject.period
-    property bool touch: credentialObject.touch
-    property string oathType: credentialObject.oath_type
+    property string issuer: credential.issuer || ''
+    property string name: credential.name
+    property int period: credential.period
+    property bool touch: credential.touch
+    property string oathType: credential.oath_type
 
     property bool continuousCalculation: oathType === "TOTP" && !touch
 
@@ -83,8 +80,8 @@ Pane {
                 id: codLbl
                 font.pixelSize: 24
                 color: !touch ? yubicoGreen : yubicoGrey
-                text: !touch ? formattedCode(codeValue) : "Requires touch"
-                visible: codeValue || touch
+                text: !touch ? formattedCode(code.value) : "Requires touch"
+                visible: code !== null || touch
             }
             Label {
                 id: nameLbl

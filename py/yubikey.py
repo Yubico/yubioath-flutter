@@ -54,7 +54,7 @@ def code_to_dict(code):
         'value': code.value,
         'valid_from': code.valid_from,
         'valid_to': min(code.valid_to, 9999999999)  # No Inf in JSON.
-    } if code else ''
+    } if code else None
 
 
 def pair_to_dict(cred, code):
