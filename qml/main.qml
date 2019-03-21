@@ -21,10 +21,12 @@ ApplicationWindow {
     readonly property string defaultDark: "#303030"
     readonly property string defaultDarkLighter: "#383838"
     readonly property string defaultDarkOverlay: "#444444"
+    readonly property string defaultDarkSelection: "#444444"
 
     readonly property string defaultLight: "#fafafa"
     readonly property string defaultLightDarker: "#ffffff"
     readonly property string defaultLightOverlay: "#bbbbbb"
+    readonly property string defaultLightSelection: "#eeeeee"
 
     Material.theme: Material.System
     Material.primary: yubicoGreen
