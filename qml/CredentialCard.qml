@@ -23,27 +23,19 @@ Pane {
 
     property bool continuousCalculation: oathType === "TOTP" && !touch
 
-    visible: toolBar.searchField.text.length < 1
-             || (issuer + " " + name).toLowerCase().indexOf(
-                 toolBar.searchField.text.toLowerCase()) > -1 ? true : false
-
     background: Rectangle {
-        color: itemColor()
+        color: if (credentialCard.GridView.isCurrentItem) {
+                   return app.isDark(
+                               ) ? app.defaultDarkSelection : app.defaultLightSelection
+               } else {
+                   return app.isDark(
+                               ) ? app.defaultDarkLighter : app.defaultLightDarker
+               }
     }
 
     MouseArea {
         anchors.fill: parent
         onClicked: credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
-    }
-
-    function itemColor() {
-        if (credentialCard.GridView.isCurrentItem) {
-            return app.isDark(
-                        ) ? app.defaultDarkSelection : app.defaultLightSelection
-        } else {
-            return app.isDark(
-                        ) ? app.defaultDarkLighter : app.defaultLightDarker
-        }
     }
 
     function formattedCode(code) {

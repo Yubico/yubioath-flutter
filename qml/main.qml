@@ -100,6 +100,7 @@ ApplicationWindow {
         anchors.fill: parent
         initialItem: credentialsView
         focus: true
+        Keys.forwardTo: toolBar.searchField
         onCurrentItemChanged: {
             if (currentItem) {
                 currentItem.forceActiveFocus()

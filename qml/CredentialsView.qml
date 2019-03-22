@@ -10,14 +10,35 @@ Pane {
 
     property string title: ""
 
+    EntriesModel {
+        id: filteredEntries
+    }
+
+    function filteredCredentials() {
+        filteredEntries.clear()
+        if (entries !== null && toolBar.searchField.text.length > 0) {
+            for (var i = 0; i < entries.count; i++) {
+                var entry = entries.get(i)
+                if (entry.credential.key.toLowerCase().indexOf(
+                            toolBar.searchField.text.toLowerCase()) !== -1) {
+                    filteredEntries.addEntry(entry)
+                }
+            }
+            return true
+        }
+        return false
+    }
+
     GridView {
         id: grid
-        ScrollBar.vertical: ScrollBar { width: 5 }
+        ScrollBar.vertical: ScrollBar {
+            width: 5
+        }
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
         interactive: true
         anchors.fill: parent
-        model: entries
+        model: filteredCredentials() ? filteredEntries : entries
         cellWidth: 372
         cellHeight: 88
         delegate: CredentialCard {
