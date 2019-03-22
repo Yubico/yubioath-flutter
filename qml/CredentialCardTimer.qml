@@ -2,23 +2,24 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
+import "utils.js" as Utils
 
 
 // Heavily based on http://www.bytebau.com/progress-circle-with-qml-and-javascript/
 Item {
 
     property int period
+    property var code
 
     Timer {
-        id: time
+        id: timer
         repeat: true
-        running: true
+        running: code && code.valid_to ? true : false
         interval: 250
         onTriggered: {
-            root.arcBegin = root.arcBegin + (360 / period / (1000 / interval))
-            if (root.arcBegin == 360) {
-                root.arcBegin = 0
-            }
+            var timeLeft = code.valid_to - Utils.getNow()
+            var currentValue = timeLeft * (360 / period)
+            root.arcEnd = 360 - currentValue
         }
     }
 

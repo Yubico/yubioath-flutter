@@ -18,7 +18,6 @@ Pane {
 
     property string issuer: credential.issuer || ''
     property string name: credential.name
-    property int period: credential.period || 0
     property bool touch: credential.touch
     property string oathType: credential.oath_type
 
@@ -34,16 +33,16 @@ Pane {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: credentialCard.GridView.isCurrentItem
-                   ? credentialCard.GridView.view.currentIndex = -1
-                   : credentialCard.GridView.view.currentIndex = index
+        onClicked: credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
     }
 
     function itemColor() {
         if (credentialCard.GridView.isCurrentItem) {
-            return app.isDark() ? app.defaultDarkSelection : app.defaultLightSelection
+            return app.isDark(
+                        ) ? app.defaultDarkSelection : app.defaultLightSelection
         } else {
-            return app.isDark() ? app.defaultDarkLighter : app.defaultLightDarker
+            return app.isDark(
+                        ) ? app.defaultDarkLighter : app.defaultLightDarker
         }
     }
 
@@ -110,7 +109,8 @@ Pane {
         }
 
         CredentialCardTimer {
-            period: credentialCard.period
+            code: credentialCard.code
+            period: credential && credential.period ? credential.period : 0
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
