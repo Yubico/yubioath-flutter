@@ -25,11 +25,26 @@ Timer {
         }
     }
 
+    function sortEntries(entries) {
+
+        function getSortableName(credential) {
+            return (credential.issuer
+                    || '') + (credential.name
+                              || '') + '/' + (credential.period || '')
+        }
+
+        return entries.sort(function (a, b) {
+            return getSortableName(a.credential).localeCompare(
+                        getSortableName(b.credential))
+        })
+    }
+
     function calculateAll() {
         yubiKey.calculateAll(function (resp) {
             if (resp.success) {
+                var sortedEntries = sortEntries(resp.entries)
                 entries.clear()
-                entries.append(resp.entries)
+                entries.append(sortedEntries)
                 updateNextCalculateAll()
             } else {
                 console.log(resp.error_id)
