@@ -161,6 +161,33 @@ class Controller(object):
         else:
             return failure('too_many_readers_found')
 
+    def add_credential(
+            self, name, secret, issuer, oath_type, algo, digits,
+            period, touch, filter='yubico'):
+        secret = parse_b32_key(secret)
+        readers = list(open_ccid(filter))
+        if not readers:
+            return failure('no_readers_found')
+        if len(readers) == 1:
+            dev = YubiKey(Descriptor.from_driver(readers[0]), readers[0])
+            controller = OathController(dev.driver)
+            try:
+                controller.put(CredentialData(
+                    secret, issuer, name, OATH_TYPE[oath_type], ALGO[algo],
+                    int(digits), int(period), 0, touch
+                ))
+            except APDUError as e:
+                # NEO doesn't return a no space error if full,
+                # but a command aborted error. Assume it's because of
+                # no space in this context.
+                if e.sw in (SW.NO_SPACE, SW.COMMAND_ABORTED):
+                    return failure('no_space')
+                else:
+                    raise
+            return success()
+        else:
+            return failure('too_many_readers_found')
+
     def count_devices(self):
         return len(get_descriptors())
 
@@ -350,29 +377,7 @@ class Controller(object):
             self._key = None
         self.settings.write()
 
-    def add_credential(
-            self, name, secret, issuer, oath_type, algo, digits,
-            period, touch):
-        dev = self._descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
-        self._unlock(controller)
-        try:
-            secret = parse_b32_key(secret)
-        except Exception as e:
-            return str(e)
-        try:
-            controller.put(CredentialData(
-                secret, issuer, name, OATH_TYPE[oath_type], ALGO[algo],
-                int(digits), int(period), 0, touch
-            ))
-        except APDUError as e:
-            # NEO doesn't return a no space error if full,
-            # but a command aborted error. Assume it's because of
-            # no space in this context.
-            if e.sw in (SW.NO_SPACE, SW.COMMAND_ABORTED):
-                return 'No space'
-            else:
-                raise
+
 
     def add_slot_credential(self, slot, key, touch):
         try:

@@ -9,6 +9,24 @@ Pane {
 
     property string title: "New credential"
 
+    function addCredential() {
+        yubiKey.addCredential(nameLbl.text, secretKeyLbl.text, issuerLbl.text,
+                              oathTypeComboBox.currentText,
+                              algoComboBox.currentText,
+                              digitsComboBox.currentText, periodSpinBox.value,
+                              requireTouchCheckBox.checked, function (resp) {
+                                  if (resp.success) {
+                                      // TODO: This should be a callback or similar,
+                                      // so that the view changes after the entries
+                                      // are refreshed. Should also show a success message.
+                                      yubiKeyPoller.calculateAll()
+                                      app.goToCredentials()
+                                  } else {
+                                      console.log(resp.error_id)
+                                  }
+                              })
+    }
+
     ColumnLayout {
         anchors.top: parent.top
         anchors.topMargin: 0
@@ -34,7 +52,7 @@ Pane {
         }
 
         CheckBox {
-            id: touchChckBox
+            id: requireTouchCheckBox
             text: "Require touch"
         }
         RowLayout {
@@ -89,6 +107,7 @@ Pane {
             text: "Add"
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             highlighted: true
+            onClicked: addCredential()
         }
     }
 }

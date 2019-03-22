@@ -87,6 +87,7 @@ ApplicationWindow {
     }
 
     YubiKeyPoller {
+        id: yubiKeyPoller
     }
 
     YubiKey {
