@@ -24,7 +24,7 @@ Pane {
                 source: "../images/yubikeys-transparent.png"
                 ColorOverlay {
                     source: yubikeys
-                    color: Material.foreground
+                    color: app.isDark() ? app.defaultDarkOverlay : app.defaultLightOverlay
                     anchors.fill: yubikeys
                 }
             }

@@ -11,6 +11,8 @@ Pane {
     property string title: ""
 
     GridView {
+        id: grid
+        ScrollBar.vertical: ScrollBar { width: 5 }
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
         interactive: true
@@ -22,5 +24,11 @@ Pane {
             credential: model.credential
             code: model.code
         }
+        flickableChildren: MouseArea {
+            anchors.fill: parent
+            onClicked: grid.currentIndex = -1
+        }
+        focus: true
+        Component.onCompleted: currentIndex = -1
     }
 }

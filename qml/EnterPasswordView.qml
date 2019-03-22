@@ -27,7 +27,7 @@ Pane {
                     source: "../images/lock.svg"
                     ColorOverlay {
                         source: lock
-                        color: yubicoGrey
+                        color: app.isDark() ? app.defaultDarkOverlay : app.defaultLightOverlay
                         anchors.fill: lock
                     }
                 }
