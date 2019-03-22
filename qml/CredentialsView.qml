@@ -40,7 +40,7 @@ Pane {
         anchors.fill: parent
         model: filteredCredentials() ? filteredEntries : entries
         cellWidth: 372
-        cellHeight: 88
+        cellHeight: 82
         delegate: CredentialCard {
             credential: model.credential
             code: model.code
