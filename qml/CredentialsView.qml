@@ -51,5 +51,8 @@ Pane {
         }
         focus: true
         Component.onCompleted: currentIndex = -1
+        Keys.onEscapePressed: {
+            grid.currentIndex = -1
+        }
     }
 }
