@@ -9,10 +9,10 @@ ToolBar {
     background: Rectangle {
         color: yubicoGreen
         layer.effect: DropShadow {
-                verticalOffset: 0
-                horizontalOffset: 0
-                spread: 0
-            }
+            verticalOffset: 0
+            horizontalOffset: 0
+            spread: 0
+        }
     }
 
     property bool showSearch: stackView.currentItem.objectName == 'credentialsView'
@@ -120,7 +120,7 @@ ToolBar {
                 id: addCredentialBtn
                 visible: showAddCredentialBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                onClicked: app.goToCredentials()
+                onClicked: app.goToAddCredential()
 
                 ToolTip.text: "Add a new credential"
                 ToolTip.delay: 1000

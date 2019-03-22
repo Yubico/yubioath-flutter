@@ -80,6 +80,12 @@ ApplicationWindow {
         }
     }
 
+    function goToAddCredential() {
+        if (stackView.currentItem.objectName !== 'newCredentialView') {
+            stackView.push(newCredentialView, StackView.Immediate)
+        }
+    }
+
     YubiKeyPoller {
     }
 
@@ -90,7 +96,7 @@ ApplicationWindow {
     StackView {
         id: stackView
         anchors.fill: parent
-        initialItem: noYubiKeyView
+        initialItem: credentialsView
         focus: true
         onCurrentItemChanged: {
             if (currentItem) {
@@ -126,6 +132,12 @@ ApplicationWindow {
     Component {
         id: multipleYubiKeysView
         MultipleYubiKeysView {
+        }
+    }
+
+    Component {
+        id: newCredentialView
+        NewCredentialView {
         }
     }
 }
