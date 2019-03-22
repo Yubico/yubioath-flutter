@@ -120,11 +120,13 @@ ToolBar {
                 id: addCredentialBtn
                 visible: showAddCredentialBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                onClicked: app.goToAddCredential()
+                onClicked: addNewCredentialMenu.open()
 
                 ToolTip.text: "Add a new credential"
                 ToolTip.delay: 1000
                 ToolTip.visible: hovered
+
+                enabled: !stackView.isAtNewCredential()
 
                 Image {
                     id: addIcon
@@ -137,6 +139,17 @@ ToolBar {
                         source: addIcon
                         color: yubicoWhite
                         anchors.fill: addIcon
+                    }
+                }
+                Menu {
+                    id: addNewCredentialMenu
+                    y: addCredentialBtn.height
+                    MenuItem {
+                        text: "Scan QR code"
+                    }
+                    MenuItem {
+                        text: "Manual entry"
+                        onClicked: app.goToAddCredential()
                     }
                 }
             }

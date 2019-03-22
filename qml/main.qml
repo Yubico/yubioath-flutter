@@ -62,6 +62,7 @@ ApplicationWindow {
         }
     }
 
+    // TODO: Break out these into a Navigator.qml object
     function goToSettings() {
         if (stackView.currentItem.objectName !== 'settingsView') {
             stackView.push(settingsView, StackView.Immediate)
@@ -81,7 +82,7 @@ ApplicationWindow {
     }
 
     function goToAddCredential() {
-        if (stackView.currentItem.objectName !== 'newCredentialView') {
+        if (!stackView.isAtNewCredential()) {
             stackView.push(newCredentialView, StackView.Immediate)
         }
     }
@@ -103,6 +104,10 @@ ApplicationWindow {
             if (currentItem) {
                 currentItem.forceActiveFocus()
             }
+        }
+
+        function isAtNewCredential() {
+            return currentItem.objectName === 'newCredentialView'
         }
     }
 
