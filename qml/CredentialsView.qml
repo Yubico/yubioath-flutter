@@ -26,7 +26,7 @@ Pane {
         }
         flickableChildren: MouseArea {
             anchors.fill: parent
-            onClicked: currentIndex = -1
+            onClicked: grid.currentIndex = -1
         }
         focus: true
         Component.onCompleted: currentIndex = -1
