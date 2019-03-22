@@ -10,7 +10,8 @@ from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
 
 from ykman.device import YubiKey
-from ykman.descriptor import get_descriptors, Descriptor, FailedOpeningDeviceException
+from ykman.descriptor import (
+    get_descriptors, Descriptor, FailedOpeningDeviceException)
 from ykman.util import (TRANSPORT, parse_b32_key)
 from ykman.driver_otp import YkpersError
 from ykman.otp import OtpController
@@ -135,9 +136,13 @@ class Controller(object):
             dev = YubiKey(Descriptor.from_driver(readers[0]), readers[0])
             controller = OathController(dev.driver)
             entries = controller.calculate_all(timestamp)
-            return success({
-                'entries': [pair_to_dict(cred, code) for (cred, code) in entries if not cred.is_hidden]
-            })
+            return success(
+                {
+                    'entries':
+                        [pair_to_dict(cred, code) for (
+                            cred, code) in entries if not cred.is_hidden]
+                }
+            )
         else:
             return failure('too_many_readers_found')
 
