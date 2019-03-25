@@ -74,6 +74,7 @@ ToolBar {
             }
 
             TextField {
+
                 id: searchField
                 visible: showSearch
                 Material.accent: yubicoWhite
@@ -94,7 +95,11 @@ ToolBar {
                     height: 30
                     radius: 4
                 }
+
+                onTextChanged: forceActiveFocus()
+
                 Keys.onEscapePressed: {
+                    text = ""
                     focus = false
                     stackView.forceActiveFocus()
                 }
