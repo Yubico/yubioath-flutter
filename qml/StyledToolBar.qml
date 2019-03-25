@@ -74,6 +74,7 @@ ToolBar {
             }
 
             TextField {
+
                 id: searchField
                 visible: showSearch
                 Material.accent: yubicoWhite
@@ -83,7 +84,7 @@ ToolBar {
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 placeholderText: "Quick Find"
-//                placeholderTextColor: "#f0f0f0"       // Qt5.12 requirement, hold for now?
+                //                placeholderTextColor: "#f0f0f0"       // Qt5.12 requirement, hold for now?
                 padding: 28
                 width: parent.width
                 horizontalAlignment: Qt.AlignLeft
@@ -93,6 +94,24 @@ ToolBar {
                     color: searchField.focus ? "#a6d14c" : "transparent"
                     height: 30
                     radius: 4
+                }
+
+                onTextChanged: forceActiveFocus()
+
+                Keys.onEscapePressed: {
+                    text = ""
+                    focus = false
+                    stackView.forceActiveFocus()
+                }
+                Keys.onUpPressed: {
+                    focus = false
+                    forwardTo: stackView
+                    stackView.forceActiveFocus()
+                }
+                Keys.onDownPressed: {
+                    focus = false
+                    forwardTo: stackView
+                    stackView.forceActiveFocus()
                 }
 
                 Image {
