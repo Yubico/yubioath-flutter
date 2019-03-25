@@ -52,7 +52,13 @@ Pane {
         focus: true
         Component.onCompleted: currentIndex = -1
         Keys.onEscapePressed: {
-            grid.currentIndex = -1
+            currentIndex = -1
+        }
+        Keys.onReturnPressed: {
+            if (currentIndex !== -1) {
+                console.log(currentItem.code.value)
+                currentIndex = currentIndex
+            }
         }
     }
 }
