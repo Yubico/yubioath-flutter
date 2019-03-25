@@ -83,7 +83,7 @@ ToolBar {
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 placeholderText: "Quick Find"
-//                placeholderTextColor: "#f0f0f0"       // Qt5.12 requirement, hold for now?
+                //                placeholderTextColor: "#f0f0f0"       // Qt5.12 requirement, hold for now?
                 padding: 28
                 width: parent.width
                 horizontalAlignment: Qt.AlignLeft
@@ -146,6 +146,7 @@ ToolBar {
                     y: addCredentialBtn.height
                     MenuItem {
                         text: "Scan QR code"
+                        onClicked: app.scanQr()
                     }
                     MenuItem {
                         text: "Manual entry"

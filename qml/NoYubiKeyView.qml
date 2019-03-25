@@ -6,6 +6,7 @@ import QtGraphicalEffects 1.0
 
 Pane {
     objectName: 'noYubiKeyView'
+
     property string title: ""
 
     ColumnLayout {
@@ -24,7 +25,8 @@ Pane {
                 source: "../images/yubikeys-transparent.png"
                 ColorOverlay {
                     source: yubikeys
-                    color: app.isDark() ? app.defaultDarkOverlay : app.defaultLightOverlay
+                    color: app.isDark(
+                               ) ? app.defaultDarkOverlay : app.defaultLightOverlay
                     anchors.fill: yubikeys
                 }
             }

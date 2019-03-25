@@ -87,6 +87,13 @@ ApplicationWindow {
         }
     }
 
+    function scanQr() {
+        yubiKey.parseQr(ScreenShot.capture(), function (resp) {
+
+            console.log(JSON.stringify(resp))
+        })
+    }
+
     YubiKeyPoller {
         id: yubiKeyPoller
     }
