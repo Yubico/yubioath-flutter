@@ -9,6 +9,9 @@ Pane {
 
     property string title: "New credential"
 
+    property var credential
+    property bool manualEntry
+
     function addCredential() {
         yubiKey.addCredential(nameLbl.text, secretKeyLbl.text, issuerLbl.text,
                               oathTypeComboBox.currentText,
@@ -39,16 +42,20 @@ Pane {
             id: issuerLbl
             placeholderText: "Issuer"
             Layout.fillWidth: true
+            text: credential && credential.issuer ? credential.issuer : ""
         }
         TextField {
             id: nameLbl
             placeholderText: "Account name"
             Layout.fillWidth: true
+            text: credential && credential.name ? credential.name : ""
         }
         TextField {
             id: secretKeyLbl
             placeholderText: "Secret key"
             Layout.fillWidth: true
+            text: credential && credential.secret ? credential.secret : ""
+            visible: manualEntry
         }
 
         CheckBox {
@@ -66,6 +73,7 @@ Pane {
                 id: oathTypeComboBox
                 model: ["TOTP", "HOTP"]
             }
+            visible: manualEntry
         }
         RowLayout {
             Label {
@@ -76,6 +84,7 @@ Pane {
                 id: digitsComboBox
                 model: ["6", "7", "8"]
             }
+            visible: manualEntry
         }
         RowLayout {
             Layout.fillWidth: true
@@ -88,6 +97,7 @@ Pane {
                 id: algoComboBox
                 model: ["SHA1", "SHA256", "SHA512"]
             }
+            visible: manualEntry
         }
         RowLayout {
             Layout.fillWidth: true
@@ -100,6 +110,7 @@ Pane {
                 id: periodSpinBox
                 value: 30
             }
+            visible: manualEntry
         }
 
         Button {

@@ -408,8 +408,9 @@ class Controller(object):
         data = b64decode(screenshot['data'])
         image = PixelImage(data, screenshot['width'], screenshot['height'])
         for qr in qrparse.parse_qr_codes(image, 2):
-            return credential_data_to_dict(
-                CredentialData.from_uri(qrdecode.decode_qr_data(qr)))
+            return success(credential_data_to_dict(
+                CredentialData.from_uri(qrdecode.decode_qr_data(qr))))
+        return failure('no_credential_found')
 
     def reset(self):
         dev = self._descriptor.open_device(TRANSPORT.CCID)

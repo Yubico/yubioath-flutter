@@ -83,14 +83,24 @@ ApplicationWindow {
 
     function goToAddCredential() {
         if (!stackView.isAtNewCredential()) {
-            stackView.push(newCredentialView, StackView.Immediate)
+            stackView.push(newCredentialView.createObject(app, {
+                                                              manualEntry: true
+                                                          }),
+                           StackView.Immediate)
         }
     }
 
     function scanQr() {
         yubiKey.parseQr(ScreenShot.capture(), function (resp) {
-
-            console.log(JSON.stringify(resp))
+            if (resp.success) {
+                stackView.push(newCredentialView.createObject(app, {
+                                                                  credential: resp,
+                                                                  manualEntry: false
+                                                              }),
+                               StackView.Immediate)
+            } else {
+                console.log(resp.error_id)
+            }
         })
     }
 
