@@ -2,6 +2,8 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
+import Qt.labs.settings 1.0
+import QtQuick.Window 2.2
 
 ApplicationWindow {
 
@@ -28,17 +30,16 @@ ApplicationWindow {
     readonly property string defaultLightOverlay: "#bbbbbb"
     readonly property string defaultLightSelection: "#eeeeee"
 
-    Material.theme: Material.System
+    Material.theme: getTheme()
     Material.primary: yubicoGreen
     Material.accent: yubicoBlue
-
-    EntriesModel {
-        id: entries
-    }
 
     header: StyledToolBar {
         id: toolBar
     }
+
+    Component.onCompleted: ensureValidWindowPosition()
+    Component.onDestruction: saveScreenLayout()
 
     function enableLogging(logLevel) {
         yubiKey.enableLogging(logLevel, null)
@@ -54,12 +55,91 @@ ApplicationWindow {
         return app.Material.theme === Material.Dark
     }
 
+    function setDark() {
+        app.Material.theme = Material.Dark
+        settings.theme = "dark"
+    }
+
+    function setLight() {
+        app.Material.theme = Material.Light
+        settings.theme = "light"
+    }
+
+    function setAuto() {
+        app.Material.theme = Material.System
+        settings.theme = "auto"
+    }
+
+    function getTheme() {
+        if (settings.theme === "dark") {
+            return Material.Dark
+        } else if (settings.theme === "light") {
+            return Material.Light
+        } else if (settings.theme === "auto") {
+            return Material.System
+        }
+        return Material.System
+    }
+
     function toggleTheme() {
         if (isDark()) {
-            app.Material.theme = Material.Light
+            setLight()
         } else {
-            app.Material.theme = Material.Dark
+            setDark()
         }
+    }
+
+    function saveScreenLayout() {
+        console.log("saving layout")
+        settings.desktopAvailableWidth = Screen.desktopAvailableWidth
+        settings.desktopAvailableHeight = Screen.desktopAvailableHeight
+    }
+
+    function ensureValidWindowPosition() {
+        // If we have the same desktop dimensions as last time, use the saved position.
+        // If not, put the window in the middle of the screen.
+        var savedScreenLayout = (settings.desktopAvailableWidth === Screen.desktopAvailableWidth)
+                && (settings.desktopAvailableHeight === Screen.desktopAvailableHeight)
+        console.log(settings.desktopAvailableWidth)
+        console.log(Screen.desktopAvailableWidth)
+        console.log(typeof settings.desktopAvailableHeight)
+        console.log(typeof Screen.desktopAvailableHeight)
+
+        console.log((settings.desktopAvailableWidth === Screen.desktopAvailableWidth)
+                    && (settings.desktopAvailableHeight === Screen.desktopAvailableHeight))
+
+        app.x = (savedScreenLayout) ? settings.x : Screen.width / 2 - app.width / 2
+        app.y = (savedScreenLayout) ? settings.y : Screen.height / 2 - app.height / 2
+    }
+
+    // This information is stored in the system registry on Windows,
+    // and in XML preferences files on macOS. On other Unix systems,
+    // in the absence of a standard, INI text files are used.
+    // See http://doc.qt.io/qt-5/qml-qt-labs-settings-settings.html#details
+    Settings {
+        id: settings
+        property bool slotMode
+        property bool slot1
+        property bool slot2
+        property int slot1digits
+        property int slot2digits
+
+        property bool closeToTray
+        property bool hideOnLaunch
+
+        property var theme
+
+        // Keep track of window and desktop dimensions.
+        property alias width: app.width
+        property alias height: app.height
+        property alias x: app.x
+        property alias y: app.y
+        property int desktopAvailableWidth
+        property int desktopAvailableHeight
+    }
+
+    EntriesModel {
+        id: entries
     }
 
     ClipBoard {
