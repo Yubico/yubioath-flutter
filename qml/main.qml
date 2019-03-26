@@ -8,9 +8,9 @@ ApplicationWindow {
     id: app
 
     width: 360
-    height: 498
+    height: 552
     minimumWidth: 360
-    minimumHeight: 498
+    minimumHeight: 552
     visible: true
 
     readonly property string yubicoGreen: "#9aca3c"

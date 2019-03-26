@@ -13,8 +13,21 @@ Pane {
             text: "Settings"
         }
         Button {
-            text: "toggle theme"
+            id: button
+            flat: true
+            text: "<font color='#fefefe'>Toggle theme</font>"
+            hoverEnabled: true
+            font.capitalization: Font.MixedCase
+            font.bold: false
+            font.pointSize: 13
             onClicked: app.toggleTheme()
+            implicitHeight: 44
+            leftPadding: 12
+            rightPadding: 12
+            background: Rectangle {
+                radius: 2
+                color: button.hovered ? "#a6d14c" : yubicoGreen // beginning of new default button (color is temporary)
+            }
         }
     }
 }
