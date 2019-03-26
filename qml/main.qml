@@ -62,6 +62,10 @@ ApplicationWindow {
         }
     }
 
+    ClipBoard {
+        id: clipBoard
+    }
+
     YubiKeyPoller {
         id: yubiKeyPoller
     }

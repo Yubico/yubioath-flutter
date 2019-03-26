@@ -66,6 +66,11 @@ Pane {
         }
     }
 
+    function copyCode() {
+        clipBoard.push(code.value)
+        // TODO: show snackbar that code is copied
+    }
+
     function calculateCard() {
         var touchCredentialNoCode = credential.touch && !code.value
         var hotpCredential = oathType == "HOTP"
@@ -74,11 +79,13 @@ Pane {
             yubiKey.calculate(credential, function (resp) {
                 if (resp.success) {
                     entries.updateEntry(resp)
-                    console.log(code.value)
+                    copyCode()
                 } else {
                     console.log(resp.error_id)
                 }
             })
+        } else {
+            copyCode()
         }
     }
 
