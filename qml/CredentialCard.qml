@@ -67,8 +67,10 @@ Pane {
     }
 
     function calculateCard() {
-        // TODO: HOTP support
-        if (credential.touch && !code.value) {
+        var touchCredentialNoCode = credential.touch && !code.value
+        var hotpCredential = oathType == "HOTP"
+
+        if (touchCredentialNoCode || hotpCredential) {
             yubiKey.calculate(credential, function (resp) {
                 if (resp.success) {
                     entries.updateEntry(resp)
@@ -77,6 +79,18 @@ Pane {
                     console.log(resp.error_id)
                 }
             })
+        }
+    }
+
+    function getCodeLblValue() {
+        if (code && code.value) {
+            return formattedCode(code.value)
+        } else if (touch) {
+            return "Requires touch"
+        } else if (!touch && oathType === "HOTP") {
+            return "HOTP Credential"
+        } else {
+            return ""
         }
     }
 
@@ -101,8 +115,7 @@ Pane {
                 id: codLbl
                 font.pixelSize: 24
                 color: code && code.value ? yubicoGreen : yubicoGrey
-                text: code && code.value ? formattedCode(
-                                               code.value) : "Requires touch"
+                text: getCodeLblValue()
                 visible: code || touch
             }
             Label {
