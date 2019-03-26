@@ -83,7 +83,7 @@ ToolBar {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                placeholderText: "Quick Find"
+                placeholderText: "<font color='#f0f0f0'>Quick Find</font>" // Workaround for lack of placeholderTextColor
                 //                placeholderTextColor: "#f0f0f0"       // Qt5.12 requirement, hold for now?
                 padding: 28
                 width: parent.width
@@ -101,11 +101,6 @@ ToolBar {
                 Keys.onEscapePressed: {
                     text = ""
                     focus = false
-                    stackView.forceActiveFocus()
-                }
-                Keys.onUpPressed: {
-                    focus = false
-                    forwardTo: stackView
                     stackView.forceActiveFocus()
                 }
                 Keys.onDownPressed: {

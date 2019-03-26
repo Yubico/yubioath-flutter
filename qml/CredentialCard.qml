@@ -31,11 +31,14 @@ Pane {
                    return app.isDark(
                                ) ? app.defaultDarkLighter : app.defaultLightDarker
                }
-    }
 
-    MouseArea {
-        anchors.fill: parent
-        onClicked: credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
+        MouseArea {
+            anchors.fill: parent
+            onClicked: credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
+            onDoubleClicked: {
+                console.log(code.value) // TODO: copy to clipboard
+            }
+        }
     }
 
     function formattedCode(code) {
