@@ -89,6 +89,16 @@ Pane {
         }
     }
 
+    function deleteCard(index) {
+        yubiKey.deleteCredential(credential, function (resp) {
+            if (resp.success) {
+                entries.remove(index)
+            } else {
+                console.log(resp.error_id)
+            }
+        })
+    }
+
     function getCodeLblValue() {
         if (code && code.value) {
             return formattedCode(code.value)

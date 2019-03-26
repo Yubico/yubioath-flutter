@@ -188,6 +188,26 @@ class Controller(object):
         else:
             return failure('too_many_readers_found')
 
+    def delete_credential(self, credential, filter='yubico'):
+        readers = list(open_ccid(filter))
+        if not readers:
+            return failure('no_readers_found')
+        if len(readers) == 1:
+            dev = YubiKey(Descriptor.from_driver(readers[0]), readers[0])
+            controller = OathController(dev.driver)
+            controller.delete(cred_from_dict(credential))
+            return success()
+        else:
+            return failure('too_many_readers_found')
+
+    def parse_qr(self, screenshot):
+            data = b64decode(screenshot['data'])
+            image = PixelImage(data, screenshot['width'], screenshot['height'])
+            for qr in qrparse.parse_qr_codes(image, 2):
+                return success(credential_data_to_dict(
+                    CredentialData.from_uri(qrdecode.decode_qr_data(qr))))
+            return failure('no_credential_found')
+
     def count_devices(self):
         return len(get_descriptors())
 
@@ -377,8 +397,6 @@ class Controller(object):
             self._key = None
         self.settings.write()
 
-
-
     def add_slot_credential(self, slot, key, touch):
         try:
             key = parse_b32_key(key)
@@ -397,20 +415,6 @@ class Controller(object):
         with self._descriptor.open_device(TRANSPORT.OTP) as dev:
             controller = OtpController(dev.driver)
             controller.zap_slot(slot)
-
-    def delete_credential(self, credential):
-        dev = self._descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
-        self._unlock(controller)
-        controller.delete(cred_from_dict(credential))
-
-    def parse_qr(self, screenshot):
-        data = b64decode(screenshot['data'])
-        image = PixelImage(data, screenshot['width'], screenshot['height'])
-        for qr in qrparse.parse_qr_codes(image, 2):
-            return success(credential_data_to_dict(
-                CredentialData.from_uri(qrdecode.decode_qr_data(qr))))
-        return failure('no_credential_found')
 
     def reset(self):
         dev = self._descriptor.open_device(TRANSPORT.CCID)

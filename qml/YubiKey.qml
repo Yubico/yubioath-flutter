@@ -125,8 +125,8 @@ Python {
         doCall('yubikey.controller.add_slot_credential', [slot, key, touch], cb)
     }
 
-    function deleteCredential(credential) {
-        doCall('yubikey.controller.delete_credential', [credential])
+    function deleteCredential(credential, cb) {
+        doCall('yubikey.controller.delete_credential', [credential], cb)
     }
 
     function deleteSlotCredential(slot) {

@@ -59,5 +59,10 @@ Pane {
                 currentItem.calculateCard()
             }
         }
+        Keys.onDeletePressed: {
+            if (currentIndex !== -1) {
+                currentItem.deleteCard(currentIndex)
+            }
+        }
     }
 }
