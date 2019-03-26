@@ -110,11 +110,10 @@ Python {
         doCall('yubikey.controller.calculate_all', [now], cb)
     }
 
-    function calculate(entry, cb) {
-        var margin = entry.credential.touch ? 10 : 0
+    function calculate(credential, cb) {
+        var margin = credential.touch ? 10 : 0
         var nowAndMargin = Utils.getNow() + margin
-        doCall('yubikey.controller.calculate',
-               [entry.credential, nowAndMargin], cb)
+        doCall('yubikey.controller.calculate', [credential, nowAndMargin], cb)
     }
 
     function addCredential(name, key, issuer, oathType, algo, digits, period, touch, cb) {

@@ -36,6 +36,18 @@ Pane {
             anchors.fill: parent
             onClicked: credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
             onDoubleClicked: {
+                // If touch and expired, could be done cleaner.
+                // TODO: HOTP support
+                if (credential.touch && !code.value) {
+                    yubiKey.calculate(credential, function (resp) {
+                        if (resp.success) {
+                            entries.updateEntry(resp)
+                            console.log(code.value)
+                        } else {
+                            console.log(resp.error_id)
+                        }
+                    })
+                }
                 console.log(code.value) // TODO: copy to clipboard
             }
         }
@@ -88,7 +100,7 @@ Pane {
             Label {
                 id: codLbl
                 font.pixelSize: 24
-                color: !touch ? yubicoGreen : yubicoGrey
+                color: code && code.value ? yubicoGreen : yubicoGrey
                 text: code && code.value ? formattedCode(
                                                code.value) : "Requires touch"
                 visible: code || touch
@@ -110,7 +122,7 @@ Pane {
             anchors.right: parent.right
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             colorCircle: Material.primary
-            visible: !touch
+            visible: code && oathType === "TOTP"
         }
 
         Image {
@@ -121,7 +133,7 @@ Pane {
             height: 16
             fillMode: Image.PreserveAspectFit
             source: "../images/touch.png"
-            visible: touch
+            visible: touch && !code
         }
     }
 }
