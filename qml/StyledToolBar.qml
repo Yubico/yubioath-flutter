@@ -15,11 +15,11 @@ ToolBar {
         }
     }
 
-    property bool showSearch: stackView.currentItem.objectName == 'credentialsView'
-    property bool showBackBtn: stackView.depth > 1
+    property bool showSearch: navigator.currentItem.objectName == 'credentialsView'
+    property bool showBackBtn: navigator.depth > 1
     property bool showAddCredentialBtn: true // TODO: should be shown when there is a yubikey and authenticated
     property bool showSettingsBtn: true
-    property bool showTitleLbl: stackView.currentItem.title.length > 1
+    property bool showTitleLbl: navigator.currentItem.title.length > 1
     property alias searchField: searchField
 
     RowLayout {
@@ -30,7 +30,7 @@ ToolBar {
         ToolButton {
             id: backBtn
             visible: showBackBtn
-            onClicked: stackView.pop(StackView.Immediate)
+            onClicked: navigator.pop(StackView.Immediate)
 
             Image {
                 id: backIcon
@@ -50,7 +50,7 @@ ToolBar {
         Label {
             id: titleLbl
             visible: showTitleLbl
-            text: stackView.currentItem.title
+            text: navigator.currentItem.title
             font.pixelSize: 16
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             horizontalAlignment: Qt.AlignHCenter
@@ -101,12 +101,12 @@ ToolBar {
                 Keys.onEscapePressed: {
                     text = ""
                     focus = false
-                    stackView.forceActiveFocus()
+                    navigator.forceActiveFocus()
                 }
                 Keys.onDownPressed: {
                     focus = false
-                    forwardTo: stackView
-                    stackView.forceActiveFocus()
+                    forwardTo: navigator
+                    navigator.forceActiveFocus()
                 }
 
                 Image {
@@ -140,7 +140,7 @@ ToolBar {
                 ToolTip.delay: 1000
                 ToolTip.visible: hovered
 
-                enabled: !stackView.isAtNewCredential()
+                enabled: !navigator.isAtNewCredential()
 
                 Image {
                     id: addIcon
@@ -160,11 +160,11 @@ ToolBar {
                     y: addCredentialBtn.height
                     MenuItem {
                         text: "Scan QR code"
-                        onClicked: app.scanQr()
+                        onClicked: yubiKey.scanQr()
                     }
                     MenuItem {
                         text: "Manual entry"
-                        onClicked: app.goToAddCredential()
+                        onClicked: navigator.goToNewCredentialManual()
                     }
                 }
             }
@@ -173,7 +173,7 @@ ToolBar {
                 id: settingsButton
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: showSettingsBtn
-                onClicked: app.goToSettings()
+                onClicked: navigator.goToSettings()
 
                 ToolTip.text: "Configure Yubico Authenticator"
                 ToolTip.delay: 1000

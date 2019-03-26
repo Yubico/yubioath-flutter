@@ -62,48 +62,6 @@ ApplicationWindow {
         }
     }
 
-    // TODO: Break out these into a Navigator.qml object
-    function goToSettings() {
-        if (stackView.currentItem.objectName !== 'settingsView') {
-            stackView.push(settingsView, StackView.Immediate)
-        }
-    }
-
-    function goToNoYubiKeyView() {
-        if (stackView.currentItem.objectName !== 'noYubiKeyView') {
-            stackView.push(noYubiKeyView, StackView.Immediate)
-        }
-    }
-
-    function goToCredentials() {
-        if (stackView.currentItem.objectName !== 'credentialsView') {
-            stackView.push(credentialsView, StackView.Immediate)
-        }
-    }
-
-    function goToAddCredential() {
-        if (!stackView.isAtNewCredential()) {
-            stackView.push(newCredentialView.createObject(app, {
-                                                              manualEntry: true
-                                                          }),
-                           StackView.Immediate)
-        }
-    }
-
-    function scanQr() {
-        yubiKey.parseQr(ScreenShot.capture(), function (resp) {
-            if (resp.success) {
-                stackView.push(newCredentialView.createObject(app, {
-                                                                  credential: resp,
-                                                                  manualEntry: false
-                                                              }),
-                               StackView.Immediate)
-            } else {
-                console.log(resp.error_id)
-            }
-        })
-    }
-
     YubiKeyPoller {
         id: yubiKeyPoller
     }
@@ -112,56 +70,10 @@ ApplicationWindow {
         id: yubiKey
     }
 
-    StackView {
-        id: stackView
+    Navigator {
+        id: navigator
         anchors.fill: parent
-        initialItem: credentialsView
         focus: true
         Keys.forwardTo: toolBar.searchField
-        onCurrentItemChanged: {
-            if (currentItem) {
-                currentItem.forceActiveFocus()
-            }
-        }
-
-        function isAtNewCredential() {
-            return currentItem.objectName === 'newCredentialView'
-        }
-    }
-
-    Component {
-        id: credentialsView
-        CredentialsView {
-        }
-    }
-
-    Component {
-        id: settingsView
-        SettingsView {
-        }
-    }
-
-    Component {
-        id: noYubiKeyView
-        NoYubiKeyView {
-        }
-    }
-
-    Component {
-        id: enterPasswordView
-        EnterPasswordView {
-        }
-    }
-
-    Component {
-        id: multipleYubiKeysView
-        MultipleYubiKeysView {
-        }
-    }
-
-    Component {
-        id: newCredentialView
-        NewCredentialView {
-        }
     }
 }

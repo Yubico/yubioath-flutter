@@ -95,6 +95,16 @@ Python {
         }
     }
 
+    function scanQr() {
+        parseQr(ScreenShot.capture(), function (resp) {
+            if (resp.success) {
+                navigator.goToNewCredentialAuto(resp)
+            } else {
+                console.log(resp.error_id)
+            }
+        })
+    }
+
     function calculateAll(cb) {
         var now = Math.floor(Date.now() / 1000)
         doCall('yubikey.controller.calculate_all', [now], cb)
