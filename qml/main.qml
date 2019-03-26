@@ -100,14 +100,6 @@ ApplicationWindow {
         // If not, put the window in the middle of the screen.
         var savedScreenLayout = (settings.desktopAvailableWidth === Screen.desktopAvailableWidth)
                 && (settings.desktopAvailableHeight === Screen.desktopAvailableHeight)
-        console.log(settings.desktopAvailableWidth)
-        console.log(Screen.desktopAvailableWidth)
-        console.log(typeof settings.desktopAvailableHeight)
-        console.log(typeof Screen.desktopAvailableHeight)
-
-        console.log((settings.desktopAvailableWidth === Screen.desktopAvailableWidth)
-                    && (settings.desktopAvailableHeight === Screen.desktopAvailableHeight))
-
         app.x = (savedScreenLayout) ? settings.x : Screen.width / 2 - app.width / 2
         app.y = (savedScreenLayout) ? settings.y : Screen.height / 2 - app.height / 2
     }
