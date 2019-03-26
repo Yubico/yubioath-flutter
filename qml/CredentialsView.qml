@@ -56,8 +56,7 @@ Pane {
         }
         Keys.onReturnPressed: {
             if (currentIndex !== -1) {
-                console.log(currentItem.code.value)
-                currentIndex = currentIndex
+                currentItem.calculateCard()
             }
         }
     }

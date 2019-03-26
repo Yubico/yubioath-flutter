@@ -35,21 +35,7 @@ Pane {
         MouseArea {
             anchors.fill: parent
             onClicked: credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
-            onDoubleClicked: {
-                // If touch and expired, could be done cleaner.
-                // TODO: HOTP support
-                if (credential.touch && !code.value) {
-                    yubiKey.calculate(credential, function (resp) {
-                        if (resp.success) {
-                            entries.updateEntry(resp)
-                            console.log(code.value)
-                        } else {
-                            console.log(resp.error_id)
-                        }
-                    })
-                }
-                console.log(code.value) // TODO: copy to clipboard
-            }
+            onDoubleClicked: calculateCard()
         }
     }
 
@@ -77,6 +63,20 @@ Pane {
             return issuer + " (" + name + ")"
         } else {
             return name
+        }
+    }
+
+    function calculateCard() {
+        // TODO: HOTP support
+        if (credential.touch && !code.value) {
+            yubiKey.calculate(credential, function (resp) {
+                if (resp.success) {
+                    entries.updateEntry(resp)
+                    console.log(code.value)
+                } else {
+                    console.log(resp.error_id)
+                }
+            })
         }
     }
 
