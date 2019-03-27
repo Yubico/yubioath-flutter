@@ -120,6 +120,7 @@ def catch_error(f):
 
 class Controller(object):
     _devices = []
+    _desc_fingerprints = []
     _key = None
 
     def __init__(self):
@@ -213,21 +214,24 @@ class Controller(object):
             return failure('no_credential_found')
 
     def refresh_ccid(self, filter='yubico'):
-        readers = list(open_ccid(filter))
-        if not readers:
-            return failure('no_readers_found')
-        self._devices = []
-        for reader in readers:
-            dev = YubiKey(Descriptor.from_driver(reader), reader)
-            self._devices.append({
-                'name': dev.device_name,
-                'version': dev.version,
-                'serial': dev.serial,
-            })
-        return success({'devices': self._devices})
+        new_desc_fingerprints = [desc.fingerprint for desc in get_descriptors()]
+        descriptors_changed = (new_desc_fingerprints != self._desc_fingerprints)
+        self._desc_fingerprints = new_desc_fingerprints
 
-    def count_devices(self):
-        return len(get_descriptors())
+        if descriptors_changed:
+            self._devices = []
+            readers = list(open_ccid(filter))
+            if not readers:
+                return failure('no_readers_found')
+            for reader in readers:
+                dev = YubiKey(Descriptor.from_driver(reader), reader)
+                self._devices.append({
+                    'name': dev.device_name,
+                    'version': dev.version,
+                    'serial': dev.serial,
+                })
+
+        return success({'devices': self._devices})
 
     def refresh(self, otp_mode=False):
         descriptors = get_descriptors()
