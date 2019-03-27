@@ -17,22 +17,26 @@ ApplicationWindow {
 
     readonly property string yubicoGreen: "#9aca3c"
     readonly property string yubicoBlue: "#284c61"
-    readonly property string yubicoWhite: "#FFFFFF"
+    readonly property string yubicoWhite: "#ffffff"
     readonly property string yubicoGrey: "#939598"
 
     readonly property string defaultDark: "#303030"
     readonly property string defaultDarkLighter: "#383838"
     readonly property string defaultDarkOverlay: "#444444"
     readonly property string defaultDarkSelection: "#444444"
+    readonly property string defaultDarkForeground: "#fafafa"
 
     readonly property string defaultLight: "#fafafa"
     readonly property string defaultLightDarker: "#ffffff"
     readonly property string defaultLightOverlay: "#bbbbbb"
     readonly property string defaultLightSelection: "#eeeeee"
+    readonly property string defaultLightForeground: "#565656"
 
     Material.theme: getTheme()
     Material.primary: yubicoGreen
-    Material.accent: yubicoBlue
+    Material.accent: yubicoGreen
+    Material.foreground: isDark(
+                             ) ? defaultDarkForeground : defaultLightForeground
 
     header: StyledToolBar {
         id: toolBar
@@ -61,11 +65,13 @@ ApplicationWindow {
 
     function setDark() {
         app.Material.theme = Material.Dark
+        Material.foreground = defaultDarkForeground
         settings.theme = "dark"
     }
 
     function setLight() {
         app.Material.theme = Material.Light
+        Material.foreground = defaultLightForeground
         settings.theme = "light"
     }
 

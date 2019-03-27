@@ -108,6 +108,11 @@ ToolBar {
                     forwardTo: navigator
                     navigator.forceActiveFocus()
                 }
+                Keys.onReturnPressed: {
+                    focus = false
+                    forwardTo: navigator
+                    navigator.forceActiveFocus()
+                }
 
                 Image {
                     id: searchIcon
