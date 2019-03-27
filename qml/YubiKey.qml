@@ -85,16 +85,8 @@ Python {
         })
     }
 
-    function refreshCcid() {
-        doCall('yubikey.controller.refresh_ccid', [], function (resp) {
-            if (resp.success) {
-                loadedDevices = resp
-            } else {
-                loadedDevices = []
-                entries.clear()
-                console.log(resp.error_id)
-            }
-        })
+    function refreshCcid(cb) {
+        doCall('yubikey.controller.refresh_ccid', [], cb)
     }
 
     function calculateAll(cb) {

@@ -119,7 +119,7 @@ def catch_error(f):
 
 
 class Controller(object):
-    _dev_info = {}
+    _devices = []
     _key = None
 
     def __init__(self):
@@ -216,16 +216,15 @@ class Controller(object):
         readers = list(open_ccid(filter))
         if not readers:
             return failure('no_readers_found')
-        if len(readers) == 1:
-            dev = YubiKey(Descriptor.from_driver(readers[0]), readers[0])
-            self._dev_info = {
+        self._devices = []
+        for reader in readers:
+            dev = YubiKey(Descriptor.from_driver(reader), reader)
+            self._devices.append({
                 'name': dev.device_name,
                 'version': dev.version,
                 'serial': dev.serial,
-            }
-            return success(self._dev_info)
-        else:
-            return failure('too_many_readers_found')
+            })
+        return success({'devices': self._devices})
 
     def count_devices(self):
         return len(get_descriptors())

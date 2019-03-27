@@ -22,7 +22,27 @@ Timer {
     function refresh() {
         if (app.isInForeground) {
             // Polling to see what devices we have.
-            yubiKey.refreshCcid()
+            yubiKey.refreshCcid(function (resp) {
+                if (resp.success) {
+                    // If the stringified list of devices is
+                    // exactly the same, probably nothing changed.
+                    var oldDevices = JSON.stringify(yubiKey.loadedDevices)
+                    var newDevices = JSON.stringify(resp.devices)
+                    console.log(oldDevices)
+                    console.log(newDevices)
+
+                    if (oldDevices !== newDevices) {
+                        // Something have changed, save the new devices
+                        // and do a calculateAll.
+                        yubiKey.loadedDevices = resp.devices
+                        calculateAll()
+                    }
+                } else {
+                    console.log(resp.error_id)
+                    yubiKey.loadedDevices = []
+                    entries.clear()
+                }
+            })
 
             if (timeToCalculateAll() && yubiKey.loadedDevices) {
                 calculateAll()
