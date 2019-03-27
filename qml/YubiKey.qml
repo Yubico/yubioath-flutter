@@ -11,8 +11,8 @@ Python {
     property bool yubikeyReady: false
     property var queue: []
 
-    property var loadedDevices: []
-
+    property var availableDevices: []
+    property var currentDevice
     signal enableLogging(string logLevel, string logFile)
     signal disableLogging
 

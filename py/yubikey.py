@@ -214,21 +214,20 @@ class Controller(object):
             return failure('no_credential_found')
 
     def refresh_ccid(self, filter='yubico'):
-        new_desc_fingerprints = [desc.fingerprint for desc in get_descriptors()]
+        descriptors = get_descriptors()
+        new_desc_fingerprints = [desc.fingerprint for desc in descriptors]
         descriptors_changed = (new_desc_fingerprints != self._desc_fingerprints)
         self._desc_fingerprints = new_desc_fingerprints
 
         if descriptors_changed:
             self._devices = []
-            readers = list(open_ccid(filter))
-            if not readers:
-                return failure('no_readers_found')
-            for reader in readers:
-                dev = YubiKey(Descriptor.from_driver(reader), reader)
+            for desc in descriptors:
+                dev = desc.open_device(TRANSPORT.CCID)
                 self._devices.append({
                     'name': dev.device_name,
                     'version': dev.version,
                     'serial': dev.serial,
+                    'fingerprint': desc.fingerprint
                 })
 
         return success({'devices': self._devices})

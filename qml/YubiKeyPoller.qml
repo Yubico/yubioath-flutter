@@ -26,25 +26,26 @@ Timer {
                 if (resp.success) {
                     // If the stringified list of devices is
                     // exactly the same, probably nothing changed.
-                    var oldDevices = JSON.stringify(yubiKey.loadedDevices)
+                    var oldDevices = JSON.stringify(yubiKey.availableDevices)
                     var newDevices = JSON.stringify(resp.devices)
-                    console.log(oldDevices)
-                    console.log(newDevices)
-
                     if (oldDevices !== newDevices) {
                         // Something have changed, save the new devices
-                        // and do a calculateAll.
-                        yubiKey.loadedDevices = resp.devices
-                        calculateAll()
+                        // and do a calculateAll, if there is still devices.
+                        yubiKey.availableDevices = resp.devices
+                        if (yubiKey.availableDevices.length > 0) {
+                            calculateAll()
+                        } else {
+                            entries.clear()
+                        }
                     }
                 } else {
                     console.log(resp.error_id)
-                    yubiKey.loadedDevices = []
+                    yubiKey.availableDevices = []
                     entries.clear()
                 }
             })
 
-            if (timeToCalculateAll() && yubiKey.loadedDevices) {
+            if (timeToCalculateAll() && yubiKey.availableDevices) {
                 calculateAll()
             }
         }
