@@ -85,8 +85,12 @@ Python {
         })
     }
 
-    function refreshCcid(cb) {
-        doCall('yubikey.controller.refresh_ccid', [], cb)
+    function refreshUsbCcidDevices(cb) {
+        doCall('yubikey.controller.get_usb_ccid_devices', [], cb)
+    }
+
+    function refreshDescriptors(cb) {
+        doCall('yubikey.controller.refresh_descriptors', [], cb)
     }
 
     function calculateAll(cb) {

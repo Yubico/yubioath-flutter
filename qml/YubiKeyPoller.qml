@@ -21,8 +21,8 @@ Timer {
 
     function refresh() {
         if (app.isInForeground) {
-            // Polling to see what devices we have.
-            yubiKey.refreshCcid(function (resp) {
+            // Polling to see what USB CCID devices we have.
+            yubiKey.refreshUsbCcidDevices(function (resp) {
                 if (resp.success) {
                     // If the stringified list of devices is
                     // exactly the same, probably nothing changed.
@@ -31,10 +31,12 @@ Timer {
                     if (oldDevices !== newDevices) {
                         // Something have changed, save the new devices
                         // and do a calculateAll, if there is still devices.
+                        // TODO: Which device should we pick if there is several?
                         yubiKey.availableDevices = resp.devices
                         if (yubiKey.availableDevices.length > 0) {
                             calculateAll()
                         } else {
+                            // All devices seem to have gone away, clear credentials.
                             entries.clear()
                         }
                     }
