@@ -5,29 +5,14 @@ import "utils.js" as Utils
 
 // @disable-check M300
 Python {
-
     id: py
-    property int nDevices
-    property bool hasDevice
-    property string name
-    property var version
-    property string oathId
-    property var supportedUsbInterfaces: []
-    property var enabledUsbInterfaces: []
-    property var entries: null
-    property int nextRefresh: 0
+
     property bool yubikeyModuleLoaded: false
     property bool yubikeyReady: false
-    property bool yubikeyBusy: false
     property var queue: []
-    readonly property bool hasOTP: enabledUsbInterfaces.indexOf('OTP') !== -1
-    readonly property bool hasCCID: enabledUsbInterfaces.indexOf('CCID') !== -1
-    property bool validated
-    property bool slot1inUse
-    property bool slot2inUse
-    property int expiration: 0
-    signal wrongPassword
-    signal credentialsRefreshed
+
+    property var loadedDevices: []
+
     signal enableLogging(string logLevel, string logFile)
     signal disableLogging
 
@@ -35,7 +20,6 @@ Python {
         importModule('site', function () {
             call('site.addsitedir', [appDir + '/pymodules'], function () {
                 addImportPath(urlPrefix + '/py')
-
                 importModule('yubikey', function () {
                     yubikeyModuleLoaded = true
                 })
@@ -49,6 +33,7 @@ Python {
                    yubikeyReady = true
                })
     }
+
     onDisableLogging: {
         doCall('yubikey.init', [], function () {
             yubikeyReady = true
@@ -57,11 +42,6 @@ Python {
 
     onYubikeyModuleLoadedChanged: runQueue()
     onYubikeyReadyChanged: runQueue()
-
-    onHasDeviceChanged: {
-        clearKey()
-        device.validated = false
-    }
 
     function isPythonReady(funcName) {
         if (Utils.startsWith(funcName, "yubikey.init")) {
@@ -100,6 +80,18 @@ Python {
             if (resp.success) {
                 navigator.goToNewCredentialAuto(resp)
             } else {
+                console.log(resp.error_id)
+            }
+        })
+    }
+
+    function refreshCcid() {
+        doCall('yubikey.controller.refresh_ccid', [], function (resp) {
+            if (resp.success) {
+                loadedDevices = resp
+            } else {
+                loadedDevices = []
+                entries.clear()
                 console.log(resp.error_id)
             }
         })

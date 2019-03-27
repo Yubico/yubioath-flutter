@@ -38,6 +38,10 @@ ApplicationWindow {
         id: toolBar
     }
 
+    // Don't refresh credentia ls when window is minimized or hidden
+    // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
+    property bool isInForeground: visibility != 3 && visibility != 0
+
     Component.onCompleted: ensureValidWindowPosition()
     Component.onDestruction: saveScreenLayout()
 

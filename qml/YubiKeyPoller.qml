@@ -8,7 +8,7 @@ Timer {
     property int nextCalculateAll: 0
 
     triggeredOnStart: true
-    interval: 500
+    interval: 1000
     repeat: true
     running: app.visible
     onTriggered: refresh()
@@ -20,8 +20,13 @@ Timer {
     }
 
     function refresh() {
-        if (timeToRefresh()) {
-            calculateAll()
+        if (app.isInForeground) {
+            // Polling to see what devices we have.
+            yubiKey.refreshCcid()
+
+            if (timeToCalculateAll() && yubiKey.loadedDevices) {
+                calculateAll()
+            }
         }
     }
 
@@ -66,7 +71,7 @@ Timer {
         }
     }
 
-    function timeToRefresh() {
+    function timeToCalculateAll() {
         return nextCalculateAll <= Utils.getNow()
     }
 }

@@ -16,8 +16,9 @@ from ykman.util import (TRANSPORT, parse_b32_key)
 from ykman.driver_otp import YkpersError
 from ykman.otp import OtpController
 from ykman.driver_ccid import APDUError, open_devices as open_ccid
-from ykman.oath import (ALGO, OATH_TYPE, OathController, CredentialData,
-                        Credential, Code, SW)
+from ykman.oath import (
+    ALGO, OATH_TYPE, OathController,
+    CredentialData, Credential, Code, SW)
 from ykman.settings import Settings
 from qr import qrparse, qrdecode
 
@@ -107,6 +108,10 @@ def catch_error(f):
             return unknown_failure(e)
         except FailedOpeningDeviceException:
             return failure('open_device_failed')
+        except APDUError as e:
+            if e.sw == SW.SECURITY_CONDITION_NOT_SATISFIED:
+                return failure('access_denied')
+            raise
         except Exception as e:
             logger.error('Uncaught exception', exc_info=e)
             return unknown_failure(e)
@@ -114,7 +119,6 @@ def catch_error(f):
 
 
 class Controller(object):
-    _descriptor = None
     _dev_info = {}
     _key = None
 
@@ -207,6 +211,21 @@ class Controller(object):
                 return success(credential_data_to_dict(
                     CredentialData.from_uri(qrdecode.decode_qr_data(qr))))
             return failure('no_credential_found')
+
+    def refresh_ccid(self, filter='yubico'):
+        readers = list(open_ccid(filter))
+        if not readers:
+            return failure('no_readers_found')
+        if len(readers) == 1:
+            dev = YubiKey(Descriptor.from_driver(readers[0]), readers[0])
+            self._dev_info = {
+                'name': dev.device_name,
+                'version': dev.version,
+                'serial': dev.serial,
+            }
+            return success(self._dev_info)
+        else:
+            return failure('too_many_readers_found')
 
     def count_devices(self):
         return len(get_descriptors())
