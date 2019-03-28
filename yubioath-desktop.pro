@@ -67,4 +67,3 @@ DISTFILES += \
     py/* \
     py/qr/* \
     qml/* \
-    qml/AddCredentialView

@@ -32,6 +32,12 @@ ToolBar {
             visible: showBackBtn
             onClicked: navigator.pop(StackView.Immediate)
 
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                enabled: false
+            }
+
             Image {
                 id: backIcon
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -108,6 +114,11 @@ ToolBar {
                     forwardTo: navigator
                     navigator.forceActiveFocus()
                 }
+                Keys.onReturnPressed: {
+                    focus = false
+                    forwardTo: navigator
+                    navigator.forceActiveFocus()
+                }
 
                 Image {
                     id: searchIcon
@@ -136,11 +147,11 @@ ToolBar {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: addNewCredentialMenu.open()
 
-                ToolTip.text: "Add a new credential"
-                ToolTip.delay: 1000
-                ToolTip.visible: hovered
-
-                enabled: !navigator.isAtNewCredential()
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
 
                 Image {
                     id: addIcon
@@ -175,9 +186,11 @@ ToolBar {
                 visible: showSettingsBtn
                 onClicked: navigator.goToSettings()
 
-                ToolTip.text: "Configure Yubico Authenticator"
-                ToolTip.delay: 1000
-                ToolTip.visible: hovered
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
 
                 Image {
                     id: settingsIcon
