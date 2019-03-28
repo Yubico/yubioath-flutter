@@ -100,7 +100,6 @@ ApplicationWindow {
     }
 
     function saveScreenLayout() {
-        console.log("saving layout")
         settings.desktopAvailableWidth = Screen.desktopAvailableWidth
         settings.desktopAvailableHeight = Screen.desktopAvailableHeight
     }

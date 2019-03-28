@@ -3,12 +3,17 @@ import QtQuick.Controls 2.2
 import "utils.js" as Utils
 
 StackView {
-    initialItem: credentialsView
+    initialItem: noYubiKeyView
 
     onCurrentItemChanged: {
         if (currentItem) {
             currentItem.forceActiveFocus()
         }
+    }
+
+    function clearAndPush(view) {
+        clear()
+        push(view, StackView.Immediate)
     }
 
     function goToSettings() {
@@ -19,24 +24,24 @@ StackView {
 
     function goToNoYubiKeyView() {
         if (currentItem.objectName !== 'noYubiKeyView') {
-            push(noYubiKeyView, StackView.Immediate)
+            clearAndPush(noYubiKeyView)
         }
     }
 
     function goToEnterPassword() {
         if (currentItem.objectName !== 'enterPasswordView') {
-            push(enterPasswordView, StackView.Immediate)
+            clearAndPush(enterPasswordView)
         }
     }
 
     function goToCredentials() {
         if (currentItem.objectName !== 'credentialsView') {
-            push(credentialsView, StackView.Immediate)
+            clearAndPush(credentialsView)
         }
     }
 
     function goToNewCredentialManual() {
-        if (!isAtNewCredential()) {
+        if (currentItem.objectName !== 'newCredentialView') {
             push(newCredentialView.createObject(app, {
                                                     manualEntry: true
                                                 }), StackView.Immediate)
@@ -48,10 +53,6 @@ StackView {
                                                 credential: credential,
                                                 manualEntry: false
                                             }), StackView.Immediate)
-    }
-
-    function isAtNewCredential() {
-        return currentItem.objectName === 'newCredentialView'
     }
 
     Component {

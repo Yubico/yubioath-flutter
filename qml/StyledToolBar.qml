@@ -15,11 +15,13 @@ ToolBar {
         }
     }
 
-    property bool showSearch: navigator.currentItem.objectName == 'credentialsView'
+    property bool showSearch: navigator.currentItem ? navigator.currentItem.objectName
+                                                      == 'credentialsView' : false
     property bool showBackBtn: navigator.depth > 1
     property bool showAddCredentialBtn: true // TODO: should be shown when there is a yubikey and authenticated
     property bool showSettingsBtn: true
-    property bool showTitleLbl: navigator.currentItem.title.length > 1
+    property bool showTitleLbl: navigator.currentItem
+                                && navigator.currentItem.title
     property alias searchField: searchField
 
     RowLayout {
@@ -56,7 +58,7 @@ ToolBar {
         Label {
             id: titleLbl
             visible: showTitleLbl
-            text: navigator.currentItem.title
+            text: showTitleLbl ? navigator.currentItem.title : ""
             font.pixelSize: 16
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             horizontalAlignment: Qt.AlignHCenter

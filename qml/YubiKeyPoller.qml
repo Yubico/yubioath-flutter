@@ -34,9 +34,11 @@ Timer {
                         // TODO: Which device should we pick if there is several?
                         yubiKey.availableDevices = resp.devices
                         if (yubiKey.availableDevices.length > 0) {
+                            navigator.goToCredentials()
                             calculateAll()
                         } else {
                             // All devices seem to have gone away, clear credentials.
+                            navigator.goToNoYubiKeyView()
                             entries.clear()
                         }
                     }
@@ -47,7 +49,7 @@ Timer {
                 }
             })
 
-            if (timeToCalculateAll() && yubiKey.availableDevices) {
+            if (timeToCalculateAll() && yubiKey.availableDevices.length > 0) {
                 calculateAll()
             }
         }
