@@ -165,6 +165,13 @@ Pane {
                 ToolButton {
                     id: showAdvancedBtn
                     onClicked: showAdvanced ? showAdvanced = false : showAdvanced = true
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        enabled: false
+                    }
+
                     Image {
                         id: downIcon
                         anchors.horizontalCenter: parent.horizontalCenter

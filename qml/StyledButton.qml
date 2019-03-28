@@ -20,4 +20,9 @@ Button {
         color: yubicoGreen
         opacity: parent.hovered ? 0.9 : 1
     }
+    MouseArea {
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        enabled: false
+    }
 }
