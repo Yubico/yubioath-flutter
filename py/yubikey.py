@@ -92,7 +92,7 @@ def failure(err_id, result={}):
 
 
 def unknown_failure(exception):
-    return failure(None, {'error_message': str(exception)})
+    return failure(str(exception))
 
 
 def catch_error(f):
@@ -118,11 +118,23 @@ def catch_error(f):
     return wrapped
 
 
+class OathContextManager(object):
+    def __init__(self, dev):
+        self._dev = dev
+
+    def __enter__(self):
+        return OathController(self._dev.driver)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._dev.close()
+
+
 class Controller(object):
 
+    _descs = []
+    _desc_fps = []
+    _current_desc = None
     _devices = []
-    _descriptor_fingerprints = []
-    _current_descriptor = None
     _current_key = None
     _keys = []
 
@@ -136,17 +148,23 @@ class Controller(object):
                 if isinstance(func, types.MethodType):
                     setattr(self, f, as_json(catch_error(func)))
 
-    def get_usb_ccid_devices(self):
-        descriptors = get_descriptors()
+    def _open_oath(self):
+        return OathContextManager(self._current_desc.open_device(TRANSPORT.CCID))
 
-        new_desc_fingerprints = [desc.fingerprint for desc in descriptors]
-        descriptors_changed = (new_desc_fingerprints != self._descriptor_fingerprints)
-        self._descriptor_fingerprints = new_desc_fingerprints
+    def _update_desc_fps(self):
+        descs = get_descriptors()
+        self._descs = descs
+        self._desc_fps = [desc.fingerprint for desc in descs]
+        # TODO: Don't always select the first descriptor, be smarter.
+        self._current_desc = descs[0] if descs else None
 
-        if descriptors_changed:
+    def refresh_devices(self):
+        old_desc_fps = self._desc_fps
+        self._update_desc_fps()
+        descs_changed = (old_desc_fps != self._desc_fps)
+        if descs_changed:
             self._devices = []
-            self._current_descriptor = descriptors[0] if descriptors else None
-            for desc in descriptors:
+            for desc in self._descs:
                 dev = desc.open_device(TRANSPORT.CCID)
                 self._devices.append({
                     'name': dev.device_name,
@@ -154,83 +172,35 @@ class Controller(object):
                     'serial': dev.serial,
                     'fingerprint': desc.fingerprint
                 })
-
         return success({'devices': self._devices})
 
+    def ccid_calculate_all(self, timestamp):
+        with self._open_oath() as oath_controller:
+            self._unlock(oath_controller)
+            entries = oath_controller.calculate_all(timestamp)
+            return success(
+                {
+                    'entries': [pair_to_dict(cred, code) for (cred, code) in entries if not cred.is_hidden]
+                }
+            )
 
-    def calculate_all(self, timestamp):
-        dev = self._current_descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
-        self._unlock(controller)
-        entries = controller.calculate_all(timestamp)
-        return success(
-            {
-                'entries': [pair_to_dict(cred, code) for (cred, code) in entries if not cred.is_hidden]
-            }
-        )
-
-    def calculate(self, credential, timestamp, filter='yubico'):
-        readers = list(open_ccid(filter))
-        if not readers:
-            return failure('no_readers_found')
-        if len(readers) == 1:
-            dev = YubiKey(Descriptor.from_driver(readers[0]), readers[0])
-            controller = OathController(dev.driver)
-            code = controller.calculate(cred_from_dict(credential), timestamp)
+    def ccid_calculate(self, credential, timestamp):
+        with self._open_oath() as oath_controller:
+            self._unlock(oath_controller)
+            code = oath_controller.calculate(cred_from_dict(credential), timestamp)
             return success({
                 'credential': credential,
                 'code': code_to_dict(code)
             })
-        else:
-            return failure('too_many_readers_found')
 
-    def ccid_validate(self, password):
-        dev = self._current_descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
-        key = controller.derive_key(password)
-        try:
-            controller.validate(key)
-            self._current_key = key
-            return success()
-        except:
-            return failure('validate_failed')
-
-    def _unlock(self, controller):
-        if controller.locked:
-            keys = self.settings.get('keys', {})
-            if self._current_key is not None:
-                controller.validate(self._current_key)
-            elif controller.id in keys:
-                controller.validate(a2b_hex(keys[controller.id]))
-            else:
-                return failure('failed_to_unlock_key')
-
-    def _provide_password(self, password, remember=False):
-        dev = self._descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
-        self._key = controller.derive_key(password)
-        try:
-            controller.validate(self._key)
-        except Exception:
-            return False
-        if remember:
-            keys = self.settings.setdefault('keys', {})
-            keys[controller.id] = b2a_hex(self._key).decode()
-            self.settings.write()
-        return True
-
-    def add_credential(
-            self, name, secret, issuer, oath_type, algo, digits,
-            period, touch, filter='yubico'):
+    def ccid_add_credential(
+            self, name, secret, issuer, oath_type,
+            algo, digits, period, touch):
         secret = parse_b32_key(secret)
-        readers = list(open_ccid(filter))
-        if not readers:
-            return failure('no_readers_found')
-        if len(readers) == 1:
-            dev = YubiKey(Descriptor.from_driver(readers[0]), readers[0])
-            controller = OathController(dev.driver)
+        with self._open_oath() as oath_controller:
             try:
-                controller.put(CredentialData(
+                self._unlock(oath_controller)
+                oath_controller.put(CredentialData(
                     secret, issuer, name, OATH_TYPE[oath_type], ALGO[algo],
                     int(digits), int(period), 0, touch
                 ))
@@ -243,20 +213,36 @@ class Controller(object):
                 else:
                     raise
             return success()
-        else:
-            return failure('too_many_readers_found')
 
-    def delete_credential(self, credential, filter='yubico'):
-        readers = list(open_ccid(filter))
-        if not readers:
-            return failure('no_readers_found')
-        if len(readers) == 1:
-            dev = YubiKey(Descriptor.from_driver(readers[0]), readers[0])
-            controller = OathController(dev.driver)
-            controller.delete(cred_from_dict(credential))
+    def ccid_validate(self, password, remember=False):
+        with self._open_oath() as oath_controller:
+            key = oath_controller.derive_key(password)
+            try:
+                oath_controller.validate(key)
+                self._current_key = key
+                if remember:
+                    keys = self.settings.setdefault('keys', {})
+                    keys[controller.id] = b2a_hex(self._key).decode()
+                    self.settings.write()
+                return success()
+            except:
+                return failure('validate_failed')
+
+    def _unlock(self, controller):
+        if controller.locked:
+            keys = self.settings.get('keys', {})
+            if self._current_key is not None:
+                controller.validate(self._current_key)
+            elif controller.id in keys:
+                controller.validate(a2b_hex(keys[controller.id]))
+            else:
+                return failure('failed_to_unlock_key')
+
+    def ccid_delete_credential(self, credential):
+        with self._open_oath() as oath_controller:
+            self._unlock(oath_controller)
+            oath_controller.delete(cred_from_dict(credential))
             return success()
-        else:
-            return failure('too_many_readers_found')
 
     def parse_qr(self, screenshot):
             data = b64decode(screenshot['data'])
@@ -265,196 +251,6 @@ class Controller(object):
                 return success(credential_data_to_dict(
                     CredentialData.from_uri(qrdecode.decode_qr_data(qr))))
             return failure('no_credential_found')
-
-    def refresh(self, otp_mode=False):
-        descriptors = get_descriptors()
-        if len(descriptors) != 1:
-            self._descriptor = None
-            return None
-
-        desc = descriptors[0]
-
-        unmatched_otp_mode = otp_mode and not desc.mode.has_transport(
-            TRANSPORT.OTP)
-        unmatched_ccid_mode = not otp_mode and not desc.mode.has_transport(
-            TRANSPORT.CCID)
-
-        if unmatched_otp_mode or unmatched_ccid_mode:
-            return {
-                'transports': [
-                    t.name for t in TRANSPORT.split(desc.mode.transports)
-                ],
-                'usable': False,
-            }
-
-        if desc.fingerprint != (
-                self._descriptor.fingerprint if self._descriptor else None) \
-                or not otp_mode and not self._dev_info.get('version'):
-            try:
-                dev = desc.open_device(TRANSPORT.OTP if otp_mode
-                                       else TRANSPORT.CCID)
-                if otp_mode:
-                    version = None
-                else:
-                    controller = OathController(dev.driver)
-                    version = controller.version
-            except Exception as e:
-                logger.debug('Failed to refresh YubiKey', exc_info=e)
-                return None
-
-            self._descriptor = desc
-            self._dev_info = {
-                'usable': True,
-                'name': dev.device_name,
-                'version': version,
-                'serial': dev.serial or '',
-                'usb_interfaces_supported': [
-                    t.name for t in TRANSPORT
-                    if t & dev.config.usb_supported],
-                'usb_interfaces_enabled': str(dev.mode).split('+')
-            }
-
-        return self._dev_info
-
-    def clear_key(self):
-        self._key = None
-
-    def refresh_credentials(self, timestamp):
-        try:
-            dev = self._descriptor.open_device(TRANSPORT.CCID)
-            controller = OathController(dev.driver)
-            self._unlock(controller)
-            entries = controller.calculate_all(timestamp)
-            return [pair_to_dict(cred, code) for (cred, code) in entries
-                    if not cred.is_hidden]
-        except Exception:
-            return []
-
-    def _calculate(self, credential, timestamp):
-        try:
-            dev = self._descriptor.open_device(TRANSPORT.CCID)
-            controller = OathController(dev.driver)
-            self._unlock(controller)
-        except Exception:
-            return None
-        code = controller.calculate(cred_from_dict(credential), timestamp)
-        return code_to_dict(code)
-
-    def calculate_slot_mode(self, slot, digits, timestamp):
-        try:
-            code = self._read_slot_code(
-                slot, digits, timestamp, wait_for_touch=True)
-            return pair_to_dict(Credential(self._slot_name(slot),
-                                           OATH_TYPE.TOTP, True), code)
-        except YkpersError as e:
-            if e.errno == 4:
-                logger.debug(
-                    'Time out error, user probably did not touch the device.')
-            else:
-                logger.error(
-                    'Failed to calculate code in slot mode', exc_info=e)
-        except Exception as e:
-            logger.error('Failed to calculate code in slot mode', exc_info=e)
-        return None
-
-    def refresh_slot_credentials(self, slots, digits, timestamp):
-        result = []
-        if slots[0]:
-            entry = self._read_slot_cred(1, digits[0], timestamp)
-            if entry:
-                result.append(entry)
-        if slots[1]:
-            entry = self._read_slot_cred(2, digits[1], timestamp)
-            if entry:
-                result.append(entry)
-        return [pair_to_dict(cred, code) for (cred, code) in result]
-
-    def _read_slot_cred(self, slot, digits, timestamp):
-        try:
-            code = self._read_slot_code(
-                slot, digits, timestamp, wait_for_touch=False)
-            return (Credential(self._slot_name(slot), OATH_TYPE.TOTP, False),
-                    code)
-        except YkpersError as e:
-            if e.errno == 11:
-                return (Credential(self._slot_name(slot), OATH_TYPE.TOTP, True
-                                   ), None)
-        except Exception as e:
-            return (Credential(str(e).encode(), OATH_TYPE.TOTP, True), None)
-        return None
-
-    def _read_slot_code(self, slot, digits, timestamp, wait_for_touch):
-        with self._descriptor.open_device(TRANSPORT.OTP) as dev:
-            controller = OtpController(dev.driver)
-            code = controller.calculate(
-                slot, challenge=timestamp, totp=True, digits=int(digits),
-                wait_for_touch=wait_for_touch)
-            valid_from = timestamp - (timestamp % 30)
-            valid_to = valid_from + 30
-            return Code(code, valid_from, valid_to)
-
-    def _slot_name(self, slot):
-        return "YubiKey Slot {}".format(slot).encode('utf-8')
-
-    def needs_validation(self):
-        try:
-            dev = self._descriptor.open_device(TRANSPORT.CCID)
-            return not self._unlock(OathController(dev.driver))
-        except Exception:
-            return True
-
-    def get_oath_id(self):
-        try:
-            dev = self._descriptor.open_device(TRANSPORT.CCID)
-            return OathController(dev.driver).id
-        except Exception:
-            return None
-
-    def set_password(self, new_password, remember=False):
-        dev = self._descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
-        self._unlock(controller)
-        keys = self.settings.setdefault('keys', {})
-        if new_password is not None:
-            self._key = controller.set_password(new_password)
-            if remember:
-                keys[controller.id] = b2a_hex(self._key).decode()
-            elif controller.id in keys:
-                del keys[controller.id]
-        else:
-            controller.clear_password()
-            del keys[controller.id]
-            self._key = None
-        self.settings.write()
-
-    def add_slot_credential(self, slot, key, touch):
-        try:
-            key = parse_b32_key(key)
-            with self._descriptor.open_device(TRANSPORT.OTP) as dev:
-                controller = OtpController(dev.driver)
-                controller.program_chalresp(int(slot), key, touch)
-                return {'success': True, 'error': None}
-        except Exception as e:
-            if str(e) == 'Incorrect padding':
-                return {'success': False, 'error': 'wrong padding'}
-            if str(e) == 'key lengths >20 bytes not supported':
-                return {'success': False, 'error': 'too large key'}
-            return {'success': False, 'error': str(e)}
-
-    def delete_slot_credential(self, slot):
-        with self._descriptor.open_device(TRANSPORT.OTP) as dev:
-            controller = OtpController(dev.driver)
-            controller.zap_slot(slot)
-
-    def reset(self):
-        dev = self._descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
-        controller.reset()
-
-    def slot_status(self):
-        with self._descriptor.open_device(TRANSPORT.OTP) as dev:
-            controller = OtpController(dev.driver)
-            return list(controller.slot_status)
 
 
 class PixelImage(object):
@@ -475,7 +271,6 @@ controller = None
 def init_with_logging(log_level, log_file=None):
     logging_setup = as_json(ykman.logging_setup.setup)
     logging_setup(log_level, log_file)
-
     init()
 
 

@@ -85,27 +85,24 @@ Python {
         })
     }
 
-    function refreshUsbCcidDevices(cb) {
-        doCall('yubikey.controller.get_usb_ccid_devices', [], cb)
-    }
-
-    function refreshDescriptors(cb) {
-        doCall('yubikey.controller.refresh_descriptors', [], cb)
+    function refreshDevices(cb) {
+        doCall('yubikey.controller.refresh_devices', [], cb)
     }
 
     function calculateAll(cb) {
         var now = Math.floor(Date.now() / 1000)
-        doCall('yubikey.controller.calculate_all', [now], cb)
+        doCall('yubikey.controller.ccid_calculate_all', [now], cb)
     }
 
     function calculate(credential, cb) {
         var margin = credential.touch ? 10 : 0
         var nowAndMargin = Utils.getNow() + margin
-        doCall('yubikey.controller.calculate', [credential, nowAndMargin], cb)
+        doCall('yubikey.controller.ccid_calculate',
+               [credential, nowAndMargin], cb)
     }
 
     function addCredential(name, key, issuer, oathType, algo, digits, period, touch, cb) {
-        doCall('yubikey.controller.add_credential',
+        doCall('yubikey.controller.ccid_add_credential',
                [name, key, issuer, oathType, algo, digits, period, touch], cb)
     }
 
@@ -114,7 +111,7 @@ Python {
     }
 
     function deleteCredential(credential, cb) {
-        doCall('yubikey.controller.delete_credential', [credential], cb)
+        doCall('yubikey.controller.ccid_delete_credential', [credential], cb)
     }
 
     function deleteSlotCredential(slot) {

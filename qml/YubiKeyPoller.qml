@@ -22,7 +22,7 @@ Timer {
     function refresh() {
         if (app.isInForeground) {
             // Polling to see what USB CCID devices we have.
-            yubiKey.refreshUsbCcidDevices(function (resp) {
+            yubiKey.refreshDevices(function (resp) {
                 if (resp.success) {
                     // If the stringified list of devices is
                     // exactly the same, probably nothing changed.
