@@ -67,6 +67,3 @@ DISTFILES += \
     py/* \
     py/qr/* \
     qml/* \
-    qml/AddCredentialView \
-    qml/StyledButton.qml \
-    qml/StyledComboBox.qml
