@@ -23,6 +23,12 @@ StackView {
         }
     }
 
+    function goToEnterPassword() {
+        if (currentItem.objectName !== 'enterPasswordView') {
+            push(enterPasswordView, StackView.Immediate)
+        }
+    }
+
     function goToCredentials() {
         if (currentItem.objectName !== 'credentialsView') {
             push(credentialsView, StackView.Immediate)

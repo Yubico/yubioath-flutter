@@ -9,6 +9,16 @@ Pane {
 
     property string title: "Unlock YubiKey"
 
+    function validate() {
+        yubiKey.validate(passwordField.text, function (resp) {
+            if (resp.success) {
+                navigator.goToCredentials()
+            } else {
+                console.log("validate failed:", resp.error_id)
+            }
+        })
+    }
+
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         anchors.horizontalCenter: parent.horizontalCenter
@@ -27,7 +37,8 @@ Pane {
                     source: "../images/lock.svg"
                     ColorOverlay {
                         source: lock
-                        color: app.isDark() ? app.defaultDarkOverlay : app.defaultLightOverlay
+                        color: app.isDark(
+                                   ) ? app.defaultDarkOverlay : app.defaultLightOverlay
                         anchors.fill: lock
                     }
                 }
@@ -40,6 +51,7 @@ Pane {
             ColumnLayout {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
                 TextField {
+                    id: passwordField
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     Layout.fillWidth: true
                     placeholderText: qsTr("Password")
@@ -48,16 +60,10 @@ Pane {
                 RowLayout {
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     Button {
-                        highlighted: false
-                        text: "Cancel"
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        onClicked: app.goToNoYubiKeyView()
-                    }
-                    Button {
                         highlighted: true
                         text: "OK"
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        onClicked: app.goToCredentials()
+                        onClicked: validate()
                     }
                 }
             }

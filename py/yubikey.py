@@ -123,6 +123,7 @@ class Controller(object):
     _devices = []
     _descriptor_fingerprints = []
     _current_descriptor = None
+    _current_key = None
     _keys = []
 
     def __init__(self):
@@ -160,6 +161,7 @@ class Controller(object):
     def calculate_all(self, timestamp):
         dev = self._current_descriptor.open_device(TRANSPORT.CCID)
         controller = OathController(dev.driver)
+        self._unlock(controller)
         entries = controller.calculate_all(timestamp)
         return success(
             {
@@ -181,6 +183,41 @@ class Controller(object):
             })
         else:
             return failure('too_many_readers_found')
+
+    def ccid_validate(self, password):
+        dev = self._current_descriptor.open_device(TRANSPORT.CCID)
+        controller = OathController(dev.driver)
+        key = controller.derive_key(password)
+        try:
+            controller.validate(key)
+            self._current_key = key
+            return success()
+        except:
+            return failure('validate_failed')
+
+    def _unlock(self, controller):
+        if controller.locked:
+            keys = self.settings.get('keys', {})
+            if self._current_key is not None:
+                controller.validate(self._current_key)
+            elif controller.id in keys:
+                controller.validate(a2b_hex(keys[controller.id]))
+            else:
+                return failure('failed_to_unlock_key')
+
+    def _provide_password(self, password, remember=False):
+        dev = self._descriptor.open_device(TRANSPORT.CCID)
+        controller = OathController(dev.driver)
+        self._key = controller.derive_key(password)
+        try:
+            controller.validate(self._key)
+        except Exception:
+            return False
+        if remember:
+            keys = self.settings.setdefault('keys', {})
+            keys[controller.id] = b2a_hex(self._key).decode()
+            self.settings.write()
+        return True
 
     def add_credential(
             self, name, secret, issuer, oath_type, algo, digits,
@@ -279,17 +316,6 @@ class Controller(object):
 
         return self._dev_info
 
-    def _unlock(self, controller):
-        if controller.locked:
-            keys = self.settings.get('keys', {})
-            if self._key is not None:
-                controller.validate(self._key)
-            elif controller.id in keys:
-                controller.validate(a2b_hex(keys[controller.id]))
-            else:
-                return False
-        return True
-
     def clear_key(self):
         self._key = None
 
@@ -383,20 +409,6 @@ class Controller(object):
             return OathController(dev.driver).id
         except Exception:
             return None
-
-    def provide_password(self, password, remember=False):
-        dev = self._descriptor.open_device(TRANSPORT.CCID)
-        controller = OathController(dev.driver)
-        self._key = controller.derive_key(password)
-        try:
-            controller.validate(self._key)
-        except Exception:
-            return False
-        if remember:
-            keys = self.settings.setdefault('keys', {})
-            keys[controller.id] = b2a_hex(self._key).decode()
-            self.settings.write()
-        return True
 
     def set_password(self, new_password, remember=False):
         dev = self._descriptor.open_device(TRANSPORT.CCID)

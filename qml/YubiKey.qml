@@ -140,4 +140,8 @@ Python {
             cb()
         })
     }
+
+    function validate(password, cb) {
+        doCall('yubikey.controller.ccid_validate', [password], cb)
+    }
 }
