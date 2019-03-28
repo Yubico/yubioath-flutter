@@ -119,9 +119,11 @@ def catch_error(f):
 
 
 class Controller(object):
+
     _devices = []
-    _desc_fingerprints = []
-    _key = None
+    _descriptor_fingerprints = []
+    _current_descriptor = None
+    _keys = []
 
     def __init__(self):
         self.settings = Settings('oath')
@@ -133,23 +135,37 @@ class Controller(object):
                 if isinstance(func, types.MethodType):
                     setattr(self, f, as_json(catch_error(func)))
 
-    def calculate_all(self, timestamp, filter='yubico'):
-        readers = list(open_ccid(filter))
-        if not readers:
-            return failure('no_readers_found')
-        if len(readers) == 1:
-            dev = YubiKey(Descriptor.from_driver(readers[0]), readers[0])
-            controller = OathController(dev.driver)
-            entries = controller.calculate_all(timestamp)
-            return success(
-                {
-                    'entries':
-                        [pair_to_dict(cred, code) for (
-                            cred, code) in entries if not cred.is_hidden]
-                }
-            )
-        else:
-            return failure('too_many_readers_found')
+    def get_usb_ccid_devices(self):
+        descriptors = get_descriptors()
+
+        new_desc_fingerprints = [desc.fingerprint for desc in descriptors]
+        descriptors_changed = (new_desc_fingerprints != self._descriptor_fingerprints)
+        self._descriptor_fingerprints = new_desc_fingerprints
+
+        if descriptors_changed:
+            self._devices = []
+            self._current_descriptor = descriptors[0] if descriptors else None
+            for desc in descriptors:
+                dev = desc.open_device(TRANSPORT.CCID)
+                self._devices.append({
+                    'name': dev.device_name,
+                    'version': dev.version,
+                    'serial': dev.serial,
+                    'fingerprint': desc.fingerprint
+                })
+
+        return success({'devices': self._devices})
+
+
+    def calculate_all(self, timestamp):
+        dev = self._current_descriptor.open_device(TRANSPORT.CCID)
+        controller = OathController(dev.driver)
+        entries = controller.calculate_all(timestamp)
+        return success(
+            {
+                'entries': [pair_to_dict(cred, code) for (cred, code) in entries if not cred.is_hidden]
+            }
+        )
 
     def calculate(self, credential, timestamp, filter='yubico'):
         readers = list(open_ccid(filter))
@@ -212,25 +228,6 @@ class Controller(object):
                 return success(credential_data_to_dict(
                     CredentialData.from_uri(qrdecode.decode_qr_data(qr))))
             return failure('no_credential_found')
-
-    def refresh_ccid(self, filter='yubico'):
-        descriptors = get_descriptors()
-        new_desc_fingerprints = [desc.fingerprint for desc in descriptors]
-        descriptors_changed = (new_desc_fingerprints != self._desc_fingerprints)
-        self._desc_fingerprints = new_desc_fingerprints
-
-        if descriptors_changed:
-            self._devices = []
-            for desc in descriptors:
-                dev = desc.open_device(TRANSPORT.CCID)
-                self._devices.append({
-                    'name': dev.device_name,
-                    'version': dev.version,
-                    'serial': dev.serial,
-                    'fingerprint': desc.fingerprint
-                })
-
-        return success({'devices': self._devices})
 
     def refresh(self, otp_mode=False):
         descriptors = get_descriptors()
