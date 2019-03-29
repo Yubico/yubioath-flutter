@@ -122,8 +122,8 @@ Python {
         doCall('yubikey.controller.parse_qr', [screenShots], cb)
     }
 
-    function reset() {
-        doCall('yubikey.controller.reset', [])
+    function reset(cb) {
+        doCall('yubikey.controller.ccid_reset', [], cb)
     }
 
     function clearKey() {

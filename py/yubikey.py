@@ -244,6 +244,11 @@ class Controller(object):
             oath_controller.delete(cred_from_dict(credential))
             return success()
 
+    def ccid_reset(self):
+        with self._open_oath() as oath_controller:
+            oath_controller.reset()
+            return success()
+
     def parse_qr(self, screenshot):
             data = b64decode(screenshot['data'])
             image = PixelImage(data, screenshot['width'], screenshot['height'])

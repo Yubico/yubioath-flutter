@@ -55,6 +55,15 @@ StackView {
                                             }), StackView.Immediate)
     }
 
+    function confirm(heading, message, cb) {
+        var popup = confirmationPopup.createObject(app, {
+                                                       heading: heading,
+                                                       message: message,
+                                                       acceptedCb: cb
+                                                   })
+        popup.open()
+    }
+
     Component {
         id: credentialsView
         CredentialsView {
@@ -88,6 +97,12 @@ StackView {
     Component {
         id: newCredentialView
         NewCredentialView {
+        }
+    }
+
+    Component {
+        id: confirmationPopup
+        ConfirmationPopup {
         }
     }
 }

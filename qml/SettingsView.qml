@@ -126,6 +126,19 @@ Pane {
             }
             StyledButton {
                 text: "Reset"
+                onClicked: navigator.confirm(
+                               "Are you sure?",
+                               "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",
+                               function () {
+                                   yubiKey.reset(function (resp) {
+                                       if (resp.success) {
+
+                                           // TODO: Success snackbar message
+                                       } else {
+                                           console.log(resp.error_id)
+                                       }
+                                   })
+                               })
             }
         }
     }
