@@ -63,6 +63,17 @@ ApplicationWindow {
         return app.Material.theme === Material.Dark
     }
 
+    function setTheme(theme) {
+        var _theme = theme.toLowerCase()
+        if (_theme === "dark") {
+            setDark()
+        } else if (_theme === "light") {
+            setLight()
+        } else if (_theme === "auto") {
+            setAuto()
+        }
+    }
+
     function setDark() {
         app.Material.theme = Material.Dark
         Material.foreground = defaultDarkForeground
