@@ -75,8 +75,7 @@ Timer {
                 // Sort the raw entries, because it's not obvious how to
                 // sort them when they are inside the ListModel.
                 var sortedEntries = sortEntries(resp.entries)
-                entries.clear()
-                entries.append(sortedEntries)
+                entries.updateEntries(sortedEntries)
                 updateNextCalculateAll()
             } else {
                 if (resp.error_id === 'access_denied') {

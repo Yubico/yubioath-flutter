@@ -21,7 +21,7 @@ Pane {
                 var entry = entries.get(i)
                 if (entry.credential.key.toLowerCase().indexOf(
                             toolBar.searchField.text.toLowerCase()) !== -1) {
-                    filteredEntries.addEntry(entry)
+                    filteredEntries.append(entry)
                 }
             }
             return true
