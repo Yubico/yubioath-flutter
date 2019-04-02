@@ -80,6 +80,7 @@ Python {
             if (resp.success) {
                 navigator.goToNewCredentialAuto(resp)
             } else {
+                navigator.snackBarError(resp.error_id)
                 console.log(resp.error_id)
             }
         })

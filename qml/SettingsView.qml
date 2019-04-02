@@ -134,6 +134,8 @@ Pane {
                                        if (resp.success) {
                                            navigator.snackBar("Reset completed")
                                        } else {
+                                           navigator.snackBarError(
+                                                       resp.error_id)
                                            console.log(resp.error_id)
                                        }
                                    })

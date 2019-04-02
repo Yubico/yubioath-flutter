@@ -80,11 +80,11 @@ Pane {
         if (touchCredentialNoCode || hotpCredential) {
             yubiKey.calculate(credential, function (resp) {
                 if (resp.success) {
-                    console.log(JSON.stringify(resp))
                     entries.updateEntry(resp)
                     expired = false
                     copyCode()
                 } else {
+                    navigator.snackBarError(resp.error_id)
                     console.log(resp.error_id)
                 }
             })
@@ -99,6 +99,7 @@ Pane {
                 entries.remove(index)
                 navigator.snackBar("Credential was deleted")
             } else {
+                navigator.snackBarError(resp.error_id)
                 console.log(resp.error_id)
             }
         })

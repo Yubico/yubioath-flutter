@@ -71,6 +71,13 @@ StackView {
         sb.open()
     }
 
+    function snackBarError(message) {
+        var sbe = snackBarError.createObject(app, {
+                                                 message: message
+                                             })
+        sbe.open()
+    }
+
     Component {
         id: credentialsView
         CredentialsView {
@@ -116,6 +123,17 @@ StackView {
     Component {
         id: snackBar
         SnackBar {
+        }
+    }
+
+    Component {
+        id: snackBarError
+        SnackBar {
+            background: Rectangle {
+                color: app.yubicoRed
+                opacity: 0.8
+                radius: 4
+            }
         }
     }
 }

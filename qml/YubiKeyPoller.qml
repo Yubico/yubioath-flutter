@@ -43,6 +43,7 @@ Timer {
                         }
                     }
                 } else {
+                    navigator.snackBarError(resp.error_id)
                     console.log("refresh failed:", resp.error_id)
                     yubiKey.availableDevices = []
                     entries.clear()
@@ -81,8 +82,10 @@ Timer {
                 if (resp.error_id === 'access_denied') {
                     entries.clear()
                     navigator.goToEnterPassword()
+                } else {
+                    navigator.snackBarError(resp.error_id)
+                    console.log("calculateAll failed:", resp.error_id)
                 }
-                console.log("calculateAll failed:", resp.error_id)
             }
         })
     }

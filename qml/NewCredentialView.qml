@@ -30,6 +30,7 @@ Pane {
                                       navigator.goToCredentials()
                                       navigator.snackBar("Credential added")
                                   } else {
+                                      navigator.snackBarError(resp.error_id)
                                       console.log(resp.error_id)
                                   }
                               })

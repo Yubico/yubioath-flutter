@@ -19,6 +19,7 @@ ApplicationWindow {
     readonly property string yubicoBlue: "#284c61"
     readonly property string yubicoWhite: "#ffffff"
     readonly property string yubicoGrey: "#939598"
+    readonly property string yubicoRed: "#d32f2f"
 
     readonly property string defaultDark: "#303030"
     readonly property string defaultDarkLighter: "#383838"
