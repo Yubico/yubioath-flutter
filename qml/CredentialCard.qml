@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
+import "utils.js" as Utils
 
 Pane {
 
@@ -15,13 +16,14 @@ Pane {
 
     property var code
     property var credential
-
     property string issuer: credential.issuer || ''
     property string name: credential.name
     property bool touch: credential.touch
     property string oathType: credential.oath_type
 
     property bool continuousCalculation: oathType === "TOTP" && !touch
+
+    property bool expired
 
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {
@@ -72,13 +74,15 @@ Pane {
     }
 
     function calculateCard() {
-        var touchCredentialNoCode = credential.touch && !code.value
+        var touchCredentialNoCode = credential.touch && (!code.value || expired)
         var hotpCredential = oathType == "HOTP"
 
         if (touchCredentialNoCode || hotpCredential) {
             yubiKey.calculate(credential, function (resp) {
                 if (resp.success) {
+                    console.log(JSON.stringify(resp))
                     entries.updateEntry(resp)
+                    expired = false
                     copyCode()
                 } else {
                     console.log(resp.error_id)
@@ -100,7 +104,7 @@ Pane {
     }
 
     function getCodeLblValue() {
-        if (code && code.value) {
+        if (code && code.value && code.valid_to > Utils.getNow()) {
             return formattedCode(code.value)
         } else if (touch) {
             return "Requires touch"
@@ -112,6 +116,7 @@ Pane {
     }
 
     Item {
+
         anchors.fill: parent
 
         CredentialCardIcon {
@@ -131,7 +136,7 @@ Pane {
             Label {
                 id: codLbl
                 font.pixelSize: 24
-                color: code && code.value ? yubicoGreen : yubicoGrey
+                color: code && code.value && !expired ? yubicoGreen : yubicoGrey
                 text: getCodeLblValue()
                 visible: code || touch
             }
@@ -152,7 +157,12 @@ Pane {
             anchors.right: parent.right
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             colorCircle: Material.primary
-            visible: code && oathType === "TOTP"
+            visible: code && oathType === "TOTP" && !expired
+            onTimesUp: {
+                if (touch) {
+                    expired = true
+                }
+            }
         }
 
         Image {
@@ -163,7 +173,7 @@ Pane {
             height: 16
             fillMode: Image.PreserveAspectFit
             source: "../images/touch.png"
-            visible: touch && !code
+            visible: (touch && !code) || touch && expired
         }
     }
 }

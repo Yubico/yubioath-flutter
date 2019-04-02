@@ -10,6 +10,7 @@ Item {
 
     property int period
     property var code
+    signal timesUp
 
     Timer {
         id: timer
@@ -20,6 +21,9 @@ Item {
             var timeLeft = code.valid_to - Utils.getNow()
             var currentValue = timeLeft * (360 / period)
             root.arcEnd = 360 - currentValue
+            if (timeLeft === 0) {
+                timesUp()
+            }
         }
     }
 
