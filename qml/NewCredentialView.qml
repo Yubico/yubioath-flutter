@@ -7,6 +7,7 @@ import QtGraphicalEffects 1.0
 Pane {
     id: pane
     objectName: 'newCredentialView'
+    topPadding: 0
 
     property string title: "New credential"
 
@@ -39,7 +40,7 @@ Pane {
     Pane {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        anchors.topMargin: 4
+        anchors.topMargin: 0
         anchors.bottomMargin: -10
         anchors.horizontalCenter: parent.horizontalCenter
         padding: 20
