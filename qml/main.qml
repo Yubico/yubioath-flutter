@@ -87,7 +87,11 @@ ApplicationWindow {
     }
 
     function setAuto() {
-        app.Material.theme = Material.System
+        if (Material.System === Material.Dark) {
+            setDark()
+        } else {
+            setLight()
+        }
         settings.theme = "auto"
     }
 

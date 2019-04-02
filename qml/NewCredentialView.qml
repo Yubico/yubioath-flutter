@@ -25,9 +25,10 @@ Pane {
                                   if (resp.success) {
                                       // TODO: This should be a callback or similar,
                                       // so that the view changes after the entries
-                                      // are refreshed. Should also show a success message.
+                                      // are refreshed.
                                       yubiKeyPoller.calculateAll()
                                       navigator.goToCredentials()
+                                      navigator.snackBar("Credential added")
                                   } else {
                                       console.log(resp.error_id)
                                   }

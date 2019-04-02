@@ -132,8 +132,7 @@ Pane {
                                function () {
                                    yubiKey.reset(function (resp) {
                                        if (resp.success) {
-
-                                           // TODO: Success snackbar message
+                                           navigator.snackBar("Reset completed")
                                        } else {
                                            console.log(resp.error_id)
                                        }

@@ -70,7 +70,7 @@ Pane {
 
     function copyCode() {
         clipBoard.push(code.value)
-        // TODO: show snackbar that code is copied
+        navigator.snackBar("Code copied to clipboard!")
     }
 
     function calculateCard() {
@@ -97,6 +97,7 @@ Pane {
         yubiKey.deleteCredential(credential, function (resp) {
             if (resp.success) {
                 entries.remove(index)
+                navigator.snackBar("Credential was deleted")
             } else {
                 console.log(resp.error_id)
             }

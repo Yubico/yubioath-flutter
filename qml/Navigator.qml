@@ -64,6 +64,13 @@ StackView {
         popup.open()
     }
 
+    function snackBar(message) {
+        var sb = snackBar.createObject(app, {
+                                           message: message
+                                       })
+        sb.open()
+    }
+
     Component {
         id: credentialsView
         CredentialsView {
@@ -103,6 +110,12 @@ StackView {
     Component {
         id: confirmationPopup
         ConfirmationPopup {
+        }
+    }
+
+    Component {
+        id: snackBar
+        SnackBar {
         }
     }
 }
