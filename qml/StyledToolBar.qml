@@ -7,11 +7,19 @@ import QtGraphicalEffects 1.0
 ToolBar {
     id: toolBar
     background: Rectangle {
-        color: yubicoGreen
-        layer.effect: DropShadow {
-            verticalOffset: 0
-            horizontalOffset: 0
-            spread: 0
+        color: isDark() ? defaultDark : defaultLight
+        opacity: 0.9
+    }
+
+    function getToolbarColor(isActive) {
+        if (!isActive) {
+            return "transparent"
+        } else {
+            if (isDark()) {
+                return defaultDarkLighter
+            } else {
+                return defaultLightDarker
+            }
         }
     }
 
@@ -49,7 +57,7 @@ ToolBar {
                 source: "../images/back.svg"
                 ColorOverlay {
                     source: backIcon
-                    color: yubicoWhite
+                    color: isDark() ? yubicoWhite : yubicoGrey
                     anchors.fill: backIcon
                 }
             }
@@ -64,7 +72,7 @@ ToolBar {
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
             Layout.fillWidth: true
-            color: yubicoWhite
+            color: isDark() ? yubicoWhite : yubicoGrey
         }
 
         ToolButton {
@@ -76,7 +84,7 @@ ToolBar {
             Layout.maximumHeight: 30
             Layout.fillWidth: true
             background: Rectangle {
-                color: searchBtn.hovered ? "#a6d14c" : "transparent"
+                color: getToolbarColor(searchBtn.hovered)
                 height: 30
                 radius: 4
             }
@@ -85,21 +93,22 @@ ToolBar {
 
                 id: searchField
                 visible: showSearch
-                Material.accent: yubicoWhite
+                Material.accent: isDark() ? yubicoWhite : yubicoGrey
                 selectByMouse: true
-                selectedTextColor: yubicoGreen
+                selectedTextColor: isDark() ? defaultDark : defaultLight
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                placeholderText: "<font color='#f0f0f0'>Quick Find</font>" // Workaround for lack of placeholderTextColor
+                placeholderText: isDark(
+                                     ) ? "<font color='#f0f0f0'>Quick Find</font>" : "<font color='#939598'>Quick Find</font>"
                 //                placeholderTextColor: "#f0f0f0"       // Qt5.12 requirement, hold for now?
                 padding: 28
                 width: parent.width
                 horizontalAlignment: Qt.AlignLeft
                 verticalAlignment: Qt.AlignVCenter
-                color: yubicoWhite
+                color: isDark() ? yubicoWhite : yubicoGrey
                 background: Rectangle {
-                    color: searchField.focus ? "#a6d14c" : "transparent"
+                    color: getToolbarColor(searchField.focus)
                     height: 30
                     radius: 4
                 }
@@ -132,7 +141,7 @@ ToolBar {
                     source: "../images/search.svg"
                     ColorOverlay {
                         source: searchIcon
-                        color: yubicoWhite
+                        color: isDark() ? yubicoWhite : yubicoGrey
                         anchors.fill: searchIcon
                     }
                 }
@@ -164,7 +173,7 @@ ToolBar {
                     source: "../images/add.svg"
                     ColorOverlay {
                         source: addIcon
-                        color: yubicoWhite
+                        color: isDark() ? yubicoWhite : yubicoGrey
                         anchors.fill: addIcon
                     }
                 }
@@ -203,7 +212,7 @@ ToolBar {
                     source: "../images/cogwheel.svg"
                     ColorOverlay {
                         source: settingsIcon
-                        color: yubicoWhite
+                        color: isDark() ? yubicoWhite : yubicoGrey
                         anchors.fill: settingsIcon
                     }
                 }

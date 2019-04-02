@@ -6,6 +6,7 @@ import QtGraphicalEffects 1.0
 
 Pane {
     objectName: 'noYubiKeyView'
+    topPadding: 0
 
     property string title: ""
 
