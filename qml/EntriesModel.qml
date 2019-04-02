@@ -1,7 +1,6 @@
 import QtQuick 2.9
 
 ListModel {
-
     function updateEntry(entry) {
         for (var j = 0; j < count; j++) {
             if (get(j).credential.key === entry.credential.key) {

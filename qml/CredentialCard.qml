@@ -68,8 +68,8 @@ Pane {
         }
     }
 
-    function copyCode() {
-        clipBoard.push(code.value)
+    function copyCode(code) {
+        clipBoard.push(code)
         navigator.snackBar("Code copied to clipboard!")
     }
 
@@ -82,14 +82,14 @@ Pane {
                 if (resp.success) {
                     entries.updateEntry(resp)
                     expired = false
-                    copyCode()
+                    copyCode(resp.code.value)
                 } else {
                     navigator.snackBarError(resp.error_id)
                     console.log(resp.error_id)
                 }
             })
         } else {
-            copyCode()
+            copyCode(code.value)
         }
     }
 
@@ -175,7 +175,7 @@ Pane {
             height: 16
             fillMode: Image.PreserveAspectFit
             source: "../images/touch.png"
-            visible: (touch && !code) || touch && expired
+            visible: (touch && !code.value) || touch && expired
         }
     }
 }

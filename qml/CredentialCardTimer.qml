@@ -16,6 +16,7 @@ Item {
         id: timer
         repeat: true
         running: code && code.valid_to ? true : false
+        triggeredOnStart: true
         interval: 250
         onTriggered: {
             var timeLeft = code.valid_to - Utils.getNow()
@@ -32,8 +33,8 @@ Item {
     height: size
 
     property int size: 12
-    property real arcBegin: 0
-    property real arcEnd: 0
+    property real arcBegin: 360
+    property real arcEnd: 360
     property string colorCircle
 
     onArcBeginChanged: canvas.requestPaint()
