@@ -21,8 +21,6 @@ Pane {
     property bool touch: credential.touch
     property string oathType: credential.oath_type
 
-    property bool continuousCalculation: oathType === "TOTP" && !touch
-
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {
                    return app.isDark(
@@ -154,8 +152,8 @@ Pane {
         }
 
         CredentialCardTimer {
-            code: credentialCard.code
             period: credential && credential.period ? credential.period : 0
+            validTo: code && code.valid_to ? code.valid_to : 0
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom

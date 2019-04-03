@@ -9,17 +9,17 @@ import "utils.js" as Utils
 Item {
 
     property int period
-    property var code
+    property int validTo
     signal timesUp
 
     Timer {
         id: timer
         repeat: true
-        running: code && code.valid_to ? true : false
+        running: validTo > 0
         triggeredOnStart: true
         interval: 250
         onTriggered: {
-            var timeLeft = code.valid_to - Utils.getNow()
+            var timeLeft = validTo - Utils.getNow()
             var currentValue = timeLeft * (360 / period)
             root.arcEnd = 360 - currentValue
             if (timeLeft === 0) {
