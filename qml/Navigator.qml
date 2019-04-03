@@ -5,6 +5,7 @@ import "utils.js" as Utils
 StackView {
     initialItem: noYubiKeyView
 
+
     onCurrentItemChanged: {
         if (currentItem) {
             currentItem.forceActiveFocus()

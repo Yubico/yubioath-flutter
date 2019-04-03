@@ -23,14 +23,19 @@ ToolBar {
         }
     }
 
-    property bool showSearch: navigator.currentItem ? navigator.currentItem.objectName
-                                                      == 'credentialsView' : false
+    property bool showSearch: shouldShowSearch()
     property bool showBackBtn: navigator.depth > 1
     property bool showAddCredentialBtn: true // TODO: should be shown when there is a yubikey and authenticated
     property bool showSettingsBtn: true
     property bool showTitleLbl: navigator.currentItem
                                 && navigator.currentItem.title
     property alias searchField: searchField
+
+    function shouldShowSearch() {
+        return navigator.currentItem
+                && navigator.currentItem.objectName == 'credentialsView'
+                && entries.count > 0
+    }
 
     RowLayout {
         spacing: 0
