@@ -23,8 +23,6 @@ Pane {
 
     property bool continuousCalculation: oathType === "TOTP" && !touch
 
-    property bool expired
-
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {
                    return app.isDark(
@@ -74,14 +72,13 @@ Pane {
     }
 
     function calculateCard() {
-        var touchCredentialNoCode = credential.touch && (!code.value || expired)
+        var touchCredentialNoCode = credential.touch && !code.value
         var hotpCredential = oathType == "HOTP"
 
         if (touchCredentialNoCode || hotpCredential) {
             yubiKey.calculate(credential, function (resp) {
                 if (resp.success) {
                     entries.updateEntry(resp)
-                    expired = false
                     copyCode(resp.code.value)
                 } else {
                     navigator.snackBarError(resp.error_id)
@@ -91,6 +88,10 @@ Pane {
         } else {
             copyCode(code.value)
         }
+    }
+
+    function clearExpiredCode(key) {
+        entries.clearCode(key)
     }
 
     function deleteCard(index) {
@@ -138,7 +139,7 @@ Pane {
             Label {
                 id: codLbl
                 font.pixelSize: 24
-                color: code && code.value && !expired ? yubicoGreen : yubicoGrey
+                color: code && code.value ? yubicoGreen : yubicoGrey
                 text: getCodeLblValue()
                 visible: code || touch
             }
@@ -159,10 +160,10 @@ Pane {
             anchors.right: parent.right
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             colorCircle: Material.primary
-            visible: code && oathType === "TOTP" && !expired
+            visible: !!(code && code.value && oathType === "TOTP")
             onTimesUp: {
                 if (touch) {
-                    expired = true
+                    clearExpiredCode(credential.key)
                 }
             }
         }
@@ -175,7 +176,7 @@ Pane {
             height: 16
             fillMode: Image.PreserveAspectFit
             source: "../images/touch.png"
-            visible: (touch && !code.value) || touch && expired
+            visible: !!(touch && !code.value)
         }
     }
 }

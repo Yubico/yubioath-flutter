@@ -18,4 +18,14 @@ ListModel {
         }
         // TODO: clear out deleted ones ?
     }
+
+    function clearCode(key) {
+        for (var j = 0; j < count; j++) {
+            if (get(j).credential.key === key) {
+                setProperty(j, "code", {
+                                value: ""
+                            })
+            }
+        }
+    }
 }
