@@ -176,7 +176,7 @@ Pane {
             height: 16
             fillMode: Image.PreserveAspectFit
             source: "../images/touch.png"
-            visible: !!(touch && !code.value)
+            visible: touch && code && !code.value
         }
     }
 }
