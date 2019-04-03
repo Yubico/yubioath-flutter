@@ -16,10 +16,6 @@ Pane {
 
     property var code
     property var credential
-    property string issuer: credential.issuer || ''
-    property string name: credential.name
-    property bool touch: credential.touch
-    property string oathType: credential.oath_type
 
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {
@@ -35,6 +31,11 @@ Pane {
             onClicked: credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
             onDoubleClicked: calculateCard()
         }
+    }
+
+    function getIconLetter() {
+        return credential.issuer ? credential.issuer.charAt(
+                                       0) : credential.name.charAt(0)
     }
 
     function formattedCode(code) {
@@ -56,11 +57,11 @@ Pane {
         }
     }
 
-    function formattedName(issuer, name) {
-        if (issuer !== "") {
-            return issuer + " (" + name + ")"
+    function formattedName() {
+        if (credential.issuer) {
+            return credential.issuer + " (" + credential.name + ")"
         } else {
-            return name
+            return credential.name
         }
     }
 
@@ -71,7 +72,7 @@ Pane {
 
     function calculateCard() {
         var touchCredentialNoCode = credential.touch && !code.value
-        var hotpCredential = oathType == "HOTP"
+        var hotpCredential = (credential.oath_type === "HOTP")
 
         if (touchCredentialNoCode || hotpCredential) {
             yubiKey.calculate(credential, function (resp) {
@@ -107,9 +108,9 @@ Pane {
     function getCodeLblValue() {
         if (code && code.value && code.valid_to > Utils.getNow()) {
             return formattedCode(code.value)
-        } else if (touch) {
+        } else if (credential.touch) {
             return "Requires touch"
-        } else if (!touch && oathType === "HOTP") {
+        } else if (!credential.touch && credential.oath_type === "HOTP") {
             return "HOTP Credential"
         } else {
             return ""
@@ -126,7 +127,7 @@ Pane {
             anchors.left: parent.left
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             size: 40
-            letter: issuer ? issuer.charAt(0) : name.charAt(0)
+            letter: getIconLetter()
         }
 
         ColumnLayout {
@@ -139,11 +140,10 @@ Pane {
                 font.pixelSize: 24
                 color: code && code.value ? yubicoGreen : yubicoGrey
                 text: getCodeLblValue()
-                visible: code || touch
             }
             Label {
                 id: nameLbl
-                text: formattedName(issuer, name)
+                text: formattedName()
                 Layout.maximumWidth: 265
                 font.pixelSize: 12
                 maximumLineCount: 3
@@ -158,9 +158,10 @@ Pane {
             anchors.right: parent.right
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             colorCircle: Material.primary
-            visible: !!(code && code.value && oathType === "TOTP")
+            visible: code && code.value && credential
+                     && credential.oath_type === "TOTP" ? true : false
             onTimesUp: {
-                if (touch) {
+                if (credential.touch) {
                     clearExpiredCode(credential.key)
                 }
             }
@@ -174,7 +175,7 @@ Pane {
             height: 16
             fillMode: Image.PreserveAspectFit
             source: "../images/touch.png"
-            visible: touch && code && !code.value
+            visible: credential.touch && code && !code.value
         }
     }
 }
