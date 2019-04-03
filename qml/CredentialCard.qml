@@ -17,6 +17,13 @@ Pane {
     property var code
     property var credential
 
+    property bool touchCredentialNoCode: (touchCredential && !code.value)
+    property bool hotpCredential: (credential.oath_type === "HOTP")
+    property bool customPeriodCredentialNoTouch: (credential.period !== 30
+                                                  && credential.oath_type === "TOTP"
+                                                  && !touchCredential)
+    property bool touchCredential: credential.touch
+
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {
                    return app.isDark(
@@ -29,7 +36,7 @@ Pane {
         MouseArea {
             anchors.fill: parent
             onClicked: credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
-            onDoubleClicked: calculateCard()
+            onDoubleClicked: calculateCard(true)
         }
     }
 
@@ -70,15 +77,15 @@ Pane {
         navigator.snackBar("Code copied to clipboard!")
     }
 
-    function calculateCard() {
-        var touchCredentialNoCode = credential.touch && !code.value
-        var hotpCredential = (credential.oath_type === "HOTP")
-
-        if (touchCredentialNoCode || hotpCredential) {
+    function calculateCard(copy) {
+        if (touchCredentialNoCode || hotpCredential
+                || customPeriodCredentialNoTouch) {
             yubiKey.calculate(credential, function (resp) {
                 if (resp.success) {
                     entries.updateEntry(resp)
-                    copyCode(resp.code.value)
+                    if (copy) {
+                        copyCode(resp.code.value)
+                    }
                 } else {
                     navigator.snackBarError(resp.error_id)
                     console.log(resp.error_id)
@@ -108,9 +115,9 @@ Pane {
     function getCodeLblValue() {
         if (code && code.value && code.valid_to > Utils.getNow()) {
             return formattedCode(code.value)
-        } else if (credential.touch) {
+        } else if (touchCredential) {
             return "Requires touch"
-        } else if (!credential.touch && credential.oath_type === "HOTP") {
+        } else if (!touchCredential && hotpCredential) {
             return "HOTP Credential"
         } else {
             return ""
@@ -161,8 +168,11 @@ Pane {
             visible: code && code.value && credential
                      && credential.oath_type === "TOTP" ? true : false
             onTimesUp: {
-                if (credential.touch) {
+                if (touchCredential) {
                     clearExpiredCode(credential.key)
+                }
+                if (customPeriodCredentialNoTouch) {
+                    calculateCard(false)
                 }
             }
         }
@@ -175,7 +185,7 @@ Pane {
             height: 16
             fillMode: Image.PreserveAspectFit
             source: "../images/touch.png"
-            visible: credential.touch && code && !code.value
+            visible: credential.touch && code && !code.value ? true : false
         }
     }
 }

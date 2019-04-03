@@ -67,6 +67,7 @@ Pane {
         ScrollBar.vertical: ScrollBar {
             width: 5
         }
+        keyNavigationWraps: true
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
         interactive: true
@@ -89,7 +90,7 @@ Pane {
         }
         Keys.onReturnPressed: {
             if (currentIndex !== -1) {
-                currentItem.calculateCard()
+                currentItem.calculateCard(true)
             }
         }
         Keys.onDeletePressed: {
