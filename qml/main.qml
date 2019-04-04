@@ -137,7 +137,7 @@ ApplicationWindow {
         SysTrayIcon.visible = settings.closeToTray
         // When the tray option is enabled, closing the last window
         // doesn't actually close the application.
-        app.quitOnLastWindowClosed = !settings.closeToTray
+        application.quitOnLastWindowClosed = !settings.closeToTray
     }
     // This information is stored in the system registry on Windows,
     // and in XML preferences files on macOS. On other Unix systems,

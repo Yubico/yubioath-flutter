@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
     // Use Material "Dense" variant, recommended for Desktop
     qputenv("QT_QUICK_CONTROLS_MATERIAL_VARIANT", "Dense");
 
-    QApplication app(argc, argv);
-    app.setApplicationName("Yubico Authenticator");
-    app.setOrganizationName("Yubico");
-    app.setOrganizationDomain("com.yubico");
+    QApplication application(argc, argv);
+    application.setApplicationName("Yubico Authenticator");
+    application.setOrganizationName("Yubico");
+    application.setOrganizationDomain("com.yubico");
 
     QQuickStyle::setStyle("Material");
 
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    QString app_dir = app.applicationDirPath();
+    QString app_dir = application.applicationDirPath();
     QString main_qml = "/qml/main.qml";
     QString path_prefix;
     QString url_prefix;
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("appVersion", APP_VERSION);
     engine.rootContext()->setContextProperty("ScreenShot", &screenshot);
     engine.rootContext()->setContextProperty("SysTrayIcon", trayIcon);
-    engine.rootContext()->setContextProperty("app", &app);
+    engine.rootContext()->setContextProperty("application", &application);
     engine.load(QUrl(url_prefix + main_qml));
 
 
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
     #endif
 
     // Explicitly hide trayIcon on exit
-    const int status = app.exec();
+    const int status = application.exec();
     trayIcon->hide();
     return status;
 }
