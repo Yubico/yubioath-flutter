@@ -98,6 +98,8 @@ Pane {
             }
             CheckBox {
                 id: sysTrayCheckbox
+                checked: settings.closeToTray
+                onCheckStateChanged: settings.closeToTray = checked
             }
         }
         RowLayout {
@@ -141,7 +143,6 @@ Pane {
                                    yubiKey.reset(function (resp) {
                                        if (resp.success) {
                                            entries.clear()
-                                           //navigator.goToCredentials()
                                            navigator.snackBar("Reset completed")
                                            navigator.goToCredentials()
                                        } else {
