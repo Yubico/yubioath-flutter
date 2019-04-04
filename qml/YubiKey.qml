@@ -11,6 +11,9 @@ Python {
     property bool yubikeyReady: false
     property var queue: []
 
+    property bool hasPassword: false
+    property bool locked: false
+
     property var availableDevices: []
     property var currentDevice
     signal enableLogging(string logLevel, string logFile)
@@ -137,6 +140,10 @@ Python {
             slot2inUse = res[1]
             cb()
         })
+    }
+
+    function setPassword(password, remember, cb) {
+        doCall('yubikey.controller.ccid_set_password', [password], cb)
     }
 
     function validate(password, cb) {

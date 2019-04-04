@@ -50,7 +50,9 @@ Timer {
                 }
             })
 
-            if (timeToCalculateAll() && yubiKey.availableDevices.length > 0) {
+            // TODO: Should not calcAll if device is locked or if no default TOTP creds.
+            if (timeToCalculateAll() && yubiKey.availableDevices.length > 0
+                    && !yubiKey.locked) {
                 calculateAll()
             }
         }
@@ -81,6 +83,8 @@ Timer {
             } else {
                 if (resp.error_id === 'access_denied') {
                     entries.clear()
+                    yubiKey.hasPassword = true
+                    yubiKey.locked = true
                     navigator.goToEnterPassword()
                 } else {
                     navigator.snackBarError(resp.error_id)

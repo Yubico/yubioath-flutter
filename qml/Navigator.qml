@@ -5,7 +5,6 @@ import "utils.js" as Utils
 StackView {
     initialItem: noYubiKeyView
 
-
     onCurrentItemChanged: {
         if (currentItem) {
             currentItem.forceActiveFocus()
@@ -32,6 +31,11 @@ StackView {
     function goToEnterPassword() {
         if (currentItem.objectName !== 'enterPasswordView') {
             clearAndPush(enterPasswordView)
+        }
+    }
+    function goToNewPasswordView() {
+        if (currentItem.objectName !== 'newPasswordView') {
+            push(newPasswordView, StackView.Immediate)
         }
     }
 
@@ -100,6 +104,12 @@ StackView {
     Component {
         id: enterPasswordView
         EnterPasswordView {
+        }
+    }
+
+    Component {
+        id: newPasswordView
+        NewPasswordView {
         }
     }
 

@@ -82,16 +82,6 @@ Pane {
 
         RowLayout {
             Label {
-                text: "No pasword set"
-                Layout.fillWidth: true
-            }
-            StyledButton {
-                text: "Set password"
-            }
-        }
-
-        RowLayout {
-            Label {
                 text: "2 remebered passwords"
                 Layout.fillWidth: true
             }
@@ -119,6 +109,21 @@ Pane {
                 enabled: sysTrayCheckbox.checked
             }
         }
+        Label {
+            text: qsTr("Settings for %1 (%2)").arg(
+                      yubiKey.availableDevices[0].name).arg(
+                      yubiKey.availableDevices[0].serial)
+        }
+        RowLayout {
+            Label {
+                text: yubiKey.hasPassword ? "YubiKey is protected with password" : "No password is set"
+                Layout.fillWidth: true
+            }
+            StyledButton {
+                text: "Set password"
+                onClicked: navigator.goToNewPasswordView()
+            }
+        }
         RowLayout {
             Label {
                 text: "Reset OATH Application"
@@ -133,7 +138,9 @@ Pane {
                                    yubiKey.reset(function (resp) {
                                        if (resp.success) {
                                            entries.clear()
+                                           //navigator.goToCredentials()
                                            navigator.snackBar("Reset completed")
+                                           navigator.goToCredentials()
                                        } else {
                                            navigator.snackBarError(
                                                        resp.error_id)

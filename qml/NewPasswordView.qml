@@ -5,17 +5,18 @@ import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
 Pane {
-    objectName: 'enterPasswordView'
+    objectName: 'newPasswordView'
 
-    property string title: "Unlock YubiKey"
+    property string title: "Set password"
 
-    function validate() {
-        yubiKey.validate(passwordField.text, function (resp) {
+    function setPassword() {
+        yubiKey.setPassword(newPasswordField.text, false, function (resp) {
             if (resp.success) {
-                yubiKey.locked = false
-                navigator.goToCredentials()
+                navigator.snackBar("Password set")
+                navigator.pop()
             } else {
-                console.log("validate failed:", resp.error_id)
+                navigator.snackBarError(resp.error_id)
+                console.log(resp.error_id)
             }
         })
     }
@@ -44,7 +45,7 @@ Pane {
                     }
                 }
                 Label {
-                    text: "The YubiKey is password protected"
+                    text: "Set a new password"
                     font.pixelSize: 12
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 }
@@ -52,22 +53,34 @@ Pane {
             ColumnLayout {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
                 TextField {
-                    id: passwordField
+                    id: newPasswordField
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     Layout.fillWidth: true
-                    placeholderText: qsTr("Password")
+                    placeholderText: qsTr("New Password")
                     background.width: width
                     echoMode: TextInput.Password
-                    Keys.onEnterPressed: validate()
-                    Keys.onReturnPressed: validate()
+                }
+                TextField {
+                    id: confirmPasswordField
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                    Layout.fillWidth: true
+                    placeholderText: qsTr("Confirm Password")
+                    background.width: width
+                    echoMode: TextInput.Password
                 }
                 RowLayout {
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     Button {
-                        highlighted: true
-                        text: "OK"
+                        text: "Cancel"
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        onClicked: validate()
+                        onClicked: navigator.pop()
+                    }
+                    Button {
+                        highlighted: true
+                        enabled: newPasswordField.text === confirmPasswordField.text
+                        text: "Ok"
+                        onClicked: setPassword()
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     }
                 }
             }

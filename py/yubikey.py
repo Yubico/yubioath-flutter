@@ -5,20 +5,16 @@ import json
 import logging
 import types
 import ykman.logging_setup
-
 from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
-
-from ykman.device import YubiKey
 from ykman.descriptor import (
-    get_descriptors, Descriptor, FailedOpeningDeviceException)
+    get_descriptors, FailedOpeningDeviceException)
 from ykman.util import (TRANSPORT, parse_b32_key)
 from ykman.driver_otp import YkpersError
-from ykman.otp import OtpController
-from ykman.driver_ccid import APDUError, open_devices as open_ccid
+from ykman.driver_ccid import APDUError
 from ykman.oath import (
     ALGO, OATH_TYPE, OathController,
-    CredentialData, Credential, Code, SW)
+    CredentialData, Credential, SW)
 from ykman.settings import Settings
 from qr import qrparse, qrdecode
 
@@ -149,7 +145,8 @@ class Controller(object):
                     setattr(self, f, as_json(catch_error(func)))
 
     def _open_oath(self):
-        return OathContextManager(self._current_desc.open_device(TRANSPORT.CCID))
+        return OathContextManager(
+            self._current_desc.open_device(TRANSPORT.CCID))
 
     def _update_desc_fps(self):
         descs = get_descriptors()
@@ -180,14 +177,18 @@ class Controller(object):
             entries = oath_controller.calculate_all(timestamp)
             return success(
                 {
-                    'entries': [pair_to_dict(cred, code) for (cred, code) in entries if not cred.is_hidden]
+                    'entries': [
+                        pair_to_dict(
+                            cred, code) for (
+                                cred, code) in entries if not cred.is_hidden]
                 }
             )
 
     def ccid_calculate(self, credential, timestamp):
         with self._open_oath() as oath_controller:
             self._unlock(oath_controller)
-            code = oath_controller.calculate(cred_from_dict(credential), timestamp)
+            code = oath_controller.calculate(
+                cred_from_dict(credential), timestamp)
             return success({
                 'credential': credential,
                 'code': code_to_dict(code)
@@ -225,7 +226,7 @@ class Controller(object):
                     keys[controller.id] = b2a_hex(self._key).decode()
                     self.settings.write()
                 return success()
-            except:
+            except Exception:
                 return failure('validate_failed')
 
     def _unlock(self, controller):
@@ -247,6 +248,18 @@ class Controller(object):
     def ccid_reset(self):
         with self._open_oath() as oath_controller:
             oath_controller.reset()
+            return success()
+
+    def ccid_set_password(self, new_password, remember=False):
+        with self._open_oath() as oath_controller:
+            self._unlock(oath_controller)
+            keys = self.settings.setdefault('keys', {})
+            self._current_key = oath_controller.set_password(new_password)
+            if remember:
+                keys[oath_controller.id] = b2a_hex(self._key).decode()
+            elif oath_controller.id in keys:
+                del keys[oath_controller.id]
+            self.settings.write()
             return success()
 
     def parse_qr(self, screenshot):
