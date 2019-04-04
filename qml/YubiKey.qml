@@ -143,10 +143,10 @@ Python {
     }
 
     function setPassword(password, remember, cb) {
-        doCall('yubikey.controller.ccid_set_password', [password], cb)
+        doCall('yubikey.controller.ccid_set_password', [password, remember], cb)
     }
 
-    function validate(password, cb) {
-        doCall('yubikey.controller.ccid_validate', [password], cb)
+    function validate(password, remember, cb) {
+        doCall('yubikey.controller.ccid_validate', [password, remember], cb)
     }
 }

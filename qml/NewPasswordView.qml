@@ -10,15 +10,16 @@ Pane {
     property string title: "Set password"
 
     function setPassword() {
-        yubiKey.setPassword(newPasswordField.text, false, function (resp) {
-            if (resp.success) {
-                navigator.snackBar("Password set")
-                navigator.pop()
-            } else {
-                navigator.snackBarError(resp.error_id)
-                console.log(resp.error_id)
-            }
-        })
+        yubiKey.setPassword(newPasswordField.text,
+                            rememberPasswordCheckBox.checked, function (resp) {
+                                if (resp.success) {
+                                    navigator.snackBar("Password set")
+                                    navigator.pop()
+                                } else {
+                                    navigator.snackBarError(resp.error_id)
+                                    console.log(resp.error_id)
+                                }
+                            })
     }
 
     ColumnLayout {
@@ -67,6 +68,10 @@ Pane {
                     placeholderText: qsTr("Confirm Password")
                     background.width: width
                     echoMode: TextInput.Password
+                }
+                CheckBox {
+                    id: rememberPasswordCheckBox
+                    text: "Remember password"
                 }
                 RowLayout {
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter

@@ -10,14 +10,15 @@ Pane {
     property string title: "Unlock YubiKey"
 
     function validate() {
-        yubiKey.validate(passwordField.text, function (resp) {
-            if (resp.success) {
-                yubiKey.locked = false
-                navigator.goToCredentials()
-            } else {
-                console.log("validate failed:", resp.error_id)
-            }
-        })
+        yubiKey.validate(passwordField.text, rememberPasswordCheckBox.checked,
+                         function (resp) {
+                             if (resp.success) {
+                                 yubiKey.locked = false
+                                 navigator.goToCredentials()
+                             } else {
+                                 console.log("validate failed:", resp.error_id)
+                             }
+                         })
     }
 
     ColumnLayout {
@@ -60,6 +61,10 @@ Pane {
                     echoMode: TextInput.Password
                     Keys.onEnterPressed: validate()
                     Keys.onReturnPressed: validate()
+                }
+                CheckBox {
+                    id: rememberPasswordCheckBox
+                    text: "Remember password"
                 }
                 RowLayout {
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter

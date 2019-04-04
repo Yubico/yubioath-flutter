@@ -50,7 +50,7 @@ Timer {
                 }
             })
 
-            // TODO: Should not calcAll if device is locked or if no default TOTP creds.
+            // TODO: Should not calcAll if no default TOTP creds.
             if (timeToCalculateAll() && yubiKey.availableDevices.length > 0
                     && !yubiKey.locked) {
                 calculateAll()

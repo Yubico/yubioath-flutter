@@ -223,7 +223,8 @@ class Controller(object):
                 self._current_key = key
                 if remember:
                     keys = self.settings.setdefault('keys', {})
-                    keys[controller.id] = b2a_hex(self._key).decode()
+                    keys[oath_controller.id] = b2a_hex(
+                        self._current_key).decode()
                     self.settings.write()
                 return success()
             except Exception:
@@ -256,19 +257,20 @@ class Controller(object):
             keys = self.settings.setdefault('keys', {})
             self._current_key = oath_controller.set_password(new_password)
             if remember:
-                keys[oath_controller.id] = b2a_hex(self._key).decode()
+                keys[oath_controller.id] = b2a_hex(self._current_key).decode()
             elif oath_controller.id in keys:
                 del keys[oath_controller.id]
             self.settings.write()
             return success()
 
     def parse_qr(self, screenshot):
-            data = b64decode(screenshot['data'])
-            image = PixelImage(data, screenshot['width'], screenshot['height'])
-            for qr in qrparse.parse_qr_codes(image, 2):
-                return success(credential_data_to_dict(
+        data = b64decode(screenshot['data'])
+        image = PixelImage(data, screenshot['width'], screenshot['height'])
+        for qr in qrparse.parse_qr_codes(image, 2):
+            return success(
+                credential_data_to_dict(
                     CredentialData.from_uri(qrdecode.decode_qr_data(qr))))
-            return failure('no_credential_found')
+        return failure('no_credential_found')
 
 
 class PixelImage(object):
