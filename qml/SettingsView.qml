@@ -110,8 +110,11 @@ Pane {
             }
             CheckBox {
                 enabled: sysTrayCheckbox.checked
+                checked: settings.hideOnLaunch
+                onCheckStateChanged: settings.hideOnLaunch = checked
             }
         }
+        //TODO: all device settings should be disabled/hidden if no yubikey is available
         Label {
             text: qsTr("Settings for %1 (%2)").arg(
                       yubiKey.availableDevices[0].name).arg(

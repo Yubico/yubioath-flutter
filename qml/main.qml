@@ -48,6 +48,9 @@ ApplicationWindow {
     property bool isInForeground: visibility != 3 && visibility != 0
 
     Component.onCompleted: {
+        if (settings.closeToTray && settings.hideOnLaunch) {
+            hide()
+        }
         updateTrayVisibility()
         ensureValidWindowPosition()
     }

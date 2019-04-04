@@ -85,10 +85,6 @@ int main(int argc, char *argv[])
 
     // Set icon in the window, doesn't effect desktop icons.
     qmlWindow->setIcon(QIcon(path_prefix + "/images/windowicon.png"));
-    // Show root window unless explicitly hidden in settings.
-    if (qmlWindow->property("hideOnLaunch").toBool() == false) {
-        qmlWindow->show();
-    }
 
     // This is the current system tray icon.
     // Should probably be replaced by QML when all supported platforms are on > Qt 5.8
