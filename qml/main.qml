@@ -47,7 +47,11 @@ ApplicationWindow {
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
     property bool isInForeground: visibility != 3 && visibility != 0
 
-    Component.onCompleted: ensureValidWindowPosition()
+    Component.onCompleted: {
+        updateTrayVisibility()
+        ensureValidWindowPosition()
+    }
+
     Component.onDestruction: saveScreenLayout()
 
     function enableLogging(logLevel) {
@@ -129,6 +133,12 @@ ApplicationWindow {
         app.y = (savedScreenLayout) ? settings.y : Screen.height / 2 - app.height / 2
     }
 
+    function updateTrayVisibility() {
+        SysTrayIcon.visible = settings.closeToTray
+        // When the tray option is enabled, closing the last window
+        // doesn't actually close the application.
+        app.quitOnLastWindowClosed = !settings.closeToTray
+    }
     // This information is stored in the system registry on Windows,
     // and in XML preferences files on macOS. On other Unix systems,
     // in the absence of a standard, INI text files are used.
@@ -153,6 +163,10 @@ ApplicationWindow {
         property alias y: app.y
         property int desktopAvailableWidth
         property int desktopAvailableHeight
+
+        onCloseToTrayChanged: {
+            updateTrayVisibility()
+        }
     }
 
     EntriesModel {
