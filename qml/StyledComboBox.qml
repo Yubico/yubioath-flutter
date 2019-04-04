@@ -8,7 +8,7 @@ ComboBox {
     id: control
     font.capitalization: Font.MixedCase
     font.bold: false
-    font.pointSize: 13
+    font.pixelSize: 13
     flat: true
     implicitWidth: 100
     contentItem: Text {

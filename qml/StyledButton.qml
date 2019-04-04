@@ -8,9 +8,10 @@ Button {
     id: button
     font.capitalization: Font.AllUppercase
     font.styleName: "Medium"
-    font.pointSize: 14
+    font.pixelSize: 14
     Material.foreground: button.flat ? yubicoGreen : yubicoWhite
     Material.background: button.flat ? "transparent" : yubicoGreen
+    Material.elevation: 0
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
