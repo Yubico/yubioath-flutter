@@ -87,6 +87,7 @@ Pane {
             }
             StyledButton {
                 text: "Clear"
+                flat: true
             }
         }
 
@@ -121,6 +122,7 @@ Pane {
             }
             StyledButton {
                 text: "Set password"
+                flat: true
                 onClicked: navigator.goToNewPasswordView()
             }
         }
@@ -131,6 +133,7 @@ Pane {
             }
             StyledButton {
                 text: "Reset"
+                flat: true
                 onClicked: navigator.confirm(
                                "Are you sure?",
                                "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",

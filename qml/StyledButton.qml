@@ -6,20 +6,11 @@ import QtGraphicalEffects 1.0
 
 Button {
     id: button
-    flat: true
-    hoverEnabled: true
-    font.capitalization: Font.MixedCase
-    font.bold: false
-    font.pointSize: 13
-    Material.foreground: yubicoWhite
-    implicitHeight: 44
-    leftPadding: 12
-    rightPadding: 12
-    background: Rectangle {
-        radius: 2
-        color: yubicoGreen
-        opacity: parent.hovered ? 0.9 : 1
-    }
+    font.capitalization: Font.AllUppercase
+    font.styleName: "Medium"
+    font.pointSize: 14
+    Material.foreground: button.flat ? yubicoGreen : yubicoWhite
+    Material.background: button.flat ? "transparent" : yubicoGreen
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
