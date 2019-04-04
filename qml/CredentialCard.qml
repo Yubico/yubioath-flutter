@@ -19,6 +19,8 @@ Pane {
 
     property bool touchCredentialNoCode: (touchCredential && !code.value)
     property bool hotpCredential: (credential.oath_type === "HOTP")
+    property bool hotpCredentialInCoolDown
+
     property bool customPeriodCredentialNoTouch: (credential.period !== 30
                                                   && credential.oath_type === "TOTP"
                                                   && !touchCredential)
@@ -78,13 +80,17 @@ Pane {
     }
 
     function calculateCard(copy) {
-        if (touchCredentialNoCode || hotpCredential
+        if (touchCredentialNoCode || (hotpCredential
+                                      && !hotpCredentialInCoolDown)
                 || customPeriodCredentialNoTouch) {
             yubiKey.calculate(credential, function (resp) {
                 if (resp.success) {
                     entries.updateEntry(resp)
                     if (copy) {
                         copyCode(resp.code.value)
+                    }
+                    if (hotpCredential) {
+                        coolDownHotpCredential()
                     }
                 } else {
                     navigator.snackBarError(resp.error_id)
@@ -122,6 +128,18 @@ Pane {
         } else {
             return ""
         }
+    }
+
+    function coolDownHotpCredential() {
+        hotpCredentialInCoolDown = true
+        hotpCoolDownTimer.start()
+    }
+
+    Timer {
+        id: hotpCoolDownTimer
+        triggeredOnStart: false
+        interval: 5000
+        onTriggered: hotpCredentialInCoolDown = false
     }
 
     Item {
@@ -186,6 +204,22 @@ Pane {
             fillMode: Image.PreserveAspectFit
             source: "../images/touch.png"
             visible: credential.touch && code && !code.value ? true : false
+        }
+
+        Image {
+            id: generateHotpIcon
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            width: 16
+            height: 16
+            fillMode: Image.PreserveAspectFit
+            source: "../images/refresh.svg"
+            visible: hotpCredential
+            ColorOverlay {
+                source: generateHotpIcon
+                color: hotpCredentialInCoolDown ? yubicoGrey : yubicoGreen
+                anchors.fill: generateHotpIcon
+            }
         }
     }
 }
