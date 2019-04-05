@@ -109,6 +109,8 @@ def catch_error(f):
                 return failure('access_denied')
             raise
         except Exception as e:
+            if str(e) == 'Incorrect padding':
+                return failure('incorrect_padding')
             logger.error('Uncaught exception', exc_info=e)
             return unknown_failure(e)
     return wrapped

@@ -31,8 +31,11 @@ Pane {
                                       navigator.goToCredentials()
                                       navigator.snackBar("Credential added")
                                   } else {
-                                      navigator.snackBarError(resp.error_id)
-                                      console.log(resp.error_id)
+                                      navigator.snackBarError(
+                                                  navigator.getErrorMessage(
+                                                      resp.error_id))
+                                      console.log("addCredential failed:",
+                                                  resp.error_id)
                                   }
                               })
     }
@@ -91,6 +94,9 @@ Pane {
                                        ) ? defaultLightForeground : defaultDarkForeground
                 Material.accent: isDark(
                                      ) ? defaultDarkForeground : defaultLightForeground
+                validator: RegExpValidator {
+                    regExp: /[2-7a-zA-Z ]+=*/
+                }
             }
 
             RowLayout {

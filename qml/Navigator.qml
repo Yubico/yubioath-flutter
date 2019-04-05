@@ -4,7 +4,6 @@ import "utils.js" as Utils
 
 StackView {
     initialItem: noYubiKeyView
-
     onCurrentItemChanged: {
         if (currentItem) {
             currentItem.forceActiveFocus()
@@ -81,6 +80,17 @@ StackView {
                                                  message: message
                                              })
         sbe.open()
+    }
+
+    function getErrorMessage(error_id) {
+        switch (error_id) {
+        case 'no_credential_found':
+            return qsTr('No QR code found on screen')
+        case 'incorrect_padding':
+            return qsTr('Secret key have the wrong format')
+        default:
+            return qsTr('Unknown error')
+        }
     }
 
     Component {
