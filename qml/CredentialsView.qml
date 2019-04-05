@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 Pane {
     padding: 0
-    topPadding: 0
+    topPadding: 16
     objectName: 'credentialsView'
 
     property string title: ""
