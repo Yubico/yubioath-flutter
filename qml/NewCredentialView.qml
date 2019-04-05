@@ -17,6 +17,12 @@ Pane {
 
     anchors.fill: parent
 
+    function acceptableInput() {
+        var nameAndKey = nameLbl.text.length > 0 && secretKeyLbl.text.length > 0
+        var okTotalLength = (nameLbl.text.length + issuerLbl.text.length) < 60
+        return nameAndKey && okTotalLength
+    }
+
     function addCredential() {
         yubiKey.addCredential(nameLbl.text, secretKeyLbl.text, issuerLbl.text,
                               oathTypeComboBox.currentText,
@@ -209,6 +215,7 @@ Pane {
             StyledButton {
                 id: addBtn
                 text: "Add"
+                enabled: acceptableInput()
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: addCredential()
             }

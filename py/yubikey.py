@@ -229,8 +229,9 @@ class Controller(object):
                         self._current_key).decode()
                     self.settings.write()
                 return success()
-            except Exception:
-                return failure('validate_failed')
+            except APDUError as e:
+                if e.sw == SW.INCORRECT_PARAMETERS:
+                    return failure('validate_failed')
 
     def _unlock(self, controller):
         if controller.locked:

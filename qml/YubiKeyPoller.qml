@@ -5,6 +5,7 @@ import "utils.js" as Utils
 Timer {
 
     // Timestamp in seconds for when it's time for the next calculateAll call.
+    // -1 means never
     property int nextCalculateAll: 0
 
     triggeredOnStart: true
@@ -50,7 +51,6 @@ Timer {
                 }
             })
 
-            // TODO: Should not calcAll if no default TOTP creds.
             if (timeToCalculateAll() && yubiKey.availableDevices.length > 0
                     && !yubiKey.locked) {
                 calculateAll()
@@ -79,6 +79,7 @@ Timer {
                 // sort them when they are inside the ListModel.
                 var sortedEntries = sortEntries(resp.entries)
                 entries.updateEntries(sortedEntries)
+
                 updateNextCalculateAll()
             } else {
                 if (resp.error_id === 'access_denied') {
@@ -96,17 +97,19 @@ Timer {
 
     function updateNextCalculateAll() {
         // Next calculateAll should be when one a default TOTP cred expires.
-        // TODO: This should probably expiration of the TOTP cred with the shortest period expires.
         for (var i = 0; i < entries.count; i++) {
             var entry = entries.get(i)
             if (entry.code && entry.code.valid_to > nextCalculateAll
                     && entry.credential.period === 30) {
                 nextCalculateAll = entry.code.valid_to
+                return
             }
         }
+        // No default TOTP credd found, don't set a time for nextCalculateAll
+        nextCalculateAll = -1
     }
 
     function timeToCalculateAll() {
-        return nextCalculateAll <= Utils.getNow()
+        return nextCalculateAll !== -1 && nextCalculateAll <= Utils.getNow()
     }
 }

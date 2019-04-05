@@ -88,6 +88,8 @@ StackView {
             return qsTr('No QR code found on screen')
         case 'incorrect_padding':
             return qsTr('Secret key have the wrong format')
+        case 'validate_failed':
+            return qsTr('Wrong password')
         default:
             return qsTr('Unknown error')
         }

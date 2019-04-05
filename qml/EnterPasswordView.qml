@@ -9,6 +9,11 @@ Pane {
 
     property string title: "Unlock YubiKey"
 
+    function clear() {
+        passwordField.text = ""
+        rememberPasswordCheckBox.checked = false
+    }
+
     function validate() {
         yubiKey.validate(passwordField.text, rememberPasswordCheckBox.checked,
                          function (resp) {
@@ -16,6 +21,10 @@ Pane {
                                  yubiKey.locked = false
                                  navigator.goToCredentials()
                              } else {
+                                 clear()
+                                 navigator.snackBarError(
+                                             navigator.getErrorMessage(
+                                                 resp.error_id))
                                  console.log("validate failed:", resp.error_id)
                              }
                          })
