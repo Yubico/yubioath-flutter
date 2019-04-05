@@ -63,6 +63,7 @@ Pane {
 
     GridView {
         id: grid
+        onCurrentItemChanged: app.currentCredentialCard = currentItem
         visible: entries.count > 0
         ScrollBar.vertical: ScrollBar {
             width: 5
@@ -95,7 +96,7 @@ Pane {
         }
         Keys.onDeletePressed: {
             if (currentIndex !== -1) {
-                currentItem.deleteCard(currentIndex)
+                currentItem.deleteCard()
             }
         }
     }

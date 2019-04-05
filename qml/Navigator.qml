@@ -90,6 +90,8 @@ StackView {
             return qsTr('Secret key have the wrong format')
         case 'validate_failed':
             return qsTr('Wrong password')
+        case 'no_space':
+            return qsTr('No space available on YubiKey')
         default:
             return qsTr('Unknown error')
         }

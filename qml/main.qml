@@ -33,6 +33,8 @@ ApplicationWindow {
     readonly property string defaultLightSelection: "#eeeeee"
     readonly property string defaultLightForeground: "#565656"
 
+    property var currentCredentialCard
+
     Material.theme: getTheme()
     Material.primary: yubicoGreen
     Material.accent: yubicoGreen

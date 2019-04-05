@@ -152,6 +152,42 @@ ToolBar {
                 }
             }
         }
+        RowLayout {
+            id: credentialOptions
+            spacing: 0
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            visible: !!(app.currentCredentialCard)
+            ToolButton {
+                id: deleteCredentialBtn
+                visible: deleteCredentialBtn
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                onClicked: app.currentCredentialCard.deleteCard()
+
+                ToolTip.text: "Delete credential from YubiKey"
+                ToolTip.delay: 1000
+                ToolTip.visible: hovered
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
+
+                Image {
+                    id: deleteIcon
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    Layout.maximumWidth: 150
+                    fillMode: Image.PreserveAspectFit
+                    source: "../images/delete.svg"
+                    ColorOverlay {
+                        source: deleteIcon
+                        color: isDark() ? yubicoWhite : yubicoGrey
+                        anchors.fill: deleteIcon
+                    }
+                }
+            }
+        }
 
         RowLayout {
             spacing: 0

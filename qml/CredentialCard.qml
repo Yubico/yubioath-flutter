@@ -106,10 +106,10 @@ Pane {
         entries.clearCode(key)
     }
 
-    function deleteCard(index) {
+    function deleteCard() {
         yubiKey.deleteCredential(credential, function (resp) {
             if (resp.success) {
-                entries.remove(index)
+                entries.deleteEntry(credential.key)
                 navigator.snackBar("Credential was deleted")
             } else {
                 navigator.snackBarError(resp.error_id)

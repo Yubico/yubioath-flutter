@@ -19,6 +19,15 @@ ListModel {
         // TODO: clear out deleted ones ?
     }
 
+    function deleteEntry(key) {
+        for (var j = 0; j < count; j++) {
+            if (get(j).credential.key === key) {
+                remove(j)
+                return
+            }
+        }
+    }
+
     function clearCode(key) {
         for (var j = 0; j < count; j++) {
             if (get(j).credential.key === key) {
