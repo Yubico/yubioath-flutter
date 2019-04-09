@@ -17,14 +17,14 @@ Pane {
     property var code
     property var credential
 
-    property bool touchCredentialNoCode: (touchCredential && !code.value)
-    property bool hotpCredential: (credential.oath_type === "HOTP")
+    property bool touchCredentialNoCode: touchCredential && (!code || !code.value)
+    property bool hotpCredential: (credential && credential.oath_type === "HOTP")
     property bool hotpCredentialInCoolDown
 
     property bool customPeriodCredentialNoTouch: (credential.period !== 30
                                                   && credential.oath_type === "TOTP"
                                                   && !touchCredential)
-    property bool touchCredential: credential.touch
+    property bool touchCredential: credential && credential.touch
 
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {

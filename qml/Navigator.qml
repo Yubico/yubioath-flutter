@@ -69,7 +69,7 @@ StackView {
     }
 
     function snackBar(message) {
-        var sb = snackBar.createObject(app, {
+        var sb = snackBarComponent.createObject(app, {
                                            message: message
                                        })
         sb.open()
@@ -146,7 +146,7 @@ StackView {
     }
 
     Component {
-        id: snackBar
+        id: snackBarComponent
         SnackBar {
         }
     }
