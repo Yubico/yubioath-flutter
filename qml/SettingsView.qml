@@ -60,36 +60,6 @@ Pane {
             }
         }
 
-        RowLayout {
-            visible: authenticatorModeCombobox.currentText == "CCID (Default)"
-
-            Label {
-                text: "Use custom reader"
-                Layout.fillWidth: true
-            }
-
-            CheckBox {
-                id: customReaderCheckbox
-            }
-        }
-
-        StyledComboBox {
-            visible: authenticatorModeCombobox.currentText == "CCID (Default)"
-            Layout.fillWidth: true
-            enabled: customReaderCheckbox.checked
-            model: ["Yubico Yubikey 4 U2F+CCID 00 00", "Alcor Micro AU9560 01 00", "HID Global OMNIKEY 5022 Smart Card Reader 02 00"]
-        }
-
-        RowLayout {
-            Label {
-                text: "2 remebered passwords"
-                Layout.fillWidth: true
-            }
-            StyledButton {
-                text: "Clear"
-                flat: true
-            }
-        }
 
         RowLayout {
             Label {
@@ -117,8 +87,8 @@ Pane {
         //TODO: all device settings should be disabled/hidden if no yubikey is available
         Label {
             text: qsTr("Settings for %1 (%2)").arg(
-                      yubiKey.availableDevices[0].name).arg(
-                      yubiKey.availableDevices[0].serial)
+                      yubiKey.currentDevice.name).arg(
+                      yubiKey.currentDevice.serial)
         }
         RowLayout {
             Label {

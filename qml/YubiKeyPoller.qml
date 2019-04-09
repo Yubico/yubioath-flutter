@@ -32,13 +32,14 @@ Timer {
                     if (oldDevices !== newDevices) {
                         // Something have changed, save the new devices
                         // and do a calculateAll, if there is still devices.
-                        // TODO: Which device should we pick if there is several?
                         yubiKey.availableDevices = resp.devices
-                        if (yubiKey.availableDevices.length > 0) {
+                        // For now we only show credentials if there is 1 device
+                        if (yubiKey.availableDevices.length === 1 ){
+                            yubiKey.currentDevice = resp.devices[0]
                             navigator.goToCredentials()
                             calculateAll()
                         } else {
-                            // All devices seem to have gone away, clear credentials.
+                            // No or too many devices, clear credentials.
                             navigator.goToNoYubiKeyView()
                             entries.clear()
                         }
@@ -46,12 +47,13 @@ Timer {
                 } else {
                     navigator.snackBarError(resp.error_id)
                     console.log("refresh failed:", resp.error_id)
+                    yubiKey.currentDevice = null
                     yubiKey.availableDevices = []
                     entries.clear()
                 }
             })
 
-            if (timeToCalculateAll() && yubiKey.availableDevices.length > 0
+            if (timeToCalculateAll() && yubiKey.currentDevice
                     && !yubiKey.locked) {
                 calculateAll()
             }
