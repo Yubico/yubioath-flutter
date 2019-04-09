@@ -76,7 +76,7 @@ StackView {
     }
 
     function snackBarError(message) {
-        var sbe = snackBarError.createObject(app, {
+        var sbe = snackBarErrorComponent.createObject(app, {
                                                  message: message
                                              })
         sbe.open()
@@ -152,7 +152,7 @@ StackView {
     }
 
     Component {
-        id: snackBarError
+        id: snackBarErrorComponent
         SnackBar {
             background: Rectangle {
                 color: app.yubicoRed
