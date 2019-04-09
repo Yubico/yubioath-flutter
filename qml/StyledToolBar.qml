@@ -6,9 +6,30 @@ import QtGraphicalEffects 1.0
 
 ToolBar {
     id: toolBar
+
     background: Rectangle {
+        id: rect
         color: isDark() ? defaultDark : defaultLight
         opacity: 0.9
+        anchors {
+            top: parent.top
+            topMargin: -1
+            left: parent.left
+            leftMargin: -1
+            right: parent.right
+            rightMargin: -1
+            bottom: parent.bottom
+            bottomMargin: 0
+        }
+    }
+    layer.enabled: true
+    layer.effect: DropShadow {
+        radius: 4
+        samples: radius * 2
+        verticalOffset: 3
+        source: toolBar
+        color: isDark() ? "#282828" : "#d3d3d3"
+        transparentBorder: true
     }
 
     function getToolbarColor(isActive) {
@@ -18,7 +39,7 @@ ToolBar {
             if (isDark()) {
                 return defaultDarkLighter
             } else {
-                return defaultLightDarker
+                return "#e7e7e7"
             }
         }
     }
@@ -62,7 +83,7 @@ ToolBar {
                 source: "../images/back.svg"
                 ColorOverlay {
                     source: backIcon
-                    color: isDark() ? yubicoWhite : yubicoGrey
+                    color: isDark() ? defaultLight : "#5f6368"
                     anchors.fill: backIcon
                 }
             }
@@ -77,7 +98,7 @@ ToolBar {
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
             Layout.fillWidth: true
-            color: isDark() ? yubicoWhite : yubicoGrey
+            color: isDark() ? defaultLight : "#5f6368"
         }
 
         ToolButton {
@@ -98,7 +119,7 @@ ToolBar {
 
                 id: searchField
                 visible: showSearch
-                Material.accent: isDark() ? yubicoWhite : yubicoGrey
+                Material.accent: isDark() ? defaultLight : "#5f6368"
                 selectByMouse: true
                 selectedTextColor: isDark() ? defaultDark : defaultLight
                 Layout.fillWidth: true
@@ -111,7 +132,7 @@ ToolBar {
                 width: parent.width
                 horizontalAlignment: Qt.AlignLeft
                 verticalAlignment: Qt.AlignVCenter
-                color: isDark() ? yubicoWhite : yubicoGrey
+                color: isDark() ? defaultLight : "#5f6368"
                 background: Rectangle {
                     color: getToolbarColor(searchField.focus)
                     height: 30
@@ -146,7 +167,7 @@ ToolBar {
                     source: "../images/search.svg"
                     ColorOverlay {
                         source: searchIcon
-                        color: isDark() ? yubicoWhite : yubicoGrey
+                        color: isDark() ? defaultLight : "#5f6368"
                         anchors.fill: searchIcon
                     }
                 }
@@ -182,7 +203,7 @@ ToolBar {
                     source: "../images/delete.svg"
                     ColorOverlay {
                         source: deleteIcon
-                        color: isDark() ? yubicoWhite : yubicoGrey
+                        color: isDark() ? defaultLight : "#5f6368"
                         anchors.fill: deleteIcon
                     }
                 }
@@ -214,7 +235,7 @@ ToolBar {
                     source: "../images/add.svg"
                     ColorOverlay {
                         source: addIcon
-                        color: isDark() ? yubicoWhite : yubicoGrey
+                        color: isDark() ? defaultLight : "#5f6368"
                         anchors.fill: addIcon
                     }
                 }
@@ -253,7 +274,7 @@ ToolBar {
                     source: "../images/cogwheel.svg"
                     ColorOverlay {
                         source: settingsIcon
-                        color: isDark() ? yubicoWhite : yubicoGrey
+                        color: isDark() ? defaultLight : "#5f6368"
                         anchors.fill: settingsIcon
                     }
                 }

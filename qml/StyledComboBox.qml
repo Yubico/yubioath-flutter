@@ -7,10 +7,8 @@ import QtGraphicalEffects 1.0
 ComboBox {
     id: control
     font.capitalization: Font.MixedCase
-    font.bold: false
-    font.pixelSize: 13
+    font.pixelSize: 14
     flat: true
-    implicitWidth: 100
     contentItem: Text {
         color: isDark() ? defaultDarkForeground : defaultLightForeground
         text: parent.displayText
