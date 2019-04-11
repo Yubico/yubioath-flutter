@@ -17,8 +17,10 @@ Pane {
     property var code
     property var credential
 
-    property bool touchCredentialNoCode: touchCredential && (!code || !code.value)
-    property bool hotpCredential: (credential && credential.oath_type === "HOTP")
+    property bool touchCredentialNoCode: touchCredential && (!code
+                                                             || !code.value)
+    property bool hotpCredential: (credential
+                                   && credential.oath_type === "HOTP")
     property bool hotpCredentialInCoolDown
 
     property bool customPeriodCredentialNoTouch: (credential.period !== 30
@@ -83,6 +85,9 @@ Pane {
         if (touchCredentialNoCode || (hotpCredential
                                       && !hotpCredentialInCoolDown)
                 || customPeriodCredentialNoTouch) {
+            if (touchCredential) {
+                navigator.snackBar("Touch your YubiKey!")
+            }
             yubiKey.calculate(credential, function (resp) {
                 if (resp.success) {
                     entries.updateEntry(resp)

@@ -150,7 +150,8 @@ ApplicationWindow {
     // See http://doc.qt.io/qt-5/qml-qt-labs-settings-settings.html#details
     Settings {
         id: settings
-        property bool slotMode
+
+        property bool otpMode
         property bool slot1
         property bool slot2
         property int slot1digits
@@ -171,6 +172,11 @@ ApplicationWindow {
 
         onCloseToTrayChanged: {
             updateTrayVisibility()
+        }
+
+        onOtpModeChanged: {
+            entries.clear()
+            yubiKeyPoller.nextCalculateAll = 0
         }
     }
 

@@ -22,8 +22,8 @@ Timer {
 
     function refresh() {
         if (app.isInForeground) {
-            // Polling to see what USB CCID devices we have.
-            yubiKey.refreshDevices(function (resp) {
+            // Polling to see what devices we have.
+            yubiKey.refreshDevices(settings.otpMode, function (resp) {
                 if (resp.success) {
                     // If the stringified list of devices is
                     // exactly the same, probably nothing changed.
@@ -34,10 +34,10 @@ Timer {
                         // and do a calculateAll, if there is still devices.
                         yubiKey.availableDevices = resp.devices
                         // For now we only show credentials if there is 1 device
-                        if (yubiKey.availableDevices.length === 1 ){
+                        if (yubiKey.availableDevices.length === 1) {
                             yubiKey.currentDevice = resp.devices[0]
                             navigator.goToCredentials()
-                            calculateAll()
+                            calculateAll(settings.otpMode)
                         } else {
                             // No or too many devices, clear credentials.
                             navigator.goToNoYubiKeyView()
@@ -45,7 +45,8 @@ Timer {
                         }
                     }
                 } else {
-                    navigator.snackBarError(resp.error_id)
+                    navigator.snackBarError(navigator.getErrorMessage(
+                                                resp.error_id))
                     console.log("refresh failed:", resp.error_id)
                     yubiKey.currentDevice = null
                     yubiKey.availableDevices = []
@@ -55,7 +56,7 @@ Timer {
 
             if (timeToCalculateAll() && yubiKey.currentDevice
                     && !yubiKey.locked) {
-                calculateAll()
+                calculateAll(settings.otpMode)
             }
         }
     }
@@ -74,27 +75,39 @@ Timer {
         })
     }
 
-    function calculateAll() {
-        yubiKey.calculateAll(function (resp) {
-            if (resp.success) {
-                // Sort the raw entries, because it's not obvious how to
-                // sort them when they are inside the ListModel.
-                var sortedEntries = sortEntries(resp.entries)
-                entries.updateEntries(sortedEntries)
+    function calculateAll(otpMode) {
 
-                updateNextCalculateAll()
-            } else {
-                if (resp.error_id === 'access_denied') {
-                    entries.clear()
-                    yubiKey.hasPassword = true
-                    yubiKey.locked = true
-                    navigator.goToEnterPassword()
+        if (otpMode) {
+            yubiKey.otpCalculateAll(function (resp) {
+                if (resp.success) {
+                    // No sorting needed, there can be maximum 2 slot entries.
+                    entries.updateEntries(resp.entries)
+                    updateNextCalculateAll()
                 } else {
-                    navigator.snackBarError(resp.error_id)
-                    console.log("calculateAll failed:", resp.error_id)
+                    console.log("otpCalculateAll failed:", resp.error_id)
                 }
-            }
-        })
+            })
+        } else {
+            yubiKey.calculateAll(function (resp) {
+                if (resp.success) {
+                    // Sort the raw entries, because it's not obvious how to
+                    // sort them when they are inside the ListModel.
+                    var sortedEntries = sortEntries(resp.entries)
+                    entries.updateEntries(resp.entries)
+                    updateNextCalculateAll()
+                } else {
+                    if (resp.error_id === 'access_denied') {
+                        entries.clear()
+                        yubiKey.hasPassword = true
+                        yubiKey.locked = true
+                        navigator.goToEnterPassword()
+                    } else {
+                        navigator.snackBarError(resp.error_id)
+                        console.log("calculateAll failed:", resp.error_id)
+                    }
+                }
+            })
+        }
     }
 
     function updateNextCalculateAll() {

@@ -32,6 +32,14 @@ Pane {
             StyledComboBox {
                 id: authenticatorModeCombobox
                 model: ["CCID (Default)", "OTP"]
+                currentIndex: settings.otpMode ? 1 : 0
+                onCurrentIndexChanged: {
+                    if (currentIndex === 1) {
+                        settings.otpMode = true
+                    } else {
+                        settings.otpMode = false
+                    }
+                }
             }
         }
 
@@ -59,7 +67,6 @@ Pane {
                 model: ["6", "7", "8"]
             }
         }
-
 
         RowLayout {
             Label {

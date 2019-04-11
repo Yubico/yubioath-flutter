@@ -47,38 +47,38 @@ StackView {
     function goToNewCredentialManual() {
         if (currentItem.objectName !== 'newCredentialView') {
             push(newCredentialView.createObject(app, {
-                                                    manualEntry: true
+                                                    "manualEntry": true
                                                 }), StackView.Immediate)
         }
     }
 
     function goToNewCredentialAuto(credential) {
         push(newCredentialView.createObject(app, {
-                                                credential: credential,
-                                                manualEntry: false
+                                                "credential": credential,
+                                                "manualEntry": false
                                             }), StackView.Immediate)
     }
 
     function confirm(heading, message, cb) {
         var popup = confirmationPopup.createObject(app, {
-                                                       heading: heading,
-                                                       message: message,
-                                                       acceptedCb: cb
+                                                       "heading": heading,
+                                                       "message": message,
+                                                       "acceptedCb": cb
                                                    })
         popup.open()
     }
 
     function snackBar(message) {
         var sb = snackBarComponent.createObject(app, {
-                                           message: message
-                                       })
+                                                    "message": message
+                                                })
         sb.open()
     }
 
     function snackBarError(message) {
         var sbe = snackBarErrorComponent.createObject(app, {
-                                                 message: message
-                                             })
+                                                          "message": message
+                                                      })
         sbe.open()
     }
 
@@ -92,6 +92,8 @@ StackView {
             return qsTr('Wrong password')
         case 'no_space':
             return qsTr('No space available on YubiKey')
+        case 'open_device_failed':
+            return qsTr('Failed to connect to YubiKey')
         default:
             return qsTr('Unknown error')
         }

@@ -2,7 +2,6 @@ import QtQuick 2.5
 import io.thp.pyotherside 1.4
 import "utils.js" as Utils
 
-
 // @disable-check M300
 Python {
     id: py
@@ -90,8 +89,8 @@ Python {
         })
     }
 
-    function refreshDevices(cb) {
-        doCall('yubikey.controller.refresh_devices', [], cb)
+    function refreshDevices(otpMode, cb) {
+        doCall('yubikey.controller.refresh_devices', [otpMode], cb)
     }
 
     function calculateAll(cb) {
@@ -104,6 +103,13 @@ Python {
         var nowAndMargin = Utils.getNow() + margin
         doCall('yubikey.controller.ccid_calculate',
                [credential, nowAndMargin], cb)
+    }
+
+    function otpCalculateAll(cb) {
+        var now = Utils.getNow()
+        // TODO: use settings here
+        doCall('yubikey.controller.otp_calculate_all',
+               [true, 6, false, 6, now], cb)
     }
 
     function addCredential(name, key, issuer, oathType, algo, digits, period, touch, cb) {

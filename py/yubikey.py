@@ -14,7 +14,8 @@ from ykman.driver_otp import YkpersError
 from ykman.driver_ccid import APDUError
 from ykman.oath import (
     ALGO, OATH_TYPE, OathController,
-    CredentialData, Credential, SW)
+    CredentialData, Credential, Code, SW)
+from ykman.otp import OtpController
 from ykman.settings import Settings
 from qr import qrparse, qrdecode
 
@@ -127,6 +128,17 @@ class OathContextManager(object):
         self._dev.close()
 
 
+class OtpContextManager(object):
+    def __init__(self, dev):
+        self._dev = dev
+
+    def __enter__(self):
+        return OtpController(self._dev.driver)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._dev.close()
+
+
 class Controller(object):
 
     _descs = []
@@ -150,6 +162,10 @@ class Controller(object):
         return OathContextManager(
             self._current_desc.open_device(TRANSPORT.CCID))
 
+    def _open_otp(self):
+        return OtpContextManager(
+            self._current_desc.open_device(TRANSPORT.OTP))
+
     def _update_desc_fps(self):
         descs = get_descriptors()
         self._descs = descs
@@ -157,14 +173,14 @@ class Controller(object):
         # TODO: Don't always select the first descriptor, be smarter.
         self._current_desc = descs[0] if descs else None
 
-    def refresh_devices(self):
+    def refresh_devices(self, otp_mode=False):
         old_desc_fps = self._desc_fps
         self._update_desc_fps()
         descs_changed = (old_desc_fps != self._desc_fps)
         if descs_changed:
             self._devices = []
             for desc in self._descs:
-                dev = desc.open_device(TRANSPORT.CCID)
+                dev = desc.open_device(TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
                 self._devices.append({
                     'name': dev.device_name,
                     'version': dev.version,
@@ -232,6 +248,27 @@ class Controller(object):
             except APDUError as e:
                 if e.sw == SW.INCORRECT_PARAMETERS:
                     return failure('validate_failed')
+
+    def otp_calculate_all(self, slot1_in_use, slot1_digits, slot2_in_use, slot2_digits, timestamp):
+        valid_from = timestamp - (timestamp % 30)
+        valid_to = valid_from + 30
+        with self._open_otp() as otp_controller:
+            entries = []
+
+            if slot1_in_use:
+                code = otp_controller.calculate(1, challenge=timestamp, totp=True, digits=int(slot1_digits))
+                entries.append({
+                    'credential': cred_to_dict(Credential(str("Slot 1").encode('utf-8'), OATH_TYPE.TOTP, False)),
+                    'code': code_to_dict(Code(code, valid_from, valid_to))
+                })
+
+            if slot2_in_use:
+                code = otp_controller.calculate(1, challenge=timestamp, totp=True, digits=int(slot2_digits))
+                entries.append({
+                    'credential': cred_to_dict(Credential(str("Slot 2").encode('utf-8'), OATH_TYPE.TOTP, False)),
+                    'code': code_to_dict(Code(code, valid_from, valid_to))
+                })
+            return success({'entries': entries})
 
     def _unlock(self, controller):
         if controller.locked:
