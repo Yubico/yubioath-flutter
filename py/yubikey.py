@@ -249,26 +249,36 @@ class Controller(object):
                 if e.sw == SW.INCORRECT_PARAMETERS:
                     return failure('validate_failed')
 
+    def _otp_get_code_or_touch(self, slot, digits, timestamp):
+        code = None
+        touch = False
+        with self._open_otp() as otp_controller:
+            try:
+                code = otp_controller.calculate(slot, challenge=timestamp, totp=True, digits=int(digits), wait_for_touch=False)
+            except YkpersError as e:
+                if e.errno == 11: # Operation would block, touch credential
+                    touch = True
+                else:
+                    raise
+            return code, touch
+
     def otp_calculate_all(self, slot1_in_use, slot1_digits, slot2_in_use, slot2_digits, timestamp):
         valid_from = timestamp - (timestamp % 30)
         valid_to = valid_from + 30
-        with self._open_otp() as otp_controller:
-            entries = []
-
-            if slot1_in_use:
-                code = otp_controller.calculate(1, challenge=timestamp, totp=True, digits=int(slot1_digits))
-                entries.append({
-                    'credential': cred_to_dict(Credential(str("Slot 1").encode('utf-8'), OATH_TYPE.TOTP, False)),
-                    'code': code_to_dict(Code(code, valid_from, valid_to))
-                })
-
-            if slot2_in_use:
-                code = otp_controller.calculate(2   , challenge=timestamp, totp=True, digits=int(slot2_digits))
-                entries.append({
-                    'credential': cred_to_dict(Credential(str("Slot 2").encode('utf-8'), OATH_TYPE.TOTP, False)),
-                    'code': code_to_dict(Code(code, valid_from, valid_to))
-                })
-            return success({'entries': entries})
+        entries = []
+        if slot1_in_use:
+            code, touch = self._otp_get_code_or_touch(1, slot1_digits, timestamp)
+            entries.append({
+                'credential': cred_to_dict(Credential(str("Slot 1").encode('utf-8'), OATH_TYPE.TOTP, touch)),
+                'code': code_to_dict(Code(code, valid_from, valid_to)) if code else None
+            })
+        if slot2_in_use:
+            code, touch = self._otp_get_code_or_touch(2, slot2_digits, timestamp)
+            entries.append({
+                'credential': cred_to_dict(Credential(str("Slot 2").encode('utf-8'), OATH_TYPE.TOTP, touch)),
+                'code': code_to_dict(Code(code, valid_from, valid_to)) if code else None
+            })
+        return success({'entries': entries})
 
     def _unlock(self, controller):
         if controller.locked:
