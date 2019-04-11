@@ -263,7 +263,7 @@ class Controller(object):
                 })
 
             if slot2_in_use:
-                code = otp_controller.calculate(1, challenge=timestamp, totp=True, digits=int(slot2_digits))
+                code = otp_controller.calculate(2   , challenge=timestamp, totp=True, digits=int(slot2_digits))
                 entries.append({
                     'credential': cred_to_dict(Credential(str("Slot 2").encode('utf-8'), OATH_TYPE.TOTP, False)),
                     'code': code_to_dict(Code(code, valid_from, valid_to))

@@ -107,9 +107,9 @@ Python {
 
     function otpCalculateAll(cb) {
         var now = Utils.getNow()
-        // TODO: use settings here
         doCall('yubikey.controller.otp_calculate_all',
-               [true, 6, false, 6, now], cb)
+               [settings.slot1inUse, settings.slot1digits, settings.slot2inUse, settings.slot2digits, now],
+               cb)
     }
 
     function addCredential(name, key, issuer, oathType, algo, digits, period, touch, cb) {

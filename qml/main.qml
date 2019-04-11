@@ -152,8 +152,8 @@ ApplicationWindow {
         id: settings
 
         property bool otpMode
-        property bool slot1
-        property bool slot2
+        property bool slot1inUse
+        property bool slot2inUse
         property int slot1digits
         property int slot2digits
 
@@ -170,11 +170,15 @@ ApplicationWindow {
         property int desktopAvailableWidth
         property int desktopAvailableHeight
 
-        onCloseToTrayChanged: {
-            updateTrayVisibility()
-        }
+        onCloseToTrayChanged: updateTrayVisibility()
 
-        onOtpModeChanged: {
+        onOtpModeChanged: clearEntriesAndCalculateAll()
+        onSlot1inUseChanged: clearEntriesAndCalculateAll()
+        onSlot1digitsChanged: clearEntriesAndCalculateAll()
+        onSlot2inUseChanged: clearEntriesAndCalculateAll()
+        onSlot2digitsChanged: clearEntriesAndCalculateAll()
+
+        function clearEntriesAndCalculateAll() {
             entries.clear()
             yubiKeyPoller.nextCalculateAll = 0
         }

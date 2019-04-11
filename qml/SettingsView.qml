@@ -49,10 +49,27 @@ Pane {
                 id: slot1CheckBox
                 text: "Slot 1"
                 Layout.fillWidth: true
+                checked: settings.slot1inUse
+                onCheckedChanged: settings.slot1inUse = checked
             }
             StyledComboBox {
                 enabled: slot1CheckBox.checked
-                model: ["6", "7", "8"]
+                model: [6, 7, 8]
+                currentIndex: {
+
+                    if (settings.slot1digits === 6) {
+                        return 0
+                    }
+
+                    if (settings.slot1digits === 7) {
+                        return 1
+                    }
+
+                    if (settings.slot1digits === 8) {
+                        return 2
+                    }
+                }
+                onCurrentTextChanged: settings.slot1digits = currentText
             }
         }
         RowLayout {
@@ -61,10 +78,27 @@ Pane {
                 id: slot2CheckBox
                 text: "Slot 2"
                 Layout.fillWidth: true
+                checked: settings.slot2inUse
+                onCheckedChanged: settings.slot2inUse = checked
             }
             StyledComboBox {
                 enabled: slot2CheckBox.checked
-                model: ["6", "7", "8"]
+                model: [6, 7, 8]
+                currentIndex: {
+
+                    if (settings.slot2digits === 6) {
+                        return 0
+                    }
+
+                    if (settings.slot2digits === 7) {
+                        return 1
+                    }
+
+                    if (settings.slot2digits === 8) {
+                        return 2
+                    }
+                }
+                onCurrentTextChanged: settings.slot2digits = currentText
             }
         }
 
