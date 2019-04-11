@@ -180,7 +180,8 @@ class Controller(object):
         if descs_changed:
             self._devices = []
             for desc in self._descs:
-                dev = desc.open_device(TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
+                dev = desc.open_device(
+                    TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
                 self._devices.append({
                     'name': dev.device_name,
                     'version': dev.version,
@@ -254,29 +255,39 @@ class Controller(object):
         touch = False
         with self._open_otp() as otp_controller:
             try:
-                code = otp_controller.calculate(slot, challenge=timestamp, totp=True, digits=int(digits), wait_for_touch=False)
+                code = otp_controller.calculate(
+                    slot, challenge=timestamp, totp=True,
+                    digits=int(digits), wait_for_touch=False)
             except YkpersError as e:
-                if e.errno == 11: # Operation would block, touch credential
+                if e.errno == 11:  # Operation would block, touch credential
                     touch = True
                 else:
                     raise
             return code, touch
 
-    def otp_calculate_all(self, slot1_in_use, slot1_digits, slot2_in_use, slot2_digits, timestamp):
+    def otp_calculate_all(
+            self, slot1_in_use, slot1_digits,
+            slot2_in_use, slot2_digits, timestamp):
         valid_from = timestamp - (timestamp % 30)
         valid_to = valid_from + 30
         entries = []
         if slot1_in_use:
-            code, touch = self._otp_get_code_or_touch(1, slot1_digits, timestamp)
+            code, touch = self._otp_get_code_or_touch(
+                1, slot1_digits, timestamp)
             entries.append({
-                'credential': cred_to_dict(Credential(str("Slot 1").encode('utf-8'), OATH_TYPE.TOTP, touch)),
-                'code': code_to_dict(Code(code, valid_from, valid_to)) if code else None
+                'credential': cred_to_dict(
+                    Credential("Slot 1".encode(), OATH_TYPE.TOTP, touch)),
+                'code': code_to_dict(
+                    Code(code, valid_from, valid_to)) if code else None
             })
         if slot2_in_use:
-            code, touch = self._otp_get_code_or_touch(2, slot2_digits, timestamp)
+            code, touch = self._otp_get_code_or_touch(
+                2, slot2_digits, timestamp)
             entries.append({
-                'credential': cred_to_dict(Credential(str("Slot 2").encode('utf-8'), OATH_TYPE.TOTP, touch)),
-                'code': code_to_dict(Code(code, valid_from, valid_to)) if code else None
+                'credential': cred_to_dict(
+                    Credential("Slot 2".encode(), OATH_TYPE.TOTP, touch)),
+                'code': code_to_dict(
+                    Code(code, valid_from, valid_to)) if code else None
             })
         return success({'entries': entries})
 
@@ -284,7 +295,9 @@ class Controller(object):
         valid_from = timestamp - (timestamp % 30)
         valid_to = valid_from + 30
         with self._open_otp() as otp_controller:
-            code = otp_controller.calculate(slot, challenge=timestamp, totp=True, digits=int(digits), wait_for_touch=True)
+            code = otp_controller.calculate(
+                slot, challenge=timestamp, totp=True,
+                digits=int(digits), wait_for_touch=True)
             return success({
                 'credential': credential,
                 'code': code_to_dict(Code(code, valid_from, valid_to))
