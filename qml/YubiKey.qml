@@ -105,6 +105,15 @@ Python {
                [credential, nowAndMargin], cb)
     }
 
+    function otpCalculate(credential, cb) {
+        var margin = credential.touch ? 10 : 0
+        var nowAndMargin = Utils.getNow() + margin
+        var slot = (credential.key === "Slot 1") ? 1 : 2
+        var digits = (slot === 1) ? settings.slot1digits : settings.slot2digits
+        doCall('yubikey.controller.otp_calculate',
+               [slot, digits, credential, nowAndMargin], cb)
+    }
+
     function otpCalculateAll(cb) {
         var now = Utils.getNow()
         doCall('yubikey.controller.otp_calculate_all',

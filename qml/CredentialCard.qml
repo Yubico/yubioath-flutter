@@ -88,20 +88,34 @@ Pane {
             if (touchCredential) {
                 navigator.snackBar("Touch your YubiKey!")
             }
-            yubiKey.calculate(credential, function (resp) {
-                if (resp.success) {
-                    entries.updateEntry(resp)
-                    if (copy) {
-                        copyCode(resp.code.value)
+            if (settings.otpMode) {
+                yubiKey.otpCalculate(credential, function (resp) {
+                    if (resp.success) {
+                        entries.updateEntry(resp)
+                        if (copy) {
+                            copyCode(resp.code.value)
+                        }
+                    } else {
+                        navigator.snackBarError(resp.error_id)
+                        console.log(resp.error_id)
                     }
-                    if (hotpCredential) {
-                        coolDownHotpCredential()
+                })
+            } else {
+                yubiKey.calculate(credential, function (resp) {
+                    if (resp.success) {
+                        entries.updateEntry(resp)
+                        if (copy) {
+                            copyCode(resp.code.value)
+                        }
+                        if (hotpCredential) {
+                            coolDownHotpCredential()
+                        }
+                    } else {
+                        navigator.snackBarError(resp.error_id)
+                        console.log(resp.error_id)
                     }
-                } else {
-                    navigator.snackBarError(resp.error_id)
-                    console.log(resp.error_id)
-                }
-            })
+                })
+            }
         } else {
             copyCode(code.value)
         }

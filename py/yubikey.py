@@ -280,6 +280,16 @@ class Controller(object):
             })
         return success({'entries': entries})
 
+    def otp_calculate(self, slot, digits, credential, timestamp):
+        valid_from = timestamp - (timestamp % 30)
+        valid_to = valid_from + 30
+        with self._open_otp() as otp_controller:
+            code = otp_controller.calculate(slot, challenge=timestamp, totp=True, digits=int(digits), wait_for_touch=True)
+            return success({
+                'credential': credential,
+                'code': code_to_dict(Code(code, valid_from, valid_to))
+            })
+
     def _unlock(self, controller):
         if controller.locked:
             keys = self.settings.get('keys', {})
