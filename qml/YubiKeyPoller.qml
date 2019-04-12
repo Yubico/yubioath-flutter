@@ -84,6 +84,8 @@ Timer {
                     entries.updateEntries(resp.entries)
                     updateNextCalculateAll()
                 } else {
+                    navigator.snackBarError(navigator.getErrorMessage(
+                                                resp.error_id))
                     console.log("otpCalculateAll failed:", resp.error_id)
                 }
             })
@@ -102,7 +104,8 @@ Timer {
                         yubiKey.locked = true
                         navigator.goToEnterPassword()
                     } else {
-                        navigator.snackBarError(resp.error_id)
+                        navigator.snackBarError(navigator.getErrorMessage(
+                                                    resp.error_id))
                         console.log("calculateAll failed:", resp.error_id)
                     }
                 }

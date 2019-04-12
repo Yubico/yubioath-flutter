@@ -94,6 +94,8 @@ StackView {
             return qsTr('No space available on YubiKey')
         case 'open_device_failed':
             return qsTr('Failed to connect to YubiKey')
+        case 'timeout':
+            return qsTr('Failed to read from slots')
         default:
             return qsTr('Unknown error')
         }
