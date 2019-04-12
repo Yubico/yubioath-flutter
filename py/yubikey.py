@@ -303,6 +303,11 @@ class Controller(object):
                 'code': code_to_dict(Code(code, valid_from, valid_to))
             })
 
+    def otp_delete_credential(self, slot):
+        with self._open_otp() as otp_controller:
+            otp_controller.zap_slot(slot)
+        return success()
+
     def _unlock(self, controller):
         if controller.locked:
             keys = self.settings.get('keys', {})

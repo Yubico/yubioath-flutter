@@ -121,6 +121,11 @@ Python {
                cb)
     }
 
+    function otpDeleteCredential(credential, cb) {
+        var slot = (credential.key === "Slot 1") ? 1 : 2
+        doCall('yubikey.controller.otp_delete_credential', [slot], cb)
+    }
+
     function addCredential(name, key, issuer, oathType, algo, digits, period, touch, cb) {
         doCall('yubikey.controller.ccid_add_credential',
                [name, key, issuer, oathType, algo, digits, period, touch], cb)
@@ -132,10 +137,6 @@ Python {
 
     function deleteCredential(credential, cb) {
         doCall('yubikey.controller.ccid_delete_credential', [credential], cb)
-    }
-
-    function deleteSlotCredential(slot) {
-        doCall('yubikey.controller.delete_slot_credential', [slot])
     }
 
     function parseQr(screenShots, cb) {

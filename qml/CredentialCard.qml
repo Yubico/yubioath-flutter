@@ -126,15 +126,27 @@ Pane {
     }
 
     function deleteCard() {
-        yubiKey.deleteCredential(credential, function (resp) {
-            if (resp.success) {
-                entries.deleteEntry(credential.key)
-                navigator.snackBar("Credential was deleted")
-            } else {
-                navigator.snackBarError(resp.error_id)
-                console.log(resp.error_id)
-            }
-        })
+        if (settings.otpMode) {
+            yubiKey.otpDeleteCredential(credential, function (resp) {
+                if (resp.success) {
+                    entries.deleteEntry(credential.key)
+                    navigator.snackBar("Credential was deleted")
+                } else {
+                    navigator.snackBarError(resp.error_id)
+                    console.log(resp.error_id)
+                }
+            })
+        } else {
+            yubiKey.deleteCredential(credential, function (resp) {
+                if (resp.success) {
+                    entries.deleteEntry(credential.key)
+                    navigator.snackBar("Credential was deleted")
+                } else {
+                    navigator.snackBarError(resp.error_id)
+                    console.log(resp.error_id)
+                }
+            })
+        }
     }
 
     function getCodeLblValue() {
