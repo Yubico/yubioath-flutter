@@ -140,6 +140,7 @@ Pane {
             yubiKey.deleteCredential(credential, function (resp) {
                 if (resp.success) {
                     entries.deleteEntry(credential.key)
+                    yubiKeyPoller.updateNextCalculateAll()
                     navigator.snackBar("Credential was deleted")
                 } else {
                     navigator.snackBarError(resp.error_id)

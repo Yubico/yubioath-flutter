@@ -63,6 +63,7 @@ Pane {
 
     GridView {
         id: grid
+
         onCurrentItemChanged: app.currentCredentialCard = currentItem
         visible: entries.count > 0
         ScrollBar.vertical: ScrollBar {

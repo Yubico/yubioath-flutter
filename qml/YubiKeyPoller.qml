@@ -14,12 +14,6 @@ Timer {
     running: app.visible
     onTriggered: refresh()
 
-    function isExpired(entry) {
-        return entry !== null && entry.code
-                && (entry.credential.oath_type !== "HOTP")
-                && (entry.code.valid_to - (Date.now() / 1000) <= 0)
-    }
-
     function refresh() {
         if (app.isInForeground) {
             // Polling to see what devices we have.
@@ -114,16 +108,16 @@ Timer {
     }
 
     function updateNextCalculateAll() {
-        // Next calculateAll should be when one a default TOTP cred expires.
+        // Next calculateAll should be when a default TOTP cred expires.
         for (var i = 0; i < entries.count; i++) {
             var entry = entries.get(i)
-            if (entry.code && entry.code.valid_to > nextCalculateAll
-                    && entry.credential.period === 30) {
+            if (entry.code && entry.credential.period === 30) {
+                // Just use the first default one
                 nextCalculateAll = entry.code.valid_to
                 return
             }
         }
-        // No default TOTP credd found, don't set a time for nextCalculateAll
+        // No default TOTP cred found, don't set a time for nextCalculateAll
         nextCalculateAll = -1
     }
 
