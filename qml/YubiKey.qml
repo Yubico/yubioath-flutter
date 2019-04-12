@@ -126,6 +126,10 @@ Python {
         doCall('yubikey.controller.otp_delete_credential', [slot], cb)
     }
 
+    function otpAddCredential(slot, key, touch, cb) {
+        doCall('yubikey.controller.otp_add_credential', [slot, key, touch], cb)
+    }
+
     function addCredential(name, key, issuer, oathType, algo, digits, period, touch, cb) {
         doCall('yubikey.controller.ccid_add_credential',
                [name, key, issuer, oathType, algo, digits, period, touch], cb)

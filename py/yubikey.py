@@ -303,6 +303,12 @@ class Controller(object):
                 'code': code_to_dict(Code(code, valid_from, valid_to))
             })
 
+    def otp_add_credential(self, slot, key, touch):
+        key = parse_b32_key(key)
+        with self._open_otp() as otp_controller:
+            otp_controller.program_chalresp(int(slot), key, touch)
+        return success()
+
     def otp_delete_credential(self, slot):
         with self._open_otp() as otp_controller:
             otp_controller.zap_slot(slot)

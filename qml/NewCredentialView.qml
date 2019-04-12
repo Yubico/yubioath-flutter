@@ -18,32 +18,65 @@ Pane {
     anchors.fill: parent
 
     function acceptableInput() {
-        var nameAndKey = nameLbl.text.length > 0 && secretKeyLbl.text.length > 0
-        var okTotalLength = (nameLbl.text.length + issuerLbl.text.length) < 60
-        return nameAndKey && okTotalLength
+        if (settings.otpMode) {
+            return secretKeyLbl.text.length > 0
+            // TODO: check maxlength of secret, 20 bytes?
+        } else {
+            var nameAndKey = nameLbl.text.length > 0
+                    && secretKeyLbl.text.length > 0
+            var okTotalLength = (nameLbl.text.length + issuerLbl.text.length) < 60
+            return nameAndKey && okTotalLength
+        }
     }
 
     function addCredential() {
-        yubiKey.addCredential(nameLbl.text, secretKeyLbl.text, issuerLbl.text,
-                              oathTypeComboBox.currentText,
-                              algoComboBox.currentText,
-                              digitsComboBox.currentText, periodLbl.text,
-                              requireTouchCheckBox.checked, function (resp) {
-                                  if (resp.success) {
-                                      // TODO: This should be a callback or similar,
-                                      // so that the view changes after the entries
-                                      // are refreshed.
-                                      yubiKeyPoller.calculateAll()
-                                      navigator.goToCredentials()
-                                      navigator.snackBar("Credential added")
-                                  } else {
-                                      navigator.snackBarError(
-                                                  navigator.getErrorMessage(
-                                                      resp.error_id))
-                                      console.log("addCredential failed:",
-                                                  resp.error_id)
-                                  }
-                              })
+        if (settings.otpMode) {
+            yubiKey.otpAddCredential(otpSlotComboBox.currentText,
+                                     secretKeyLbl.text,
+                                     requireTouchCheckBox.checked,
+                                     function (resp) {
+                                         if (resp.success) {
+                                             // TODO: This should be a callback or similar,
+                                             // so that the view changes after the entries
+                                             // are refreshed.
+                                             yubiKeyPoller.calculateAll(
+                                                         settings.otpMode)
+                                             navigator.goToCredentials()
+                                             navigator.snackBar(
+                                                         "Credential added")
+                                         } else {
+                                             navigator.snackBarError(
+                                                         navigator.getErrorMessage(
+                                                             resp.error_id))
+                                             console.log("otpAddCredential failed:",
+                                                         resp.error_id)
+                                         }
+                                     })
+        } else {
+
+            yubiKey.addCredential(nameLbl.text, secretKeyLbl.text,
+                                  issuerLbl.text, oathTypeComboBox.currentText,
+                                  algoComboBox.currentText,
+                                  digitsComboBox.currentText, periodLbl.text,
+                                  requireTouchCheckBox.checked,
+                                  function (resp) {
+                                      if (resp.success) {
+                                          // TODO: This should be a callback or similar,
+                                          // so that the view changes after the entries
+                                          // are refreshed.
+                                          yubiKeyPoller.calculateAll(
+                                                      settings.otpMode)
+                                          navigator.goToCredentials()
+                                          navigator.snackBar("Credential added")
+                                      } else {
+                                          navigator.snackBarError(
+                                                      navigator.getErrorMessage(
+                                                          resp.error_id))
+                                          console.log("addCredential failed:",
+                                                      resp.error_id)
+                                      }
+                                  })
+        }
     }
 
     Pane {
@@ -77,6 +110,7 @@ Pane {
                                        ) ? defaultLightForeground : defaultDarkForeground
                 Material.accent: isDark(
                                      ) ? defaultDarkForeground : defaultLightForeground
+                visible: !settings.otpMode
             }
             TextField {
                 id: nameLbl
@@ -88,6 +122,7 @@ Pane {
                                        ) ? defaultLightForeground : defaultDarkForeground
                 Material.accent: isDark(
                                      ) ? defaultDarkForeground : defaultLightForeground
+                visible: !settings.otpMode
             }
             TextField {
                 id: secretKeyLbl
@@ -114,6 +149,20 @@ Pane {
                     id: requireTouchCheckBox
                     //text: "Require touch"
                 }
+                visible: true // TODO: Invisible for NEO in CCID mode
+            }
+            RowLayout {
+                Layout.fillWidth: true
+
+                Label {
+                    text: "Slot"
+                    Layout.fillWidth: true
+                }
+                StyledComboBox {
+                    id: otpSlotComboBox
+                    model: [1, 2]
+                }
+                visible: settings.otpMode
             }
 
             RowLayout {
@@ -127,7 +176,7 @@ Pane {
                     id: oathTypeComboBox
                     model: ["TOTP", "HOTP"]
                 }
-                visible: manualEntry && showAdvanced
+                visible: manualEntry && showAdvanced && !settings.otpMode
             }
             RowLayout {
                 Label {
@@ -138,7 +187,7 @@ Pane {
                     id: digitsComboBox
                     model: ["6", "7", "8"]
                 }
-                visible: manualEntry && showAdvanced
+                visible: manualEntry && showAdvanced && !settings.otpMode
             }
             RowLayout {
                 Layout.fillWidth: true
@@ -151,7 +200,7 @@ Pane {
                     id: algoComboBox
                     model: ["SHA1", "SHA256", "SHA512"]
                 }
-                visible: manualEntry && showAdvanced
+                visible: manualEntry && showAdvanced && !settings.otpMode
             }
 
             RowLayout {
@@ -174,7 +223,7 @@ Pane {
                     }
                     selectByMouse: true
                 }
-                visible: manualEntry && showAdvanced
+                visible: manualEntry && showAdvanced && !settings.otpMode
             }
             RowLayout {
                 ToolButton {
@@ -209,7 +258,7 @@ Pane {
                     verticalAlignment: Qt.AlignVCenter
                     Layout.fillWidth: true
                 }
-                visible: manualEntry
+                visible: manualEntry && !settings.otpMode
             }
 
             StyledButton {
