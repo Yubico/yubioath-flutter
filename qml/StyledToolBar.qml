@@ -221,8 +221,7 @@ ToolBar {
                 ToolTip.text: "Add a new credential"
                 ToolTip.delay: 1000
                 ToolTip.visible: hovered
-
-                //enabled: !navigator.isAtNewCredential()
+                //enabled: TODO: when visible?
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor

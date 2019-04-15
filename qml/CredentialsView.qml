@@ -11,9 +11,11 @@ Pane {
     Material.background: isNoCredentials()
 
     property string title: ""
+    Component {
+        id: entriesComponent
 
-    EntriesModel {
-        id: filteredEntries
+        EntriesModel {
+        }
     }
 
     function isNoCredentials() {
@@ -25,8 +27,10 @@ Pane {
     }
 
     function filteredCredentials() {
-        filteredEntries.clear()
         if (entries !== null && toolBar.searchField.text.length > 0) {
+            var filteredEntries = entriesComponent.createObject(app, {
+
+                                                                })
             for (var i = 0; i < entries.count; i++) {
                 var entry = entries.get(i)
                 if (entry.credential.key.toLowerCase().indexOf(
@@ -34,9 +38,9 @@ Pane {
                     filteredEntries.append(entry)
                 }
             }
-            return true
+            return filteredEntries
         }
-        return false
+        return entries
     }
 
     ColumnLayout {
@@ -96,7 +100,7 @@ Pane {
         flickableDirection: Flickable.VerticalFlick
         interactive: true
         anchors.fill: parent
-        model: filteredCredentials() ? filteredEntries : entries
+        model: filteredCredentials()
         cellWidth: 362
         cellHeight: 82
         delegate: CredentialCard {

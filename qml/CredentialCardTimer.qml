@@ -4,7 +4,6 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import "utils.js" as Utils
 
-
 // Heavily based on http://www.bytebau.com/progress-circle-with-qml-and-javascript/
 Item {
 
@@ -17,7 +16,7 @@ Item {
         repeat: true
         running: validTo > 0
         triggeredOnStart: true
-        interval: 250
+        interval: 1000
         onTriggered: {
             var timeLeft = validTo - Utils.getNow()
             var currentValue = timeLeft * (360 / period)
