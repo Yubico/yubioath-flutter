@@ -7,12 +7,13 @@ import QtGraphicalEffects 1.0
 ToolTip {
 
     property string message: "Default message"
-    property string button: "Dismiss"
+    property string buttonText: "Dismiss"
+    property string buttonColor: yubicoGreen
 
     timeout: 5000
     x: (app.width - width) / 2
     y: app.height
-    width: snackLbl.implicitWidth + 80 + snackBtn.implicitWidth
+    width: 300
     height: 48
     bottomMargin: 10
     padding: 0
@@ -41,7 +42,8 @@ ToolTip {
         StyledButton {
             id: snackBtn
             flat: true
-            text: button
+            text: buttonText
+            Material.foreground: buttonColor
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 0

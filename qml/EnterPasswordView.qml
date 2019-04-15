@@ -8,7 +8,7 @@ Pane {
     id: pane
     objectName: 'enterPasswordView'
     background: Rectangle {
-        color: "#383838"
+        color: isDark() ? defaultDarkLighter : Material.background
     }
     padding: 50
 
@@ -103,7 +103,7 @@ Pane {
                     anchors.left: parent.left
                     anchors.leftMargin: 1
                 }
-                Button {
+                StyledButton {
                     highlighted: true
                     text: "Unlock"
                     anchors.right: parent.right

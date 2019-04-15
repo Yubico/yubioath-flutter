@@ -153,10 +153,8 @@ Pane {
     function getCodeLblValue() {
         if (code && code.value && code.valid_to > Utils.getNow()) {
             return formattedCode(code.value)
-        } else if (touchCredential) {
-            return "Requires touch"
-        } else if (!touchCredential && hotpCredential) {
-            return "HOTP Credential"
+        } else if (touchCredential || hotpCredential) {
+            return "*** ***"
         } else {
             return ""
         }
@@ -195,7 +193,7 @@ Pane {
             Label {
                 id: codLbl
                 font.pixelSize: 24
-                color: code && code.value ? yubicoGreen : yubicoGrey
+                color: yubicoGreen
                 text: getCodeLblValue()
             }
             Label {

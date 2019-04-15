@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 Button {
     id: button
-    font.capitalization: Font.AllUppercase
+    font.capitalization: Font.MixedCase
     font.styleName: "Medium"
     font.pixelSize: 14
     Material.foreground: button.flat ? yubicoGreen : yubicoWhite
