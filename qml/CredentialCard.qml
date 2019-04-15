@@ -78,7 +78,7 @@ Pane {
 
     function copyCode(code) {
         clipBoard.push(code)
-        navigator.snackBar("Code copied to clipboard!")
+        navigator.snackBar("Code copied!")
     }
 
     function calculateCard(copy) {

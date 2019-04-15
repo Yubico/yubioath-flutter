@@ -14,8 +14,8 @@ ListModel {
 
     function updateEntries(entries) {
         // Update new ones
-        for (var j = 0; j < entries.length; j++) {
-            updateEntry(entries[j])
+        for (var i = 0; i < entries.length; i++) {
+            updateEntry(entries[i])
         }
         // TODO: clear out deleted ones ?
     }

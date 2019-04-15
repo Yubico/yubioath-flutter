@@ -92,20 +92,8 @@ Pane {
                 focus: true
             }
             Item {
-                id: item1
                 Layout.fillHeight: false
                 Layout.fillWidth: true
-
-
-                /*
-                CheckBox {
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                    id: rememberPasswordCheckBox
-                    text: "Remember password"
-                    font.pixelSize: 12
-                    anchors.left: parent.left
-                    anchors.leftMargin: 1
-                }*/
                 StyledButton {
                     flat: true
                     text: "Cancel"

@@ -46,7 +46,7 @@ Python {
     onYubikeyReadyChanged: runQueue()
 
     function isPythonReady(funcName) {
-        if (Utils.startsWith(funcName, "yubikey.init")) {
+        if (funcName.startsWith("yubikey.init")) {
             return yubikeyModuleLoaded
         } else {
             return yubikeyReady

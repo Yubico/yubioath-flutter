@@ -8,17 +8,11 @@ Pane {
     padding: entries.count === 0 ? 50 : 0
     topPadding: entries.count === 0 ? 50 : 16
     objectName: 'credentialsView'
-    Material.background: isNoCredentials()
+    Material.background: getBackgroundColor()
 
     property string title: ""
-    Component {
-        id: entriesComponent
 
-        EntriesModel {
-        }
-    }
-
-    function isNoCredentials() {
+    function getBackgroundColor() {
         if (isDark()) {
             return entries.count === 0 ? defaultDarkLighter : defaultDark
         } else {
@@ -41,6 +35,13 @@ Pane {
             return filteredEntries
         }
         return entries
+    }
+
+    Component {
+        id: entriesComponent
+
+        EntriesModel {
+        }
     }
 
     ColumnLayout {
