@@ -8,7 +8,6 @@ ToolBar {
     id: toolBar
 
     background: Rectangle {
-        id: rect
         color: isDark() ? defaultDark : defaultLight
         opacity: 0.9
         anchors {
@@ -46,16 +45,33 @@ ToolBar {
 
     property bool showSearch: shouldShowSearch()
     property bool showBackBtn: navigator.depth > 1
-    property bool showAddCredentialBtn: true // TODO: should be shown when there is a yubikey and authenticated
-    property bool showSettingsBtn: true
+    property bool showAddCredentialBtn: shouldShowAddCredential()
+    property bool showSettingsBtn: shouldShowSettings()
     property bool showTitleLbl: navigator.currentItem
                                 && navigator.currentItem.title
+
     property alias searchField: searchField
 
     function shouldShowSearch() {
-        return navigator.currentItem
-                && navigator.currentItem.objectName == 'credentialsView'
-                && entries.count > 0
+        return !!(navigator.currentItem
+                  && navigator.currentItem.objectName === 'credentialsView'
+                  && entries.count > 0 && !settings.otpMode)
+    }
+
+    function shouldShowAddCredential() {
+        return !!(yubiKey.currentDevice && !yubiKey.locked
+                  && navigator.currentItem
+                  && navigator.currentItem.objectName === 'credentialsView')
+    }
+
+    function shouldShowSettings() {
+        return !!(navigator.currentItem
+                  && navigator.currentItem.objectName !== 'settingsView')
+    }
+
+    function shouldShowCredentialOptions() {
+        return !!(app.currentCredentialCard && navigator.currentItem
+                  && navigator.currentItem.objectName === 'credentialsView')
     }
 
     RowLayout {
@@ -176,7 +192,7 @@ ToolBar {
             id: credentialOptions
             spacing: 0
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            visible: !!(app.currentCredentialCard)
+            visible: shouldShowCredentialOptions()
             ToolButton {
                 id: deleteCredentialBtn
                 visible: deleteCredentialBtn
