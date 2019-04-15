@@ -101,7 +101,6 @@ Pane {
                     anchors.leftMargin: 1
                 }
                 StyledButton {
-                    highlighted: true
                     text: "Unlock"
                     anchors.right: parent.right
                     anchors.rightMargin: 0

@@ -10,6 +10,7 @@ ToolTip {
     property string buttonText: "Dismiss"
     property string buttonColor: yubicoGreen
 
+    id: tooltip
     timeout: 5000
     x: (app.width - width) / 2
     y: app.height
@@ -20,6 +21,14 @@ ToolTip {
     background: Rectangle {
         color: "#333333"
         radius: 4
+    }
+    DropShadow {
+        radius: 4
+        samples: radius * 2
+        verticalOffset: 3
+        source: toolBar
+        color: isDark() ? "#282828" : "#d3d3d3"
+        transparentBorder: true
     }
 
     Item {
@@ -47,6 +56,7 @@ ToolTip {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 0
+            onClicked: tooltip.close()
         }
     }
 }

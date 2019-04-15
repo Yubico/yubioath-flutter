@@ -8,12 +8,20 @@ Pane {
     padding: entries.count === 0 ? 50 : 0
     topPadding: entries.count === 0 ? 50 : 16
     objectName: 'credentialsView'
-    Material.background: isDark() ? defaultDark : defaultLight
+    Material.background: isNoCredentials()
 
     property string title: ""
 
     EntriesModel {
         id: filteredEntries
+    }
+
+    function isNoCredentials() {
+        if (isDark()) {
+            return entries.count === 0 ? defaultDarkLighter : defaultDark
+        } else {
+            return entries.count === 0 ? defaultLight : defaultLight
+        }
     }
 
     function filteredCredentials() {
