@@ -5,7 +5,12 @@ import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
 Pane {
+    id: pane
     objectName: 'enterPasswordView'
+    background: Rectangle {
+        color: "#383838"
+    }
+    padding: 50
 
     property string title: "Unlock YubiKey"
 
@@ -31,58 +36,80 @@ Pane {
     }
 
     ColumnLayout {
-        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+        spacing: 20
 
         ColumnLayout {
-            spacing: 20
-            ColumnLayout {
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                Image {
-                    id: lock
-                    sourceSize.height: 60
-                    sourceSize.width: 100
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    fillMode: Image.PreserveAspectFit
-                    source: "../images/lock.svg"
-                    ColorOverlay {
-                        source: lock
-                        color: app.isDark(
-                                   ) ? app.defaultDarkOverlay : app.defaultLightOverlay
-                        anchors.fill: lock
-                    }
-                }
-                Label {
-                    text: "The YubiKey is password protected"
-                    font.pixelSize: 12
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Image {
+                id: lock
+                sourceSize.width: 60
+                Layout.alignment: parent.left | Qt.AlignVCenter
+                Layout.topMargin: 20
+                Layout.leftMargin: -11
+                Layout.bottomMargin: 10
+                fillMode: Image.PreserveAspectFit
+                source: "../images/lock.svg"
+                ColorOverlay {
+                    source: lock
+                    color: app.isDark(
+                               ) ? app.defaultDarkOverlay : app.defaultLightOverlay
+                    anchors.fill: lock
                 }
             }
-            ColumnLayout {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
-                TextField {
-                    id: passwordField
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    Layout.fillWidth: true
-                    placeholderText: qsTr("Password")
-                    background.width: width
-                    echoMode: TextInput.Password
-                    Keys.onEnterPressed: validate()
-                    Keys.onReturnPressed: validate()
-                }
+            Label {
+                text: "Password required"
+                Layout.rowSpan: 1
+                wrapMode: Text.WordWrap
+                font.pixelSize: 12
+                font.bold: true
+                lineHeight: 1.5
+                Layout.alignment: Qt.AlignHLeft | Qt.AlignVCenter
+            }
+            Label {
+                text: "To prevent unauthorized access this YubiKey is protected with a password. Enter the password to continue."
+                Layout.minimumWidth: 320
+                Layout.maximumWidth: app.width - 100 < 600 ? app.width - 100 : 600
+                Layout.rowSpan: 1
+                lineHeight: 1.1
+                wrapMode: Text.WordWrap
+                font.pixelSize: 12
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            }
+        }
+        ColumnLayout {
+            Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
+            TextField {
+                id: passwordField
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: true
+                placeholderText: qsTr("Password")
+                background.width: parent.width
+                echoMode: TextInput.Password
+                Keys.onEnterPressed: validate()
+                Keys.onReturnPressed: validate()
+                Material.accent: isDark() ? defaultLight : "#5f6368"
+                selectedTextColor: isDark() ? defaultDark : defaultLight
+                focus: true
+            }
+            Item {
+                id: item1
+                Layout.fillHeight: false
+                Layout.fillWidth: true
                 CheckBox {
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     id: rememberPasswordCheckBox
+                    font.pixelSize: 12
                     text: "Remember password"
+                    anchors.left: parent.left
+                    anchors.leftMargin: 1
                 }
-                RowLayout {
+                Button {
+                    highlighted: true
+                    text: "Unlock"
+                    anchors.right: parent.right
+                    anchors.rightMargin: 0
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    Button {
-                        highlighted: true
-                        text: "OK"
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        onClicked: validate()
-                    }
+                    onClicked: validate()
                 }
             }
         }

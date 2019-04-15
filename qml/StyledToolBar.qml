@@ -119,15 +119,14 @@ ToolBar {
 
                 id: searchField
                 visible: showSearch
-                Material.accent: isDark() ? defaultLight : "#5f6368"
                 selectByMouse: true
+                Material.accent: isDark() ? defaultLight : "#5f6368"
                 selectedTextColor: isDark() ? defaultDark : defaultLight
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                placeholderText: isDark(
-                                     ) ? "<font color='#f0f0f0'>Quick Find</font>" : "<font color='#939598'>Quick Find</font>"
-                //                placeholderTextColor: "#f0f0f0"       // Qt5.12 requirement, hold for now?
+                placeholderText: "Quick Find"
+                placeholderTextColor: isDark() ? defaultLight : yubicoGrey
                 padding: 28
                 width: parent.width
                 horizontalAlignment: Qt.AlignLeft
@@ -219,6 +218,10 @@ ToolBar {
                 visible: showAddCredentialBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: addNewCredentialMenu.open()
+                ToolTip.text: "Add a new credential"
+                ToolTip.delay: 1000
+                ToolTip.visible: hovered
+                enabled: !navigator.isAtNewCredential()
 
                 MouseArea {
                     anchors.fill: parent
@@ -258,6 +261,9 @@ ToolBar {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: showSettingsBtn
                 onClicked: navigator.goToSettings()
+                ToolTip.text: "Configure Yubico Authenticator"
+                ToolTip.delay: 1000
+                ToolTip.visible: hovered
 
                 MouseArea {
                     anchors.fill: parent
