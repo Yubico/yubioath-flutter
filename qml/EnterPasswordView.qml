@@ -7,9 +7,6 @@ import QtGraphicalEffects 1.0
 Pane {
     id: pane
     objectName: 'enterPasswordView'
-    background: Rectangle {
-        color: isDark() ? defaultDarkLighter : Material.background
-    }
     padding: 50
 
     property string title: "Unlock YubiKey"
@@ -52,7 +49,7 @@ Pane {
                 ColorOverlay {
                     source: lock
                     color: app.isDark(
-                               ) ? app.defaultDarkOverlay : app.defaultLightOverlay
+                               ) ? defaultLightForeground : app.defaultLightOverlay
                     anchors.fill: lock
                 }
             }

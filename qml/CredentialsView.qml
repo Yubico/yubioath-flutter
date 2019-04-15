@@ -8,6 +8,7 @@ Pane {
     padding: entries.count === 0 ? 50 : 0
     topPadding: entries.count === 0 ? 50 : 16
     objectName: 'credentialsView'
+    Material.background: isDark() ? defaultDark : defaultLight
 
     property string title: ""
 
@@ -48,7 +49,7 @@ Pane {
                 ColorOverlay {
                     source: people
                     color: app.isDark(
-                               ) ? app.defaultDarkOverlay : app.defaultLightOverlay
+                               ) ? defaultLightForeground : app.defaultLightOverlay
                     anchors.fill: people
                 }
             }

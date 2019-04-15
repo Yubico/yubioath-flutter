@@ -40,7 +40,7 @@ ApplicationWindow {
     Material.accent: yubicoGreen
     Material.foreground: isDark(
                              ) ? defaultDarkForeground : defaultLightForeground
-
+    Material.background: isDark() ? defaultDarkLighter : defaultLight
     header: StyledToolBar {
         id: toolBar
     }
