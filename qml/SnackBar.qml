@@ -21,14 +21,15 @@ ToolTip {
     background: Rectangle {
         color: "#333333"
         radius: 4
-    }
-    DropShadow {
-        radius: 4
-        samples: radius * 2
-        verticalOffset: 3
-        source: toolBar
-        color: isDark() ? "#282828" : "#d3d3d3"
-        transparentBorder: true
+        layer.enabled: true
+        layer.effect: DropShadow {
+            radius: 4
+            samples: radius * 2
+            verticalOffset: 3
+            horizontalOffset: 3
+            color: isDark() ? "#282828" : "#d3d3d3"
+            transparentBorder: true
+        }
     }
 
     Item {
@@ -43,7 +44,7 @@ ToolTip {
             anchors.verticalCenter: parent.verticalCenter
             color: isDark() ? defaultDarkForeground : defaultLight
             opacity: 0.87
-            font.pixelSize: 13
+            font.pixelSize: 14
             leftPadding: 0
             rightPadding: 8
         }
