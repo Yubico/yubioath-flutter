@@ -132,12 +132,6 @@ StackView {
     }
 
     Component {
-        id: multipleYubiKeysView
-        MultipleYubiKeysView {
-        }
-    }
-
-    Component {
         id: newCredentialView
         NewCredentialView {
         }
