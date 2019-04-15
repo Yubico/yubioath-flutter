@@ -126,28 +126,41 @@ Pane {
     }
 
     function deleteCard() {
-        if (settings.otpMode) {
-            yubiKey.otpDeleteCredential(credential, function (resp) {
-                if (resp.success) {
-                    entries.deleteEntry(credential.key)
-                    navigator.snackBar("Credential was deleted")
-                } else {
-                    navigator.snackBarError(resp.error_id)
-                    console.log(resp.error_id)
-                }
-            })
-        } else {
-            yubiKey.deleteCredential(credential, function (resp) {
-                if (resp.success) {
-                    entries.deleteEntry(credential.key)
-                    yubiKeyPoller.updateNextCalculateAll()
-                    navigator.snackBar("Credential was deleted")
-                } else {
-                    navigator.snackBarError(resp.error_id)
-                    console.log(resp.error_id)
-                }
-            })
-        }
+        navigator.confirm(
+                    "Are you sure?",
+                    "Do you want to permanently delete the credential from the YubiKey?",
+                    function () {
+                        if (settings.otpMode) {
+                            yubiKey.otpDeleteCredential(credential,
+                                                        function (resp) {
+                                                            if (resp.success) {
+                                                                entries.deleteEntry(
+                                                                            credential.key)
+                                                                navigator.snackBar(
+                                                                            "Credential was deleted")
+                                                            } else {
+                                                                navigator.snackBarError(
+                                                                            resp.error_id)
+                                                                console.log(resp.error_id)
+                                                            }
+                                                        })
+                        } else {
+                            yubiKey.deleteCredential(credential,
+                                                     function (resp) {
+                                                         if (resp.success) {
+                                                             entries.deleteEntry(
+                                                                         credential.key)
+                                                             yubiKeyPoller.updateNextCalculateAll()
+                                                             navigator.snackBar(
+                                                                         "Credential was deleted")
+                                                         } else {
+                                                             navigator.snackBarError(
+                                                                         resp.error_id)
+                                                             console.log(resp.error_id)
+                                                         }
+                                                     })
+                        }
+                    })
     }
 
     function getCodeLblValue() {
