@@ -7,9 +7,6 @@ import QtGraphicalEffects 1.0
 Pane {
     id: pane
     objectName: 'enterPasswordView'
-    background: Rectangle {
-        color: "#383838"
-    }
     padding: 50
 
     property string title: "Unlock YubiKey"
@@ -52,7 +49,7 @@ Pane {
                 ColorOverlay {
                     source: lock
                     color: app.isDark(
-                               ) ? app.defaultDarkOverlay : app.defaultLightOverlay
+                               ) ? defaultLightForeground : app.defaultLightOverlay
                     anchors.fill: lock
                 }
             }
@@ -103,8 +100,7 @@ Pane {
                     anchors.left: parent.left
                     anchors.leftMargin: 1
                 }
-                Button {
-                    highlighted: true
+                StyledButton {
                     text: "Unlock"
                     anchors.right: parent.right
                     anchors.rightMargin: 0

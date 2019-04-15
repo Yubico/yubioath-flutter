@@ -5,15 +5,24 @@ import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
 Pane {
-    padding: 0
-    topPadding: 16
+    padding: entries.count === 0 ? 50 : 0
+    topPadding: entries.count === 0 ? 50 : 16
     objectName: 'credentialsView'
+    Material.background: isNoCredentials()
 
     property string title: ""
     Component {
         id: entriesComponent
 
         EntriesModel {
+        }
+    }
+
+    function isNoCredentials() {
+        if (isDark()) {
+            return entries.count === 0 ? defaultDarkLighter : defaultDark
+        } else {
+            return entries.count === 0 ? defaultLight : defaultLight
         }
     }
 
@@ -36,29 +45,42 @@ Pane {
 
     ColumnLayout {
         visible: entries.count === 0
-        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+        spacing: 20
 
         ColumnLayout {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Image {
                 id: people
-                sourceSize.height: 60
-                sourceSize.width: 100
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                sourceSize.width: 80
+                Layout.alignment: parent.left | Qt.AlignVCenter
+                Layout.topMargin: 10
+                Layout.leftMargin: -4
+                Layout.bottomMargin: 0
                 fillMode: Image.PreserveAspectFit
                 source: "../images/people.svg"
-
                 ColorOverlay {
                     source: people
                     color: app.isDark(
-                               ) ? app.defaultDarkOverlay : app.defaultLightOverlay
+                               ) ? defaultLightForeground : app.defaultLightOverlay
                     anchors.fill: people
                 }
             }
             Label {
-                text: "No credentials found."
+                text: "No credentials"
+                Layout.rowSpan: 1
+                wrapMode: Text.WordWrap
+                font.pixelSize: 12
+                font.bold: true
+                lineHeight: 1.5
+                Layout.alignment: Qt.AlignHLeft | Qt.AlignVCenter
+            }
+            Label {
+                text: "This YubiKey contains no credentials, how about adding some? For more information how it works please refer to yubico.com/authenticator."
+                Layout.minimumWidth: 320
+                Layout.maximumWidth: app.width - 100 < 600 ? app.width - 100 : 600
+                Layout.rowSpan: 1
+                lineHeight: 1.1
+                wrapMode: Text.WordWrap
                 font.pixelSize: 12
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             }

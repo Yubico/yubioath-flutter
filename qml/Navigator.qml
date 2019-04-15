@@ -158,9 +158,9 @@ StackView {
     Component {
         id: snackBarErrorComponent
         SnackBar {
+            buttonColor: yubicoWhite
             background: Rectangle {
                 color: app.yubicoRed
-                opacity: 0.8
                 radius: 4
             }
         }
