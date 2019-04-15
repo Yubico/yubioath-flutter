@@ -39,8 +39,7 @@ Pane {
                                              // TODO: This should be a callback or similar,
                                              // so that the view changes after the entries
                                              // are refreshed.
-                                             yubiKeyPoller.calculateAll(
-                                                         settings.otpMode)
+                                             yubiKeyPoller.calculateAll()
                                              navigator.goToCredentials()
                                              navigator.snackBar(
                                                          "Credential added")
@@ -64,8 +63,7 @@ Pane {
                                           // TODO: This should be a callback or similar,
                                           // so that the view changes after the entries
                                           // are refreshed.
-                                          yubiKeyPoller.calculateAll(
-                                                      settings.otpMode)
+                                          yubiKeyPoller.calculateAll()
                                           navigator.goToCredentials()
                                           navigator.snackBar("Credential added")
                                       } else {

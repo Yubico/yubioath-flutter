@@ -237,7 +237,6 @@ ToolBar {
                 ToolTip.text: "Add a new credential"
                 ToolTip.delay: 1000
                 ToolTip.visible: hovered
-                //enabled: TODO: when visible?
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
@@ -276,7 +275,8 @@ ToolBar {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: showSettingsBtn
                 onClicked: navigator.goToSettings()
-                ToolTip.text: "Configure Yubico Authenticator"
+
+                ToolTip.text: "Settings"
                 ToolTip.delay: 1000
                 ToolTip.visible: hovered
 

@@ -20,7 +20,7 @@ Timer {
             yubiKey.refreshDevices(settings.otpMode, function (resp) {
                 if (resp.success) {
                     // If the stringified list of devices is
-                    // exactly the same, probably nothing changed.
+                    // exactly the same, nothing changed.
                     var oldDevices = JSON.stringify(yubiKey.availableDevices)
                     var newDevices = JSON.stringify(resp.devices)
                     if (oldDevices !== newDevices) {
@@ -31,7 +31,7 @@ Timer {
                         if (yubiKey.availableDevices.length === 1) {
                             yubiKey.currentDevice = resp.devices[0]
                             navigator.goToCredentials()
-                            calculateAll(settings.otpMode)
+                            calculateAll()
                         } else {
                             // No or too many devices, clear credentials.
                             navigator.goToNoYubiKeyView()
@@ -50,7 +50,7 @@ Timer {
 
             if (timeToCalculateAll() && yubiKey.currentDevice
                     && !yubiKey.locked) {
-                calculateAll(settings.otpMode)
+                calculateAll()
             }
         }
     }
@@ -69,9 +69,9 @@ Timer {
         })
     }
 
-    function calculateAll(otpMode) {
+    function calculateAll() {
 
-        if (otpMode) {
+        if (settings.otpMode) {
             yubiKey.otpCalculateAll(function (resp) {
                 if (resp.success) {
                     // No sorting needed, there can be maximum 2 slot entries.
