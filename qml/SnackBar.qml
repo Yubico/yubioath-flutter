@@ -9,6 +9,7 @@ ToolTip {
     property string message: "Default message"
     property string buttonText: "Dismiss"
     property string buttonColor: yubicoGreen
+    property string backgroundColor: "#333333"
 
     id: tooltip
     timeout: 5000
@@ -19,7 +20,7 @@ ToolTip {
     bottomMargin: 10
     padding: 0
     background: Rectangle {
-        color: "#333333"
+        color: backgroundColor
         radius: 4
         layer.enabled: true
         layer.effect: DropShadow {

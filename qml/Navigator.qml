@@ -153,10 +153,7 @@ StackView {
         id: snackBarErrorComponent
         SnackBar {
             buttonColor: yubicoWhite
-            background: Rectangle {
-                color: app.yubicoRed
-                radius: 4
-            }
+            backgroundColor: yubicoRed
         }
     }
 }

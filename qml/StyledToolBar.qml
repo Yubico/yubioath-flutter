@@ -190,18 +190,13 @@ ToolBar {
             }
         }
 
-        Item {
-            Layout.fillWidth: true
-        }
-
         RowLayout {
-            id: credentialOptions
             spacing: 0
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            visible: shouldShowCredentialOptions()
+
             ToolButton {
                 id: deleteCredentialBtn
-                visible: deleteCredentialBtn
+                visible: shouldShowCredentialOptions()
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: app.currentCredentialCard.deleteCard()
 
@@ -229,11 +224,6 @@ ToolBar {
                     }
                 }
             }
-        }
-
-        RowLayout {
-            spacing: 0
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
             ToolButton {
                 id: addCredentialBtn
