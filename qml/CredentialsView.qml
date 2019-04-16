@@ -90,6 +90,12 @@ Pane {
 
     GridView {
         id: grid
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: (Math.min(model.count,
+                         Math.floor(parent.width / cellWidth)) * cellWidth)
+               || cellWidth
+        anchors.bottom: parent.bottom
+        anchors.top: parent.top
 
         onCurrentItemChanged: app.currentCredentialCard = currentItem
         visible: entries.count > 0
@@ -100,7 +106,6 @@ Pane {
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
         interactive: true
-        anchors.fill: parent
         model: filteredCredentials()
         cellWidth: 362
         cellHeight: 82
