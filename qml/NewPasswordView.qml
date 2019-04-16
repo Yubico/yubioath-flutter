@@ -72,8 +72,8 @@ Pane {
                 placeholderText: qsTr("New Password")
                 background.width: parent.width
                 echoMode: TextInput.Password
-                Keys.onEnterPressed: validate()
-                Keys.onReturnPressed: validate()
+                Keys.onEnterPressed: setPassword()
+                Keys.onReturnPressed: setPassword()
                 Material.accent: isDark() ? defaultLight : "#5f6368"
                 selectedTextColor: isDark() ? defaultDark : defaultLight
                 focus: true
@@ -85,8 +85,8 @@ Pane {
                 placeholderText: qsTr("Confirm Password")
                 background.width: parent.width
                 echoMode: TextInput.Password
-                Keys.onEnterPressed: validate()
-                Keys.onReturnPressed: validate()
+                Keys.onEnterPressed: setPassword()
+                Keys.onReturnPressed: setPassword()
                 Material.accent: isDark() ? defaultLight : "#5f6368"
                 selectedTextColor: isDark() ? defaultDark : defaultLight
                 focus: true

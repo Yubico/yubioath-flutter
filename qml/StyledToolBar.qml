@@ -76,7 +76,6 @@ ToolBar {
 
     RowLayout {
         spacing: 0
-        anchors.leftMargin: 20
         anchors.fill: parent
 
         ToolButton {
@@ -113,6 +112,7 @@ ToolBar {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
+            rightPadding: showAddCredentialBtn || showSettingsBtn ? 0 : 40
             Layout.fillWidth: true
             color: isDark() ? defaultLight : "#5f6368"
         }
@@ -120,6 +120,7 @@ ToolBar {
         ToolButton {
             id: searchBtn
             visible: showSearch
+            Layout.leftMargin: 8
             Layout.minimumWidth: 200
             Layout.maximumWidth: 500
             Layout.minimumHeight: 30
@@ -188,14 +189,14 @@ ToolBar {
                 }
             }
         }
+
         RowLayout {
-            id: credentialOptions
             spacing: 0
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            visible: shouldShowCredentialOptions()
+
             ToolButton {
                 id: deleteCredentialBtn
-                visible: deleteCredentialBtn
+                visible: shouldShowCredentialOptions()
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: app.currentCredentialCard.deleteCard()
 
@@ -223,11 +224,6 @@ ToolBar {
                     }
                 }
             }
-        }
-
-        RowLayout {
-            spacing: 0
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
             ToolButton {
                 id: addCredentialBtn
