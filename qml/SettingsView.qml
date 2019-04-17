@@ -30,7 +30,7 @@ Pane {
 
         spacing: 0
 
-    RowLayout {
+        RowLayout {
             Layout.fillWidth: true
             StyledComboBox {
                 id: themeComboBox
@@ -42,7 +42,7 @@ Pane {
                 }
                 currentIndex: {
                     switch (settings.theme) {
-                    case Material.Auto:
+                    case Material.System:
                         return 0
                     case Material.Light:
                         return 1
