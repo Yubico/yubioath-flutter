@@ -31,7 +31,7 @@ Pane {
 
     function addCredential() {
         if (settings.otpMode) {
-            yubiKey.otpAddCredential(otpSlotComboBox.comboBox.currentText,
+            yubiKey.otpAddCredential(otpSlotComboBox.currentText,
                                      secretKeyLbl.text,
                                      requireTouchCheckBox.checked,
                                      function (resp) {
@@ -54,11 +54,10 @@ Pane {
         } else {
 
             yubiKey.addCredential(nameLbl.text, secretKeyLbl.text,
-                                  issuerLbl.text,
-                                  oathTypeComboBox.comboBox.currentText,
-                                  algoComboBox.comboBox.currentText,
-                                  digitsComboBox.comboBox.currentText,
-                                  periodLbl.text, requireTouchCheckBox.checked,
+                                  issuerLbl.text, oathTypeComboBox.currentText,
+                                  algoComboBox.currentText,
+                                  digitsComboBox.currentText, periodLbl.text,
+                                  requireTouchCheckBox.checked,
                                   function (resp) {
                                       if (resp.success) {
                                           // TODO: This should be a callback or similar,
@@ -155,7 +154,7 @@ Pane {
                 StyledComboBox {
                     label: "Slot"
                     id: otpSlotComboBox
-                    comboBox.model: [1, 2]
+                    model: [1, 2]
                 }
                 visible: settings.otpMode
             }
@@ -165,7 +164,7 @@ Pane {
                 StyledComboBox {
                     label: "Type"
                     id: oathTypeComboBox
-                    comboBox.model: ["TOTP", "HOTP"]
+                    model: ["TOTP", "HOTP"]
                 }
                 visible: manualEntry && showAdvanced && !settings.otpMode
             }
@@ -173,7 +172,7 @@ Pane {
                 StyledComboBox {
                     id: digitsComboBox
                     label: "Digits"
-                    comboBox.model: ["6", "7", "8"]
+                    model: ["6", "7", "8"]
                 }
                 visible: manualEntry && showAdvanced && !settings.otpMode
             }
@@ -182,7 +181,7 @@ Pane {
                 StyledComboBox {
                     id: algoComboBox
                     label: "Algorithm"
-                    comboBox.model: ["SHA1", "SHA256", "SHA512"]
+                    model: ["SHA1", "SHA256", "SHA512"]
                 }
                 visible: manualEntry && showAdvanced && !settings.otpMode
             }
