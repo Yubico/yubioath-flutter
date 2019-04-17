@@ -12,7 +12,7 @@ Pane {
         id: themes
 
         ListElement {
-            text: "Auto"
+            text: "System Default"
             value: Material.System
         }
         ListElement {
@@ -28,17 +28,19 @@ Pane {
         anchors.left: parent.left
         anchors.right: parent.right
 
-        RowLayout {
+        spacing: 0
+
+    RowLayout {
             Layout.fillWidth: true
             StyledComboBox {
                 id: themeComboBox
                 label: "Appearance"
                 comboBox.textRole: "text"
-                comboBox.model: themes
-                comboBox.onCurrentIndexChanged: {
+                model: themes
+                onCurrentIndexChanged: {
                     settings.theme = themes.get(comboBox.currentIndex).value
                 }
-                comboBox.currentIndex: {
+                currentIndex: {
                     switch (settings.theme) {
                     case Material.Auto:
                         return 0
@@ -58,10 +60,10 @@ Pane {
             StyledComboBox {
                 id: authenticatorModeCombobox
                 label: "Authenticator Mode"
-                comboBox.model: ["CCID (Default)", "OTP"]
-                comboBox.currentIndex: settings.otpMode ? 1 : 0
-                comboBox.onCurrentIndexChanged: {
-                    if (comboBox.currentIndex === 1) {
+                model: ["CCID (Default)", "OTP"]
+                currentIndex: settings.otpMode ? 1 : 0
+                onCurrentIndexChanged: {
+                    if (currentIndex === 1) {
                         settings.otpMode = true
                     } else {
                         settings.otpMode = false
@@ -72,17 +74,20 @@ Pane {
 
         RowLayout {
             visible: authenticatorModeCombobox.currentText == "OTP"
-            CheckBox {
+
+
+            /*            CheckBox {
                 id: slot1CheckBox
                 text: "Slot 1"
                 Layout.fillWidth: true
                 checked: settings.slot1inUse
                 onCheckedChanged: settings.slot1inUse = checked
-            }
+            }*/
             StyledComboBox {
-                enabled: slot1CheckBox.checked
-                comboBox.model: [6, 7, 8]
-                comboBox.currentIndex: {
+                //enabled: slot1CheckBox.checked
+                label: "Slot 1"
+                model: [6, 7, 8]
+                currentIndex: {
 
                     if (settings.slot1digits === 6) {
                         return 0
@@ -96,23 +101,26 @@ Pane {
                         return 2
                     }
                 }
-                comboBox.onCurrentTextChanged: settings.slot1digits = comboBox.currentText
+                onCurrentTextChanged: settings.slot1digits = currentText
             }
-        }
-        RowLayout {
-            visible: authenticatorModeCombobox.currentText == "OTP"
-            CheckBox {
+
+            Item {
+                width: 16
+            }
+
+
+            /*            CheckBox {
                 id: slot2CheckBox
                 text: "Slot 2"
                 Layout.fillWidth: true
                 checked: settings.slot2inUse
                 onCheckedChanged: settings.slot2inUse = checked
-            }
+            }*/
             StyledComboBox {
-                enabled: slot2CheckBox.checked
-                comboBox.model: [6, 7, 8]
-                comboBox.currentIndex: {
-
+                //enabled: slot2CheckBox.checked
+                label: "Slot 2"
+                model: [6, 7, 8]
+                currentIndex: {
                     if (settings.slot2digits === 6) {
                         return 0
                     }
@@ -125,30 +133,36 @@ Pane {
                         return 2
                     }
                 }
-                comboBox.onCurrentTextChanged: settings.slot2digits = comboBox.currentText
+                onCurrentTextChanged: settings.slot2digits = currentText
             }
         }
 
         RowLayout {
-            Label {
+
+
+            /*            Label {
                 text: "Show in system tray"
                 Layout.fillWidth: true
-            }
+            }*/
             CheckBox {
                 id: sysTrayCheckbox
                 checked: settings.closeToTray
+                text: "Show in system tray"
                 onCheckStateChanged: settings.closeToTray = checked
             }
         }
         RowLayout {
-            Label {
+
+
+            /*            Label {
                 enabled: sysTrayCheckbox.checked
                 text: "Hide on launch"
                 Layout.fillWidth: true
-            }
+            }*/
             CheckBox {
                 enabled: sysTrayCheckbox.checked
                 checked: settings.hideOnLaunch
+                text: "Hide on launch"
                 onCheckStateChanged: settings.hideOnLaunch = checked
             }
         }

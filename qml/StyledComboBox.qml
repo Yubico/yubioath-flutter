@@ -6,8 +6,11 @@ import QtGraphicalEffects 1.0
 
 Item {
 
-    property string label: "Label"
+    property string label
     property alias comboBox: comboBox
+    property alias model: comboBox.model
+    property alias currentIndex: comboBox.currentIndex
+    property alias currentText: comboBox.currentText
 
     id: container
     height: 50
@@ -28,7 +31,6 @@ Item {
             implicitWidth: container.width
             font.pixelSize: 13
             flat: true
-            model: model ? model : ["one", "two"]
             indicator: Rectangle {
                 id: rectangle
                 anchors.right: parent.right
