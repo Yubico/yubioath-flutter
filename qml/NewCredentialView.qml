@@ -31,7 +31,7 @@ Pane {
 
     function addCredential() {
         if (settings.otpMode) {
-            yubiKey.otpAddCredential(otpSlotComboBox.currentText,
+            yubiKey.otpAddCredential(otpSlotComboBox.comboBox.currentText,
                                      secretKeyLbl.text,
                                      requireTouchCheckBox.checked,
                                      function (resp) {
@@ -54,10 +54,11 @@ Pane {
         } else {
 
             yubiKey.addCredential(nameLbl.text, secretKeyLbl.text,
-                                  issuerLbl.text, oathTypeComboBox.currentText,
-                                  algoComboBox.currentText,
-                                  digitsComboBox.currentText, periodLbl.text,
-                                  requireTouchCheckBox.checked,
+                                  issuerLbl.text,
+                                  oathTypeComboBox.comboBox.currentText,
+                                  algoComboBox.comboBox.currentText,
+                                  digitsComboBox.comboBox.currentText,
+                                  periodLbl.text, requireTouchCheckBox.checked,
                                   function (resp) {
                                       if (resp.success) {
                                           // TODO: This should be a callback or similar,
