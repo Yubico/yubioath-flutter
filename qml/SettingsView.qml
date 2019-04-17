@@ -11,30 +11,28 @@ Pane {
     ColumnLayout {
         anchors.left: parent.left
         anchors.right: parent.right
+
+        //spacing: 20
         RowLayout {
             Layout.fillWidth: true
-            Label {
-                text: "Theme"
-                Layout.fillWidth: true
-            }
             StyledComboBox {
                 id: themeComboBox
-                model: ["Auto", "Light", "Dark"]
-                onCurrentTextChanged: app.setTheme(currentText)
+                label: "Appearance"
+                comboBox.model: ["Auto", "Light", "Dark"]
+                comboBox.onCurrentTextChanged: app.setTheme(
+                                                   comboBox.currentText)
             }
         }
 
         RowLayout {
-            Label {
-                text: "Authenticator mode"
-                Layout.fillWidth: true
-            }
+            Layout.fillWidth: true
             StyledComboBox {
                 id: authenticatorModeCombobox
-                model: ["CCID (Default)", "OTP"]
-                currentIndex: settings.otpMode ? 1 : 0
-                onCurrentIndexChanged: {
-                    if (currentIndex === 1) {
+                label: "Authenticator Mode"
+                comboBox.model: ["CCID (Default)", "OTP"]
+                comboBox.currentIndex: settings.otpMode ? 1 : 0
+                comboBox.onCurrentIndexChanged: {
+                    if (comboBox.currentIndex === 1) {
                         settings.otpMode = true
                     } else {
                         settings.otpMode = false
@@ -54,8 +52,8 @@ Pane {
             }
             StyledComboBox {
                 enabled: slot1CheckBox.checked
-                model: [6, 7, 8]
-                currentIndex: {
+                comboBox.model: [6, 7, 8]
+                comboBox.currentIndex: {
 
                     if (settings.slot1digits === 6) {
                         return 0
@@ -69,7 +67,7 @@ Pane {
                         return 2
                     }
                 }
-                onCurrentTextChanged: settings.slot1digits = currentText
+                comboBox.onCurrentTextChanged: settings.slot1digits = comboBox.currentText
             }
         }
         RowLayout {
@@ -83,8 +81,8 @@ Pane {
             }
             StyledComboBox {
                 enabled: slot2CheckBox.checked
-                model: [6, 7, 8]
-                currentIndex: {
+                comboBox.model: [6, 7, 8]
+                comboBox.currentIndex: {
 
                     if (settings.slot2digits === 6) {
                         return 0
@@ -98,7 +96,7 @@ Pane {
                         return 2
                     }
                 }
-                onCurrentTextChanged: settings.slot2digits = currentText
+                comboBox.onCurrentTextChanged: settings.slot2digits = comboBox.currentText
             }
         }
 

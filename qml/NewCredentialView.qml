@@ -96,8 +96,8 @@ Pane {
             anchors.leftMargin: 0
             anchors.right: parent.right
             anchors.rightMargin: 0
-            spacing: 0
 
+            //            spacing: 0
             TextField {
                 id: issuerLbl
                 placeholderText: "Issuer"
@@ -151,52 +151,37 @@ Pane {
             }
             RowLayout {
                 Layout.fillWidth: true
-
-                Label {
-                    text: "Slot"
-                    Layout.fillWidth: true
-                }
                 StyledComboBox {
+                    label: "Slot"
                     id: otpSlotComboBox
-                    model: [1, 2]
+                    comboBox.model: [1, 2]
                 }
                 visible: settings.otpMode
             }
 
             RowLayout {
                 Layout.fillWidth: true
-
-                Label {
-                    text: "Type"
-                    Layout.fillWidth: true
-                }
                 StyledComboBox {
+                    label: "Type"
                     id: oathTypeComboBox
-                    model: ["TOTP", "HOTP"]
+                    comboBox.model: ["TOTP", "HOTP"]
                 }
                 visible: manualEntry && showAdvanced && !settings.otpMode
             }
             RowLayout {
-                Label {
-                    text: "Digits"
-                    Layout.fillWidth: true
-                }
                 StyledComboBox {
                     id: digitsComboBox
-                    model: ["6", "7", "8"]
+                    label: "Digits"
+                    comboBox.model: ["6", "7", "8"]
                 }
                 visible: manualEntry && showAdvanced && !settings.otpMode
             }
             RowLayout {
                 Layout.fillWidth: true
-
-                Label {
-                    text: "Algorithm"
-                    Layout.fillWidth: true
-                }
                 StyledComboBox {
                     id: algoComboBox
-                    model: ["SHA1", "SHA256", "SHA512"]
+                    label: "Algorithm"
+                    comboBox.model: ["SHA1", "SHA256", "SHA512"]
                 }
                 visible: manualEntry && showAdvanced && !settings.otpMode
             }
