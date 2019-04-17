@@ -8,19 +8,48 @@ Pane {
 
     property string title: "Settings"
 
+    ListModel {
+        id: themes
+
+        ListElement {
+            text: "Auto"
+            value: Material.System
+        }
+        ListElement {
+            text: "Light Mode"
+            value: Material.Light
+        }
+        ListElement {
+            text: "Dark Mode"
+            value: Material.Dark
+        }
+    }
     ColumnLayout {
         anchors.left: parent.left
         anchors.right: parent.right
 
-        //spacing: 20
         RowLayout {
             Layout.fillWidth: true
             StyledComboBox {
                 id: themeComboBox
                 label: "Appearance"
-                comboBox.model: ["Auto", "Light", "Dark"]
-                comboBox.onCurrentTextChanged: app.setTheme(
-                                                   comboBox.currentText)
+                comboBox.textRole: "text"
+                comboBox.model: themes
+                comboBox.onCurrentIndexChanged: {
+                    settings.theme = themes.get(comboBox.currentIndex).value
+                }
+                comboBox.currentIndex: {
+                    switch (settings.theme) {
+                    case Material.Auto:
+                        return 0
+                    case Material.Light:
+                        return 1
+                    case Material.Dark:
+                        return 2
+                    default:
+                        return 0
+                    }
+                }
             }
         }
 
