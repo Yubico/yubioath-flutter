@@ -91,7 +91,7 @@ StackView {
         case 'validate_failed':
             return qsTr('Wrong password')
         case 'no_space':
-            return qsTr('No space available on YubiKey')
+            return qsTr('No space available')
         case 'open_device_failed':
             return qsTr('Failed to connect to YubiKey')
         case 'timeout':

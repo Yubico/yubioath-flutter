@@ -35,7 +35,7 @@ ApplicationWindow {
 
     property var currentCredentialCard
 
-    Material.theme: getTheme()
+    Material.theme: settings.theme
     Material.primary: yubicoGreen
     Material.accent: yubicoGreen
     Material.foreground: isDark(
@@ -71,57 +71,6 @@ ApplicationWindow {
 
     function isDark() {
         return app.Material.theme === Material.Dark
-    }
-
-    function setTheme(theme) {
-        var _theme = theme.toLowerCase()
-        if (_theme === "dark") {
-            setDark()
-        } else if (_theme === "light") {
-            setLight()
-        } else if (_theme === "auto") {
-            setAuto()
-        }
-    }
-
-    function setDark() {
-        app.Material.theme = Material.Dark
-        Material.foreground = defaultDarkForeground
-        settings.theme = "dark"
-    }
-
-    function setLight() {
-        app.Material.theme = Material.Light
-        Material.foreground = defaultLightForeground
-        settings.theme = "light"
-    }
-
-    function setAuto() {
-        if (Material.System === Material.Dark) {
-            setDark()
-        } else {
-            setLight()
-        }
-        settings.theme = "auto"
-    }
-
-    function getTheme() {
-        if (settings.theme === "dark") {
-            return Material.Dark
-        } else if (settings.theme === "light") {
-            return Material.Light
-        } else if (settings.theme === "auto") {
-            return Material.System
-        }
-        return Material.System
-    }
-
-    function toggleTheme() {
-        if (isDark()) {
-            setLight()
-        } else {
-            setDark()
-        }
     }
 
     function saveScreenLayout() {
@@ -160,7 +109,7 @@ ApplicationWindow {
         property bool closeToTray
         property bool hideOnLaunch
 
-        property var theme
+        property int theme
 
         // Keep track of window and desktop dimensions.
         property alias width: app.width
@@ -177,6 +126,10 @@ ApplicationWindow {
         onSlot1digitsChanged: clearEntriesAndCalculateAll()
         onSlot2inUseChanged: clearEntriesAndCalculateAll()
         onSlot2digitsChanged: clearEntriesAndCalculateAll()
+
+        onThemeChanged: {
+            app.Material.theme = theme
+        }
 
         function clearEntriesAndCalculateAll() {
             entries.clear()
