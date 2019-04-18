@@ -238,31 +238,26 @@ Pane {
             }
         }
 
-        Image {
+        StyledImage {
             id: touchIcon
             anchors.bottom: parent.bottom
             anchors.right: parent.right
-            width: 16
-            height: 16
-            fillMode: Image.PreserveAspectFit
-            source: "../images/touch.png"
-            visible: credential.touch && code && !code.value ? true : false
+            iconWidth: 24
+            iconHeight: 24
+            source: "../images/touch.svg"
+            visible: !!(touchCredential && code && !code.value)
+            color: yubicoGreen
         }
 
-        Image {
-            id: generateHotpIcon
+        StyledImage {
+            id: hotpIcon
+            source: "../images/refresh.svg"
+            iconWidth: 24
+            iconHeight: 24
+            visible: hotpCredential
             anchors.bottom: parent.bottom
             anchors.right: parent.right
-            width: 16
-            height: 16
-            fillMode: Image.PreserveAspectFit
-            source: "../images/refresh.svg"
-            visible: hotpCredential
-            ColorOverlay {
-                source: generateHotpIcon
-                color: hotpCredentialInCoolDown ? yubicoGrey : yubicoGreen
-                anchors.fill: generateHotpIcon
-            }
+            color: hotpCredentialInCoolDown ? yubicoGrey : yubicoGreen
         }
     }
 }

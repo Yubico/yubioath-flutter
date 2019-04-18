@@ -82,25 +82,12 @@ ToolBar {
             id: backBtn
             visible: showBackBtn
             onClicked: navigator.pop(StackView.Immediate)
-
+            icon.source: "../images/back.svg"
+            icon.color: isDark() ? defaultLight : "#5f6368"
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 enabled: false
-            }
-
-            Image {
-                id: backIcon
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
-                Layout.maximumWidth: 150
-                fillMode: Image.PreserveAspectFit
-                source: "../images/back.svg"
-                ColorOverlay {
-                    source: backIcon
-                    color: isDark() ? defaultLight : "#5f6368"
-                    anchors.fill: backIcon
-                }
             }
         }
 
@@ -173,19 +160,14 @@ ToolBar {
                     navigator.forceActiveFocus()
                 }
 
-                Image {
+                StyledImage {
                     id: searchIcon
                     x: 5
                     y: 6
-                    height: 20
-                    width: 20
-                    fillMode: Image.PreserveAspectFit
+                    iconHeight: 20
+                    iconWidth: 20
                     source: "../images/search.svg"
-                    ColorOverlay {
-                        source: searchIcon
-                        color: isDark() ? defaultLight : "#5f6368"
-                        anchors.fill: searchIcon
-                    }
+                    color: isDark() ? defaultLight : "#5f6368"
                 }
             }
         }
@@ -211,24 +193,13 @@ ToolBar {
                                              ) ? defaultDarkOverlay : defaultLightForeground
                 }
 
+                icon.source: "../images/delete.svg"
+                icon.color: isDark() ? defaultLight : "#5f6368"
+
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     enabled: false
-                }
-
-                Image {
-                    id: deleteIcon
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    Layout.maximumWidth: 150
-                    fillMode: Image.PreserveAspectFit
-                    source: "../images/delete.svg"
-                    ColorOverlay {
-                        source: deleteIcon
-                        color: isDark() ? defaultLight : "#5f6368"
-                        anchors.fill: deleteIcon
-                    }
                 }
             }
 
@@ -247,32 +218,25 @@ ToolBar {
                     Material.background: app.isDark(
                                              ) ? defaultDarkOverlay : defaultLightForeground
                 }
+
+                icon.source: "../images/add.svg"
+                icon.color: isDark() ? defaultLight : "#5f6368"
+
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     enabled: false
                 }
 
-                Image {
-                    id: addIcon
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    Layout.maximumWidth: 150
-                    fillMode: Image.PreserveAspectFit
-                    source: "../images/add.svg"
-                    ColorOverlay {
-                        source: addIcon
-                        color: isDark() ? defaultLight : "#5f6368"
-                        anchors.fill: addIcon
-                    }
-                }
                 Menu {
                     id: addNewCredentialMenu
                     y: addCredentialBtn.height
+
                     MenuItem {
                         text: "Scan QR code"
                         onClicked: yubiKey.scanQr()
                     }
+
                     MenuItem {
                         text: "Manual entry"
                         onClicked: navigator.goToNewCredentialManual()
@@ -296,24 +260,13 @@ ToolBar {
                                              ) ? defaultDarkOverlay : defaultLightForeground
                 }
 
+                icon.source: "../images/cogwheel.svg"
+                icon.color: isDark() ? defaultLight : "#5f6368"
+
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     enabled: false
-                }
-
-                Image {
-                    id: settingsIcon
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    Layout.maximumWidth: 150
-                    fillMode: Image.PreserveAspectFit
-                    source: "../images/cogwheel.svg"
-                    ColorOverlay {
-                        source: settingsIcon
-                        color: isDark() ? defaultLight : "#5f6368"
-                        anchors.fill: settingsIcon
-                    }
                 }
             }
         }

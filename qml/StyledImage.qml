@@ -6,7 +6,11 @@ Button {
     property string color
     property int iconWidth
     property int iconHeight
-
+    width: iconWidth
+    height: iconHeight
+    spacing: 0
+    rightPadding: 0
+    leftPadding: 0
     padding: 0
     icon.source: source
     icon.color: color

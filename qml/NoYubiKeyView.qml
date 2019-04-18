@@ -17,19 +17,13 @@ Pane {
 
         ColumnLayout {
             spacing: 20
-            Image {
+            StyledImage {
                 id: yubikeys
-                sourceSize.height: 0
-                Layout.maximumWidth: 200
-                Layout.maximumHeight: 120
-                fillMode: Image.PreserveAspectFit
+                iconWidth: 200
+                iconHeight: 120
                 source: "../images/yubikeys-transparent.png"
-                ColorOverlay {
-                    source: yubikeys
-                    color: app.isDark(
-                               ) ? app.defaultDarkOverlay : app.defaultLightOverlay
-                    anchors.fill: yubikeys
-                }
+                color: app.isDark(
+                           ) ? defaultLightForeground : defaultLightOverlay
             }
             Label {
                 text: yubiKey.availableDevices.length
