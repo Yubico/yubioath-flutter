@@ -22,7 +22,7 @@ Item {
         Label {
             text: label
             font.pixelSize: 10
-            color: yubicoGrey
+            color: formLabel
         }
 
         ComboBox {
@@ -31,6 +31,8 @@ Item {
             implicitWidth: container.width
             font.pixelSize: 13
             flat: true
+            Material.accent: isDark(
+                                 ) ? defaultDarkForeground : defaultLightForeground
             indicator: Rectangle {
                 id: rectangle
                 anchors.right: parent.right
@@ -49,7 +51,7 @@ Item {
                 }
             }
             contentItem: Text {
-                color: isDark() ? defaultDarkForeground : defaultLightForeground
+                color: formText
                 text: parent.displayText
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
@@ -64,7 +66,7 @@ Item {
             height: 2
             Layout.fillWidth: true
             background: Rectangle {
-                color: isDark() ? yubicoWhite : yubicoGrey
+                color: formUnderline
                 height: comboBox.hovered ? 2 : 1
                 implicitWidth: comboBox.width
             }
