@@ -200,9 +200,16 @@ ToolBar {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: app.currentCredentialCard.deleteCard()
 
-                ToolTip.text: "Delete credential from YubiKey"
-                ToolTip.delay: 1000
-                ToolTip.visible: hovered
+                ToolTip {
+                    text: "Delete credential from YubiKey"
+                    delay: 1000
+                    parent: deleteCredentialBtn
+                    visible: parent.hovered
+                    Material.foreground: app.isDark(
+                                             ) ? defaultDarkForeground : defaultLight
+                    Material.background: app.isDark(
+                                             ) ? defaultDarkOverlay : defaultLightForeground
+                }
 
                 MouseArea {
                     anchors.fill: parent
@@ -230,9 +237,16 @@ ToolBar {
                 visible: showAddCredentialBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: addNewCredentialMenu.open()
-                ToolTip.text: "Add a new credential"
-                ToolTip.delay: 1000
-                ToolTip.visible: hovered
+                ToolTip {
+                    text: "Add a new credential"
+                    delay: 1000
+                    parent: addCredentialBtn
+                    visible: parent.hovered
+                    Material.foreground: app.isDark(
+                                             ) ? defaultDarkForeground : defaultLight
+                    Material.background: app.isDark(
+                                             ) ? defaultDarkOverlay : defaultLightForeground
+                }
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
@@ -271,10 +285,16 @@ ToolBar {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: showSettingsBtn
                 onClicked: navigator.goToSettings()
-
-                ToolTip.text: "Settings"
-                ToolTip.delay: 1000
-                ToolTip.visible: hovered
+                ToolTip {
+                    text: "Settings"
+                    delay: 1000
+                    parent: settingsButton
+                    visible: parent.hovered
+                    Material.foreground: app.isDark(
+                                             ) ? defaultDarkForeground : defaultLight
+                    Material.background: app.isDark(
+                                             ) ? defaultDarkOverlay : defaultLightForeground
+                }
 
                 MouseArea {
                     anchors.fill: parent
