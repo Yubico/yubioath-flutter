@@ -8,32 +8,11 @@ ColumnLayout {
     spacing: 20
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        Image {
-            id: people
-            sourceSize.width: 80
-            Layout.alignment: parent.left | Qt.AlignVCenter
-            Layout.topMargin: 10
-            Layout.leftMargin: -4
-            Layout.bottomMargin: 0
-            fillMode: Image.PreserveAspectFit
+
+        StyledImage {
             source: "../images/people.svg"
-
-            ColorOverlay {
-                source: people
-                color: app.isDark(
-                           ) ? defaultLightForeground : defaultLightOverlay
-                anchors.fill: people
-                antialiasing: true
-            }
-        }
-
-        Button {
-            icon.source: "../images/people.svg"
-            icon.color: "red"
-            icon.width: 80
-            icon.height: 80
-            flat: true
-            enabled: false
+            color: app.isDark() ? defaultLightForeground : defaultLightOverlay
+            iconWidth: 80
         }
 
         Label {
