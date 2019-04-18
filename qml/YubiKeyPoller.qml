@@ -6,7 +6,7 @@ Timer {
 
     // Timestamp in seconds for when it's time for the next calculateAll call.
     // -1 means never
-    property int nextCalculateAll: 0
+    property int nextCalculateAll: -1
 
     triggeredOnStart: true
     interval: 1000
@@ -33,8 +33,10 @@ Timer {
                             navigator.goToCredentials()
                             calculateAll()
                         } else {
-                            // No or too many devices, clear credentials.
+                            // No or too many devices, clear credentials,
+                            // and stop any scheduled calculateAll calls.
                             navigator.goToNoYubiKeyView()
+                            nextCalculateAll = -1
                             entries.clear()
                         }
                     }
