@@ -344,6 +344,7 @@ ScrollView {
                     }
                     StyledBusyIndicator {
                         id: busy
+                        implicitHeight: 30
                     }
                 }
             }
