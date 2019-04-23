@@ -34,7 +34,9 @@ Timer {
                             calculateAll()
                         } else {
                             // No or too many devices, clear credentials,
+                            // clear current device,
                             // and stop any scheduled calculateAll calls.
+                            yubiKey.currentDevice = null
                             navigator.goToNoYubiKeyView()
                             nextCalculateAll = -1
                             entries.clear()
