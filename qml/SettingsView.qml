@@ -331,11 +331,12 @@ ScrollView {
                                                    entries.clear()
                                                    navigator.snackBar(
                                                                "Reset completed")
-                                                   navigator.goToCredentials()
                                                } else {
                                                    navigator.snackBarError(
+                                                               navigator.getErrorMessage(
+                                                                   resp.error_id))
+                                                   console.log("reset failed:",
                                                                resp.error_id)
-                                                   console.log(resp.error_id)
                                                }
                                                busy.running = false
                                            })
