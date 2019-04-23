@@ -4,11 +4,22 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-Pane {
+ScrollView {
+    id: pane
     padding: entries.count === 0 ? 50 : 0
     topPadding: entries.count === 0 ? 50 : 16
     objectName: 'credentialsView'
     Material.background: getBackgroundColor()
+
+    contentHeight: grid.contentHeight
+    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+    ScrollBar.vertical: ScrollBar {
+        interactive: true
+        width: 5
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+    }
 
     property string title: ""
 
@@ -59,9 +70,7 @@ Pane {
 
         onCurrentItemChanged: app.currentCredentialCard = currentItem
         visible: entries.count > 0
-        ScrollBar.vertical: ScrollBar {
-            width: 5
-        }
+
         keyNavigationWraps: true
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
