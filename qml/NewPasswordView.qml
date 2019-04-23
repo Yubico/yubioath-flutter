@@ -27,21 +27,16 @@ Pane {
 
         ColumnLayout {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Image {
+            StyledImage {
                 id: lock
-                sourceSize.width: 60
                 Layout.alignment: parent.left | Qt.AlignVCenter
                 Layout.topMargin: 20
                 Layout.leftMargin: -11
                 Layout.bottomMargin: 10
-                fillMode: Image.PreserveAspectFit
+                iconWidth: 80
                 source: "../images/lock.svg"
-                ColorOverlay {
-                    source: lock
-                    color: app.isDark(
-                               ) ? defaultLightForeground : app.defaultLightOverlay
-                    anchors.fill: lock
-                }
+                color: app.isDark(
+                           ) ? defaultLightForeground : defaultLightOverlay
             }
             Label {
                 text: "Set a new password"

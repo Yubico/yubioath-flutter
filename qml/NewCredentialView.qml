@@ -212,25 +212,13 @@ Pane {
                 ToolButton {
                     id: showAdvancedBtn
                     onClicked: showAdvanced ? showAdvanced = false : showAdvanced = true
-
+                    icon.width: 24
+                    icon.source: showAdvanced ? "../images/up.svg" : "../images/down.svg"
+                    icon.color: isDark() ? yubicoWhite : yubicoGrey
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         enabled: false
-                    }
-
-                    Image {
-                        id: downIcon
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        Layout.maximumWidth: 150
-                        fillMode: Image.PreserveAspectFit
-                        source: showAdvanced ? "../images/up.svg" : "../images/down.svg"
-                        ColorOverlay {
-                            source: downIcon
-                            color: isDark() ? yubicoWhite : yubicoGrey
-                            anchors.fill: downIcon
-                        }
                     }
                 }
 
