@@ -38,6 +38,10 @@ ScrollView {
 
     property string title: "Settings"
 
+    StyledBusyIndicator {
+        id: busy
+    }
+
     ListModel {
         id: themes
 
@@ -325,6 +329,7 @@ ScrollView {
                                        "Are you sure?",
                                        "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",
                                        function () {
+                                           busy.running = true
                                            yubiKey.reset(function (resp) {
                                                if (resp.success) {
                                                    entries.clear()
@@ -336,6 +341,7 @@ ScrollView {
                                                                resp.error_id)
                                                    console.log(resp.error_id)
                                                }
+                                               busy.running = false
                                            })
                                        })
                     }
