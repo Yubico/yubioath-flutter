@@ -1,6 +1,20 @@
 import QtQuick 2.9
 
-ListModel {
+SortedListModel {
+
+    compareFunc: compareFunction
+    onDataChanged: sort()
+    function compareFunction(a, b) {
+
+        function getSortableName(credential) {
+            return (credential.issuer
+                    || '') + (credential.name
+                              || '') + '/' + (credential.period || '')
+        }
+
+        return getSortableName(a.credential).localeCompare(getSortableName(
+                                                               b.credential))
+    }
 
     function updateEntry(entry) {
         for (var j = 0; j < count; j++) {

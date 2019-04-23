@@ -57,20 +57,6 @@ Timer {
         }
     }
 
-    function sortEntries(entries) {
-
-        function getSortableName(credential) {
-            return (credential.issuer
-                    || '') + (credential.name
-                              || '') + '/' + (credential.period || '')
-        }
-
-        return entries.sort(function (a, b) {
-            return getSortableName(a.credential).localeCompare(
-                        getSortableName(b.credential))
-        })
-    }
-
     function calculateAll() {
 
         if (settings.otpMode) {
@@ -88,9 +74,6 @@ Timer {
         } else {
             yubiKey.calculateAll(function (resp) {
                 if (resp.success) {
-                    // Sort the raw entries, because it's not obvious how to
-                    // sort them when they are inside the ListModel.
-                    var sortedEntries = sortEntries(resp.entries)
                     entries.updateEntries(resp.entries)
                     updateNextCalculateAll()
                 } else {
