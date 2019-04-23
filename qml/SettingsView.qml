@@ -38,10 +38,6 @@ ScrollView {
 
     property string title: "Settings"
 
-    StyledBusyIndicator {
-        id: busy
-    }
-
     ListModel {
         id: themes
 
@@ -344,6 +340,9 @@ ScrollView {
                                                busy.running = false
                                            })
                                        })
+                    }
+                    StyledBusyIndicator {
+                        id: busy
                     }
                 }
             }
