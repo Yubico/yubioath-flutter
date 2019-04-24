@@ -21,10 +21,7 @@ ScrollView {
     }
 
     function isKeyAvailable() {
-        if (yubiKey.currentDevice !== undefined)
-            return true
-        else
-            return false
+        return !!yubiKey.currentDevice
     }
 
     function deviceInfo() {
