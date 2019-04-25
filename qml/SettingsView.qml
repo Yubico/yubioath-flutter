@@ -230,6 +230,9 @@ ScrollView {
                         Material.foreground: formText
                     }
                 }
+
+
+                /*
                 RowLayout {
                     Label {
                         text: "Local Password"
@@ -244,10 +247,11 @@ ScrollView {
                         checked: false
                         text: "Remember password"
                         padding: 0
-                        onCheckStateChanged: settings.closeToTray = checked
+                        //onCheckStateChanged: TODO: clear remembered password if deselected
                         Material.foreground: formText
                     }
                 }
+                */
             }
         }
 
@@ -291,7 +295,7 @@ ScrollView {
 
                 RowLayout {
                     Label {
-                        text: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
+                        text: "Password"
                         font.pixelSize: 10
                         color: formLabel
                     }

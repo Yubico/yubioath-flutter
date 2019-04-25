@@ -22,8 +22,7 @@ Pane {
                 iconWidth: 200
                 iconHeight: 120
                 source: "../images/yubikeys-transparent.png"
-                color: app.isDark(
-                           ) ? defaultLightForeground : defaultLightOverlay
+                color: app.isDark() ? formUnderline : defaultLightOverlay
             }
             Label {
                 text: yubiKey.availableDevices.length

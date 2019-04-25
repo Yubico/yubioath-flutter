@@ -9,8 +9,9 @@ ScrollView {
     padding: entries.count === 0 ? 50 : 0
     topPadding: entries.count === 0 ? 50 : 16
     objectName: 'credentialsView'
-    Material.background: getBackgroundColor()
-
+    background: Rectangle {
+        color: getBackgroundColor()
+    }
     contentHeight: grid.contentHeight
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {

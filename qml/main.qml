@@ -24,19 +24,21 @@ ApplicationWindow {
     readonly property string defaultDark: "#303030"
     readonly property string defaultDarkLighter: "#383838"
     readonly property string defaultDarkOverlay: "#4a4a4a"
-    readonly property string defaultDarkSelection: "#4a4a4a"
     readonly property string defaultDarkForeground: "#fafafa"
 
     readonly property string defaultLight: "#f0f0f0"
     readonly property string defaultLightDarker: "#ffffff"
     readonly property string defaultLightOverlay: "#bbbbbb"
-    readonly property string defaultLightSelection: "#eeeeee"
     readonly property string defaultLightForeground: "#565656"
 
     property string formUnderline: "#d8d8d8"
     property string formLabel: "#c0c0c0"
     property string formText: isDark() ? "#f0f0f0" : "#7e7e7e"
     property string formDropShdaow: isDark() ? "#282828" : "#d3d3d3"
+
+    property string credentialCardCurrentItem: isDark() ? "#4a4a4a" : "#eeeeee"
+    property string credentialCardHovered: isDark() ? "#333333" : "#f9f9f9"
+    property string credentialCardNormal: isDark() ? "#383838" : "#ffffff"
 
     property var currentCredentialCard
 
