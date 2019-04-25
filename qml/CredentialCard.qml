@@ -28,16 +28,22 @@ Pane {
                                                   && !touchCredential)
     property bool touchCredential: credential && credential.touch
 
+    function getBackgroundColor() {
+        if (credentialCard.GridView.isCurrentItem) {
+            return credentialCardCurrentItem
+        } else if (cardMouseArea.containsMouse) {
+            return credentialCardHovered
+        } else {
+            return credentialCardNormal
+        }
+    }
+
     background: Rectangle {
-        color: if (credentialCard.GridView.isCurrentItem) {
-                   return app.isDark(
-                               ) ? app.defaultDarkSelection : app.defaultLightSelection
-               } else {
-                   return app.isDark(
-                               ) ? app.defaultDarkLighter : app.defaultLightDarker
-               }
+        color: getBackgroundColor()
 
         MouseArea {
+            id: cardMouseArea
+            hoverEnabled: true
             anchors.fill: parent
             onClicked: credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
             onDoubleClicked: calculateCard(true)
