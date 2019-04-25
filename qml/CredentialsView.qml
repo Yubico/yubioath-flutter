@@ -10,7 +10,11 @@ ScrollView {
     topPadding: entries.count === 0 ? 50 : 16
     objectName: 'credentialsView'
     background: Rectangle {
-        color: getBackgroundColor()
+        color: if (isDark()) {
+                   return entries.count === 0 ? defaultDarkLighter : defaultDark
+               } else {
+                   return entries.count === 0 ? defaultLight : defaultLight
+               }
     }
     contentHeight: grid.contentHeight
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -24,14 +28,6 @@ ScrollView {
 
     property string title: ""
 
-    function getBackgroundColor() {
-        if (isDark()) {
-            return entries.count === 0 ? defaultDarkLighter : defaultDark
-        } else {
-            return entries.count === 0 ? defaultLight : defaultLight
-        }
-    }
-
     function filteredCredentials() {
         if (entries !== null && toolBar.searchField.text.length > 0) {
             var filteredEntries = entriesComponent.createObject(app, {
@@ -39,9 +35,12 @@ ScrollView {
                                                                 })
             for (var i = 0; i < entries.count; i++) {
                 var entry = entries.get(i)
-                if (entry.credential.key.toLowerCase().indexOf(
-                            toolBar.searchField.text.toLowerCase()) !== -1) {
-                    filteredEntries.append(entry)
+                if (entry !== null && entry !== undefined) {
+                    if (entry.credential.key.toLowerCase().indexOf(
+                                toolBar.searchField.text.toLowerCase(
+                                    )) !== -1) {
+                        filteredEntries.append(entry)
+                    }
                 }
             }
             return filteredEntries
@@ -72,7 +71,7 @@ ScrollView {
         onCurrentItemChanged: app.currentCredentialCard = currentItem
         visible: entries.count > 0
 
-        keyNavigationWraps: true
+        keyNavigationWraps: false
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
         interactive: true

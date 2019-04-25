@@ -10,6 +10,7 @@ ScrollView {
     contentWidth: app.width
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {
+        interactive: true
         width: 5
         anchors.top: parent.top
         anchors.bottom: parent.bottom
