@@ -26,7 +26,7 @@ Pane {
             }
             Label {
                 text: yubiKey.availableDevices.length
-                      === 0 ? "Insert your YubiKey" : "Multiple YubiKeys detected"
+                      > 1 ? "Multiple YubiKeys detected" : "Insert your YubiKey"
                 font.pixelSize: 13
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             }

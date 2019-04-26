@@ -30,8 +30,7 @@ Timer {
                         // For now we only show credentials if there is 1 device
                         if (yubiKey.availableDevices.length === 1) {
                             yubiKey.currentDevice = resp.devices[0]
-                            navigator.goToCredentials()
-                            calculateAll()
+                            calculateAll(navigator.goToCredentials)
                         } else {
                             // No or too many devices, clear credentials,
                             // clear current device,
@@ -59,7 +58,7 @@ Timer {
         }
     }
 
-    function calculateAll() {
+    function calculateAll(cb) {
 
         if (settings.otpMode) {
             yubiKey.otpCalculateAll(function (resp) {
@@ -71,6 +70,9 @@ Timer {
                     navigator.snackBarError(navigator.getErrorMessage(
                                                 resp.error_id))
                     console.log("otpCalculateAll failed:", resp.error_id)
+                }
+                if (cb) {
+                    cb()
                 }
             })
         } else {
@@ -89,6 +91,10 @@ Timer {
                                                     resp.error_id))
                         console.log("calculateAll failed:", resp.error_id)
                     }
+
+                }
+                if (cb) {
+                    cb()
                 }
             })
         }
