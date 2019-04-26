@@ -9,7 +9,7 @@ ToolBar {
 
     background: Rectangle {
         color: isDark() ? defaultDark : defaultLight
-        opacity: 0.9
+        opacity: 0.8
         anchors {
             top: parent.top
             topMargin: -1
@@ -144,21 +144,19 @@ ToolBar {
 
                 onTextChanged: forceActiveFocus()
 
-                Keys.onEscapePressed: {
-                    text = ""
+                function exitSearchMode(clearInput) {
+                    text = clearInput ? "" : text
                     focus = false
+                    Keys.forwardTo = navigator
                     navigator.forceActiveFocus()
                 }
-                Keys.onDownPressed: {
-                    focus = false
-                    forwardTo: navigator
-                    navigator.forceActiveFocus()
-                }
-                Keys.onReturnPressed: {
-                    focus = false
-                    forwardTo: navigator
-                    navigator.forceActiveFocus()
-                }
+
+                Keys.onEscapePressed: exitSearchMode(true)
+                Keys.onTabPressed: exitSearchMode(false)
+                Keys.onReturnPressed: exitSearchMode(false)
+                Keys.onEnterPressed: exitSearchMode(false)
+                Keys.onDownPressed: exitSearchMode(false)
+                Keys.onUpPressed: exitSearchMode(false)
 
                 StyledImage {
                     id: searchIcon
