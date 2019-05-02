@@ -70,18 +70,12 @@ Pane {
         }
         ColumnLayout {
             Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
-            TextField {
+            StyledTextField {
                 id: passwordField
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                Layout.fillWidth: true
                 placeholderText: qsTr("Password")
-                background.width: parent.width
                 echoMode: TextInput.Password
                 Keys.onEnterPressed: validate()
                 Keys.onReturnPressed: validate()
-                Material.accent: isDark() ? defaultLight : "#5f6368"
-                selectedTextColor: isDark() ? defaultDark : defaultLight
-                focus: true
             }
             Item {
                 id: item1

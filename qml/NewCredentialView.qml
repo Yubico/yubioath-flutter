@@ -98,41 +98,26 @@ Pane {
             anchors.rightMargin: 0
 
             //            spacing: 0
-            TextField {
+            StyledTextField {
                 id: issuerLbl
                 placeholderText: "Issuer"
                 Layout.fillWidth: true
-                selectByMouse: true
                 text: credential && credential.issuer ? credential.issuer : ""
-                selectedTextColor: isDark(
-                                       ) ? defaultLightForeground : defaultDarkForeground
-                Material.accent: isDark(
-                                     ) ? defaultDarkForeground : defaultLightForeground
                 visible: !settings.otpMode
             }
-            TextField {
+            StyledTextField {
                 id: nameLbl
                 placeholderText: "Account name"
                 Layout.fillWidth: true
-                selectByMouse: true
                 text: credential && credential.name ? credential.name : ""
-                selectedTextColor: isDark(
-                                       ) ? defaultLightForeground : defaultDarkForeground
-                Material.accent: isDark(
-                                     ) ? defaultDarkForeground : defaultLightForeground
                 visible: !settings.otpMode
             }
-            TextField {
+            StyledTextField {
                 id: secretKeyLbl
                 placeholderText: "Secret key"
                 Layout.fillWidth: true
-                selectByMouse: true
                 text: credential && credential.secret ? credential.secret : ""
                 visible: manualEntry
-                selectedTextColor: isDark(
-                                       ) ? defaultLightForeground : defaultDarkForeground
-                Material.accent: isDark(
-                                     ) ? defaultDarkForeground : defaultLightForeground
                 validator: RegExpValidator {
                     regExp: /[2-7a-zA-Z ]+=*/
                 }
@@ -193,7 +178,7 @@ Pane {
                     text: "Period"
                     Layout.fillWidth: true
                 }
-                TextField {
+                StyledTextField {
                     id: periodLbl
                     placeholderText: "Period"
                     Layout.fillWidth: false
@@ -204,7 +189,6 @@ Pane {
                         bottom: 15
                         top: 60
                     }
-                    selectByMouse: true
                 }
                 visible: manualEntry && showAdvanced && !settings.otpMode
             }
