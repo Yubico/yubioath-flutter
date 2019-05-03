@@ -8,6 +8,7 @@ ScrollView {
     objectName: 'settingsView'
     id: pane
     contentWidth: app.width
+    contentHeight: app.height
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {
         interactive: true
@@ -31,6 +32,21 @@ ScrollView {
                         yubiKey.currentDevice.serial)
         } else {
             return "Device"
+        }
+    }
+
+    function setPassword() {
+        if (!yubiKey.locked
+                && (newPasswordField.text.length > 0
+                    && (newPasswordField.text === confirmPasswordField.text))) {
+            yubiKey.setPassword(newPasswordField.text, false, function (resp) {
+                if (resp.success) {
+                    navigator.snackBar("Password set")
+                } else {
+                    navigator.snackBarError(resp.error_id)
+                    console.log(resp.error_id)
+                }
+            })
         }
     }
 
@@ -145,6 +161,7 @@ ScrollView {
                     Label {
                         Layout.fillWidth: true
                         font.pixelSize: 11
+                        font.italic: true
                         color: formLabel
                         text: "Note: OTP mode allows usage of the configurable OTP slots on the YubiKey, this should be considered for special usecases only and is not recommended for normal use."
                         wrapMode: Text.WordWrap
@@ -264,6 +281,9 @@ ScrollView {
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
             Layout.topMargin: 8
             Layout.bottomMargin: 8
+            anchors.top: appPane.bottom
+            anchors.topMargin: 16
+
             background: Rectangle {
                 color: isDark() ? defaultDarkLighter : defaultLightDarker
                 layer.enabled: true
@@ -280,7 +300,7 @@ ScrollView {
             ColumnLayout {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: app.width - 32 < 600 ? app.width - 32 : 600
-                spacing: 8
+                spacing: 16
 
                 RowLayout {
                     Label {
@@ -294,59 +314,117 @@ ScrollView {
                     }
                 }
 
-                RowLayout {
-                    Label {
-                        text: "Password"
-                        font.pixelSize: 10
-                        color: formLabel
+                StyledExpansionPanel {
+                    label: yubiKey.hasPassword ? "Change Password" : "Set Password"
+                    description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
+
+                    ColumnLayout {
+                        visible: parent.isExpanded
+                        Layout.alignment: Qt.AlignRight
+
+                        StyledTextField {
+                            id: currentPasswordField
+                            visible: yubiKey.hasPassword ? true : false
+                            placeholderText: qsTr("Current Password")
+                            echoMode: TextInput.Password
+                            Keys.onEnterPressed: setPassword()
+                            Keys.onReturnPressed: setPassword()
+                        }
+                        StyledTextField {
+                            id: newPasswordField
+                            placeholderText: qsTr("New Password")
+                            echoMode: TextInput.Password
+                            Keys.onEnterPressed: setPassword()
+                            Keys.onReturnPressed: setPassword()
+                        }
+                        StyledTextField {
+                            id: confirmPasswordField
+                            placeholderText: qsTr("Confirm Password")
+                            echoMode: TextInput.Password
+                            Keys.onEnterPressed: setPassword()
+                            Keys.onReturnPressed: setPassword()
+                        }
+                        StyledButton {
+                            Layout.alignment: Qt.AlignRight
+                            text: YubiKey.hasPassword ? "Change Password" : "Set Password"
+                            flat: true
+                            enabled: !yubiKey.locked
+                                     && (newPasswordField.text.length > 0
+                                         && (newPasswordField.text
+                                             === confirmPasswordField.text)) ? true : false
+                            onClicked: setPassword()
+                        }
                     }
                 }
 
-                RowLayout {
-                    StyledButton {
-                        text: YubiKey.hasPassword ? "Remove Password" : "Set Password"
-                        flat: false
-                        font.pixelSize: 11
-                        onClicked: navigator.goToNewPasswordView()
+                StyledExpansionPanel {
+                    label: "Manage Passwords"
+                    description: "Clear password on this YubiKey or forget the locally remembered password."
+
+                    RowLayout {
+                        visible: parent.isExpanded
+                        Layout.alignment: Qt.AlignRight
+
+                        StyledButton {
+                            Layout.alignment: Qt.AlignRight
+                            text: "Forget Password"
+                            flat: true
+                            enabled: !yubiKey.locked
+                                     && (newPasswordField.text.length > 0
+                                         && (newPasswordField.text
+                                             === confirmPasswordField.text)) ? true : false
+                            onClicked: setPassword()
+                        }
+                        StyledButton {
+                            Layout.alignment: Qt.AlignRight
+                            text: "Clear Password"
+                            flat: true
+                            enabled: !yubiKey.locked
+                                     && (newPasswordField.text.length > 0
+                                         && (newPasswordField.text
+                                             === confirmPasswordField.text)) ? true : false
+                            onClicked: setPassword()
+                        }
                     }
                 }
 
-                RowLayout {
-                    Label {
-                        text: "Reset OATH Application"
-                        font.pixelSize: 10
-                        color: formLabel
-                    }
-                }
-                RowLayout {
-                    StyledButton {
-                        text: "Reset"
-                        flat: false
-                        font.pixelSize: 11
-                        onClicked: navigator.confirm(
-                                       "Are you sure?",
-                                       "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",
-                                       function () {
-                                           busy.running = true
-                                           yubiKey.reset(function (resp) {
-                                               if (resp.success) {
-                                                   entries.clear()
-                                                   navigator.snackBar(
-                                                               "Reset completed")
-                                               } else {
-                                                   navigator.snackBarError(
-                                                               navigator.getErrorMessage(
-                                                                   resp.error_id))
-                                                   console.log("reset failed:",
-                                                               resp.error_id)
-                                               }
-                                               busy.running = false
+                StyledExpansionPanel {
+                    label: "Reset OATH Application"
+                    description: "Warning: Resetting the OATH application will delete all credentials and restore factory defaults."
+
+                    RowLayout {
+                        visible: parent.isExpanded
+                        Layout.alignment: Qt.AlignRight
+
+                        StyledButton {
+                            text: "Reset"
+                            Layout.alignment: Qt.AlignRight
+                            flat: true
+                            onClicked: navigator.confirm(
+                                           "Are you sure?",
+                                           "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",
+                                           function () {
+                                               busy.running = true
+                                               yubiKey.reset(function (resp) {
+                                                   if (resp.success) {
+                                                       entries.clear()
+                                                       navigator.snackBar(
+                                                                   "Reset completed")
+                                                   } else {
+                                                       navigator.snackBarError(
+                                                                   navigator.getErrorMessage(
+                                                                       resp.error_id))
+                                                       console.log("reset failed:",
+                                                                   resp.error_id)
+                                                   }
+                                                   busy.running = false
+                                               })
                                            })
-                                       })
-                    }
-                    StyledBusyIndicator {
-                        id: busy
-                        implicitHeight: 30
+                        }
+                        StyledBusyIndicator {
+                            id: busy
+                            implicitHeight: 30
+                        }
                     }
                 }
             }

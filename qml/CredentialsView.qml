@@ -16,7 +16,7 @@ ScrollView {
                    return entries.count === 0 ? defaultLight : defaultLight
                }
     }
-    contentHeight: grid.contentHeight
+
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {
         interactive: true
