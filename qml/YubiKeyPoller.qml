@@ -82,10 +82,11 @@ Timer {
                     updateNextCalculateAll()
                 } else {
                     if (resp.error_id === 'access_denied') {
+
                         entries.clear()
                         yubiKey.hasPassword = true
                         yubiKey.locked = true
-                        navigator.goToEnterPassword()
+                        cb = navigator.goToEnterPassword
                     } else {
                         navigator.snackBarError(navigator.getErrorMessage(
                                                     resp.error_id))
