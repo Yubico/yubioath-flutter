@@ -36,11 +36,7 @@ Pane {
                                      requireTouchCheckBox.checked,
                                      function (resp) {
                                          if (resp.success) {
-                                             // TODO: This should be a callback or similar,
-                                             // so that the view changes after the entries
-                                             // are refreshed.
-                                             yubiKeyPoller.calculateAll()
-                                             navigator.goToCredentials()
+                                             yubiKeyPoller.calculateAll(navigator.goToCredentials)
                                              navigator.snackBar(
                                                          "Credential added")
                                          } else {
@@ -63,8 +59,7 @@ Pane {
                                           // TODO: This should be a callback or similar,
                                           // so that the view changes after the entries
                                           // are refreshed.
-                                          yubiKeyPoller.calculateAll()
-                                          navigator.goToCredentials()
+                                          yubiKeyPoller.calculateAll(navigator.goToCredentials)
                                           navigator.snackBar("Credential added")
                                       } else {
                                           navigator.snackBarError(
