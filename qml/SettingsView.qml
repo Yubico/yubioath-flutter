@@ -281,8 +281,6 @@ ScrollView {
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
             Layout.topMargin: 8
             Layout.bottomMargin: 8
-            anchors.top: appPane.bottom
-            anchors.topMargin: 16
 
             background: Rectangle {
                 color: isDark() ? defaultDarkLighter : defaultLightDarker
