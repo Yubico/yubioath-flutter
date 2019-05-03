@@ -88,7 +88,7 @@ after_build:
   # Create zip for deployment
   - set ARTIFACT_NAME=%APPVEYOR_REPO_BRANCH%-%WIN_ARCH%
   - if defined APPVEYOR_REPO_TAG_NAME set ARTIFACT_NAME=%APPVEYOR_REPO_TAG_NAME%-%WIN_ARCH%
-  - 7z a yubioath-desktop-%ARTIFACT_NAME%-win.zip .\release\*
+  - 7z a yubioath-desktop-%ARTIFACT_NAME%-win.zip release
   - cd %APPVEYOR_BUILD_FOLDER%
 
 artifacts:
