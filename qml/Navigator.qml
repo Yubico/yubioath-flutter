@@ -87,6 +87,8 @@ StackView {
             return qsTr('Wrong password')
         case 'no_space':
             return qsTr('No space available')
+        case 'no_current_device':
+            return qsTr('No YubiKey found')
         case 'open_device_failed':
             return qsTr('Failed to connect to YubiKey')
         case 'timeout':

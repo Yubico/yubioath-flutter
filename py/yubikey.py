@@ -159,12 +159,18 @@ class Controller(object):
                     setattr(self, f, as_json(catch_error(func)))
 
     def _open_oath(self):
-        return OathContextManager(
-            self._current_desc.open_device(TRANSPORT.CCID))
+        if self._current_desc:
+            return OathContextManager(
+                self._current_desc.open_device(TRANSPORT.CCID))
+        else:
+            raise ValueError('no_current_device')
 
     def _open_otp(self):
-        return OtpContextManager(
-            self._current_desc.open_device(TRANSPORT.OTP))
+        if self._current_desc:
+            return OtpContextManager(
+                self._current_desc.open_device(TRANSPORT.OTP))
+        else:
+            raise ValueError('no_current_device')
 
     def _update_desc_fps(self):
         descs = get_descriptors()
