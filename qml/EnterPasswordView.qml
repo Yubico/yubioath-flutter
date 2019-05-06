@@ -21,7 +21,7 @@ Pane {
                          function (resp) {
                              if (resp.success) {
                                  yubiKey.locked = false
-                                 navigator.goToCredentials()
+                                 yubiKeyPoller.calculateAll(navigator.goToCredentials)
                              } else {
                                  clear()
                                  navigator.snackBarError(
