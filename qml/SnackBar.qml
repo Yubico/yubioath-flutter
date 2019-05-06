@@ -10,18 +10,24 @@ ToolTip {
     property string buttonText: "Dismiss"
     property string buttonColor: yubicoGreen
     property string backgroundColor: "#333333"
+    property bool fullWidth: false
+    readonly property int dynamicWidth: 480
+    readonly property int dynamicMargin: 16
 
     id: tooltip
     timeout: 5000
     x: (app.width - width) / 2
     y: app.height
-    width: 300
+    width: fullWidth ? app.width : app.width - dynamicMargin
+                       < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+    leftMargin: fullWidth ? 0 : 8
+    rightMargin: fullWidth ? 0 : 8
+    bottomMargin: fullWidth ? 0 : 8
     height: 48
-    bottomMargin: 10
     padding: 0
     background: Rectangle {
         color: backgroundColor
-        radius: 4
+        radius: fullWidth ? 0 : 4
         layer.enabled: true
         layer.effect: DropShadow {
             radius: 4
@@ -33,31 +39,28 @@ ToolTip {
         }
     }
 
-    Item {
+    RowLayout {
+        spacing: 8
         anchors.fill: parent
 
         Label {
             id: snackLbl
             text: message
-            anchors.verticalCenterOffset: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 8
-            anchors.verticalCenter: parent.verticalCenter
             color: isDark() ? defaultDarkForeground : defaultLight
             opacity: 0.87
             font.pixelSize: 14
-            leftPadding: 0
-            rightPadding: 8
+            leftPadding: 8
+            rightPadding: 0
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
         }
 
         StyledButton {
             id: snackBtn
             flat: true
             text: buttonText
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             Material.foreground: buttonColor
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: 0
             onClicked: tooltip.close()
         }
     }

@@ -16,7 +16,7 @@ Item {
     id: textFieldContainer
     height: 50
     implicitHeight: 50
-    implicitWidth: parent.width
+    width: parent.width
     Layout.fillWidth: true
 
     Column {
@@ -31,7 +31,7 @@ Item {
         TextField {
             id: textField
             Layout.topMargin: 10
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             selectByMouse: true
             implicitWidth: textFieldContainer.width
             font.pixelSize: 13

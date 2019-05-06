@@ -9,26 +9,7 @@ ToolBar {
 
     background: Rectangle {
         color: isDark() ? defaultDark : defaultLight
-        opacity: 0.8
-        anchors {
-            top: parent.top
-            topMargin: -1
-            left: parent.left
-            leftMargin: -1
-            right: parent.right
-            rightMargin: -1
-            bottom: parent.bottom
-            bottomMargin: 0
-        }
-    }
-    layer.enabled: true
-    layer.effect: DropShadow {
-        radius: 4
-        samples: radius * 2
-        verticalOffset: 3
-        source: toolBar
-        color: isDark() ? "#282828" : "#d3d3d3"
-        transparentBorder: true
+        opacity: 0.7
     }
 
     function getToolbarColor(isActive) {

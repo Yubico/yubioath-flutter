@@ -7,7 +7,7 @@ import QtGraphicalEffects 1.0
 Pane {
     id: pane
     objectName: 'enterPasswordView'
-    padding: 50
+    padding: 32
 
     property string title: "Unlock YubiKey"
 
@@ -36,7 +36,7 @@ Pane {
         spacing: 20
 
         ColumnLayout {
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignHLeft | Qt.AlignVCenter
             StyledImage {
                 id: lock
                 Layout.alignment: parent.left | Qt.AlignVCenter
@@ -56,16 +56,18 @@ Pane {
                 font.bold: true
                 lineHeight: 1.5
                 Layout.alignment: Qt.AlignHLeft | Qt.AlignVCenter
+                color: formLabel
             }
             Label {
                 text: "To prevent unauthorized access this YubiKey is protected with a password. Enter the password to continue."
                 Layout.minimumWidth: 320
-                Layout.maximumWidth: app.width - 100 < 600 ? app.width - 100 : 600
+                Layout.maximumWidth: app.width - 64 < 600 ? app.width - 64 : 600
                 Layout.rowSpan: 1
                 lineHeight: 1.1
                 wrapMode: Text.WordWrap
                 font.pixelSize: 12
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                color: formText
             }
         }
         ColumnLayout {
@@ -88,6 +90,7 @@ Pane {
                     text: "Remember password"
                     anchors.left: parent.left
                     anchors.leftMargin: 1
+                    leftPadding: 0
                 }
                 StyledButton {
                     text: "Unlock"

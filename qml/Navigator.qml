@@ -141,8 +141,7 @@ StackView {
     Component {
         id: snackBarErrorComponent
         SnackBar {
-            buttonColor: yubicoWhite
-            backgroundColor: yubicoRed
+            buttonColor: yubicoRed
         }
     }
 }
