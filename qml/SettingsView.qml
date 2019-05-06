@@ -12,7 +12,6 @@ ScrollView {
     objectName: 'settingsView'
     id: pane
     contentWidth: app.width
-    contentHeight: app.height
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {
         interactive: true
@@ -20,10 +19,6 @@ ScrollView {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-    }
-
-    background: Rectangle {
-        color: defaultBackground
     }
 
     function isKeyAvailable() {
@@ -39,19 +34,42 @@ ScrollView {
         }
     }
 
-    function setPassword() {
-        if (!yubiKey.locked
-                && (newPasswordField.text.length > 0
-                    && (newPasswordField.text === confirmPasswordField.text))) {
-            yubiKey.setPassword(newPasswordField.text, false, function (resp) {
-                if (resp.success) {
-                    navigator.snackBar("Password set")
-                } else {
-                    navigator.snackBarError(resp.error_id)
-                    console.log(resp.error_id)
-                }
-            })
+    function forgetPassword() {
+        console.log("TODO: FORGET PASSWORD")
+    }
+
+    function clearPassword() {
+        console.log("TODO: CLEAR PASSWORD")
+    }
+
+    function submitPassword() {
+        if (yubiKey.hasPassword) {
+            changePassword()
+        } else {
+            setPassword()
         }
+    }
+
+    function changePassword() {
+        yubiKey.validate(currentPasswordField.text, false, function (resp) {
+            if (resp.success) {
+                setPassword()
+            } else {
+                navigator.snackBarError(getErrorMessage(resp.error_id))
+                console.log(resp.error_id)
+            }
+        })
+    }
+
+    function setPassword() {
+        yubiKey.setPassword(newPasswordField.text, false, function (resp) {
+            if (resp.success) {
+                navigator.snackBar("Password set")
+            } else {
+                navigator.snackBarError(getErrorMessage(resp.error_id))
+                console.log(resp.error_id)
+            }
+        })
     }
 
     property string title: "Settings"
@@ -76,8 +94,8 @@ ScrollView {
     spacing: 8
     padding: 0
 
-    //topPadding: 16
     ColumnLayout {
+        id: content
         anchors.fill: parent
         Layout.fillHeight: true
         Layout.fillWidth: true
@@ -253,32 +271,9 @@ ScrollView {
                         Material.foreground: formText
                     }
                 }
-
-
-                /*
-                RowLayout {
-                    Label {
-                        text: "Local Password"
-                        font.pixelSize: 10
-                        color: formLabel
-                    }
-                }
-
-                RowLayout {
-                    CheckBox {
-                        id: rememberPasswordCheckbox
-                        checked: false
-                        text: "Remember password"
-                        padding: 0
-                        //onCheckStateChanged: TODO: clear remembered password if deselected
-                        Material.foreground: formText
-                    }
-                }
-                */
             }
         }
 
-        //TODO: all device settings should be disabled/hidden if no yubikey is available
         Pane {
             visible: isKeyAvailable()
             id: keyPane
@@ -331,32 +326,42 @@ ScrollView {
                             visible: yubiKey.hasPassword ? true : false
                             labelText: qsTr("Current Password")
                             echoMode: TextInput.Password
-                            Keys.onEnterPressed: setPassword()
-                            Keys.onReturnPressed: setPassword()
+                            Keys.onEnterPressed: submitPassword()
+                            Keys.onReturnPressed: submitPassword()
                         }
                         StyledTextField {
                             id: newPasswordField
                             labelText: qsTr("New Password")
                             echoMode: TextInput.Password
-                            Keys.onEnterPressed: setPassword()
-                            Keys.onReturnPressed: setPassword()
+                            Keys.onEnterPressed: submitPassword()
+                            Keys.onReturnPressed: submitPassword()
                         }
                         StyledTextField {
                             id: confirmPasswordField
                             labelText: qsTr("Confirm Password")
                             echoMode: TextInput.Password
-                            Keys.onEnterPressed: setPassword()
-                            Keys.onReturnPressed: setPassword()
+                            Keys.onEnterPressed: submitPassword()
+                            Keys.onReturnPressed: submitPassword()
                         }
                         StyledButton {
                             Layout.alignment: Qt.AlignRight
-                            text: YubiKey.hasPassword ? "Change Password" : "Set Password"
+                            text: yubiKey.hasPassword ? "Change Password" : "Set Password"
                             flat: true
-                            enabled: !yubiKey.locked
-                                     && (newPasswordField.text.length > 0
-                                         && (newPasswordField.text
-                                             === confirmPasswordField.text)) ? true : false
-                            onClicked: setPassword()
+                            enabled: {
+                                if (!yubiKey.locked) {
+                                    if (yubiKey.hasPassword
+                                            && currentPasswordField.text.length == 0) {
+                                        return false
+                                    }
+                                    if (newPasswordField.text.length > 0
+                                            && (newPasswordField.text
+                                                === confirmPasswordField.text)) {
+                                        return true
+                                    }
+                                }
+                                return false
+                            }
+                            onClicked: submitPassword()
                         }
                     }
                 }
@@ -364,6 +369,7 @@ ScrollView {
                 StyledExpansionPanel {
                     label: "Manage Passwords"
                     description: "Clear password on this YubiKey or forget the locally remembered password."
+                    isEnabled: false
 
                     RowLayout {
                         visible: parent.isExpanded
@@ -372,22 +378,18 @@ ScrollView {
                         StyledButton {
                             Layout.alignment: Qt.AlignRight
                             text: "Forget Password"
+                            toolTipText: "Forget stored password on this computer"
                             flat: true
-                            enabled: !yubiKey.locked
-                                     && (newPasswordField.text.length > 0
-                                         && (newPasswordField.text
-                                             === confirmPasswordField.text)) ? true : false
-                            onClicked: setPassword()
+                            enabled: !yubiKey.hasPassword ? true : false // TODO: Better way to check for locally stored password?
+                            onClicked: forgetPassword()
                         }
                         StyledButton {
                             Layout.alignment: Qt.AlignRight
                             text: "Clear Password"
+                            toolTipText: "Clear password on YubiKey"
                             flat: true
-                            enabled: !yubiKey.locked
-                                     && (newPasswordField.text.length > 0
-                                         && (newPasswordField.text
-                                             === confirmPasswordField.text)) ? true : false
-                            onClicked: setPassword()
+                            enabled: !yubiKey.locked ? true : false
+                            onClicked: clearPassword()
                         }
                     }
                 }
@@ -395,6 +397,7 @@ ScrollView {
                 StyledExpansionPanel {
                     label: "Reset OATH Application"
                     description: "Warning: Resetting the OATH application will delete all credentials and restore factory defaults."
+                    isEnabled: false
 
                     RowLayout {
                         visible: parent.isExpanded
@@ -402,6 +405,7 @@ ScrollView {
 
                         StyledButton {
                             text: "Reset"
+                            toolTipText: "Reset to factory settings"
                             Layout.alignment: Qt.AlignRight
                             flat: true
                             onClicked: navigator.confirm(

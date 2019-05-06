@@ -10,7 +10,8 @@ ColumnLayout {
 
     property string label
     property string description
-    property bool isExpanded: false
+    property bool isEnabled: true
+    property bool isExpanded: !isEnabled ? true : false
 
     RowLayout {
 
@@ -39,6 +40,7 @@ ColumnLayout {
             icon.width: 24
             icon.source: isExpanded ? "../images/up.svg" : "../images/down.svg"
             icon.color: isDark() ? yubicoWhite : yubicoGrey
+            visible: isEnabled
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor

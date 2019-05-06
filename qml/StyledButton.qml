@@ -5,13 +5,26 @@ import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
 Button {
+
+    property alias toolTipText: buttonToolTip.text
+
     id: button
-    font.capitalization: button.flat ? Font.UpperCase : Font.MixedCase
+    font.capitalization: Font.MixedCase
     font.weight: Font.Medium
     font.pixelSize: 14
     Material.foreground: button.flat ? yubicoGreen : yubicoWhite
     Material.background: button.flat ? "transparent" : yubicoGreen
     Material.elevation: 0
+    ToolTip {
+        id: buttonToolTip
+        text: ""
+        delay: 1000
+        parent: button
+        visible: buttonToolTip.text.length > 0 && parent.hovered
+        Material.foreground: app.isDark() ? defaultDarkForeground : defaultLight
+        Material.background: app.isDark(
+                                 ) ? defaultDarkOverlay : defaultLightForeground
+    }
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor

@@ -89,8 +89,6 @@ ToolBar {
             id: searchBtn
             visible: showSearch
             Layout.leftMargin: 8
-            Layout.minimumWidth: 200
-            Layout.maximumWidth: 500
             Layout.minimumHeight: 30
             Layout.maximumHeight: 30
             Layout.fillWidth: true
@@ -154,6 +152,33 @@ ToolBar {
         RowLayout {
             spacing: 0
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+
+            ToolButton {
+                id: copyCredentialBtn
+                visible: shouldShowCredentialOptions()
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                onClicked: app.currentCredentialCard.calculateCard(true)
+
+                ToolTip {
+                    text: "Copy credential from YubiKey"
+                    delay: 1000
+                    parent: copyCredentialBtn
+                    visible: parent.hovered
+                    Material.foreground: app.isDark(
+                                             ) ? defaultDarkForeground : defaultLight
+                    Material.background: app.isDark(
+                                             ) ? defaultDarkOverlay : defaultLightForeground
+                }
+
+                icon.source: "../images/copy.svg"
+                icon.color: isDark() ? defaultLight : "#5f6368"
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
+            }
 
             ToolButton {
                 id: deleteCredentialBtn
