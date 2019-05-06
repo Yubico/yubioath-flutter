@@ -5,7 +5,12 @@ import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
 ColumnLayout {
+
+    readonly property int dynamicWidth: 600
+    readonly property int dynamicMargin: 64
+
     spacing: 20
+
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
@@ -13,6 +18,7 @@ ColumnLayout {
             source: "../images/people.svg"
             color: app.isDark() ? defaultLightForeground : defaultLightOverlay
             iconWidth: 80
+            Layout.leftMargin: -3
         }
 
         Label {
@@ -27,7 +33,8 @@ ColumnLayout {
         Label {
             text: "This YubiKey contains no credentials, how about adding some? For more information how it works please refer to yubico.com/authenticator."
             Layout.minimumWidth: 320
-            Layout.maximumWidth: app.width - 100 < 600 ? app.width - 100 : 600
+            Layout.maximumWidth: app.width - dynamicMargin
+                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             Layout.rowSpan: 1
             lineHeight: 1.1
             wrapMode: Text.WordWrap

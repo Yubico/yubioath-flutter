@@ -19,26 +19,29 @@ ApplicationWindow {
     readonly property string yubicoBlue: "#284c61"
     readonly property string yubicoWhite: "#ffffff"
     readonly property string yubicoGrey: "#939598"
-    readonly property string yubicoRed: "#e53935"
+    readonly property string yubicoRed: "#fd5552"
 
     readonly property string defaultDark: "#303030"
     readonly property string defaultDarkLighter: "#383838"
     readonly property string defaultDarkOverlay: "#4a4a4a"
     readonly property string defaultDarkForeground: "#fafafa"
 
-    readonly property string defaultLight: "#f0f0f0"
-    readonly property string defaultLightDarker: "#ffffff"
+    readonly property string defaultLight: "#f7f7f7" // "#f7f7f7"
+    readonly property string defaultLightDarker: "#ffffff" // "#ffffff"
     readonly property string defaultLightOverlay: "#bbbbbb"
     readonly property string defaultLightForeground: "#565656"
 
-    property string formUnderline: "#d8d8d8"
-    property string formLabel: "#c0c0c0"
-    property string formText: isDark() ? "#f0f0f0" : "#7e7e7e"
-    property string formDropShdaow: isDark() ? "#282828" : "#d3d3d3"
+    readonly property string defaultBackground: isDark() ? "#303030" : "#fefefe"
 
-    property string credentialCardCurrentItem: isDark() ? "#4a4a4a" : "#eeeeee"
-    property string credentialCardHovered: isDark() ? "#333333" : "#f9f9f9"
-    property string credentialCardNormal: isDark() ? "#383838" : "#ffffff"
+    property string formUnderline: "#d8d8d8"
+    property string formLabel: isDark() ? "#c0c0c0" : "#a0a0a0"
+    property string formText: isDark() ? "#f0f0f0" : "#7e7e7e"
+    property string formDropShdaow: isDark() ? "#2e2e2e" : "#e0e0e0"
+    property string formImageOverlay: isDark() ? "#d8d8d8" : "#727272"
+
+    property string credentialCardCurrentItem: isDark() ? "#4a4a4a" : "#f0f0f0"
+    property string credentialCardHovered: isDark() ? "#424242" : "#fbfbfb"
+    property string credentialCardNormal: isDark() ? "#3e3e3e" : "#ffffff"
 
     property var currentCredentialCard
 
@@ -47,7 +50,7 @@ ApplicationWindow {
     Material.accent: yubicoGreen
     Material.foreground: isDark(
                              ) ? defaultDarkForeground : defaultLightForeground
-    Material.background: isDark() ? defaultDarkLighter : defaultLight
+    Material.background: isDark() ? defaultDark : defaultLight
     header: StyledToolBar {
         id: toolBar
     }

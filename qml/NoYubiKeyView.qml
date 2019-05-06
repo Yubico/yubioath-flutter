@@ -22,13 +22,14 @@ Pane {
                 iconWidth: 200
                 iconHeight: 120
                 source: "../images/yubikeys-transparent.png"
-                color: app.isDark() ? formUnderline : defaultLightOverlay
+                color: formImageOverlay
             }
             Label {
                 text: yubiKey.availableDevices.length
                       > 1 ? "Multiple YubiKeys detected" : "Insert your YubiKey"
                 font.pixelSize: 13
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                color: formText
             }
         }
     }

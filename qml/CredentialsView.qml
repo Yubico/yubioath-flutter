@@ -6,16 +6,9 @@ import QtGraphicalEffects 1.0
 
 ScrollView {
     id: pane
-    padding: entries.count === 0 ? 50 : 0
-    topPadding: entries.count === 0 ? 50 : 16
+    padding: entries.count === 0 ? 32 : 0
+    topPadding: entries.count === 0 ? 64 : 0
     objectName: 'credentialsView'
-    background: Rectangle {
-        color: if (isDark()) {
-                   return entries.count === 0 ? defaultDarkLighter : defaultDark
-               } else {
-                   return entries.count === 0 ? defaultLight : defaultLight
-               }
-    }
 
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {
@@ -67,7 +60,6 @@ ScrollView {
                || cellWidth
         anchors.bottom: parent.bottom
         anchors.top: parent.top
-
         onCurrentItemChanged: app.currentCredentialCard = currentItem
         visible: entries.count > 0
 

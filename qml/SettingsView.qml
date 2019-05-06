@@ -5,6 +5,10 @@ import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
 ScrollView {
+
+    readonly property int dynamicWidth: 600
+    readonly property int dynamicMargin: 32
+
     objectName: 'settingsView'
     id: pane
     contentWidth: app.width
@@ -19,7 +23,7 @@ ScrollView {
     }
 
     background: Rectangle {
-        color: isDark() ? defaultDark : defaultLight
+        color: defaultBackground
     }
 
     function isKeyAvailable() {
@@ -71,8 +75,8 @@ ScrollView {
 
     spacing: 8
     padding: 0
-    topPadding: 16
 
+    //topPadding: 16
     ColumnLayout {
         anchors.fill: parent
         Layout.fillHeight: true
@@ -89,8 +93,8 @@ ScrollView {
                 layer.effect: DropShadow {
                     radius: 4
                     samples: radius * 2
-                    verticalOffset: 3
-                    horizontalOffset: 3
+                    verticalOffset: 2
+                    horizontalOffset: 2
                     color: formDropShdaow
                     transparentBorder: true
                 }
@@ -98,7 +102,8 @@ ScrollView {
 
             ColumnLayout {
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: app.width - 32 < 600 ? app.width - 32 : 600
+                width: app.width - dynamicMargin
+                       < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
                 spacing: 8
 
                 RowLayout {
@@ -288,8 +293,8 @@ ScrollView {
                 layer.effect: DropShadow {
                     radius: 4
                     samples: radius * 2
-                    verticalOffset: 3
-                    horizontalOffset: 3
+                    verticalOffset: 2
+                    horizontalOffset: 2
                     color: formDropShdaow
                     transparentBorder: true
                 }
@@ -297,7 +302,8 @@ ScrollView {
 
             ColumnLayout {
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: app.width - 32 < 600 ? app.width - 32 : 600
+                width: app.width - dynamicMargin
+                       < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
                 spacing: 16
 
                 RowLayout {

@@ -80,7 +80,7 @@ Pane {
 
     function copyCode(code) {
         clipBoard.push(code)
-        navigator.snackBar("Code copied!")
+        navigator.snackBar("Code has been copied to clipboard.")
     }
 
     function calculateCard(copy) {
@@ -88,7 +88,7 @@ Pane {
                                       && !hotpCredentialInCoolDown)
                 || customPeriodCredentialNoTouch) {
             if (touchCredential) {
-                navigator.snackBar("Touch your YubiKey!")
+                navigator.snackBar("Touch your YubiKey.")
             }
             if (settings.otpMode) {
                 yubiKey.otpCalculate(credential, function (resp) {
@@ -218,6 +218,7 @@ Pane {
                 font.pixelSize: 12
                 maximumLineCount: 3
                 wrapMode: Text.Wrap
+                color: formText
             }
         }
 
