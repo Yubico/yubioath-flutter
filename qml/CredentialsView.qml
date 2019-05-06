@@ -10,6 +10,8 @@ ScrollView {
     topPadding: entries.count === 0 ? 64 : 0
     objectName: 'credentialsView'
 
+    contentWidth: app.width
+    contentHeight: grid
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {
         interactive: true
@@ -54,6 +56,7 @@ ScrollView {
 
     GridView {
         id: grid
+        displayMarginBeginning: 80
         anchors.horizontalCenter: parent.horizontalCenter
         width: (Math.min(model.count,
                          Math.floor(parent.width / cellWidth)) * cellWidth)
@@ -62,7 +65,6 @@ ScrollView {
         anchors.top: parent.top
         onCurrentItemChanged: app.currentCredentialCard = currentItem
         visible: entries.count > 0
-
         keyNavigationWraps: false
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick

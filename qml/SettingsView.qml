@@ -12,7 +12,7 @@ ScrollView {
     objectName: 'settingsView'
     id: pane
     contentWidth: app.width
-    contentHeight: app.height
+    contentHeight: content
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {
         interactive: true
@@ -20,10 +20,6 @@ ScrollView {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-    }
-
-    background: Rectangle {
-        color: defaultBackground
     }
 
     function isKeyAvailable() {
@@ -100,6 +96,7 @@ ScrollView {
     padding: 0
 
     ColumnLayout {
+        id: content
         anchors.fill: parent
         Layout.fillHeight: true
         Layout.fillWidth: true
