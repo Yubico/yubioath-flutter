@@ -74,7 +74,7 @@ Pane {
             Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
             StyledTextField {
                 id: passwordField
-                placeholderText: qsTr("Password")
+                labelText: qsTr("Password")
                 echoMode: TextInput.Password
                 Keys.onEnterPressed: validate()
                 Keys.onReturnPressed: validate()

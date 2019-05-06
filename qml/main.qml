@@ -26,8 +26,8 @@ ApplicationWindow {
     readonly property string defaultDarkOverlay: "#4a4a4a"
     readonly property string defaultDarkForeground: "#fafafa"
 
-    readonly property string defaultLight: "#f7f7f7" // "#f7f7f7"
-    readonly property string defaultLightDarker: "#ffffff" // "#ffffff"
+    readonly property string defaultLight: "#f7f7f7"
+    readonly property string defaultLightDarker: "#ffffff"
     readonly property string defaultLightOverlay: "#bbbbbb"
     readonly property string defaultLightForeground: "#565656"
 
