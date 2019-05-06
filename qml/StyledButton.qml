@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 Button {
 
-    property alias hoverText: buttonToolTip.text
+    property alias toolTipText: buttonToolTip.text
 
     id: button
     font.capitalization: Font.MixedCase

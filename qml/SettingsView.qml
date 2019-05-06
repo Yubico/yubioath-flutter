@@ -99,7 +99,6 @@ ScrollView {
     spacing: 8
     padding: 0
 
-    //topPadding: 16
     ColumnLayout {
         anchors.fill: parent
         Layout.fillHeight: true
@@ -361,10 +360,7 @@ ScrollView {
                                     if (newPasswordField.text.length > 0
                                             && (newPasswordField.text
                                                 === confirmPasswordField.text)) {
-
                                         return true
-                                    } else {
-                                        return false
                                     }
                                 }
                                 return false
@@ -386,7 +382,7 @@ ScrollView {
                         StyledButton {
                             Layout.alignment: Qt.AlignRight
                             text: "Forget Password"
-                            hoverText: "Forget stored password on this computer"
+                            toolTipText: "Forget stored password on this computer"
                             flat: true
                             enabled: !yubiKey.hasPassword ? true : false // TODO: Better way to check for locally stored password?
                             onClicked: forgetPassword()
@@ -394,7 +390,7 @@ ScrollView {
                         StyledButton {
                             Layout.alignment: Qt.AlignRight
                             text: "Clear Password"
-                            hoverText: "Clear password on YubiKey"
+                            toolTipText: "Clear password on YubiKey"
                             flat: true
                             enabled: !yubiKey.locked ? true : false
                             onClicked: clearPassword()
@@ -413,7 +409,7 @@ ScrollView {
 
                         StyledButton {
                             text: "Reset"
-                            hoverText: "Reset to factory settings"
+                            toolTipText: "Reset to factory settings"
                             Layout.alignment: Qt.AlignRight
                             flat: true
                             onClicked: navigator.confirm(
