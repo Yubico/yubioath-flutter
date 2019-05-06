@@ -14,23 +14,21 @@ Pane {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
+        spacing: 16
 
-        ColumnLayout {
-            spacing: 20
-            StyledImage {
-                id: yubikeys
-                iconWidth: 200
-                iconHeight: 120
-                source: "../images/yubikeys-transparent.png"
-                color: formImageOverlay
-            }
-            Label {
-                text: yubiKey.availableDevices.length
-                      > 1 ? "Multiple YubiKeys detected" : "Insert your YubiKey"
-                font.pixelSize: 13
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                color: formText
-            }
+        StyledImage {
+            id: yubikeys
+            iconWidth: 200
+            iconHeight: 120
+            source: "../images/yubikeys-transparent.png"
+            color: formImageOverlay
+        }
+        Label {
+            text: yubiKey.availableDevices.length
+                  > 1 ? "Multiple YubiKeys detected" : "Insert your YubiKey"
+            font.pixelSize: 13
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            color: formText
         }
     }
 }
