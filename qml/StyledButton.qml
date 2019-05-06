@@ -21,6 +21,9 @@ Button {
         delay: 1000
         parent: button
         visible: buttonToolTip.text.length > 0 && parent.hovered
+        Material.foreground: app.isDark() ? defaultDarkForeground : defaultLight
+        Material.background: app.isDark(
+                                 ) ? defaultDarkOverlay : defaultLightForeground
     }
     MouseArea {
         anchors.fill: parent

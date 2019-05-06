@@ -12,7 +12,6 @@ ScrollView {
     objectName: 'settingsView'
     id: pane
     contentWidth: app.width
-    contentHeight: content
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {
         interactive: true

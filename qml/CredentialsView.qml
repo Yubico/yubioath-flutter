@@ -11,7 +11,6 @@ ScrollView {
     objectName: 'credentialsView'
 
     contentWidth: app.width
-    contentHeight: grid
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {
         interactive: true
