@@ -53,7 +53,7 @@ Pane {
 
     function formattedCode(code) {
         // Add a space in the code for easier reading.
-        if (code !== null) {
+        if (!!code) {
             switch (code.length) {
             case 6:
                 // 123 123
@@ -105,16 +105,24 @@ Pane {
             } else {
                 yubiKey.calculate(credential, function (resp) {
                     if (resp.success) {
+
+                        // This should not be needed, but it
+                        // makes the UI update instantly.
+                        code = resp.code
+                        credential = resp.credential
+
                         entries.updateEntry(resp)
+
                         if (copy) {
                             copyCode(resp.code.value)
                         }
+
                         if (hotpCredential) {
                             coolDownHotpCredential()
                         }
                     } else {
-                        navigator.snackBarError(resp.error_id)
-                        console.log(resp.error_id)
+                        navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+                        console.log("calculate failed:", resp.error_id)
                     }
                 })
             }
@@ -166,7 +174,7 @@ Pane {
     }
 
     function getCodeLblValue() {
-        if (code && code.value && code.valid_to > Utils.getNow()) {
+        if (!!code && !!code.value && (code.valid_to > Utils.getNow())) {
             return formattedCode(code.value)
         } else if (touchCredential || hotpCredential) {
             return "*** ***"
@@ -248,7 +256,7 @@ Pane {
             iconWidth: 24
             iconHeight: 24
             source: "../images/touch.svg"
-            visible: !!(touchCredential && code && !code.value)
+            visible: touchCredentialNoCode
             color: yubicoGreen
         }
 

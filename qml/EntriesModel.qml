@@ -4,6 +4,8 @@ SortedListModel {
 
     compareFunc: compareFunction
     onDataChanged: sort()
+    dynamicRoles: true
+
     function compareFunction(a, b) {
 
         function getSortableName(credential) {
@@ -46,9 +48,7 @@ SortedListModel {
     function clearCode(key) {
         for (var j = 0; j < count; j++) {
             if (get(j).credential.key === key) {
-                setProperty(j, "code", {
-                                "value": ""
-                            })
+                setProperty(j, "code", null)
             }
         }
     }
