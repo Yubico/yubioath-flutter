@@ -94,21 +94,21 @@ Pane {
             //            spacing: 0
             StyledTextField {
                 id: issuerLbl
-                placeholderText: "Issuer"
+                labelText: "Issuer"
                 Layout.fillWidth: true
                 text: credential && credential.issuer ? credential.issuer : ""
                 visible: !settings.otpMode
             }
             StyledTextField {
                 id: nameLbl
-                placeholderText: "Account name"
+                labelText: "Account name"
                 Layout.fillWidth: true
                 text: credential && credential.name ? credential.name : ""
                 visible: !settings.otpMode
             }
             StyledTextField {
                 id: secretKeyLbl
-                placeholderText: "Secret key"
+                labelText: "Secret key"
                 Layout.fillWidth: true
                 text: credential && credential.secret ? credential.secret : ""
                 visible: manualEntry
@@ -174,7 +174,7 @@ Pane {
                 }
                 StyledTextField {
                     id: periodLbl
-                    placeholderText: "Period"
+                    labelText: "Period"
                     Layout.fillWidth: false
                     text: "30"
                     implicitWidth: 50

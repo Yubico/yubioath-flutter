@@ -329,21 +329,21 @@ ScrollView {
                         StyledTextField {
                             id: currentPasswordField
                             visible: yubiKey.hasPassword ? true : false
-                            placeholderText: qsTr("Current Password")
+                            labelText: qsTr("Current Password")
                             echoMode: TextInput.Password
                             Keys.onEnterPressed: setPassword()
                             Keys.onReturnPressed: setPassword()
                         }
                         StyledTextField {
                             id: newPasswordField
-                            placeholderText: qsTr("New Password")
+                            labelText: qsTr("New Password")
                             echoMode: TextInput.Password
                             Keys.onEnterPressed: setPassword()
                             Keys.onReturnPressed: setPassword()
                         }
                         StyledTextField {
                             id: confirmPasswordField
-                            placeholderText: qsTr("Confirm Password")
+                            labelText: qsTr("Confirm Password")
                             echoMode: TextInput.Password
                             Keys.onEnterPressed: setPassword()
                             Keys.onReturnPressed: setPassword()

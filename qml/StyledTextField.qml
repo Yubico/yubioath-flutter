@@ -8,10 +8,10 @@ Item {
 
     property string label
     property alias echoMode: textField.echoMode
-    property alias placeholderText: textField.placeholderText
     property alias text: textField.text
     property alias validator: textField.validator
     property alias horizontalAlignment: textField.horizontalAlignment
+    property string labelText
 
     id: textFieldContainer
     height: 50
@@ -24,8 +24,8 @@ Item {
         Label {
             font.pixelSize: 10
             color: formLabel
-            text: textField.text.length > 0 ? textField.placeholderText.valueOf(
-                                                  ) : " "
+            text: textField.activeFocus
+                  || textField.text.length > 0 ? labelText : " "
         }
 
         TextField {
@@ -41,6 +41,7 @@ Item {
             focus: true
             color: formText
             Material.accent: formText
+            placeholderText: textField.activeFocus ? "" : labelText
             placeholderTextColor: formText
             background: Item {
                 implicitWidth: parent.width
