@@ -80,7 +80,7 @@ Pane {
 
     function copyCode(code) {
         clipBoard.push(code)
-        navigator.snackBar("Code has been copied to clipboard.")
+        navigator.snackBar("Code copied to clipboard")
     }
 
     function calculateCard(copy) {
@@ -88,7 +88,7 @@ Pane {
                                       && !hotpCredentialInCoolDown)
                 || customPeriodCredentialNoTouch) {
             if (touchCredential) {
-                navigator.snackBar("Touch your YubiKey.")
+                navigator.snackBar("Touch your YubiKey")
             }
             if (settings.otpMode) {
                 yubiKey.otpCalculate(credential, function (resp) {
@@ -121,7 +121,8 @@ Pane {
                             coolDownHotpCredential()
                         }
                     } else {
-                        navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+                        navigator.snackBarError(navigator.getErrorMessage(
+                                                    resp.error_id))
                         console.log("calculate failed:", resp.error_id)
                     }
                 })

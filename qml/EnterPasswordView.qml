@@ -9,7 +9,7 @@ Pane {
     objectName: 'enterPasswordView'
     padding: 32
 
-    property string title: "Unlock YubiKey"
+    property string title: ""
 
     function clear() {
         passwordField.text = ""
@@ -21,7 +21,8 @@ Pane {
                          function (resp) {
                              if (resp.success) {
                                  yubiKey.locked = false
-                                 yubiKeyPoller.calculateAll(navigator.goToCredentials)
+                                 yubiKeyPoller.calculateAll(
+                                             navigator.goToCredentials)
                              } else {
                                  clear()
                                  navigator.snackBarError(
@@ -91,6 +92,8 @@ Pane {
                     anchors.left: parent.left
                     anchors.leftMargin: 1
                     leftPadding: 0
+                    indicator.width: 16
+                    indicator.height: 16
                 }
                 StyledButton {
                     text: "Unlock"

@@ -223,7 +223,8 @@ ScrollView {
                         comboBox.textRole: "text"
                         model: slotModeDigits
                         onCurrentIndexChanged: {
-                            settings.slot1digits = slotModeDigits.get(currentIndex).value
+                            settings.slot1digits = slotModeDigits.get(
+                                        currentIndex).value
                         }
                         currentIndex: {
                             switch (settings.slot1digits) {
@@ -251,7 +252,8 @@ ScrollView {
                         comboBox.textRole: "text"
                         model: slotModeDigits
                         onCurrentIndexChanged: {
-                            settings.slot2digits = slotModeDigits.get(currentIndex).value
+                            settings.slot2digits = slotModeDigits.get(
+                                        currentIndex).value
                         }
                         currentIndex: {
                             switch (settings.slot2digits) {
@@ -284,6 +286,8 @@ ScrollView {
                         checked: settings.closeToTray
                         text: Qt.platform.os === "osx" ? "Show in menu bar" : "Show in system tray"
                         padding: 0
+                        indicator.width: 16
+                        indicator.height: 16
                         onCheckStateChanged: settings.closeToTray = checked
                         Material.foreground: formText
                     }
@@ -293,8 +297,10 @@ ScrollView {
                         visible: sysTrayCheckbox.checked
                         enabled: sysTrayCheckbox.checked
                         checked: settings.hideOnLaunch
-                        padding: 0
                         text: "Hide on launch"
+                        padding: 0
+                        indicator.width: 16
+                        indicator.height: 16
                         onCheckStateChanged: settings.hideOnLaunch = checked
                         Material.foreground: formText
                     }

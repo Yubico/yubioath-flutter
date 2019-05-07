@@ -81,6 +81,8 @@ ScrollView {
         }
         focus: true
         Component.onCompleted: currentIndex = -1
+        KeyNavigation.tab: toolBar.searchField
+        KeyNavigation.up: toolBar.searchField
         Keys.onEscapePressed: {
             currentIndex = -1
         }
