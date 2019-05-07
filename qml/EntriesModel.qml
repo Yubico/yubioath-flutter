@@ -26,6 +26,7 @@ SortedListModel {
             }
         }
         append(entry)
+        sort()
     }
 
     function updateEntries(entries) {

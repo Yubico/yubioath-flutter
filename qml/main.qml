@@ -142,7 +142,9 @@ ApplicationWindow {
         function clearEntriesAndCalculateAll() {
             entries.clear()
             yubiKeyPoller.nextCalculateAll = -1
-            yubiKeyPoller.calculateAll()
+            if (!!yubiKey.currentDevice) {
+                yubiKeyPoller.calculateAll()
+            }
         }
     }
 
