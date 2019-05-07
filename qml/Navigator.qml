@@ -11,8 +11,10 @@ StackView {
     }
 
     function clearAndPush(view) {
-        clear()
-        push(view, StackView.Immediate)
+        if (currentItem.objectName !== 'settingsView') {
+            clear()
+            push(view, StackView.Immediate)
+        }
     }
 
     function goToSettings() {
@@ -29,7 +31,8 @@ StackView {
 
     function goToEnterPassword() {
         if (currentItem.objectName !== 'enterPasswordView') {
-            clearAndPush(enterPasswordView)
+            clear()
+            push(enterPasswordView, StackView.Immediate)
         }
     }
 
