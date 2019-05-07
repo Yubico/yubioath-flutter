@@ -117,7 +117,7 @@ Python {
     function otpCalculateAll(cb) {
         var now = Utils.getNow()
         doCall('yubikey.controller.otp_calculate_all',
-               [settings.slot1inUse, settings.slot1digits, settings.slot2inUse, settings.slot2digits, now],
+               [settings.slot1digits, settings.slot2digits, now],
                cb)
     }
 
@@ -153,14 +153,6 @@ Python {
 
     function clearKey() {
         doCall('yubikey.controller.clear_key', [])
-    }
-
-    function getSlotStatus(cb) {
-        doCall('yubikey.controller.slot_status', [], function (res) {
-            slot1inUse = res[0]
-            slot2inUse = res[1]
-            cb()
-        })
     }
 
     function setPassword(password, remember, cb) {

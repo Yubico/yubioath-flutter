@@ -272,12 +272,11 @@ class Controller(object):
             return code, touch
 
     def otp_calculate_all(
-            self, slot1_in_use, slot1_digits,
-            slot2_in_use, slot2_digits, timestamp):
+            self, slot1_digits, slot2_digits, timestamp):
         valid_from = timestamp - (timestamp % 30)
         valid_to = valid_from + 30
         entries = []
-        if slot1_in_use:
+        if slot1_digits:
             code, touch = self._otp_get_code_or_touch(
                 1, slot1_digits, timestamp)
             entries.append({
@@ -286,7 +285,7 @@ class Controller(object):
                 'code': code_to_dict(
                     Code(code, valid_from, valid_to)) if code else None
             })
-        if slot2_in_use:
+        if slot2_digits:
             code, touch = self._otp_get_code_or_touch(
                 2, slot2_digits, timestamp)
             entries.append({

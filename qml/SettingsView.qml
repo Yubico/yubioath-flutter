@@ -91,6 +91,27 @@ ScrollView {
         }
     }
 
+    ListModel {
+        id: slotModeDigits
+
+        ListElement {
+            text: "Off"
+            value: 0
+        }
+        ListElement {
+            text: "6"
+            value: 6
+        }
+        ListElement {
+            text: "7"
+            value: 7
+        }
+        ListElement {
+            text: "8"
+            value: 8
+        }
+    }
+
     spacing: 8
     padding: 0
 
@@ -197,24 +218,27 @@ ScrollView {
                                  "OTP") > -1
 
                     StyledComboBox {
-                        //enabled: slot1CheckBox.checked
+                        enabled: settings.otpMode
                         label: "Slot 1 Digits"
-                        model: [6, 7, 8]
+                        comboBox.textRole: "text"
+                        model: slotModeDigits
+                        onCurrentIndexChanged: {
+                            settings.slot1digits = slotModeDigits.get(currentIndex).value
+                        }
                         currentIndex: {
-
-                            if (settings.slot1digits === 6) {
+                            switch (settings.slot1digits) {
+                            case 0:
+                                return 0
+                            case 6:
+                                return 1
+                            case 7:
+                                return 2
+                            case 8:
+                                return 3
+                            default:
                                 return 0
                             }
-
-                            if (settings.slot1digits === 7) {
-                                return 1
-                            }
-
-                            if (settings.slot1digits === 8) {
-                                return 2
-                            }
                         }
-                        onCurrentTextChanged: settings.slot1digits = currentText
                     }
 
                     Item {
@@ -222,23 +246,27 @@ ScrollView {
                     }
 
                     StyledComboBox {
-                        //enabled: slot2CheckBox.checked
+                        enabled: settings.otpMode
                         label: "Slot 2 Digits"
-                        model: [6, 7, 8]
+                        comboBox.textRole: "text"
+                        model: slotModeDigits
+                        onCurrentIndexChanged: {
+                            settings.slot2digits = slotModeDigits.get(currentIndex).value
+                        }
                         currentIndex: {
-                            if (settings.slot2digits === 6) {
+                            switch (settings.slot2digits) {
+                            case 0:
+                                return 0
+                            case 6:
+                                return 1
+                            case 7:
+                                return 2
+                            case 8:
+                                return 3
+                            default:
                                 return 0
                             }
-
-                            if (settings.slot2digits === 7) {
-                                return 1
-                            }
-
-                            if (settings.slot2digits === 8) {
-                                return 2
-                            }
                         }
-                        onCurrentTextChanged: settings.slot2digits = currentText
                     }
                 }
 

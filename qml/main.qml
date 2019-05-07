@@ -111,8 +111,8 @@ ApplicationWindow {
         id: settings
 
         property bool otpMode
-        property bool slot1inUse
-        property bool slot2inUse
+
+        // Can be 0 (off), 6, 7 or 8
         property int slot1digits
         property int slot2digits
 
@@ -132,9 +132,7 @@ ApplicationWindow {
         onCloseToTrayChanged: updateTrayVisibility()
 
         onOtpModeChanged: clearEntriesAndCalculateAll()
-        onSlot1inUseChanged: clearEntriesAndCalculateAll()
         onSlot1digitsChanged: clearEntriesAndCalculateAll()
-        onSlot2inUseChanged: clearEntriesAndCalculateAll()
         onSlot2digitsChanged: clearEntriesAndCalculateAll()
 
         onThemeChanged: {
