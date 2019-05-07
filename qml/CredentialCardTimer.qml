@@ -21,7 +21,7 @@ Item {
             var timeLeft = validTo - Utils.getNow()
             var currentValue = timeLeft * (360 / period)
             root.arcEnd = 360 - currentValue
-            if (timeLeft === 0) {
+            if (timeLeft <= 0) {
                 timesUp()
             }
         }

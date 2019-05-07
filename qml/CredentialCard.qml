@@ -131,8 +131,9 @@ Pane {
         }
     }
 
-    function clearExpiredCode(key) {
-        entries.clearCode(key)
+    function clearExpiredCode() {
+        code = null // To update UI instantly
+        entries.clearCode(credential.key)
     }
 
     function deleteCard() {
@@ -241,7 +242,7 @@ Pane {
                      && credential.oath_type === "TOTP" ? true : false
             onTimesUp: {
                 if (touchCredential) {
-                    clearExpiredCode(credential.key)
+                    clearExpiredCode()
                 }
                 if (customPeriodCredentialNoTouch) {
                     calculateCard(false)
