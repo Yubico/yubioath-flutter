@@ -143,7 +143,8 @@ ApplicationWindow {
 
         function clearEntriesAndCalculateAll() {
             entries.clear()
-            yubiKeyPoller.nextCalculateAll = 0
+            yubiKeyPoller.nextCalculateAll = -1
+            yubiKeyPoller.calculateAll()
         }
     }
 
