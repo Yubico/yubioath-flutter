@@ -4,12 +4,11 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-Pane {
-    id: pane
-    objectName: 'enterPasswordView'
-    padding: 32
+ColumnLayout {
 
-    property string title: ""
+    readonly property int dynamicWidth: 600
+    readonly property int dynamicMargin: 64
+    spacing: 20
 
     function clear() {
         passwordField.text = ""
@@ -20,9 +19,7 @@ Pane {
         yubiKey.validate(passwordField.text, rememberPasswordCheckBox.checked,
                          function (resp) {
                              if (resp.success) {
-                                 yubiKey.locked = false
-                                 yubiKeyPoller.calculateAll(
-                                             navigator.goToCredentials)
+                                 yubiKeyPoller.calculateAll(navigator.goToCredentials)
                              } else {
                                  clear()
                                  navigator.snackBarError(
@@ -33,11 +30,10 @@ Pane {
                          })
     }
 
-    ColumnLayout {
-        spacing: 20
 
         ColumnLayout {
             Layout.alignment: Qt.AlignHLeft | Qt.AlignVCenter
+
             StyledImage {
                 id: lock
                 Layout.alignment: parent.left | Qt.AlignVCenter
@@ -49,6 +45,7 @@ Pane {
                 color: app.isDark(
                            ) ? defaultLightForeground : defaultLightOverlay
             }
+
             Label {
                 text: "Password required"
                 Layout.rowSpan: 1
@@ -59,6 +56,7 @@ Pane {
                 Layout.alignment: Qt.AlignHLeft | Qt.AlignVCenter
                 color: formLabel
             }
+
             Label {
                 text: "To prevent unauthorized access this YubiKey is protected with a password. Enter the password to continue."
                 Layout.minimumWidth: 320
@@ -104,5 +102,5 @@ Pane {
                 }
             }
         }
-    }
+
 }

@@ -29,13 +29,6 @@ StackView {
         }
     }
 
-    function goToEnterPassword() {
-        if (currentItem.objectName !== 'enterPasswordView') {
-            clear()
-            push(enterPasswordView, StackView.Immediate)
-        }
-    }
-
     function goToCredentials() {
         if (currentItem.objectName !== 'credentialsView') {
             clearAndPush(credentialsView)
@@ -116,12 +109,6 @@ StackView {
     Component {
         id: noYubiKeyView
         NoYubiKeyView {
-        }
-    }
-
-    Component {
-        id: enterPasswordView
-        EnterPasswordView {
         }
     }
 

@@ -43,13 +43,16 @@ ScrollView {
 
     Component {
         id: entriesComponent
-
         EntriesModel {
         }
     }
 
     NoCredentialsSection {
-        visible: entries.count === 0
+        visible: entries.count === 0 && !yubiKey.locked
+    }
+
+    EnterPasswordSection {
+        visible: yubiKey.locked
     }
 
     GridView {
