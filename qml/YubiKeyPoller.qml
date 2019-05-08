@@ -36,9 +36,10 @@ Timer {
                             // clear current device,
                             // and stop any scheduled calculateAll calls.
                             yubiKey.currentDevice = null
-                            navigator.goToNoYubiKeyView()
                             nextCalculateAll = -1
                             entries.clear()
+                            navigator.goToCredentials()
+                            yubiKey.locked = false
                         }
                     }
                 } else {

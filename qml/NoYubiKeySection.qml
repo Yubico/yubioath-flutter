@@ -4,16 +4,16 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-Pane {
-    objectName: 'noYubiKeyView'
-    topPadding: 0
+ColumnLayout {
 
-    property string title: ""
-
+    readonly property int dynamicWidth: 600
+    readonly property int dynamicMargin: 64
+    spacing: 20
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.verticalCenter: parent.verticalCenter
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+
         spacing: 16
 
         StyledImage {
@@ -23,6 +23,7 @@ Pane {
             source: "../images/yubikeys-transparent.png"
             color: formImageOverlay
         }
+
         Label {
             text: yubiKey.availableDevices.length
                   > 1 ? "Multiple YubiKeys detected" : "Insert your YubiKey"
@@ -31,4 +32,5 @@ Pane {
             color: formText
         }
     }
+
 }

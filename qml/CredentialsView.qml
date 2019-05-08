@@ -48,11 +48,15 @@ ScrollView {
     }
 
     NoCredentialsSection {
-        visible: entries.count === 0 && !yubiKey.locked
+        visible: entries.count === 0 && !yubiKey.locked && !!yubiKey.currentDevice
     }
 
     EnterPasswordSection {
-        visible: yubiKey.locked
+        visible: yubiKey.locked && !!yubiKey.currentDevice
+    }
+
+    NoYubiKeySection {
+        visible: yubiKey.availableDevices.length !== 1
     }
 
     GridView {
