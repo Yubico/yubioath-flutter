@@ -10,7 +10,6 @@ ScrollView {
     topPadding: entries.count === 0 ? 64 : 0
     objectName: 'credentialsView'
 
-    contentWidth: app.width
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {
         interactive: true
@@ -81,6 +80,8 @@ ScrollView {
         }
         focus: true
         Component.onCompleted: currentIndex = -1
+        KeyNavigation.tab: toolBar.searchField
+        KeyNavigation.up: toolBar.searchField
         Keys.onEscapePressed: {
             currentIndex = -1
         }

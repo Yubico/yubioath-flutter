@@ -47,7 +47,8 @@ ToolBar {
 
     function shouldShowSettings() {
         return !!(navigator.currentItem
-                  && navigator.currentItem.objectName !== 'settingsView')
+                  && navigator.currentItem.objectName !== 'settingsView'
+                  && navigator.currentItem.objectName !== 'newCredentialView')
     }
 
     function shouldShowCredentialOptions() {
@@ -119,6 +120,7 @@ ToolBar {
                     color: getToolbarColor(searchField.focus)
                     height: 30
                     radius: 4
+                    opacity: 0.8
                 }
 
                 onTextChanged: forceActiveFocus()
@@ -130,12 +132,13 @@ ToolBar {
                     navigator.forceActiveFocus()
                 }
 
+                KeyNavigation.tab: shouldShowCredentialOptions(
+                                       ) ? copyCredentialBtn : addCredentialBtn
+
                 Keys.onEscapePressed: exitSearchMode(true)
-                Keys.onTabPressed: exitSearchMode(false)
                 Keys.onReturnPressed: exitSearchMode(false)
                 Keys.onEnterPressed: exitSearchMode(false)
                 Keys.onDownPressed: exitSearchMode(false)
-                Keys.onUpPressed: exitSearchMode(false)
 
                 StyledImage {
                     id: searchIcon
@@ -158,6 +161,15 @@ ToolBar {
                 visible: shouldShowCredentialOptions()
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: app.currentCredentialCard.calculateCard(true)
+
+                Keys.onReturnPressed: app.currentCredentialCard.calculateCard(
+                                          true)
+                Keys.onEnterPressed: app.currentCredentialCard.calculateCard(
+                                         true)
+
+                KeyNavigation.left: searchField
+                KeyNavigation.right: deleteCredentialBtn
+                KeyNavigation.tab: deleteCredentialBtn
 
                 ToolTip {
                     text: "Copy credential from YubiKey"
@@ -186,6 +198,13 @@ ToolBar {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: app.currentCredentialCard.deleteCard()
 
+                Keys.onReturnPressed: app.currentCredentialCard.deleteCard()
+                Keys.onEnterPressed: app.currentCredentialCard.deleteCard()
+
+                KeyNavigation.left: copyCredentialBtn
+                KeyNavigation.right: settingsBtn
+                KeyNavigation.tab: settingsBtn
+
                 ToolTip {
                     text: "Delete credential from YubiKey"
                     delay: 1000
@@ -212,6 +231,14 @@ ToolBar {
                 visible: showAddCredentialBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: addNewCredentialMenu.open()
+
+                Keys.onReturnPressed: addNewCredentialMenu.open()
+                Keys.onEnterPressed: addNewCredentialMenu.open()
+
+                KeyNavigation.left: searchField
+                KeyNavigation.right: settingsBtn
+                KeyNavigation.tab: settingsBtn
+
                 ToolTip {
                     text: "Add a new credential"
                     delay: 1000
@@ -249,14 +276,23 @@ ToolBar {
             }
 
             ToolButton {
-                id: settingsButton
+                id: settingsBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: showSettingsBtn
                 onClicked: navigator.goToSettings()
+
+                Keys.onReturnPressed: navigator.goToSettings()
+                Keys.onEnterPressed: navigator.goToSettings()
+
+                KeyNavigation.left: shouldShowCredentialOptions(
+                                        ) ? deleteCredentialBtn : addCredentialBtn
+                KeyNavigation.right: navigator
+                KeyNavigation.tab: navigator
+
                 ToolTip {
                     text: "Settings"
                     delay: 1000
-                    parent: settingsButton
+                    parent: settingsBtn
                     visible: parent.hovered
                     Material.foreground: app.isDark(
                                              ) ? defaultDarkForeground : defaultLight
