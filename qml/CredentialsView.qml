@@ -10,7 +10,6 @@ ScrollView {
     topPadding: entries.count === 0 ? 64 : 0
     objectName: 'credentialsView'
 
-    contentWidth: app.width
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {
         interactive: true

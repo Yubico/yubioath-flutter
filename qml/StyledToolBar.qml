@@ -42,8 +42,7 @@ ToolBar {
     function shouldShowAddCredential() {
         return !!(yubiKey.currentDevice && !yubiKey.locked
                   && navigator.currentItem
-                  && navigator.currentItem.objectName === 'credentialsView'
-                  && app.currentCredentialCard === null)
+                  && navigator.currentItem.objectName === 'credentialsView')
     }
 
     function shouldShowSettings() {
