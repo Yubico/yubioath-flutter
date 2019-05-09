@@ -34,12 +34,10 @@ ScrollView {
         }
     }
 
-    function forgetPassword() {
-        console.log("TODO: FORGET PASSWORD")
-    }
-
-    function clearPassword() {
-        console.log("TODO: CLEAR PASSWORD")
+    function clearPasswordFields() {
+        currentPasswordField.text = ""
+        newPasswordField.text = ""
+        confirmPasswordField.text = ""
     }
 
     function submitPassword() {
@@ -58,6 +56,7 @@ ScrollView {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
                 console.log(resp.error_id)
             }
+            clearPasswordFields()
         })
     }
 
@@ -65,10 +64,13 @@ ScrollView {
         yubiKey.setPassword(newPasswordField.text, false, function (resp) {
             if (resp.success) {
                 navigator.snackBar("Password set")
+                yubiKey.hasPassword = true
+                passwordManagementPanel.isExpanded = false
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
                 console.log(resp.error_id)
             }
+            clearPasswordFields()
         })
     }
 
@@ -348,6 +350,8 @@ ScrollView {
                 }
 
                 StyledExpansionPanel {
+                    id: passwordManagementPanel
+
                     label: yubiKey.hasPassword ? "Change Password" : "Set Password"
                     description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
 
@@ -401,34 +405,6 @@ ScrollView {
                 }
 
                 StyledExpansionPanel {
-                    label: "Manage Passwords"
-                    description: "Clear password on this YubiKey or forget the locally remembered password."
-                    isEnabled: false
-
-                    RowLayout {
-                        visible: parent.isExpanded
-                        Layout.alignment: Qt.AlignRight
-
-                        StyledButton {
-                            Layout.alignment: Qt.AlignRight
-                            text: "Forget Password"
-                            toolTipText: "Forget stored password on this computer"
-                            flat: true
-                            enabled: !yubiKey.hasPassword ? true : false // TODO: Better way to check for locally stored password?
-                            onClicked: forgetPassword()
-                        }
-                        StyledButton {
-                            Layout.alignment: Qt.AlignRight
-                            text: "Clear Password"
-                            toolTipText: "Clear password on YubiKey"
-                            flat: true
-                            enabled: !yubiKey.locked ? true : false
-                            onClicked: clearPassword()
-                        }
-                    }
-                }
-
-                StyledExpansionPanel {
                     label: "Reset OATH Application"
                     description: "Warning: Resetting the OATH application will delete all credentials and restore factory defaults."
                     isEnabled: false
@@ -452,6 +428,8 @@ ScrollView {
                                                        entries.clear()
                                                        navigator.snackBar(
                                                                    "Reset completed")
+                                                       yubiKey.locked = false
+                                                       yubiKey.hasPassword = false
                                                    } else {
                                                        navigator.snackBarError(
                                                                    navigator.getErrorMessage(
