@@ -82,9 +82,8 @@ Python {
             if (resp.success) {
                 navigator.goToNewCredentialAuto(resp)
             } else {
-                navigator.snackBarError(navigator.getErrorMessage(
-                                            resp.error_id))
-                console.log("scanQr failed:", resp.error_id)
+                navigator.goToNewCredentialManual()
+                navigator.snackBar(navigator.getErrorMessage(resp.error_id))
             }
         })
     }

@@ -230,10 +230,9 @@ ToolBar {
                 id: addCredentialBtn
                 visible: showAddCredentialBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                onClicked: addNewCredentialMenu.open()
-
-                Keys.onReturnPressed: addNewCredentialMenu.open()
-                Keys.onEnterPressed: addNewCredentialMenu.open()
+                onClicked: yubiKey.scanQr()
+                Keys.onReturnPressed: yubiKey.scanQr()
+                Keys.onEnterPressed: yubiKey.scanQr()
 
                 KeyNavigation.left: searchField
                 KeyNavigation.right: settingsBtn
@@ -257,21 +256,6 @@ ToolBar {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     enabled: false
-                }
-
-                Menu {
-                    id: addNewCredentialMenu
-                    y: addCredentialBtn.height
-
-                    MenuItem {
-                        text: "Scan QR code"
-                        onClicked: yubiKey.scanQr()
-                    }
-
-                    MenuItem {
-                        text: "Manual entry"
-                        onClicked: navigator.goToNewCredentialManual()
-                    }
                 }
             }
 

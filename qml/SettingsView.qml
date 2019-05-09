@@ -10,7 +10,6 @@ ScrollView {
     readonly property int dynamicMargin: 32
 
     objectName: 'settingsView'
-    id: pane
     contentWidth: app.width
 
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
