@@ -12,6 +12,7 @@ ScrollView {
     objectName: 'settingsView'
     id: pane
     contentWidth: app.width
+
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical: ScrollBar {
         interactive: true
@@ -422,7 +423,6 @@ ScrollView {
                                            "Are you sure?",
                                            "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",
                                            function () {
-                                               busy.running = true
                                                yubiKey.reset(function (resp) {
                                                    if (resp.success) {
                                                        entries.clear()
@@ -437,13 +437,8 @@ ScrollView {
                                                        console.log("reset failed:",
                                                                    resp.error_id)
                                                    }
-                                                   busy.running = false
                                                })
                                            })
-                        }
-                        StyledBusyIndicator {
-                            id: busy
-                            implicitHeight: 30
                         }
                     }
                 }
