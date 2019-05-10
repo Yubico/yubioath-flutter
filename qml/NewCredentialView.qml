@@ -91,6 +91,7 @@ ScrollView {
         Layout.fillWidth: true
         Pane {
             id: retryPane
+            visible: manualEntry
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
             Layout.fillWidth: true
             Layout.bottomMargin: 16
@@ -139,9 +140,8 @@ ScrollView {
                 StyledButton {
                     id: retry
                     text: "Scan"
-                    visible: manualEntry
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    onClicked: yubiKey.scanQr()
+                    onClicked: yubiKey.scanQr(true)
                 }
             }
         }

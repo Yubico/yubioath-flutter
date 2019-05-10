@@ -77,13 +77,16 @@ Python {
         }
     }
 
-    function scanQr() {
+    function scanQr(toastIfError) {
         parseQr(ScreenShot.capture(), function (resp) {
             if (resp.success) {
                 navigator.goToNewCredentialAuto(resp)
+                navigator.snackBar("QR code found on screen")
             } else {
+                if (toastIfError) {
+                    navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+                }
                 navigator.goToNewCredentialManual()
-                navigator.snackBar(navigator.getErrorMessage(resp.error_id))
             }
         })
     }
