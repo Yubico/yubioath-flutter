@@ -154,17 +154,17 @@ ScrollView {
             Layout.bottomMargin: 8
 
             background: Rectangle {
-        color: isDark() ? defaultDarkLighter : defaultLightDarker
-        layer.enabled: true
-        layer.effect: DropShadow {
-            radius: 4
-            samples: radius * 2
-            verticalOffset: 2
-            horizontalOffset: 2
-            color: formDropShdaow
-            transparentBorder: true
-        }
-    }
+                color: isDark() ? defaultDarkLighter : defaultLightDarker
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    radius: 4
+                    samples: radius * 2
+                    verticalOffset: 2
+                    horizontalOffset: 2
+                    color: formDropShdaow
+                    transparentBorder: true
+                }
+            }
 
             ColumnLayout {
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -172,6 +172,7 @@ ScrollView {
                        < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
                 spacing: 16
                 RowLayout {
+                    visible: !credential
                     Label {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                         text: "Manual entry"
@@ -250,6 +251,7 @@ ScrollView {
                     StyledComboBox {
                         id: algoComboBox
                         label: "Algorithm"
+                        // TODO: only show algorithms supported on device
                         model: ["SHA1", "SHA256", "SHA512"]
                     }
                     visible: manualEntry && showAdvanced && !settings.otpMode
@@ -279,7 +281,7 @@ ScrollView {
                 RowLayout {
                     ToolButton {
                         id: showAdvancedBtn
-                        onClicked: showAdvanced ? showAdvanced = false : showAdvanced = true
+                        onClicked: showAdvanced = !showAdvanced
                         icon.width: 24
                         icon.source: showAdvanced ? "../images/up.svg" : "../images/down.svg"
                         icon.color: isDark() ? yubicoWhite : yubicoGrey
