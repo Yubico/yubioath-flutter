@@ -77,6 +77,10 @@ Python {
         }
     }
 
+    function supportsTouchCredentials() {
+        return !!currentDevice && parseInt(currentDevice.version.join("")) >= 426
+    }
+
     function scanQr(toastIfError) {
         parseQr(ScreenShot.capture(), function (resp) {
             if (resp.success) {

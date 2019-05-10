@@ -215,9 +215,8 @@ ScrollView {
                     }
                     CheckBox {
                         id: requireTouchCheckBox
-                        //text: "Require touch"
                     }
-                    visible: true // TODO: Invisible for NEO in CCID mode
+                    visible: yubiKey.supportsTouchCredentials() || settings.otpMode
                 }
                 RowLayout {
                     Layout.fillWidth: true
