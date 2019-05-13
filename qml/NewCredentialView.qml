@@ -39,45 +39,31 @@ ScrollView {
         }
     }
 
+
     function addCredential() {
+
+        function callback(resp) {
+            if (resp.success) {
+                yubiKey.calculateAll(navigator.goToCredentials)
+                navigator.snackBar("Credential added")
+            } else {
+                navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+                console.log("addCredential failed:", resp.error_id)
+            }
+        }
+
         if (settings.otpMode) {
             yubiKey.otpAddCredential(otpSlotComboBox.currentText,
                                      secretKeyLbl.text,
                                      requireTouchCheckBox.checked,
-                                     function (resp) {
-                                         if (resp.success) {
-                                             yubiKeyPoller.calculateAll(
-                                                         navigator.goToCredentials)
-                                             navigator.snackBar(
-                                                         "Credential added")
-                                         } else {
-                                             navigator.snackBarError(
-                                                         navigator.getErrorMessage(
-                                                             resp.error_id))
-                                             console.log("otpAddCredential failed:",
-                                                         resp.error_id)
-                                         }
-                                     })
+                                     callback)
         } else {
-
-            yubiKey.addCredential(nameLbl.text, secretKeyLbl.text,
+            yubiKey.ccidAddCredential(nameLbl.text, secretKeyLbl.text,
                                   issuerLbl.text, oathTypeComboBox.currentText,
                                   algoComboBox.currentText,
                                   digitsComboBox.currentText, periodLbl.text,
                                   requireTouchCheckBox.checked,
-                                  function (resp) {
-                                      if (resp.success) {
-                                          yubiKeyPoller.calculateAll(
-                                                      navigator.goToCredentials)
-                                          navigator.snackBar("Credential added")
-                                      } else {
-                                          navigator.snackBarError(
-                                                      navigator.getErrorMessage(
-                                                          resp.error_id))
-                                          console.log("addCredential failed:",
-                                                      resp.error_id)
-                                      }
-                                  })
+                                  callback)
         }
     }
 

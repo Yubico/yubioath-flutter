@@ -103,6 +103,7 @@ ApplicationWindow {
         // doesn't actually close the application.
         application.quitOnLastWindowClosed = !settings.closeToTray
     }
+
     // This information is stored in the system registry on Windows,
     // and in XML preferences files on macOS. On other Unix systems,
     // in the absence of a standard, INI text files are used.
@@ -131,20 +132,12 @@ ApplicationWindow {
 
         onCloseToTrayChanged: updateTrayVisibility()
 
-        onOtpModeChanged: clearEntriesAndCalculateAll()
-        onSlot1digitsChanged: clearEntriesAndCalculateAll()
-        onSlot2digitsChanged: clearEntriesAndCalculateAll()
+        onOtpModeChanged: yubiKey.clearEntriesAndCalculateAll()
+        onSlot1digitsChanged: yubiKey.clearEntriesAndCalculateAll()
+        onSlot2digitsChanged: yubiKey.clearEntriesAndCalculateAll()
 
         onThemeChanged: {
             app.Material.theme = theme
-        }
-
-        function clearEntriesAndCalculateAll() {
-            entries.clear()
-            yubiKeyPoller.nextCalculateAll = -1
-            if (!!yubiKey.currentDevice) {
-                yubiKeyPoller.calculateAll()
-            }
         }
     }
 
@@ -156,8 +149,12 @@ ApplicationWindow {
         id: clipBoard
     }
 
-    YubiKeyPoller {
-        id: yubiKeyPoller
+    Timer {
+        triggeredOnStart: true
+        interval: 1000
+        repeat: true
+        running: app.visible
+        onTriggered: yubiKey.refresh()
     }
 
     YubiKey {

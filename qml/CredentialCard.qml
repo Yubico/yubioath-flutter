@@ -162,7 +162,7 @@ Pane {
                                                          if (resp.success) {
                                                              entries.deleteEntry(
                                                                          credential.key)
-                                                             yubiKeyPoller.updateNextCalculateAll()
+                                                             yubiKey.updateNextCalculateAll()
                                                              navigator.snackBar(
                                                                          "Credential was deleted")
                                                          } else {

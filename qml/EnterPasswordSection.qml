@@ -19,7 +19,7 @@ ColumnLayout {
         yubiKey.validate(passwordField.text, rememberPasswordCheckBox.checked,
                          function (resp) {
                              if (resp.success) {
-                                 yubiKeyPoller.calculateAll(navigator.goToCredentials)
+                                 yubiKey.calculateAll(navigator.goToCredentials)
                              } else {
                                  clear()
                                  navigator.snackBarError(
