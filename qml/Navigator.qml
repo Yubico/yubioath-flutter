@@ -11,15 +11,19 @@ StackView {
     }
 
     function clearAndPush(view) {
-        if (currentItem.objectName !== 'settingsView') {
             clear()
             push(view, StackView.Immediate)
-        }
     }
 
     function goToSettings() {
         if (currentItem.objectName !== 'settingsView') {
             push(settingsView, StackView.Immediate)
+        }
+    }
+
+    function goToLoading() {
+        if (currentItem.objectName !== 'loadingView') {
+            push(loadingView, StackView.Immediate)
         }
     }
 
@@ -31,6 +35,13 @@ StackView {
 
     function goToCredentials() {
         if (currentItem.objectName !== 'credentialsView') {
+            clearAndPush(credentialsView)
+        }
+    }
+
+    function goToCredentialsIfNotInSettings() {
+        if (currentItem.objectName !== 'credentialsView'
+                && currentItem.objectName !== 'settingsView') {
             clearAndPush(credentialsView)
         }
     }
@@ -115,6 +126,12 @@ StackView {
     Component {
         id: enterPasswordView
         EnterPasswordView {
+        }
+    }
+
+    Component {
+        id: loadingView
+        LoadingView {
         }
     }
 

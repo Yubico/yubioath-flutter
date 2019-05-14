@@ -28,8 +28,8 @@ ToolBar {
     property bool showBackBtn: navigator.depth > 1
     property bool showAddCredentialBtn: shouldShowAddCredential()
     property bool showSettingsBtn: shouldShowSettings()
-    property bool showTitleLbl: navigator.currentItem
-                                && navigator.currentItem.title
+    property bool showTitleLbl: !!navigator.currentItem
+                                && !!navigator.currentItem.title
 
     property alias searchField: searchField
 
@@ -63,7 +63,7 @@ ToolBar {
         ToolButton {
             id: backBtn
             visible: showBackBtn
-            onClicked: navigator.pop(StackView.Immediate)
+            onClicked: navigator.goToCredentials()
             icon.source: "../images/back.svg"
             icon.color: isDark() ? defaultLight : "#5f6368"
             MouseArea {
@@ -230,6 +230,7 @@ ToolBar {
                 id: addCredentialBtn
                 visible: showAddCredentialBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+
                 onClicked: yubiKey.scanQr()
                 Keys.onReturnPressed: yubiKey.scanQr()
                 Keys.onEnterPressed: yubiKey.scanQr()

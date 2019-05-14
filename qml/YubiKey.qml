@@ -99,7 +99,7 @@ Python {
                         // For now we only show credentials if there is 1 device
                         if (availableDevices.length === 1) {
                             currentDevice = resp.devices[0]
-                            calculateAll(navigator.goToCredentials)
+                            calculateAll(navigator.goToCredentialsIfNotInSettings)
                         } else {
                             // No or too many devices, clear credentials,
                             // clear current device,
@@ -107,7 +107,7 @@ Python {
                             currentDevice = null
                             nextCalculateAll = -1
                             entries.clear()
-                            navigator.goToCredentials()
+                            navigator.goToCredentialsIfNotInSettings()
                             currentDeviceValidated = true
                         }
                     }
@@ -190,6 +190,7 @@ Python {
     }
 
     function scanQr(toastIfError) {
+        navigator.goToLoading()
         parseQr(ScreenShot.capture(), function (resp) {
             if (resp.success) {
                 navigator.goToNewCredentialAuto(resp)
