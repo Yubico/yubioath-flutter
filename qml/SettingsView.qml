@@ -422,7 +422,9 @@ ScrollView {
                                            "Are you sure?",
                                            "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",
                                            function () {
+                                               navigator.goToLoading()
                                                yubiKey.reset(function (resp) {
+                                                   navigator.goToSettings()
                                                    if (resp.success) {
                                                        entries.clear()
                                                        navigator.snackBar(
@@ -436,6 +438,7 @@ ScrollView {
                                                        console.log("reset failed:",
                                                                    resp.error_id)
                                                    }
+
                                                })
                                            })
                         }

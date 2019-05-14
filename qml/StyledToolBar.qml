@@ -63,7 +63,7 @@ ToolBar {
         ToolButton {
             id: backBtn
             visible: showBackBtn
-            onClicked: navigator.goToCredentials()
+            onClicked: navigator.home()
             icon.source: "../images/back.svg"
             icon.color: isDark() ? defaultLight : "#5f6368"
             MouseArea {

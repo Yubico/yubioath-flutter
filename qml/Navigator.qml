@@ -33,7 +33,22 @@ StackView {
         }
     }
 
-    function goToCredentials() {
+    function home() {
+
+        // If locked, prompt for password
+        if (yubiKey.currentDeviceHasPassword && !yubiKey.currentDeviceValidated) {
+            clearAndPush(enterPasswordView)
+            return
+        }
+
+        if (currentItem.objectName !== 'credentialsView') {
+            clearAndPush(credentialsView)
+            return
+        }
+
+    }
+
+    function goToCredentials(force) {
         if (currentItem.objectName !== 'credentialsView') {
             clearAndPush(credentialsView)
         }
