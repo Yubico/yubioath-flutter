@@ -42,7 +42,7 @@ Item {
             color: formText
             Material.accent: formText
             placeholderText: textField.activeFocus ? "" : labelText
-            placeholderTextColor: formText
+            placeholderTextColor: formPlaceholderText
             background: Item {
                 implicitWidth: parent.width
                 implicitHeight: 40
