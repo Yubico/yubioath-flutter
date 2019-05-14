@@ -23,6 +23,12 @@ StackView {
         }
     }
 
+    function goToEnterPassword() {
+        if (currentItem.objectName !== 'enterPasswordView') {
+            clearAndPush(enterPasswordView, StackView.Immediate)
+        }
+    }
+
     function goToCredentials() {
         if (currentItem.objectName !== 'credentialsView') {
             clearAndPush(credentialsView)
@@ -103,6 +109,12 @@ StackView {
     Component {
         id: newCredentialView
         NewCredentialView {
+        }
+    }
+
+    Component {
+        id: enterPasswordView
+        EnterPasswordView {
         }
     }
 

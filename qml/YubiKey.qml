@@ -140,6 +140,7 @@ Python {
                    entries.clear()
                    currentDeviceHasPassword = true
                    currentDeviceValidated = false
+                   cb = navigator.goToEnterPassword
                } else {
                    navigator.snackBarError(navigator.getErrorMessage(
                                                resp.error_id))

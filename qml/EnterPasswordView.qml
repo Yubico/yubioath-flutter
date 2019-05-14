@@ -4,11 +4,25 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-ColumnLayout {
+ScrollView {
 
     readonly property int dynamicWidth: 600
-    readonly property int dynamicMargin: 64
-    spacing: 20
+    readonly property int dynamicMargin: 32
+
+    spacing: 8
+    padding: 32
+
+    objectName: 'enterPasswordView'
+    contentWidth: app.width
+
+    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+    ScrollBar.vertical: ScrollBar {
+        interactive: true
+        width: 5
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+    }
 
     function clear() {
         passwordField.text = ""
@@ -30,7 +44,8 @@ ColumnLayout {
                          })
     }
 
-
+    ColumnLayout {
+        spacing: 20
         ColumnLayout {
             Layout.alignment: Qt.AlignHLeft | Qt.AlignVCenter
 
@@ -71,6 +86,7 @@ ColumnLayout {
         }
         ColumnLayout {
             Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
+
             StyledTextField {
                 id: passwordField
                 labelText: qsTr("Password")
@@ -78,6 +94,7 @@ ColumnLayout {
                 Keys.onEnterPressed: validate()
                 Keys.onReturnPressed: validate()
             }
+
             Item {
                 id: item1
                 Layout.fillHeight: false
@@ -102,5 +119,5 @@ ColumnLayout {
                 }
             }
         }
-
+    }
 }

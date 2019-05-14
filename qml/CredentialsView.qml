@@ -51,10 +51,6 @@ ScrollView {
         visible: entries.count === 0 && yubiKey.currentDeviceValidated && !!yubiKey.currentDevice
     }
 
-    EnterPasswordSection {
-        visible: !yubiKey.currentDeviceValidated && !!yubiKey.currentDevice
-    }
-
     NoYubiKeySection {
         visible: yubiKey.availableDevices.length !== 1
     }
