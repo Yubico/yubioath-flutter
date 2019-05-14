@@ -279,6 +279,7 @@ ScrollView {
 
                         StyledTextField {
                             id: periodLbl
+                            visible: oathTypeComboBox.currentIndex === 0
                             labelText: "Period"
                             Layout.fillWidth: true
                             text: "30"
@@ -290,6 +291,7 @@ ScrollView {
                         }
 
                         Item {
+                            visible: oathTypeComboBox.currentIndex === 0
                             width: 16
                         }
 

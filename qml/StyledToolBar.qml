@@ -159,6 +159,7 @@ ToolBar {
             ToolButton {
                 id: copyCredentialBtn
                 visible: shouldShowCredentialOptions()
+                enabled: shouldShowCredentialOptions() && !app.currentCredentialCard.hotpCredentialInCoolDown
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: app.currentCredentialCard.calculateCard(true)
 
