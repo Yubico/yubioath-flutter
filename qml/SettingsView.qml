@@ -41,7 +41,7 @@ ScrollView {
     }
 
     function submitPassword() {
-        if (yubiKey.hasPassword) {
+        if (yubiKey.currentDeviceHasPassword) {
             changePassword()
         } else {
             setPassword()
@@ -64,7 +64,7 @@ ScrollView {
         yubiKey.setPassword(newPasswordField.text, false, function (resp) {
             if (resp.success) {
                 navigator.snackBar("Password set")
-                yubiKey.hasPassword = true
+                yubiKey.currentDeviceHasPassword = true
                 passwordManagementPanel.isExpanded = false
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
@@ -352,7 +352,7 @@ ScrollView {
                 StyledExpansionPanel {
                     id: passwordManagementPanel
 
-                    label: yubiKey.hasPassword ? "Change Password" : "Set Password"
+                    label: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
                     description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
 
                     ColumnLayout {
@@ -361,7 +361,7 @@ ScrollView {
 
                         StyledTextField {
                             id: currentPasswordField
-                            visible: yubiKey.hasPassword ? true : false
+                            visible: yubiKey.currentDeviceHasPassword ? true : false
                             labelText: qsTr("Current Password")
                             echoMode: TextInput.Password
                             Keys.onEnterPressed: submitPassword()
@@ -383,11 +383,11 @@ ScrollView {
                         }
                         StyledButton {
                             Layout.alignment: Qt.AlignRight
-                            text: yubiKey.hasPassword ? "Change Password" : "Set Password"
+                            text: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
                             flat: true
                             enabled: {
-                                if (!yubiKey.locked) {
-                                    if (yubiKey.hasPassword
+                                if (yubiKey.currentDeviceValidated) {
+                                    if (yubiKey.currentDeviceHasPassword
                                             && currentPasswordField.text.length == 0) {
                                         return false
                                     }
@@ -427,8 +427,8 @@ ScrollView {
                                                        entries.clear()
                                                        navigator.snackBar(
                                                                    "Reset completed")
-                                                       yubiKey.locked = false
-                                                       yubiKey.hasPassword = false
+                                                       yubiKey.currentDeviceValidated = true
+                                                       yubiKey.currentDeviceHasPassword = false
                                                    } else {
                                                        navigator.snackBarError(
                                                                    navigator.getErrorMessage(

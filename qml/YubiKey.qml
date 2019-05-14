@@ -10,11 +10,13 @@ Python {
     property bool yubikeyReady: false
     property var queue: []
 
-    property bool hasPassword: false
-    property bool locked: false
 
     property var availableDevices: []
+
     property var currentDevice
+    property bool currentDeviceHasPassword: false
+    property bool currentDeviceValidated: true
+
     signal enableLogging(string logLevel, string logFile)
     signal disableLogging
 
@@ -106,7 +108,7 @@ Python {
                             nextCalculateAll = -1
                             entries.clear()
                             navigator.goToCredentials()
-                            locked = false
+                            currentDeviceValidated = true
                         }
                     }
                 } else {
@@ -120,7 +122,7 @@ Python {
             })
 
             if (timeToCalculateAll() && currentDevice
-                    && !locked) {
+                    && currentDeviceValidated) {
                 calculateAll()
             }
         }
@@ -132,12 +134,12 @@ Python {
            if (resp.success) {
                entries.updateEntries(resp.entries)
                updateNextCalculateAll()
-               locked = false
+               currentDeviceValidated = true
            } else {
                if (resp.error_id === 'access_denied') {
                    entries.clear()
-                   hasPassword = true
-                   locked = true
+                   currentDeviceHasPassword = true
+                   currentDeviceValidated = false
                } else {
                    navigator.snackBarError(navigator.getErrorMessage(
                                                resp.error_id))

@@ -185,6 +185,9 @@ class Controller(object):
         descs_changed = (old_desc_fps != self._desc_fps)
         if descs_changed:
             self._devices = []
+            # Forget current key if no descriptors
+            if not self._descs:
+                self._current_key = None
             for desc in self._descs:
                 dev = desc.open_device(
                     TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
