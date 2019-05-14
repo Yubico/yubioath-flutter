@@ -27,8 +27,9 @@ StackView {
         }
     }
 
-    function goToEnterPassword() {
-        if (currentItem.objectName !== 'enterPasswordView') {
+    function goToEnterPasswordIfNotInSettings() {
+        if (currentItem.objectName !== 'enterPasswordView'
+                && currentItem.objectName !== 'settingsView') {
             clearAndPush(enterPasswordView, StackView.Immediate)
         }
     }
