@@ -495,5 +495,67 @@ ScrollView {
                 }
             }
         }
+
+        Pane {
+            id: aboutPane
+            Layout.alignment: Qt.AlignCenter | Qt.AlignTop
+            Layout.fillWidth: true
+            Layout.maximumWidth: dynamicWidth + dynamicMargin
+            Layout.topMargin: 8
+            Layout.bottomMargin: 8
+
+            background: Rectangle {
+                color: isDark() ? defaultDarkLighter : defaultLightDarker
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    radius: 4
+                    samples: radius * 2
+                    verticalOffset: 2
+                    horizontalOffset: 2
+                    color: formDropShdaow
+                    transparentBorder: true
+                }
+            }
+
+            ColumnLayout {
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: app.width - dynamicMargin
+                       < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+                spacing: 16
+
+                RowLayout {
+                    Label {
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                        text: "About"
+                        color: yubicoGreen
+                        font.pixelSize: 14
+                        font.weight: Font.Medium
+                        topPadding: 8
+                        bottomPadding: 8
+                        Layout.fillWidth: true
+                        background: Item {
+                            implicitWidth: parent.width
+                            implicitHeight: 40
+                            Rectangle {
+                                color: formTitleUnderline
+                                height: 1
+                                width: parent.width
+                                y: 31
+                            }
+                        }
+                    }
+                }
+
+                StyledExpansionPanel {
+                    label: "Yubico Authenticator 5.0.0"
+                    description: "Copyright © " + Qt.formatDateTime(
+                                     new Date(),
+                                     "yyyy") + ", Yubico AB. All rights reserved."
+                    isEnabled: false
+                    toolButtonIcon: "../images/autorenew.svg"
+                    toolButtonToolTip: "Check for updates"
+                }
+            }
+        }
     }
 }

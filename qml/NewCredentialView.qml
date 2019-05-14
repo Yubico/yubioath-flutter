@@ -283,39 +283,40 @@ ScrollView {
 
                         RowLayout {
 
-                        StyledTextField {
-                            id: periodLbl
-                            visible: oathTypeComboBox.currentIndex === 0
-                            labelText: "Period"
-                            Layout.fillWidth: true
-                            text: "30"
-                            horizontalAlignment: Text.Alignleft
-                            validator: IntValidator {
-                                bottom: 15
-                                top: 60
-                            }
+                            StyledTextField {
+                                id: periodLbl
+                                visible: oathTypeComboBox.currentIndex === 0
+                                labelText: "Period"
+                                Layout.fillWidth: true
+                                text: "30"
+                                horizontalAlignment: Text.Alignleft
+                                validator: IntValidator {
+                                    bottom: 15
+                                    top: 60
+                                }
 
-                        Item {
-                            visible: oathTypeComboBox.currentIndex === 0
-                            width: 16
-                        }
+                                Item {
+                                    visible: oathTypeComboBox.currentIndex === 0
+                                    width: 16
+                                }
 
-                            StyledComboBox {
-                                id: digitsComboBox
-                                label: "Digits"
-                                model: ["6", "7", "8"]
+                                StyledComboBox {
+                                    id: digitsComboBox
+                                    label: "Digits"
+                                    model: ["6", "7", "8"]
+                                }
                             }
                         }
                     }
-                }
 
-                StyledButton {
-                    id: addBtn
-                    text: "Add"
-                    toolTipText: "Add credential to YubiKey"
-                    enabled: acceptableInput()
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    onClicked: addCredential()
+                    StyledButton {
+                        id: addBtn
+                        text: "Add"
+                        toolTipText: "Add credential to YubiKey"
+                        enabled: acceptableInput()
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        onClicked: addCredential()
+                    }
                 }
             }
         }
