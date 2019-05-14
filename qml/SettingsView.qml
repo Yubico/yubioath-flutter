@@ -6,9 +6,10 @@ import QtGraphicalEffects 1.0
 
 ScrollView {
 
-    readonly property int dynamicWidth: 600
+    readonly property int dynamicWidth: 864
     readonly property int dynamicMargin: 32
 
+    id: settingsPanel
     objectName: 'settingsView'
     contentWidth: app.width
 
@@ -125,8 +126,9 @@ ScrollView {
 
         Pane {
             id: appPane
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+            Layout.alignment: Qt.AlignCenter | Qt.AlignTop
             Layout.fillWidth: true
+            Layout.maximumWidth: dynamicWidth + dynamicMargin
             Layout.bottomMargin: 16
             background: Rectangle {
                 color: isDark() ? defaultDarkLighter : defaultLightDarker
@@ -156,155 +158,187 @@ ScrollView {
                         font.weight: Font.Medium
                         topPadding: 8
                         bottomPadding: 8
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    StyledComboBox {
-                        id: themeComboBox
-                        label: "Appearance"
-                        comboBox.textRole: "text"
-                        model: themes
-                        onCurrentIndexChanged: {
-                            settings.theme = themes.get(currentIndex).value
-                        }
-                        currentIndex: {
-                            switch (settings.theme) {
-                            case Material.System:
-                                return 0
-                            case Material.Light:
-                                return 1
-                            case Material.Dark:
-                                return 2
-                            default:
-                                return 0
-                            }
-                        }
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    StyledComboBox {
-                        id: authenticatorModeCombobox
-                        label: "Authenticator Mode"
-                        model: ["CCID (Default)", "OTP"]
-                        currentIndex: settings.otpMode ? 1 : 0
-                        onCurrentIndexChanged: {
-                            if (currentIndex === 1) {
-                                settings.otpMode = true
-                            } else {
-                                settings.otpMode = false
-                            }
-                        }
-                    }
-                }
-
-                RowLayout {
-                    visible: authenticatorModeCombobox.currentText.indexOf(
-                                 "OTP") > -1
-                    Label {
                         Layout.fillWidth: true
-                        font.pixelSize: 11
-                        font.italic: true
-                        color: formLabel
-                        text: "Note: OTP mode allows usage of the configurable OTP slots on the YubiKey, this should be considered for special usecases only and is not recommended for normal use."
-                        wrapMode: Text.WordWrap
-                        Layout.rowSpan: 1
-                    }
-                }
-
-                RowLayout {
-                    visible: authenticatorModeCombobox.currentText.indexOf(
-                                 "OTP") > -1
-
-                    StyledComboBox {
-                        enabled: settings.otpMode
-                        label: "Slot 1 Digits"
-                        comboBox.textRole: "text"
-                        model: slotModeDigits
-                        onCurrentIndexChanged: {
-                            settings.slot1digits = slotModeDigits.get(
-                                        currentIndex).value
-                        }
-                        currentIndex: {
-                            switch (settings.slot1digits) {
-                            case 0:
-                                return 0
-                            case 6:
-                                return 1
-                            case 7:
-                                return 2
-                            case 8:
-                                return 3
-                            default:
-                                return 0
-                            }
-                        }
-                    }
-
-                    Item {
-                        width: 16
-                    }
-
-                    StyledComboBox {
-                        enabled: settings.otpMode
-                        label: "Slot 2 Digits"
-                        comboBox.textRole: "text"
-                        model: slotModeDigits
-                        onCurrentIndexChanged: {
-                            settings.slot2digits = slotModeDigits.get(
-                                        currentIndex).value
-                        }
-                        currentIndex: {
-                            switch (settings.slot2digits) {
-                            case 0:
-                                return 0
-                            case 6:
-                                return 1
-                            case 7:
-                                return 2
-                            case 8:
-                                return 3
-                            default:
-                                return 0
+                        background: Item {
+                            implicitWidth: parent.width
+                            implicitHeight: 40
+                            Rectangle {
+                                color: formTitleUnderline
+                                height: 1
+                                width: parent.width
+                                y: 31
                             }
                         }
                     }
                 }
 
-                RowLayout {
-                    Label {
-                        text: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
-                        font.pixelSize: 10
-                        color: formLabel
+                StyledExpansionPanel {
+                    label: "Appearance"
+                    description: "Change the theme and appearance of the application."
+
+                    ColumnLayout {
+                        visible: parent.isExpanded
+                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            StyledComboBox {
+                                id: themeComboBox
+                                label: "Appearance"
+                                comboBox.textRole: "text"
+                                model: themes
+                                onCurrentIndexChanged: {
+                                    settings.theme = themes.get(
+                                                currentIndex).value
+                                }
+                                currentIndex: {
+                                    switch (settings.theme) {
+                                    case Material.System:
+                                        return 0
+                                    case Material.Light:
+                                        return 1
+                                    case Material.Dark:
+                                        return 2
+                                    default:
+                                        return 0
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
-                RowLayout {
-                    CheckBox {
-                        id: sysTrayCheckbox
-                        checked: settings.closeToTray
-                        text: Qt.platform.os === "osx" ? "Show in menu bar" : "Show in system tray"
-                        padding: 0
-                        indicator.width: 16
-                        indicator.height: 16
-                        onCheckStateChanged: settings.closeToTray = checked
-                        Material.foreground: formText
+                StyledExpansionPanel {
+                    label: "Authenticator Mode"
+                    description: "Configure which mode the YubiKey will operate in."
+
+                    ColumnLayout {
+                        visible: parent.isExpanded
+                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            StyledComboBox {
+                                id: authenticatorModeCombobox
+                                label: "Authenticator Mode"
+                                model: ["CCID (Default)", "OTP"]
+                                currentIndex: settings.otpMode ? 1 : 0
+                                onCurrentIndexChanged: {
+                                    if (currentIndex === 1) {
+                                        settings.otpMode = true
+                                    } else {
+                                        settings.otpMode = false
+                                    }
+                                }
+                            }
+                        }
+
+                        RowLayout {
+                            visible: authenticatorModeCombobox.currentText.indexOf(
+                                         "OTP") > -1
+                            Label {
+                                Layout.fillWidth: true
+                                font.pixelSize: 11
+                                color: formLabel
+                                text: "Note: OTP mode allows usage of the configurable OTP slots on the YubiKey, this should be considered for special usecases only and is not recommended for normal use."
+                                wrapMode: Text.WordWrap
+                                Layout.rowSpan: 1
+                            }
+                        }
+
+                        RowLayout {
+                            visible: authenticatorModeCombobox.currentText.indexOf(
+                                         "OTP") > -1
+
+                            StyledComboBox {
+                                enabled: settings.otpMode
+                                label: "Slot 1 Digits"
+                                comboBox.textRole: "text"
+                                model: slotModeDigits
+                                onCurrentIndexChanged: {
+                                    settings.slot1digits = slotModeDigits.get(
+                                                currentIndex).value
+                                }
+                                currentIndex: {
+                                    switch (settings.slot1digits) {
+                                    case 0:
+                                        return 0
+                                    case 6:
+                                        return 1
+                                    case 7:
+                                        return 2
+                                    case 8:
+                                        return 3
+                                    default:
+                                        return 0
+                                    }
+                                }
+                            }
+
+                            Item {
+                                width: 16
+                            }
+
+                            StyledComboBox {
+                                enabled: settings.otpMode
+                                label: "Slot 2 Digits"
+                                comboBox.textRole: "text"
+                                model: slotModeDigits
+                                onCurrentIndexChanged: {
+                                    settings.slot2digits = slotModeDigits.get(
+                                                currentIndex).value
+                                }
+                                currentIndex: {
+                                    switch (settings.slot2digits) {
+                                    case 0:
+                                        return 0
+                                    case 6:
+                                        return 1
+                                    case 7:
+                                        return 2
+                                    case 8:
+                                        return 3
+                                    default:
+                                        return 0
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
-                RowLayout {
-                    CheckBox {
-                        visible: sysTrayCheckbox.checked
-                        enabled: sysTrayCheckbox.checked
-                        checked: settings.hideOnLaunch
-                        text: "Hide on launch"
-                        padding: 0
-                        indicator.width: 16
-                        indicator.height: 16
-                        onCheckStateChanged: settings.hideOnLaunch = checked
-                        Material.foreground: formText
+
+                StyledExpansionPanel {
+                    label: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
+                    description: "Configure where and how the application is visible."
+
+                    RowLayout {
+                        visible: parent.isExpanded
+
+                        CheckBox {
+                            id: sysTrayCheckbox
+                            checked: settings.closeToTray
+                            text: Qt.platform.os
+                                  === "osx" ? "Show in menu bar" : "Show in system tray"
+                            padding: 0
+                            indicator.width: 16
+                            indicator.height: 16
+                            onCheckStateChanged: settings.closeToTray = checked
+                            Material.foreground: formText
+                        }
+                    }
+                    RowLayout {
+                        visible: parent.isExpanded
+
+                        CheckBox {
+                            enabled: sysTrayCheckbox.checked
+                            checked: settings.hideOnLaunch
+                            text: "Hide on launch"
+                            padding: 0
+                            indicator.width: 16
+                            indicator.height: 16
+                            onCheckStateChanged: settings.hideOnLaunch = checked
+                            Material.foreground: formText
+                        }
                     }
                 }
             }
@@ -313,8 +347,9 @@ ScrollView {
         Pane {
             visible: isKeyAvailable()
             id: keyPane
+            Layout.alignment: Qt.AlignCenter | Qt.AlignTop
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+            Layout.maximumWidth: dynamicWidth + dynamicMargin
             Layout.topMargin: 8
             Layout.bottomMargin: 8
 
@@ -346,18 +381,28 @@ ScrollView {
                         font.weight: Font.Medium
                         topPadding: 8
                         bottomPadding: 8
+                        Layout.fillWidth: true
+                        background: Item {
+                            implicitWidth: parent.width
+                            implicitHeight: 40
+                            Rectangle {
+                                color: formTitleUnderline
+                                height: 1
+                                width: parent.width
+                                y: 31
+                            }
+                        }
                     }
                 }
 
                 StyledExpansionPanel {
                     id: passwordManagementPanel
-
                     label: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
                     description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
 
                     ColumnLayout {
                         visible: parent.isExpanded
-                        Layout.alignment: Qt.AlignRight
+                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
 
                         StyledTextField {
                             id: currentPasswordField
@@ -382,7 +427,7 @@ ScrollView {
                             Keys.onReturnPressed: submitPassword()
                         }
                         StyledButton {
-                            Layout.alignment: Qt.AlignRight
+                            Layout.alignment: Qt.AlignRight | Qt.AlignTop
                             text: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
                             flat: true
                             enabled: {
@@ -408,41 +453,29 @@ ScrollView {
                     label: "Reset OATH Application"
                     description: "Warning: Resetting the OATH application will delete all credentials and restore factory defaults."
                     isEnabled: false
-
-                    RowLayout {
-                        visible: parent.isExpanded
-                        Layout.alignment: Qt.AlignRight
-
-                        StyledButton {
-                            text: "Reset"
-                            toolTipText: "Reset to factory settings"
-                            Layout.alignment: Qt.AlignRight
-                            flat: true
-                            onClicked: navigator.confirm(
-                                           "Are you sure?",
-                                           "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",
-                                           function () {
-                                               navigator.goToLoading()
-                                               yubiKey.reset(function (resp) {
-                                                   navigator.goToSettings()
-                                                   if (resp.success) {
-                                                       entries.clear()
-                                                       navigator.snackBar(
-                                                                   "Reset completed")
-                                                       yubiKey.currentDeviceValidated = true
-                                                       yubiKey.currentDeviceHasPassword = false
-                                                   } else {
-                                                       navigator.snackBarError(
-                                                                   navigator.getErrorMessage(
-                                                                       resp.error_id))
-                                                       console.log("reset failed:",
-                                                                   resp.error_id)
-                                                   }
-
-                                               })
-                                           })
-                        }
-                    }
+                    toolButtonIcon: "../images/reset.svg"
+                    toolButtonToolTip: "Reset to factory settings"
+                    toolButton.onClicked: navigator.confirm(
+                                              "Are you sure?",
+                                              "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",
+                                              function () {
+                                                  navigator.goToLoading()
+                                                  yubiKey.reset(
+                                                              function (resp) {
+                                                                  navigator.goToSettings()
+                                                                  if (resp.success) {
+                                                                      entries.clear()
+                                                                      navigator.snackBar(
+                                                                                  "Reset completed")
+                                                                      yubiKey.currentDeviceValidated = true
+                                                                      yubiKey.currentDeviceHasPassword = false
+                                                                  } else {
+                                                                      navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+                                                                      console.log("reset failed:",
+                                                                                  resp.error_id)
+                                                                  }
+                                                              })
+                                              })
                 }
             }
         }

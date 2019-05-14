@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 ScrollView {
 
-    readonly property int dynamicWidth: 600
+    readonly property int dynamicWidth: 864
     readonly property int dynamicMargin: 32
 
     objectName: 'newCredentialView'
@@ -23,9 +23,8 @@ ScrollView {
 
     property var credential
     property bool manualEntry
-    property bool showAdvanced: false
-    contentWidth: app.width
 
+    contentWidth: app.width
 
     function acceptableInput() {
         if (settings.otpMode) {
@@ -39,7 +38,6 @@ ScrollView {
         }
     }
 
-
     function addCredential() {
 
         function callback(resp) {
@@ -47,7 +45,8 @@ ScrollView {
                 yubiKey.calculateAll(navigator.goToCredentials)
                 navigator.snackBar("Credential added")
             } else {
-                navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+                navigator.snackBarError(navigator.getErrorMessage(
+                                            resp.error_id))
                 console.log("addCredential failed:", resp.error_id)
             }
         }
@@ -55,15 +54,15 @@ ScrollView {
         if (settings.otpMode) {
             yubiKey.otpAddCredential(otpSlotComboBox.currentText,
                                      secretKeyLbl.text,
-                                     requireTouchCheckBox.checked,
-                                     callback)
+                                     requireTouchCheckBox.checked, callback)
         } else {
             yubiKey.ccidAddCredential(nameLbl.text, secretKeyLbl.text,
-                                  issuerLbl.text, oathTypeComboBox.currentText,
-                                  algoComboBox.currentText,
-                                  digitsComboBox.currentText, periodLbl.text,
-                                  requireTouchCheckBox.checked,
-                                  callback)
+                                      issuerLbl.text,
+                                      oathTypeComboBox.currentText,
+                                      algoComboBox.currentText,
+                                      digitsComboBox.currentText,
+                                      periodLbl.text,
+                                      requireTouchCheckBox.checked, callback)
         }
     }
 
@@ -78,8 +77,9 @@ ScrollView {
         Pane {
             id: retryPane
             visible: manualEntry
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+            Layout.alignment: Qt.AlignCenter | Qt.AlignTop
             Layout.fillWidth: true
+            Layout.maximumWidth: dynamicWidth + dynamicMargin
             Layout.bottomMargin: 16
             background: Rectangle {
                 color: isDark() ? defaultDarkLighter : defaultLightDarker
@@ -107,6 +107,17 @@ ScrollView {
                         font.weight: Font.Medium
                         topPadding: 8
                         bottomPadding: 8
+                        Layout.fillWidth: true
+                        background: Item {
+                            implicitWidth: parent.width
+                            implicitHeight: 40
+                            Rectangle {
+                                color: formTitleUnderline
+                                height: 1
+                                width: parent.width
+                                y: 31
+                            }
+                        }
                     }
                 }
                 Label {
@@ -134,8 +145,9 @@ ScrollView {
 
         Pane {
             id: manualEntryPane
+            Layout.alignment: Qt.AlignCenter | Qt.AlignTop
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+            Layout.maximumWidth: dynamicWidth + dynamicMargin
             Layout.topMargin: 8
             Layout.bottomMargin: 8
 
@@ -156,7 +168,8 @@ ScrollView {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: app.width - dynamicMargin
                        < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
-                spacing: 16
+                spacing: 8
+
                 RowLayout {
                     visible: !credential
                     Label {
@@ -167,6 +180,17 @@ ScrollView {
                         font.weight: Font.Medium
                         topPadding: 8
                         bottomPadding: 8
+                        Layout.fillWidth: true
+                        background: Item {
+                            implicitWidth: parent.width
+                            implicitHeight: 40
+                            Rectangle {
+                                color: formTitleUnderline
+                                height: 1
+                                width: parent.width
+                                y: 31
+                            }
+                        }
                     }
                 }
 
@@ -174,37 +198,29 @@ ScrollView {
                     id: issuerLbl
                     labelText: "Issuer"
                     Layout.fillWidth: true
-                    text: credential && credential.issuer ? credential.issuer : ""
+                    text: credential
+                          && credential.issuer ? credential.issuer : ""
                     visible: !settings.otpMode
                 }
                 StyledTextField {
                     id: nameLbl
-                    labelText: "Account name"
+                    labelText: "Account name *"
                     Layout.fillWidth: true
                     text: credential && credential.name ? credential.name : ""
                     visible: !settings.otpMode
                 }
                 StyledTextField {
                     id: secretKeyLbl
-                    labelText: "Secret key"
+                    labelText: "Secret key *"
                     Layout.fillWidth: true
-                    text: credential && credential.secret ? credential.secret : ""
+                    text: credential
+                          && credential.secret ? credential.secret : ""
                     visible: manualEntry
                     validator: RegExpValidator {
                         regExp: /[2-7a-zA-Z ]+=*/
                     }
                 }
 
-                RowLayout {
-                    Label {
-                        text: "Require touch"
-                        Layout.fillWidth: true
-                    }
-                    CheckBox {
-                        id: requireTouchCheckBox
-                    }
-                    visible: yubiKey.supportsTouchCredentials() || settings.otpMode
-                }
                 RowLayout {
                     Layout.fillWidth: true
                     StyledComboBox {
@@ -216,76 +232,73 @@ ScrollView {
                 }
 
                 RowLayout {
-                    Layout.fillWidth: true
-                    StyledComboBox {
-                        label: "Type"
-                        id: oathTypeComboBox
-                        model: ["TOTP", "HOTP"]
+                    CheckBox {
+                        id: requireTouchCheckBox
+                        checked: settings.closeToTray
+                        text: "Require touch"
+                        padding: 0
+                        indicator.width: 16
+                        indicator.height: 16
+                        Material.foreground: formText
                     }
-                    visible: manualEntry && showAdvanced && !settings.otpMode
-                }
-                RowLayout {
-                    StyledComboBox {
-                        id: digitsComboBox
-                        label: "Digits"
-                        model: ["6", "7", "8"]
-                    }
-                    visible: manualEntry && showAdvanced && !settings.otpMode
-                }
-                RowLayout {
-                    Layout.fillWidth: true
-                    StyledComboBox {
-                        id: algoComboBox
-                        label: "Algorithm"
-                        // TODO: only show algorithms supported on device
-                        model: ["SHA1", "SHA256", "SHA512"]
-                    }
-                    visible: manualEntry && showAdvanced && !settings.otpMode
+                    visible: yubiKey.supportsTouchCredentials()
+                             || settings.otpMode
                 }
 
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Label {
-                        text: "Period"
-                        Layout.fillWidth: true
-                    }
-                    StyledTextField {
-                        id: periodLbl
-                        labelText: "Period"
-                        Layout.fillWidth: false
-                        text: "30"
-                        implicitWidth: 50
-                        horizontalAlignment: Text.AlignHCenter
-                        validator: IntValidator {
-                            bottom: 15
-                            top: 60
-                        }
-                    }
-                    visible: manualEntry && showAdvanced && !settings.otpMode
-                }
-                RowLayout {
-                    ToolButton {
-                        id: showAdvancedBtn
-                        onClicked: showAdvanced = !showAdvanced
-                        icon.width: 24
-                        icon.source: showAdvanced ? "../images/up.svg" : "../images/down.svg"
-                        icon.color: isDark() ? yubicoWhite : yubicoGrey
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            enabled: false
-                        }
-                    }
-
-                    Label {
-                        text: showAdvanced ? "Show less settings" : "Show more settings"
-                        elide: Label.ElideRight
-                        horizontalAlignment: Qt.AlignHLeft
-                        verticalAlignment: Qt.AlignVCenter
-                        Layout.fillWidth: true
-                    }
+                StyledExpansionPanel {
+                    id: advancedSettingsPanel
+                    label: "Advanced settings"
+                    description: "Normally these options should not be changed, doing so may result in the code not working as expected."
                     visible: manualEntry && !settings.otpMode
+
+                    RowLayout {
+                        visible: parent.isExpanded
+                        Layout.fillWidth: true
+
+                        StyledComboBox {
+                            label: "Type"
+                            id: oathTypeComboBox
+                            model: ["TOTP", "HOTP"]
+                        }
+
+                        Item {
+                            width: 16
+                        }
+
+                        StyledComboBox {
+                            id: algoComboBox
+                            label: "Algorithm"
+                            // TODO: only show algorithms supported on device
+                            model: ["SHA1", "SHA256", "SHA512"]
+                        }
+                    }
+
+                    RowLayout {
+                        visible: parent.isExpanded
+                        Layout.fillWidth: true
+
+                        StyledTextField {
+                            id: periodLbl
+                            labelText: "Period"
+                            Layout.fillWidth: true
+                            text: "30"
+                            horizontalAlignment: Text.Alignleft
+                            validator: IntValidator {
+                                bottom: 15
+                                top: 60
+                            }
+                        }
+
+                        Item {
+                            width: 16
+                        }
+
+                        StyledComboBox {
+                            id: digitsComboBox
+                            label: "Digits"
+                            model: ["6", "7", "8"]
+                        }
+                    }
                 }
 
                 StyledButton {
