@@ -137,6 +137,7 @@ ScrollView {
                 StyledButton {
                     id: retry
                     text: "Scan"
+                    toolTipText: "Scan a QR code on the screen"
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     onClicked: yubiKey.scanQr(true)
                 }
@@ -306,6 +307,7 @@ ScrollView {
                 StyledButton {
                     id: addBtn
                     text: "Add"
+                    toolTipText: "Add credential to YubiKey"
                     enabled: acceptableInput()
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     onClicked: addCredential()

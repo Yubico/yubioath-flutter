@@ -450,11 +450,11 @@ ScrollView {
                 }
 
                 StyledExpansionPanel {
-                    label: "Reset OATH Application"
+                    label: "Reset"
                     description: "Warning: Resetting the OATH application will delete all credentials and restore factory defaults."
                     isEnabled: false
                     toolButtonIcon: "../images/reset.svg"
-                    toolButtonToolTip: "Reset to factory settings"
+                    toolButtonToolTip: "Reset OATH Application"
                     toolButton.onClicked: navigator.confirm(
                                               "Are you sure?",
                                               "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",

@@ -173,7 +173,7 @@ ToolBar {
                 KeyNavigation.tab: deleteCredentialBtn
 
                 ToolTip {
-                    text: "Copy credential from YubiKey"
+                    text: "Copy code to clipboard"
                     delay: 1000
                     parent: copyCredentialBtn
                     visible: parent.hovered
@@ -207,7 +207,7 @@ ToolBar {
                 KeyNavigation.tab: settingsBtn
 
                 ToolTip {
-                    text: "Delete credential from YubiKey"
+                    text: "Delete credential"
                     delay: 1000
                     parent: deleteCredentialBtn
                     visible: parent.hovered
