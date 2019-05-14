@@ -132,18 +132,7 @@ ScrollView {
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
             Layout.bottomMargin: 16
-            background: Rectangle {
-                color: isDark() ? defaultDarkLighter : defaultLightDarker
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    radius: 4
-                    samples: radius * 2
-                    verticalOffset: 2
-                    horizontalOffset: 2
-                    color: formDropShdaow
-                    transparentBorder: true
-                }
-            }
+            spacing: 0
 
             ColumnLayout {
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -161,16 +150,6 @@ ScrollView {
                         topPadding: 8
                         bottomPadding: 8
                         Layout.fillWidth: true
-                        background: Item {
-                            implicitWidth: parent.width
-                            implicitHeight: 40
-                            Rectangle {
-                                color: formTitleUnderline
-                                height: 1
-                                width: parent.width
-                                y: 31
-                            }
-                        }
                     }
                 }
 
@@ -180,11 +159,7 @@ ScrollView {
                     motherView: settingsPanel
 
                     ColumnLayout {
-                        visible: parent.isExpanded
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                        Layout.leftMargin: 8
-                        Layout.rightMargin: 8
-                        Layout.bottomMargin: 8
 
                         RowLayout {
                             Layout.fillWidth: true
@@ -220,11 +195,7 @@ ScrollView {
                     motherView: settingsPanel
 
                     ColumnLayout {
-                        visible: parent.isExpanded
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                        Layout.leftMargin: 8
-                        Layout.rightMargin: 8
-                        Layout.bottomMargin: 8
 
                         RowLayout {
                             Layout.fillWidth: true
@@ -324,11 +295,6 @@ ScrollView {
                     motherView: settingsPanel
 
                     ColumnLayout {
-                        visible: parent.isExpanded
-                        Layout.leftMargin: 8
-                        Layout.rightMargin: 8
-                        Layout.bottomMargin: 8
-
                         CheckBox {
                             id: sysTrayCheckbox
                             checked: settings.closeToTray
@@ -362,27 +328,14 @@ ScrollView {
             Layout.alignment: Qt.AlignCenter | Qt.AlignTop
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
-            Layout.topMargin: 8
-            Layout.bottomMargin: 8
-
-            background: Rectangle {
-                color: isDark() ? defaultDarkLighter : defaultLightDarker
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    radius: 4
-                    samples: radius * 2
-                    verticalOffset: 2
-                    horizontalOffset: 2
-                    color: formDropShdaow
-                    transparentBorder: true
-                }
-            }
+            Layout.bottomMargin: 16
+            spacing: 0
 
             ColumnLayout {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: app.width - dynamicMargin
                        < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
-                spacing: 16
+                spacing: 8
 
                 RowLayout {
                     Label {
@@ -394,16 +347,6 @@ ScrollView {
                         topPadding: 8
                         bottomPadding: 8
                         Layout.fillWidth: true
-                        background: Item {
-                            implicitWidth: parent.width
-                            implicitHeight: 40
-                            Rectangle {
-                                color: formTitleUnderline
-                                height: 1
-                                width: parent.width
-                                y: 31
-                            }
-                        }
                     }
                 }
 
@@ -414,11 +357,7 @@ ScrollView {
                     motherView: settingsPanel
 
                     ColumnLayout {
-                        visible: parent.isExpanded
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                        Layout.leftMargin: 8
-                        Layout.rightMargin: 8
-                        Layout.bottomMargin: 8
 
                         StyledTextField {
                             id: currentPasswordField
@@ -501,27 +440,14 @@ ScrollView {
             Layout.alignment: Qt.AlignCenter | Qt.AlignTop
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
-            Layout.topMargin: 8
-            Layout.bottomMargin: 8
-
-            background: Rectangle {
-                color: isDark() ? defaultDarkLighter : defaultLightDarker
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    radius: 4
-                    samples: radius * 2
-                    verticalOffset: 2
-                    horizontalOffset: 2
-                    color: formDropShdaow
-                    transparentBorder: true
-                }
-            }
+            Layout.bottomMargin: 16
+            spacing: 0
 
             ColumnLayout {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: app.width - dynamicMargin
                        < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
-                spacing: 16
+                spacing: 8
 
                 RowLayout {
                     Label {
@@ -533,16 +459,6 @@ ScrollView {
                         topPadding: 8
                         bottomPadding: 8
                         Layout.fillWidth: true
-                        background: Item {
-                            implicitWidth: parent.width
-                            implicitHeight: 40
-                            Rectangle {
-                                color: formTitleUnderline
-                                height: 1
-                                width: parent.width
-                                y: 31
-                            }
-                        }
                     }
                 }
 
