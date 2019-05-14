@@ -22,6 +22,8 @@ ScrollView {
         anchors.right: parent.right
     }
 
+    property int expandedHeight: 0
+
     function isKeyAvailable() {
         return !!yubiKey.currentDevice
     }
@@ -175,10 +177,14 @@ ScrollView {
                 StyledExpansionPanel {
                     label: "Appearance"
                     description: "Change the theme and appearance of the application."
+                    motherView: settingsPanel
 
                     ColumnLayout {
                         visible: parent.isExpanded
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                        Layout.leftMargin: 8
+                        Layout.rightMargin: 8
+                        Layout.bottomMargin: 8
 
                         RowLayout {
                             Layout.fillWidth: true
@@ -211,10 +217,14 @@ ScrollView {
                 StyledExpansionPanel {
                     label: "Authenticator Mode"
                     description: "Configure which mode the YubiKey will operate in."
+                    motherView: settingsPanel
 
                     ColumnLayout {
                         visible: parent.isExpanded
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                        Layout.leftMargin: 8
+                        Layout.rightMargin: 8
+                        Layout.bottomMargin: 8
 
                         RowLayout {
                             Layout.fillWidth: true
@@ -240,9 +250,10 @@ ScrollView {
                                 Layout.fillWidth: true
                                 font.pixelSize: 11
                                 color: formLabel
-                                text: "Note: OTP mode allows usage of the configurable OTP slots on the YubiKey, this should be considered for special usecases only and is not recommended for normal use."
+                                text: "Using the OTP slots on the YubiKey should be considered for special usecases only and is not recommended for normal use."
                                 wrapMode: Text.WordWrap
                                 Layout.rowSpan: 1
+                                bottomPadding: 8
                             }
                         }
 
@@ -310,9 +321,13 @@ ScrollView {
                 StyledExpansionPanel {
                     label: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
                     description: "Configure where and how the application is visible."
+                    motherView: settingsPanel
 
-                    RowLayout {
+                    ColumnLayout {
                         visible: parent.isExpanded
+                        Layout.leftMargin: 8
+                        Layout.rightMargin: 8
+                        Layout.bottomMargin: 8
 
                         CheckBox {
                             id: sysTrayCheckbox
@@ -325,9 +340,6 @@ ScrollView {
                             onCheckStateChanged: settings.closeToTray = checked
                             Material.foreground: formText
                         }
-                    }
-                    RowLayout {
-                        visible: parent.isExpanded
 
                         CheckBox {
                             enabled: sysTrayCheckbox.checked
@@ -399,10 +411,14 @@ ScrollView {
                     id: passwordManagementPanel
                     label: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
                     description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
+                    motherView: settingsPanel
 
                     ColumnLayout {
                         visible: parent.isExpanded
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                        Layout.leftMargin: 8
+                        Layout.rightMargin: 8
+                        Layout.bottomMargin: 8
 
                         StyledTextField {
                             id: currentPasswordField

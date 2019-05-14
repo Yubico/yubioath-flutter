@@ -17,12 +17,16 @@ ColumnLayout {
     property string toolButtonToolTip
     property alias toolButton: toolButton
 
+    property var motherView
+
     spacing: 16
 
     RowLayout {
         Layout.rightMargin: -12
 
         ColumnLayout {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
             Label {
                 text: label
                 font.pixelSize: 13
@@ -39,19 +43,32 @@ ColumnLayout {
                 wrapMode: Text.WordWrap
                 Layout.rowSpan: 1
             }
+            MouseArea {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                cursorShape: Qt.PointingHandCursor
+                enabled: false
+                onClicked: {
+                    if (isExpanded) {
+                        motherView.contentHeight = motherView.contentHeight - expansionPanel.height
+                        isExpanded = false
+                    } else {
+                        isExpanded = true
+                        motherView.contentHeight = motherView.contentHeight + expansionPanel.height
+                    }
+                }
+            }
         }
 
         ToolButton {
             id: expandButton
             onClicked: {
                 if (isExpanded) {
-                    //                    settingsPanel.contentHeight = settingsPanel.contentHeight
-                    //                            - expansionPanel.height
+                    motherView.contentHeight = motherView.contentHeight - expansionPanel.height
                     isExpanded = false
                 } else {
                     isExpanded = true
-                    //                    settingsPanel.contentHeight = settingsPanel.contentHeight
-                    //                            + expansionPanel.height
+                    motherView.contentHeight = motherView.contentHeight + expansionPanel.height
                 }
             }
             icon.width: 24

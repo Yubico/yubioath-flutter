@@ -9,6 +9,7 @@ ScrollView {
     readonly property int dynamicWidth: 864
     readonly property int dynamicMargin: 32
 
+    id: newCredentialViewId
     objectName: 'newCredentialView'
     property string title: "New credential"
 
@@ -106,7 +107,7 @@ ScrollView {
                         font.pixelSize: 14
                         font.weight: Font.Medium
                         topPadding: 8
-                        bottomPadding: 8
+                        bottomPadding: 16
                         Layout.fillWidth: true
                         background: Item {
                             implicitWidth: parent.width
@@ -251,32 +252,36 @@ ScrollView {
                     label: "Advanced settings"
                     description: "Normally these options should not be changed, doing so may result in the code not working as expected."
                     visible: manualEntry && !settings.otpMode
+                    motherView: newCredentialViewId
 
-                    RowLayout {
+                    ColumnLayout {
+                        Layout.leftMargin: 8
+                        Layout.rightMargin: 8
+                        Layout.bottomMargin: 8
                         visible: parent.isExpanded
                         Layout.fillWidth: true
 
-                        StyledComboBox {
-                            label: "Type"
-                            id: oathTypeComboBox
-                            model: ["TOTP", "HOTP"]
+                        RowLayout {
+
+                            StyledComboBox {
+                                label: "Type"
+                                id: oathTypeComboBox
+                                model: ["TOTP", "HOTP"]
+                            }
+
+                            Item {
+                                width: 16
+                            }
+
+                            StyledComboBox {
+                                id: algoComboBox
+                                label: "Algorithm"
+                                // TODO: only show algorithms supported on device
+                                model: ["SHA1", "SHA256", "SHA512"]
+                            }
                         }
 
-                        Item {
-                            width: 16
-                        }
-
-                        StyledComboBox {
-                            id: algoComboBox
-                            label: "Algorithm"
-                            // TODO: only show algorithms supported on device
-                            model: ["SHA1", "SHA256", "SHA512"]
-                        }
-                    }
-
-                    RowLayout {
-                        visible: parent.isExpanded
-                        Layout.fillWidth: true
+                        RowLayout {
 
                         StyledTextField {
                             id: periodLbl
@@ -289,17 +294,17 @@ ScrollView {
                                 bottom: 15
                                 top: 60
                             }
-                        }
 
                         Item {
                             visible: oathTypeComboBox.currentIndex === 0
                             width: 16
                         }
 
-                        StyledComboBox {
-                            id: digitsComboBox
-                            label: "Digits"
-                            model: ["6", "7", "8"]
+                            StyledComboBox {
+                                id: digitsComboBox
+                                label: "Digits"
+                                model: ["6", "7", "8"]
+                            }
                         }
                     }
                 }
