@@ -31,7 +31,7 @@ ColumnLayout {
             Layout.alignment: Qt.AlignHLeft | Qt.AlignVCenter
         }
         Label {
-            text: "This YubiKey contains no credentials, how about adding some? For more information how it works please refer to yubico.com/authenticator."
+            text: "This YubiKey contains no credentials, how about adding some? Click the + sign in the toolbar to get started."
             Layout.minimumWidth: 320
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth

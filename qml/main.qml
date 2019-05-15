@@ -12,7 +12,7 @@ ApplicationWindow {
     width: 360
     height: 536
     minimumWidth: 360
-    minimumHeight: 536
+    minimumHeight: 126
     visible: true
 
     readonly property string yubicoGreen: "#9aca3c"
