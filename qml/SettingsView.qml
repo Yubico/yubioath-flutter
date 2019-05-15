@@ -204,12 +204,16 @@ ScrollView {
                     }
 
                     function setAuthenticatorMode() {
+                        navigator.goToLoading()
+
                         settings.slot1digits = otpModeDigits.get(
                                     slot1DigitsComboBox.currentIndex).value
                         settings.slot2digits = otpModeDigits.get(
                                     slot2DigitsComboBox.currentIndex).value
                         settings.otpMode = otpModeSelected
-                        yubiKey.clearEntriesAndCalculateAll()
+                        entries.clear()
+                        yubiKey.nextCalculateAll = -1
+                        yubiKey.calculateAll(navigator.goToSettings)
                     }
 
                     function getComboBoxIndex(digits) {

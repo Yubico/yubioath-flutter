@@ -10,7 +10,6 @@ Python {
     property bool yubikeyReady: false
     property var queue: []
 
-
     property var availableDevices: []
 
     property var currentDevice
@@ -128,65 +127,58 @@ Python {
         }
     }
 
-   function calculateAll(cb) {
+    function calculateAll(cb) {
 
-       function callback(resp) {
-           if (resp.success) {
-               entries.updateEntries(resp.entries)
-               updateNextCalculateAll()
-               currentDeviceValidated = true
-           } else {
-               if (resp.error_id === 'access_denied') {
-                   entries.clear()
-                   currentDeviceHasPassword = true
-                   currentDeviceValidated = false
-                   cb = navigator.goToEnterPasswordIfNotInSettings
-               } else {
-                   navigator.snackBarError(navigator.getErrorMessage(
-                                               resp.error_id))
-                   console.log("calculateAll failed:", resp.error_id)
-               }
-           }
-           if (cb) {
-               cb()
-           }
-       }
+        function callback(resp) {
+            if (resp.success) {
+                entries.updateEntries(resp.entries)
+                updateNextCalculateAll()
+                currentDeviceValidated = true
+            } else {
+                if (resp.error_id === 'access_denied') {
+                    entries.clear()
+                    currentDeviceHasPassword = true
+                    currentDeviceValidated = false
+                    cb = navigator.goToEnterPasswordIfNotInSettings
+                } else {
+                    navigator.snackBarError(navigator.getErrorMessage(
+                                                resp.error_id))
+                    console.log("calculateAll failed:", resp.error_id)
+                }
+            }
+            if (cb) {
+                cb()
+            }
+        }
 
-       if (settings.otpMode) {
-           otpCalculateAll(callback)
-       } else {
-           ccidCalculateAll(callback)
-       }
-   }
+        if (settings.otpMode) {
+            otpCalculateAll(callback)
+        } else {
+            ccidCalculateAll(callback)
+        }
+    }
 
-   function updateNextCalculateAll() {
-       // Next calculateAll should be when a default TOTP cred expires.
-       for (var i = 0; i < entries.count; i++) {
-           var entry = entries.get(i)
-           if (entry.code && entry.credential.period === 30) {
-               // Just use the first default one
-               nextCalculateAll = entry.code.valid_to
-               return
-           }
-       }
-       // No default TOTP cred found, don't set a time for nextCalculateAll
-       nextCalculateAll = -1
-   }
+    function updateNextCalculateAll() {
+        // Next calculateAll should be when a default TOTP cred expires.
+        for (var i; i < entries.count; i++) {
+            var entry = entries.get(i)
+            if (entry.code && entry.credential.period === 30) {
+                // Just use the first default one
+                nextCalculateAll = entry.code.valid_to
+                return
+            }
+        }
+        // No default TOTP cred found, don't set a time for nextCalculateAll
+        nextCalculateAll = -1
+    }
 
-   function timeToCalculateAll() {
-       return nextCalculateAll !== -1 && nextCalculateAll <= Utils.getNow()
-   }
-
-   function clearEntriesAndCalculateAll() {
-       entries.clear()
-       nextCalculateAll = -1
-       if (!!currentDevice) {
-           calculateAll()
-       }
-   }
+    function timeToCalculateAll() {
+        return nextCalculateAll !== -1 && nextCalculateAll <= Utils.getNow()
+    }
 
     function supportsTouchCredentials() {
-        return !!currentDevice && parseInt(currentDevice.version.join("")) >= 426
+        return !!currentDevice && parseInt(currentDevice.version.join(
+                                               "")) >= 426
     }
 
     function scanQr(toastIfError) {
@@ -197,7 +189,8 @@ Python {
                 navigator.snackBar("QR code found on screen")
             } else {
                 if (toastIfError) {
-                    navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+                    navigator.snackBarError(navigator.getErrorMessage(
+                                                resp.error_id))
                 }
                 navigator.goToNewCredentialManual()
             }
@@ -212,8 +205,7 @@ Python {
     function otpCalculateAll(cb) {
         var now = Utils.getNow()
         doCall('yubikey.controller.otp_calculate_all',
-               [settings.slot1digits, settings.slot2digits, now],
-               cb)
+               [settings.slot1digits, settings.slot2digits, now], cb)
     }
 
     function refreshDevices(otpMode, cb) {
@@ -235,7 +227,6 @@ Python {
         doCall('yubikey.controller.otp_calculate',
                [slot, digits, credential, nowAndMargin], cb)
     }
-
 
     function otpDeleteCredential(credential, cb) {
         var slot = (credential.key === "Slot 1") ? 1 : 2

@@ -279,24 +279,39 @@ class Controller(object):
         valid_from = timestamp - (timestamp % 30)
         valid_to = valid_from + 30
         entries = []
+
         if slot1_digits:
-            code, touch = self._otp_get_code_or_touch(
-                1, slot1_digits, timestamp)
-            entries.append({
-                'credential': cred_to_dict(
-                    Credential("Slot 1".encode(), OATH_TYPE.TOTP, touch)),
-                'code': code_to_dict(
-                    Code(code, valid_from, valid_to)) if code else None
-            })
+            try:
+                code, touch = self._otp_get_code_or_touch(
+                    1, slot1_digits, timestamp)
+                entries.append({
+                    'credential': cred_to_dict(
+                        Credential("Slot 1".encode(), OATH_TYPE.TOTP, touch)),
+                    'code': code_to_dict(
+                        Code(code, valid_from, valid_to)) if code else None
+                })
+            except YkpersError as e:
+                if e.errno == 4:
+                    pass
+                else:
+                    raise
+
         if slot2_digits:
-            code, touch = self._otp_get_code_or_touch(
-                2, slot2_digits, timestamp)
-            entries.append({
-                'credential': cred_to_dict(
-                    Credential("Slot 2".encode(), OATH_TYPE.TOTP, touch)),
-                'code': code_to_dict(
-                    Code(code, valid_from, valid_to)) if code else None
-            })
+            try:
+                code, touch = self._otp_get_code_or_touch(
+                    2, slot2_digits, timestamp)
+                entries.append({
+                    'credential': cred_to_dict(
+                        Credential("Slot 2".encode(), OATH_TYPE.TOTP, touch)),
+                    'code': code_to_dict(
+                        Code(code, valid_from, valid_to)) if code else None
+                })
+            except YkpersError as e:
+                if e.errno == 4:
+                    pass
+                else:
+                    raise
+
         return success({'entries': entries})
 
     def otp_calculate(self, slot, digits, credential, timestamp):
