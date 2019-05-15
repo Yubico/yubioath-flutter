@@ -17,6 +17,7 @@ Pane {
     property string description
     property bool isEnabled: true
     property bool isExpanded: false
+    property bool dropShadow: true
 
     property string toolButtonIcon
     property string toolButtonToolTip
@@ -35,7 +36,7 @@ Pane {
 
     background: Rectangle {
         color: isDark() ? defaultDarkLighter : defaultLightDarker
-        layer.enabled: true
+        layer.enabled: dropShadow
         layer.effect: DropShadow {
             radius: 4
             samples: radius * 2
@@ -43,6 +44,23 @@ Pane {
             horizontalOffset: 2
             color: formDropShdaow
             transparentBorder: true
+        }
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            enabled: true
+            onClicked: expandAction()
+        }
+    }
+
+    function expandAction() {
+        if (isExpanded) {
+            motherView.contentHeight = motherView.contentHeight - expansionPanel.height
+            isExpanded = false
+        } else {
+            isExpanded = true
+            motherView.contentHeight = motherView.contentHeight + expansionPanel.height
         }
     }
 
@@ -53,8 +71,8 @@ Pane {
         spacing: 16
 
         RowLayout {
-
             Layout.rightMargin: -12
+
             ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
@@ -74,36 +92,11 @@ Pane {
                     wrapMode: Text.WordWrap
                     Layout.rowSpan: 1
                 }
-                MouseArea {
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                    onClicked: {
-                        if (isExpanded) {
-                            motherView.contentHeight = motherView.contentHeight
-                                    - expansionPanel.height
-                            isExpanded = false
-                        } else {
-                            isExpanded = true
-                            motherView.contentHeight = motherView.contentHeight
-                                    + expansionPanel.height
-                        }
-                    }
-                }
             }
 
             ToolButton {
                 id: expandButton
-                onClicked: {
-                    if (isExpanded) {
-                        motherView.contentHeight = motherView.contentHeight - expansionPanel.height
-                        isExpanded = false
-                    } else {
-                        isExpanded = true
-                        motherView.contentHeight = motherView.contentHeight + expansionPanel.height
-                    }
-                }
+                onClicked: expandAction()
                 icon.width: 24
                 icon.source: isExpanded ? "../images/up.svg" : "../images/down.svg"
                 icon.color: isDark() ? yubicoWhite : yubicoGrey

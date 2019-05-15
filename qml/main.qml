@@ -37,7 +37,7 @@ ApplicationWindow {
     property string formLabel: isDark() ? "#c0c0c0" : "#a0a0a0"
     property string formText: isDark() ? "#f0f0f0" : "#7e7e7e"
     property string formPlaceholderText: isDark() ? "#808080" : "#d0d0d0"
-    property string formDropShdaow: isDark() ? "#2e2e2e" : "#e0e0e0"
+    property string formDropShdaow: isDark() ? "#2e2e2e" : "#cbcbcb"
     property string formImageOverlay: isDark() ? "#d8d8d8" : "#727272"
     property string formTitleUnderline: isDark() ? "#424242" : "#f5f5f5"
 

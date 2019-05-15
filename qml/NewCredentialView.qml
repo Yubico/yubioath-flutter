@@ -253,12 +253,12 @@ ScrollView {
                     description: "Normally these options should not be changed, doing so may result in the code not working as expected."
                     visible: manualEntry && !settings.otpMode
                     motherView: newCredentialViewId
+                    dropShadow: false
 
                     ColumnLayout {
                         Layout.leftMargin: 8
                         Layout.rightMargin: 8
                         Layout.bottomMargin: 8
-                        visible: parent.isExpanded
                         Layout.fillWidth: true
 
                         RowLayout {
@@ -268,11 +268,9 @@ ScrollView {
                                 id: oathTypeComboBox
                                 model: ["TOTP", "HOTP"]
                             }
-
                             Item {
                                 width: 16
                             }
-
                             StyledComboBox {
                                 id: algoComboBox
                                 label: "Algorithm"
@@ -287,36 +285,33 @@ ScrollView {
                                 id: periodLbl
                                 visible: oathTypeComboBox.currentIndex === 0
                                 labelText: "Period"
-                                Layout.fillWidth: true
                                 text: "30"
                                 horizontalAlignment: Text.Alignleft
                                 validator: IntValidator {
                                     bottom: 15
                                     top: 60
                                 }
-
-                                Item {
-                                    visible: oathTypeComboBox.currentIndex === 0
-                                    width: 16
-                                }
-
-                                StyledComboBox {
-                                    id: digitsComboBox
-                                    label: "Digits"
-                                    model: ["6", "7", "8"]
-                                }
+                            }
+                            Item {
+                                visible: oathTypeComboBox.currentIndex === 0
+                                width: 16
+                            }
+                            StyledComboBox {
+                                id: digitsComboBox
+                                label: "Digits"
+                                model: ["6", "7", "8"]
                             }
                         }
                     }
+                }
 
-                    StyledButton {
-                        id: addBtn
-                        text: "Add"
-                        toolTipText: "Add credential to YubiKey"
-                        enabled: acceptableInput()
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        onClicked: addCredential()
-                    }
+                StyledButton {
+                    id: addBtn
+                    text: "Add"
+                    toolTipText: "Add credential to YubiKey"
+                    enabled: acceptableInput()
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                    onClicked: addCredential()
                 }
             }
         }

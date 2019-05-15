@@ -16,7 +16,6 @@ Item {
     id: textFieldContainer
     height: 50
     implicitHeight: 50
-    width: parent.width
     Layout.fillWidth: true
 
     Column {
