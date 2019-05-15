@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 ColumnLayout {
 
-    readonly property int dynamicWidth: 500
+    readonly property int dynamicWidth: 420
     readonly property int dynamicMargin: 64
 
     anchors.horizontalCenter: parent.horizontalCenter
@@ -34,6 +34,7 @@ ColumnLayout {
         }
         Label {
             text: "This YubiKey contains no credentials, how about adding some? Click the + sign in the toolbar to get started."
+            horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 320
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
