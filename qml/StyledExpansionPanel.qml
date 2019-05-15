@@ -4,97 +4,155 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-ColumnLayout {
+Pane {
 
     id: expansionPanel
+
+    default property alias children: inner_space.data
+
+    readonly property int dynamicWidth: 864
+    readonly property int dynamicMargin: 32
 
     property string label
     property string description
     property bool isEnabled: true
-    property bool isExpanded: !isEnabled ? true : false
+    property bool isExpanded: false
 
     property string toolButtonIcon
     property string toolButtonToolTip
     property alias toolButton: toolButton
 
-    spacing: 16
+    property var motherView
 
-    RowLayout {
-        Layout.rightMargin: -12
+    Layout.alignment: Qt.AlignCenter | Qt.AlignTop
+    Layout.fillWidth: true
+    Layout.maximumWidth: dynamicWidth + dynamicMargin
 
-        ColumnLayout {
-            Label {
-                text: label
-                font.pixelSize: 13
-                font.bold: false
-                color: formText
-                Layout.fillWidth: true
-            }
-            Label {
-                Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                Layout.fillWidth: true
-                font.pixelSize: 11
-                color: formLabel
-                text: description
-                wrapMode: Text.WordWrap
-                Layout.rowSpan: 1
-            }
+    Layout.leftMargin: -16
+    Layout.rightMargin: -16
+    Layout.topMargin: isExpanded ? 8 : -4
+    Layout.bottomMargin: isExpanded ? 8 : -3
+
+    background: Rectangle {
+        color: isDark() ? defaultDarkLighter : defaultLightDarker
+        layer.enabled: true
+        layer.effect: DropShadow {
+            radius: 4
+            samples: radius * 2
+            verticalOffset: 2
+            horizontalOffset: 2
+            color: formDropShdaow
+            transparentBorder: true
         }
+    }
 
-        ToolButton {
-            id: expandButton
-            onClicked: {
-                if (isExpanded) {
-                    //                    settingsPanel.contentHeight = settingsPanel.contentHeight
-                    //                            - expansionPanel.height
-                    isExpanded = false
-                } else {
-                    isExpanded = true
-                    //                    settingsPanel.contentHeight = settingsPanel.contentHeight
-                    //                            + expansionPanel.height
+    ColumnLayout {
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: app.width - dynamicMargin < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+        spacing: 16
+
+        RowLayout {
+
+            Layout.rightMargin: -12
+            ColumnLayout {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Label {
+                    text: label
+                    font.pixelSize: 13
+                    font.bold: false
+                    color: formText
+                    Layout.fillWidth: true
+                }
+                Label {
+                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                    Layout.fillWidth: true
+                    font.pixelSize: 11
+                    color: formLabel
+                    text: description
+                    wrapMode: Text.WordWrap
+                    Layout.rowSpan: 1
+                }
+                MouseArea {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                    onClicked: {
+                        if (isExpanded) {
+                            motherView.contentHeight = motherView.contentHeight
+                                    - expansionPanel.height
+                            isExpanded = false
+                        } else {
+                            isExpanded = true
+                            motherView.contentHeight = motherView.contentHeight
+                                    + expansionPanel.height
+                        }
+                    }
                 }
             }
-            icon.width: 24
-            icon.source: isExpanded ? "../images/up.svg" : "../images/down.svg"
-            icon.color: isDark() ? yubicoWhite : yubicoGrey
-            visible: isEnabled
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                enabled: false
+
+            ToolButton {
+                id: expandButton
+                onClicked: {
+                    if (isExpanded) {
+                        motherView.contentHeight = motherView.contentHeight - expansionPanel.height
+                        isExpanded = false
+                    } else {
+                        isExpanded = true
+                        motherView.contentHeight = motherView.contentHeight + expansionPanel.height
+                    }
+                }
+                icon.width: 24
+                icon.source: isExpanded ? "../images/up.svg" : "../images/down.svg"
+                icon.color: isDark() ? yubicoWhite : yubicoGrey
+                visible: isEnabled
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
+                ToolTip {
+                    text: isExpanded ? "Show less" : "Show more"
+                    delay: 1000
+                    parent: expandButton
+                    visible: parent.hovered
+                    Material.foreground: app.isDark(
+                                             ) ? defaultDarkForeground : defaultLight
+                    Material.background: app.isDark(
+                                             ) ? defaultDarkOverlay : defaultLightForeground
+                }
             }
-            ToolTip {
-                text: isExpanded ? "Show less" : "Show more"
-                delay: 1000
-                parent: expandButton
-                visible: parent.hovered
-                Material.foreground: app.isDark(
-                                         ) ? defaultDarkForeground : defaultLight
-                Material.background: app.isDark(
-                                         ) ? defaultDarkOverlay : defaultLightForeground
+
+            ToolButton {
+                id: toolButton
+                icon.width: 24
+                icon.source: toolButtonIcon
+                icon.color: isDark() ? yubicoWhite : yubicoGrey
+                visible: !isEnabled && !!toolButtonIcon
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
+                ToolTip {
+                    text: toolButtonToolTip
+                    delay: 1000
+                    parent: toolButton
+                    visible: parent.hovered
+                    Material.foreground: app.isDark(
+                                             ) ? defaultDarkForeground : defaultLight
+                    Material.background: app.isDark(
+                                             ) ? defaultDarkOverlay : defaultLightForeground
+                }
             }
         }
 
-        ToolButton {
-            id: toolButton
-            icon.width: 24
-            icon.source: toolButtonIcon
-            icon.color: isDark() ? yubicoWhite : yubicoGrey
-            visible: !isEnabled && !!toolButtonIcon
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                enabled: false
-            }
-            ToolTip {
-                text: toolButtonToolTip
-                delay: 1000
-                parent: toolButton
-                visible: parent.hovered
-                Material.foreground: app.isDark(
-                                         ) ? defaultDarkForeground : defaultLight
-                Material.background: app.isDark(
-                                         ) ? defaultDarkOverlay : defaultLightForeground
+        RowLayout {
+            visible: isExpanded
+            ColumnLayout {
+                id: inner_space
             }
         }
     }

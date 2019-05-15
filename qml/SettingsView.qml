@@ -22,6 +22,8 @@ ScrollView {
         anchors.right: parent.right
     }
 
+    property int expandedHeight: 0
+
     function isKeyAvailable() {
         return !!yubiKey.currentDevice
     }
@@ -130,18 +132,7 @@ ScrollView {
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
             Layout.bottomMargin: 16
-            background: Rectangle {
-                color: isDark() ? defaultDarkLighter : defaultLightDarker
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    radius: 4
-                    samples: radius * 2
-                    verticalOffset: 2
-                    horizontalOffset: 2
-                    color: formDropShdaow
-                    transparentBorder: true
-                }
-            }
+            spacing: 0
 
             ColumnLayout {
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -159,25 +150,15 @@ ScrollView {
                         topPadding: 8
                         bottomPadding: 8
                         Layout.fillWidth: true
-                        background: Item {
-                            implicitWidth: parent.width
-                            implicitHeight: 40
-                            Rectangle {
-                                color: formTitleUnderline
-                                height: 1
-                                width: parent.width
-                                y: 31
-                            }
-                        }
                     }
                 }
 
                 StyledExpansionPanel {
                     label: "Appearance"
                     description: "Change the theme and appearance of the application."
+                    motherView: settingsPanel
 
                     ColumnLayout {
-                        visible: parent.isExpanded
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
 
                         RowLayout {
@@ -211,9 +192,9 @@ ScrollView {
                 StyledExpansionPanel {
                     label: "Authenticator Mode"
                     description: "Configure which mode the YubiKey will operate in."
+                    motherView: settingsPanel
 
                     ColumnLayout {
-                        visible: parent.isExpanded
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
 
                         RowLayout {
@@ -240,9 +221,10 @@ ScrollView {
                                 Layout.fillWidth: true
                                 font.pixelSize: 11
                                 color: formLabel
-                                text: "Note: OTP mode allows usage of the configurable OTP slots on the YubiKey, this should be considered for special usecases only and is not recommended for normal use."
+                                text: "Using the OTP slots on the YubiKey should be considered for special usecases only and is not recommended for normal use."
                                 wrapMode: Text.WordWrap
                                 Layout.rowSpan: 1
+                                bottomPadding: 8
                             }
                         }
 
@@ -310,10 +292,9 @@ ScrollView {
                 StyledExpansionPanel {
                     label: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
                     description: "Configure where and how the application is visible."
+                    motherView: settingsPanel
 
-                    RowLayout {
-                        visible: parent.isExpanded
-
+                    ColumnLayout {
                         CheckBox {
                             id: sysTrayCheckbox
                             checked: settings.closeToTray
@@ -325,9 +306,6 @@ ScrollView {
                             onCheckStateChanged: settings.closeToTray = checked
                             Material.foreground: formText
                         }
-                    }
-                    RowLayout {
-                        visible: parent.isExpanded
 
                         CheckBox {
                             enabled: sysTrayCheckbox.checked
@@ -350,27 +328,14 @@ ScrollView {
             Layout.alignment: Qt.AlignCenter | Qt.AlignTop
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
-            Layout.topMargin: 8
-            Layout.bottomMargin: 8
-
-            background: Rectangle {
-                color: isDark() ? defaultDarkLighter : defaultLightDarker
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    radius: 4
-                    samples: radius * 2
-                    verticalOffset: 2
-                    horizontalOffset: 2
-                    color: formDropShdaow
-                    transparentBorder: true
-                }
-            }
+            Layout.bottomMargin: 16
+            spacing: 0
 
             ColumnLayout {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: app.width - dynamicMargin
                        < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
-                spacing: 16
+                spacing: 8
 
                 RowLayout {
                     Label {
@@ -382,16 +347,6 @@ ScrollView {
                         topPadding: 8
                         bottomPadding: 8
                         Layout.fillWidth: true
-                        background: Item {
-                            implicitWidth: parent.width
-                            implicitHeight: 40
-                            Rectangle {
-                                color: formTitleUnderline
-                                height: 1
-                                width: parent.width
-                                y: 31
-                            }
-                        }
                     }
                 }
 
@@ -399,9 +354,9 @@ ScrollView {
                     id: passwordManagementPanel
                     label: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
                     description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
+                    motherView: settingsPanel
 
                     ColumnLayout {
-                        visible: parent.isExpanded
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
 
                         StyledTextField {
@@ -476,6 +431,45 @@ ScrollView {
                                                                   }
                                                               })
                                               })
+                }
+            }
+        }
+
+        Pane {
+            id: aboutPane
+            Layout.alignment: Qt.AlignCenter | Qt.AlignTop
+            Layout.fillWidth: true
+            Layout.maximumWidth: dynamicWidth + dynamicMargin
+            Layout.bottomMargin: 16
+            spacing: 0
+
+            ColumnLayout {
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: app.width - dynamicMargin
+                       < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+                spacing: 8
+
+                RowLayout {
+                    Label {
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                        text: "About"
+                        color: yubicoGreen
+                        font.pixelSize: 14
+                        font.weight: Font.Medium
+                        topPadding: 8
+                        bottomPadding: 8
+                        Layout.fillWidth: true
+                    }
+                }
+
+                StyledExpansionPanel {
+                    label: "Yubico Authenticator 5.0.0"
+                    description: "Copyright © " + Qt.formatDateTime(
+                                     new Date(),
+                                     "yyyy") + ", Yubico AB. All rights reserved."
+                    isEnabled: false
+                    toolButtonIcon: "../images/autorenew.svg"
+                    toolButtonToolTip: "Check for updates"
                 }
             }
         }
