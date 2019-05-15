@@ -141,6 +141,8 @@ ScrollView {
         anchors.fill: parent
         Layout.fillHeight: true
         Layout.fillWidth: true
+        Layout.alignment: Qt.AlignTop
+        spacing: 0
 
         StyledExpansionContainer {
             id: appPane
@@ -182,44 +184,43 @@ ScrollView {
                 }
             }
 
+            StyledExpansionPanel {
+                id: authenticatorModePanel
+                label: "Authenticator Mode"
+                description: "Configure how to read credentials from the YubiKey."
+                motherView: settingsPanel
+                property bool otpModeSelected: authenticatorModeCombobox.currentIndex === 1
+                property bool aboutToChange: otpModeSelected !== settings.otpMode
 
-                StyledExpansionPanel {
-                    id: authenticatorModePanel
-                    label: "Authenticator Mode"
-                    description: "Configure how to read credentials from the YubiKey."
-                    motherView: settingsPanel
-                    property bool otpModeSelected: authenticatorModeCombobox.currentIndex === 1
-                    property bool aboutToChange: otpModeSelected !== settings.otpMode
-
-                    function isValidMode() {
-                        return aboutToChange && ((otpModeSelected
-                                && (slot1DigitsComboBox.currentIndex !== 0
-                                    || slot2DigitsComboBox.currentIndex !== 0))
+                function isValidMode() {
+                    return aboutToChange
+                            && ((otpModeSelected
+                                 && (slot1DigitsComboBox.currentIndex !== 0
+                                     || slot2DigitsComboBox.currentIndex !== 0))
                                 || !otpModeSelected)
+                }
+
+                function setAuthenticatorMode() {
+
+                    function callback() {
+                        navigator.goToSettings()
+                        navigator.snackBar("Authenticator mode changed")
                     }
 
-                    function setAuthenticatorMode() {
-
-                        function callback() {
-                            navigator.goToSettings()
-                            navigator.snackBar("Authenticator mode changed")
-                        }
-
-                        navigator.goToLoading()
-                        settings.slot1digits = otpModeDigits.get(
-                                    slot1DigitsComboBox.currentIndex).value
-                        settings.slot2digits = otpModeDigits.get(
-                                    slot2DigitsComboBox.currentIndex).value
-                        settings.otpMode = otpModeSelected
-                        entries.clear()
-                        yubiKey.nextCalculateAll = -1
-                        if (!!yubiKey.currentDevice) {
-                            yubiKey.calculateAll(callback)
-                        } else {
-                            callback()
-                        }
+                    navigator.goToLoading()
+                    settings.slot1digits = otpModeDigits.get(
+                                slot1DigitsComboBox.currentIndex).value
+                    settings.slot2digits = otpModeDigits.get(
+                                slot2DigitsComboBox.currentIndex).value
+                    settings.otpMode = otpModeSelected
+                    entries.clear()
+                    yubiKey.nextCalculateAll = -1
+                    if (!!yubiKey.currentDevice) {
+                        yubiKey.calculateAll(callback)
+                    } else {
+                        callback()
                     }
-
+                }
 
                 function getComboBoxIndex(digits) {
                     switch (digits) {

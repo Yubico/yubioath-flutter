@@ -17,7 +17,7 @@ Pane {
     Layout.alignment: Qt.AlignCenter | Qt.AlignTop
     Layout.fillWidth: true
     Layout.maximumWidth: dynamicWidth + dynamicMargin
-    Layout.bottomMargin: 16
+    //    Layout.bottomMargin: 16
     spacing: 0
 
     ColumnLayout {

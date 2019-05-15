@@ -16,15 +16,15 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
         StyledImage {
-            source: "../images/people.svg"
+            source: "../images/search.svg"
             color: app.isDark() ? defaultLightForeground : defaultLightOverlay
             iconWidth: 80
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Layout.topMargin: -60
+            Layout.topMargin: -40
         }
 
         Label {
-            text: "No credentials"
+            text: "No credentials found"
             Layout.rowSpan: 1
             wrapMode: Text.WordWrap
             font.pixelSize: 12
@@ -33,7 +33,7 @@ ColumnLayout {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
         Label {
-            text: "This YubiKey contains no credentials, how about adding some? Click the + sign in the toolbar to get started."
+            text: "No credentials matching your search criteria. Re-think your search strategy and try again."
             Layout.minimumWidth: 320
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth

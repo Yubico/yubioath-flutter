@@ -8,12 +8,14 @@ ColumnLayout {
 
     readonly property int dynamicWidth: 600
     readonly property int dynamicMargin: 64
+
     spacing: 20
+
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
+
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-
         spacing: 16
 
         StyledImage {
@@ -22,6 +24,7 @@ ColumnLayout {
             iconHeight: 120
             source: "../images/yubikeys-transparent.png"
             color: formImageOverlay
+            Layout.topMargin: -40
         }
 
         Label {
@@ -32,5 +35,4 @@ ColumnLayout {
             color: formText
         }
     }
-
 }
