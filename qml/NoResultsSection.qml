@@ -14,13 +14,13 @@ ColumnLayout {
 
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        Layout.topMargin: -80
 
         StyledImage {
             source: "../images/search.svg"
             color: app.isDark() ? defaultLightForeground : defaultLightOverlay
             iconWidth: 80
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Layout.topMargin: -40
         }
 
         Label {
