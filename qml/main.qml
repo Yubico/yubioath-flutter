@@ -74,7 +74,7 @@ ApplicationWindow {
     function enableLogging(logLevel) {
         yubiKey.enableLogging(logLevel, null)
     }
-    function enableLoggingToFile(logLevel, logFile) {
+    function enableLoggingToFile(logLevellogFile) {
         yubiKey.enableLogging(logLevel, logFile)
     }
     function disableLogging() {
@@ -133,11 +133,6 @@ ApplicationWindow {
         property int desktopAvailableHeight
 
         onCloseToTrayChanged: updateTrayVisibility()
-
-        onOtpModeChanged: yubiKey.clearEntriesAndCalculateAll()
-        onSlot1digitsChanged: yubiKey.clearEntriesAndCalculateAll()
-        onSlot2digitsChanged: yubiKey.clearEntriesAndCalculateAll()
-
         onThemeChanged: {
             app.Material.theme = theme
         }

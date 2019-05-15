@@ -97,7 +97,7 @@ ScrollView {
     }
 
     ListModel {
-        id: slotModeDigits
+        id: otpModeDigits
 
         ListElement {
             text: "Off"
@@ -190,9 +190,42 @@ ScrollView {
                 }
 
                 StyledExpansionPanel {
+                    id: authenticatorModePanel
                     label: "Authenticator Mode"
-                    description: "Configure which mode the YubiKey will operate in."
+                    description: "Configure how to read credentials from the YubiKey"
                     motherView: settingsPanel
+                    property bool otpModeSelected: authenticatorModeCombobox.currentIndex === 1
+
+                    function isValidMode() {
+                        return (otpModeSelected
+                                && (slot1DigitsComboBox.currentIndex !== 0
+                                    || slot2DigitsComboBox.currentIndex !== 0))
+                                || !otpModeSelected
+                    }
+
+                    function setAuthenticatorMode() {
+                        settings.slot1digits = otpModeDigits.get(
+                                    slot1DigitsComboBox.currentIndex).value
+                        settings.slot2digits = otpModeDigits.get(
+                                    slot2DigitsComboBox.currentIndex).value
+                        settings.otpMode = otpModeSelected
+                        yubiKey.clearEntriesAndCalculateAll()
+                    }
+
+                    function getComboBoxIndex(digits) {
+                        switch (digits) {
+                        case 0:
+                            return 0
+                        case 6:
+                            return 1
+                        case 7:
+                            return 2
+                        case 8:
+                            return 3
+                        default:
+                            return 0
+                        }
+                    }
 
                     ColumnLayout {
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
@@ -202,15 +235,8 @@ ScrollView {
                             StyledComboBox {
                                 id: authenticatorModeCombobox
                                 label: "Authenticator Mode"
-                                model: ["CCID (Default)", "OTP"]
+                                model: ["CCID (recommended)", "OTP"]
                                 currentIndex: settings.otpMode ? 1 : 0
-                                onCurrentIndexChanged: {
-                                    if (currentIndex === 1) {
-                                        settings.otpMode = true
-                                    } else {
-                                        settings.otpMode = false
-                                    }
-                                }
                             }
                         }
 
@@ -221,7 +247,7 @@ ScrollView {
                                 Layout.fillWidth: true
                                 font.pixelSize: 11
                                 color: formLabel
-                                text: "Using the OTP slots on the YubiKey should be considered for special usecases only and is not recommended for normal use."
+                                text: "Using the OTP slots should be considered for special cases only"
                                 wrapMode: Text.WordWrap
                                 Layout.rowSpan: 1
                                 bottomPadding: 8
@@ -229,32 +255,15 @@ ScrollView {
                         }
 
                         RowLayout {
-                            visible: authenticatorModeCombobox.currentText.indexOf(
-                                         "OTP") > -1
+                            visible: authenticatorModePanel.otpModeSelected
 
                             StyledComboBox {
-                                enabled: settings.otpMode
+                                id: slot1DigitsComboBox
                                 label: "Slot 1 Digits"
                                 comboBox.textRole: "text"
-                                model: slotModeDigits
-                                onCurrentIndexChanged: {
-                                    settings.slot1digits = slotModeDigits.get(
-                                                currentIndex).value
-                                }
-                                currentIndex: {
-                                    switch (settings.slot1digits) {
-                                    case 0:
-                                        return 0
-                                    case 6:
-                                        return 1
-                                    case 7:
-                                        return 2
-                                    case 8:
-                                        return 3
-                                    default:
-                                        return 0
-                                    }
-                                }
+                                model: otpModeDigits
+                                currentIndex: authenticatorModePanel.getComboBoxIndex(
+                                                  settings.slot1digits)
                             }
 
                             Item {
@@ -262,29 +271,20 @@ ScrollView {
                             }
 
                             StyledComboBox {
-                                enabled: settings.otpMode
+                                id: slot2DigitsComboBox
                                 label: "Slot 2 Digits"
                                 comboBox.textRole: "text"
-                                model: slotModeDigits
-                                onCurrentIndexChanged: {
-                                    settings.slot2digits = slotModeDigits.get(
-                                                currentIndex).value
-                                }
-                                currentIndex: {
-                                    switch (settings.slot2digits) {
-                                    case 0:
-                                        return 0
-                                    case 6:
-                                        return 1
-                                    case 7:
-                                        return 2
-                                    case 8:
-                                        return 3
-                                    default:
-                                        return 0
-                                    }
-                                }
+                                model: otpModeDigits
+                                currentIndex: authenticatorModePanel.getComboBoxIndex(
+                                                  settings.slot2digits)
                             }
+                        }
+                        StyledButton {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                            text: "Set mode"
+                            flat: true
+                            enabled: authenticatorModePanel.isValidMode()
+                            onClicked: authenticatorModePanel.setAuthenticatorMode()
                         }
                     }
                 }
