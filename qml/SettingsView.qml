@@ -44,11 +44,27 @@ ScrollView {
     }
 
     function submitPassword() {
-        if (yubiKey.currentDeviceHasPassword) {
-            changePassword()
-        } else {
-            setPassword()
+        if (acceptableInput()) {
+            if (yubiKey.currentDeviceHasPassword) {
+                changePassword()
+            } else {
+                setPassword()
+            }
         }
+    }
+
+    function acceptableInput() {
+        if (yubiKey.currentDeviceValidated) {
+            if (yubiKey.currentDeviceHasPassword
+                    && currentPasswordField.text.length == 0) {
+                return false
+            }
+            if (newPasswordField.text.length > 0
+                    && (newPasswordField.text === confirmPasswordField.text)) {
+                return true
+            }
+        }
+        return false
     }
 
     function changePassword() {
@@ -134,6 +150,7 @@ ScrollView {
                 label: "Appearance"
                 description: "Change the theme and appearance of the application."
                 motherView: settingsPanel
+                isTopPanel: true
 
                 ColumnLayout {
                     Layout.alignment: Qt.AlignRight | Qt.AlignTop
@@ -165,35 +182,33 @@ ScrollView {
                 }
             }
 
+            StyledExpansionPanel {
+                id: authenticatorModePanel
+                label: "Authenticator Mode"
+                description: "Configure how to read credentials from the YubiKey."
+                motherView: settingsPanel
 
+                property bool otpModeSelected: authenticatorModeCombobox.currentIndex === 1
 
-                StyledExpansionPanel {
-                    id: authenticatorModePanel
-                    label: "Authenticator Mode"
-                    description: "Configure how to read credentials from the YubiKey"
-                    motherView: settingsPanel
-                    property bool otpModeSelected: authenticatorModeCombobox.currentIndex === 1
+                function isValidMode() {
+                    return (otpModeSelected
+                            && (slot1DigitsComboBox.currentIndex !== 0
+                                || slot2DigitsComboBox.currentIndex !== 0))
+                            || !otpModeSelected
+                }
 
-                    function isValidMode() {
-                        return (otpModeSelected
-                                && (slot1DigitsComboBox.currentIndex !== 0
-                                    || slot2DigitsComboBox.currentIndex !== 0))
-                                || !otpModeSelected
-                    }
+                function setAuthenticatorMode() {
+                    navigator.goToLoading()
 
-                    function setAuthenticatorMode() {
-                        navigator.goToLoading()
-
-                        settings.slot1digits = otpModeDigits.get(
-                                    slot1DigitsComboBox.currentIndex).value
-                        settings.slot2digits = otpModeDigits.get(
-                                    slot2DigitsComboBox.currentIndex).value
-                        settings.otpMode = otpModeSelected
-                        entries.clear()
-                        yubiKey.nextCalculateAll = -1
-                        yubiKey.calculateAll(navigator.goToSettings)
-                    }
-
+                    settings.slot1digits = otpModeDigits.get(
+                                slot1DigitsComboBox.currentIndex).value
+                    settings.slot2digits = otpModeDigits.get(
+                                slot2DigitsComboBox.currentIndex).value
+                    settings.otpMode = otpModeSelected
+                    entries.clear()
+                    yubiKey.nextCalculateAll = -1
+                    yubiKey.calculateAll(navigator.goToSettings)
+                }
 
                 function getComboBoxIndex(digits) {
                     switch (digits) {
@@ -231,7 +246,7 @@ ScrollView {
                         Layout.fillWidth: true
                         font.pixelSize: 11
                         color: formLabel
-                        text: "Using the OTP slots should be considered for special cases only"
+                        text: "Using the OTP slots should be considered for special cases only."
                         wrapMode: Text.WordWrap
                         Layout.rowSpan: 1
                         bottomPadding: 8
@@ -276,6 +291,7 @@ ScrollView {
                 label: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
                 description: "Configure where and how the application is visible."
                 motherView: settingsPanel
+                isBottomPanel: true
 
                 ColumnLayout {
                     CheckBox {
@@ -313,6 +329,7 @@ ScrollView {
                 label: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
                 description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
                 motherView: settingsPanel
+                isTopPanel: true
 
                 ColumnLayout {
                     Layout.alignment: Qt.AlignRight | Qt.AlignTop
@@ -343,19 +360,7 @@ ScrollView {
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
                         text: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
                         flat: true
-                        enabled: {
-                            if (yubiKey.currentDeviceValidated) {
-                                if (yubiKey.currentDeviceHasPassword
-                                        && currentPasswordField.text.length == 0) {
-                                    return false
-                                }
-                                if (newPasswordField.text.length > 0
-                                        && (newPasswordField.text === confirmPasswordField.text)) {
-                                    return true
-                                }
-                            }
-                            return false
-                        }
+                        enabled: acceptableInput()
                         onClicked: submitPassword()
                     }
                 }

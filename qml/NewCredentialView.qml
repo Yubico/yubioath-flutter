@@ -67,6 +67,17 @@ ScrollView {
         }
     }
 
+    Keys.onReturnPressed: {
+        if (acceptableInput()) {
+            addCredential()
+        }
+    }
+    Keys.onEnterPressed: {
+        if (acceptableInput()) {
+            addCredential()
+        }
+    }
+
     spacing: 8
     padding: 0
 
@@ -256,9 +267,6 @@ ScrollView {
                     dropShadow: false
 
                     ColumnLayout {
-                        Layout.leftMargin: 8
-                        Layout.rightMargin: 8
-                        Layout.bottomMargin: 8
                         Layout.fillWidth: true
 
                         RowLayout {

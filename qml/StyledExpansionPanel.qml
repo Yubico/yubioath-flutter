@@ -17,6 +17,8 @@ Pane {
     property string description
     property bool isEnabled: true
     property bool isExpanded: false
+    property bool isTopPanel: false
+    property bool isBottomPanel: false
     property bool dropShadow: true
 
     property string toolButtonIcon
@@ -31,8 +33,8 @@ Pane {
 
     Layout.leftMargin: -16
     Layout.rightMargin: -16
-    Layout.topMargin: isExpanded ? 8 : -4
-    Layout.bottomMargin: isExpanded ? 8 : -3
+    Layout.topMargin: isExpanded && !isTopPanel ? 9 : -4
+    Layout.bottomMargin: isExpanded && !isBottomPanel ? 11 : -3
 
     background: Rectangle {
         color: isDark() ? defaultDarkLighter : defaultLightDarker
@@ -45,22 +47,17 @@ Pane {
             color: formDropShdaow
             transparentBorder: true
         }
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            enabled: true
-            onClicked: expandAction()
-        }
     }
 
     function expandAction() {
-        if (isExpanded) {
-            motherView.contentHeight = motherView.contentHeight - expansionPanel.height
-            isExpanded = false
-        } else {
-            isExpanded = true
-            motherView.contentHeight = motherView.contentHeight + expansionPanel.height
+        if (isEnabled) {
+            if (isExpanded) {
+                motherView.contentHeight = motherView.contentHeight - expansionPanel.height
+                isExpanded = false
+            } else {
+                isExpanded = true
+                motherView.contentHeight = motherView.contentHeight + expansionPanel.height
+            }
         }
     }
 
@@ -76,6 +73,7 @@ Pane {
             ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+
                 Label {
                     text: label
                     font.pixelSize: 13
