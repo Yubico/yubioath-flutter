@@ -18,7 +18,7 @@ ColumnLayout {
 
         StyledImage {
             source: "../images/search.svg"
-            color: app.isDark() ? defaultLightForeground : defaultLightOverlay
+            color: yubicoGreen
             iconWidth: 80
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
@@ -27,21 +27,21 @@ ColumnLayout {
             text: "No credentials found"
             Layout.rowSpan: 1
             wrapMode: Text.WordWrap
-            font.pixelSize: 12
+            font.pixelSize: 13
             font.bold: true
             lineHeight: 1.5
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
         Label {
-            text: "No credentials matching your search criteria. Re-think your search strategy and try again."
+            text: "No credentials matching your search criteria. Check your spelling and try again."
             horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 320
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             Layout.rowSpan: 1
-            lineHeight: 1.1
+            lineHeight: 1.2
             wrapMode: Text.WordWrap
-            font.pixelSize: 12
+            font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
     }

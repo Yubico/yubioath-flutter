@@ -33,17 +33,17 @@ Pane {
 
     Layout.leftMargin: -16
     Layout.rightMargin: -16
-    Layout.topMargin: isExpanded && !isTopPanel ? 9 : -4
-    Layout.bottomMargin: isExpanded && !isBottomPanel ? 11 : -3
+    Layout.topMargin: isExpanded && dropShadow && !isTopPanel ? 9 : -4
+    Layout.bottomMargin: isExpanded && dropShadow && !isBottomPanel ? 11 : -3
 
     background: Rectangle {
         color: isDark() ? defaultDarkLighter : defaultLightDarker
         layer.enabled: dropShadow
         layer.effect: DropShadow {
-            radius: 4
+            radius: 3
             samples: radius * 2
             verticalOffset: 2
-            horizontalOffset: 2
+            horizontalOffset: 0
             color: formDropShdaow
             transparentBorder: true
         }

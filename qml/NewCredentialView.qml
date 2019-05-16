@@ -54,26 +54,27 @@ ScrollView {
 
         function _otpAddCredential() {
             yubiKey.otpAddCredential(otpSlotComboBox.currentText,
-                                 secretKeyLbl.text,
-                                 requireTouchCheckBox.checked, callback)
+                                     secretKeyLbl.text,
+                                     requireTouchCheckBox.checked, callback)
         }
 
         if (settings.otpMode) {
-            yubiKey.otpSlotStatus(function(resp) {
+            yubiKey.otpSlotStatus(function (resp) {
                 if (resp.success) {
-                    if (resp.status[parseInt(otpSlotComboBox.currentText) - 1]) {
-                        navigator.confirm("Overwrite?", "The slot is already configured, do you want to overwrite it?",
-                                          _otpAddCredential)
+                    if (resp.status[parseInt(
+                                        otpSlotComboBox.currentText) - 1]) {
+                        navigator.confirm(
+                                    "Overwrite?",
+                                    "The slot is already configured, do you want to overwrite it?",
+                                    _otpAddCredential)
                     } else {
                         _otpAddCredential()
                     }
-
                 } else {
                     navigator.snackBarError(navigator.getErrorMessage(
                                                 resp.error_id))
                 }
             })
-
         } else {
             yubiKey.ccidAddCredential(nameLbl.text, secretKeyLbl.text,
                                       issuerLbl.text,
@@ -115,6 +116,7 @@ ScrollView {
         anchors.fill: parent
         Layout.fillHeight: true
         Layout.fillWidth: true
+
         Pane {
             id: retryPane
             visible: manualEntry
@@ -126,10 +128,10 @@ ScrollView {
                 color: isDark() ? defaultDarkLighter : defaultLightDarker
                 layer.enabled: true
                 layer.effect: DropShadow {
-                    radius: 4
+                    radius: 3
                     samples: radius * 2
                     verticalOffset: 2
-                    horizontalOffset: 2
+                    horizontalOffset: 0
                     color: formDropShdaow
                     transparentBorder: true
                 }
@@ -149,16 +151,6 @@ ScrollView {
                         topPadding: 8
                         bottomPadding: 16
                         Layout.fillWidth: true
-                        background: Item {
-                            implicitWidth: parent.width
-                            implicitHeight: 40
-                            Rectangle {
-                                color: formTitleUnderline
-                                height: 1
-                                width: parent.width
-                                y: 31
-                            }
-                        }
                     }
                 }
                 Label {
@@ -169,7 +161,7 @@ ScrollView {
                     Layout.fillWidth: true
                 }
                 Label {
-                    text: "2. Click the Scan QR code button"
+                    text: "2. Click the Scan button"
                     font.pixelSize: 13
                     font.bold: false
                     color: formText
@@ -197,10 +189,10 @@ ScrollView {
                 color: isDark() ? defaultDarkLighter : defaultLightDarker
                 layer.enabled: true
                 layer.effect: DropShadow {
-                    radius: 4
+                    radius: 3
                     samples: radius * 2
                     verticalOffset: 2
-                    horizontalOffset: 2
+                    horizontalOffset: 0
                     color: formDropShdaow
                     transparentBorder: true
                 }
@@ -216,23 +208,13 @@ ScrollView {
                     visible: !credential
                     Label {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                        text: "Manual entry"
+                        text: "Manual Entry"
                         color: yubicoGreen
                         font.pixelSize: 14
                         font.weight: Font.Medium
                         topPadding: 8
-                        bottomPadding: 8
+                        bottomPadding: 0
                         Layout.fillWidth: true
-                        background: Item {
-                            implicitWidth: parent.width
-                            implicitHeight: 40
-                            Rectangle {
-                                color: formTitleUnderline
-                                height: 1
-                                width: parent.width
-                                y: 31
-                            }
-                        }
                     }
                 }
 
@@ -290,7 +272,7 @@ ScrollView {
                 StyledExpansionPanel {
                     id: advancedSettingsPanel
                     label: "Advanced settings"
-                    description: "Normally these options should not be changed, doing so may result in the code not working as expected."
+                    description: "Normally these settings should not be changed, doing so may result in the code not working as expected."
                     visible: manualEntry && !settings.otpMode
                     motherView: newCredentialViewId
                     dropShadow: false
