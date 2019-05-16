@@ -41,12 +41,7 @@ StackView {
             clearAndPush(enterPasswordView)
             return
         }
-
-        if (currentItem.objectName !== 'credentialsView') {
-            clearAndPush(credentialsView)
-            return
-        }
-
+        yubiKey.calculateAll(navigator.goToCredentials)
     }
 
     function goToCredentials(force) {
