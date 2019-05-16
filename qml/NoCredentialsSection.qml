@@ -18,7 +18,7 @@ ColumnLayout {
 
         StyledImage {
             source: "../images/people.svg"
-            color: app.isDark() ? defaultLightForeground : defaultLightOverlay
+            color: yubicoGreen
             iconWidth: 80
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
@@ -27,21 +27,21 @@ ColumnLayout {
             text: "No credentials"
             Layout.rowSpan: 1
             wrapMode: Text.WordWrap
-            font.pixelSize: 12
+            font.pixelSize: 13
             font.bold: true
             lineHeight: 1.5
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
         Label {
-            text: "This YubiKey contains no credentials, how about adding some? Click the + sign in the toolbar to get started."
+            text: "This YubiKey contains no credentials. Click the [ + ] sign in the toolbar menu to get started."
             horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 320
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             Layout.rowSpan: 1
-            lineHeight: 1.1
+            lineHeight: 1.2
             wrapMode: Text.WordWrap
-            font.pixelSize: 12
+            font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
     }

@@ -11,7 +11,6 @@ Button {
     id: button
     font.capitalization: Font.UpperCase
     font.weight: Font.Medium
-    font.pixelSize: 13
     Material.foreground: button.flat ? yubicoGreen : yubicoWhite
     Material.background: button.flat ? "transparent" : yubicoGreen
     Material.elevation: button.flat ? 0 : 1
