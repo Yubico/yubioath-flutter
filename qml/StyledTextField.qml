@@ -46,7 +46,7 @@ Item {
                 implicitWidth: parent.width
                 implicitHeight: 40
                 Rectangle {
-                    color: formUnderline
+                    color: textField.activeFocus ? formLabel : formUnderline
                     height: textField.hovered || textField.activeFocus ? 2 : 1
                     width: parent.width
                     y: 31
