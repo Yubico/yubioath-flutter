@@ -190,7 +190,10 @@ ScrollView {
                 description: "Configure how to read credentials from the YubiKey."
                 motherView: settingsPanel
                 property bool otpModeSelected: authenticatorModeCombobox.currentIndex === 1
-                property bool aboutToChange: otpModeSelected !== settings.otpMode
+                property bool aboutToChange: (otpModeSelected !== settings.otpMode)
+                                             || (slot1DigitsComboBox.currentIndex !== getComboBoxIndex(settings.slot1digits))
+                                             || (slot2DigitsComboBox.currentIndex !== getComboBoxIndex(settings.slot2digits))
+
 
                 function isValidMode() {
                     return aboutToChange

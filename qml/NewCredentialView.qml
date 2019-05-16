@@ -81,6 +81,17 @@ ScrollView {
     spacing: 8
     padding: 0
 
+    function getEnabledOtpSlots() {
+        var res = []
+        if (settings.slot1digits) {
+            res.push(1)
+        }
+        if (settings.slot2digits) {
+            res.push(2)
+        }
+        return res
+    }
+
     ColumnLayout {
         id: content
         anchors.fill: parent
@@ -239,7 +250,7 @@ ScrollView {
                     StyledComboBox {
                         label: "Slot"
                         id: otpSlotComboBox
-                        model: [1, 2]
+                        model: getEnabledOtpSlots()
                     }
                     visible: settings.otpMode
                 }
