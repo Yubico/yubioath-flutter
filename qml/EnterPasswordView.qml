@@ -47,10 +47,6 @@ ScrollView {
     spacing: 8
     padding: 0
 
-    Component.onCompleted: {
-        passwordField.forceActiveFocus()
-    }
-
     ColumnLayout {
         anchors.fill: parent
         Layout.fillHeight: true
