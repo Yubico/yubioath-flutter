@@ -181,6 +181,12 @@ Python {
                                                "")) >= 426
     }
 
+    function supportsOathSha512() {
+        // TODO: FIPS keys also does not support this
+        return !!currentDevice && parseInt(currentDevice.version.join(
+                                               "")) >= 431
+    }
+
     function scanQr(toastIfError) {
         navigator.goToLoading()
         parseQr(ScreenShot.capture(), function (resp) {

@@ -311,8 +311,13 @@ ScrollView {
                             StyledComboBox {
                                 id: algoComboBox
                                 label: "Algorithm"
-                                // TODO: only show algorithms supported on device
-                                model: ["SHA1", "SHA256", "SHA512"]
+                                model: {
+                                    var algos = ["SHA1", "SHA256"]
+                                    if (yubiKey.supportsOathSha512()) {
+                                        algos.push("SHA512")
+                                    }
+                                    return algos
+                                }
                             }
                         }
 
