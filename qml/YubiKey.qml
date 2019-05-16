@@ -242,10 +242,6 @@ Python {
                [name, key, issuer, oathType, algo, digits, period, touch], cb)
     }
 
-    function addSlotCredential(slot, key, touch, cb) {
-        doCall('yubikey.controller.add_slot_credential', [slot, key, touch], cb)
-    }
-
     function deleteCredential(credential, cb) {
         doCall('yubikey.controller.ccid_delete_credential', [credential], cb)
     }
@@ -256,6 +252,10 @@ Python {
 
     function reset(cb) {
         doCall('yubikey.controller.ccid_reset', [], cb)
+    }
+
+    function otpSlotStatus(cb) {
+        doCall('yubikey.controller.otp_slot_status', [], cb)
     }
 
     function clearKey() {

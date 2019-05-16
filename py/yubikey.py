@@ -326,6 +326,10 @@ class Controller(object):
                 'code': code_to_dict(Code(code, valid_from, valid_to))
             })
 
+    def otp_slot_status(self):
+        with self._open_otp() as otp_controller:
+            return success({'status': otp_controller.slot_status})
+
     def otp_add_credential(self, slot, key, touch):
         key = parse_b32_key(key)
         with self._open_otp() as otp_controller:

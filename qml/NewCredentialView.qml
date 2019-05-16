@@ -52,10 +52,28 @@ ScrollView {
             }
         }
 
-        if (settings.otpMode) {
+        function _otpAddCredential() {
             yubiKey.otpAddCredential(otpSlotComboBox.currentText,
-                                     secretKeyLbl.text,
-                                     requireTouchCheckBox.checked, callback)
+                                 secretKeyLbl.text,
+                                 requireTouchCheckBox.checked, callback)
+        }
+
+        if (settings.otpMode) {
+            yubiKey.otpSlotStatus(function(resp) {
+                if (resp.success) {
+                    if (resp.status[parseInt(otpSlotComboBox.currentText) - 1]) {
+                        navigator.confirm("Overwrite?", "The slot is already configured, do you want to overwrite it?",
+                                          _otpAddCredential)
+                    } else {
+                        _otpAddCredential()
+                    }
+
+                } else {
+                    navigator.snackBarError(navigator.getErrorMessage(
+                                                resp.error_id))
+                }
+            })
+
         } else {
             yubiKey.ccidAddCredential(nameLbl.text, secretKeyLbl.text,
                                       issuerLbl.text,
