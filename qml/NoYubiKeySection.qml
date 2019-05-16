@@ -8,13 +8,14 @@ ColumnLayout {
 
     readonly property int dynamicWidth: 600
     readonly property int dynamicMargin: 64
-    spacing: 20
+
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
+
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-
         spacing: 16
+        Layout.topMargin: -80
 
         StyledImage {
             id: yubikeys
@@ -32,5 +33,4 @@ ColumnLayout {
             color: formText
         }
     }
-
 }
