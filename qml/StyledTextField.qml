@@ -12,10 +12,11 @@ Item {
     property alias validator: textField.validator
     property alias horizontalAlignment: textField.horizontalAlignment
     property string labelText
+    property alias textField: textField
 
     id: textFieldContainer
-    height: 50
-    implicitHeight: 50
+    height: 46
+    implicitHeight: 46
     Layout.fillWidth: true
 
     Column {
@@ -37,6 +38,7 @@ Item {
             selectedTextColor: isDark() ? defaultDark : defaultLight
             Keys.onEscapePressed: textField.focus = false
             height: 40
+            activeFocusOnTab: true
             focus: true
             color: formText
             Material.accent: formText

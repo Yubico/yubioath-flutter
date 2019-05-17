@@ -18,7 +18,7 @@ ColumnLayout {
 
         StyledImage {
             source: "../images/people.svg"
-            color: yubicoGreen
+            color: app.isDark() ? defaultLightForeground : defaultLightOverlay
             iconWidth: 80
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
@@ -32,8 +32,9 @@ ColumnLayout {
             lineHeight: 1.5
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
+
         Label {
-            text: "This YubiKey contains no credentials. Click the [ + ] sign in the toolbar menu to get started."
+            text: "This YubiKey contains no credentials."
             horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 320
             Layout.maximumWidth: app.width - dynamicMargin
@@ -43,6 +44,15 @@ ColumnLayout {
             wrapMode: Text.WordWrap
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        }
+
+        StyledButton {
+            id: addBtn
+            text: "Add"
+            enabled: true
+            focus: true
+            Layout.alignment: Qt.AlignCenter | Qt.AlignVCenter
+            onClicked: yubiKey.scanQr()
         }
     }
 }

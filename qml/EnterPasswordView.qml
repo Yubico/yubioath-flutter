@@ -47,6 +47,10 @@ ScrollView {
     spacing: 8
     padding: 0
 
+    Component.onCompleted: {
+        passwordField.textField.forceActiveFocus()
+    }
+
     ColumnLayout {
         anchors.fill: parent
         Layout.fillHeight: true
@@ -109,6 +113,8 @@ ScrollView {
                     Keys.onEnterPressed: validate()
                     Keys.onReturnPressed: validate()
                     Layout.fillWidth: true
+                    KeyNavigation.backtab: unlockBtn
+                    KeyNavigation.tab: rememberPasswordCheckBox
                 }
 
                 RowLayout {
@@ -120,16 +126,20 @@ ScrollView {
                         leftPadding: 0
                         indicator.width: 16
                         indicator.height: 16
+                        KeyNavigation.backtab: passwordField.textField
+                        KeyNavigation.tab: unlockBtn
                     }
                 }
 
                 StyledButton {
-                    id: addBtn
+                    id: unlockBtn
                     text: "Unlock"
                     toolTipText: "Unlock YubiKey"
                     enabled: passwordField.text.valueOf().length > 0
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     onClicked: validate()
+                    KeyNavigation.backtab: rememberPasswordCheckBox
+                    KeyNavigation.tab: passwordField.textField
                 }
             }
         }
