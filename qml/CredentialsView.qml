@@ -47,6 +47,12 @@ ScrollView {
         }
     }
 
+    MouseArea {
+        onClicked: grid.currentIndex = -1
+        anchors.fill: parent
+        enabled: entries.count > 0
+    }
+
     NoCredentialsSection {
         visible: entries.count === 0 && yubiKey.currentDeviceValidated
                  && !!yubiKey.currentDevice
@@ -59,11 +65,6 @@ ScrollView {
 
     NoYubiKeySection {
         visible: yubiKey.availableDevices.length !== 1
-    }
-
-    MouseArea {
-        onClicked: grid.currentIndex = -1
-        anchors.fill: parent
     }
 
     GridView {

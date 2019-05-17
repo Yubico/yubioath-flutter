@@ -18,7 +18,7 @@ ColumnLayout {
 
         StyledImage {
             source: "../images/search.svg"
-            color: yubicoGreen
+            color: app.isDark() ? defaultLightForeground : defaultLightOverlay
             iconWidth: 80
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
