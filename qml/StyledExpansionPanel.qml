@@ -52,11 +52,13 @@ Pane {
     function expandAction() {
         if (isEnabled) {
             if (isExpanded) {
-                motherView.contentHeight = motherView.contentHeight - expansionPanel.height
+                motherView.contentHeight = motherView.contentHeight - expandedContent.height
+                motherView.bottomPadding -= 48
                 isExpanded = false
             } else {
                 isExpanded = true
-                motherView.contentHeight = motherView.contentHeight + expansionPanel.height
+                motherView.bottomPadding += 48
+                motherView.contentHeight = motherView.contentHeight + expandedContent.height
             }
         }
     }
@@ -141,6 +143,7 @@ Pane {
         }
 
         RowLayout {
+            id: expandedContent
             visible: isExpanded
             ColumnLayout {
                 id: inner_space
