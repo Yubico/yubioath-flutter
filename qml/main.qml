@@ -33,7 +33,7 @@ ApplicationWindow {
 
     readonly property string defaultBackground: isDark() ? "#303030" : "#fefefe"
 
-    property string formUnderline: "#d8d8d8"
+    property string formUnderline: isDark() ? "#737373" : "#d8d8d8"
     property string formLabel: isDark() ? "#c0c0c0" : "#a0a0a0"
     property string formText: isDark() ? "#f0f0f0" : "#7e7e7e"
     property string formPlaceholderText: isDark() ? "#808080" : "#d0d0d0"

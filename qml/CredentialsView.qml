@@ -61,6 +61,11 @@ ScrollView {
         visible: yubiKey.availableDevices.length !== 1
     }
 
+    MouseArea {
+        onClicked: grid.currentIndex = -1
+        anchors.fill: parent
+    }
+
     GridView {
         id: grid
         displayMarginBeginning: 80
@@ -68,7 +73,9 @@ ScrollView {
         width: (Math.min(model.count,
                          Math.floor(parent.width / cellWidth)) * cellWidth)
                || cellWidth
-        anchors.bottom: parent.bottom
+        height: (Math.min(model.count,
+                          Math.floor(parent.height / cellHeight)) * cellHeight)
+                || cellHeight
         anchors.top: parent.top
         onCurrentItemChanged: app.currentCredentialCard = currentItem
         visible: entries.count > 0
