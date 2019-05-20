@@ -14,44 +14,17 @@ os:
   - osx
   - linux
 
-# High sierra
-osx_image: xcode9.4
+# Mojave
+osx_image: xcode10.2
 
 services:
   - docker
-
-before_install:
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]
-    then
-      brew update
-      wget https://github.com/thp/pyotherside/archive/$PYOTHERSIDE_VERSION.tar.gz -P ./lib
-      cd lib
-      tar -xzvf $PYOTHERSIDE_VERSION.tar.gz
-      # Patch PyOtherSide to not be built with debug output
-      echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-$PYOTHERSIDE_VERSION/src/src.pro
-      cd ..
-    fi
 
 install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
-      git clone https://github.com/aurelien-rainone/macdeployqtfix.git
-      brew install swig ykpers libyubikey libusb
-      brew install qt
-      brew link qt -f
-      # Build Python 3 with --enable-framework, to be able to distribute it in a .app bundle
-      brew upgrade pyenv
-      eval "$(pyenv init -)"
-      env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" pyenv install $PY_VERSION
-      pyenv global system $PY_VERSION
-      # Build and install PyOtherside
-      cd lib/pyotherside-$PYOTHERSIDE_VERSION
-      qmake
-      make
-      sudo make install
-      cd ../..
+      ./.travis/build-macos
       sudo pip3 install --upgrade pip
       sudo pip3 install pre-commit flake8
     fi
@@ -70,12 +43,6 @@ script:
       docker build -t xenial-deb -f docker/xenial-deb/Dockerfile .
       docker build -t xenial-appimage -f docker/xenial-appimage/Dockerfile .
     fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]
-    then
-      qmake
-      make
-    fi
 
 after_success:
   - mkdir deploy/
@@ -85,32 +52,6 @@ after_success:
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
-      macdeployqt yubioath-desktop.app/ -qmldir=qml/ -verbose=2
-      # Copy needed dylibs
-      find /usr/local/Cellar/json-c/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
-      find /usr/local/Cellar/ykpers/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
-      find /usr/local/Cellar/libyubikey/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
-      find /usr/local/Cellar/libusb/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
-      find /usr/local/Cellar/openssl/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
-      # Copy Python framework
-      cp -a ~/.pyenv/versions/$PY_VERSION/Python.framework yubioath-desktop.app/Contents/Frameworks/
-      sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '*.pyc' -delete
-      sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '__pycache__' -delete
-      # Move pymodules from app bundle to site-packages, to be accepted by codesign
-      mv yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/
-      rm -rf yubioath-desktop.app/Contents/MacOS/pymodules
-      # Fix linking for PyOtherSide
-      # otool -L yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
-      sudo install_name_tool -change /usr/local/opt/python/Frameworks/Python.framework/Versions/3.6/Python @executable_path/../Frameworks/Python.framework/Versions/3.6/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
-      # Fix linking for Python _ssl
-      sudo install_name_tool -change /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_ssl.cpython-36m-darwin.so
-      sudo install_name_tool -change /usr/local/opt/openssl/lib/libssl.1.0.0.dylib @executable_path/../Frameworks/libssl.1.0.0.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_ssl.cpython-36m-darwin.so
-      # Fix linking for Python _hashlib
-      sudo install_name_tool -change /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_hashlib.cpython-36m-darwin.so
-      sudo install_name_tool -change /usr/local/opt/openssl/lib/libssl.1.0.0.dylib @executable_path/../Frameworks/libssl.1.0.0.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_hashlib.cpython-36m-darwin.so
-      # Fix stuff that macdeployqt does incorrectly.
-      sudo python macdeployqtfix/macdeployqtfix.py yubioath-desktop.app/Contents/MacOS/yubioath-desktop /usr/local
-
       # Rename app bundle
       mv yubioath-desktop.app Yubico\ Authenticator.app
       # Copy .app to deploy dir
