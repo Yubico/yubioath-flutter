@@ -22,6 +22,8 @@ ScrollView {
         anchors.right: parent.right
     }
 
+    Keys.onEscapePressed: navigator.home()
+
     function isKeyAvailable() {
         return !!yubiKey.currentDevice
     }
@@ -82,6 +84,9 @@ ScrollView {
             if (resp.success) {
                 navigator.snackBar("Password set")
                 yubiKey.currentDeviceHasPassword = true
+                settingsPanel.contentHeight = settingsPanel.contentHeight
+                        - passwordManagementPanel.expandedContent.height
+                settingsPanel.bottomPadding -= 48
                 passwordManagementPanel.isExpanded = false
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))

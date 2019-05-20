@@ -12,20 +12,51 @@ Item {
     property alias validator: textField.validator
     property alias horizontalAlignment: textField.horizontalAlignment
     property string labelText
+    property string validateText
+    property variant validateRegExp
     property alias textField: textField
 
     id: textFieldContainer
-    height: 46
-    implicitHeight: 46
+    height: 52
+    implicitHeight: 52
     Layout.fillWidth: true
+
+    function validateInput() {
+        if (validateRegExp !== undefined) {
+            if (textField.text.length) {
+                if (!validateRegExp.test(textField.text))
+                    return false
+            }
+        }
+        return true
+    }
+
+    function labelTextValue() {
+        if (!validateInput()) {
+            return "Error"
+        } else if (textField.activeFocus || textField.text.length > 0)
+            return labelText
+        else {
+            return " "
+        }
+    }
+
+    function underLineColor() {
+        if (!validateInput()) {
+            return yubicoRed
+        } else if (textField.activeFocus) {
+            return formLabel
+        } else {
+            return formUnderline
+        }
+    }
 
     Column {
 
         Label {
             font.pixelSize: 10
-            color: formLabel
-            text: textField.activeFocus
-                  || textField.text.length > 0 ? labelText : " "
+            color: validateInput() ? formLabel : yubicoRed
+            text: labelTextValue()
         }
 
         TextField {
@@ -48,12 +79,19 @@ Item {
                 implicitWidth: parent.width
                 implicitHeight: 40
                 Rectangle {
-                    color: textField.activeFocus ? formLabel : formUnderline
+                    color: underLineColor()
                     height: textField.hovered || textField.activeFocus ? 2 : 1
                     width: parent.width
                     y: 31
                 }
             }
+        }
+
+        Label {
+            font.pixelSize: 10
+            color: yubicoRed
+            text: validateText
+            visible: !validateInput()
         }
     }
 }

@@ -24,6 +24,7 @@ Pane {
     property string toolButtonIcon
     property string toolButtonToolTip
     property alias toolButton: toolButton
+    property alias expandedContent: expandedContent
 
     property var motherView
 
