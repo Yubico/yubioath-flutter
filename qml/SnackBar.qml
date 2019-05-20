@@ -15,7 +15,7 @@ ToolTip {
     readonly property int dynamicMargin: 16
 
     id: tooltip
-    timeout: 4000
+    timeout: 3000
     x: (app.width - width) / 2
     y: app.height
     width: fullWidth ? app.width : app.width - dynamicMargin

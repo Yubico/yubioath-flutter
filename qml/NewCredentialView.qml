@@ -97,6 +97,8 @@ ScrollView {
         }
     }
 
+    Component.onCompleted: retry.forceActiveFocus()
+
     spacing: 8
     padding: 0
 
@@ -116,6 +118,7 @@ ScrollView {
         anchors.fill: parent
         Layout.fillHeight: true
         Layout.fillWidth: true
+        spacing: 0
 
         Pane {
             id: retryPane
@@ -172,7 +175,10 @@ ScrollView {
                     text: "Scan"
                     toolTipText: "Scan a QR code on the screen"
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                    focus: true
                     onClicked: yubiKey.scanQr(true)
+                    Keys.onReturnPressed: yubiKey.scanQr(true)
+                    Keys.onEnterPressed: yubiKey.scanQr(true)
                 }
             }
         }

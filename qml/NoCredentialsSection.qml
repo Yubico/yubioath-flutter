@@ -53,6 +53,8 @@ ColumnLayout {
             focus: true
             Layout.alignment: Qt.AlignCenter | Qt.AlignVCenter
             onClicked: yubiKey.scanQr()
+            Keys.onReturnPressed: yubiKey.scanQr()
+            Keys.onEnterPressed: yubiKey.scanQr()
         }
     }
 }
