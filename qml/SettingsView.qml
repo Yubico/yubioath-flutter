@@ -84,9 +84,6 @@ ScrollView {
             if (resp.success) {
                 navigator.snackBar("Password set")
                 yubiKey.currentDeviceHasPassword = true
-                settingsPanel.contentHeight = settingsPanel.contentHeight
-                        - passwordManagementPanel.expandedContent.height
-                settingsPanel.bottomPadding -= 48
                 passwordManagementPanel.isExpanded = false
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
@@ -154,7 +151,6 @@ ScrollView {
             StyledExpansionPanel {
                 label: "Appearance"
                 description: "Change the theme and appearance of the application."
-                motherView: settingsPanel
                 isTopPanel: true
 
                 ColumnLayout {
@@ -191,7 +187,6 @@ ScrollView {
                 id: authenticatorModePanel
                 label: "Authenticator Mode"
                 description: "Configure how to read credentials from the YubiKey."
-                motherView: settingsPanel
                 property bool otpModeSelected: authenticatorModeCombobox.currentIndex === 1
                 property bool aboutToChange: (otpModeSelected !== settings.otpMode)
                                              || (slot1DigitsComboBox.currentIndex
@@ -311,7 +306,6 @@ ScrollView {
             StyledExpansionPanel {
                 label: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
                 description: "Configure where and how the application is visible."
-                motherView: settingsPanel
                 isBottomPanel: true
 
                 ColumnLayout {
@@ -349,7 +343,6 @@ ScrollView {
                 id: passwordManagementPanel
                 label: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
                 description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
-                motherView: settingsPanel
                 isTopPanel: true
 
                 ColumnLayout {
