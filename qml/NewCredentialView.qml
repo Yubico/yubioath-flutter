@@ -86,16 +86,7 @@ ScrollView {
         }
     }
 
-    Keys.onReturnPressed: {
-        if (acceptableInput()) {
-            addCredential()
-        }
-    }
-    Keys.onEnterPressed: {
-        if (acceptableInput()) {
-            addCredential()
-        }
-    }
+    Keys.onEscapePressed: navigator.home()
 
     Component.onCompleted: retry.forceActiveFocus()
 
@@ -176,6 +167,7 @@ ScrollView {
                     toolTipText: "Scan a QR code on the screen"
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     focus: true
+                    enabled: manualEntry
                     onClicked: yubiKey.scanQr(true)
                     Keys.onReturnPressed: yubiKey.scanQr(true)
                     Keys.onEnterPressed: yubiKey.scanQr(true)
