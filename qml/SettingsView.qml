@@ -145,6 +145,117 @@ ScrollView {
         spacing: 0
 
         StyledExpansionContainer {
+            id: keyPane
+            sectionTitle: "Current Device"
+            visible: isKeyAvailable()
+
+            StyledExpansionPanel {
+                id: currentDevicePanel
+                label: deviceInfo()
+                description: "FIDO+CCID+OTP"
+                keyImage: "../images/neo.png"
+                isTopPanel: true
+                Layout.fillWidth: true
+
+                ColumnLayout {
+                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                    Layout.fillWidth: true
+
+                    RadioButton {
+                        text: "YubiKey NEO"
+                    }
+                    RadioButton {
+                        text: "YubiKey NEO"
+                    }
+                    StyledButton {
+                        id: applyKey
+                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                        text: "Apply"
+                        flat: true
+                    }
+                }
+            }
+        }
+
+        StyledExpansionContainer {
+            id: oathPane
+            sectionTitle: "OATH"
+            visible: isKeyAvailable()
+
+            StyledExpansionPanel {
+                id: passwordManagementPanel
+                label: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
+                description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
+                isTopPanel: true
+
+                ColumnLayout {
+                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
+
+                    StyledTextField {
+                        id: currentPasswordField
+                        visible: yubiKey.currentDeviceHasPassword ? true : false
+                        labelText: qsTr("Current Password")
+                        echoMode: TextInput.Password
+                        Keys.onEnterPressed: submitPassword()
+                        Keys.onReturnPressed: submitPassword()
+                    }
+                    StyledTextField {
+                        id: newPasswordField
+                        labelText: qsTr("New Password")
+                        echoMode: TextInput.Password
+                        Keys.onEnterPressed: submitPassword()
+                        Keys.onReturnPressed: submitPassword()
+                    }
+                    StyledTextField {
+                        id: confirmPasswordField
+                        labelText: qsTr("Confirm Password")
+                        echoMode: TextInput.Password
+                        Keys.onEnterPressed: submitPassword()
+                        Keys.onReturnPressed: submitPassword()
+                    }
+                    StyledButton {
+                        id: applyPassword
+                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                        text: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
+                        flat: true
+                        enabled: acceptableInput()
+                        onClicked: submitPassword()
+                    }
+                }
+            }
+
+            StyledExpansionPanel {
+                label: "Reset"
+                description: "Warning: Resetting the OATH application will delete all credentials and restore factory defaults."
+                isEnabled: false
+                toolButtonIcon: "../images/reset.svg"
+                toolButtonToolTip: "Reset OATH Application"
+                toolButton.onClicked: navigator.confirm(
+                                          "Are you sure?",
+                                          "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",
+                                          function () {
+                                              navigator.goToLoading()
+                                              yubiKey.reset(function (resp) {
+                                                  navigator.goToSettings()
+                                                  if (resp.success) {
+                                                      entries.clear()
+                                                      navigator.snackBar(
+                                                                  "Reset completed")
+                                                      yubiKey.currentDeviceValidated = true
+                                                      yubiKey.currentDeviceHasPassword = false
+                                                  } else {
+                                                      navigator.snackBarError(
+                                                                  navigator.getErrorMessage(
+                                                                      resp.error_id))
+                                                      console.log("reset failed:",
+                                                                  resp.error_id)
+                                                  }
+                                              })
+                                          })
+            }
+        }
+
+        StyledExpansionContainer {
             id: appPane
             sectionTitle: "Application"
 
@@ -335,91 +446,15 @@ ScrollView {
         }
 
         StyledExpansionContainer {
-            id: keyPane
-            sectionTitle: deviceInfo()
-            visible: isKeyAvailable()
-
-            StyledExpansionPanel {
-                id: passwordManagementPanel
-                label: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
-                description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
-                isTopPanel: true
-
-                ColumnLayout {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
-
-                    StyledTextField {
-                        id: currentPasswordField
-                        visible: yubiKey.currentDeviceHasPassword ? true : false
-                        labelText: qsTr("Current Password")
-                        echoMode: TextInput.Password
-                        Keys.onEnterPressed: submitPassword()
-                        Keys.onReturnPressed: submitPassword()
-                    }
-                    StyledTextField {
-                        id: newPasswordField
-                        labelText: qsTr("New Password")
-                        echoMode: TextInput.Password
-                        Keys.onEnterPressed: submitPassword()
-                        Keys.onReturnPressed: submitPassword()
-                    }
-                    StyledTextField {
-                        id: confirmPasswordField
-                        labelText: qsTr("Confirm Password")
-                        echoMode: TextInput.Password
-                        Keys.onEnterPressed: submitPassword()
-                        Keys.onReturnPressed: submitPassword()
-                    }
-                    StyledButton {
-                        id: applyPassword
-                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                        text: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
-                        flat: true
-                        enabled: acceptableInput()
-                        onClicked: submitPassword()
-                    }
-                }
-            }
-
-            StyledExpansionPanel {
-                label: "Reset"
-                description: "Warning: Resetting the OATH application will delete all credentials and restore factory defaults."
-                isEnabled: false
-                toolButtonIcon: "../images/reset.svg"
-                toolButtonToolTip: "Reset OATH Application"
-                toolButton.onClicked: navigator.confirm(
-                                          "Are you sure?",
-                                          "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",
-                                          function () {
-                                              navigator.goToLoading()
-                                              yubiKey.reset(function (resp) {
-                                                  navigator.goToSettings()
-                                                  if (resp.success) {
-                                                      entries.clear()
-                                                      navigator.snackBar(
-                                                                  "Reset completed")
-                                                      yubiKey.currentDeviceValidated = true
-                                                      yubiKey.currentDeviceHasPassword = false
-                                                  } else {
-                                                      navigator.snackBarError(
-                                                                  navigator.getErrorMessage(
-                                                                      resp.error_id))
-                                                      console.log("reset failed:",
-                                                                  resp.error_id)
-                                                  }
-                                              })
-                                          })
-            }
-        }
-
-        StyledExpansionContainer {
             id: aboutPane
             sectionTitle: "About"
 
             StyledExpansionPanel {
                 id: aboutPanel
                 label: qsTr("Yubico Authenticator ") + appVersion
-                description: qsTr("Copyright © 2019, Yubico Inc. All rights reserved.")
+                description: qsTr("Copyright © " + Qt.formatDateTime(
+                                      new Date(),
+                                      "yyyy") + ", Yubico Inc. All rights reserved.")
                 isTopPanel: true
                 isEnabled: false
             }
