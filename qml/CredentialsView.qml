@@ -56,15 +56,18 @@ ScrollView {
     NoCredentialsSection {
         visible: entries.count === 0 && yubiKey.currentDeviceValidated
                  && !!yubiKey.currentDevice
+        enabled: visible
     }
 
     NoResultsSection {
         visible: entries.count > 0 && yubiKey.currentDeviceValidated
                  && filteredCredentials().count === 0 && !!yubiKey.currentDevice
+        enabled: visible
     }
 
     NoYubiKeySection {
         visible: yubiKey.availableDevices.length !== 1
+        enabled: visible
     }
 
     GridView {
@@ -80,6 +83,7 @@ ScrollView {
         anchors.top: parent.top
         onCurrentItemChanged: app.currentCredentialCard = currentItem
         visible: entries.count > 0
+        enabled: visible
         keyNavigationWraps: false
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
@@ -95,7 +99,7 @@ ScrollView {
             anchors.fill: parent
             onClicked: grid.currentIndex = -1
         }
-        focus: true
+        focus: visible
         Component.onCompleted: currentIndex = -1
         KeyNavigation.tab: toolBar.searchField
         KeyNavigation.up: toolBar.searchField

@@ -24,8 +24,7 @@ Pane {
     property string toolButtonIcon
     property string toolButtonToolTip
     property alias toolButton: toolButton
-
-    property var motherView
+    property alias expandedContent: expandedContent
 
     Layout.alignment: Qt.AlignCenter | Qt.AlignTop
     Layout.fillWidth: true
@@ -33,6 +32,7 @@ Pane {
 
     Layout.leftMargin: -16
     Layout.rightMargin: -16
+
     Layout.topMargin: isExpanded && dropShadow && !isTopPanel ? 9 : -4
     Layout.bottomMargin: isExpanded && dropShadow && !isBottomPanel ? 11 : -3
 
@@ -52,13 +52,9 @@ Pane {
     function expandAction() {
         if (isEnabled) {
             if (isExpanded) {
-                motherView.contentHeight = motherView.contentHeight - expandedContent.height
-                motherView.bottomPadding -= 48
                 isExpanded = false
             } else {
                 isExpanded = true
-                motherView.bottomPadding += 48
-                motherView.contentHeight = motherView.contentHeight + expandedContent.height
             }
         }
     }
@@ -66,6 +62,7 @@ Pane {
     ColumnLayout {
 
         anchors.horizontalCenter: parent.horizontalCenter
+        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         width: app.width - dynamicMargin < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
         spacing: 16
 
