@@ -272,7 +272,6 @@ ScrollView {
                     label: "Advanced settings"
                     description: "Normally these settings should not be changed, doing so may result in the code not working as expected."
                     visible: manualEntry && !settings.otpMode
-                    motherView: newCredentialViewId
                     dropShadow: false
 
                     ColumnLayout {
