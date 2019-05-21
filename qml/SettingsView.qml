@@ -411,5 +411,18 @@ ScrollView {
                                           })
             }
         }
+
+        StyledExpansionContainer {
+            id: aboutPane
+            sectionTitle: "About"
+
+            StyledExpansionPanel {
+                id: aboutPanel
+                label: qsTr("Yubico Authenticator ") + appVersion
+                description: qsTr("Copyright © 2019, Yubico Inc. All rights reserved.")
+                isTopPanel: true
+                isEnabled: false
+            }
+        }
     }
 }
