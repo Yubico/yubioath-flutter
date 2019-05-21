@@ -119,8 +119,7 @@ Python {
                     entries.clear()
                 }
             })
-
-            if (timeToCalculateAll() && currentDevice
+            if (timeToCalculateAll() && !!currentDevice
                     && currentDeviceValidated) {
                 calculateAll()
             }
@@ -160,7 +159,7 @@ Python {
 
     function updateNextCalculateAll() {
         // Next calculateAll should be when a default TOTP cred expires.
-        for (var i; i < entries.count; i++) {
+        for (var i = 0; i < entries.count; i++) {
             var entry = entries.get(i)
             if (entry.code && entry.credential.period === 30) {
                 // Just use the first default one
