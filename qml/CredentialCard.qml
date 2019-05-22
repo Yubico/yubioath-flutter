@@ -44,6 +44,17 @@ Pane {
             onClicked: credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
             onDoubleClicked: calculateCard(true)
         }
+
+        ToolTip {
+            text: "Double-click to initiate touch required"
+            delay: 1000
+            parent: credentialCard
+            visible: touchCredential && parent.hovered
+            Material.foreground: app.isDark(
+                                     ) ? defaultDarkForeground : defaultLight
+            Material.background: app.isDark(
+                                     ) ? defaultDarkOverlay : defaultLightForeground
+        }
     }
 
     function getIconLetter() {
@@ -218,7 +229,7 @@ Pane {
             Label {
                 id: codLbl
                 font.pixelSize: 24
-                color: yubicoGreen
+                color: Material.primary
                 text: getCodeLblValue()
             }
             Label {
@@ -259,7 +270,7 @@ Pane {
             iconHeight: 24
             source: "../images/touch.svg"
             visible: touchCredentialNoCode
-            color: yubicoGreen
+            color: Material.primary
         }
 
         StyledImage {
@@ -270,7 +281,7 @@ Pane {
             visible: hotpCredential
             anchors.bottom: parent.bottom
             anchors.right: parent.right
-            color: hotpCredentialInCoolDown ? yubicoGrey : yubicoGreen
+            color: hotpCredentialInCoolDown ? yubicoGrey : Material.primary
         }
     }
 }

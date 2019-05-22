@@ -9,7 +9,7 @@ Rectangle {
     width: size
     height: size
     radius: width * 0.5
-    color: yubicoGreen
+    color: Material.primary
     Label {
         text: letter.toUpperCase()
         font.bold: true

@@ -139,7 +139,7 @@ ScrollView {
                     Label {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                         text: "Automatic (recommended)"
-                        color: yubicoGreen
+                        color: Material.primary
                         font.pixelSize: 14
                         font.weight: Font.Medium
                         topPadding: 8
@@ -207,7 +207,7 @@ ScrollView {
                     Label {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                         text: "Manual Entry"
-                        color: yubicoGreen
+                        color: Material.primary
                         font.pixelSize: 14
                         font.weight: Font.Medium
                         topPadding: 8

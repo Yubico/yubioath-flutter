@@ -113,6 +113,27 @@ ScrollView {
     }
 
     ListModel {
+        id: themeColor
+
+        ListElement {
+            text: "Green"
+            value: "#9aca3c"
+        }
+        ListElement {
+            text: "Blue"
+            value: "#284c61"
+        }
+        ListElement {
+            text: "Red"
+            value: "#fd5552"
+        }
+        ListElement {
+            text: "Grey"
+            value: "#939598"
+        }
+    }
+
+    ListModel {
         id: otpModeDigits
 
         ListElement {
@@ -288,6 +309,29 @@ ScrollView {
                                 default:
                                     return 0
                                 }
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        StyledComboBox {
+                            id: themeColorComboBox
+                            label: "Theme Color"
+                            comboBox.textRole: "text"
+                            model: themeColor
+                            onCurrentIndexChanged: {
+                                settings.themeAccentColor = themeColor.get(
+                                            currentIndex).value
+                            }
+                            currentIndex: {
+                                for (var i = 0; i < themeColor.count; i++) {
+                                    if (themeColor.get(
+                                                i).value === settings.themeAccentColor) {
+                                        return i
+                                    }
+                                }
+                                return 0
                             }
                         }
                     }
