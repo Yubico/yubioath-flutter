@@ -30,6 +30,7 @@ Item {
     id: textFieldContainer
     height: 52
     implicitHeight: 52
+    Layout.bottomMargin: 4
     Layout.fillWidth: true
 
     function validateInput() {
