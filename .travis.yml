@@ -39,6 +39,7 @@ install:
     then
       git clone https://github.com/aurelien-rainone/macdeployqtfix.git
       brew install swig ykpers libyubikey libusb
+      brew upgrade swig ykpers libyubikey libusb
       # Qt 5.10.1 needed on macOS because of https://bugreports.qt.io/browse/QTBUG-67663
       brew install -v https://gist.githubusercontent.com/dagheyman/ebe0c373cdd71f83239633b9db7c285e/raw/f70fbe450c86ed360a8bf4daea7effce70d3e094/qt.rb
       brew link qt -f
