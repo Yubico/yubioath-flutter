@@ -28,7 +28,7 @@ Pane {
             Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 text: sectionTitle
-                color: yubicoGreen
+                color: Material.primary
                 font.pixelSize: 14
                 font.weight: Font.Medium
                 topPadding: 8

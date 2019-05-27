@@ -11,14 +11,26 @@ Item {
     property alias text: textField.text
     property alias validator: textField.validator
     property alias horizontalAlignment: textField.horizontalAlignment
+    property bool required: false
     property string labelText
     property string validateText
     property variant validateRegExp
     property alias textField: textField
+    property bool validated: {
+        if (validateInput()) {
+            if (required && textField.text.length > 0) {
+                return true
+            } else if (!required) {
+                return true
+            }
+        }
+        return false
+    }
 
     id: textFieldContainer
     height: 52
     implicitHeight: 52
+    Layout.bottomMargin: 4
     Layout.fillWidth: true
 
     function validateInput() {
@@ -35,7 +47,7 @@ Item {
         if (!validateInput()) {
             return "Error"
         } else if (textField.activeFocus || textField.text.length > 0)
-            return labelText
+            return required ? labelText + " *" : labelText
         else {
             return " "
         }
@@ -73,7 +85,13 @@ Item {
             focus: true
             color: formText
             Material.accent: formText
-            placeholderText: textField.activeFocus ? "" : labelText
+            placeholderText: {
+                if (textField.activeFocus) {
+                    return ""
+                } else {
+                    return required ? labelText + " *" : labelText
+                }
+            }
             placeholderTextColor: formPlaceholderText
             background: Item {
                 implicitWidth: parent.width

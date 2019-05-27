@@ -36,18 +36,14 @@ Item {
             indicator: Rectangle {
                 id: rectangle
                 anchors.right: parent.right
-                anchors.rightMargin: 0
-                Image {
+                anchors.rightMargin: 24
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                StyledImage {
                     id: arrowIcon
-                    anchors.right: parent.right
-                    anchors.rightMargin: 0
-                    fillMode: Image.PreserveAspectFit
                     source: "../images/arrow-down.svg"
-                    ColorOverlay {
-                        source: arrowIcon
-                        color: isDark() ? defaultLight : yubicoGrey
-                        anchors.fill: arrowIcon
-                    }
+                    iconWidth: 24
+                    iconHeight: 24
+                    color: formText
                 }
             }
             contentItem: Text {

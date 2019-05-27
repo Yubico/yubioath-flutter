@@ -123,6 +123,7 @@ ApplicationWindow {
         property bool hideOnLaunch
 
         property int theme
+        property string themeAccentColor
 
         // Keep track of window and desktop dimensions.
         property alias width: app.width
@@ -135,6 +136,10 @@ ApplicationWindow {
         onCloseToTrayChanged: updateTrayVisibility()
         onThemeChanged: {
             app.Material.theme = theme
+        }
+        onThemeAccentColorChanged: {
+            app.Material.accent = themeAccentColor
+            app.Material.primary = themeAccentColor
         }
     }
 

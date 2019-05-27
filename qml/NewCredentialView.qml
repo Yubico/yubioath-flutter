@@ -139,7 +139,7 @@ ScrollView {
                     Label {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                         text: "Automatic (recommended)"
-                        color: yubicoGreen
+                        color: Material.primary
                         font.pixelSize: 14
                         font.weight: Font.Medium
                         topPadding: 8
@@ -207,7 +207,7 @@ ScrollView {
                     Label {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                         text: "Manual Entry"
-                        color: yubicoGreen
+                        color: Material.primary
                         font.pixelSize: 14
                         font.weight: Font.Medium
                         topPadding: 8
@@ -226,21 +226,22 @@ ScrollView {
                 }
                 StyledTextField {
                     id: nameLbl
-                    labelText: "Account name *"
+                    labelText: "Account name"
                     Layout.fillWidth: true
+                    required: true
                     text: credential && credential.name ? credential.name : ""
                     visible: !settings.otpMode
                 }
                 StyledTextField {
                     id: secretKeyLbl
-                    labelText: "Secret key *"
+                    labelText: "Secret key"
                     Layout.fillWidth: true
+                    required: true
                     text: credential
                           && credential.secret ? credential.secret : ""
                     visible: manualEntry
-                    validator: RegExpValidator {
-                        regExp: /[2-7a-zA-Z ]+=*/
-                    }
+                    validateText: "Invalid Base32 format (valid characters are A-Z and 2-7)"
+                    validateRegExp: /^[2-7A-Z]+=*$/
                 }
 
                 RowLayout {
@@ -330,7 +331,8 @@ ScrollView {
                     id: addBtn
                     text: "Add"
                     toolTipText: "Add credential to YubiKey"
-                    enabled: acceptableInput()
+                    enabled: secretKeyLbl.validated && nameLbl.validated
+                             && acceptableInput()
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     onClicked: addCredential()
                 }

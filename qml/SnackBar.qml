@@ -8,7 +8,7 @@ ToolTip {
 
     property string message: "Default message"
     property string buttonText: "Dismiss"
-    property string buttonColor: yubicoGreen
+    property string buttonColor: Material.primary
     property string backgroundColor: "#333333"
     property bool fullWidth: false
     readonly property int dynamicWidth: 480

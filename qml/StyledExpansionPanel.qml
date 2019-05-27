@@ -15,6 +15,8 @@ Pane {
 
     property string label
     property string description
+    property string keyImage
+
     property bool isEnabled: true
     property bool isExpanded: false
     property bool isTopPanel: false
@@ -68,6 +70,15 @@ Pane {
 
         RowLayout {
             Layout.rightMargin: -12
+
+            Image {
+                id: key
+                sourceSize.width: 32
+                source: keyImage
+                fillMode: Image.PreserveAspectFit
+                Layout.rightMargin: 8
+                visible: keyImage
+            }
 
             ColumnLayout {
                 Layout.fillHeight: true

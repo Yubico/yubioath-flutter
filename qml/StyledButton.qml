@@ -11,8 +11,8 @@ Button {
     id: button
     font.capitalization: Font.MixedCase
     font.weight: Font.Medium
-    Material.foreground: button.flat ? yubicoGreen : yubicoWhite
-    Material.background: button.flat ? "transparent" : yubicoGreen
+    Material.foreground: button.flat ? Material.primary : yubicoWhite
+    Material.background: button.flat ? "transparent" : Material.primary
     Material.elevation: button.flat ? 0 : 1
 
     ToolTip {
