@@ -8,7 +8,7 @@ language: cpp
 sudo: required
 
 env:
-  - PY_VERSION="3.6.5" PYOTHERSIDE_VERSION="1.5.3"
+  - PY_VERSION="3.6.8" PYOTHERSIDE_VERSION="1.5.3"
 
 os:
   - osx
