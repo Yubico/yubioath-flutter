@@ -93,6 +93,29 @@ ScrollView {
         })
     }
 
+    function removePassword() {
+        yubiKey.validate(currentPasswordField.text, false, function (resp) {
+            if (resp.success) {
+
+                // TODO: Change to new method
+                yubiKey.setPassword(null, true, function (resp) {
+                    if (resp.success) {
+                        navigator.snackBar("Password removed")
+                        yubiKey.currentDeviceHasPassword = false
+                        passwordManagementPanel.isExpanded = false
+                    } else {
+                        navigator.snackBarError(getErrorMessage(resp.error_id))
+                        console.log(resp.error_id)
+                    }
+                    clearPasswordFields()
+                })
+            } else {
+                navigator.snackBarError(getErrorMessage(resp.error_id))
+                console.log(resp.error_id)
+            }
+        })
+    }
+
     property string title: "Settings"
 
     ListModel {
@@ -234,13 +257,28 @@ ScrollView {
                         Keys.onEnterPressed: submitPassword()
                         Keys.onReturnPressed: submitPassword()
                     }
-                    StyledButton {
-                        id: applyPassword
+                    RowLayout {
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                        text: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
-                        flat: true
-                        enabled: acceptableInput()
-                        onClicked: submitPassword()
+                        StyledButton {
+                            id: removePasswordBtn
+                            visible: yubiKey.currentDeviceHasPassword
+                            text: "Remove Password"
+                            flat: true
+                            enabled: currentPasswordField.text.length > 0
+                            onClicked: navigator.confirm(
+                                           "Are you sure?",
+                                           "Are you sure you want to remove the password? A password will not be required to access the credentails anymore.",
+                                           function () {
+                                               removePassword()
+                                           })
+                        }
+                        StyledButton {
+                            id: applyPassword
+                            text: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
+                            flat: true
+                            enabled: acceptableInput()
+                            onClicked: submitPassword()
+                        }
                     }
                 }
             }

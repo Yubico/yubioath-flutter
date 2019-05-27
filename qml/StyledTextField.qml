@@ -28,9 +28,9 @@ Item {
     }
 
     id: textFieldContainer
-    height: 52
-    implicitHeight: 52
-    Layout.bottomMargin: 4
+    height: 50
+    implicitHeight: 50
+    Layout.bottomMargin: 8
     Layout.fillWidth: true
 
     function validateInput() {
@@ -100,7 +100,7 @@ Item {
                     color: underLineColor()
                     height: textField.hovered || textField.activeFocus ? 2 : 1
                     width: parent.width
-                    y: 31
+                    y: 32
                 }
             }
         }
