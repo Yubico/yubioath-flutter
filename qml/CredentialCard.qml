@@ -165,8 +165,8 @@ Pane {
 
     function deleteCard() {
         navigator.confirm(
-                    "Are you sure?",
-                    "Do you want to permanently delete the credential from the YubiKey?",
+                    "Delete credential?",
+                    "This will permanently delete the credential from the YubiKey.",
                     function () {
                         if (settings.otpMode) {
                             yubiKey.otpDeleteCredential(credential,
