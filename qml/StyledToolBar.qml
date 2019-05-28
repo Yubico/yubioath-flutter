@@ -42,7 +42,8 @@ ToolBar {
     function shouldShowAddCredential() {
         return !!(yubiKey.currentDevice && yubiKey.currentDeviceValidated
                   && navigator.currentItem
-                  && navigator.currentItem.objectName === 'credentialsView')
+                  && navigator.currentItem.objectName === 'credentialsView'
+                  && !shouldShowCredentialOptions())
     }
 
     function shouldShowSettings() {
@@ -159,7 +160,8 @@ ToolBar {
             ToolButton {
                 id: copyCredentialBtn
                 visible: shouldShowCredentialOptions()
-                enabled: shouldShowCredentialOptions() && !app.currentCredentialCard.hotpCredentialInCoolDown
+                enabled: shouldShowCredentialOptions()
+                         && !app.currentCredentialCard.hotpCredentialInCoolDown
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: app.currentCredentialCard.calculateCard(true)
 
@@ -203,8 +205,8 @@ ToolBar {
                 Keys.onEnterPressed: app.currentCredentialCard.deleteCard()
 
                 KeyNavigation.left: copyCredentialBtn
-                KeyNavigation.right: settingsBtn
-                KeyNavigation.tab: settingsBtn
+                KeyNavigation.right: favouriteBtn
+                KeyNavigation.tab: favouriteBtn
 
                 ToolTip {
                     text: "Delete credential"
@@ -218,6 +220,42 @@ ToolBar {
                 }
 
                 icon.source: "../images/delete.svg"
+                icon.color: isDark() ? defaultLight : "#5f6368"
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
+            }
+
+            ToolButton {
+                id: favouriteBtn
+                visible: shouldShowCredentialOptions()
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+
+                onClicked: app.currentCredentialCard.toggleFavourite()
+                Keys.onReturnPressed: app.currentCredentialCard.toggleFavourite(
+                                          )
+                Keys.onEnterPressed: app.currentCredentialCard.toggleFavourite()
+                KeyNavigation.left: deleteCredentialBtn
+                KeyNavigation.right: settingsBtn
+                KeyNavigation.tab: settingsBtn
+
+                ToolTip {
+                    text: "Favourite credential"
+                    delay: 1000
+                    parent: favouriteBtn
+                    visible: parent.hovered
+                    Material.foreground: app.isDark(
+                                             ) ? defaultDarkForeground : defaultLight
+                    Material.background: app.isDark(
+                                             ) ? defaultDarkOverlay : defaultLightForeground
+                }
+
+                icon.source: shouldShowCredentialOptions()
+                             && app.currentCredentialCard.isFavourite(
+                                 ) ? "../images/star.svg" : "../images/star_border.svg"
                 icon.color: isDark() ? defaultLight : "#5f6368"
 
                 MouseArea {

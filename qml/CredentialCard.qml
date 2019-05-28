@@ -28,6 +28,8 @@ Pane {
                                                   && !touchCredential)
     property bool touchCredential: credential && credential.touch
 
+    property bool favourite: false
+
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {
                    return credentialCardCurrentItem
@@ -54,6 +56,21 @@ Pane {
                                      ) ? defaultDarkForeground : defaultLight
             Material.background: app.isDark(
                                      ) ? defaultDarkOverlay : defaultLightForeground
+        }
+    }
+
+    function isFavourite() {
+        return favourite
+    }
+
+    function toggleFavourite() {
+        // TODO: Save the actual favourite to settings
+        if (isFavourite()) {
+            favourite = false
+            navigator.snackBar("Credential removed from favourites")
+        } else {
+            favourite = true
+            navigator.snackBar("Credential set as favourite")
         }
     }
 

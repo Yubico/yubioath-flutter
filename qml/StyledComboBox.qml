@@ -15,6 +15,7 @@ Item {
     id: container
     height: 50
     implicitHeight: 50
+    Layout.bottomMargin: 8
     Layout.fillWidth: true
 
     Column {
