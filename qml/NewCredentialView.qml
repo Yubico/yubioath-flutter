@@ -241,7 +241,7 @@ ScrollView {
                           && credential.secret ? credential.secret : ""
                     visible: manualEntry
                     validateText: "Invalid Base32 format (valid characters are A-Z and 2-7)"
-                    validateRegExp: /^[2-7A-Z]+=*$/
+                    validateRegExp: /^[2-7a-zA-Z]+=*$/
                 }
 
                 RowLayout {

@@ -107,7 +107,7 @@ Pane {
                 onClicked: expandAction()
                 icon.width: 24
                 icon.source: isExpanded ? "../images/up.svg" : "../images/down.svg"
-                icon.color: isDark() ? yubicoWhite : yubicoGrey
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
                 visible: isEnabled
                 MouseArea {
                     anchors.fill: parent
@@ -119,10 +119,8 @@ Pane {
                     delay: 1000
                     parent: expandButton
                     visible: parent.hovered
-                    Material.foreground: app.isDark(
-                                             ) ? defaultDarkForeground : defaultLight
-                    Material.background: app.isDark(
-                                             ) ? defaultDarkOverlay : defaultLightForeground
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
                 }
             }
 
@@ -130,7 +128,7 @@ Pane {
                 id: toolButton
                 icon.width: 24
                 icon.source: toolButtonIcon
-                icon.color: isDark() ? yubicoWhite : yubicoGrey
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
                 visible: !isEnabled && !!toolButtonIcon
                 MouseArea {
                     anchors.fill: parent
@@ -142,10 +140,8 @@ Pane {
                     delay: 1000
                     parent: toolButton
                     visible: parent.hovered
-                    Material.foreground: app.isDark(
-                                             ) ? defaultDarkForeground : defaultLight
-                    Material.background: app.isDark(
-                                             ) ? defaultDarkOverlay : defaultLightForeground
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
                 }
             }
         }

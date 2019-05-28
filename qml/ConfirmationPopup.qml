@@ -8,8 +8,8 @@ Dialog {
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2
 
-    width: app.width * 0.7
-    standardButtons: Dialog.No | Dialog.Yes
+    width: app.width > 600 ? 600 : app.width * 0.8
+    standardButtons: Dialog.Cancel | Dialog.Ok
     onAccepted: acceptedCb()
     focus: true
 
@@ -20,12 +20,13 @@ Dialog {
 
     ColumnLayout {
         width: parent.width
-        spacing: 20
+        spacing: 16
 
         Label {
             id: confirmationHeading
             text: heading
-            font.bold: true
+            font.pixelSize: 16
+            font.weight: Font.Medium
             width: parent.width
             Layout.maximumWidth: parent.width
         }
@@ -33,6 +34,9 @@ Dialog {
         Label {
             id: confirmationLbl
             text: message
+            color: formText
+            font.pixelSize: 14
+            lineHeight: 1.2
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
             width: parent.width

@@ -52,10 +52,8 @@ Pane {
             delay: 1000
             parent: credentialCard
             visible: touchCredential && parent.hovered
-            Material.foreground: app.isDark(
-                                     ) ? defaultDarkForeground : defaultLight
-            Material.background: app.isDark(
-                                     ) ? defaultDarkOverlay : defaultLightForeground
+            Material.foreground: toolTipForeground
+            Material.background: toolTipBackground
         }
     }
 
