@@ -96,8 +96,7 @@ ScrollView {
     function removePassword() {
         yubiKey.validate(currentPasswordField.text, false, function (resp) {
             if (resp.success) {
-
-                // TODO: Change to new method
+                // TODO: Change to new method that works
                 yubiKey.setPassword(null, true, function (resp) {
                     if (resp.success) {
                         navigator.snackBar("Password removed")
@@ -202,7 +201,6 @@ ScrollView {
                 Layout.fillWidth: true
 
                 ColumnLayout {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
                     Layout.fillWidth: true
 
                     RadioButton {
@@ -233,7 +231,6 @@ ScrollView {
                 isTopPanel: true
 
                 ColumnLayout {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
 
                     StyledTextField {
                         id: currentPasswordField
@@ -262,20 +259,19 @@ ScrollView {
                         StyledButton {
                             id: removePasswordBtn
                             visible: yubiKey.currentDeviceHasPassword
-                            text: "Remove Password"
-                            flat: true
                             enabled: currentPasswordField.text.length > 0
+                            text: "Remove"
+                            flat: true
                             onClicked: navigator.confirm(
-                                           "Are you sure?",
-                                           "Are you sure you want to remove the password? A password will not be required to access the credentails anymore.",
+                                           "Remove password?",
+                                           "A password will not be required to access the credentails anymore.",
                                            function () {
                                                removePassword()
                                            })
                         }
                         StyledButton {
                             id: applyPassword
-                            text: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
-                            flat: true
+                            text: yubiKey.currentDeviceHasPassword ? "Change" : "Set"
                             enabled: acceptableInput()
                             onClicked: submitPassword()
                         }
@@ -290,8 +286,8 @@ ScrollView {
                 toolButtonIcon: "../images/reset.svg"
                 toolButtonToolTip: "Reset OATH Application"
                 toolButton.onClicked: navigator.confirm(
-                                          "Are you sure?",
-                                          "Are you sure you want to reset the OATH application? This will delete all credentials and restore factory defaults.",
+                                          "Reset OATH application?",
+                                          "This will delete all credentials and restore factory defaults.",
                                           function () {
                                               navigator.goToLoading()
                                               yubiKey.reset(function (resp) {
@@ -324,7 +320,6 @@ ScrollView {
                 isTopPanel: true
 
                 ColumnLayout {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -435,7 +430,6 @@ ScrollView {
                 }
 
                 ColumnLayout {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -489,8 +483,7 @@ ScrollView {
                 }
                 StyledButton {
                     Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                    text: "Set mode"
-                    flat: true
+                    text: "Apply"
                     enabled: authenticatorModePanel.isValidMode()
                     onClicked: authenticatorModePanel.setAuthenticatorMode()
                 }

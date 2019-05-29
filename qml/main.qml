@@ -45,6 +45,12 @@ ApplicationWindow {
     property string credentialCardHovered: isDark() ? "#424242" : "#fbfbfb"
     property string credentialCardNormal: isDark() ? "#3e3e3e" : "#ffffff"
 
+    property string iconButtonNormal: isDark() ? "#B7B7B7" : "#767676"
+    property string iconButtonHovered: isDark() ? "#ffffff" : "#202020"
+
+    property string toolTipForeground: app.isDark() ? "#fafafa" : "#f7f7f7"
+    property string toolTipBackground: app.isDark() ? "#4a4a4a" : "#565656"
+
     property var currentCredentialCard
 
     Material.theme: settings.theme

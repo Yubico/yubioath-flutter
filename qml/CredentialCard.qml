@@ -52,10 +52,8 @@ Pane {
             delay: 1000
             parent: credentialCard
             visible: touchCredential && parent.hovered
-            Material.foreground: app.isDark(
-                                     ) ? defaultDarkForeground : defaultLight
-            Material.background: app.isDark(
-                                     ) ? defaultDarkOverlay : defaultLightForeground
+            Material.foreground: toolTipForeground
+            Material.background: toolTipBackground
         }
     }
 
@@ -167,8 +165,8 @@ Pane {
 
     function deleteCard() {
         navigator.confirm(
-                    "Are you sure?",
-                    "Do you want to permanently delete the credential from the YubiKey?",
+                    "Delete credential?",
+                    "This will permanently delete the credential from the YubiKey.",
                     function () {
                         if (settings.otpMode) {
                             yubiKey.otpDeleteCredential(credential,

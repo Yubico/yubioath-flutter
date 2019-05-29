@@ -21,6 +21,7 @@ Pane {
     property bool isExpanded: false
     property bool isTopPanel: false
     property bool isBottomPanel: false
+    property bool isSectionTitle: false
     property bool dropShadow: true
 
     property string toolButtonIcon
@@ -83,8 +84,20 @@ Pane {
             ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                visible: label
 
                 Label {
+                    visible: isSectionTitle
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                    text: label
+                    color: Material.primary
+                    font.pixelSize: 14
+                    font.weight: Font.Medium
+                    Layout.fillWidth: true
+                }
+
+                Label {
+                    visible: !isSectionTitle
                     text: label
                     font.pixelSize: 13
                     font.bold: false
@@ -99,6 +112,7 @@ Pane {
                     text: description
                     wrapMode: Text.WordWrap
                     Layout.rowSpan: 1
+                    visible: description
                 }
             }
 
@@ -107,7 +121,7 @@ Pane {
                 onClicked: expandAction()
                 icon.width: 24
                 icon.source: isExpanded ? "../images/up.svg" : "../images/down.svg"
-                icon.color: isDark() ? yubicoWhite : yubicoGrey
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
                 visible: isEnabled
                 MouseArea {
                     anchors.fill: parent
@@ -119,10 +133,8 @@ Pane {
                     delay: 1000
                     parent: expandButton
                     visible: parent.hovered
-                    Material.foreground: app.isDark(
-                                             ) ? defaultDarkForeground : defaultLight
-                    Material.background: app.isDark(
-                                             ) ? defaultDarkOverlay : defaultLightForeground
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
                 }
             }
 
@@ -130,7 +142,7 @@ Pane {
                 id: toolButton
                 icon.width: 24
                 icon.source: toolButtonIcon
-                icon.color: isDark() ? yubicoWhite : yubicoGrey
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
                 visible: !isEnabled && !!toolButtonIcon
                 MouseArea {
                     anchors.fill: parent
@@ -142,10 +154,8 @@ Pane {
                     delay: 1000
                     parent: toolButton
                     visible: parent.hovered
-                    Material.foreground: app.isDark(
-                                             ) ? defaultDarkForeground : defaultLight
-                    Material.background: app.isDark(
-                                             ) ? defaultDarkOverlay : defaultLightForeground
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
                 }
             }
         }

@@ -60,6 +60,7 @@ ScrollView {
             Layout.alignment: Qt.AlignCenter | Qt.AlignTop
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
+            Layout.topMargin: 32
             background: Rectangle {
                 color: isDark() ? defaultDarkLighter : defaultLightDarker
                 layer.enabled: true

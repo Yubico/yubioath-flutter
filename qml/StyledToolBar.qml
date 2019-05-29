@@ -66,7 +66,7 @@ ToolBar {
             visible: showBackBtn
             onClicked: navigator.home()
             icon.source: "../images/back.svg"
-            icon.color: isDark() ? defaultLight : "#5f6368"
+            icon.color: hovered ? iconButtonHovered : iconButtonNormal
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
@@ -84,7 +84,7 @@ ToolBar {
             verticalAlignment: Qt.AlignVCenter
             rightPadding: showAddCredentialBtn || showSettingsBtn ? 0 : 40
             Layout.fillWidth: true
-            color: isDark() ? defaultLight : "#5f6368"
+            color: iconButtonNormal
         }
 
         ToolButton {
@@ -116,7 +116,7 @@ ToolBar {
                 width: parent.width
                 horizontalAlignment: Qt.AlignLeft
                 verticalAlignment: Qt.AlignVCenter
-                color: isDark() ? defaultLight : "#5f6368"
+                color: hovered ? iconButtonHovered : iconButtonNormal
                 background: Rectangle {
                     color: getToolbarColor(searchField.focus)
                     height: 30
@@ -148,7 +148,7 @@ ToolBar {
                     iconHeight: 20
                     iconWidth: 20
                     source: "../images/search.svg"
-                    color: isDark() ? defaultLight : "#5f6368"
+                    color: hovered ? iconButtonHovered : iconButtonNormal
                 }
             }
         }
@@ -179,14 +179,12 @@ ToolBar {
                     delay: 1000
                     parent: copyCredentialBtn
                     visible: parent.hovered
-                    Material.foreground: app.isDark(
-                                             ) ? defaultDarkForeground : defaultLight
-                    Material.background: app.isDark(
-                                             ) ? defaultDarkOverlay : defaultLightForeground
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
                 }
 
                 icon.source: "../images/copy.svg"
-                icon.color: isDark() ? defaultLight : "#5f6368"
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
 
                 MouseArea {
                     anchors.fill: parent
@@ -213,14 +211,12 @@ ToolBar {
                     delay: 1000
                     parent: deleteCredentialBtn
                     visible: parent.hovered
-                    Material.foreground: app.isDark(
-                                             ) ? defaultDarkForeground : defaultLight
-                    Material.background: app.isDark(
-                                             ) ? defaultDarkOverlay : defaultLightForeground
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
                 }
 
                 icon.source: "../images/delete.svg"
-                icon.color: isDark() ? defaultLight : "#5f6368"
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
 
                 MouseArea {
                     anchors.fill: parent
@@ -247,16 +243,14 @@ ToolBar {
                     delay: 1000
                     parent: favouriteBtn
                     visible: parent.hovered
-                    Material.foreground: app.isDark(
-                                             ) ? defaultDarkForeground : defaultLight
-                    Material.background: app.isDark(
-                                             ) ? defaultDarkOverlay : defaultLightForeground
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
                 }
 
                 icon.source: shouldShowCredentialOptions()
                              && app.currentCredentialCard.isFavourite(
                                  ) ? "../images/star.svg" : "../images/star_border.svg"
-                icon.color: isDark() ? defaultLight : "#5f6368"
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
 
                 MouseArea {
                     anchors.fill: parent
@@ -283,14 +277,12 @@ ToolBar {
                     delay: 1000
                     parent: addCredentialBtn
                     visible: parent.hovered
-                    Material.foreground: app.isDark(
-                                             ) ? defaultDarkForeground : defaultLight
-                    Material.background: app.isDark(
-                                             ) ? defaultDarkOverlay : defaultLightForeground
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
                 }
 
                 icon.source: "../images/add.svg"
-                icon.color: isDark() ? defaultLight : "#5f6368"
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
 
                 MouseArea {
                     anchors.fill: parent
@@ -318,14 +310,12 @@ ToolBar {
                     delay: 1000
                     parent: settingsBtn
                     visible: parent.hovered
-                    Material.foreground: app.isDark(
-                                             ) ? defaultDarkForeground : defaultLight
-                    Material.background: app.isDark(
-                                             ) ? defaultDarkOverlay : defaultLightForeground
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
                 }
 
                 icon.source: "../images/cogwheel.svg"
-                icon.color: isDark() ? defaultLight : "#5f6368"
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
 
                 MouseArea {
                     anchors.fill: parent
