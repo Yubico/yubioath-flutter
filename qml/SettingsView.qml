@@ -94,21 +94,18 @@ ScrollView {
     }
 
     function removePassword() {
-        if (resp.success) {
-
-            // TODO: Change to new method
-            yubiKey.setPassword(null, true, function (resp) {
-                if (resp.success) {
-                    navigator.snackBar("Password removed")
-                    yubiKey.currentDeviceHasPassword = false
-                    passwordManagementPanel.isExpanded = false
-                } else {
-                    navigator.snackBarError(getErrorMessage(resp.error_id))
-                    console.log(resp.error_id)
-                }
-                clearPasswordFields()
-            })
-        }
+        // TODO: Change to new method to remove password, below doesn't work
+        yubiKey.setPassword(null, true, function (resp) {
+            if (resp.success) {
+                navigator.snackBar("Password removed")
+                yubiKey.currentDeviceHasPassword = false
+                passwordManagementPanel.isExpanded = false
+            } else {
+                navigator.snackBarError(getErrorMessage(resp.error_id))
+                console.log(resp.error_id)
+            }
+            clearPasswordFields()
+        })
     }
 
     property string title: "Settings"
