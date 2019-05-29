@@ -21,6 +21,7 @@ Pane {
     property bool isExpanded: false
     property bool isTopPanel: false
     property bool isBottomPanel: false
+    property bool isSectionTitle: false
     property bool dropShadow: true
 
     property string toolButtonIcon
@@ -83,8 +84,20 @@ Pane {
             ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                visible: label
 
                 Label {
+                    visible: isSectionTitle
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                    text: label
+                    color: Material.primary
+                    font.pixelSize: 14
+                    font.weight: Font.Medium
+                    Layout.fillWidth: true
+                }
+
+                Label {
+                    visible: !isSectionTitle
                     text: label
                     font.pixelSize: 13
                     font.bold: false
@@ -99,6 +112,7 @@ Pane {
                     text: description
                     wrapMode: Text.WordWrap
                     Layout.rowSpan: 1
+                    visible: description
                 }
             }
 

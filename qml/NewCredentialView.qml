@@ -118,6 +118,7 @@ ScrollView {
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
             Layout.bottomMargin: 16
+            Layout.topMargin: 32
             background: Rectangle {
                 color: isDark() ? defaultDarkLighter : defaultLightDarker
                 layer.enabled: true
@@ -175,46 +176,16 @@ ScrollView {
             }
         }
 
-        Pane {
+        StyledExpansionPanel {
+            isSectionTitle: true
+            label: !manualEntry ? "" : "Manual Entry"
+            description: !manualEntry ? "" : "Use manual entry if there's no QR code available or more advanced configuration is needed."
+            isTopPanel: true
+            isExpanded: !manualEntry
+            isEnabled: manualEntry
             id: manualEntryPane
-            Layout.alignment: Qt.AlignCenter | Qt.AlignTop
-            Layout.fillWidth: true
-            Layout.maximumWidth: dynamicWidth + dynamicMargin
-            Layout.topMargin: 8
-            Layout.bottomMargin: 8
-
-            background: Rectangle {
-                color: isDark() ? defaultDarkLighter : defaultLightDarker
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    radius: 3
-                    samples: radius * 2
-                    verticalOffset: 2
-                    horizontalOffset: 0
-                    color: formDropShdaow
-                    transparentBorder: true
-                }
-            }
 
             ColumnLayout {
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: app.width - dynamicMargin
-                       < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
-                spacing: 8
-
-                RowLayout {
-                    visible: !credential
-                    Label {
-                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                        text: "Manual Entry"
-                        color: Material.primary
-                        font.pixelSize: 14
-                        font.weight: Font.Medium
-                        topPadding: 8
-                        bottomPadding: 0
-                        Layout.fillWidth: true
-                    }
-                }
 
                 StyledTextField {
                     id: issuerLbl
@@ -242,6 +213,7 @@ ScrollView {
                     visible: manualEntry
                     validateText: "Invalid Base32 format (valid characters are A-Z and 2-7)"
                     validateRegExp: /^[2-7a-zA-Z]+=*$/
+                    Layout.bottomMargin: 12
                 }
 
                 RowLayout {

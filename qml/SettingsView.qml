@@ -94,17 +94,24 @@ ScrollView {
     }
 
     function removePassword() {
-        // TODO: Change to new method to remove password, below doesn't work
-        yubiKey.setPassword(null, true, function (resp) {
+        yubiKey.validate(currentPasswordField.text, false, function (resp) {
             if (resp.success) {
-                navigator.snackBar("Password removed")
-                yubiKey.currentDeviceHasPassword = false
-                passwordManagementPanel.isExpanded = false
+                // TODO: Change to new method that works
+                yubiKey.setPassword(null, true, function (resp) {
+                    if (resp.success) {
+                        navigator.snackBar("Password removed")
+                        yubiKey.currentDeviceHasPassword = false
+                        passwordManagementPanel.isExpanded = false
+                    } else {
+                        navigator.snackBarError(getErrorMessage(resp.error_id))
+                        console.log(resp.error_id)
+                    }
+                    clearPasswordFields()
+                })
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
                 console.log(resp.error_id)
             }
-            clearPasswordFields()
         })
     }
 
@@ -194,7 +201,6 @@ ScrollView {
                 Layout.fillWidth: true
 
                 ColumnLayout {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
                     Layout.fillWidth: true
 
                     RadioButton {
@@ -225,7 +231,6 @@ ScrollView {
                 isTopPanel: true
 
                 ColumnLayout {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
 
                     StyledTextField {
                         id: currentPasswordField
@@ -253,8 +258,8 @@ ScrollView {
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
                         StyledButton {
                             id: removePasswordBtn
-                            visible: yubiKey.currentDeviceValidated
-                            enabled: visible
+                            visible: yubiKey.currentDeviceHasPassword
+                            enabled: currentPasswordField.text.length > 0
                             text: "Remove"
                             flat: true
                             onClicked: navigator.confirm(
@@ -315,7 +320,6 @@ ScrollView {
                 isTopPanel: true
 
                 ColumnLayout {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -426,7 +430,6 @@ ScrollView {
                 }
 
                 ColumnLayout {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
 
                     RowLayout {
                         Layout.fillWidth: true
