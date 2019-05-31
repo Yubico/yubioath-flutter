@@ -31,7 +31,7 @@ ApplicationWindow {
     readonly property string defaultLightOverlay: "#bbbbbb"
     readonly property string defaultLightForeground: "#565656"
 
-    readonly property string defaultBackground: isDark() ? "#303030" : "#fefefe"
+    readonly property string defaultBackground: isDark() ? "#303030" : "#f7f7f7"
 
     property string formUnderline: isDark() ? "#737373" : "#d8d8d8"
     property string formLabel: isDark() ? "#c0c0c0" : "#a0a0a0"
@@ -58,7 +58,7 @@ ApplicationWindow {
     Material.accent: yubicoGreen
     Material.foreground: isDark(
                              ) ? defaultDarkForeground : defaultLightForeground
-    Material.background: isDark() ? defaultDark : defaultLight
+    Material.background: defaultBackground
     header: StyledToolBar {
         id: toolBar
     }

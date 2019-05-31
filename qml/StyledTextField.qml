@@ -78,7 +78,7 @@ Item {
             selectByMouse: true
             implicitWidth: textFieldContainer.width
             font.pixelSize: 13
-            selectedTextColor: isDark() ? defaultDark : defaultLight
+            selectedTextColor: defaultBackground
             Keys.onEscapePressed: textField.focus = false
             height: 40
             activeFocusOnTab: true
