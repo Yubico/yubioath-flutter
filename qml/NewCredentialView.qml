@@ -180,6 +180,7 @@ ScrollView {
             isSectionTitle: true
             label: !manualEntry ? "" : "Manual Entry"
             description: !manualEntry ? "" : "Use manual entry if there's no QR code available or more advanced configuration is needed."
+            Layout.topMargin: !manualEntry ? 32 : 0
             isTopPanel: true
             isExpanded: !manualEntry
             isEnabled: manualEntry

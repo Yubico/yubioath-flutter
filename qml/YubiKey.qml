@@ -14,7 +14,7 @@ Python {
 
     property var currentDevice
     property bool currentDeviceHasPassword: false
-    property bool currentDeviceValidated: true
+    property bool currentDeviceValidated: false
 
     signal enableLogging(string logLevel, string logFile)
     signal disableLogging
@@ -104,10 +104,10 @@ Python {
                             // clear current device,
                             // and stop any scheduled calculateAll calls.
                             currentDevice = null
+                            currentDeviceValidated = false
                             nextCalculateAll = -1
                             entries.clear()
                             navigator.goToCredentialsIfNotInSettings()
-                            currentDeviceValidated = true
                         }
                     }
                 } else {

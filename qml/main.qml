@@ -112,6 +112,35 @@ ApplicationWindow {
         application.quitOnLastWindowClosed = !settings.closeToTray
     }
 
+    Shortcut {
+        sequence: StandardKey.Copy
+        enabled: currentCredentialCard !== undefined && currentCredentialCard
+        onActivated: app.currentCredentialCard.calculateCard(true)
+    }
+
+    Shortcut {
+        sequence: StandardKey.Delete
+        enabled: currentCredentialCard !== undefined && currentCredentialCard
+        onActivated: app.currentCredentialCard.deleteCard()
+    }
+
+    Shortcut {
+        sequence: StandardKey.Open
+        enabled: yubiKey.currentDeviceValidated
+        onActivated: yubiKey.scanQr()
+    }
+
+    Shortcut {
+        sequence: StandardKey.Preferences
+        onActivated: navigator.goToSettings()
+    }
+
+    Shortcut {
+        sequence: StandardKey.Quit
+        context: Qt.ApplicationShortcut
+        onActivated: Qt.quit()
+    }
+
     // This information is stored in the system registry on Windows,
     // and in XML preferences files on macOS. On other Unix systems,
     // in the absence of a standard, INI text files are used.
