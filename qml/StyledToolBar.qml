@@ -8,7 +8,7 @@ ToolBar {
     id: toolBar
 
     background: Rectangle {
-        color: isDark() ? defaultDark : defaultLight
+        color: defaultBackground
         opacity: 0.7
     }
 
@@ -79,10 +79,9 @@ ToolBar {
             visible: showTitleLbl
             text: showTitleLbl ? navigator.currentItem.title : ""
             font.pixelSize: 16
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            x: (parent.width - width) / 2
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
-            rightPadding: showAddCredentialBtn || showSettingsBtn ? 0 : 40
             Layout.fillWidth: true
             color: iconButtonNormal
         }
@@ -105,8 +104,8 @@ ToolBar {
                 id: searchField
                 visible: showSearch
                 selectByMouse: true
-                Material.accent: isDark() ? defaultLight : "#5f6368"
-                selectedTextColor: isDark() ? defaultDark : defaultLight
+                Material.accent: formText
+                selectedTextColor: defaultBackground
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter

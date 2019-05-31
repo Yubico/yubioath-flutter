@@ -30,18 +30,22 @@ ScrollView {
     }
 
     function validate() {
-        yubiKey.validate(passwordField.text, rememberPasswordCheckBox.checked,
-                         function (resp) {
-                             if (resp.success) {
-                                 yubiKey.calculateAll(navigator.goToCredentials)
-                             } else {
-                                 clear()
-                                 navigator.snackBarError(
-                                             navigator.getErrorMessage(
-                                                 resp.error_id))
-                                 console.log("validate failed:", resp.error_id)
-                             }
-                         })
+        if (passwordField.text.valueOf().length > 0) {
+            yubiKey.validate(passwordField.text,
+                             rememberPasswordCheckBox.checked, function (resp) {
+                                 if (resp.success) {
+                                     yubiKey.calculateAll(
+                                                 navigator.goToCredentials)
+                                 } else {
+                                     clear()
+                                     navigator.snackBarError(
+                                                 navigator.getErrorMessage(
+                                                     resp.error_id))
+                                     console.log("validate failed:",
+                                                 resp.error_id)
+                                 }
+                             })
+        }
     }
 
     spacing: 8
