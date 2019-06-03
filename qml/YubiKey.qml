@@ -82,6 +82,24 @@ Python {
         }
     }
 
+    function getCurrentDeviceImage() {
+        // TODO: implement different images
+        if (!!yubiKey.currentDevice) {
+            return "../images/neo.png"
+        } else {
+            return ""
+        }
+    }
+
+    function getCurrentDeviceMode() {
+        // TODO: read out mode
+        if (!!yubiKey.currentDevice) {
+            return "OTP+FIDO+CCID"
+        } else {
+            return ""
+        }
+    }
+
     function refresh() {
         if (app.isInForeground) {
             // Polling to see what devices we have.
@@ -95,18 +113,17 @@ Python {
                         // Something have changed, save the new devices
                         // and do a calculateAll, if there is still devices.
                         availableDevices = resp.devices
-                        // For now we only show credentials if there is 1 device
-                        if (availableDevices.length === 1) {
-                            currentDevice = resp.devices[0]
+                        nextCalculateAll = -1
+                        entries.clear()
+                        if (availableDevices.length > 0) {
+                            currentDevice = resp.devices[0] // pick the first!
                             calculateAll(navigator.goToCredentialsIfNotInSettings)
                         } else {
-                            // No or too many devices, clear credentials,
-                            // clear current device,
+                            // No device!
+                            // Clear credentials, clear current device,
                             // and stop any scheduled calculateAll calls.
                             currentDevice = null
                             currentDeviceValidated = false
-                            nextCalculateAll = -1
-                            entries.clear()
                             navigator.goToCredentialsIfNotInSettings()
                         }
                     }
@@ -176,13 +193,13 @@ Python {
     }
 
     function supportsTouchCredentials() {
-        return !!currentDevice && parseInt(currentDevice.version.join(
+        return !!currentDevice && !!currentDevice.version && parseInt(currentDevice.version.join(
                                                "")) >= 426
     }
 
     function supportsOathSha512() {
         // TODO: FIPS keys also does not support this
-        return !!currentDevice && parseInt(currentDevice.version.join(
+        return !!currentDevice && !!currentDevice.version && parseInt(currentDevice.version.join(
                                                "")) >= 431
     }
 
@@ -215,6 +232,10 @@ Python {
 
     function refreshDevices(otpMode, cb) {
         doCall('yubikey.controller.refresh_devices', [otpMode], cb)
+    }
+
+    function selectCurrentSerial(serial, cb) {
+        doCall('yubikey.controller.select_current_serial', [serial], cb)
     }
 
     function calculate(credential, cb) {

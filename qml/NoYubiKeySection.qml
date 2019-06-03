@@ -26,8 +26,7 @@ ColumnLayout {
         }
 
         Label {
-            text: yubiKey.availableDevices.length
-                  > 1 ? "Multiple YubiKeys detected" : "Insert your YubiKey"
+            text: "Insert your YubiKey"
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             color: formText

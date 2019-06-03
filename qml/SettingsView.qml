@@ -24,19 +24,6 @@ ScrollView {
 
     Keys.onEscapePressed: navigator.home()
 
-    function isKeyAvailable() {
-        return !!yubiKey.currentDevice
-    }
-
-    function deviceInfo() {
-        if (isKeyAvailable()) {
-            return qsTr("%1 (#%2)").arg(yubiKey.currentDevice.name).arg(
-                        yubiKey.currentDevice.serial)
-        } else {
-            return "Device"
-        }
-    }
-
     function clearPasswordFields() {
         currentPasswordField.text = ""
         newPasswordField.text = ""
@@ -190,30 +177,48 @@ ScrollView {
         StyledExpansionContainer {
             id: keyPane
             sectionTitle: "Current Device"
-            visible: isKeyAvailable()
+            visible: !!yubiKey.currentDevice
 
             StyledExpansionPanel {
                 id: currentDevicePanel
-                label: deviceInfo()
-                description: "FIDO+CCID+OTP"
-                keyImage: "../images/neo.png"
+                label: !!yubiKey.currentDevice ? ("%1 (#%2)").arg(yubiKey.currentDevice.name).arg(yubiKey.currentDevice.serial) : ""
+                description: yubiKey.getCurrentDeviceMode()
+                keyImage: yubiKey.getCurrentDeviceImage()
                 isTopPanel: true
                 Layout.fillWidth: true
+
+                ButtonGroup {
+                    id: deviceButtonGroup
+                }
 
                 ColumnLayout {
                     Layout.fillWidth: true
 
-                    RadioButton {
-                        text: "YubiKey NEO"
+                    Repeater {
+                        model: yubiKey.availableDevices
+                        RadioButton {
+                            objectName: index
+                            checked: modelData.serial === yubiKey.currentDevice.serial
+                            text: ("%1 (#%2)").arg(modelData.name).arg(modelData.serial)
+                            ButtonGroup.group: deviceButtonGroup
+                        }
                     }
-                    RadioButton {
-                        text: "YubiKey NEO"
-                    }
+
                     StyledButton {
                         id: applyKey
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
                         text: "Apply"
                         flat: true
+                        onClicked: {
+                            var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
+                            yubiKey.selectCurrentSerial(dev.serial, function (resp) {
+                                if (resp.success) {
+                                    yubiKey.nextCalculateAll = -1
+                                    entries.clear()
+                                    yubiKey.currentDevice = dev
+                                }
+                            })
+                        }
                     }
                 }
             }
@@ -222,7 +227,7 @@ ScrollView {
         StyledExpansionContainer {
             id: oathPane
             sectionTitle: "OATH"
-            visible: isKeyAvailable()
+            visible: !!yubiKey.currentDevice
 
             StyledExpansionPanel {
                 id: passwordManagementPanel

@@ -66,7 +66,7 @@ ScrollView {
     }
 
     NoYubiKeySection {
-        visible: yubiKey.availableDevices.length !== 1
+        visible: yubiKey.availableDevices.length === 0
         enabled: visible
     }
 

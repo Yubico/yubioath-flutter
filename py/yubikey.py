@@ -8,7 +8,8 @@ import ykman.logging_setup
 from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
 from ykman.descriptor import (
-    get_descriptors, FailedOpeningDeviceException)
+    get_descriptors, list_devices, open_device,
+    FailedOpeningDeviceException)
 from ykman.util import (TRANSPORT, parse_b32_key)
 from ykman.driver_otp import YkpersError
 from ykman.driver_ccid import APDUError
@@ -143,7 +144,7 @@ class Controller(object):
 
     _descs = []
     _desc_fps = []
-    _current_desc = None
+    _current_serial = None
     _devices = []
     _current_key = None
     _keys = []
@@ -159,25 +160,17 @@ class Controller(object):
                     setattr(self, f, as_json(catch_error(func)))
 
     def _open_oath(self):
-        if self._current_desc:
-            return OathContextManager(
-                self._current_desc.open_device(TRANSPORT.CCID))
-        else:
-            raise ValueError('no_current_device')
+        return OathContextManager(
+            open_device(TRANSPORT.CCID, serial=self._current_serial))
 
     def _open_otp(self):
-        if self._current_desc:
-            return OtpContextManager(
-                self._current_desc.open_device(TRANSPORT.OTP))
-        else:
-            raise ValueError('no_current_device')
+        return OtpContextManager(
+            open_device(TRANSPORT.OTP, serial=self._current_serial))
 
     def _update_desc_fps(self):
         descs = get_descriptors()
         self._descs = descs
         self._desc_fps = [desc.fingerprint for desc in descs]
-        # TODO: Don't always select the first descriptor, be smarter.
-        self._current_desc = descs[0] if descs else None
 
     def refresh_devices(self, otp_mode=False):
         old_desc_fps = self._desc_fps
@@ -185,19 +178,43 @@ class Controller(object):
         descs_changed = (old_desc_fps != self._desc_fps)
         if descs_changed:
             self._devices = []
+            self._current_serial = None
+
             # Forget current key if no descriptors
             if not self._descs:
                 self._current_key = None
-            for desc in self._descs:
-                dev = desc.open_device(
-                    TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
-                self._devices.append({
-                    'name': dev.device_name,
-                    'version': dev.version,
-                    'serial': dev.serial,
-                    'fingerprint': desc.fingerprint
-                })
+
+            # Open all devices, so that read and save the serials
+            descriptors = self._descs
+            handled_serials = set()
+            for dev in list_devices(
+                    TRANSPORT.OTP if otp_mode else TRANSPORT.CCID):
+                # TODO: Handle SKYs
+                serial = dev.serial
+                if serial not in handled_serials:
+                    handled_serials.add(serial)
+                    matches = [
+                        d for d in descriptors if (
+                            d.key_type, d.mode) == (
+                                dev.driver.key_type, dev.driver.mode)]
+                    if len(matches) > 0:
+                        matching_descriptor = matches[0]
+                        self._devices.append({
+                            'name': dev.device_name,
+                            'version': dev.version,
+                            'serial': dev.serial,
+                            'fingerprint': matching_descriptor.fingerprint
+                        })
+                        descriptors.remove(matching_descriptor)
+
+            if not self._current_serial:
+                self._current_serial = self._devices[0]['serial']
+
         return success({'devices': self._devices})
+
+    def select_current_serial(self, serial):
+        self._current_serial = serial
+        return success()
 
     def ccid_calculate_all(self, timestamp):
         with self._open_oath() as oath_controller:
