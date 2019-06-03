@@ -136,9 +136,17 @@ ToolBar {
                                        ) ? copyCredentialBtn : addCredentialBtn
 
                 Keys.onEscapePressed: exitSearchMode(true)
-                Keys.onReturnPressed: exitSearchMode(false)
-                Keys.onEnterPressed: exitSearchMode(false)
                 Keys.onDownPressed: exitSearchMode(false)
+                Keys.onReturnPressed: {
+                    if (currentCredentialCard) {
+                        currentCredentialCard.calculateCard(true)
+                    }
+                }
+                Keys.onEnterPressed: {
+                    if (currentCredentialCard) {
+                        currentCredentialCard.calculateCard(true)
+                    }
+                }
 
                 StyledImage {
                     id: searchIcon
