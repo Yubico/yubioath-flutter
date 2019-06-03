@@ -114,13 +114,13 @@ ApplicationWindow {
 
     Shortcut {
         sequence: StandardKey.Copy
-        enabled: currentCredentialCard !== undefined && currentCredentialCard
+        enabled: !!currentCredentialCard
         onActivated: app.currentCredentialCard.calculateCard(true)
     }
 
     Shortcut {
         sequence: StandardKey.Delete
-        enabled: currentCredentialCard !== undefined && currentCredentialCard
+        enabled: !!currentCredentialCard
         onActivated: app.currentCredentialCard.deleteCard()
     }
 
