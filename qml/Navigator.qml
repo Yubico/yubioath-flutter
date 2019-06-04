@@ -11,8 +11,8 @@ StackView {
     }
 
     function clearAndPush(view) {
-            clear()
-            push(view, StackView.Immediate)
+        clear()
+        push(view, StackView.Immediate)
     }
 
     function goToSettings() {
@@ -35,13 +35,18 @@ StackView {
     }
 
     function home() {
+        if (!!yubiKey.currentDevice) {
 
-        // If locked, prompt for password
-        if (yubiKey.currentDeviceHasPassword && !yubiKey.currentDeviceValidated) {
-            clearAndPush(enterPasswordView)
-            return
+            // If locked, prompt for password
+            if (yubiKey.currentDeviceHasPassword
+                    && !yubiKey.currentDeviceValidated) {
+                clearAndPush(enterPasswordView)
+                return
+            }
+            yubiKey.calculateAll(navigator.goToCredentials)
+        } else {
+            clearAndPush(credentialsView)
         }
-        yubiKey.calculateAll(navigator.goToCredentials)
     }
 
     function goToCredentials(force) {
