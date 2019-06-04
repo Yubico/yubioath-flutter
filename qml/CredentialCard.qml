@@ -43,8 +43,69 @@ Pane {
             id: cardMouseArea
             hoverEnabled: true
             anchors.fill: parent
-            onClicked: credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
             onDoubleClicked: calculateCard(true)
+            onClicked: {
+                if (mouse.button === Qt.RightButton) {
+                    contextMenu.popup()
+                } else {
+                    credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
+                }
+            }
+            Menu {
+                id: contextMenu
+                MenuItem {
+                    icon.source: "../images/copy.svg"
+                    icon.color: iconButtonNormal
+                    icon.width: 20
+                    icon.height: 20
+                    text: "Copy to clipboard"
+                    onTriggered: calculateCard(true)
+                }
+                MenuItem {
+                    icon.source: "../images/delete.svg"
+                    icon.color: iconButtonNormal
+                    icon.width: 20
+                    icon.height: 20
+                    text: "Delete credential"
+                    onTriggered: deleteCard()
+                }
+                MenuItem {
+                    icon.source: favourite ? "../images/star.svg" : "../images/star_border.svg"
+                    icon.color: iconButtonNormal
+                    icon.width: 20
+                    icon.height: 20
+                    text: favourite ? "Remove as favourite" : "Set as favourite"
+                    onTriggered: toggleFavourite()
+                }
+                MenuSeparator {
+                    padding: 0
+                    topPadding: 4
+                    bottomPadding: 4
+                    contentItem: Rectangle {
+                        implicitWidth: 200
+                        implicitHeight: 1
+                        color: formUnderline
+                    }
+                }
+                MenuItem {
+                    icon.source: "../images/add.svg"
+                    icon.color: iconButtonNormal
+                    icon.width: 20
+                    icon.height: 20
+                    enabled: yubiKey.currentDeviceValidated
+                    text: "Add credential"
+                    onTriggered: yubiKey.scanQr()
+                }
+                MenuItem {
+                    icon.source: "../images/cogwheel.svg"
+                    icon.color: iconButtonNormal
+                    icon.width: 20
+                    icon.height: 20
+                    text: "Settings"
+                    onTriggered: navigator.goToSettings()
+                }
+            }
         }
 
         ToolTip {
