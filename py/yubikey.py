@@ -207,7 +207,7 @@ class Controller(object):
                         })
                         descriptors.remove(matching_descriptor)
 
-            if not self._current_serial:
+            if not self._current_serial and self._devices:
                 self._current_serial = self._devices[0]['serial']
 
         return success({'devices': self._devices})

@@ -179,6 +179,7 @@ ScrollView {
             sectionTitle: "Current Device"
             visible: !!yubiKey.currentDevice
 
+
             StyledExpansionPanel {
                 id: currentDevicePanel
                 label: !!yubiKey.currentDevice ? ("%1 (#%2)").arg(yubiKey.currentDevice.name).arg(yubiKey.currentDevice.serial) : ""
@@ -186,6 +187,7 @@ ScrollView {
                 keyImage: yubiKey.getCurrentDeviceImage()
                 isTopPanel: true
                 Layout.fillWidth: true
+                isEnabled: yubiKey.availableDevices.length > 1
 
                 ButtonGroup {
                     id: deviceButtonGroup
