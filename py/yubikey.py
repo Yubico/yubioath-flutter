@@ -144,10 +144,9 @@ class Controller(object):
 
     _descs = []
     _desc_fps = []
-    _current_serial = None
     _devices = []
+    _current_serial = None
     _current_derived_key = None
-    _keys = []
 
     def __init__(self):
         self.settings = Settings('oath')
@@ -167,34 +166,34 @@ class Controller(object):
         return OtpContextManager(
             open_device(TRANSPORT.OTP, serial=self._current_serial))
 
-    def _update_desc_fps(self):
-        descs = get_descriptors()
-        self._descs = descs
-        self._desc_fps = [desc.fingerprint for desc in descs]
-
     def refresh_devices(self, otp_mode=False):
+
+        # Look at USB descriptors and see if they changed
         old_desc_fps = self._desc_fps
-        self._update_desc_fps()
+        self._descs = get_descriptors()
+        self._desc_fps = [desc.fingerprint for desc in self._descs]
         descs_changed = (old_desc_fps != self._desc_fps)
+
         if descs_changed:
             self._devices = []
-            self._current_serial = None
 
-            # Forget current key if no descriptors
+            # Forget current serial and derived key if no descriptors
             if not self._descs:
+                self._current_serial = None
                 self._current_derived_key = None
 
-            # Open all devices, so that read and save the serials
-            descriptors = self._descs
+            # Open all devices over the selected transport
+            # so that we can read and save the serials
+            # TODO: Handle FIDO only devices.
+            descs_to_iterate = self._descs
             handled_serials = set()
             for dev in list_devices(
                     TRANSPORT.OTP if otp_mode else TRANSPORT.CCID):
-                # TODO: Handle SKYs
                 serial = dev.serial
                 if serial not in handled_serials:
                     handled_serials.add(serial)
                     matches = [
-                        d for d in descriptors if (
+                        d for d in descs_to_iterate if (
                             d.key_type, d.mode) == (
                                 dev.driver.key_type, dev.driver.mode)]
                     if len(matches) > 0:
@@ -207,12 +206,18 @@ class Controller(object):
                             'serial': dev.serial or '',
                             'usbInterfacesEnabled': str(dev.mode).split('+')
                         })
-                        descriptors.remove(matching_descriptor)
+                        descs_to_iterate.remove(matching_descriptor)
 
-            if not self._current_serial and self._devices:
-                dev = self._devices[0]
-                if dev['serial']:
-                    self._current_serial = dev['serial']
+            # If no current serial, or current serial seems removed,
+            # select the first serial found.
+            if not self._current_serial or (
+                    self._current_serial not in [
+                        dev['serial'] for dev in self._devices]):
+                for dev in self._devices:
+                    if dev['serial']:
+                        self._current_serial = dev['serial']
+                        break
+
         return success({'devices': self._devices})
 
     def select_current_serial(self, serial):
