@@ -94,7 +94,7 @@ Python {
     function getCurrentDeviceMode() {
         // TODO: read out mode
         if (!!yubiKey.currentDevice) {
-            return "OTP+FIDO+CCID"
+            return yubiKey.currentDevice.usbInterfacesEnabled.join('+')
         } else {
             return ""
         }

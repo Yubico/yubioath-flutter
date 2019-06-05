@@ -146,7 +146,7 @@ class Controller(object):
     _desc_fps = []
     _current_serial = None
     _devices = []
-    _current_key = None
+    _current_derived_key = None
     _keys = []
 
     def __init__(self):
@@ -182,7 +182,7 @@ class Controller(object):
 
             # Forget current key if no descriptors
             if not self._descs:
-                self._current_key = None
+                self._current_derived_key = None
 
             # Open all devices, so that read and save the serials
             descriptors = self._descs
@@ -201,15 +201,18 @@ class Controller(object):
                         matching_descriptor = matches[0]
                         self._devices.append({
                             'name': dev.device_name,
-                            'version': dev.version,
-                            'serial': dev.serial,
-                            'fingerprint': matching_descriptor.fingerprint
+                            'version': '.'.join(
+                                str(x) for x in dev.version
+                                ) if dev.version else '',
+                            'serial': dev.serial or '',
+                            'usbInterfacesEnabled': str(dev.mode).split('+')
                         })
                         descriptors.remove(matching_descriptor)
 
             if not self._current_serial and self._devices:
-                self._current_serial = self._devices[0]['serial']
-
+                dev = self._devices[0]
+                if dev['serial']:
+                    self._current_serial = dev['serial']
         return success({'devices': self._devices})
 
     def select_current_serial(self, serial):
@@ -265,11 +268,11 @@ class Controller(object):
             key = oath_controller.derive_key(password)
             try:
                 oath_controller.validate(key)
-                self._current_key = key
+                self._current_derived_key = key
                 if remember:
                     keys = self.settings.setdefault('keys', {})
                     keys[oath_controller.id] = b2a_hex(
-                        self._current_key).decode()
+                        self._current_derived_key).decode()
                     self.settings.write()
                 return success()
             except APDUError as e:
@@ -361,8 +364,8 @@ class Controller(object):
     def _unlock(self, controller):
         if controller.locked:
             keys = self.settings.get('keys', {})
-            if self._current_key is not None:
-                controller.validate(self._current_key)
+            if self._current_derived_key is not None:
+                controller.validate(self._current_derived_key)
             elif controller.id in keys:
                 controller.validate(a2b_hex(keys[controller.id]))
             else:
@@ -383,9 +386,11 @@ class Controller(object):
         with self._open_oath() as oath_controller:
             self._unlock(oath_controller)
             keys = self.settings.setdefault('keys', {})
-            self._current_key = oath_controller.set_password(new_password)
+            self._current_derived_key = \
+                oath_controller.set_password(new_password)
             if remember:
-                keys[oath_controller.id] = b2a_hex(self._current_key).decode()
+                keys[oath_controller.id] = b2a_hex(
+                    self._current_derived_key).decode()
             elif oath_controller.id in keys:
                 del keys[oath_controller.id]
             self.settings.write()
