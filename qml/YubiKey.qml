@@ -92,7 +92,6 @@ Python {
     }
 
     function getCurrentDeviceMode() {
-        // TODO: read out mode
         if (!!yubiKey.currentDevice) {
             return yubiKey.currentDevice.usbInterfacesEnabled.join('+')
         } else {
@@ -150,20 +149,20 @@ Python {
                 entries.updateEntries(resp.entries)
                 updateNextCalculateAll()
                 currentDeviceValidated = true
+                if (cb) {
+                    cb()
+                }
             } else {
                 if (resp.error_id === 'access_denied') {
                     entries.clear()
                     currentDeviceHasPassword = true
                     currentDeviceValidated = false
-                    cb = navigator.goToEnterPasswordIfNotInSettings
+                    navigator.goToEnterPasswordIfNotInSettings()
                 } else {
                     navigator.snackBarError(navigator.getErrorMessage(
                                                 resp.error_id))
                     console.log("calculateAll failed:", resp.error_id)
                 }
-            }
-            if (cb) {
-                cb()
             }
         }
 

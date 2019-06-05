@@ -200,7 +200,7 @@ ScrollView {
                         model: yubiKey.availableDevices
                         RadioButton {
                             objectName: index
-                            checked: modelData.serial === yubiKey.currentDevice.serial
+                            checked: !!yubiKey.currentDevice && modelData.serial === yubiKey.currentDevice.serial
                             text: ("%1 (#%2)").arg(modelData.name).arg(modelData.serial)
                             ButtonGroup.group: deviceButtonGroup
                         }

@@ -12,7 +12,7 @@ from ykman.descriptor import (
     FailedOpeningDeviceException)
 from ykman.util import (TRANSPORT, parse_b32_key)
 from ykman.driver_otp import YkpersError
-from ykman.driver_ccid import APDUError
+from ykman.driver_ccid import APDUError, CCIDError
 from ykman.oath import (
     ALGO, OATH_TYPE, OathController,
     CredentialData, Credential, Code, SW)
@@ -110,6 +110,8 @@ def catch_error(f):
             if e.sw == SW.SECURITY_CONDITION_NOT_SATISFIED:
                 return failure('access_denied')
             raise
+        except CCIDError:
+            return failure('ccid_error')
         except Exception as e:
             if str(e) == 'Incorrect padding':
                 return failure('incorrect_padding')

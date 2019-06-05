@@ -114,6 +114,8 @@ StackView {
             return qsTr('No YubiKey found')
         case 'open_device_failed':
             return qsTr('Failed to connect to YubiKey')
+        case 'ccid_error':
+            return qsTr('Failed to connect to YubiKey')
         case 'timeout':
             return qsTr('Failed to read from slots')
         default:
