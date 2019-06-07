@@ -82,18 +82,122 @@ Python {
         }
     }
 
-    function getCurrentDeviceImage() {
-        // TODO: implement different images
-        if (!!yubiKey.currentDevice) {
+    function isNEO(device) {
+        return device.name === 'YubiKey NEO'
+    }
+
+    function isYubiKeyEdge(device) {
+        return device.name === 'YubiKey Edge'
+    }
+
+    function isYubiKey4(device) {
+        return device.name === 'YubiKey 4'
+    }
+
+    function isSecurityKeyNfc(device) {
+        return device.name === 'Security Key NFC'
+    }
+
+    function isSecurityKeyByYubico(device) {
+        return device.name === 'Security Key by Yubico'
+    }
+
+    function isFidoU2fSecurityKey(device) {
+        return device.name === 'FIDO U2F Security Key'
+    }
+
+    function isYubiKeyStandard(device) {
+        return device.name === 'YubiKey Standard'
+    }
+
+    function isYubiKeyPreview(device) {
+        return device.name === 'YubiKey Preview'
+    }
+
+    function isYubiKey5NFC(device) {
+        return device.name === 'YubiKey 5 NFC'
+    }
+
+    function isYubiKey5Nano(device) {
+        return device.name === 'YubiKey 5 Nano'
+    }
+
+    function isYubiKey5C(device) {
+        return device.name === 'YubiKey 5C'
+    }
+
+    function isYubiKey5CNano(device) {
+        return device.name === 'YubiKey 5C Nano'
+    }
+
+    function isYubiKey5A(device) {
+        return device.name === 'YubiKey 5A'
+    }
+
+    function isYubiKey5Family(device) {
+        return device.name.startsWith('YubiKey 5')
+    }
+
+    function getYubiKeyImageSource(currentDevice) {
+        if (isYubiKey4(currentDevice)) {
+            return "../images/yk4series.png"
+        }
+        if (isYubiKeyEdge(currentDevice)) {
+            return "../images/ykedge.png"
+        }
+
+        if (isSecurityKeyNfc(currentDevice)) {
+            return "../images/sky3.png"
+        }
+
+        if (isSecurityKeyByYubico(currentDevice)) {
+            return "../images/sky2.png"
+        }
+        if (isFidoU2fSecurityKey(currentDevice)) {
+            return "../images/sky1.png"
+        }
+        if (isNEO(currentDevice)) {
             return "../images/neo.png"
+        }
+        if (isYubiKeyStandard(currentDevice)) {
+            return "../images/standard.png"
+        }
+        if (isYubiKeyPreview(currentDevice)) {
+            return "../images/yk5nfc.png"
+        }
+        if (isYubiKey5NFC(currentDevice)) {
+            return "../images/yk5nfc.png"
+        }
+        if (isYubiKey5Nano(currentDevice)) {
+            return "../images/yk5nano.png"
+        }
+        if (isYubiKey5C(currentDevice)) {
+            return "../images/yk5c.png"
+        }
+        if (isYubiKey5CNano(currentDevice)) {
+            return "../images/yk5cnano.png"
+        }
+        if (isYubiKey5A(currentDevice)) {
+            return "../images/yk4.png"
+        }
+        if (isYubiKey5Family(currentDevice)) {
+            return "../images/yk5series.png"
+        }
+        return "../images/yk5series.png" //default for now
+    }
+
+    function getCurrentDeviceImage() {
+        if (!!currentDevice) {
+            console.log(JSON.stringify(currentDevice))
+            return getYubiKeyImageSource(currentDevice)
         } else {
             return ""
         }
     }
 
     function getCurrentDeviceMode() {
-        if (!!yubiKey.currentDevice) {
-            return yubiKey.currentDevice.usbInterfacesEnabled.join('+')
+        if (!!currentDevice) {
+            return currentDevice.usbInterfacesEnabled.join('+')
         } else {
             return ""
         }
