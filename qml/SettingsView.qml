@@ -536,7 +536,7 @@ ScrollView {
                 label: qsTr("Yubico Authenticator ") + appVersion
                 description: qsTr("Copyright © " + Qt.formatDateTime(
                                       new Date(),
-                                      "yyyy") + ", Yubico Inc. All rights reserved.")
+                                      "yyyy") + ", Yubico AB. All rights reserved.")
                 isTopPanel: true
                 isEnabled: false
             }
