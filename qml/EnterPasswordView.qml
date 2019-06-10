@@ -14,13 +14,7 @@ ScrollView {
     property string title: "Unlock YubiKey"
 
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-    ScrollBar.vertical: ScrollBar {
-        interactive: true
-        width: 5
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-    }
+    ScrollBar.vertical.width: 8
 
     contentWidth: app.width
 

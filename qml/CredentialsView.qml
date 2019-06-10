@@ -4,20 +4,11 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-ScrollView {
+Pane {
     id: pane
     padding: entries.count === 0 ? 32 : 0
     topPadding: entries.count === 0 ? 64 : 0
     objectName: 'credentialsView'
-
-    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-    ScrollBar.vertical: ScrollBar {
-        interactive: true
-        width: 5
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-    }
 
     property string title: ""
 
@@ -73,10 +64,17 @@ ScrollView {
     GridView {
         id: grid
         displayMarginBeginning: 80
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: (Math.min(model.count,
-                         Math.floor(parent.width / cellWidth)) * cellWidth)
-               || cellWidth
+        displayMarginEnd: 80
+        ScrollBar.vertical: ScrollBar {
+            width: 8
+        }
+        width: {
+            var w = (parent.width - (Math.min(
+                                         model.count, Math.floor(
+                                             parent.width / cellWidth)) * cellWidth)) / 2
+            leftMargin = w >= 180 ? 0 : w
+            return parent.width
+        }
         height: (Math.min(model.count,
                           Math.floor(parent.height / cellHeight)) * cellHeight)
                 || cellHeight
@@ -85,9 +83,7 @@ ScrollView {
         visible: entries.count > 0
         enabled: visible
         keyNavigationWraps: false
-        boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
-        interactive: true
         model: filteredCredentials()
         cellWidth: 362
         cellHeight: 82
