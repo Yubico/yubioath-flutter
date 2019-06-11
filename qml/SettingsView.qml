@@ -14,13 +14,7 @@ ScrollView {
     contentWidth: app.width
 
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-    ScrollBar.vertical: ScrollBar {
-        interactive: true
-        width: 5
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-    }
+    ScrollBar.vertical.width: 8
 
     Keys.onEscapePressed: navigator.home()
 
@@ -179,10 +173,11 @@ ScrollView {
             sectionTitle: "Current Device"
             visible: !!yubiKey.currentDevice
 
-
             StyledExpansionPanel {
                 id: currentDevicePanel
-                label: !!yubiKey.currentDevice ? ("%1 (#%2)").arg(yubiKey.currentDevice.name).arg(yubiKey.currentDevice.serial) : ""
+                label: !!yubiKey.currentDevice ? ("%1 (#%2)").arg(
+                                                     yubiKey.currentDevice.name).arg(
+                                                     yubiKey.currentDevice.serial) : ""
                 description: yubiKey.getCurrentDeviceMode()
                 keyImage: yubiKey.getCurrentDeviceImage()
                 isTopPanel: true
@@ -200,8 +195,10 @@ ScrollView {
                         model: yubiKey.availableDevices
                         RadioButton {
                             objectName: index
-                            checked: !!yubiKey.currentDevice && modelData.serial === yubiKey.currentDevice.serial
-                            text: ("%1 (#%2)").arg(modelData.name).arg(modelData.serial)
+                            checked: !!yubiKey.currentDevice
+                                     && modelData.serial === yubiKey.currentDevice.serial
+                            text: ("%1 (#%2)").arg(modelData.name).arg(
+                                      modelData.serial)
                             ButtonGroup.group: deviceButtonGroup
                         }
                     }
@@ -213,13 +210,14 @@ ScrollView {
                         flat: true
                         onClicked: {
                             var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
-                            yubiKey.selectCurrentSerial(dev.serial, function (resp) {
-                                if (resp.success) {
-                                    yubiKey.nextCalculateAll = -1
-                                    entries.clear()
-                                    yubiKey.currentDevice = dev
-                                }
-                            })
+                            yubiKey.selectCurrentSerial(dev.serial,
+                                                        function (resp) {
+                                                            if (resp.success) {
+                                                                yubiKey.nextCalculateAll = -1
+                                                                entries.clear()
+                                                                yubiKey.currentDevice = dev
+                                                            }
+                                                        })
                         }
                     }
                 }
