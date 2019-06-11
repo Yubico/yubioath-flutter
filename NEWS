@@ -1,3 +1,6 @@
+* Version 4.3.6b (released 2019-06-11)
+ ** Fixes problem where YubiKey was not being detected on macOS.
+
 * Version 4.3.6 (released 2019-05-29)
  ** Windows: improve support for YubiKey NEO on Windows 10
 
