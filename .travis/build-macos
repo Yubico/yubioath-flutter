@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# Builds a deployable yubioath-desktop on macOS Mojave.
+# Assumes hombrew and xcode installed.
+# Uses pyenv to build a python as a framework, but 
+# compiles pyotherside against homebrew python.
+# Make sure the versions match.
+
+
+rm -rf ~/.pyenv
+rm -rf lib
+rm -rf yubioath-desktop.app
+
+PYVERSION="3.7.3"
+PYOTHERSIDEVERSION="1.5.3"
+
+# Workaround for compiling python on mojave
+# https://github.com/pyenv/pyenv/issues/1219
+# sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+# CFLAGS="-I$(xcrun --show-sdk-path)/usr/include"
+
+# Install and upgrade brew dependencies
+brew install swig ykpers libyubikey libusb pyenv wget zlib python openssl@1.1
+brew upgrade swig ykpers libyubikey libusb pyenv wget zlib python openssl@1.1
+
+# Qt 5.10.1 needed on macOS because of https://bugreports.qt.io/browse/QTBUG-67663
+brew uninstall --ignore-dependencies qt
+brew install -v https://gist.githubusercontent.com/dagheyman/ebe0c373cdd71f83239633b9db7c285e/raw/f70fbe450c86ed360a8bf4daea7effce70d3e094/qt.rb
+brew link qt -f
+
+# Download, build and install pyotherside qml plugin
+wget https://github.com/thp/pyotherside/archive/$PYOTHERSIDEVERSION.tar.gz -P ./lib
+cd lib
+tar -xzvf $PYOTHERSIDEVERSION.tar.gz
+echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-$PYOTHERSIDEVERSION/src/src.pro
+cd pyotherside-$PYOTHERSIDEVERSION
+qmake
+make
+sudo make install
+cd ../..
+
+# Build custom Python from pyenv with --enable-framework and activate it
+eval "$(pyenv init -)"
+env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" pyenv install $PYVERSION -f
+pyenv global $PYVERSION
+
+# Build yubioath-desktop
+make distclean
+qmake
+make
+macdeployqt yubioath-desktop.app/ -qmldir=qml/
+
+# Copy over dylibs from homebrew
+sudo find /usr/local/Cellar/json-c/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+sudo find /usr/local/Cellar/ykpers/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+sudo find /usr/local/Cellar/libyubikey/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+sudo find /usr/local/Cellar/libusb/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+sudo find /usr/local/Cellar/openssl@1.1/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+
+# Copy over Python.framework 
+cp -a ~/.pyenv/versions/$PYVERSION/Python.framework yubioath-desktop.app/Contents/Frameworks/
+sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '*.pyc' -delete
+sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '__pycache__' -delete
+
+# Move pymodules from app bundle to site-packages, to be accepted by codesign
+mv yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/
+rm -rf yubioath-desktop.app/Contents/MacOS/pymodules
+
+# Point pyotherside to relative custom Python, currently points to homebrew python
+sudo install_name_tool -change /usr/local/opt/python/Frameworks/Python.framework/Versions/3.7/Python @executable_path/../Frameworks/Python.framework/Versions/3.7/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
+
+# Fix linking for python and openssl .so's
+sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so
+sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so
+sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_hashlib.cpython-37m-darwin.so
+sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_hashlib.cpython-37m-darwin.so
+sudo install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1c/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/libssl.1.1.dylib
