@@ -57,14 +57,10 @@ int main(int argc, char *argv[])
     ScreenShot screenshot;
     QQmlApplicationEngine engine;
 
-    SystemTray *trayIcon = new SystemTray();
-    trayIcon->setIcon(QIcon(path_prefix + "/images/windowicon.png"));
-
     engine.rootContext()->setContextProperty("appDir", app_dir);
     engine.rootContext()->setContextProperty("urlPrefix", url_prefix);
     engine.rootContext()->setContextProperty("appVersion", APP_VERSION);
     engine.rootContext()->setContextProperty("ScreenShot", &screenshot);
-    engine.rootContext()->setContextProperty("SysTrayIcon", trayIcon);
     engine.rootContext()->setContextProperty("application", &application);
     engine.load(QUrl(url_prefix + main_qml));
 
@@ -86,33 +82,6 @@ int main(int argc, char *argv[])
     // Set icon in the window, doesn't effect desktop icons.
     qmlWindow->setIcon(QIcon(path_prefix + "/images/windowicon.png"));
 
-    // This is the current system tray icon.
-    // Should probably be replaced by QML when all supported platforms are on > Qt 5.8
-    // See http://doc-snapshots.qt.io/qt5-5.8/qml-qt-labs-platform-systemtrayicon.html
-    QAction *showAction = new QAction(QObject::tr("&Show credentials"), qmlWindow);
-    // The call to hide doesn't make much sense but makes it work on macOS when hidden from the dock.
-    root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::hide);
-    root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::show);
-    root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::raise);
-    root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::requestActivate);
-    QAction *quitAction = new QAction(QObject::tr("&Quit"), qmlWindow);
-    root->connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);
-    QMenu *trayIconMenu = new QMenu();
-    trayIconMenu->addAction(showAction);
-    trayIconMenu->addSeparator();
-    trayIconMenu->addAction(quitAction);
-    trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setToolTip("Yubico Authenticator");
-    #ifndef Q_OS_DARWIN
-    // Double-click should show credentials.
-    // Double-click in systemtray icons is not supported on macOS.
-    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(show()));
-    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(raise()));
-    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(requestActivate()));
-    #endif
-
-    // Explicitly hide trayIcon on exit
     const int status = application.exec();
-    trayIcon->hide();
     return status;
 }

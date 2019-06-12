@@ -28,7 +28,13 @@ Pane {
                                                   && !touchCredential)
     property bool touchCredential: credential && credential.touch
 
-    property bool favourite: false
+    property bool favourite: favouriteExist() >= 0 ? true : false
+
+    property string currentCredentialHash: Qt.md5(
+                                               (yubiKey.currentDevice.serial
+                                                || '') + (credential.issuer
+                                                          || '') + (credential.name
+                                                                    || ''))
 
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {
@@ -123,14 +129,36 @@ Pane {
     }
 
     function toggleFavourite() {
-        // TODO: Save the actual favourite to settings
-        if (isFavourite()) {
-            favourite = false
+        var pos = favouriteExist()
+
+        if (pos >= 0) {
+            favouriteCards.remove(pos)
             navigator.snackBar("Credential removed from favourites")
         } else {
-            favourite = true
+            favouriteCards.append({
+                                      "hash": currentCredentialHash
+                                  })
             navigator.snackBar("Credential set as favourite")
         }
+
+        settings.favouriteHashes = favouritesToString()
+    }
+
+    function favouritesToString() {
+        var s = ""
+        for (var i = 0; i < favouriteCards.count; i++) {
+            s += favouriteCards.get(i).hash + ";"
+        }
+        return s
+    }
+
+    function favouriteExist() {
+        for (var i = 0; i < favouriteCards.count; i++) {
+            if (favouriteCards.get(i).hash === currentCredentialHash) {
+                return i
+            }
+        }
+        return -1
     }
 
     function getIconLetter() {
@@ -295,6 +323,17 @@ Pane {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             size: 40
             letter: getIconLetter()
+            StyledImage {
+                id: favouriteIcon
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                anchors.bottomMargin: -4
+                iconWidth: 15
+                iconHeight: 15
+                source: "../images/star.svg"
+                visible: isFavourite()
+                color: "yellow"
+            }
         }
 
         ColumnLayout {
