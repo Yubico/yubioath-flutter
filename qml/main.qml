@@ -3,7 +3,9 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import Qt.labs.settings 1.0
+import Qt.labs.platform 1.1
 import QtQuick.Window 2.2
+import QtQml 2.12
 
 ApplicationWindow {
 
@@ -106,7 +108,6 @@ ApplicationWindow {
     }
 
     function updateTrayVisibility() {
-        SysTrayIcon.visible = settings.closeToTray
         // When the tray option is enabled, closing the last window
         // doesn't actually close the application.
         application.quitOnLastWindowClosed = !settings.closeToTray
@@ -168,6 +169,8 @@ ApplicationWindow {
         property int desktopAvailableWidth
         property int desktopAvailableHeight
 
+        property string favouriteHashes
+
         onCloseToTrayChanged: updateTrayVisibility()
         onThemeChanged: {
             app.Material.theme = theme
@@ -176,10 +179,90 @@ ApplicationWindow {
             app.Material.accent = themeAccentColor
             app.Material.primary = themeAccentColor
         }
+        onFavouriteHashesChanged: {
+            favouriteCards.clear()
+            var t = favouriteHashes.split(";")
+            for (var i = 0; i < t.length - 1; i++) {
+                favouriteCards.append({
+                                          "hash": t[i]
+                                      })
+            }
+        }
+    }
+
+    function getFavouritesFromHash() {
+        var favouriteEntries = entriesComponent.createObject(app, {
+
+                                                             })
+        if (favouriteCards.count > 0 && yubiKey.currentDeviceValidated
+                && !!yubiKey.currentDevice) {
+            for (var f = 0; f < favouriteCards.count; f++) {
+                var hash = favouriteCards.get(f).hash
+                if (hash !== "") {
+                    for (var i = 0; i < entries.count; i++) {
+                        var entry = entries.get(i)
+                        var newHash = Qt.md5(
+                                    (yubiKey.currentDevice.serial
+                                     || '') + (entry.credential.issuer
+                                               || '') + (entry.credential.name
+                                                         || ''))
+                        if (newHash === hash) {
+                            favouriteEntries.append(entry)
+                            break
+                        }
+                    }
+                }
+            }
+        }
+        return favouriteEntries
+    }
+
+    function calculateFavourite(credential, text) {
+        if (credential && credential.touch) {
+            sysTrayIcon.showMessage(
+                        "Touch required",
+                        "Touch your YubiKey now to generate code for protected credential.")
+        }
+        if (settings.otpMode) {
+            yubiKey.otpCalculate(credential, function (resp) {
+                if (resp.success) {
+                    clipBoard.push(resp.code.value)
+                    sysTrayIcon.showMessage(
+                                "Copied to clipboard",
+                                "The code for " + text + " is now in the clipboard.")
+                } else {
+                    navigator.snackBarError(resp.error_id)
+                    console.log(resp.error_id)
+                }
+            })
+        } else {
+            yubiKey.calculate(credential, function (resp) {
+                if (resp.success) {
+                    clipBoard.push(resp.code.value)
+                    sysTrayIcon.showMessage(
+                                "Copied to clipboard",
+                                "The code for " + text + " is now in the clipboard.")
+                } else {
+                    navigator.snackBarError(navigator.getErrorMessage(
+                                                resp.error_id))
+                    console.log("calculate failed:", resp.error_id)
+                }
+            })
+        }
+    }
+
+    Component {
+        id: entriesComponent
+        EntriesModel {
+        }
     }
 
     EntriesModel {
         id: entries
+    }
+
+    ListModel {
+        id: favouriteCards
     }
 
     ClipBoard {
@@ -196,6 +279,49 @@ ApplicationWindow {
 
     YubiKey {
         id: yubiKey
+    }
+
+    SystemTrayIcon {
+        id: sysTrayIcon
+        visible: settings.closeToTray
+        iconSource: "qrc:/images/windowicon.png"
+
+        menu: Menu {
+            id: sysTrayMenu
+
+            Instantiator {
+                model: getFavouritesFromHash()
+                onObjectAdded: sysTrayMenu.insertItem(index, object)
+                onObjectRemoved: sysTrayMenu.removeItem(object)
+
+                delegate: MenuItem {
+                    text: {
+                        if (credential.issuer) {
+                            return credential.issuer + " (" + credential.name + ")"
+                        } else {
+                            return credential.name
+                        }
+                    }
+                    onTriggered: calculateFavourite(credential, text)
+                }
+            }
+
+            MenuSeparator {
+            }
+
+            MenuItem {
+                text: qsTr("Show credentials")
+                onTriggered: app.show()
+            }
+
+            MenuSeparator {
+            }
+
+            MenuItem {
+                text: qsTr("Quit")
+                onTriggered: Qt.quit()
+            }
+        }
     }
 
     Navigator {
