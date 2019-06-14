@@ -176,12 +176,15 @@ class Controller(object):
         self._desc_fps = [desc.fingerprint for desc in self._descs]
         descs_changed = (old_desc_fps != self._desc_fps)
 
-        if descs_changed:
+        # TODO: look at the mode in the descriptor and try to match
+        # it against what mode we're communicating over
+        if descs_changed or (self._descs and not self._devices):
             self._devices = []
 
             # Forget current serial and derived key if no descriptors
             if not self._descs:
                 self._current_serial = None
+
                 self._current_derived_key = None
 
             # Open all devices over the selected transport
