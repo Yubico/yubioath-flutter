@@ -253,6 +253,7 @@ Python {
                 entries.updateEntries(resp.entries)
                 updateNextCalculateAll()
                 currentDeviceValidated = true
+                updateEntriesWithFavorites()
                 if (cb) {
                     cb()
                 }
@@ -299,14 +300,14 @@ Python {
     }
 
     function supportsTouchCredentials() {
-        return !!currentDevice && !!currentDevice.version && parseInt(currentDevice.version.split('.').join(
-                                               "")) >= 426
+        return !!currentDevice && !!currentDevice.version && parseInt(
+                    currentDevice.version.split('.').join("")) >= 426
     }
 
     function supportsOathSha512() {
         // TODO: FIPS keys also does not support this
-        return !!currentDevice && !!currentDevice.version && parseInt(currentDevice.version.split('.').join(
-                                               "")) >= 431
+        return !!currentDevice && !!currentDevice.version && parseInt(
+                    currentDevice.version.split('.').join("")) >= 431
     }
 
     function scanQr(toastIfError) {

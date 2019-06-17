@@ -113,6 +113,71 @@ ApplicationWindow {
         application.quitOnLastWindowClosed = !settings.closeToTray
     }
 
+    function updateEntriesWithFavorites() {
+        if (yubiKey.currentDeviceValidated && !!yubiKey.currentDevice) {
+            for (var i = 0; i < entries.count; i++) {
+                var entry = entries.get(i)
+                var hash = Qt.md5(
+                            (yubiKey.currentDevice.serial
+                             || '') + (entry.credential.issuer
+                                       || '') + (entry.credential.name || ''))
+                entry.favorite = settings.favoriteHashes.includes(hash)
+                entries.set(i, entry)
+            }
+            entries.updateEntries(entries)
+        }
+    }
+
+    function filteredFavorites() {
+        var favoriteEntries = entriesComponent.createObject(app, {
+
+                                                            })
+        if (settings.favoriteHashes !== "" && yubiKey.currentDeviceValidated
+                && !!yubiKey.currentDevice) {
+            for (var i = 0; i < entries.count; i++) {
+                var entry = entries.get(i)
+                if (entry.favorite) {
+                    favoriteEntries.append(entry)
+                }
+            }
+        }
+        return favoriteEntries
+    }
+
+    function calculateFavorite(credential, text) {
+        if (credential && credential.touch) {
+            sysTrayIcon.showMessage(
+                        "Touch required",
+                        "Touch your YubiKey now to generate code for protected credential.")
+        }
+        if (settings.otpMode) {
+            yubiKey.otpCalculate(credential, function (resp) {
+                if (resp.success) {
+                    clipBoard.push(resp.code.value)
+                    sysTrayIcon.showMessage(
+                                "Copied to clipboard",
+                                "The code for " + text + " is now in the clipboard.")
+                } else {
+                    navigator.snackBarError(resp.error_id)
+                    console.log(resp.error_id)
+                }
+            })
+        } else {
+            yubiKey.calculate(credential, function (resp) {
+                if (resp.success) {
+                    clipBoard.push(resp.code.value)
+                    sysTrayIcon.showMessage(
+                                "Copied to clipboard",
+                                "The code for " + text + " is now in the clipboard.")
+                } else {
+                    navigator.snackBarError(navigator.getErrorMessage(
+                                                resp.error_id))
+                    console.log("calculate failed:", resp.error_id)
+                }
+            })
+        }
+    }
+
     Shortcut {
         sequence: StandardKey.Copy
         enabled: !!currentCredentialCard
@@ -169,7 +234,7 @@ ApplicationWindow {
         property int desktopAvailableWidth
         property int desktopAvailableHeight
 
-        property string favouriteHashes
+        property string favoriteHashes
 
         onCloseToTrayChanged: updateTrayVisibility()
         onThemeChanged: {
@@ -179,75 +244,8 @@ ApplicationWindow {
             app.Material.accent = themeAccentColor
             app.Material.primary = themeAccentColor
         }
-        onFavouriteHashesChanged: {
-            favouriteCards.clear()
-            var t = favouriteHashes.split(";")
-            for (var i = 0; i < t.length - 1; i++) {
-                favouriteCards.append({
-                                          "hash": t[i]
-                                      })
-            }
-        }
-    }
-
-    function getFavouritesFromHash() {
-        var favouriteEntries = entriesComponent.createObject(app, {
-
-                                                             })
-        if (favouriteCards.count > 0 && yubiKey.currentDeviceValidated
-                && !!yubiKey.currentDevice) {
-            for (var f = 0; f < favouriteCards.count; f++) {
-                var hash = favouriteCards.get(f).hash
-                if (hash !== "") {
-                    for (var i = 0; i < entries.count; i++) {
-                        var entry = entries.get(i)
-                        var newHash = Qt.md5(
-                                    (yubiKey.currentDevice.serial
-                                     || '') + (entry.credential.issuer
-                                               || '') + (entry.credential.name
-                                                         || ''))
-                        if (newHash === hash) {
-                            favouriteEntries.append(entry)
-                            break
-                        }
-                    }
-                }
-            }
-        }
-        return favouriteEntries
-    }
-
-    function calculateFavourite(credential, text) {
-        if (credential && credential.touch) {
-            sysTrayIcon.showMessage(
-                        "Touch required",
-                        "Touch your YubiKey now to generate code for protected credential.")
-        }
-        if (settings.otpMode) {
-            yubiKey.otpCalculate(credential, function (resp) {
-                if (resp.success) {
-                    clipBoard.push(resp.code.value)
-                    sysTrayIcon.showMessage(
-                                "Copied to clipboard",
-                                "The code for " + text + " is now in the clipboard.")
-                } else {
-                    navigator.snackBarError(resp.error_id)
-                    console.log(resp.error_id)
-                }
-            })
-        } else {
-            yubiKey.calculate(credential, function (resp) {
-                if (resp.success) {
-                    clipBoard.push(resp.code.value)
-                    sysTrayIcon.showMessage(
-                                "Copied to clipboard",
-                                "The code for " + text + " is now in the clipboard.")
-                } else {
-                    navigator.snackBarError(navigator.getErrorMessage(
-                                                resp.error_id))
-                    console.log("calculate failed:", resp.error_id)
-                }
-            })
+        onFavoriteHashesChanged: {
+            updateEntriesWithFavorites()
         }
     }
 
@@ -259,10 +257,6 @@ ApplicationWindow {
 
     EntriesModel {
         id: entries
-    }
-
-    ListModel {
-        id: favouriteCards
     }
 
     ClipBoard {
@@ -290,7 +284,7 @@ ApplicationWindow {
             id: sysTrayMenu
 
             Instantiator {
-                model: getFavouritesFromHash()
+                model: filteredFavorites()
                 onObjectAdded: sysTrayMenu.insertItem(index, object)
                 onObjectRemoved: sysTrayMenu.removeItem(object)
 
@@ -302,7 +296,7 @@ ApplicationWindow {
                             return credential.name
                         }
                     }
-                    onTriggered: calculateFavourite(credential, text)
+                    onTriggered: calculateFavorite(credential, text)
                 }
             }
 

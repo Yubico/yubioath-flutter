@@ -90,6 +90,7 @@ Pane {
         delegate: CredentialCard {
             credential: model.credential
             code: model.code
+            favorite: model.favorite
         }
         flickableChildren: MouseArea {
             anchors.fill: parent

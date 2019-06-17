@@ -28,7 +28,7 @@ Pane {
                                                   && !touchCredential)
     property bool touchCredential: credential && credential.touch
 
-    property bool favourite: favouriteExist() >= 0 ? true : false
+    property bool favorite
 
     property string currentCredentialHash: Qt.md5(
                                                (yubiKey.currentDevice.serial
@@ -77,12 +77,12 @@ Pane {
                     onTriggered: deleteCard()
                 }
                 MenuItem {
-                    icon.source: favourite ? "../images/star.svg" : "../images/star_border.svg"
+                    icon.source: favorite ? "../images/star.svg" : "../images/star_border.svg"
                     icon.color: iconButtonNormal
                     icon.width: 20
                     icon.height: 20
-                    text: favourite ? "Remove as favourite" : "Set as favourite"
-                    onTriggered: toggleFavourite()
+                    text: favorite ? "Remove as favorite" : "Set as favorite"
+                    onTriggered: toggleFavorite()
                 }
                 MenuSeparator {
                     padding: 0
@@ -124,41 +124,15 @@ Pane {
         }
     }
 
-    function isFavourite() {
-        return favourite
-    }
-
-    function toggleFavourite() {
-        var pos = favouriteExist()
-
-        if (pos >= 0) {
-            favouriteCards.remove(pos)
-            navigator.snackBar("Credential removed from favourites")
+    function toggleFavorite() {
+        if (favorite) {
+            var s = settings.favoriteHashes.replace(currentCredentialHash, "")
+            settings.favoriteHashes = s.replace(/^;+|;(?=;)/g, "")
+            navigator.snackBar("Credential removed from favorites")
         } else {
-            favouriteCards.append({
-                                      "hash": currentCredentialHash
-                                  })
-            navigator.snackBar("Credential set as favourite")
+            settings.favoriteHashes += currentCredentialHash + ";"
+            navigator.snackBar("Credential set as favorite")
         }
-
-        settings.favouriteHashes = favouritesToString()
-    }
-
-    function favouritesToString() {
-        var s = ""
-        for (var i = 0; i < favouriteCards.count; i++) {
-            s += favouriteCards.get(i).hash + ";"
-        }
-        return s
-    }
-
-    function favouriteExist() {
-        for (var i = 0; i < favouriteCards.count; i++) {
-            if (favouriteCards.get(i).hash === currentCredentialHash) {
-                return i
-            }
-        }
-        return -1
     }
 
     function getIconLetter() {
@@ -324,14 +298,14 @@ Pane {
             size: 40
             letter: getIconLetter()
             StyledImage {
-                id: favouriteIcon
+                id: favoriteIcon
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
                 anchors.bottomMargin: -4
                 iconWidth: 15
                 iconHeight: 15
                 source: "../images/star.svg"
-                visible: isFavourite()
+                visible: favorite
                 color: "yellow"
             }
         }
