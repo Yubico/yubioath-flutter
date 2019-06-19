@@ -145,6 +145,7 @@ class OtpContextManager(object):
 class Controller(object):
 
     _descs = []
+    _descs_fps = []
     _devices = []
     _current_serial = None
     _current_derived_key = None
@@ -169,16 +170,10 @@ class Controller(object):
 
     def refresh_devices(self, otp_mode=False):
 
-        # Save current fingerprints
-        old_descs_fps = [desc.fingerprint for desc in self._descs]
-        # Load new descriptors
+        old_descs_fps = self._descs_fps
         self._descs = get_descriptors()
-        # Get new fingerprints
-        new_descs_fps = [desc.fingerprint for desc in self._descs]
-        # Check if fingerprints changed
-        descs_fps_changed = old_descs_fps != new_descs_fps
-        # Check if the number of descriptor is no longer the same as
-        # loaded devices
+        self._descs_fps = [desc.fingerprint for desc in self._descs]
+        descs_changed = (old_descs_fps != self._descs_fps)
         n_descs_changed = len(self._descs) != len(self._devices)
 
         # TODO: Only try to match with descriptors
@@ -186,13 +181,12 @@ class Controller(object):
 
         # If a new number of descriptors or the
         # fingerprints have changed, reload devices.
-        if n_descs_changed or descs_fps_changed:
+        if n_descs_changed or descs_changed:
             self._devices = []
 
             # Forget current serial and derived key if no descriptors
             if not self._descs:
                 self._current_serial = None
-
                 self._current_derived_key = None
 
             # Open all devices over the selected transport
