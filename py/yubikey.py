@@ -169,16 +169,24 @@ class Controller(object):
 
     def refresh_devices(self, otp_mode=False):
 
-        # Get the USB descriptors
+        # Save current fingerprints
+        old_descs_fps = [desc.fingerprint for desc in self._descs]
+        # Load new descriptors
         self._descs = get_descriptors()
+        # Get new fingerprints
+        new_descs_fps = [desc.fingerprint for desc in self._descs]
+        # Check if fingerprints changed
+        descs_fps_changed = old_descs_fps != new_descs_fps
+        # Check if the number of descriptor is no longer the same as
+        # loaded devices
+        n_descs_changed = len(self._descs) != len(self._devices)
 
-        # If the number of decriptors doesn't match the number of devices
-        # we have loaded, open them all.
         # TODO: Only try to match with descriptors
         # that have the selected transportation (CCID or OTP)
-        # TODO: Should we also do this if the descriptors have changed, but
-        # the number of devices is correct?
-        if len(self._descs) != len(self._devices):
+
+        # If a new number of descriptors or the
+        # fingerprints have changed, reload devices.
+        if n_descs_changed or descs_fps_changed:
             self._devices = []
 
             # Forget current serial and derived key if no descriptors
