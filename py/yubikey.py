@@ -145,7 +145,6 @@ class OtpContextManager(object):
 class Controller(object):
 
     _descs = []
-    _desc_fps = []
     _devices = []
     _current_serial = None
     _current_derived_key = None
@@ -170,15 +169,16 @@ class Controller(object):
 
     def refresh_devices(self, otp_mode=False):
 
-        # Look at USB descriptors and see if they changed
-        old_desc_fps = self._desc_fps
+        # Get the USB descriptors
         self._descs = get_descriptors()
-        self._desc_fps = [desc.fingerprint for desc in self._descs]
-        descs_changed = (old_desc_fps != self._desc_fps)
 
-        # TODO: look at the mode in the descriptor and try to match
-        # it against what mode we're communicating over
-        if descs_changed or (self._descs and not self._devices):
+        # If the number of decriptors doesn't match the number of devices
+        # we have loaded, open them all.
+        # TODO: Only try to match with descriptors
+        # that have the selected transportation (CCID or OTP)
+        # TODO: Should we also do this if the descriptors have changed, but
+        # the number of devices is correct?
+        if len(self._descs) != len(self._devices):
             self._devices = []
 
             # Forget current serial and derived key if no descriptors
