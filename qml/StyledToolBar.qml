@@ -210,8 +210,8 @@ ToolBar {
                 Keys.onEnterPressed: app.currentCredentialCard.deleteCard()
 
                 KeyNavigation.left: copyCredentialBtn
-                KeyNavigation.right: favouriteBtn
-                KeyNavigation.tab: favouriteBtn
+                KeyNavigation.right: favoriteBtn
+                KeyNavigation.tab: favoriteBtn
 
                 ToolTip {
                     text: "Delete credential"
@@ -233,30 +233,28 @@ ToolBar {
             }
 
             ToolButton {
-                id: favouriteBtn
+                id: favoriteBtn
                 visible: shouldShowCredentialOptions()
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
-                onClicked: app.currentCredentialCard.toggleFavourite()
-                Keys.onReturnPressed: app.currentCredentialCard.toggleFavourite(
-                                          )
-                Keys.onEnterPressed: app.currentCredentialCard.toggleFavourite()
+                onClicked: app.currentCredentialCard.toggleFavorite()
+                Keys.onReturnPressed: app.currentCredentialCard.toggleFavorite()
+                Keys.onEnterPressed: app.currentCredentialCard.toggleFavorite()
                 KeyNavigation.left: deleteCredentialBtn
                 KeyNavigation.right: settingsBtn
                 KeyNavigation.tab: settingsBtn
 
                 ToolTip {
-                    text: "Favourite credential"
+                    text: "Favorite credential"
                     delay: 1000
-                    parent: favouriteBtn
+                    parent: favoriteBtn
                     visible: parent.hovered
                     Material.foreground: toolTipForeground
                     Material.background: toolTipBackground
                 }
 
                 icon.source: shouldShowCredentialOptions()
-                             && app.currentCredentialCard.isFavourite(
-                                 ) ? "../images/star.svg" : "../images/star_border.svg"
+                             && app.currentCredentialCard.favorite ? "../images/star.svg" : "../images/star_border.svg"
                 icon.color: hovered ? iconButtonHovered : iconButtonNormal
 
                 MouseArea {
