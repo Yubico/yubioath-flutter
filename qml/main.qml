@@ -17,6 +17,10 @@ ApplicationWindow {
     minimumHeight: 126
     visible: true
 
+    flags: Qt.Window | Qt.WindowFullscreenButtonHint | Qt.WindowTitleHint
+           | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
+           | Qt.WindowCloseButtonHint | Qt.WindowFullscreenButtonHint
+
     readonly property string yubicoGreen: "#9aca3c"
     readonly property string yubicoBlue: "#284c61"
     readonly property string yubicoWhite: "#ffffff"
@@ -117,11 +121,11 @@ ApplicationWindow {
         if (yubiKey.currentDeviceValidated && !!yubiKey.currentDevice) {
             for (var i = 0; i < entries.count; i++) {
                 var entry = entries.get(i)
-                var hash = Qt.md5(
-                            (yubiKey.currentDevice.serial
-                             || '') + (entry.credential.issuer
-                                       || '') + (entry.credential.name || ''))
-                entry.favorite = settings.favoriteHashes.includes(hash)
+                var favorite = (yubiKey.currentDevice.serial
+                                || '') + ":" + (entry.credential.issuer
+                                                || '') + ":" + (entry.credential.name
+                                                                || '')
+                entry.favorite = settings.favorites.includes(favorite)
                 entries.set(i, entry)
             }
             entries.updateEntries(entries)
@@ -207,6 +211,19 @@ ApplicationWindow {
         onActivated: Qt.quit()
     }
 
+    Shortcut {
+        sequence: StandardKey.Close
+        onActivated: app.close()
+        context: Qt.ApplicationShortcut
+    }
+
+    Shortcut {
+        sequence: StandardKey.FullScreen
+        onActivated: visibility = visibility
+                     === Window.FullScreen ? Window.Windowed : Window.FullScreen
+        context: Qt.ApplicationShortcut
+    }
+
     // This information is stored in the system registry on Windows,
     // and in XML preferences files on macOS. On other Unix systems,
     // in the absence of a standard, INI text files are used.
@@ -234,7 +251,7 @@ ApplicationWindow {
         property int desktopAvailableWidth
         property int desktopAvailableHeight
 
-        property string favoriteHashes
+        property string favorites
 
         onCloseToTrayChanged: updateTrayVisibility()
         onThemeChanged: {
@@ -244,7 +261,7 @@ ApplicationWindow {
             app.Material.accent = themeAccentColor
             app.Material.primary = themeAccentColor
         }
-        onFavoriteHashesChanged: {
+        onFavoritesChanged: {
             updateEntriesWithFavorites()
         }
     }

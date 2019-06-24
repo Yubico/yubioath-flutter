@@ -30,11 +30,10 @@ Pane {
 
     property bool favorite
 
-    property string currentCredentialHash: Qt.md5(
-                                               (yubiKey.currentDevice.serial
-                                                || '') + (credential.issuer
-                                                          || '') + (credential.name
-                                                                    || ''))
+    property string currentCredentialFavorite: (yubiKey.currentDevice.serial
+                                                || '') + ":" + (credential.issuer
+                                                                || '') + ":" + (credential.name
+                                                                                || '')
 
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {
@@ -126,11 +125,11 @@ Pane {
 
     function toggleFavorite() {
         if (favorite) {
-            var s = settings.favoriteHashes.replace(currentCredentialHash, "")
-            settings.favoriteHashes = s.replace(/^;+|;(?=;)/g, "")
+            var s = settings.favorites.replace(currentCredentialFavorite, "")
+            settings.favorites = s.replace(/^;+|;(?=;)/g, "")
             navigator.snackBar("Credential removed from favorites")
         } else {
-            settings.favoriteHashes += currentCredentialHash + ";"
+            settings.favorites += currentCredentialFavorite + ";"
             navigator.snackBar("Credential set as favorite")
         }
     }
