@@ -83,7 +83,7 @@ Pane {
         visible: entries.count > 0
         enabled: visible
         keyNavigationWraps: false
-        flickableDirection: Flickable.VerticalFlick
+        flickableDirection: Flickable.StopAtBounds
         model: filteredCredentials()
         cellWidth: 362
         cellHeight: 82
