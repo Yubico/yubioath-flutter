@@ -224,12 +224,6 @@ ApplicationWindow {
         context: Qt.ApplicationShortcut
     }
 
-    Shortcut {
-        sequence: "Ctrl+T"
-        context: Qt.ApplicationShortcut
-        onActivated: toolBar.visible = toolBar.visible ? false : true
-    }
-
     // This information is stored in the system registry on Windows,
     // and in XML preferences files on macOS. On other Unix systems,
     // in the absence of a standard, INI text files are used.
