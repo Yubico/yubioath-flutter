@@ -176,9 +176,6 @@ class Controller(object):
         descs_changed = (old_descs_fps != self._descs_fps)
         n_descs_changed = len(self._descs) != len(self._devices)
 
-        # TODO: Only try to match with descriptors
-        # that have the selected transportation (CCID or OTP)
-
         # If a new number of descriptors or the
         # fingerprints have changed, reload devices.
         if n_descs_changed or descs_changed:
@@ -191,11 +188,9 @@ class Controller(object):
 
             # Open all devices over the selected transport
             # so that we can read and save the serials
-            # TODO: Handle FIDO only devices.
             descs_to_iterate = self._descs
             handled_serials = set()
-            for dev in list_devices(
-                    TRANSPORT.OTP if otp_mode else TRANSPORT.CCID):
+            for dev in list_devices():
                 serial = dev.serial
                 if serial not in handled_serials:
                     handled_serials.add(serial)

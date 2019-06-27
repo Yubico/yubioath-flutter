@@ -194,6 +194,7 @@ ScrollView {
                     Repeater {
                         model: yubiKey.availableDevices
                         RadioButton {
+                            Layout.fillWidth: true
                             objectName: index
                             checked: !!yubiKey.currentDevice
                                      && modelData.serial === yubiKey.currentDevice.serial
@@ -204,10 +205,13 @@ ScrollView {
                     }
 
                     StyledButton {
-                        id: applyKey
-                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                        text: "Apply"
-                        flat: true
+                        id: selectBtn
+                        Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                        text: "Select"
+                        enabled: {
+                            var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
+                            return dev !== yubiKey.currentDevice
+                        }
                         onClicked: {
                             var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
                             yubiKey.selectCurrentSerial(dev.serial,
