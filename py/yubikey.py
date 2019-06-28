@@ -151,6 +151,7 @@ class Controller(object):
     _current_derived_key = None
 
     def __init__(self):
+
         self.settings = Settings('oath')
 
         # Wrap all args and return values as JSON.
@@ -168,28 +169,36 @@ class Controller(object):
         return OtpContextManager(
             open_device(TRANSPORT.OTP, serial=self._current_serial))
 
-    def refresh_devices(self, otp_mode=False):
-
-        old_descs_fps = self._descs_fps
+    def _descriptors_changed(self):
+        old_descs = self._descs[:]
+        old_descs_fps = self._descs_fps[:]
         self._descs = get_descriptors()
         self._descs_fps = [desc.fingerprint for desc in self._descs]
         descs_changed = (old_descs_fps != self._descs_fps)
-        n_descs_changed = len(self._descs) != len(self._devices)
+        n_descs_changed = len(self._descs) != len(old_descs)
+        return n_descs_changed or descs_changed
 
-        # If a new number of descriptors or the
-        # fingerprints have changed, reload devices.
-        if n_descs_changed or descs_changed:
-            self._devices = []
+    def check_descriptors(self):
+        return success({
+            'descriptorsChanged': self._descriptors_changed()
+        })
 
-            # Forget current serial and derived key if no descriptors
-            if not self._descs:
-                self._current_serial = None
-                self._current_derived_key = None
+    def refresh_devices(self, otp_mode=False):
+        self._devices = []
 
-            # Open all devices over the selected transport
-            # so that we can read and save the serials
-            descs_to_iterate = self._descs
-            handled_serials = set()
+        # Forget current serial and derived key if no descriptors
+        # Return empty list of devices
+        if not self._descs:
+            self._current_serial = None
+            self._current_derived_key = None
+            return success({'devices': []})
+
+        # Open all devices over any transport, match against descriptors
+        # to build up a list of available devices.
+        # Make a copy of the descs to iterate over.
+        descs_to_iterate = self._descs[:]
+        handled_serials = set()
+        if descs_to_iterate:
             for dev in list_devices():
                 serial = dev.serial
                 if serial not in handled_serials:
@@ -219,7 +228,6 @@ class Controller(object):
                     if dev['serial']:
                         self._current_serial = dev['serial']
                         break
-
         return success({'devices': self._devices})
 
     def select_current_serial(self, serial):

@@ -30,10 +30,10 @@ Pane {
 
     property bool favorite
 
-    property string currentCredentialFavorite: (yubiKey.currentDevice.serial
+    property string currentCredentialFavorite: !!yubiKey.currentDevice ? (yubiKey.currentDevice.serial
                                                 || '') + ":" + (credential.issuer
                                                                 || '') + ":" + (credential.name
-                                                                                || '')
+                                                                                || '') : ""
 
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {

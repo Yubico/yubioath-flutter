@@ -281,11 +281,13 @@ ApplicationWindow {
     }
 
     Timer {
+        id: poller
         triggeredOnStart: true
         interval: 1000
         repeat: true
-        running: app.visible
-        onTriggered: yubiKey.refresh()
+        running: app.isInForeground
+        onTriggered: yubiKey.poll()
+
     }
 
     YubiKey {

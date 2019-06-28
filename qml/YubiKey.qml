@@ -203,18 +203,17 @@ Python {
         }
     }
 
-    function refresh() {
-        if (app.isInForeground) {
-            // Polling to see what devices we have.
-            refreshDevices(settings.otpMode, function (resp) {
-                if (resp.success) {
-                    // If the stringified list of devices is
-                    // exactly the same, nothing changed.
-                    var oldDevices = JSON.stringify(availableDevices)
-                    var newDevices = JSON.stringify(resp.devices)
-                    if (oldDevices !== newDevices) {
-                        // Something have changed, save the new devices
-                        // and do a calculateAll, if there is still devices.
+    function checkDescriptors(cb) {
+        doCall('yubikey.controller.check_descriptors', [], cb)
+    }
+
+    function poll() {
+        checkDescriptors(function (resp) {
+            if (resp.descriptorsChanged) {
+                poller.running = false
+                // refresh devices
+                refreshDevices(settings.otpMode, function (resp) {
+                    if (resp.success) {
                         availableDevices = resp.devices
                         nextCalculateAll = -1
                         entries.clear()
@@ -229,25 +228,26 @@ Python {
                             currentDeviceValidated = false
                             navigator.goToCredentialsIfNotInSettings()
                         }
+                    } else {
+                        navigator.snackBarError(navigator.getErrorMessage(
+                                                    resp.error_id))
+                        console.log("refreshing devices failed:", resp.error_id)
+                        currentDevice = null
+                        availableDevices = []
+                        entries.clear()
                     }
-                } else {
-                    navigator.snackBarError(navigator.getErrorMessage(
-                                                resp.error_id))
-                    console.log("refresh failed:", resp.error_id)
-                    currentDevice = null
-                    availableDevices = []
-                    entries.clear()
-                }
-            })
+                    poller.running = true
+                })
+            }
+
             if (timeToCalculateAll() && !!currentDevice
                     && currentDeviceValidated) {
                 calculateAll()
             }
-        }
+        })
     }
 
     function calculateAll(cb) {
-
         function callback(resp) {
             if (resp.success) {
                 entries.updateEntries(resp.entries)
