@@ -209,40 +209,47 @@ Python {
 
     function poll() {
         checkDescriptors(function (resp) {
-            if (resp.descriptorsChanged) {
-                poller.running = false
-                // refresh devices
-                refreshDevices(settings.otpMode, function (resp) {
-                    if (resp.success) {
-                        availableDevices = resp.devices
-                        nextCalculateAll = -1
-                        entries.clear()
-                        if (availableDevices.length > 0) {
-                            currentDevice = resp.devices[0] // pick the first!
-                            calculateAll(navigator.goToCredentialsIfNotInSettings)
+            if (resp.success) {
+                if (resp.descriptorsChanged) {
+                    poller.running = false
+                    // refresh devices
+                    refreshDevices(settings.otpMode, function (resp) {
+                        if (resp.success) {
+                            availableDevices = resp.devices
+                            nextCalculateAll = -1
+                            entries.clear()
+                            if (availableDevices.length > 0) {
+                                currentDevice = resp.devices[0] // pick the first!
+                                calculateAll(navigator.goToCredentialsIfNotInSettings)
+                            } else {
+                                // No device!
+                                // Clear credentials, clear current device,
+                                // and stop any scheduled calculateAll calls.
+                                currentDevice = null
+                                currentDeviceValidated = false
+                                navigator.goToCredentialsIfNotInSettings()
+                            }
                         } else {
-                            // No device!
-                            // Clear credentials, clear current device,
-                            // and stop any scheduled calculateAll calls.
+                            navigator.snackBarError(navigator.getErrorMessage(
+                                                        resp.error_id))
+                            console.log("refreshing devices failed:", resp.error_id)
                             currentDevice = null
-                            currentDeviceValidated = false
-                            navigator.goToCredentialsIfNotInSettings()
+                            availableDevices = []
+                            entries.clear()
                         }
-                    } else {
-                        navigator.snackBarError(navigator.getErrorMessage(
-                                                    resp.error_id))
-                        console.log("refreshing devices failed:", resp.error_id)
-                        currentDevice = null
-                        availableDevices = []
-                        entries.clear()
-                    }
-                    poller.running = true
-                })
-            }
+                        poller.running = true
+                    })
+                }
 
-            if (timeToCalculateAll() && !!currentDevice
-                    && currentDeviceValidated) {
-                calculateAll()
+                if (timeToCalculateAll() && !!currentDevice
+                        && currentDeviceValidated) {
+                    calculateAll()
+                }
+            } else {
+                console.log("check descriptors failed:", resp.error_id)
+                currentDevice = null
+                availableDevices = []
+                entries.clear()
             }
         })
     }
