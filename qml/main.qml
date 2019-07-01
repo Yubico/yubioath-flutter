@@ -163,7 +163,7 @@ ApplicationWindow {
                                 "The code for " + text + " is now in the clipboard.")
                 } else {
                     navigator.snackBarError(resp.error_id)
-                    console.log(resp.error_id)
+                    console.log("calculate failed:", resp.error_id)
                 }
             })
         } else {

@@ -187,7 +187,7 @@ Pane {
                         }
                     } else {
                         navigator.snackBarError(resp.error_id)
-                        console.log(resp.error_id)
+                        console.log("calculate failed:", resp.error_id)
                     }
                 })
             } else {
@@ -241,7 +241,7 @@ Pane {
                                                             } else {
                                                                 navigator.snackBarError(
                                                                             resp.error_id)
-                                                                console.log(resp.error_id)
+                                                                console.log("delete failed:", resp.error_id)
                                                             }
                                                         })
                         } else {
@@ -256,7 +256,7 @@ Pane {
                                                          } else {
                                                              navigator.snackBarError(
                                                                          resp.error_id)
-                                                             console.log(resp.error_id)
+                                                             console.log("delete failed:", resp.error_id)
                                                          }
                                                      })
                         }

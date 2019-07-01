@@ -57,7 +57,7 @@ Pane {
     }
 
     NoYubiKeySection {
-        visible: yubiKey.availableDevices.length === 0
+        visible: !yubiKey.availableDevices.some(dev => dev.selectable)
         enabled: visible
     }
 

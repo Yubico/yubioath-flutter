@@ -201,6 +201,8 @@ class Controller(object):
         if descs_to_iterate:
             for dev in list_devices():
                 serial = dev.serial
+                selectable = dev.mode.has_transport(
+                    TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
                 if serial not in handled_serials:
                     handled_serials.add(serial)
                     matches = [
@@ -214,8 +216,9 @@ class Controller(object):
                             'version': '.'.join(
                                 str(x) for x in dev.version
                                 ) if dev.version else '',
-                            'serial': dev.serial or '',
-                            'usbInterfacesEnabled': str(dev.mode).split('+')
+                            'serial': serial or '',
+                            'usbInterfacesEnabled': str(dev.mode).split('+'),
+                            'selectable': selectable
                         })
                         descs_to_iterate.remove(matching_descriptor)
 

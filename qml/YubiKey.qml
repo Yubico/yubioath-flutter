@@ -188,7 +188,6 @@ Python {
 
     function getCurrentDeviceImage() {
         if (!!currentDevice) {
-            console.log(JSON.stringify(currentDevice))
             return getYubiKeyImageSource(currentDevice)
         } else {
             return ""
@@ -212,14 +211,19 @@ Python {
             if (resp.success) {
                 if (resp.descriptorsChanged) {
                     poller.running = false
+
                     // refresh devices
                     refreshDevices(settings.otpMode, function (resp) {
                         if (resp.success) {
+
                             availableDevices = resp.devices
+                            console.log('available devices', JSON.stringify(availableDevices))
                             nextCalculateAll = -1
                             entries.clear()
-                            if (availableDevices.length > 0) {
-                                currentDevice = resp.devices[0] // pick the first!
+                            if (availableDevices.some(dev => dev.selectable)) {
+                                // pick the first selectable device
+                                currentDevice = resp.devices.find(dev => dev.selectable)
+                                console.log('current', JSON.stringify(currentDevice))
                                 calculateAll(navigator.goToCredentialsIfNotInSettings)
                             } else {
                                 // No device!

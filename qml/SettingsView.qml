@@ -18,6 +18,14 @@ ScrollView {
 
     Keys.onEscapePressed: navigator.home()
 
+    function getDeviceLabel(device) {
+        if (!!device.serial) {
+            return ("%1 (#%2)").arg(device.name).arg(device.serial)
+        }  else {
+            return ("%1").arg(device.name)
+        }
+    }
+
     function clearPasswordFields() {
         currentPasswordField.text = ""
         newPasswordField.text = ""
@@ -54,7 +62,7 @@ ScrollView {
                 setPassword()
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
-                console.log(resp.error_id)
+                console.log("change password failed:", resp.error_id)
             }
             clearPasswordFields()
         })
@@ -68,7 +76,7 @@ ScrollView {
                 passwordManagementPanel.isExpanded = false
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
-                console.log(resp.error_id)
+                console.log("set password failed:", resp.error_id)
             }
             clearPasswordFields()
         })
@@ -85,13 +93,13 @@ ScrollView {
                         passwordManagementPanel.isExpanded = false
                     } else {
                         navigator.snackBarError(getErrorMessage(resp.error_id))
-                        console.log(resp.error_id)
+                        console.log("remove password failed:", resp.error_id)
                     }
                     clearPasswordFields()
                 })
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
-                console.log(resp.error_id)
+                console.log("remove password failed:", resp.error_id)
             }
         })
     }
@@ -171,13 +179,11 @@ ScrollView {
         StyledExpansionContainer {
             id: keyPane
             sectionTitle: "Current Device"
-            visible: !!yubiKey.currentDevice
+            visible: !!yubiKey.availableDevices
 
             StyledExpansionPanel {
                 id: currentDevicePanel
-                label: !!yubiKey.currentDevice ? ("%1 (#%2)").arg(
-                                                     yubiKey.currentDevice.name).arg(
-                                                     yubiKey.currentDevice.serial) : ""
+                label: !!yubiKey.currentDevice ? getDeviceLabel(yubiKey.currentDevice) : "No device found"
                 description: yubiKey.getCurrentDeviceMode()
                 keyImage: yubiKey.getCurrentDeviceImage()
                 isTopPanel: true
@@ -198,8 +204,8 @@ ScrollView {
                             objectName: index
                             checked: !!yubiKey.currentDevice
                                      && modelData.serial === yubiKey.currentDevice.serial
-                            text: ("%1 (#%2)").arg(modelData.name).arg(
-                                      modelData.serial)
+                            text: getDeviceLabel(modelData)
+                            enabled: modelData.selectable
                             ButtonGroup.group: deviceButtonGroup
                         }
                     }
@@ -209,8 +215,12 @@ ScrollView {
                         Layout.alignment: Qt.AlignRight | Qt.AlignBottom
                         text: "Select"
                         enabled: {
-                            var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
-                            return dev !== yubiKey.currentDevice
+                            if (!!yubiKey.availableDevices && !!deviceButtonGroup.checkedButton) {
+                                var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
+                                return dev !== yubiKey.currentDevice
+                            } else {
+                                return false
+                            }
                         }
                         onClicked: {
                             var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
@@ -221,6 +231,8 @@ ScrollView {
                                                                 entries.clear()
                                                                 yubiKey.currentDevice = dev
                                                                 currentDevicePanel.expandAction()
+                                                            } else {
+                                                                console.log("select device failed", resp.error_id)
                                                             }
                                                         })
                         }
