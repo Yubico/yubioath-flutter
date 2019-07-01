@@ -220,6 +220,7 @@ ScrollView {
                                                                 yubiKey.nextCalculateAll = -1
                                                                 entries.clear()
                                                                 yubiKey.currentDevice = dev
+                                                                currentDevicePanel.expandAction()
                                                             }
                                                         })
                         }
