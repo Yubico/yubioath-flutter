@@ -194,13 +194,6 @@ Python {
         }
     }
 
-    function getCurrentDeviceMode() {
-        if (!!currentDevice) {
-            return currentDevice.usbInterfacesEnabled.join('+')
-        } else {
-            return ""
-        }
-    }
 
     function checkDescriptors(cb) {
         doCall('yubikey.controller.check_descriptors', [], cb)

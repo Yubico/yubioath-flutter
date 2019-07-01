@@ -26,6 +26,18 @@ ScrollView {
         }
     }
 
+    function getDeviceDescription() {
+        if (!!yubiKey.currentDevice) {
+            return yubiKey.currentDevice.usbInterfacesEnabled.join('+')
+        } else if (yubiKey.availableDevices.length > 0
+                   && !yubiKey.availableDevices.some(dev => dev.selectable)) {
+            return "No compatible device found"
+        } else {
+            return "No device found"
+        }
+    }
+
+
     function clearPasswordFields() {
         currentPasswordField.text = ""
         newPasswordField.text = ""
@@ -178,13 +190,12 @@ ScrollView {
 
         StyledExpansionContainer {
             id: keyPane
-            sectionTitle: "Current Device"
-            visible: !!yubiKey.availableDevices
+            sectionTitle: "Device"
 
             StyledExpansionPanel {
                 id: currentDevicePanel
-                label: !!yubiKey.currentDevice ? getDeviceLabel(yubiKey.currentDevice) : "No device found"
-                description: yubiKey.getCurrentDeviceMode()
+                label: !!yubiKey.currentDevice ? getDeviceLabel(yubiKey.currentDevice) : "Insert your YubiKey"
+                description: getDeviceDescription()
                 keyImage: yubiKey.getCurrentDeviceImage()
                 isTopPanel: true
                 Layout.fillWidth: true
