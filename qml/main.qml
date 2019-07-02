@@ -151,6 +151,18 @@ ApplicationWindow {
         }
     }
 
+    function filteredFavorites() {
+        var b = entriesComponent.createObject(app, {
+        })
+        for (var i = 0; i < entries.count; i++) {
+            var entry = entries.get(i)
+            if (settings.favorites.includes(entry.key)) {
+                b.append(entry)
+            }
+        }
+        return b
+    }
+
     Shortcut {
         sequence: StandardKey.Copy
         enabled: !!currentCredentialCard
@@ -270,7 +282,7 @@ ApplicationWindow {
             id: sysTrayMenu
 
             Instantiator {
-                model: entries.filter(entry => settings.favorites.includes(entry.key))
+                model: filteredFavorites()
                 onObjectAdded: sysTrayMenu.insertItem(index, object)
                 onObjectRemoved: sysTrayMenu.removeItem(object)
 
