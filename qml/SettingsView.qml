@@ -97,8 +97,7 @@ ScrollView {
     function removePassword() {
         yubiKey.validate(currentPasswordField.text, false, function (resp) {
             if (resp.success) {
-                // TODO: Change to new method that works
-                yubiKey.setPassword(null, true, function (resp) {
+                yubiKey.removePassword(function (resp) {
                     if (resp.success) {
                         navigator.snackBar("Password removed")
                         yubiKey.currentDeviceHasPassword = false
@@ -297,7 +296,7 @@ ScrollView {
                             flat: true
                             onClicked: navigator.confirm(
                                            "Remove password?",
-                                           "A password will not be required to access the credentails anymore.",
+                                           "A password will not be required to access the credentials anymore.",
                                            function () {
                                                removePassword()
                                            })

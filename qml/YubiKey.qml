@@ -395,12 +395,12 @@ Python {
         doCall('yubikey.controller.otp_slot_status', [], cb)
     }
 
-    function clearKey() {
-        doCall('yubikey.controller.clear_key', [])
-    }
-
     function setPassword(password, remember, cb) {
         doCall('yubikey.controller.ccid_set_password', [password, remember], cb)
+    }
+
+    function removePassword(cb) {
+        doCall('yubikey.controller.ccid_remove_password', [], cb)
     }
 
     function validate(password, remember, cb) {

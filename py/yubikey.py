@@ -400,6 +400,17 @@ class Controller(object):
             oath_controller.reset()
             return success()
 
+    def ccid_remove_password(self):
+        with self._open_oath() as oath_controller:
+            self._unlock(oath_controller)
+            oath_controller.clear_password()
+            self._current_derived_key = None
+            keys = self.settings.setdefault('keys', {})
+            if oath_controller.id in keys:
+                del keys[oath_controller.id]
+            self.settings.write()
+            return success()
+
     def ccid_set_password(self, new_password, remember=False):
         with self._open_oath() as oath_controller:
             self._unlock(oath_controller)
