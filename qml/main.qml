@@ -117,22 +117,6 @@ ApplicationWindow {
         application.quitOnLastWindowClosed = !settings.closeToTray
     }
 
-    function filteredFavorites() {
-        var favoriteEntries = entriesComponent.createObject(app, {
-
-                                                            })
-        if (settings.favoriteHashes !== "" && yubiKey.currentDeviceValidated
-                && !!yubiKey.currentDevice) {
-            for (var i = 0; i < entries.count; i++) {
-                var entry = entries.get(i)
-                if (entry.favorite) {
-                    favoriteEntries.append(entry)
-                }
-            }
-        }
-        return favoriteEntries
-    }
-
     function calculateFavorite(credential, text) {
         if (credential && credential.touch) {
             sysTrayIcon.showMessage(
@@ -286,7 +270,7 @@ ApplicationWindow {
             id: sysTrayMenu
 
             Instantiator {
-                model: filteredFavorites()
+                model: entries.filter(entry => settings.favorites.includes(entry.key))
                 onObjectAdded: sysTrayMenu.insertItem(index, object)
                 onObjectRemoved: sysTrayMenu.removeItem(object)
 
