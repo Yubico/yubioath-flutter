@@ -257,7 +257,6 @@ Python {
                 entries.updateEntries(resp.entries)
                 updateNextCalculateAll()
                 currentDeviceValidated = true
-                updateEntriesWithFavorites()
                 if (cb) {
                     cb()
                 }

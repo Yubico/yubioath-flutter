@@ -117,21 +117,6 @@ ApplicationWindow {
         application.quitOnLastWindowClosed = !settings.closeToTray
     }
 
-    function updateEntriesWithFavorites() {
-        if (yubiKey.currentDeviceValidated && !!yubiKey.currentDevice) {
-            for (var i = 0; i < entries.count; i++) {
-                var entry = entries.get(i)
-                var favorite = (yubiKey.currentDevice.serial
-                                || '') + ":" + (entry.credential.issuer
-                                                || '') + ":" + (entry.credential.name
-                                                                || '')
-                entry.favorite = settings.favorites.includes(favorite)
-                entries.set(i, entry)
-            }
-            entries.updateEntries(entries)
-        }
-    }
-
     function filteredFavorites() {
         var favoriteEntries = entriesComponent.createObject(app, {
 
@@ -248,10 +233,11 @@ ApplicationWindow {
         property alias height: app.height
         property alias x: app.x
         property alias y: app.y
+
         property int desktopAvailableWidth
         property int desktopAvailableHeight
 
-        property string favorites
+        property var favorites: []
 
         onCloseToTrayChanged: updateTrayVisibility()
         onThemeChanged: {
@@ -260,9 +246,6 @@ ApplicationWindow {
         onThemeAccentColorChanged: {
             app.Material.accent = themeAccentColor
             app.Material.primary = themeAccentColor
-        }
-        onFavoritesChanged: {
-            updateEntriesWithFavorites()
         }
     }
 

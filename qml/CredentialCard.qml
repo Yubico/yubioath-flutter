@@ -28,12 +28,7 @@ Pane {
                                                   && !touchCredential)
     property bool touchCredential: credential && credential.touch
 
-    property bool favorite
-
-    property string currentCredentialFavorite: !!yubiKey.currentDevice ? (yubiKey.currentDevice.serial
-                                                || '') + ":" + (credential.issuer
-                                                                || '') + ":" + (credential.name
-                                                                                || '') : ""
+    property bool favorite: settings.favorites.includes(credential.key)
 
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {
@@ -125,13 +120,13 @@ Pane {
 
     function toggleFavorite() {
         if (favorite) {
-            var s = settings.favorites.replace(currentCredentialFavorite, "")
-            settings.favorites = s.replace(/^;+|;(?=;)/g, "")
-            navigator.snackBar("Credential removed from favorites")
+            settings.favorites = settings.favorites.filter(fav => fav !== credential.key)
         } else {
-            settings.favorites += currentCredentialFavorite + ";"
-            navigator.snackBar("Credential set as favorite")
+            let favs = settings.favorites
+            favs.push(credential.key)
+            settings.favorites = favs
         }
+        entries.sort()
     }
 
     function getIconLetter() {
@@ -209,15 +204,12 @@ Pane {
                             coolDownHotpCredential()
                         }
                     } else {
-
                         if (resp.error_id === 'access_denied') {
                             navigator.snackBarError("Touch credential timed out")
                         } else {
                             navigator.snackBarError(navigator.getErrorMessage(
                                                         resp.error_id))
                         }
-
-
                         console.log("calculate failed:", resp.error_id)
                     }
                 })
