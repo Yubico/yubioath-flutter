@@ -209,8 +209,15 @@ Pane {
                             coolDownHotpCredential()
                         }
                     } else {
-                        navigator.snackBarError(navigator.getErrorMessage(
-                                                    resp.error_id))
+
+                        if (resp.error_id === 'access_denied') {
+                            navigator.snackBarError("Touch credential timed out")
+                        } else {
+                            navigator.snackBarError(navigator.getErrorMessage(
+                                                        resp.error_id))
+                        }
+
+
                         console.log("calculate failed:", resp.error_id)
                     }
                 })
