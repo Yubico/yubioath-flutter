@@ -72,13 +72,32 @@ Pane {
         RowLayout {
             Layout.rightMargin: -12
 
-            Image {
-                id: key
-                sourceSize.width: 32
-                source: keyImage
-                fillMode: Image.PreserveAspectFit
-                Layout.rightMargin: 8
+            Rectangle {
+                id: rectangle
+                width: 40
+                height: 40
+                color: credentialCardCurrentItem
+                radius: width * 0.5
                 visible: keyImage
+                Layout.rightMargin: 8
+                Image {
+                    id: key
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    sourceSize.width: 32
+                    source: keyImage
+                    fillMode: Image.PreserveAspectFit
+                    visible: keyImage && !!yubiKey.currentDevice
+                }
+                StyledImage {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    iconWidth: 21
+                    iconHeight: 23
+                    source: keyImage
+                    visible: keyImage && !key.visible
+                    color: formImageOverlay
+                }
             }
 
             ColumnLayout {

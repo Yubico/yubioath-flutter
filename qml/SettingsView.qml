@@ -195,7 +195,7 @@ ScrollView {
                 id: currentDevicePanel
                 label: !!yubiKey.currentDevice ? getDeviceLabel(yubiKey.currentDevice) : "Insert your YubiKey"
                 description: getDeviceDescription()
-                keyImage: yubiKey.getCurrentDeviceImage()
+                keyImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : "../images/yubikeys-large-transparent"
                 isTopPanel: true
                 Layout.fillWidth: true
                 isEnabled: yubiKey.availableDevices.length > 1
