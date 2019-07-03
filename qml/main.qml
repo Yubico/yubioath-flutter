@@ -151,16 +151,16 @@ ApplicationWindow {
         }
     }
 
-    function filteredFavorites() {
-        var b = entriesComponent.createObject(app, {
+    function getFavoriteEntries() {
+        var favs = entriesComponent.createObject(app, {
         })
         for (var i = 0; i < entries.count; i++) {
             var entry = entries.get(i)
-            if (settings.favorites.includes(entry.key)) {
-                b.append(entry)
+            if (settings.favorites.includes(entry.credential.key)) {
+                favs.append(entry)
             }
         }
-        return b
+        return favs
     }
 
     Shortcut {
@@ -243,6 +243,7 @@ ApplicationWindow {
             app.Material.accent = themeAccentColor
             app.Material.primary = themeAccentColor
         }
+        onFavoritesChanged: sysTrayInstantiator.model = getFavoriteEntries()
     }
 
     Component {
@@ -282,7 +283,8 @@ ApplicationWindow {
             id: sysTrayMenu
 
             Instantiator {
-                model: filteredFavorites()
+                id: sysTrayInstantiator
+                model: getFavoriteEntries()
                 onObjectAdded: sysTrayMenu.insertItem(index, object)
                 onObjectRemoved: sysTrayMenu.removeItem(object)
 
