@@ -117,37 +117,6 @@ ApplicationWindow {
         application.quitOnLastWindowClosed = !settings.closeToTray
     }
 
-    function updateEntriesWithFavorites() {
-        if (yubiKey.currentDeviceValidated && !!yubiKey.currentDevice) {
-            for (var i = 0; i < entries.count; i++) {
-                var entry = entries.get(i)
-                var favorite = (yubiKey.currentDevice.serial
-                                || '') + ":" + (entry.credential.issuer
-                                                || '') + ":" + (entry.credential.name
-                                                                || '')
-                entry.favorite = settings.favorites.includes(favorite)
-                entries.set(i, entry)
-            }
-            entries.updateEntries(entries)
-        }
-    }
-
-    function filteredFavorites() {
-        var favoriteEntries = entriesComponent.createObject(app, {
-
-                                                            })
-        if (settings.favoriteHashes !== "" && yubiKey.currentDeviceValidated
-                && !!yubiKey.currentDevice) {
-            for (var i = 0; i < entries.count; i++) {
-                var entry = entries.get(i)
-                if (entry.favorite) {
-                    favoriteEntries.append(entry)
-                }
-            }
-        }
-        return favoriteEntries
-    }
-
     function calculateFavorite(credential, text) {
         if (credential && credential.touch) {
             sysTrayIcon.showMessage(
@@ -180,6 +149,18 @@ ApplicationWindow {
                 }
             })
         }
+    }
+
+    function getFavoriteEntries() {
+        var favs = entriesComponent.createObject(app, {
+        })
+        for (var i = 0; i < entries.count; i++) {
+            var entry = entries.get(i)
+            if (settings.favorites.includes(entry.credential.key)) {
+                favs.append(entry)
+            }
+        }
+        return favs
     }
 
     Shortcut {
@@ -248,10 +229,11 @@ ApplicationWindow {
         property alias height: app.height
         property alias x: app.x
         property alias y: app.y
+
         property int desktopAvailableWidth
         property int desktopAvailableHeight
 
-        property string favorites
+        property var favorites: []
 
         onCloseToTrayChanged: updateTrayVisibility()
         onThemeChanged: {
@@ -261,9 +243,7 @@ ApplicationWindow {
             app.Material.accent = themeAccentColor
             app.Material.primary = themeAccentColor
         }
-        onFavoritesChanged: {
-            updateEntriesWithFavorites()
-        }
+        onFavoritesChanged: sysTrayInstantiator.model = getFavoriteEntries()
     }
 
     Component {
@@ -303,7 +283,8 @@ ApplicationWindow {
             id: sysTrayMenu
 
             Instantiator {
-                model: filteredFavorites()
+                id: sysTrayInstantiator
+                model: getFavoriteEntries()
                 onObjectAdded: sysTrayMenu.insertItem(index, object)
                 onObjectRemoved: sysTrayMenu.removeItem(object)
 
