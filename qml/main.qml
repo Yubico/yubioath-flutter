@@ -239,10 +239,6 @@ ApplicationWindow {
         onThemeChanged: {
             app.Material.theme = theme
         }
-        onThemeAccentColorChanged: {
-            app.Material.accent = themeAccentColor
-            app.Material.primary = themeAccentColor
-        }
     }
 
     Component {
@@ -305,7 +301,11 @@ ApplicationWindow {
 
             MenuItem {
                 text: qsTr("Show credentials")
-                onTriggered: app.show()
+                onTriggered: {
+                    show()
+                    raise()
+                    requestActivate()
+                }
             }
 
             MenuSeparator {
