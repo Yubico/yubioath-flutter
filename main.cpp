@@ -7,7 +7,6 @@
 #include <QQuickWindow>
 #include <QQuickStyle>
 #include "screenshot.h"
-#include "systemtray.h"
 
 int main(int argc, char *argv[])
 {
