@@ -299,12 +299,12 @@ Pane {
                 id: favoriteIcon
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
-                anchors.bottomMargin: -4
+                anchors.bottomMargin: -5
                 iconWidth: 15
                 iconHeight: 15
                 source: "../images/star.svg"
                 visible: favorite
-                color: "yellow"
+                color: "#f7bd0c"
             }
         }
 

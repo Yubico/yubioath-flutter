@@ -1,8 +1,8 @@
 TEMPLATE = app
 QT += qml quick widgets quickcontrols2
 CONFIG += c++11
-SOURCES += main.cpp systemtray.cpp
-HEADERS += screenshot.h systemtray.h
+SOURCES += main.cpp
+HEADERS += screenshot.h
 
 # This is the internal verson number, Windows requires 4 digits.
 win32|win64 {
