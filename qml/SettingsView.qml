@@ -348,7 +348,7 @@ ScrollView {
 
             StyledExpansionPanel {
                 label: "Appearance"
-                description: "Change the theme and appearance of the application."
+                description: "Change the appearance of the application."
                 isTopPanel: true
 
                 ColumnLayout {
@@ -357,7 +357,7 @@ ScrollView {
                         Layout.fillWidth: true
                         StyledComboBox {
                             id: themeComboBox
-                            label: "Appearance"
+                            label: "Theme"
                             comboBox.textRole: "text"
                             model: themes
                             onCurrentIndexChanged: {
@@ -374,29 +374,6 @@ ScrollView {
                                 default:
                                     return 0
                                 }
-                            }
-                        }
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        StyledComboBox {
-                            id: themeColorComboBox
-                            label: "Theme Color"
-                            comboBox.textRole: "text"
-                            model: themeColor
-                            onCurrentIndexChanged: {
-                                settings.themeAccentColor = themeColor.get(
-                                            currentIndex).value
-                            }
-                            currentIndex: {
-                                for (var i = 0; i < themeColor.count; i++) {
-                                    if (themeColor.get(
-                                                i).value === settings.themeAccentColor) {
-                                        return i
-                                    }
-                                }
-                                return 0
                             }
                         }
                     }
