@@ -15,7 +15,7 @@ ApplicationWindow {
     height: 620
     minimumWidth: 360
     minimumHeight: 126
-    visible: true
+    visible: !(settings.closeToTray && settings.hideOnLaunch)
 
     flags: Qt.Window | Qt.WindowFullscreenButtonHint | Qt.WindowTitleHint
            | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
@@ -74,9 +74,6 @@ ApplicationWindow {
     property bool isInForeground: visibility != 3 && visibility != 0
 
     Component.onCompleted: {
-        if (settings.closeToTray && settings.hideOnLaunch) {
-            hide()
-        }
         updateTrayVisibility()
         ensureValidWindowPosition()
     }
@@ -273,7 +270,7 @@ ApplicationWindow {
         id: sysTrayIcon
         visible: settings.closeToTray
         iconSource: "qrc:/images/windowicon.png"
-        onActivated:  sysTrayInstantiator.model = getFavoriteEntries()
+        onActivated: sysTrayInstantiator.model = getFavoriteEntries()
 
         menu: Menu {
             id: sysTrayMenu
