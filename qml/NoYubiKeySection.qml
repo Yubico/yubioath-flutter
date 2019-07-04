@@ -14,8 +14,7 @@ ColumnLayout {
 
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        spacing: 16
-        Layout.topMargin: -80
+        Layout.topMargin: -64
 
         StyledImage {
             id: yubikeys
@@ -23,13 +22,37 @@ ColumnLayout {
             iconHeight: 120
             source: "../images/yubikeys-transparent.png"
             color: formImageOverlay
+            bottomPadding: 16
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
 
         Label {
             text: "Insert your YubiKey"
-            font.pixelSize: 13
+            font.pixelSize: 16
+            font.weight: Font.Normal
+            lineHeight: 1.5
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             color: formText
+        }
+        Label {
+            text: {
+                if (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable)) {
+                    return "No compatible device found."
+                }
+                else {
+                    return ""
+                }
+            }
+            Layout.minimumWidth: 320
+            Layout.maximumWidth: app.width - dynamicMargin
+                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+            horizontalAlignment: Qt.AlignHCenter
+            Layout.rowSpan: 1
+            lineHeight: 1.1
+            wrapMode: Text.WordWrap
+            font.pixelSize: 13
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            color: yubicoGrey
         }
     }
 }
