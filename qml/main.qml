@@ -15,7 +15,7 @@ ApplicationWindow {
     height: 620
     minimumWidth: 360
     minimumHeight: 126
-    visible: !(settings.closeToTray && settings.hideOnLaunch)
+    visible: false
 
     flags: Qt.Window | Qt.WindowFullscreenButtonHint | Qt.WindowTitleHint
            | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
@@ -111,6 +111,7 @@ ApplicationWindow {
     function updateTrayVisibility() {
         // When the tray option is enabled, closing the last window
         // doesn't actually close the application.
+        app.visible = !(settings.closeToTray && settings.hideOnLaunch)
         application.quitOnLastWindowClosed = !settings.closeToTray
     }
 
