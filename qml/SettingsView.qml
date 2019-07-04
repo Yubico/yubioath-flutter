@@ -511,11 +511,17 @@ ScrollView {
                         padding: 0
                         indicator.width: 16
                         indicator.height: 16
-                        onCheckStateChanged: settings.closeToTray = checked
+                        onCheckStateChanged: {
+                            if(!checked) {
+                                hideOnLaunchCheckbox.checked = false
+                            }
+                            settings.closeToTray = checked
+                        }
                         Material.foreground: formText
                     }
 
                     CheckBox {
+                        id: hideOnLaunchCheckbox
                         enabled: sysTrayCheckbox.checked
                         checked: settings.hideOnLaunch
                         text: "Hide on launch"

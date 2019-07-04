@@ -15,7 +15,7 @@ ApplicationWindow {
     height: 620
     minimumWidth: 360
     minimumHeight: 126
-    visible: !(settings.closeToTray && settings.hideOnLaunch)
+    visible: false
 
     flags: Qt.Window | Qt.WindowFullscreenButtonHint | Qt.WindowTitleHint
            | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
@@ -74,6 +74,7 @@ ApplicationWindow {
     property bool isInForeground: visibility != 3 && visibility != 0
 
     Component.onCompleted: {
+        app.visible = !(settings.closeToTray && settings.hideOnLaunch)
         updateTrayVisibility()
         ensureValidWindowPosition()
     }
