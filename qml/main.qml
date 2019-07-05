@@ -235,6 +235,7 @@ ApplicationWindow {
         property int desktopAvailableHeight
 
         property var favorites: []
+        property string favoriteDefault
 
         onCloseToTrayChanged: updateTrayVisibility()
         onThemeChanged: {

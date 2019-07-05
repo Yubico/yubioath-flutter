@@ -29,6 +29,7 @@ Pane {
     property bool touchCredential: credential && credential.touch
 
     property bool favorite: settings.favorites.includes(credential.key)
+    property bool favoriteDefault: settings.favoriteDefault === credential.key
 
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {
@@ -77,6 +78,14 @@ Pane {
                     icon.height: 20
                     text: favorite ? "Remove as favorite" : "Set as favorite"
                     onTriggered: toggleFavorite()
+                }
+                MenuItem {
+                    icon.source: favoriteDefault ? "../images/favorite.svg" : "../images/favorite_border.svg"
+                    icon.color: iconButtonNormal
+                    icon.width: 20
+                    icon.height: 20
+                    text: favoriteDefault ? "Remove as default" : "Make default"
+                    onTriggered: toggleDefault()
                 }
                 MenuSeparator {
                     padding: 0
@@ -127,6 +136,14 @@ Pane {
             settings.favorites = favs
         }
         entries.sort()
+    }
+
+    function toggleDefault() {
+        if (favoriteDefault) {
+            settings.favoriteDefault = ""
+        } else {
+            settings.favoriteDefault = credential.key
+        }
     }
 
     function getIconLetter() {
@@ -303,8 +320,19 @@ Pane {
                 iconWidth: 15
                 iconHeight: 15
                 source: "../images/star.svg"
-                visible: favorite
+                visible: favorite && !favoriteDefault
                 color: "#f7bd0c"
+            }
+            StyledImage {
+                id: favoriteDefaultIcon
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                anchors.bottomMargin: -5
+                iconWidth: 15
+                iconHeight: 15
+                source: "../images/favorite.svg"
+                visible: favoriteDefault
+                color: yubicoRed
             }
         }
 
