@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 ColumnLayout {
 
-    readonly property int dynamicWidth: 420
+    readonly property int dynamicWidth: 380
     readonly property int dynamicMargin: 64
 
     anchors.horizontalCenter: parent.horizontalCenter
@@ -27,10 +27,11 @@ ColumnLayout {
             text: "No credentials"
             Layout.rowSpan: 1
             wrapMode: Text.WordWrap
-            font.pixelSize: 13
-            font.bold: true
+            font.pixelSize: 16
+            font.weight: Font.Normal
             lineHeight: 1.5
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            color: formText
         }
 
         Label {
@@ -40,10 +41,11 @@ ColumnLayout {
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             Layout.rowSpan: 1
-            lineHeight: 1.2
+            lineHeight: 1.1
             wrapMode: Text.WordWrap
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            color: yubicoGrey
         }
 
         StyledButton {
@@ -55,6 +57,7 @@ ColumnLayout {
             onClicked: yubiKey.scanQr()
             Keys.onReturnPressed: yubiKey.scanQr()
             Keys.onEnterPressed: yubiKey.scanQr()
+            Layout.topMargin: 8
         }
     }
 }

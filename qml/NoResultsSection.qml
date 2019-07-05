@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 ColumnLayout {
 
-    readonly property int dynamicWidth: 420
+    readonly property int dynamicWidth: 380
     readonly property int dynamicMargin: 64
 
     anchors.horizontalCenter: parent.horizontalCenter
@@ -27,10 +27,11 @@ ColumnLayout {
             text: "No credentials found"
             Layout.rowSpan: 1
             wrapMode: Text.WordWrap
-            font.pixelSize: 13
-            font.bold: true
+            font.pixelSize: 16
+            font.weight: Font.Normal
             lineHeight: 1.5
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            color: formText
         }
         Label {
             text: "No credentials matching your search criteria. Check your spelling and try again."
@@ -39,10 +40,11 @@ ColumnLayout {
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             Layout.rowSpan: 1
-            lineHeight: 1.2
+            lineHeight: 1.1
             wrapMode: Text.WordWrap
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            color: yubicoGrey
         }
     }
 }
