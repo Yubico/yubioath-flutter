@@ -247,7 +247,7 @@ Python {
             }
         }
 
-        if (settings.useCustomReader && !currentDevice) {
+        if (settings.useCustomReader && !settings.otpMode && !currentDevice) {
             checkReaders(settings.customReaderName, callback)
         } else {
             checkDescriptors(callback)
