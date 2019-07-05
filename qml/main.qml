@@ -216,6 +216,9 @@ ApplicationWindow {
         property int slot1digits
         property int slot2digits
 
+        property bool useCustomReader
+        property string customReaderName
+
         property bool closeToTray
         property bool hideOnLaunch
 
@@ -260,7 +263,6 @@ ApplicationWindow {
         repeat: true
         running: app.isInForeground
         onTriggered: yubiKey.poll()
-
     }
 
     YubiKey {

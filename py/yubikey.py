@@ -9,10 +9,13 @@ from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
 from ykman.descriptor import (
     get_descriptors, list_devices, open_device,
-    FailedOpeningDeviceException)
+    FailedOpeningDeviceException, Descriptor)
 from ykman.util import (TRANSPORT, parse_b32_key)
+from ykman.device import YubiKey
 from ykman.driver_otp import YkpersError
-from ykman.driver_ccid import APDUError, CCIDError
+from ykman.driver_ccid import (
+    APDUError, CCIDError,
+    open_devices as open_ccid)
 from ykman.oath import (
     ALGO, OATH_TYPE, OathController,
     CredentialData, Credential, Code, SW)
@@ -147,8 +150,12 @@ class Controller(object):
     _descs = []
     _descs_fps = []
     _devices = []
+
     _current_serial = None
     _current_derived_key = None
+
+    _reader_filter = None
+    _readers = []
 
     def __init__(self):
 
@@ -162,6 +169,13 @@ class Controller(object):
                     setattr(self, f, as_json(catch_error(func)))
 
     def _open_oath(self):
+        if self._reader_filter:
+            dev = self._get_dev_from_reader()
+            if dev:
+                return OathContextManager(dev)
+            else:
+                raise ValueError('not_one_device_custom_reader')
+
         return OathContextManager(
             open_device(TRANSPORT.CCID, serial=self._current_serial))
 
@@ -180,58 +194,95 @@ class Controller(object):
 
     def check_descriptors(self):
         return success({
-            'descriptorsChanged': self._descriptors_changed()
+            'needToRefresh': self._descriptors_changed()
         })
 
-    def refresh_devices(self, otp_mode=False):
+    def _readers_changed(self, filter):
+        old_readers = self._readers
+        self._readers = list(open_ccid(filter))
+        readers_changed = len(self._readers) != len(old_readers)
+        return readers_changed
+
+    def check_readers(self, filter):
+        return success({
+            'needToRefresh': self._readers_changed(filter)
+        })
+
+    def _get_dev_from_reader(self):
+        readers = list(open_ccid(self._reader_filter))
+        if len(readers) == 1:
+            drv = readers[0]
+            return YubiKey(Descriptor.from_driver(drv), drv)
+        return None
+
+    def refresh_devices(self, otp_mode=False, reader_filter=None):
         self._devices = []
 
-        # Forget current serial and derived key if no descriptors
-        # Return empty list of devices
-        if not self._descs:
-            self._current_serial = None
-            self._current_derived_key = None
-            return success({'devices': []})
+        if not otp_mode and reader_filter:
+            self._reader_filter = reader_filter
+            dev = self._get_dev_from_reader()
+            if dev:
+                self._devices.append({
+                    'name': dev.device_name,
+                    'version': '.'.join(
+                        str(x) for x in dev.version
+                        ) if dev.version else '',
+                    'serial': dev.serial or '',
+                    'usbInterfacesEnabled': str(dev.mode).split('+'),
+                    'selectable': True
+                })
+                return success({'devices': self._devices})
+            else:
+                return failure('not_one_device_custom_reader')
+        else:
+            self._reader_filter = None
+            # Forget current serial and derived key if no descriptors
+            # Return empty list of devices
+            if not self._descs:
+                self._current_serial = None
+                self._current_derived_key = None
+                return success({'devices': []})
 
-        # Open all devices over any transport, match against descriptors
-        # to build up a list of available devices.
-        # Make a copy of the descs to iterate over.
-        descs_to_iterate = self._descs[:]
-        handled_serials = set()
-        if descs_to_iterate:
-            for dev in list_devices():
-                serial = dev.serial
-                selectable = dev.mode.has_transport(
-                    TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
-                if serial not in handled_serials:
-                    handled_serials.add(serial)
-                    matches = [
-                        d for d in descs_to_iterate if (
-                            d.key_type, d.mode) == (
-                                dev.driver.key_type, dev.driver.mode)]
-                    if len(matches) > 0:
-                        matching_descriptor = matches[0]
-                        self._devices.append({
-                            'name': dev.device_name,
-                            'version': '.'.join(
-                                str(x) for x in dev.version
-                                ) if dev.version else '',
-                            'serial': serial or '',
-                            'usbInterfacesEnabled': str(dev.mode).split('+'),
-                            'selectable': selectable
-                        })
-                        descs_to_iterate.remove(matching_descriptor)
+            # Open all devices over any transport, match against descriptors
+            # to build up a list of available devices.
+            # Make a copy of the descs to iterate over.
+            descs_to_iterate = self._descs[:]
+            handled_serials = set()
+            if descs_to_iterate:
+                for dev in list_devices():
+                    serial = dev.serial
+                    selectable = dev.mode.has_transport(
+                        TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
+                    if serial not in handled_serials:
+                        handled_serials.add(serial)
+                        matches = [
+                            d for d in descs_to_iterate if (
+                                d.key_type, d.mode) == (
+                                    dev.driver.key_type, dev.driver.mode)]
+                        if len(matches) > 0:
+                            matching_descriptor = matches[0]
+                            self._devices.append({
+                                'name': dev.device_name,
+                                'version': '.'.join(
+                                    str(x) for x in dev.version
+                                    ) if dev.version else '',
+                                'serial': serial or '',
+                                'usbInterfacesEnabled': str(
+                                    dev.mode).split('+'),
+                                'selectable': selectable
+                            })
+                            descs_to_iterate.remove(matching_descriptor)
 
-            # If no current serial, or current serial seems removed,
-            # select the first serial found.
-            if not self._current_serial or (
-                    self._current_serial not in [
-                        dev['serial'] for dev in self._devices]):
-                for dev in self._devices:
-                    if dev['serial']:
-                        self._current_serial = dev['serial']
-                        break
-        return success({'devices': self._devices})
+                # If no current serial, or current serial seems removed,
+                # select the first serial found.
+                if not self._current_serial or (
+                        self._current_serial not in [
+                            dev['serial'] for dev in self._devices]):
+                    for dev in self._devices:
+                        if dev['serial']:
+                            self._current_serial = dev['serial']
+                            break
+            return success({'devices': self._devices})
 
     def select_current_serial(self, serial):
         self._current_serial = serial

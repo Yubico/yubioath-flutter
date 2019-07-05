@@ -199,56 +199,59 @@ Python {
         doCall('yubikey.controller.check_descriptors', [], cb)
     }
 
+    function checkReaders(filter, cb) {
+        doCall('yubikey.controller.check_readers', [filter], cb)
+    }
+
+    function clearEntriesAndDevices() {
+        currentDevice = null
+        currentDeviceValidated = false
+        availableDevices = []
+        entries.clear()
+        nextCalculateAll = -1
+    }
+
     function poll() {
-        checkDescriptors(function (resp) {
+        function callback(resp) {
             if (resp.success) {
-                if (resp.descriptorsChanged) {
+                if (resp.needToRefresh) {
                     poller.running = false
-
-                    // refresh devices
-                    refreshDevices(settings.otpMode, function (resp) {
+                    let customReaderName = settings.useCustomReader ? settings.customReaderName : null
+                    refreshDevices(settings.otpMode, customReaderName, function (resp) {
                         if (resp.success) {
-
                             availableDevices = resp.devices
-                            console.log('available devices', JSON.stringify(availableDevices))
                             nextCalculateAll = -1
                             entries.clear()
                             if (availableDevices.some(dev => dev.selectable)) {
                                 // pick the first selectable device
                                 currentDevice = resp.devices.find(dev => dev.selectable)
-                                console.log('current', JSON.stringify(currentDevice))
                                 calculateAll(navigator.goToCredentialsIfNotInSettings)
                             } else {
-                                // No device!
-                                // Clear credentials, clear current device,
-                                // and stop any scheduled calculateAll calls.
-                                currentDevice = null
-                                currentDeviceValidated = false
+                                clearEntriesAndDevices()
                                 navigator.goToCredentialsIfNotInSettings()
                             }
                         } else {
-                            navigator.snackBarError(navigator.getErrorMessage(
-                                                        resp.error_id))
                             console.log("refreshing devices failed:", resp.error_id)
-                            currentDevice = null
-                            availableDevices = []
-                            entries.clear()
+                            clearEntriesAndDevices()
                         }
                         poller.running = true
                     })
                 }
-
                 if (timeToCalculateAll() && !!currentDevice
                         && currentDeviceValidated) {
                     calculateAll()
                 }
             } else {
                 console.log("check descriptors failed:", resp.error_id)
-                currentDevice = null
-                availableDevices = []
-                entries.clear()
+                clearEntriesAndDevices()
             }
-        })
+        }
+
+        if (settings.useCustomReader && !currentDevice) {
+            checkReaders(settings.customReaderName, callback)
+        } else {
+            checkDescriptors(callback)
+        }
     }
 
     function calculateAll(cb) {
@@ -267,12 +270,8 @@ Python {
                     currentDeviceValidated = false
                     navigator.goToEnterPasswordIfNotInSettings()
                 } else {
-                    navigator.snackBarError(navigator.getErrorMessage(
-                                                resp.error_id))
+                    clearEntriesAndDevices()
                     console.log("calculateAll failed:", resp.error_id)
-                    currentDevice = null
-                    availableDevices = []
-                    entries.clear()
                 }
             }
         }
@@ -340,8 +339,8 @@ Python {
                [settings.slot1digits, settings.slot2digits, now], cb)
     }
 
-    function refreshDevices(otpMode, cb) {
-        doCall('yubikey.controller.refresh_devices', [otpMode], cb)
+    function refreshDevices(otpMode, customReader, cb) {
+        doCall('yubikey.controller.refresh_devices', [otpMode, customReader], cb)
     }
 
     function selectCurrentSerial(serial, cb) {

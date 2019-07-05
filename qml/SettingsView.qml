@@ -392,6 +392,9 @@ ScrollView {
                                              || (slot2DigitsComboBox.currentIndex
                                                  !== getComboBoxIndex(
                                                      settings.slot2digits))
+                                             || customReaderCheckBox.checked !== settings.useCustomReader
+                                             || readerFilter.text !== settings.customReaderName
+
 
                 function isValidMode() {
                     return aboutToChange
@@ -402,25 +405,17 @@ ScrollView {
                 }
 
                 function setAuthenticatorMode() {
-
-                    function callback() {
-                        navigator.goToSettings()
-                        navigator.snackBar("Authenticator mode changed")
-                    }
-
-                    navigator.goToLoading()
                     settings.slot1digits = otpModeDigits.get(
                                 slot1DigitsComboBox.currentIndex).value
                     settings.slot2digits = otpModeDigits.get(
                                 slot2DigitsComboBox.currentIndex).value
                     settings.otpMode = otpModeSelected
-                    entries.clear()
-                    yubiKey.nextCalculateAll = -1
-                    if (!!yubiKey.currentDevice) {
-                        yubiKey.calculateAll(callback)
-                    } else {
-                        callback()
-                    }
+
+                    settings.useCustomReader = customReaderCheckBox.checked
+                    settings.customReaderName = readerFilter.text
+                    yubiKey.clearEntriesAndDevices()
+                    navigator.goToSettings()
+                    navigator.snackBar("Authenticator mode changed")
                 }
 
                 function getComboBoxIndex(digits) {
@@ -490,6 +485,29 @@ ScrollView {
                                           settings.slot2digits)
                     }
                 }
+
+                ColumnLayout {
+                    visible: !authenticatorModePanel.otpModeSelected
+
+                    CheckBox {
+                        id: customReaderCheckBox
+                        text: "Use a custom smart card reader"
+                        checked: settings.useCustomReader
+                        padding: 0
+                        indicator.width: 16
+                        indicator.height: 16
+                        Material.foreground: formText
+                        onCheckStateChanged: readerFilter.text = checked ? readerFilter.text : ""
+                    }
+
+                    StyledTextField {
+                        id: readerFilter
+                        enabled: customReaderCheckBox.checked
+                        labelText: qsTr("Custom reader")
+                        text: settings.customReaderName
+                    }
+                }
+
                 StyledButton {
                     Layout.alignment: Qt.AlignRight | Qt.AlignTop
                     text: "Apply"
