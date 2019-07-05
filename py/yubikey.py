@@ -215,6 +215,40 @@ class Controller(object):
             return YubiKey(Descriptor.from_driver(drv), drv)
         return None
 
+    def _get_devices(self, otp_mode=False):
+        res = []
+        descs_to_match = self._descs[:]
+        handled_serials = set()
+        for transport in [TRANSPORT.CCID, TRANSPORT.OTP, TRANSPORT.FIDO]:
+            if not descs_to_match:
+                return res
+            for dev in list_devices(transport):
+                if not descs_to_match:
+                    return res
+                serial = dev.serial
+                selectable = dev.mode.has_transport(
+                    TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
+                if serial not in handled_serials:
+                    handled_serials.add(serial)
+                    matches = [
+                        d for d in descs_to_match if (
+                            d.key_type, d.mode) == (
+                                dev.driver.key_type, dev.driver.mode)]
+                    if len(matches) > 0:
+                        matching_descriptor = matches[0]
+                        res.append({
+                            'name': dev.device_name,
+                            'version': '.'.join(
+                                str(x) for x in dev.version
+                                ) if dev.version else '',
+                            'serial': serial or '',
+                            'usbInterfacesEnabled': str(
+                                dev.mode).split('+'),
+                            'selectable': selectable
+                        })
+                        descs_to_match.remove(matching_descriptor)
+        return res
+
     def refresh_devices(self, otp_mode=False, reader_filter=None):
         self._devices = []
 
@@ -243,45 +277,17 @@ class Controller(object):
                 self._current_derived_key = None
                 return success({'devices': []})
 
-            # Open all devices over any transport, match against descriptors
-            # to build up a list of available devices.
-            # Make a copy of the descs to iterate over.
-            descs_to_iterate = self._descs[:]
-            handled_serials = set()
-            if descs_to_iterate:
-                for dev in list_devices():
-                    serial = dev.serial
-                    selectable = dev.mode.has_transport(
-                        TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
-                    if serial not in handled_serials:
-                        handled_serials.add(serial)
-                        matches = [
-                            d for d in descs_to_iterate if (
-                                d.key_type, d.mode) == (
-                                    dev.driver.key_type, dev.driver.mode)]
-                        if len(matches) > 0:
-                            matching_descriptor = matches[0]
-                            self._devices.append({
-                                'name': dev.device_name,
-                                'version': '.'.join(
-                                    str(x) for x in dev.version
-                                    ) if dev.version else '',
-                                'serial': serial or '',
-                                'usbInterfacesEnabled': str(
-                                    dev.mode).split('+'),
-                                'selectable': selectable
-                            })
-                            descs_to_iterate.remove(matching_descriptor)
+            self._devices = self._get_devices(otp_mode)
 
-                # If no current serial, or current serial seems removed,
-                # select the first serial found.
-                if not self._current_serial or (
-                        self._current_serial not in [
-                            dev['serial'] for dev in self._devices]):
-                    for dev in self._devices:
-                        if dev['serial']:
-                            self._current_serial = dev['serial']
-                            break
+            # If no current serial, or current serial seems removed,
+            # select the first serial found.
+            if not self._current_serial or (
+                    self._current_serial not in [
+                        dev['serial'] for dev in self._devices]):
+                for dev in self._devices:
+                    if dev['serial']:
+                        self._current_serial = dev['serial']
+                        break
             return success({'devices': self._devices})
 
     def select_current_serial(self, serial):
