@@ -206,36 +206,39 @@ Python {
     function clearEntriesAndDevices() {
         currentDevice = null
         currentDeviceValidated = false
-        availableDevices = []
         entries.clear()
         nextCalculateAll = -1
+    }
+
+    function refreshDevicesDefault() {
+        poller.running = false
+        let customReaderName = settings.useCustomReader ? settings.customReaderName : null
+        refreshDevices(settings.otpMode, customReaderName, function (resp) {
+            if (resp.success) {
+                availableDevices = resp.devices
+                nextCalculateAll = -1
+                entries.clear()
+                if (availableDevices.some(dev => dev.selectable)) {
+                    // pick the first selectable device
+                    currentDevice = resp.devices.find(dev => dev.selectable)
+                    calculateAll(navigator.goToCredentialsIfNotInSettings)
+                } else {
+                    clearEntriesAndDevices()
+                    navigator.goToCredentialsIfNotInSettings()
+                }
+            } else {
+                console.log("refreshing devices failed:", resp.error_id)
+                clearEntriesAndDevices()
+            }
+            poller.running = true
+        })
     }
 
     function poll() {
         function callback(resp) {
             if (resp.success) {
                 if (resp.needToRefresh) {
-                    poller.running = false
-                    let customReaderName = settings.useCustomReader ? settings.customReaderName : null
-                    refreshDevices(settings.otpMode, customReaderName, function (resp) {
-                        if (resp.success) {
-                            availableDevices = resp.devices
-                            nextCalculateAll = -1
-                            entries.clear()
-                            if (availableDevices.some(dev => dev.selectable)) {
-                                // pick the first selectable device
-                                currentDevice = resp.devices.find(dev => dev.selectable)
-                                calculateAll(navigator.goToCredentialsIfNotInSettings)
-                            } else {
-                                clearEntriesAndDevices()
-                                navigator.goToCredentialsIfNotInSettings()
-                            }
-                        } else {
-                            console.log("refreshing devices failed:", resp.error_id)
-                            clearEntriesAndDevices()
-                        }
-                        poller.running = true
-                    })
+                    refreshDevicesDefault()
                 }
                 if (timeToCalculateAll() && !!currentDevice
                         && currentDeviceValidated) {
