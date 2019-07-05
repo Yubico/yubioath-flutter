@@ -217,14 +217,15 @@ Python {
             if (resp.success) {
                 availableDevices = resp.devices
                 nextCalculateAll = -1
-                entries.clear()
-                if (availableDevices.some(dev => dev.selectable)) {
-                    // pick the first selectable device
-                    currentDevice = resp.devices.find(dev => dev.selectable)
-                    calculateAll(navigator.goToCredentialsIfNotInSettings)
-                } else {
-                    clearEntriesAndDevices()
-                    navigator.goToCredentialsIfNotInSettings()
+                if (!availableDevices.some(dev => dev.serial === currentDevice)) {
+                    if (availableDevices.some(dev => dev.selectable)) {
+                        // pick the first selectable device
+                        currentDevice = resp.devices.find(dev => dev.selectable)
+                        calculateAll(navigator.goToCredentialsIfNotInSettings)
+                    } else {
+                        clearEntriesAndDevices()
+                        navigator.goToCredentialsIfNotInSettings()
+                    }
                 }
             } else {
                 console.log("refreshing devices failed:", resp.error_id)
