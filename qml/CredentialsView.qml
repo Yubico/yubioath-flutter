@@ -63,18 +63,17 @@ Pane {
 
     GridView {
         id: grid
+        leftMargin: {
+            var cards = Math.max(Math.min(model.count, Math.floor(parent.width / cellWidth)), 1)
+            var margin = (parent.width - (cards * cellWidth)) / 2
+            return margin < 0 ? 0 : margin
+        }
         displayMarginBeginning: 80
         displayMarginEnd: 80
         ScrollBar.vertical: ScrollBar {
             width: 8
         }
-        width: {
-            var w = (parent.width - (Math.min(
-                                         model.count, Math.floor(
-                                             parent.width / cellWidth)) * cellWidth)) / 2
-            leftMargin = w >= 180 ? 0 : w
-            return parent.width
-        }
+        width: parent.width
         height: (Math.min(model.count,
                           Math.floor(parent.height / cellHeight)) * cellHeight)
                 || cellHeight
