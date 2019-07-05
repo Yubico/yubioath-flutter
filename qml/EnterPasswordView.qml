@@ -114,6 +114,7 @@ ScrollView {
                     Layout.fillWidth: true
                     KeyNavigation.backtab: unlockBtn
                     KeyNavigation.tab: rememberPasswordCheckBox
+                    onSubmit: validate()
                 }
 
                 RowLayout {

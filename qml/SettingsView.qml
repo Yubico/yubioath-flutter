@@ -271,6 +271,7 @@ ScrollView {
                         echoMode: TextInput.Password
                         Keys.onEnterPressed: submitPassword()
                         Keys.onReturnPressed: submitPassword()
+                        onSubmit: submitPassword()
                     }
                     StyledTextField {
                         id: newPasswordField
@@ -278,6 +279,7 @@ ScrollView {
                         echoMode: TextInput.Password
                         Keys.onEnterPressed: submitPassword()
                         Keys.onReturnPressed: submitPassword()
+                        onSubmit: submitPassword()
                     }
                     StyledTextField {
                         id: confirmPasswordField
@@ -285,6 +287,7 @@ ScrollView {
                         echoMode: TextInput.Password
                         Keys.onEnterPressed: submitPassword()
                         Keys.onReturnPressed: submitPassword()
+                        onSubmit: submitPassword()
                     }
                     RowLayout {
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
