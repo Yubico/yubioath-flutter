@@ -52,33 +52,36 @@ ScrollView {
                                      requireTouchCheckBox.checked, callback)
         }
 
-        if (settings.otpMode) {
-            yubiKey.otpSlotStatus(function (resp) {
-                if (resp.success) {
-                    if (resp.status[parseInt(
-                                        otpSlotComboBox.currentText) - 1]) {
-                        navigator.confirm(
-                                    "Overwrite?",
-                                    "The slot is already configured, do you want to overwrite it?",
-                                    _otpAddCredential)
+        if (acceptableInput()) {
+            if (settings.otpMode) {
+                yubiKey.otpSlotStatus(function (resp) {
+                    if (resp.success) {
+                        if (resp.status[parseInt(
+                                            otpSlotComboBox.currentText) - 1]) {
+                            navigator.confirm(
+                                        "Overwrite?",
+                                        "The slot is already configured, do you want to overwrite it?",
+                                        _otpAddCredential)
+                        } else {
+                            _otpAddCredential()
+                        }
                     } else {
-                        _otpAddCredential()
+                        navigator.snackBarError(navigator.getErrorMessage(
+                                                    resp.error_id))
                     }
-                } else {
-                    navigator.snackBarError(navigator.getErrorMessage(
-                                                resp.error_id))
-                }
-            })
-        } else {
-            yubiKey.ccidAddCredential(nameLbl.text, secretKeyLbl.text,
-                                      issuerLbl.text,
-                                      oathTypeComboBox.currentText,
-                                      algoComboBox.currentText,
-                                      digitsComboBox.currentText,
-                                      periodLbl.text,
-                                      requireTouchCheckBox.checked, callback)
+                })
+            } else {
+                yubiKey.ccidAddCredential(nameLbl.text, secretKeyLbl.text,
+                                          issuerLbl.text,
+                                          oathTypeComboBox.currentText,
+                                          algoComboBox.currentText,
+                                          digitsComboBox.currentText,
+                                          periodLbl.text,
+                                          requireTouchCheckBox.checked, callback)
+            }
         }
     }
+
 
     Keys.onEscapePressed: navigator.home()
 
@@ -189,6 +192,7 @@ ScrollView {
                     text: credential
                           && credential.issuer ? credential.issuer : ""
                     visible: !settings.otpMode
+                    onSubmit: addCredential()
                 }
                 StyledTextField {
                     id: nameLbl
@@ -197,6 +201,7 @@ ScrollView {
                     required: true
                     text: credential && credential.name ? credential.name : ""
                     visible: !settings.otpMode
+                    onSubmit: addCredential()
                 }
                 StyledTextField {
                     id: secretKeyLbl
@@ -209,6 +214,7 @@ ScrollView {
                     validateText: "Invalid Base32 format (valid characters are A-Z and 2-7)"
                     validateRegExp: /^[2-7a-zA-Z]+=*$/
                     Layout.bottomMargin: 12
+                    onSubmit: addCredential()
                 }
 
                 RowLayout {

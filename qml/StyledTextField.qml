@@ -26,6 +26,7 @@ Item {
         }
         return false
     }
+    signal submit()
 
     id: textFieldContainer
     height: 50
@@ -80,6 +81,10 @@ Item {
             font.pixelSize: 13
             selectedTextColor: defaultBackground
             Keys.onEscapePressed: textField.focus = false
+            Keys.onReturnPressed: {
+                textField.focus = false
+                textFieldContainer.submit()
+            }
             height: 40
             activeFocusOnTab: true
             focus: true
