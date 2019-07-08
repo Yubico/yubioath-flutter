@@ -76,6 +76,7 @@ ApplicationWindow {
         (poller.running = isInForeground || settings.closeToTray)
     }
     Component.onCompleted: {
+        app.visible = !(settings.closeToTray && settings.hideOnLaunch)
         updateTrayVisibility()
         ensureValidWindowPosition()
     }
@@ -113,7 +114,6 @@ ApplicationWindow {
     function updateTrayVisibility() {
         // When the tray option is enabled, closing the last window
         // doesn't actually close the application.
-        app.visible = !(settings.closeToTray && settings.hideOnLaunch)
         application.quitOnLastWindowClosed = !settings.closeToTray
     }
 
