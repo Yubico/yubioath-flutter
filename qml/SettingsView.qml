@@ -416,7 +416,7 @@ ScrollView {
 
                     settings.useCustomReader = customReaderCheckBox.checked
                     settings.customReaderName = readerFilter.text
-                    yubiKey.clearEntriesAndDevices()
+                    yubiKey.clearCurrentDeviceAndEntries()
                     yubiKey.refreshDevicesDefault()
                     navigator.goToSettings()
                     navigator.snackBar("Authenticator mode changed")

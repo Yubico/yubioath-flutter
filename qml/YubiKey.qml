@@ -203,7 +203,7 @@ Python {
         doCall('yubikey.controller.check_readers', [filter], cb)
     }
 
-    function clearEntriesAndDevices() {
+    function clearCurrentDeviceAndEntries() {
         currentDevice = null
         currentDeviceValidated = false
         entries.clear()
@@ -225,13 +225,14 @@ Python {
                         calculateAll(navigator.goToCredentialsIfNotInSettings)
                     } else {
                         // no selectable device
-                        clearEntriesAndDevices()
+                        clearCurrentDeviceAndEntries()
                         navigator.goToCredentialsIfNotInSettings()
                     }
                 }
             } else {
                 console.log("refreshing devices failed:", resp.error_id)
-                clearEntriesAndDevices()
+                availableDevices = []
+                clearCurrentDeviceAndEntries()
             }
             poller.running = true
         })
@@ -249,7 +250,7 @@ Python {
                 }
             } else {
                 console.log("check descriptors failed:", resp.error_id)
-                clearEntriesAndDevices()
+                clearCurrentDeviceAndEntries()
             }
         }
 
@@ -276,7 +277,7 @@ Python {
                     currentDeviceValidated = false
                     navigator.goToEnterPasswordIfNotInSettings()
                 } else {
-                    clearEntriesAndDevices()
+                    clearCurrentDeviceAndEntries()
                     console.log("calculateAll failed:", resp.error_id)
                 }
             }
