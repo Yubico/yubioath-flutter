@@ -217,12 +217,14 @@ Python {
             if (resp.success) {
                 availableDevices = resp.devices
                 nextCalculateAll = -1
-                if (!availableDevices.some(dev => dev.serial === currentDevice)) {
+                // no current device, or current device is no longer available, pick a new one
+                if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
                     if (availableDevices.some(dev => dev.selectable)) {
                         // pick the first selectable device
                         currentDevice = resp.devices.find(dev => dev.selectable)
                         calculateAll(navigator.goToCredentialsIfNotInSettings)
                     } else {
+                        // no selectable device
                         clearEntriesAndDevices()
                         navigator.goToCredentialsIfNotInSettings()
                     }
