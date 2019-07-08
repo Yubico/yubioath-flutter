@@ -192,9 +192,14 @@ Pane {
             if (touchCredential) {
                 navigator.snackBar("Touch your YubiKey")
             }
+            if (hotpCredential) {
+                hotpTouchTimer.start()
+            }
+
             if (settings.otpMode) {
                 yubiKey.otpCalculate(credential, function (resp) {
                     if (resp.success) {
+                        hotpTouchTimer.stop()
                         entries.updateEntry(resp)
                         if (copy) {
                             copyCode(resp.code.value)
@@ -207,7 +212,7 @@ Pane {
             } else {
                 yubiKey.calculate(credential, function (resp) {
                     if (resp.success) {
-
+                        hotpTouchTimer.stop()
                         // This should not be needed, but it
                         // makes the UI update instantly.
                         code = resp.code
@@ -302,6 +307,14 @@ Pane {
         interval: 5000
         onTriggered: hotpCredentialInCoolDown = false
     }
+
+    Timer {
+        id: hotpTouchTimer
+        triggeredOnStart: false
+        interval: 500
+        onTriggered: navigator.snackBar("Touch your YubiKey")
+    }
+
 
     Item {
 
