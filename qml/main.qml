@@ -72,7 +72,9 @@ ApplicationWindow {
     // Don't refresh credentials when window is minimized or hidden
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
     property bool isInForeground: visibility != 3 && visibility != 0
-
+    onIsInForegroundChanged: {
+        (poller.running = isInForeground || settings.closeToTray)
+    }
     Component.onCompleted: {
         updateTrayVisibility()
         ensureValidWindowPosition()
@@ -261,7 +263,7 @@ ApplicationWindow {
         triggeredOnStart: true
         interval: 1000
         repeat: true
-        running: app.isInForeground
+        running: app.isInForeground || settings.closeToTray
         onTriggered: yubiKey.poll()
     }
 
