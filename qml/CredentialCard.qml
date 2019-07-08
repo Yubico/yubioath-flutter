@@ -79,6 +79,7 @@ Pane {
                     text: favorite ? "Remove as favorite" : "Set as favorite"
                     onTriggered: toggleFavorite()
                 }
+                /*
                 MenuItem {
                     icon.source: favoriteDefault ? "../images/favorite.svg" : "../images/favorite_border.svg"
                     icon.color: iconButtonNormal
@@ -87,6 +88,7 @@ Pane {
                     text: favoriteDefault ? "Remove as default" : "Make default"
                     onTriggered: toggleDefault()
                 }
+                */
                 MenuSeparator {
                     padding: 0
                     topPadding: 4
