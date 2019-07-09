@@ -46,7 +46,7 @@ ScrollView {
 
     function submitPassword() {
         if (acceptableInput()) {
-            if (yubiKey.currentDeviceHasPassword) {
+            if (yubiKey.currentDevice.hasPassword) {
                 changePassword()
             } else {
                 setPassword()
@@ -56,7 +56,7 @@ ScrollView {
 
     function acceptableInput() {
         if (yubiKey.currentDeviceValidated) {
-            if (yubiKey.currentDeviceHasPassword
+            if (yubiKey.currentDevice.hasPassword
                     && currentPasswordField.text.length == 0) {
                 return false
             }
@@ -77,6 +77,7 @@ ScrollView {
                 console.log("change password failed:", resp.error_id)
             }
             clearPasswordFields()
+            yubiKey.refreshDevicesDefault()
         })
     }
 
@@ -84,13 +85,14 @@ ScrollView {
         yubiKey.setPassword(newPasswordField.text, false, function (resp) {
             if (resp.success) {
                 navigator.snackBar("Password set")
-                yubiKey.currentDeviceHasPassword = true
+                yubiKey.currentDevice.hasPassword = true
                 passwordManagementPanel.isExpanded = false
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
                 console.log("set password failed:", resp.error_id)
             }
             clearPasswordFields()
+            yubiKey.refreshDevicesDefault()
         })
     }
 
@@ -100,13 +102,14 @@ ScrollView {
                 yubiKey.removePassword(function (resp) {
                     if (resp.success) {
                         navigator.snackBar("Password removed")
-                        yubiKey.currentDeviceHasPassword = false
+                        yubiKey.currentDevice.hasPassword = false
                         passwordManagementPanel.isExpanded = false
                     } else {
                         navigator.snackBarError(getErrorMessage(resp.error_id))
                         console.log("remove password failed:", resp.error_id)
                     }
                     clearPasswordFields()
+                    yubiKey.refreshDevicesDefault()
                 })
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
@@ -241,6 +244,7 @@ ScrollView {
                                                                 entries.clear()
                                                                 yubiKey.currentDevice = dev
                                                                 currentDevicePanel.expandAction()
+                                                                yubiKey.refreshDevicesDefault()
                                                             } else {
                                                                 console.log("select device failed", resp.error_id)
                                                             }
@@ -258,7 +262,7 @@ ScrollView {
 
             StyledExpansionPanel {
                 id: passwordManagementPanel
-                label: yubiKey.currentDeviceHasPassword ? "Change Password" : "Set Password"
+                label: yubiKey.currentDevice.hasPassword ? "Change Password" : "Set Password"
                 description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
                 isTopPanel: true
 
@@ -266,7 +270,7 @@ ScrollView {
 
                     StyledTextField {
                         id: currentPasswordField
-                        visible: yubiKey.currentDeviceHasPassword ? true : false
+                        visible: yubiKey.currentDevice.hasPassword ? true : false
                         labelText: qsTr("Current Password")
                         echoMode: TextInput.Password
                         Keys.onEnterPressed: submitPassword()
@@ -293,7 +297,7 @@ ScrollView {
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
                         StyledButton {
                             id: removePasswordBtn
-                            visible: yubiKey.currentDeviceHasPassword
+                            visible: yubiKey.currentDevice.hasPassword
                             enabled: currentPasswordField.text.length > 0
                             text: "Remove"
                             flat: true
@@ -306,7 +310,7 @@ ScrollView {
                         }
                         StyledButton {
                             id: applyPassword
-                            text: yubiKey.currentDeviceHasPassword ? "Change" : "Set"
+                            text: yubiKey.currentDevice.hasPassword ? "Change" : "Set"
                             enabled: acceptableInput()
                             onClicked: submitPassword()
                         }
@@ -332,7 +336,7 @@ ScrollView {
                                                       navigator.snackBar(
                                                                   "Reset completed")
                                                       yubiKey.currentDeviceValidated = true
-                                                      yubiKey.currentDeviceHasPassword = false
+                                                      yubiKey.currentDevice.hasPassword = false
                                                   } else {
                                                       navigator.snackBarError(
                                                                   navigator.getErrorMessage(

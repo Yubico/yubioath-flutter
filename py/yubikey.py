@@ -228,6 +228,13 @@ class Controller(object):
                 serial = dev.serial
                 selectable = dev.mode.has_transport(
                     TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
+
+                if selectable and not otp_mode:
+                    controller = OathController(dev.driver)
+                    has_password = controller.locked
+                else:
+                    has_password = False
+
                 if serial not in handled_serials:
                     handled_serials.add(serial)
                     matches = [
@@ -244,6 +251,7 @@ class Controller(object):
                             'serial': serial or '',
                             'usbInterfacesEnabled': str(
                                 dev.mode).split('+'),
+                            'hasPassword': has_password,
                             'selectable': selectable
                         })
                         descs_to_match.remove(matching_descriptor)
@@ -256,6 +264,8 @@ class Controller(object):
             self._reader_filter = reader_filter
             dev = self._get_dev_from_reader()
             if dev:
+                controller = OathController(dev.driver)
+                has_password = controller.locked
                 self._devices.append({
                     'name': dev.device_name,
                     'version': '.'.join(
@@ -263,6 +273,7 @@ class Controller(object):
                         ) if dev.version else '',
                     'serial': dev.serial or '',
                     'usbInterfacesEnabled': str(dev.mode).split('+'),
+                    'hasPassword': has_password,
                     'selectable': True
                 })
                 return success({'devices': self._devices})

@@ -13,7 +13,6 @@ Python {
     property var availableDevices: []
 
     property var currentDevice
-    property bool currentDeviceHasPassword: false
     property bool currentDeviceValidated: false
 
     signal enableLogging(string logLevel, string logFile)
@@ -228,6 +227,9 @@ Python {
                         clearCurrentDeviceAndEntries()
                         navigator.goToCredentialsIfNotInSettings()
                     }
+                } else {
+                    // the same one but potentially updated
+                    currentDevice = resp.devices.find(dev => dev.serial === currentDevice.serial)
                 }
             } else {
                 console.log("refreshing devices failed:", resp.error_id)
@@ -273,7 +275,7 @@ Python {
             } else {
                 if (resp.error_id === 'access_denied') {
                     entries.clear()
-                    currentDeviceHasPassword = true
+                    currentDevice.hasPassword = true
                     currentDeviceValidated = false
                     navigator.goToEnterPasswordIfNotInSettings()
                 } else {
