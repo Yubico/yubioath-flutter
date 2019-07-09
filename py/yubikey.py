@@ -303,6 +303,7 @@ class Controller(object):
 
     def select_current_serial(self, serial):
         self._current_serial = serial
+        self._current_derived_key = None
         return success()
 
     def ccid_calculate_all(self, timestamp):

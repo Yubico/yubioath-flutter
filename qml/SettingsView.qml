@@ -46,7 +46,7 @@ ScrollView {
 
     function submitPassword() {
         if (acceptableInput()) {
-            if (yubiKey.currentDevice.hasPassword) {
+            if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword) {
                 changePassword()
             } else {
                 setPassword()
@@ -56,7 +56,7 @@ ScrollView {
 
     function acceptableInput() {
         if (yubiKey.currentDeviceValidated) {
-            if (yubiKey.currentDevice.hasPassword
+            if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
                     && currentPasswordField.text.length == 0) {
                 return false
             }
@@ -262,7 +262,7 @@ ScrollView {
 
             StyledExpansionPanel {
                 id: passwordManagementPanel
-                label: yubiKey.currentDevice.hasPassword ? "Change Password" : "Set Password"
+                label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? "Change Password" : "Set Password"
                 description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
                 isTopPanel: true
 
@@ -270,7 +270,7 @@ ScrollView {
 
                     StyledTextField {
                         id: currentPasswordField
-                        visible: yubiKey.currentDevice.hasPassword ? true : false
+                        visible: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
                         labelText: qsTr("Current Password")
                         echoMode: TextInput.Password
                         Keys.onEnterPressed: submitPassword()
@@ -297,7 +297,7 @@ ScrollView {
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
                         StyledButton {
                             id: removePasswordBtn
-                            visible: yubiKey.currentDevice.hasPassword
+                            visible: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
                             enabled: currentPasswordField.text.length > 0
                             text: "Remove"
                             flat: true
@@ -310,7 +310,7 @@ ScrollView {
                         }
                         StyledButton {
                             id: applyPassword
-                            text: yubiKey.currentDevice.hasPassword ? "Change" : "Set"
+                            text: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? "Change" : "Set"
                             enabled: acceptableInput()
                             onClicked: submitPassword()
                         }
