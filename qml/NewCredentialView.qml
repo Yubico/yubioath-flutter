@@ -304,8 +304,7 @@ ScrollView {
                     id: addBtn
                     text: "Add"
                     toolTipText: "Add credential to YubiKey"
-                    enabled: secretKeyLbl.validated && nameLbl.validated
-                             && acceptableInput()
+                    enabled: settings.otpMode ? secretKeyLbl.validated && acceptableInput() :  secretKeyLbl.validated && acceptableInput() && nameLbl.validated
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     onClicked: addCredential()
                 }
