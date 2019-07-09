@@ -45,14 +45,13 @@ Pane {
     }
 
     NoCredentialsSection {
-        visible: entries.count === 0 && yubiKey.currentDeviceValidated
-                 && !!yubiKey.currentDevice
+        visible: entries.count === 0 && !!yubiKey.currentDevice && yubiKey.currentDevice.validated
         enabled: visible
     }
 
     NoResultsSection {
-        visible: entries.count > 0 && yubiKey.currentDeviceValidated
-                 && filteredCredentials().count === 0 && !!yubiKey.currentDevice
+        visible: entries.count > 0 && !!yubiKey.currentDevice && yubiKey.currentDevice.validated
+                 && filteredCredentials().count === 0
         enabled: visible
     }
 

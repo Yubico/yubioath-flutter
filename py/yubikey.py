@@ -252,7 +252,8 @@ class Controller(object):
                             'usbInterfacesEnabled': str(
                                 dev.mode).split('+'),
                             'hasPassword': has_password,
-                            'selectable': selectable
+                            'selectable': selectable,
+                            'validated': True
                         })
                         descs_to_match.remove(matching_descriptor)
         return res
@@ -274,7 +275,8 @@ class Controller(object):
                     'serial': dev.serial or '',
                     'usbInterfacesEnabled': str(dev.mode).split('+'),
                     'hasPassword': has_password,
-                    'selectable': True
+                    'selectable': True,
+                    'validated': True
                 })
                 return success({'devices': self._devices})
             else:

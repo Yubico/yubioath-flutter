@@ -40,7 +40,7 @@ ToolBar {
     }
 
     function shouldShowAddCredential() {
-        return !!(yubiKey.currentDevice && yubiKey.currentDeviceValidated
+        return !!(!!yubiKey.currentDevice && yubiKey.currentDevice.validated
                   && navigator.currentItem
                   && navigator.currentItem.objectName === 'credentialsView'
                   && !shouldShowCredentialOptions())
