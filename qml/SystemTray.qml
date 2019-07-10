@@ -5,10 +5,8 @@ import QtQml 2.12
 SystemTrayIcon {
     visible: settings.closeToTray
     icon.source: "../images/windowicon.png"
-    onActivated: {
-        sysTrayMenu.open()
-        sysTrayInstantiator.model = getFavoriteEntries()
-    }
+    onActivated: sysTrayInstantiator.model = getFavoriteEntries()
+
 
     menu: Menu {
         id: sysTrayMenu
