@@ -4,6 +4,7 @@
 import json
 import logging
 import types
+import time
 import ykman.logging_setup
 from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
@@ -219,6 +220,7 @@ class Controller(object):
         res = []
         descs_to_match = self._descs[:]
         handled_serials = set()
+        time.sleep(0.5)  # Let macOS take time to see the reader
         for transport in [TRANSPORT.CCID, TRANSPORT.OTP, TRANSPORT.FIDO]:
             if not descs_to_match:
                 return res
