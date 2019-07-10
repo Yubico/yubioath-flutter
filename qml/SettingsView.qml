@@ -55,7 +55,7 @@ ScrollView {
     }
 
     function acceptableInput() {
-        if (!!yubiKey.currentDevice && yubiKey.currentDevice.validated) {
+        if (!!yubiKey.currentDevice && yubiKey.ccurrentDeviceValidated) {
             if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
                     && currentPasswordField.text.length == 0) {
                 return false
@@ -314,7 +314,7 @@ ScrollView {
                                                       entries.clear()
                                                       navigator.snackBar(
                                                                   "Reset completed")
-                                                      yubiKey.currentDevice.validated = true
+                                                      yubiKey.currentDeviceValidated = true
                                                       yubiKey.currentDevice.hasPassword = false
                                                   } else {
                                                       navigator.snackBarError(

@@ -27,8 +27,8 @@ ScrollView {
             yubiKey.validate(passwordField.text,
                              rememberPasswordCheckBox.checked, function (resp) {
                                  if (resp.success) {
-                                     yubiKey.calculateAll(
-                                                 navigator.goToCredentials)
+                                     yubiKey.currentDeviceValidated = true
+                                     yubiKey.calculateAll(navigator.goToCredentials)
                                  } else {
                                      clear()
                                      navigator.snackBarError(

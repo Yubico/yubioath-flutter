@@ -26,24 +26,14 @@ ToolBar {
 
     property bool showSearch: shouldShowSearch()
     property bool showBackBtn: navigator.depth > 1
-    property bool showAddCredentialBtn: shouldShowAddCredential()
-    property bool showSettingsBtn: shouldShowSettings()
     property bool showTitleLbl: !!navigator.currentItem
                                 && !!navigator.currentItem.title
-
     property alias searchField: searchField
 
-    function shouldShowSearch() {
+    function shouldShowSearch() {        
         return !!(navigator.currentItem
                   && navigator.currentItem.objectName === 'credentialsView'
                   && entries.count > 0 && !settings.otpMode)
-    }
-
-    function shouldShowAddCredential() {
-        return !!(!!yubiKey.currentDevice && yubiKey.currentDevice.validated
-                  && navigator.currentItem
-                  && navigator.currentItem.objectName === 'credentialsView'
-                  && !shouldShowCredentialOptions())
     }
 
     function shouldShowSettings() {
@@ -266,7 +256,12 @@ ToolBar {
 
             ToolButton {
                 id: addCredentialBtn
-                visible: showAddCredentialBtn
+                visible: !!yubiKey.currentDevice
+                         && yubiKey.currentDeviceValidated
+                         && navigator.currentItem
+                         && navigator.currentItem.objectName === 'credentialsView'
+                         && !app.currentCredentialCard
+
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
                 onClicked: yubiKey.scanQr()
@@ -299,7 +294,7 @@ ToolBar {
             ToolButton {
                 id: settingsBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: showSettingsBtn
+                visible: shouldShowSettings()
                 onClicked: navigator.goToSettings()
 
                 Keys.onReturnPressed: navigator.goToSettings()

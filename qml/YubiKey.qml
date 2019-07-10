@@ -13,6 +13,7 @@ Python {
     property var availableDevices: []
 
     property var currentDevice
+    property bool currentDeviceValidated
 
     signal enableLogging(string logLevel, string logFile)
     signal disableLogging
@@ -240,13 +241,14 @@ Python {
     }
 
     function poll() {
+
         function callback(resp) {
             if (resp.success) {
                 if (resp.needToRefresh) {
                     refreshDevicesDefault()
                 }
                 if (timeToCalculateAll() && !!currentDevice
-                        && currentDevice.validated) {
+                        && currentDeviceValidated) {
                     calculateAll()
                 }
             } else {
@@ -267,7 +269,7 @@ Python {
             if (resp.success) {
                 entries.updateEntries(resp.entries)
                 updateNextCalculateAll()
-                currentDevice.validated = true
+                currentDeviceValidated = true
                 if (cb) {
                     cb()
                 }
@@ -275,7 +277,7 @@ Python {
                 if (resp.error_id === 'access_denied') {
                     entries.clear()
                     currentDevice.hasPassword = true
-                    currentDevice.validated = false
+                    currentDeviceValidated = false
                     navigator.goToEnterPasswordIfNotInSettings()
                 } else {
                     clearCurrentDeviceAndEntries()

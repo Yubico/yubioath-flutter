@@ -104,7 +104,7 @@ Pane {
                     icon.color: iconButtonNormal
                     icon.width: 20
                     icon.height: 20
-                    enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.validated
+                    enabled: !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
                     text: "Add credential"
                     onTriggered: yubiKey.scanQr()
                 }

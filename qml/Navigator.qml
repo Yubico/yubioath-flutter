@@ -39,7 +39,7 @@ StackView {
 
             // If locked, prompt for password
             if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                    && !yubiKey.currentDevice.validated) {
+                    && !yubiKey.currentDeviceValidated) {
                 clearAndPush(enterPasswordView)
                 return
             }
