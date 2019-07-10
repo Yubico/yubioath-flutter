@@ -20,6 +20,7 @@ ScrollView {
     property bool manualEntry
 
     contentWidth: app.width
+    contentHeight: content.implicitHeight
 
     function acceptableInput() {
         if (settings.otpMode) {

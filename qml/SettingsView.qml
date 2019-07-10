@@ -12,6 +12,7 @@ ScrollView {
     id: settingsPanel
     objectName: 'settingsView'
     contentWidth: app.width
+    contentHeight: content.implicitHeight
 
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical.width: 8
