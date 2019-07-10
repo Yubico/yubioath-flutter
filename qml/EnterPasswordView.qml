@@ -11,7 +11,6 @@ ScrollView {
 
     id: enterPasswordViewId
     objectName: 'enterPasswordView'
-    property string title: "Unlock YubiKey"
 
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical.width: 8
@@ -42,7 +41,7 @@ ScrollView {
         }
     }
 
-    spacing: 8
+    spacing: 0
     padding: 0
 
     Component.onCompleted: {
@@ -59,6 +58,7 @@ ScrollView {
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
             Layout.topMargin: 32
+
             background: Rectangle {
                 color: isDark() ? defaultDarkLighter : defaultLightDarker
                 layer.enabled: true
@@ -78,17 +78,17 @@ ScrollView {
                        < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
                 spacing: 8
 
-                RowLayout {
-                    Label {
-                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                        text: "Unlock YubiKey"
-                        color: Material.primary
-                        font.pixelSize: 14
-                        font.weight: Font.Medium
-                        topPadding: 8
-                        bottomPadding: 8
-                        Layout.fillWidth: true
-                    }
+                Label {
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                    text: "Unlock YubiKey"
+                    color: Material.primary
+                    font.pixelSize: 16
+                    font.weight: Font.Normal
+                    Layout.fillWidth: true
+                    topPadding: 8
+                    bottomPadding: 8
+                    Layout.leftMargin: 8
+                    Layout.rightMargin: 8
                 }
 
                 Label {
@@ -100,9 +100,11 @@ ScrollView {
                     wrapMode: Text.WordWrap
                     font.pixelSize: 13
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                    color: yubicoGrey
                     Layout.fillWidth: true
-                    topPadding: 8
-                    color: formText
+                    bottomPadding: 8
+                    Layout.leftMargin: 8
+                    Layout.rightMargin: 8
                 }
 
                 StyledTextField {
@@ -115,31 +117,40 @@ ScrollView {
                     KeyNavigation.backtab: unlockBtn
                     KeyNavigation.tab: rememberPasswordCheckBox
                     onSubmit: validate()
+                    Layout.leftMargin: 8
+                    Layout.rightMargin: 8
                 }
 
                 RowLayout {
+                    Layout.fillWidth: true
                     CheckBox {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                         id: rememberPasswordCheckBox
                         font.pixelSize: 12
                         text: "Remember password"
                         leftPadding: 0
-                        indicator.width: 16
-                        indicator.height: 16
                         KeyNavigation.backtab: passwordField.textField
                         KeyNavigation.tab: unlockBtn
+                        indicator.width: 16
+                        indicator.height: 16
+                        Layout.leftMargin: 8
+                        Layout.topMargin: -8
                     }
-                }
-
-                StyledButton {
-                    id: unlockBtn
-                    text: "Unlock"
-                    toolTipText: "Unlock YubiKey"
-                    enabled: passwordField.text.valueOf().length > 0
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    onClicked: validate()
-                    KeyNavigation.backtab: rememberPasswordCheckBox
-                    KeyNavigation.tab: passwordField.textField
+                    Item {
+                        Layout.fillWidth: true
+                    }
+                    StyledButton {
+                        id: unlockBtn
+                        text: "Unlock"
+                        toolTipText: "Unlock YubiKey"
+                        enabled: passwordField.text.valueOf().length > 0
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        onClicked: validate()
+                        KeyNavigation.backtab: rememberPasswordCheckBox
+                        KeyNavigation.tab: passwordField.textField
+                        Layout.rightMargin: 8
+                        Layout.bottomMargin: 8
+                    }
                 }
             }
         }
