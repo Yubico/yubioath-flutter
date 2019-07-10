@@ -272,53 +272,8 @@ ApplicationWindow {
         id: yubiKey
     }
 
-    SystemTrayIcon {
+    SystemTray {
         id: sysTrayIcon
-        visible: settings.closeToTray
-        iconSource: "qrc:/images/windowicon.png"
-        onActivated: sysTrayInstantiator.model = getFavoriteEntries()
-
-        menu: Menu {
-            id: sysTrayMenu
-
-            Instantiator {
-                id: sysTrayInstantiator
-                model: getFavoriteEntries()
-                onObjectAdded: sysTrayMenu.insertItem(index, object)
-                onObjectRemoved: sysTrayMenu.removeItem(object)
-
-                delegate: MenuItem {
-                    text: {
-                        if (credential.issuer) {
-                            return credential.issuer + " (" + credential.name + ")"
-                        } else {
-                            return credential.name
-                        }
-                    }
-                    onTriggered: calculateFavorite(credential, text)
-                }
-            }
-
-            MenuSeparator {
-            }
-
-            MenuItem {
-                text: qsTr("Show credentials")
-                onTriggered: {
-                    show()
-                    raise()
-                    requestActivate()
-                }
-            }
-
-            MenuSeparator {
-            }
-
-            MenuItem {
-                text: qsTr("Quit")
-                onTriggered: Qt.quit()
-            }
-        }
     }
 
     Navigator {
