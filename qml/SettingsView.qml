@@ -138,27 +138,6 @@ ScrollView {
     }
 
     ListModel {
-        id: themeColor
-
-        ListElement {
-            text: "Green"
-            value: "#9aca3c"
-        }
-        ListElement {
-            text: "Blue"
-            value: "#284c61"
-        }
-        ListElement {
-            text: "Red"
-            value: "#fd5552"
-        }
-        ListElement {
-            text: "Grey"
-            value: "#939598"
-        }
-    }
-
-    ListModel {
         id: otpModeDigits
 
         ListElement {

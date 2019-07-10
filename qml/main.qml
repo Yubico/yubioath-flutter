@@ -121,7 +121,8 @@ ApplicationWindow {
         if (credential && credential.touch) {
             sysTrayIcon.showMessage(
                         "Touch required",
-                        "Touch your YubiKey now to generate code for protected credential.")
+                        "Touch your YubiKey now to generate code for protected credential.",
+                        SystemTrayIcon.NoIcon)
         }
         if (settings.otpMode) {
             yubiKey.otpCalculate(credential, function (resp) {
@@ -129,9 +130,13 @@ ApplicationWindow {
                     clipBoard.push(resp.code.value)
                     sysTrayIcon.showMessage(
                                 "Copied to clipboard",
-                                "The code for " + text + " is now in the clipboard.")
+                                "The code for " + text + " is now in the clipboard.",
+                                SystemTrayIcon.NoIcon)
                 } else {
-                    navigator.snackBarError(resp.error_id)
+                    sysTrayIcon.showMessage(
+                                "Error",
+                                "calculate failed: " + resp.error_id,
+                                SystemTrayIcon.NoIcon)
                     console.log("calculate failed:", resp.error_id)
                 }
             })
@@ -141,10 +146,13 @@ ApplicationWindow {
                     clipBoard.push(resp.code.value)
                     sysTrayIcon.showMessage(
                                 "Copied to clipboard",
-                                "The code for " + text + " is now in the clipboard.")
+                                "The code for " + text + " is now in the clipboard.",
+                                SystemTrayIcon.NoIcon)
                 } else {
-                    navigator.snackBarError(navigator.getErrorMessage(
-                                                resp.error_id))
+                    sysTrayIcon.showMessage(
+                                "Error",
+                                "calculate failed: " + resp.error_id,
+                                SystemTrayIcon.NoIcon)
                     console.log("calculate failed:", resp.error_id)
                 }
             })
@@ -225,7 +233,6 @@ ApplicationWindow {
         property bool hideOnLaunch
 
         property int theme
-        property string themeAccentColor
 
         // Keep track of window and desktop dimensions.
         property alias width: app.width
