@@ -232,7 +232,7 @@ ApplicationWindow {
         property bool closeToTray
         property bool hideOnLaunch
 
-        property int theme
+        property int theme: Material.System
 
         // Keep track of window and desktop dimensions.
         property alias width: app.width
