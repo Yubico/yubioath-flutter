@@ -27,13 +27,6 @@ install:
       ./.travis/build-macos
     fi
 
-before_script:
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]
-    then
-        pre-commit run --all-files
-    fi
-
 script:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]
