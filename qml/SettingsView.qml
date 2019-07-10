@@ -236,6 +236,7 @@ ScrollView {
                             }
                         }
                         onClicked: {
+                            yubiKey.refreshDevicesDefault()
                             var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
                             yubiKey.selectCurrentSerial(dev.serial,
                                                         function (resp) {
@@ -244,7 +245,6 @@ ScrollView {
                                                                 entries.clear()
                                                                 yubiKey.currentDevice = dev
                                                                 currentDevicePanel.expandAction()
-                                                                yubiKey.refreshDevicesDefault()
                                                             } else {
                                                                 console.log("select device failed", resp.error_id)
                                                             }

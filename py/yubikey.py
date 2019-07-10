@@ -253,7 +253,7 @@ class Controller(object):
                                 dev.mode).split('+'),
                             'hasPassword': has_password,
                             'selectable': selectable,
-                            'validated': True
+                            'validated': not has_password
                         })
                         descs_to_match.remove(matching_descriptor)
         return res
