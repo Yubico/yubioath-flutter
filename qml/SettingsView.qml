@@ -56,7 +56,7 @@ ScrollView {
     }
 
     function acceptableInput() {
-        if (!!yubiKey.currentDevice && yubiKey.ccurrentDeviceValidated) {
+        if (!!yubiKey.currentDevice && yubiKey.currentDeviceValidated) {
             if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
                     && currentPasswordField.text.length == 0) {
                 return false
