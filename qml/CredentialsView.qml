@@ -22,11 +22,6 @@ Flickable {
         z: 2
     }
 
-    Keys.onDigit1Pressed: {
-        console.log(grid.visibleArea.heightRatio)
-        console.log(grid.visibleArea.yPosition)
-    }
-
     property string title: ""
 
     function filteredCredentials() {
