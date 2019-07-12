@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-Flickable {
+ScrollView {
     id: pane
     objectName: 'credentialsView'
 
