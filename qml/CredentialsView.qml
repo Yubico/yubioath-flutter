@@ -4,9 +4,11 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-ScrollView {
+Flickable {
     id: pane
     objectName: 'credentialsView'
+
+    property var filtered: 0
 
     contentHeight: filteredCredentials().count > 0 ? grid.contentHeight : app.height - toolBar.height
 
@@ -18,6 +20,11 @@ ScrollView {
         anchors.bottom: pane.bottom
         hoverEnabled: true
         z: 2
+    }
+
+    Keys.onDigit1Pressed: {
+        console.log(grid.visibleArea.heightRatio)
+        console.log(grid.visibleArea.yPosition)
     }
 
     property string title: ""
@@ -74,17 +81,14 @@ ScrollView {
         id: grid
         displayMarginBeginning: cellHeight
         displayMarginEnd: cellHeight
-        ScrollBar.vertical: paneScrollBar
         width: (Math.min(model.count, Math.floor(parent.width / cellWidth)) * cellWidth) || cellWidth
-        height: (Math.min(model.count, Math.floor((parent.height - 44) / cellHeight)) * cellHeight) || cellHeight
+        height: (Math.min(model.count, Math.floor((parent.height - toolBar.height) / cellHeight)) * cellHeight) || cellHeight
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         onCurrentItemChanged: app.currentCredentialCard = currentItem
-        highlightFollowsCurrentItem: false
         visible: entries.count > 0
         enabled: visible
         keyNavigationWraps: false
-        flickableDirection: Flickable.StopAtBounds
         model: filteredCredentials()
         cellWidth: 362
         cellHeight: 82
@@ -100,6 +104,9 @@ ScrollView {
         Component.onCompleted: currentIndex = -1
         KeyNavigation.tab: toolBar.searchField
         KeyNavigation.up: toolBar.searchField
+        Keys.onPressed: interactive = true
+        Keys.onReleased: interactive = false
+        interactive: false
         Keys.onEscapePressed: {
             currentIndex = -1
         }
