@@ -14,7 +14,7 @@ ColumnLayout {
 
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        Layout.topMargin: -125
+        Layout.topMargin: -32
 
         StyledImage {
             source: "../images/people.svg"
