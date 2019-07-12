@@ -14,7 +14,6 @@ ColumnLayout {
 
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        Layout.topMargin: -64
 
         StyledImage {
             id: yubikeys

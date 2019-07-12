@@ -4,11 +4,21 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-Pane {
+ScrollView {
     id: pane
-    padding: entries.count === 0 ? 32 : 0
-    topPadding: entries.count === 0 ? 64 : 0
     objectName: 'credentialsView'
+
+    contentHeight: filteredCredentials().count > 0 ? grid.contentHeight : app.height - toolBar.height
+
+    ScrollBar.vertical: ScrollBar {
+        id: paneScrollBar
+        width: 8
+        anchors.top: pane.top
+        anchors.right: pane.right
+        anchors.bottom: pane.bottom
+        hoverEnabled: true
+        z: 2
+    }
 
     property string title: ""
 
@@ -62,22 +72,15 @@ Pane {
 
     GridView {
         id: grid
-        leftMargin: {
-            var cards = Math.max(Math.min(model.count, Math.floor(parent.width / cellWidth)), 1)
-            var margin = (parent.width - (cards * cellWidth)) / 2
-            return margin < 0 ? 0 : margin
-        }
-        displayMarginBeginning: 80
-        displayMarginEnd: 80
-        ScrollBar.vertical: ScrollBar {
-            width: 8
-        }
-        width: parent.width
-        height: (Math.min(model.count,
-                          Math.floor(parent.height / cellHeight)) * cellHeight)
-                || cellHeight
+        displayMarginBeginning: cellHeight
+        displayMarginEnd: cellHeight
+        ScrollBar.vertical: paneScrollBar
+        width: (Math.min(model.count, Math.floor(parent.width / cellWidth)) * cellWidth) || cellWidth
+        height: (Math.min(model.count, Math.floor((parent.height - 44) / cellHeight)) * cellHeight) || cellHeight
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         onCurrentItemChanged: app.currentCredentialCard = currentItem
+        highlightFollowsCurrentItem: false
         visible: entries.count > 0
         enabled: visible
         keyNavigationWraps: false
