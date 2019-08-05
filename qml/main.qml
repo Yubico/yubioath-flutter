@@ -76,9 +76,10 @@ ApplicationWindow {
         (poller.running = isInForeground || settings.closeToTray)
     }
     Component.onCompleted: {
-        app.visible = !(settings.closeToTray && settings.hideOnLaunch)
         updateTrayVisibility()
+        ensureMinimumWindowSize()
         ensureValidWindowPosition()
+        app.visible = !(settings.closeToTray && settings.hideOnLaunch)
     }
 
     Component.onDestruction: saveScreenLayout()
@@ -100,6 +101,11 @@ ApplicationWindow {
     function saveScreenLayout() {
         settings.desktopAvailableWidth = Screen.desktopAvailableWidth
         settings.desktopAvailableHeight = Screen.desktopAvailableHeight
+    }
+
+    function ensureMinimumWindowSize() {
+        app.width = width < minimumWidth ? minimumWidth : width
+        app.height = height < minimumHeight ? minimumHeight : height
     }
 
     function ensureValidWindowPosition() {
