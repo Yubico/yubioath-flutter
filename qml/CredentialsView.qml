@@ -99,9 +99,16 @@ ScrollView {
         Component.onCompleted: currentIndex = -1
         KeyNavigation.tab: toolBar.searchField
         KeyNavigation.up: toolBar.searchField
-        Keys.onPressed: interactive = true
-        Keys.onReleased: interactive = false
         interactive: false
+        highlightFollowsCurrentItem: false
+        Keys.onPressed: {
+            interactive = true
+            highlightFollowsCurrentItem = true
+        }
+        Keys.onReleased: {
+            interactive = false
+            highlightFollowsCurrentItem = false
+        }
         Keys.onEscapePressed: {
             currentIndex = -1
         }
