@@ -80,6 +80,7 @@ ScrollView {
                                           periodLbl.text,
                                           requireTouchCheckBox.checked, callback)
             }
+            settings.requireTouch = requireTouchCheckBox.checked
         }
     }
 
@@ -231,7 +232,7 @@ ScrollView {
                 RowLayout {
                     CheckBox {
                         id: requireTouchCheckBox
-                        checked: settings.closeToTray
+                        checked: settings.requireTouch
                         text: "Require touch"
                         padding: 0
                         indicator.width: 16

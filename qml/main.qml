@@ -231,6 +231,7 @@ ApplicationWindow {
 
         property bool closeToTray
         property bool hideOnLaunch
+        property bool requireTouch: true
 
         property int theme: Material.System
 
