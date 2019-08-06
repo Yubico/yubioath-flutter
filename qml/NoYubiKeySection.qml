@@ -14,6 +14,7 @@ ColumnLayout {
 
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        Layout.topMargin: -32
 
         StyledImage {
             id: yubikeys
@@ -26,7 +27,14 @@ ColumnLayout {
         }
 
         Label {
-            text: "Insert your YubiKey"
+            text: {
+                if (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable)) {
+                    return "Unsupported device"
+                }
+                else {
+                    return "Insert your YubiKey"
+                }
+            }
             font.pixelSize: 16
             font.weight: Font.Normal
             lineHeight: 1.5
@@ -36,12 +44,13 @@ ColumnLayout {
         Label {
             text: {
                 if (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable)) {
-                    return "No compatible device found."
+                    return "Yubico Authenticator requires a CCID/OTP enabled and compatible YubiKey."
                 }
                 else {
                     return ""
                 }
             }
+            visible: (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable))
             Layout.minimumWidth: 320
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
