@@ -44,6 +44,12 @@ ScrollView {
         return entries
     }
 
+    function calculate() {
+        if (grid.currentIndex !== -1) {
+            grid.currentItem.calculateCard(true)
+        }
+    }
+
     Component {
         id: entriesComponent
         EntriesModel {
@@ -104,11 +110,9 @@ ScrollView {
         Keys.onPressed: interactive = true
         Keys.onReleased: interactive = false
         Keys.onEscapePressed: currentIndex = -1
-        Keys.onReturnPressed: {
-            if (currentIndex !== -1) {
-                currentItem.calculateCard(true)
-            }
-        }
+        Keys.onSpacePressed: calculate()
+        Keys.onEnterPressed: calculate()
+        Keys.onReturnPressed: calculate()
         Keys.onDeletePressed: {
             if (currentIndex !== -1) {
                 currentItem.deleteCard()
