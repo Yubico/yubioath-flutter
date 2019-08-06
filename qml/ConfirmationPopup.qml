@@ -17,6 +17,13 @@ Dialog {
         radius: 4
     }
 
+    onClosed: {
+        focus = false
+        navigator.focus = true
+    }
+
+    Component.onCompleted: btnCancel.forceActiveFocus()
+
     property var acceptedCb
 
     property string heading
@@ -56,23 +63,47 @@ Dialog {
             Layout.topMargin: 14
             Layout.rightMargin: -22
             Layout.bottomMargin: -22
-            onRejected: close()
+            onRejected: {
+                focus = false
+                close()
+                navigator.focus = true
+            }
             onAccepted: {
+                focus = false
                 acceptedCb()
                 close()
+                navigator.focus = true
             }
 
             StyledButton {
+                id: btnAccept
                 text: qsTr(buttonAccept)
                 flat: true
+                enabled: true
                 font.capitalization: Font.capitalization
                 DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+                KeyNavigation.tab: btnCancel
+                Keys.onReturnPressed: {
+                    focus = false
+                    acceptedCb()
+                    close()
+                    navigator.focus = true
+                }
             }
             StyledButton {
+                id: btnCancel
                 text: qsTr(buttonCancel)
                 flat: true
+                enabled: true
                 font.capitalization: Font.capitalization
                 DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
+                KeyNavigation.tab: btnAccept
+                Keys.onReturnPressed: {
+                    focus = false
+                    close()
+                    navigator.focus = true
+                }
+
             }
         }
     }
