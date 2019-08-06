@@ -98,20 +98,12 @@ ScrollView {
         focus: visible
         Component.onCompleted: currentIndex = -1
         KeyNavigation.tab: toolBar.searchField
-        KeyNavigation.up: toolBar.searchField
+        KeyNavigation.up: paneScrollBar.position === 0 ? toolBar.searchField : null
         interactive: false
         highlightFollowsCurrentItem: false
-        Keys.onPressed: {
-            interactive = true
-            highlightFollowsCurrentItem = true
-        }
-        Keys.onReleased: {
-            interactive = false
-            highlightFollowsCurrentItem = false
-        }
-        Keys.onEscapePressed: {
-            currentIndex = -1
-        }
+        Keys.onPressed: interactive = true
+        Keys.onReleased: interactive = false
+        Keys.onEscapePressed: currentIndex = -1
         Keys.onReturnPressed: {
             if (currentIndex !== -1) {
                 currentItem.calculateCard(true)

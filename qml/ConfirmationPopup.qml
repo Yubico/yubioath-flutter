@@ -18,7 +18,17 @@ Dialog {
     }
 
     onClosed: {
-        focus = false
+        navigator.focus = true
+    }
+
+    onAccepted: {
+        acceptedCb()
+        close()
+        navigator.focus = true
+    }
+
+    onRejected: {
+        close()
         navigator.focus = true
     }
 
@@ -63,17 +73,6 @@ Dialog {
             Layout.topMargin: 14
             Layout.rightMargin: -22
             Layout.bottomMargin: -22
-            onRejected: {
-                focus = false
-                close()
-                navigator.focus = true
-            }
-            onAccepted: {
-                focus = false
-                acceptedCb()
-                close()
-                navigator.focus = true
-            }
 
             StyledButton {
                 id: btnAccept
@@ -83,12 +82,8 @@ Dialog {
                 font.capitalization: Font.capitalization
                 DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
                 KeyNavigation.tab: btnCancel
-                Keys.onReturnPressed: {
-                    focus = false
-                    acceptedCb()
-                    close()
-                    navigator.focus = true
-                }
+                Keys.onReturnPressed: accept()
+                onClicked: accept()
             }
             StyledButton {
                 id: btnCancel
@@ -98,12 +93,8 @@ Dialog {
                 font.capitalization: Font.capitalization
                 DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
                 KeyNavigation.tab: btnAccept
-                Keys.onReturnPressed: {
-                    focus = false
-                    close()
-                    navigator.focus = true
-                }
-
+                Keys.onReturnPressed: reject()
+                onClicked: reject()
             }
         }
     }

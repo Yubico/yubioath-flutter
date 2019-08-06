@@ -69,7 +69,7 @@ ToolBar {
             visible: showTitleLbl
             text: showTitleLbl ? navigator.currentItem.title : ""
             font.pixelSize: 16
-            x: (parent.width - width) / 2
+            Layout.leftMargin: -32
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
             Layout.fillWidth: true
