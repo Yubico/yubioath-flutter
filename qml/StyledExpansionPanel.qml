@@ -53,10 +53,20 @@ Pane {
     }
 
     function expandAction() {
+        function collapseAll() {
+            for (var i = 0; i < parent.children.length; ++i) {
+                if (!!parent.children[i] &&
+                        parent.children[i].toString().indexOf("StyledExpansionPanel") === 0) {
+                    parent.children[i].isExpanded = false
+                }
+            }
+        }
+
         if (isEnabled) {
             if (isExpanded) {
                 isExpanded = false
             } else {
+                collapseAll()
                 isExpanded = true
             }
         }
