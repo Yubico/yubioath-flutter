@@ -50,6 +50,13 @@ Pane {
             color: formDropShdaow
             transparentBorder: true
         }
+        MouseArea {
+            onClicked: expandAction()
+            width: parent.width
+            height: parent.height < 71 ? parent.height : 71
+            enabled: isEnabled
+            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+        }
     }
 
     function expandAction() {
