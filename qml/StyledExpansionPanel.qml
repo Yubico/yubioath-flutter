@@ -148,6 +148,7 @@ Pane {
                     text: description
                     wrapMode: Text.WordWrap
                     Layout.rowSpan: 1
+                    lineHeight: 1.1
                     visible: description
                 }
             }

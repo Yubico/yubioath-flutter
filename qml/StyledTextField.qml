@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
+import Qt.labs.platform 1.1
 
 Item {
 
@@ -54,16 +55,6 @@ Item {
         }
     }
 
-    function underLineColor() {
-        if (!validateInput()) {
-            return yubicoRed
-        } else if (textField.activeFocus) {
-            return formLabel
-        } else {
-            return formUnderline
-        }
-    }
-
     Column {
 
         Label {
@@ -79,17 +70,16 @@ Item {
             selectByMouse: true
             implicitWidth: textFieldContainer.width
             font.pixelSize: 13
-            selectedTextColor: defaultBackground
             Keys.onEscapePressed: textField.focus = false
             Keys.onReturnPressed: {
                 textField.focus = false
                 textFieldContainer.submit()
             }
+            Material.accent: validateInput() ? yubicoGreen : yubicoRed
             height: 40
             activeFocusOnTab: true
             focus: true
             color: formText
-            Material.accent: formText
             placeholderText: {
                 if (textField.activeFocus) {
                     return ""
@@ -98,16 +88,45 @@ Item {
                 }
             }
             placeholderTextColor: formPlaceholderText
-            background: Item {
-                implicitWidth: parent.width
-                implicitHeight: 40
-                Rectangle {
-                    color: underLineColor()
-                    height: textField.hovered || textField.activeFocus ? 2 : 1
-                    width: parent.width
-                    y: 32
+
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.RightButton
+                hoverEnabled: true
+                cursorShape: Qt.IBeamCursor
+                onClicked: {
+                    contextMenu.open();
+                }
+                onPressAndHold: {
+                    if (mouse.source === Qt.MouseEventNotSynthesized) {
+                        contextMenu.open();
+                    }
                 }
             }
+
+            Menu {
+                id: contextMenu
+
+                MenuItem {
+                    text: "Cut"
+                    onTriggered: {
+                        textField.cut()
+                    }
+                }
+                MenuItem {
+                    text: "Copy"
+                    onTriggered: {
+                        textField.copy()
+                    }
+                }
+                MenuItem {
+                    text: "Paste"
+                    onTriggered: {
+                        textField.paste()
+                    }
+                }
+            }
+
         }
 
         Label {
