@@ -74,7 +74,7 @@ Item {
             height: 2
             Layout.fillWidth: true
             background: Rectangle {
-                color: formUnderline
+                color: comboBox.hovered ? formText : formUnderline
                 height: comboBox.hovered ? 2 : 1
                 implicitWidth: comboBox.width
             }
