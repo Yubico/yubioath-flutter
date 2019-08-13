@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
+import Qt.labs.platform 1.1
 
 ToolBar {
     id: toolBar
@@ -69,7 +70,7 @@ ToolBar {
             visible: showTitleLbl
             text: showTitleLbl ? navigator.currentItem.title : ""
             font.pixelSize: 16
-            x: (parent.width - width) / 2
+            Layout.leftMargin: -32
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
             Layout.fillWidth: true
@@ -94,7 +95,6 @@ ToolBar {
                 id: searchField
                 visible: showSearch
                 selectByMouse: true
-                Material.accent: formText
                 selectedTextColor: defaultBackground
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -114,6 +114,45 @@ ToolBar {
                 }
 
                 onTextChanged: forceActiveFocus()
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.RightButton
+                    hoverEnabled: true
+                    cursorShape: Qt.IBeamCursor
+                    onClicked: {
+                        contextMenu.open();
+                    }
+                    onPressAndHold: {
+                        if (mouse.source === Qt.MouseEventNotSynthesized) {
+                            contextMenu.open();
+                        }
+                    }
+                }
+
+                Menu {
+                    id: contextMenu
+
+                    MenuItem {
+                        text: "Cut"
+                        onTriggered: {
+                            searchField.cut()
+                        }
+                    }
+                    MenuItem {
+                        text: "Copy"
+                        onTriggered: {
+                            searchField.copy()
+                        }
+                    }
+                    MenuItem {
+                        text: "Paste"
+                        onTriggered: {
+                            searchField.paste()
+                        }
+                    }
+                }
+
 
                 function exitSearchMode(clearInput) {
                     text = clearInput ? "" : text

@@ -37,19 +37,19 @@ ApplicationWindow {
     readonly property string defaultLightOverlay: "#bbbbbb"
     readonly property string defaultLightForeground: "#565656"
 
-    readonly property string defaultBackground: isDark() ? "#303030" : "#f7f7f7"
+    readonly property string defaultBackground: isDark() ? "#303030" : "#f0f0f0"
 
     property string formUnderline: isDark() ? "#737373" : "#d8d8d8"
     property string formLabel: isDark() ? "#c0c0c0" : "#a0a0a0"
-    property string formText: isDark() ? "#f0f0f0" : "#7e7e7e"
+    property string formText: isDark() ? "#f0f0f0" : "#5f6368"
     property string formPlaceholderText: isDark() ? "#808080" : "#d0d0d0"
     property string formDropShdaow: isDark() ? "#1f1f1f" : "#cbcbcb"
     property string formImageOverlay: isDark() ? "#d8d8d8" : "#727272"
-    property string formTitleUnderline: isDark() ? "#424242" : "#f5f5f5"
+    property string formTitleUnderline: isDark() ? "#424242" : "#ffffff"
 
-    property string credentialCardCurrentItem: isDark() ? "#4a4a4a" : "#f0f0f0"
-    property string credentialCardHovered: isDark() ? "#424242" : "#fbfbfb"
-    property string credentialCardNormal: isDark() ? "#3e3e3e" : "#ffffff"
+    property string credentialCardCurrentItem: isDark() ? "#4a4a4a" : "#f1f1f1"
+    property string credentialCardHovered: isDark() ? "#424242" : "#f5f5f5"
+    property string credentialCardNormal: isDark() ? "#3e3e3e" : "#fafafa"
 
     property string iconButtonNormal: isDark() ? "#B7B7B7" : "#767676"
     property string iconButtonHovered: isDark() ? "#ffffff" : "#202020"
@@ -76,9 +76,10 @@ ApplicationWindow {
         (poller.running = isInForeground || settings.closeToTray)
     }
     Component.onCompleted: {
-        app.visible = !(settings.closeToTray && settings.hideOnLaunch)
         updateTrayVisibility()
+        ensureMinimumWindowSize()
         ensureValidWindowPosition()
+        app.visible = !(settings.closeToTray && settings.hideOnLaunch)
     }
 
     Component.onDestruction: saveScreenLayout()
@@ -100,6 +101,11 @@ ApplicationWindow {
     function saveScreenLayout() {
         settings.desktopAvailableWidth = Screen.desktopAvailableWidth
         settings.desktopAvailableHeight = Screen.desktopAvailableHeight
+    }
+
+    function ensureMinimumWindowSize() {
+        app.width = width < minimumWidth ? minimumWidth : width
+        app.height = height < minimumHeight ? minimumHeight : height
     }
 
     function ensureValidWindowPosition() {
@@ -231,6 +237,7 @@ ApplicationWindow {
 
         property bool closeToTray
         property bool hideOnLaunch
+        property bool requireTouch: true
 
         property int theme: Material.System
 

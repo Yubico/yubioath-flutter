@@ -44,6 +44,12 @@ ScrollView {
         return entries
     }
 
+    function calculate() {
+        if (grid.currentIndex !== -1) {
+            grid.currentItem.calculateCard(true)
+        }
+    }
+
     Component {
         id: entriesComponent
         EntriesModel {
@@ -98,18 +104,15 @@ ScrollView {
         focus: visible
         Component.onCompleted: currentIndex = -1
         KeyNavigation.tab: toolBar.searchField
-        KeyNavigation.up: toolBar.searchField
+        KeyNavigation.up: paneScrollBar.position === 0 ? toolBar.searchField : null
+        interactive: false
+        highlightFollowsCurrentItem: false
         Keys.onPressed: interactive = true
         Keys.onReleased: interactive = false
-        interactive: false
-        Keys.onEscapePressed: {
-            currentIndex = -1
-        }
-        Keys.onReturnPressed: {
-            if (currentIndex !== -1) {
-                currentItem.calculateCard(true)
-            }
-        }
+        Keys.onEscapePressed: currentIndex = -1
+        Keys.onSpacePressed: calculate()
+        Keys.onEnterPressed: calculate()
+        Keys.onReturnPressed: calculate()
         Keys.onDeletePressed: {
             if (currentIndex !== -1) {
                 currentItem.deleteCard()

@@ -80,6 +80,7 @@ ScrollView {
                                           periodLbl.text,
                                           requireTouchCheckBox.checked, callback)
             }
+            settings.requireTouch = requireTouchCheckBox.checked
         }
     }
 
@@ -231,7 +232,7 @@ ScrollView {
                 RowLayout {
                     CheckBox {
                         id: requireTouchCheckBox
-                        checked: settings.closeToTray
+                        checked: settings.requireTouch
                         text: "Require touch"
                         padding: 0
                         indicator.width: 16
@@ -258,6 +259,7 @@ ScrollView {
                                 label: "Type"
                                 id: oathTypeComboBox
                                 model: ["TOTP", "HOTP"]
+                                defaultValue: credential && credential.oath_type ? credential.oath_type : ""
                             }
                             Item {
                                 width: 16
@@ -272,6 +274,7 @@ ScrollView {
                                     }
                                     return algos
                                 }
+                                defaultValue: credential && credential.algorithm ? credential.algorithm : ""
                             }
                         }
 
@@ -281,7 +284,7 @@ ScrollView {
                                 id: periodLbl
                                 visible: oathTypeComboBox.currentIndex === 0
                                 labelText: "Period"
-                                text: "30"
+                                text: credential && credential.period ? credential.period : "30"
                                 horizontalAlignment: Text.Alignleft
                                 validator: IntValidator {
                                     bottom: 15
@@ -296,6 +299,7 @@ ScrollView {
                                 id: digitsComboBox
                                 label: "Digits"
                                 model: ["6", "7", "8"]
+                                defaultValue: credential && credential.digits ? credential.digits : ""
                             }
                         }
                     }
