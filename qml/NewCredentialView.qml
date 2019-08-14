@@ -87,8 +87,6 @@ ScrollView {
 
     Keys.onEscapePressed: navigator.home()
 
-    Component.onCompleted: retry.forceActiveFocus()
-
     spacing: 8
     padding: 0
 
@@ -104,20 +102,18 @@ ScrollView {
     }
 
     ColumnLayout {
-        id: content
         anchors.fill: parent
         Layout.fillHeight: true
         Layout.fillWidth: true
-        spacing: 0
+        Layout.leftMargin: 0
 
         Pane {
-            id: retryPane
-            visible: manualEntry
+            id: content
             Layout.alignment: Qt.AlignCenter | Qt.AlignTop
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
-            Layout.bottomMargin: 16
             Layout.topMargin: 32
+
             background: Rectangle {
                 color: isDark() ? defaultDarkLighter : defaultLightDarker
                 layer.enabled: true
@@ -130,188 +126,204 @@ ScrollView {
                     transparentBorder: true
                 }
             }
+
             ColumnLayout {
-                anchors.horizontalCenter: parent.horizontalCenter
                 width: app.width - dynamicMargin
                        < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
                 spacing: 8
-                RowLayout {
-                    Label {
-                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                        text: "Automatic (recommended)"
-                        color: Material.primary
-                        font.pixelSize: 14
-                        font.weight: Font.Medium
-                        topPadding: 8
-                        bottomPadding: 16
-                        Layout.fillWidth: true
-                    }
-                }
+
                 Label {
-                    text: "1. Make sure the QR code is fully visible on screen"
-                    font.pixelSize: 13
-                    font.bold: false
-                    color: formText
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                    text: "New credential"
+                    color: Material.primary
+                    font.pixelSize: 16
+                    font.weight: Font.Normal
                     Layout.fillWidth: true
+                    topPadding: 8
+                    Layout.leftMargin: 8
+                    Layout.rightMargin: 8
                 }
-                Label {
-                    text: "2. Click the Scan button"
-                    font.pixelSize: 13
-                    font.bold: false
-                    color: formText
+
+                StyledStepperContainer {
                     Layout.fillWidth: true
-                }
-                StyledButton {
-                    id: retry
-                    text: "Scan"
-                    toolTipText: "Scan a QR code on the screen"
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    focus: true
-                    enabled: manualEntry
-                    onClicked: yubiKey.scanQr(true)
-                    Keys.onReturnPressed: yubiKey.scanQr(true)
-                    Keys.onEnterPressed: yubiKey.scanQr(true)
-                }
-            }
-        }
+                    initialStep: !manualEntry ? 2 : 1
 
-        StyledExpansionPanel {
-            isSectionTitle: true
-            label: !manualEntry ? "" : "Manual Entry"
-            description: !manualEntry ? "" : "Use manual entry if there's no QR code available or more advanced configuration is needed."
-            Layout.topMargin: !manualEntry ? 32 : 0
-            isTopPanel: true
-            isExpanded: !manualEntry
-            isEnabled: manualEntry
-            id: manualEntryPane
-
-            ColumnLayout {
-
-                StyledTextField {
-                    id: issuerLbl
-                    labelText: "Issuer"
-                    Layout.fillWidth: true
-                    text: credential
-                          && credential.issuer ? credential.issuer : ""
-                    visible: !settings.otpMode
-                    onSubmit: addCredential()
-                }
-                StyledTextField {
-                    id: nameLbl
-                    labelText: "Account name"
-                    Layout.fillWidth: true
-                    required: true
-                    text: credential && credential.name ? credential.name : ""
-                    visible: !settings.otpMode
-                    onSubmit: addCredential()
-                }
-                StyledTextField {
-                    id: secretKeyLbl
-                    labelText: "Secret key"
-                    Layout.fillWidth: true
-                    required: true
-                    text: credential
-                          && credential.secret ? credential.secret : ""
-                    visible: manualEntry
-                    validateText: "Invalid Base32 format (valid characters are A-Z and 2-7)"
-                    validateRegExp: /^[2-7a-zA-Z]+=*$/
-                    Layout.bottomMargin: 12
-                    onSubmit: addCredential()
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    StyledComboBox {
-                        label: "Slot"
-                        id: otpSlotComboBox
-                        model: getEnabledOtpSlots()
-                    }
-                    visible: settings.otpMode
-                }
-
-                RowLayout {
-                    CheckBox {
-                        id: requireTouchCheckBox
-                        checked: settings.requireTouch
-                        text: "Require touch"
-                        padding: 0
-                        indicator.width: 16
-                        indicator.height: 16
-                        Material.foreground: formText
-                    }
-                    visible: yubiKey.supportsTouchCredentials()
-                             || settings.otpMode
-                }
-
-                StyledExpansionPanel {
-                    id: advancedSettingsPanel
-                    label: "Advanced settings"
-                    description: "Normally these settings should not be changed, doing so may result in the code not working as expected."
-                    visible: manualEntry && !settings.otpMode
-                    dropShadow: false
-
-                    ColumnLayout {
+                    StyledStepperPanel {
+                        label: "Make sure QR code is fully visible on screen"
+                        description: "Press the button to scan when ready."
+                        id: retryPane
                         Layout.fillWidth: true
+                        Component.onCompleted: retry.forceActiveFocus()
 
-                        RowLayout {
-
-                            StyledComboBox {
-                                label: "Type"
-                                id: oathTypeComboBox
-                                model: ["TOTP", "HOTP"]
-                                defaultValue: credential && credential.oath_type ? credential.oath_type : ""
-                            }
-                            Item {
-                                width: 16
-                            }
-                            StyledComboBox {
-                                id: algoComboBox
-                                label: "Algorithm"
-                                model: {
-                                    var algos = ["SHA1", "SHA256"]
-                                    if (yubiKey.supportsOathSha512()) {
-                                        algos.push("SHA512")
-                                    }
-                                    return algos
-                                }
-                                defaultValue: credential && credential.algorithm ? credential.algorithm : ""
-                            }
+                        Image {
+                            Layout.margins: 16
+                            id: yubikeys
+                            source: "../images/monitor.png"
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         }
 
                         RowLayout {
+                            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+
+                            StyledButton {
+                                id: retry
+                                text: "Scan"
+                                toolTipText: "Scan a QR code on the screen"
+                                focus: true
+                                onClicked: yubiKey.scanQr(true)
+                                Keys.onReturnPressed: yubiKey.scanQr(true)
+                                Keys.onEnterPressed: yubiKey.scanQr(true)
+                            }
+                            StyledButton {
+                                text: "Enter manually"
+                                toolTipText: "Enter credential details manually"
+                                flat: true
+                                onClicked: manualEntryPane.expandAction()
+                                Material.foreground: iconButtonNormal
+                                Keys.onReturnPressed: manualEntryPane.expandAction()
+                                Keys.onEnterPressed: manualEntryPane.expandAction()
+                            }
+                        }
+                    }
+
+                    StyledStepperPanel {
+                        label: "Add credential"
+                        description: !manualEntry ? "Edit and confirm settings" : "Use manual entry if there's no QR code available."
+                        id: manualEntryPane
+
+                        ColumnLayout {
+                            Layout.topMargin: 8
 
                             StyledTextField {
-                                id: periodLbl
-                                visible: oathTypeComboBox.currentIndex === 0
-                                labelText: "Period"
-                                text: credential && credential.period ? credential.period : "30"
-                                horizontalAlignment: Text.Alignleft
-                                validator: IntValidator {
-                                    bottom: 15
-                                    top: 60
+                                id: issuerLbl
+                                labelText: "Issuer"
+                                Layout.fillWidth: true
+                                text: credential
+                                      && credential.issuer ? credential.issuer : ""
+                                visible: !settings.otpMode
+                                onSubmit: addCredential()
+                            }
+                            StyledTextField {
+                                id: nameLbl
+                                labelText: "Account name"
+                                Layout.fillWidth: true
+                                required: true
+                                text: credential && credential.name ? credential.name : ""
+                                visible: !settings.otpMode
+                                onSubmit: addCredential()
+                            }
+                            StyledTextField {
+                                id: secretKeyLbl
+                                labelText: "Secret key"
+                                Layout.fillWidth: true
+                                required: true
+                                text: credential
+                                      && credential.secret ? credential.secret : ""
+                                visible: manualEntry
+                                validateText: "Invalid Base32 format (valid characters are A-Z and 2-7)"
+                                validateRegExp: /^[2-7a-zA-Z]+=*$/
+                                Layout.bottomMargin: 12
+                                onSubmit: addCredential()
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                StyledComboBox {
+                                    label: "Slot"
+                                    id: otpSlotComboBox
+                                    model: getEnabledOtpSlots()
+                                }
+                                visible: settings.otpMode
+                            }
+
+                            RowLayout {
+                                CheckBox {
+                                    id: requireTouchCheckBox
+                                    checked: settings.requireTouch
+                                    text: "Require touch"
+                                    padding: 0
+                                    indicator.width: 16
+                                    indicator.height: 16
+                                    Material.foreground: formText
+                                }
+                                visible: yubiKey.supportsTouchCredentials()
+                                         || settings.otpMode
+                            }
+
+                            StyledExpansionPanel {
+                                id: advancedSettingsPanel
+                                label: "Advanced settings"
+                                description: "Note: Changing these may result in unexpected behavior."
+                                visible: manualEntry && !settings.otpMode
+                                dropShadow: false
+                                backgroundColor: "transparent"
+
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+
+                                    RowLayout {
+
+                                        StyledComboBox {
+                                            label: "Type"
+                                            id: oathTypeComboBox
+                                            model: ["TOTP", "HOTP"]
+                                            selectedValue: credential && credential.oath_type ? credential.oath_type : ""
+                                        }
+                                        Item {
+                                            width: 16
+                                        }
+                                        StyledComboBox {
+                                            id: algoComboBox
+                                            label: "Algorithm"
+                                            model: {
+                                                var algos = ["SHA1", "SHA256"]
+                                                if (yubiKey.supportsOathSha512()) {
+                                                    algos.push("SHA512")
+                                                }
+                                                return algos
+                                            }
+                                            selectedValue: credential && credential.algorithm ? credential.algorithm : ""
+                                        }
+                                    }
+
+                                    RowLayout {
+
+                                        StyledTextField {
+                                            id: periodLbl
+                                            visible: oathTypeComboBox.currentIndex === 0
+                                            labelText: "Period"
+                                            text: credential && credential.period ? credential.period : "30"
+                                            horizontalAlignment: Text.Alignleft
+                                            validator: IntValidator {
+                                                bottom: 15
+                                                top: 60
+                                            }
+                                        }
+                                        Item {
+                                            visible: oathTypeComboBox.currentIndex === 0
+                                            width: 16
+                                        }
+                                        StyledComboBox {
+                                            id: digitsComboBox
+                                            label: "Digits"
+                                            model: ["6", "7", "8"]
+                                            selectedValue: credential && credential.digits ? credential.digits : ""
+                                        }
+                                    }
                                 }
                             }
-                            Item {
-                                visible: oathTypeComboBox.currentIndex === 0
-                                width: 16
-                            }
-                            StyledComboBox {
-                                id: digitsComboBox
-                                label: "Digits"
-                                model: ["6", "7", "8"]
-                                defaultValue: credential && credential.digits ? credential.digits : ""
+
+                            StyledButton {
+                                id: addBtn
+                                text: "Add"
+                                toolTipText: "Add credential to YubiKey"
+                                enabled: settings.otpMode ? secretKeyLbl.validated && acceptableInput() :  secretKeyLbl.validated && acceptableInput() && nameLbl.validated
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                onClicked: addCredential()
+                                Layout.bottomMargin: -16
                             }
                         }
                     }
-                }
-
-                StyledButton {
-                    id: addBtn
-                    text: "Add"
-                    toolTipText: "Add credential to YubiKey"
-                    enabled: settings.otpMode ? secretKeyLbl.validated && acceptableInput() :  secretKeyLbl.validated && acceptableInput() && nameLbl.validated
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    onClicked: addCredential()
                 }
             }
         }

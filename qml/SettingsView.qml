@@ -233,18 +233,12 @@ ScrollView {
                     }
                 }
             }
-        }
-
-        StyledExpansionContainer {
-            id: oathPane
-            sectionTitle: "OATH"
-            visible: !!yubiKey.currentDevice
 
             StyledExpansionPanel {
                 id: passwordManagementPanel
                 label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? "Change Password" : "Set Password"
                 description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
-                isTopPanel: true
+                visible: !!yubiKey.currentDevice
 
                 ColumnLayout {
 
@@ -302,6 +296,7 @@ ScrollView {
                 label: "Reset"
                 description: "Warning: Resetting the OATH application will delete all credentials and restore factory defaults."
                 isEnabled: false
+                visible: !!yubiKey.currentDevice
                 toolButtonIcon: "../images/reset.svg"
                 toolButtonToolTip: "Reset OATH Application"
                 toolButton.onClicked: navigator.confirm(

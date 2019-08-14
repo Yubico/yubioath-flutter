@@ -7,7 +7,7 @@ import QtGraphicalEffects 1.0
 Item {
 
     property string label
-    property string defaultValue
+    property string selectedValue
     property alias comboBox: comboBox
     property alias model: comboBox.model
     property alias currentIndex: comboBox.currentIndex
@@ -55,9 +55,9 @@ Item {
                 horizontalAlignment: Text.AlignLeft
             }
             currentIndex: {
-                if (defaultValue && defaultValue.length > 0) {
+                if (selectedValue && selectedValue.length > 0) {
                     return model.findIndex(function(element) {
-                      return element === defaultValue
+                      return element === selectedValue
                     });
                 }
                 else {

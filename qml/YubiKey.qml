@@ -327,7 +327,6 @@ Python {
         parseQr(ScreenShot.capture(), function (resp) {
             if (resp.success) {
                 navigator.goToNewCredentialAuto(resp)
-                navigator.snackBar("QR code found on screen")
             } else {
                 if (toastIfError) {
                     navigator.snackBarError(navigator.getErrorMessage(

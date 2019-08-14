@@ -30,9 +30,9 @@ Item {
     signal submit()
 
     id: textFieldContainer
-    height: 50
-    implicitHeight: 50
-    Layout.bottomMargin: 8
+    height: 47
+    implicitHeight: 47
+    Layout.bottomMargin: 4
     Layout.fillWidth: true
 
     function validateInput() {
@@ -59,13 +59,13 @@ Item {
 
         Label {
             font.pixelSize: 10
+            height: 10
             color: validateInput() ? formLabel : yubicoRed
             text: labelTextValue()
         }
 
         TextField {
             id: textField
-            Layout.topMargin: 10
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             selectByMouse: true
             implicitWidth: textFieldContainer.width
@@ -76,7 +76,7 @@ Item {
                 textFieldContainer.submit()
             }
             Material.accent: validateInput() ? yubicoGreen : yubicoRed
-            height: 40
+            height: 39
             activeFocusOnTab: true
             focus: true
             color: formText
@@ -134,6 +134,7 @@ Item {
             color: yubicoRed
             text: validateText
             visible: !validateInput()
+
         }
     }
 }

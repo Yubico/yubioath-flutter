@@ -18,6 +18,7 @@ Pane {
     Layout.fillWidth: true
     Layout.maximumWidth: dynamicWidth + dynamicMargin
     spacing: 0
+    Layout.margins: 0
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
