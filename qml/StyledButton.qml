@@ -9,7 +9,7 @@ Button {
     property alias toolTipText: buttonToolTip.text
 
     id: button
-    font.capitalization: Font.MixedCase
+    font.capitalization: Font.capitalization
     font.weight: Font.Medium
     Material.foreground: button.flat ? Material.primary : yubicoWhite
     Material.background: button.flat ? "transparent" : Material.primary

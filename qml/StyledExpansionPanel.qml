@@ -16,6 +16,7 @@ Pane {
     property string label
     property string description
     property string keyImage
+    property string backgroundColor: isDark() ? defaultDarkLighter : defaultLightDarker
 
     property bool isEnabled: true
     property bool isExpanded: false
@@ -40,7 +41,7 @@ Pane {
     Layout.bottomMargin: isExpanded && dropShadow && !isBottomPanel ? 11 : -3
 
     background: Rectangle {
-        color: isDark() ? defaultDarkLighter : defaultLightDarker
+        color: backgroundColor
         layer.enabled: dropShadow
         layer.effect: DropShadow {
             radius: 3
@@ -53,7 +54,7 @@ Pane {
         MouseArea {
             onClicked: expandAction()
             width: parent.width
-            height: parent.height < 71 ? parent.height : 71
+            height: parent.height < 74 ? parent.height : 74
             enabled: isEnabled
             cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         }
@@ -83,11 +84,12 @@ Pane {
 
         anchors.horizontalCenter: parent.horizontalCenter
         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-        width: app.width - dynamicMargin < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+        width: parent.width - dynamicMargin < dynamicWidth ? parent.width - dynamicMargin : dynamicWidth
         spacing: 16
 
         RowLayout {
-            Layout.rightMargin: -12
+            Layout.leftMargin: -12
+            Layout.rightMargin: -24
 
             Rectangle {
                 id: rectangle
@@ -120,6 +122,7 @@ Pane {
             ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 visible: label
 
                 Label {
@@ -200,6 +203,8 @@ Pane {
         RowLayout {
             id: expandedContent
             visible: isExpanded
+            Layout.leftMargin: -12
+            Layout.rightMargin: -12
             ColumnLayout {
                 id: inner_space
             }
