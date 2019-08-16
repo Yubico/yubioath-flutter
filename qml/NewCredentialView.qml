@@ -20,7 +20,7 @@ ScrollView {
     property bool manualEntry
 
     contentWidth: app.width
-    contentHeight: content.implicitHeight
+    contentHeight: content.implicitHeight + dynamicMargin
 
     function acceptableInput() {
         if (settings.otpMode) {
@@ -155,11 +155,12 @@ ScrollView {
                         Layout.fillWidth: true
                         Component.onCompleted: retry.forceActiveFocus()
 
-                        Image {
-                            Layout.margins: 16
-                            id: yubikeys
-                            source: "../images/monitor.png"
+                        StyledImage {
+                            source: "../images/qr-monitor.svg"
+                            color: app.isDark() ? defaultLightForeground : defaultLightOverlay
+                            iconWidth: 140
                             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                            Layout.margins: 16
                         }
 
                         RowLayout {

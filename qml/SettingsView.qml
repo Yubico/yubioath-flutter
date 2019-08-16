@@ -238,7 +238,7 @@ ScrollView {
                 id: passwordManagementPanel
                 label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? "Change Password" : "Set Password"
                 description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
-                visible: !!yubiKey.currentDevice
+                visible: !!yubiKey.currentDevice && !settings.otpMode
 
                 ColumnLayout {
 
@@ -296,7 +296,7 @@ ScrollView {
                 label: "Reset"
                 description: "Warning: Resetting the OATH application will delete all credentials and restore factory defaults."
                 isEnabled: false
-                visible: !!yubiKey.currentDevice
+                visible: !!yubiKey.currentDevice && !settings.otpMode
                 toolButtonIcon: "../images/reset.svg"
                 toolButtonToolTip: "Reset OATH Application"
                 toolButton.onClicked: navigator.confirm(

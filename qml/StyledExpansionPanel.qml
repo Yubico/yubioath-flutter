@@ -122,7 +122,7 @@ Pane {
             ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                 visible: label
 
                 Label {
