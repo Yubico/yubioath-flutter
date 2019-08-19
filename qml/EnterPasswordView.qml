@@ -36,6 +36,7 @@ ScrollView {
                                                      resp.error_id))
                                      console.log("validate failed:",
                                                  resp.error_id)
+                                     passwordField.textField.forceActiveFocus()
                                  }
                              })
         }

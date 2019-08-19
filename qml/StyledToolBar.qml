@@ -340,7 +340,7 @@ ToolBar {
                 Keys.onEnterPressed: navigator.goToSettings()
 
                 KeyNavigation.left: shouldShowCredentialOptions(
-                                        ) ? deleteCredentialBtn : addCredentialBtn
+                                        ) ? favoriteBtn : addCredentialBtn
                 KeyNavigation.right: navigator
                 KeyNavigation.tab: navigator
 

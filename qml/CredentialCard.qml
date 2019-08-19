@@ -396,8 +396,8 @@ Pane {
             id: touchIcon
             anchors.bottom: parent.bottom
             anchors.right: parent.right
-            iconWidth: 24
-            iconHeight: 24
+            iconWidth: 18
+            iconHeight: 18
             source: "../images/touch.svg"
             visible: touchCredentialNoCode
             color: Material.primary
@@ -406,8 +406,8 @@ Pane {
         StyledImage {
             id: hotpIcon
             source: "../images/refresh.svg"
-            iconWidth: 24
-            iconHeight: 24
+            iconWidth: 20
+            iconHeight: 20
             visible: hotpCredential
             anchors.bottom: parent.bottom
             anchors.right: parent.right
