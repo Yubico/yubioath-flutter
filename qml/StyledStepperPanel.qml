@@ -88,7 +88,7 @@ Pane {
                 id: circle
                 width: 20
                 height: 20
-                color: isExpanded || isCompleted ? yubicoGreen : credentialCardCurrentItem
+                color: isExpanded || isCompleted ? yubicoGreen : formStepBackground
                 radius: width * 0.5
                 Layout.rightMargin: 8
                 Image {

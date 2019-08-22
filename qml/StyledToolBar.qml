@@ -274,7 +274,8 @@ ToolBar {
                 KeyNavigation.tab: settingsBtn
 
                 ToolTip {
-                    text: "Favorite credential"
+                    text: shouldShowCredentialOptions()
+                          && app.currentCredentialCard.favorite ? "Remove as favorite" : "Set as favorite"
                     delay: 1000
                     parent: favoriteBtn
                     visible: parent.hovered
