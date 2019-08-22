@@ -21,7 +21,7 @@ ScrollView {
 
     function getDeviceLabel(device) {
         if (!!device.serial) {
-            return ("%1 (#%2)").arg(device.name).arg(device.serial)
+            return ("%1 [#%2]").arg(device.name).arg(device.serial)
         }  else {
             return ("%1").arg(device.name)
         }
