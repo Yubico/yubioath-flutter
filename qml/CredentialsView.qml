@@ -58,7 +58,8 @@ ScrollView {
 
     MouseArea {
         onClicked: grid.currentIndex = -1
-        anchors.fill: parent
+        height: app.height
+        width: app.width
         enabled: entries.count > 0
     }
 
@@ -96,10 +97,6 @@ ScrollView {
         delegate: CredentialCard {
             credential: model.credential
             code: model.code
-        }
-        flickableChildren: MouseArea {
-            anchors.fill: parent
-            onClicked: grid.currentIndex = -1
         }
         focus: visible
         Component.onCompleted: currentIndex = -1

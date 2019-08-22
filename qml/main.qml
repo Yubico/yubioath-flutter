@@ -46,6 +46,7 @@ ApplicationWindow {
     property string formDropShdaow: isDark() ? "#1f1f1f" : "#cbcbcb"
     property string formImageOverlay: isDark() ? "#d8d8d8" : "#727272"
     property string formTitleUnderline: isDark() ? "#424242" : "#ffffff"
+    property string formStepBackground: isDark() ? "#565656" : "#bbbbbb"
 
     property string credentialCardCurrentItem: isDark() ? "#4a4a4a" : "#f1f1f1"
     property string credentialCardHovered: isDark() ? "#424242" : "#f5f5f5"
