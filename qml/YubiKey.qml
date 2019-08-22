@@ -234,7 +234,6 @@ Python {
                 console.log("refreshing devices failed:", resp.error_id)
                 availableDevices = []
                 clearCurrentDeviceAndEntries()
-                refreshDevicesDefault()
             }
             poller.running = true
         })
