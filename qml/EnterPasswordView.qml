@@ -58,7 +58,7 @@ ScrollView {
             Layout.alignment: Qt.AlignCenter | Qt.AlignTop
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
-            Layout.topMargin: 32
+            Layout.topMargin: 0
 
             background: Rectangle {
                 color: isDark() ? defaultDarkLighter : defaultLightDarker
@@ -101,7 +101,7 @@ ScrollView {
                     wrapMode: Text.WordWrap
                     font.pixelSize: 13
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                    color: yubicoGrey
+                    color: formText
                     Layout.fillWidth: true
                     bottomPadding: 8
                     Layout.leftMargin: 8
