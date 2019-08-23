@@ -231,7 +231,7 @@ class Controller(object):
                 selectable = dev.mode.has_transport(
                     TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
 
-                if selectable and not otp_mode:
+                if selectable and not otp_mode and transport == TRANSPORT.CCID:
                     controller = OathController(dev.driver)
                     has_password = controller.locked
                 else:
