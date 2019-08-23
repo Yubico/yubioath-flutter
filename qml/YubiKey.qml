@@ -281,6 +281,7 @@ Python {
                 } else {
                     clearCurrentDeviceAndEntries()
                     console.log("calculateAll failed:", resp.error_id)
+                    refreshDevicesDefault()
                 }
             }
         }
