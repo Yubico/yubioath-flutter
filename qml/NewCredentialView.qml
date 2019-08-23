@@ -11,7 +11,7 @@ ScrollView {
 
     id: newCredentialViewId
     objectName: 'newCredentialView'
-    property string title: ""
+    property string title: "New Credential"
 
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical.width: 8
@@ -131,18 +131,6 @@ ScrollView {
                 width: app.width - dynamicMargin
                        < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
                 spacing: 0
-
-                Label {
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                    text: "New credential"
-                    color: Material.primary
-                    font.pixelSize: 16
-                    font.weight: Font.Normal
-                    Layout.fillWidth: true
-                    topPadding: 8
-                    Layout.leftMargin: 8
-                    Layout.rightMargin: 8
-                }
 
                 StyledStepperContainer {
                     Layout.fillWidth: true

@@ -70,7 +70,8 @@ ToolBar {
             visible: showTitleLbl
             text: showTitleLbl ? navigator.currentItem.title : ""
             font.pixelSize: 16
-            Layout.leftMargin: -32
+            Layout.leftMargin: backBtn.visible ? -32 : 0
+            Layout.rightMargin: settingsBtn.visible ? -32 : 0
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
             Layout.fillWidth: true
@@ -83,7 +84,6 @@ ToolBar {
             Layout.leftMargin: 8
             Layout.minimumHeight: 30
             Layout.maximumHeight: 30
-            Layout.maximumWidth: 400
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             background: Rectangle {

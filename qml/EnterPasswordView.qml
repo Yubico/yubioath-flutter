@@ -11,6 +11,7 @@ ScrollView {
 
     id: enterPasswordViewId
     objectName: 'enterPasswordView'
+    property string title: "Unlock YubiKey"
 
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical.width: 8
@@ -80,19 +81,7 @@ ScrollView {
                 spacing: 8
 
                 Label {
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                    text: "Unlock YubiKey"
-                    color: Material.primary
-                    font.pixelSize: 16
-                    font.weight: Font.Normal
-                    Layout.fillWidth: true
-                    topPadding: 8
-                    bottomPadding: 8
-                    Layout.leftMargin: 8
-                    Layout.rightMargin: 8
-                }
-
-                Label {
+                    Layout.topMargin: 16
                     text: "To prevent unauthorized access this YubiKey is protected with a password."
                     Layout.maximumWidth: app.width - dynamicMargin
                                          < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
