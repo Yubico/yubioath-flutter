@@ -44,7 +44,7 @@ ColumnLayout {
             wrapMode: Text.WordWrap
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            color: yubicoGrey
+            color: formLabel
         }
     }
 }

@@ -106,7 +106,11 @@ ScrollView {
         highlightFollowsCurrentItem: false
         Keys.onPressed: interactive = true
         Keys.onReleased: interactive = false
-        Keys.onEscapePressed: currentIndex = -1
+        Keys.onEscapePressed: {
+            toolBar.searchField.text = ""
+            navigator.forceActiveFocus()
+            currentIndex = -1
+        }
         Keys.onSpacePressed: calculate()
         Keys.onEnterPressed: calculate()
         Keys.onReturnPressed: calculate()

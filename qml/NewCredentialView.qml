@@ -11,7 +11,7 @@ ScrollView {
 
     id: newCredentialViewId
     objectName: 'newCredentialView'
-    property string title: "New credential"
+    property string title: ""
 
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical.width: 8
@@ -112,7 +112,7 @@ ScrollView {
             Layout.alignment: Qt.AlignCenter | Qt.AlignTop
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
-            Layout.topMargin: 32
+            Layout.topMargin: 0
 
             background: Rectangle {
                 color: isDark() ? defaultDarkLighter : defaultLightDarker
@@ -130,7 +130,7 @@ ScrollView {
             ColumnLayout {
                 width: app.width - dynamicMargin
                        < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
-                spacing: 8
+                spacing: 0
 
                 Label {
                     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
@@ -180,7 +180,7 @@ ScrollView {
                                 toolTipText: "Enter credential details manually"
                                 flat: true
                                 onClicked: manualEntryPane.expandAction()
-                                Material.foreground: iconButtonNormal
+                                Material.foreground: formText
                                 Keys.onReturnPressed: manualEntryPane.expandAction()
                                 Keys.onEnterPressed: manualEntryPane.expandAction()
                             }
@@ -319,7 +319,7 @@ ScrollView {
                                 text: "Add"
                                 toolTipText: "Add credential to YubiKey"
                                 enabled: settings.otpMode ? secretKeyLbl.validated && acceptableInput() :  secretKeyLbl.validated && acceptableInput() && nameLbl.validated
-                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                                 onClicked: addCredential()
                                 Layout.bottomMargin: -16
                             }

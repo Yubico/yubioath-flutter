@@ -83,7 +83,9 @@ ToolBar {
             Layout.leftMargin: 8
             Layout.minimumHeight: 30
             Layout.maximumHeight: 30
+            Layout.maximumWidth: 400
             Layout.fillWidth: true
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             background: Rectangle {
                 color: getToolbarColor(searchBtn.hovered)
                 height: 30
@@ -91,21 +93,20 @@ ToolBar {
             }
 
             TextField {
-
                 id: searchField
                 visible: showSearch
                 selectByMouse: true
                 selectedTextColor: defaultBackground
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 placeholderText: "Quick Find"
-                placeholderTextColor: isDark() ? defaultLight : yubicoGrey
-                padding: 28
+                placeholderTextColor: hovered || focus ? iconButtonHovered : iconButtonNormal
+                leftPadding: 28
+                rightPadding: 8
                 width: parent.width
                 horizontalAlignment: Qt.AlignLeft
                 verticalAlignment: Qt.AlignVCenter
-                color: hovered ? iconButtonHovered : iconButtonNormal
+                color: hovered || focus ? iconButtonHovered : iconButtonNormal
                 background: Rectangle {
                     color: getToolbarColor(searchField.focus)
                     height: 30
@@ -153,9 +154,10 @@ ToolBar {
                     }
                 }
 
-
                 function exitSearchMode(clearInput) {
-                    text = clearInput ? "" : text
+                    if (clearInput) {
+                        text = ""
+                    }
                     focus = false
                     Keys.forwardTo = navigator
                     navigator.forceActiveFocus()
@@ -184,7 +186,7 @@ ToolBar {
                     iconHeight: 20
                     iconWidth: 20
                     source: "../images/search.svg"
-                    color: hovered ? iconButtonHovered : iconButtonNormal
+                    color: searchField.hovered || searchField.focus ? iconButtonHovered : iconButtonNormal
                 }
             }
         }

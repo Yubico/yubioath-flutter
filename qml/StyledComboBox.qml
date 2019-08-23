@@ -50,6 +50,7 @@ Item {
             }
             contentItem: Text {
                 color: formText
+                font.pixelSize: 13
                 text: parent.displayText
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
