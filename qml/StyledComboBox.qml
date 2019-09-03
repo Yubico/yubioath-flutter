@@ -12,6 +12,7 @@ Item {
     property alias model: comboBox.model
     property alias currentIndex: comboBox.currentIndex
     property alias currentText: comboBox.currentText
+    property alias displayText: comboBox.displayText
 
     id: container
     height: 50

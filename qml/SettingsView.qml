@@ -477,13 +477,23 @@ ScrollView {
                         indicator.width: 16
                         indicator.height: 16
                         Material.foreground: formText
-                        onCheckStateChanged: readerFilter.text = checked ? readerFilter.text : ""
+                    }
+
+                    StyledComboBox {
+                        id: connectedReaders
+                        enabled: customReaderCheckBox.checked
+                        visible: customReaderCheckBox.checked
+                        label: "Connected readers"
+                        displayText: "Select reader"
+                        model: yubiKey.availableReaders
+                        onCurrentTextChanged: readerFilter.text = currentText
                     }
 
                     StyledTextField {
                         id: readerFilter
                         enabled: customReaderCheckBox.checked
-                        labelText: qsTr("Custom reader")
+                        visible: customReaderCheckBox.checked
+                        labelText: qsTr("Custom reader filter")
                         text: settings.customReaderName
                     }
                 }

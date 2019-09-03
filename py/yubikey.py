@@ -15,7 +15,7 @@ from ykman.util import (TRANSPORT, parse_b32_key)
 from ykman.device import YubiKey
 from ykman.driver_otp import YkpersError
 from ykman.driver_ccid import (
-    APDUError, CCIDError,
+    APDUError, CCIDError, list_readers,
     open_devices as open_ccid)
 from ykman.oath import (
     ALGO, OATH_TYPE, OathController,
@@ -497,6 +497,9 @@ class Controller(object):
                 del keys[oath_controller.id]
             self.settings.write()
             return success()
+
+    def get_connected_readers(self):
+        return success({'readers': [str(reader) for reader in list_readers()]})
 
     def parse_qr(self, screenshot):
         data = b64decode(screenshot['data'])

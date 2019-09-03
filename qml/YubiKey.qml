@@ -11,6 +11,7 @@ Python {
     property var queue: []
 
     property var availableDevices: []
+    property var availableReaders: []
 
     property var currentDevice
     property bool currentDeviceValidated
@@ -208,6 +209,16 @@ Python {
         nextCalculateAll = -1
     }
 
+    function refreshReaders() {
+        yubiKey.getConnectedReaders(function(resp) {
+            if (resp.success) {
+                availableReaders = resp.readers
+            } else {
+                console.log("failed to update readers:", resp.error_id)
+            }
+        })
+    }
+
     function refreshDevicesDefault() {
         poller.running = false
         let customReaderName = settings.useCustomReader ? settings.customReaderName : null
@@ -232,6 +243,7 @@ Python {
             } else {
                 console.log("refreshing devices failed:", resp.error_id)
                 availableDevices = []
+                availableReaders = []
                 clearCurrentDeviceAndEntries()
             }
             poller.running = true
@@ -259,6 +271,10 @@ Python {
             checkReaders(settings.customReaderName, callback)
         } else {
             checkDescriptors(callback)
+        }
+
+        if (!settings.otpMode) {
+            refreshReaders()
         }
     }
 
@@ -411,5 +427,9 @@ Python {
 
     function validate(password, remember, cb) {
         doCall('yubikey.controller.ccid_validate', [password, remember], cb)
+    }
+
+    function getConnectedReaders(cb) {
+        doCall('yubikey.controller.get_connected_readers', [], cb)
     }
 }
