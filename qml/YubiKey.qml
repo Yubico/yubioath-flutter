@@ -214,7 +214,6 @@ Python {
         refreshDevices(settings.otpMode, customReaderName, function (resp) {
             if (resp.success) {
                 availableDevices = resp.devices
-                nextCalculateAll = -1
                 // no current device, or current device is no longer available, pick a new one
                 if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
                     if (availableDevices.some(dev => dev.selectable)) {

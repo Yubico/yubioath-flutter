@@ -78,7 +78,6 @@ ScrollView {
                 console.log("change password failed:", resp.error_id)
             }
             clearPasswordFields()
-            yubiKey.refreshDevicesDefault()
         })
     }
 
@@ -93,7 +92,6 @@ ScrollView {
                 console.log("set password failed:", resp.error_id)
             }
             clearPasswordFields()
-            yubiKey.refreshDevicesDefault()
         })
     }
 
@@ -110,7 +108,6 @@ ScrollView {
                         console.log("remove password failed:", resp.error_id)
                     }
                     clearPasswordFields()
-                    yubiKey.refreshDevicesDefault()
                 })
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
@@ -221,10 +218,10 @@ ScrollView {
                             yubiKey.selectCurrentSerial(dev.serial,
                                                         function (resp) {
                                                             if (resp.success) {
-                                                                yubiKey.nextCalculateAll = -1
                                                                 entries.clear()
                                                                 yubiKey.currentDevice = dev
                                                                 currentDevicePanel.expandAction()
+                                                                yubiKey.calculateAll()
                                                             } else {
                                                                 console.log("select device failed", resp.error_id)
                                                             }

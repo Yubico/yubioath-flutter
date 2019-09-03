@@ -43,7 +43,7 @@ StackView {
                 clearAndPush(enterPasswordView)
                 return
             }
-            yubiKey.calculateAll(navigator.goToCredentials)
+            navigator.goToCredentials()
         } else {
             clearAndPush(credentialsView)
         }
