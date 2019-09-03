@@ -477,6 +477,8 @@ ScrollView {
                         indicator.width: 16
                         indicator.height: 16
                         Material.foreground: formText
+                        onCheckedChanged: readerFilter.text = ""
+
                     }
 
                     StyledComboBox {
