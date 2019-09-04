@@ -39,8 +39,9 @@ Item {
             indicator: Rectangle {
                 id: rectangle
                 anchors.right: parent.right
-                anchors.rightMargin: 24
+                anchors.rightMargin: -8
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                width: 32
                 StyledImage {
                     id: arrowIcon
                     source: "../images/arrow-down.svg"
@@ -55,6 +56,7 @@ Item {
                 text: parent.displayText
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
+                elide: Text.ElideRight
             }
             currentIndex: {
                 if (selectedValue && selectedValue.length > 0) {

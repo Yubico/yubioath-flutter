@@ -62,5 +62,24 @@ ColumnLayout {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             color: formLabel
         }
+        Label {
+            text: {
+                var t = yubiKey.availableReaders.filter(reader => reader.includes(settings.customReaderName)).toString()
+                if (t.length === 0)
+                    t = "Custom reader not found. Make sure reader is attached and/or verify settings."
+                return t
+            }
+            visible: settings.useCustomReader
+            Layout.minimumWidth: 320
+            Layout.maximumWidth: app.width - dynamicMargin
+                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+            horizontalAlignment: Qt.AlignHCenter
+            Layout.rowSpan: 1
+            lineHeight: 1.1
+            wrapMode: Text.WordWrap
+            font.pixelSize: 13
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            color: formLabel
+        }
     }
 }
