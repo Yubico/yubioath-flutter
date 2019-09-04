@@ -471,24 +471,31 @@ ScrollView {
 
                     CheckBox {
                         id: customReaderCheckBox
-                        text: "Use a custom smart card reader"
+                        text: "Use custom smart card reader"
                         checked: settings.useCustomReader
                         padding: 0
                         indicator.width: 16
                         indicator.height: 16
                         Material.foreground: formText
-                        onCheckedChanged: readerFilter.text = ""
-
                     }
 
-                    StyledComboBox {
-                        id: connectedReaders
-                        enabled: customReaderCheckBox.checked
-                        visible: customReaderCheckBox.checked
-                        label: "Connected readers"
-                        displayText: "Select reader"
-                        model: yubiKey.availableReaders
-                        onCurrentTextChanged: readerFilter.text = currentText
+                    RowLayout {
+                        visible: yubiKey.availableReaders.length > 0
+                        StyledComboBox {
+                            id: connectedReaders
+                            enabled: customReaderCheckBox.checked
+                            visible: customReaderCheckBox.checked
+                            label: "Connected readers"
+                            model: yubiKey.availableReaders
+                        }
+                        StyledButton {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            text: "Add"
+                            flat: true
+                            enabled: customReaderCheckBox.checked
+                            visible: customReaderCheckBox.checked
+                            onClicked: readerFilter.text = connectedReaders.currentText
+                        }
                     }
 
                     StyledTextField {
