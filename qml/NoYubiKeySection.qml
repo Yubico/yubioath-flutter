@@ -18,12 +18,11 @@ ColumnLayout {
 
         StyledImage {
             id: yubikeys
+            source: "../images/ykfamily.svg"
+            color: app.isDark() ? defaultLightForeground : defaultLightOverlay
             iconWidth: 200
-            iconHeight: 120
-            source: "../images/yubikeys-transparent.png"
-            color: formImageOverlay
-            bottomPadding: 16
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            bottomPadding: 16
         }
 
         Label {
@@ -62,6 +61,19 @@ ColumnLayout {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             color: formLabel
         }
+
+        Label {
+            text: settings.useCustomReader ? "Custom reader mode" : "OTP mode"
+            visible: settings.useCustomReader || settings.otpMode
+            Layout.minimumWidth: 320
+            Layout.maximumWidth: app.width - dynamicMargin
+                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+            horizontalAlignment: Qt.AlignHCenter
+            wrapMode: Text.WordWrap
+            font.pixelSize: 13
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            color: formLabel
+        }
         Label {
             text: {
                 var t = yubiKey.availableReaders.filter(reader => reader.includes(settings.customReaderName)).toString()
@@ -74,12 +86,12 @@ ColumnLayout {
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             horizontalAlignment: Qt.AlignHCenter
-            Layout.rowSpan: 1
-            lineHeight: 1.1
             wrapMode: Text.WordWrap
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             color: formLabel
+            maximumLineCount: 2
+            elide: Text.ElideRight
         }
     }
 }

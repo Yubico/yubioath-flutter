@@ -71,9 +71,9 @@ ToolBar {
             text: showTitleLbl ? navigator.currentItem.title : ""
             font.pixelSize: 16
             Layout.leftMargin: backBtn.visible ? -32 : 0
-            Layout.rightMargin: settingsBtn.visible ? -32 : 0
-            horizontalAlignment: Qt.AlignHCenter
-            verticalAlignment: Qt.AlignVCenter
+            Layout.rightMargin: shouldShowSettings() ? -80 : 0
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             Layout.fillWidth: true
             color: iconButtonNormal
         }
@@ -344,8 +344,8 @@ ToolBar {
 
                 KeyNavigation.left: shouldShowCredentialOptions(
                                         ) ? favoriteBtn : addCredentialBtn
-                KeyNavigation.right: navigator
-                KeyNavigation.tab: navigator
+                KeyNavigation.right: moreBtn
+                KeyNavigation.tab: moreBtn
 
                 ToolTip {
                     text: "Settings"
@@ -365,6 +365,39 @@ ToolBar {
                     enabled: false
                 }
             }
+
+            ToolButton {
+                id: moreBtn
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                visible: shouldShowSettings()
+                onClicked: navigator.about()
+
+                Keys.onReturnPressed: navigator.about()
+                Keys.onEnterPressed: navigator.about()
+
+                KeyNavigation.left: settingsBtn
+                KeyNavigation.right: navigator
+                KeyNavigation.tab: navigator
+
+                ToolTip {
+                    text: "About"
+                    delay: 1000
+                    parent: moreBtn
+                    visible: parent.hovered
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
+                }
+
+                icon.source: "../images/info.svg"
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
+            }
+
         }
     }
 }

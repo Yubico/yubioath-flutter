@@ -257,6 +257,10 @@ Pane {
                             yubiKey.otpDeleteCredential(credential,
                                                         function (resp) {
                                                             if (resp.success) {
+                                                                if (favorite)
+                                                                {
+                                                                    toggleFavorite()
+                                                                }
                                                                 entries.deleteEntry(
                                                                             credential.key)
                                                                 navigator.snackBar(
@@ -271,6 +275,10 @@ Pane {
                             yubiKey.deleteCredential(credential,
                                                      function (resp) {
                                                          if (resp.success) {
+                                                             if (favorite)
+                                                             {
+                                                                 toggleFavorite()
+                                                             }
                                                              entries.deleteEntry(
                                                                          credential.key)
                                                              yubiKey.updateNextCalculateAll()

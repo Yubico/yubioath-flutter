@@ -374,7 +374,6 @@ ScrollView {
                                              || customReaderCheckBox.checked !== settings.useCustomReader
                                              || readerFilter.text !== settings.customReaderName
 
-
                 function isValidMode() {
                     return aboutToChange
                             && ((otpModeSelected
@@ -490,7 +489,7 @@ ScrollView {
                         }
                         StyledButton {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            text: "Add"
+                            text: "Use as filter"
                             flat: true
                             enabled: customReaderCheckBox.checked
                             visible: customReaderCheckBox.checked
@@ -549,21 +548,6 @@ ScrollView {
                         Material.foreground: formText
                     }
                 }
-            }
-        }
-
-        StyledExpansionContainer {
-            id: aboutPane
-            sectionTitle: "About"
-
-            StyledExpansionPanel {
-                id: aboutPanel
-                label: qsTr("Yubico Authenticator ") + appVersion
-                description: qsTr("Copyright © " + Qt.formatDateTime(
-                                      new Date(),
-                                      "yyyy") + ", Yubico AB. All rights reserved.")
-                isTopPanel: true
-                isEnabled: false
             }
         }
     }
