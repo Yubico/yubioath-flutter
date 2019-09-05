@@ -86,6 +86,11 @@ StackView {
         popup.open()
     }
 
+    function about() {
+        var popup = aboutPopup.createObject(app)
+        popup.open()
+    }
+
     function snackBar(message) {
         var sb = snackBarComponent.createObject(app, {
                                                     "message": message
@@ -156,6 +161,12 @@ StackView {
     Component {
         id: confirmationPopup
         ConfirmationPopup {
+        }
+    }
+
+    Component {
+        id: aboutPopup
+        AboutPopup {
         }
     }
 
