@@ -15,7 +15,7 @@ environment:
   matrix:
     - platform: x86
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QT_VERSION: 5.12\msvc2017
+      QT_VERSION: 5.13\msvc2017
       PYTHON: C:\Python36
       PY_ARCH: win32
       WIN_ARCH: win32
@@ -25,7 +25,7 @@ environment:
 
     - platform: x64
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QT_VERSION: 5.12\msvc2017_64
+      QT_VERSION: 5.13\msvc2017_64
       PYTHON: C:\Python36-x64
       PY_ARCH: amd64
       WIN_ARCH: win64
