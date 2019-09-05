@@ -365,7 +365,7 @@ Pane {
             anchors.verticalCenter: parent.verticalCenter
             spacing: 0
             Label {
-                id: codLbl
+                id: codeLbl
                 font.pixelSize: 24
                 color: Material.primary
                 text: getCodeLblValue()

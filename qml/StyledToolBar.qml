@@ -20,7 +20,7 @@ ToolBar {
             if (isDark()) {
                 return defaultDarkLighter
             } else {
-                return "#e7e7e7"
+                return "#e8e8e9"
             }
         }
     }
@@ -39,6 +39,7 @@ ToolBar {
 
     function shouldShowSettings() {
         return !!(navigator.currentItem
+                  && !shouldShowCredentialOptions()
                   && navigator.currentItem.objectName !== 'settingsView'
                   && navigator.currentItem.objectName !== 'newCredentialView')
     }
@@ -380,7 +381,7 @@ ToolBar {
                 KeyNavigation.tab: navigator
 
                 ToolTip {
-                    text: "About"
+                    text: "Information"
                     delay: 1000
                     parent: moreBtn
                     visible: parent.hovered
