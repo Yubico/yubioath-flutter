@@ -16,6 +16,8 @@ int main(int argc, char *argv[])
     // Use Material "Dense" variant, recommended for Desktop
     qputenv("QT_QUICK_CONTROLS_MATERIAL_VARIANT", "Dense");
 
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     QApplication application(argc, argv);
     application.setApplicationName("Yubico Authenticator");
     application.setOrganizationName("Yubico");
