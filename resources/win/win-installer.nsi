@@ -39,7 +39,7 @@ Var STARTMENU_FOLDER
   Name "Yubico Authenticator"
   
   ; The file to write
-  OutFile "../../yubioath-desktop-${VERSION}-win.exe"
+  OutFile "../../yubioath-desktop-${VERSION}-win32.exe"
   
   ; The default installation directory
   InstallDir "$PROGRAMFILES\Yubico\Yubico Authenticator"
@@ -121,9 +121,9 @@ Section "Yubico Authenticator"
 
   ; Install Visual C++ Redistributable Packages
   ; will do nothing if already installed
-  ExecWait "$INSTDIR\vcredist_x86.exe /q /norestart"
+  ExecWait "$INSTDIR\vc_redist.x86.exe /q /norestart"
   ; Delete redist packages
-  Delete "$INSTDIR\vcredist_x86.exe"
+  Delete "$INSTDIR\vc_redist.x86.exe"
 
 SectionEnd
 

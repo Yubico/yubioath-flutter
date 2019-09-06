@@ -7,14 +7,10 @@
 language: cpp
 sudo: required
 
-env:
-  - PY_VERSION="3.6.5" PYOTHERSIDE_VERSION="1.5.3"
-
 os:
   - osx
   - linux
 
-# Mojave
 osx_image: xcode10.2
 
 services:
@@ -58,6 +54,9 @@ after_success:
       id=$(docker create --privileged xenial-appimage)
       docker start --attach $id
       docker cp $id:/yubioath-desktop/Yubico_Authenticator-x86_64.AppImage deploy/yubioath-desktop-$TRAVIS_BRANCH.AppImage
+
+      git archive --format=tar.gz -o yubioath-desktop-$TRAVIS_BRANCH.tar.gz --prefix yubioath-desktop/ $TRAVIS_BRANCH
+      mv yubioath-desktop-$TRAVIS_BRANCH.tar.gz deploy
     fi
 
 deploy:
