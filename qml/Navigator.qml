@@ -123,6 +123,8 @@ StackView {
             return qsTr('Failed to connect to YubiKey')
         case 'timeout':
             return qsTr('Failed to read from slots')
+        case 'failed_to_parse_uri':
+            return qsTr('Failed to read credential from QR code')
         default:
             return qsTr('Unknown error')
         }

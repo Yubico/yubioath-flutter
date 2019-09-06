@@ -505,9 +505,13 @@ class Controller(object):
         data = b64decode(screenshot['data'])
         image = PixelImage(data, screenshot['width'], screenshot['height'])
         for qr in qrparse.parse_qr_codes(image, 2):
-            return success(
-                credential_data_to_dict(
-                    CredentialData.from_uri(qrdecode.decode_qr_data(qr))))
+            try:
+                return success(
+                    credential_data_to_dict(
+                        CredentialData.from_uri(qrdecode.decode_qr_data(qr))))
+            except Exception as e:
+                logger.error('Failed to parse uri', exc_info=e)
+                return failure('failed_to_parse_uri')
         return failure('no_credential_found')
 
 
