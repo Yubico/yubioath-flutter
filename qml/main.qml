@@ -32,12 +32,12 @@ ApplicationWindow {
     readonly property string defaultDarkOverlay: "#4a4a4a"
     readonly property string defaultDarkForeground: "#fafafa"
 
-    readonly property string defaultLight: "#f7f7f7"
+    readonly property string defaultLight: "#fafafa"
     readonly property string defaultLightDarker: "#ffffff"
-    readonly property string defaultLightOverlay: "#bbbbbb"
+    readonly property string defaultLightOverlay: "#dddddd"
     readonly property string defaultLightForeground: "#565656"
 
-    readonly property string defaultBackground: isDark() ? "#303030" : "#f0f0f0"
+    readonly property string defaultBackground: isDark() ? "#303030" : "#f7f8f9"
 
     property string formUnderline: isDark() ? "#737373" : "#d8d8d8"
     property string formLabel: isDark() ? "#c0c0c0" : "#a0a0a0"
@@ -48,15 +48,15 @@ ApplicationWindow {
     property string formTitleUnderline: isDark() ? "#424242" : "#ffffff"
     property string formStepBackground: isDark() ? "#565656" : "#bbbbbb"
 
-    property string credentialCardCurrentItem: isDark() ? "#4a4a4a" : "#e7e7e7"
-    property string credentialCardHovered: isDark() ? "#3e3e3e" : "#f1f1f1"
-    property string credentialCardNormal: isDark() ? "#363636" : "#f7f7f7"
+    property string credentialCardCurrentItem: isDark() ? "#4a4a4a" : "#e5e5e5"
+    property string credentialCardHovered: isDark() ? "#3e3e3e" : "#efefef"
+    property string credentialCardNormal: isDark() ? "#363636" : "#ffffff"
 
     property string iconButtonNormal: isDark() ? "#B7B7B7" : "#767676"
     property string iconButtonHovered: isDark() ? "#ffffff" : "#202020"
 
-    property string toolTipForeground: app.isDark() ? "#fafafa" : "#f7f7f7"
-    property string toolTipBackground: app.isDark() ? "#4a4a4a" : "#565656"
+    property string toolTipForeground: app.isDark() ? "#fafafa" : "#fbfbfb"
+    property string toolTipBackground: app.isDark() ? "#4a4a4a" : "#7f7f7f"
 
     property var currentCredentialCard
 

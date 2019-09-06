@@ -130,7 +130,7 @@ Dialog {
         }
 
         Image {
-            source: "../images/windowicon.png"
+            source: "../images/yubioath.svg"
             sourceSize.width: 40
             sourceSize.height: 40
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
