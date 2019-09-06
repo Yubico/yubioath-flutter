@@ -130,9 +130,7 @@ Dialog {
         }
 
         Image {
-            source: "../images/yubioath.svg"
-            sourceSize.width: 40
-            sourceSize.height: 40
+            source: "../images/yubioath.png"
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Layout.margins: 16
             Layout.topMargin: 0
@@ -178,7 +176,7 @@ Dialog {
 
             StyledButton {
                 id: btnCancel
-                text: "Dismiss"
+                text: "Close"
                 flat: true
                 enabled: true
                 font.capitalization: Font.capitalization

@@ -73,6 +73,7 @@ ToolBar {
             font.pixelSize: 16
             Layout.leftMargin: backBtn.visible ? -32 : 0
             Layout.rightMargin: shouldShowSettings() ? -80 : 0
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             Layout.fillWidth: true
