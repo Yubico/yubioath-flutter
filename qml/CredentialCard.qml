@@ -369,7 +369,13 @@ Pane {
                 wrapMode: Text.Wrap
                 color: formText
             }
+
         }
+
+        Accessible.role: Accessible.ListItem
+        Accessible.focusable: true
+        Accessible.name: (credential.issuer ? credential.issuer : credential.name)
+        Accessible.description: getCodeLblValue()
 
         CredentialCardTimer {
             period: credential && credential.period ? credential.period : 0
