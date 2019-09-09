@@ -1,17 +1,17 @@
 TEMPLATE = app
-QT += qml quick widgets
+QT += qml quick widgets quickcontrols2
 CONFIG += c++11
-SOURCES += main.cpp systemtray.cpp
-HEADERS += screenshot.h systemtray.h
+SOURCES += main.cpp
+HEADERS += screenshot.h
 
 # This is the internal verson number, Windows requires 4 digits.
 win32|win64 {
-    VERSION = 4.3.6.0
+    VERSION = 5.0.0.0
 } else {
-    VERSION = 4.3.6
+    VERSION = 5.0.0
 }
 # This is the version shown on the About page
-DEFINES += APP_VERSION=\\\"4.3.6\\\"
+DEFINES += APP_VERSION=\\\"5.0.0-ALPHA-2\\\"
 
 message(Version of this build: $$VERSION)
 
@@ -65,4 +65,4 @@ lupdate_only {
 DISTFILES += \
     py/* \
     py/qr/* \
-    qml/*
+    qml/* \
