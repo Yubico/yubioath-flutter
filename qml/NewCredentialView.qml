@@ -24,8 +24,7 @@ ScrollView {
 
     function acceptableInput() {
         if (settings.otpMode) {
-            return secretKeyLbl.text.length > 0
-            // TODO: check maxlength of secret, 20 bytes?
+            return secretKeyLbl.text.length > 0 && secretKeyLbl.text.length <= 32
         } else {
             var nameAndKey = nameLbl.text.length > 0
                     && secretKeyLbl.text.length > 0
