@@ -11,21 +11,23 @@ rm -rf ~/.pyenv
 rm -rf lib
 rm -rf yubioath-desktop.app
 
-PYVERSION="3.7.3"
+PYVERSION="3.6.7"
 PYOTHERSIDEVERSION="1.5.3"
 
 # Workaround for compiling python on mojave
 # https://github.com/pyenv/pyenv/issues/1219
-# sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
-# CFLAGS="-I$(xcrun --show-sdk-path)/usr/include"
+sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+CFLAGS="-I$(xcrun --show-sdk-path)/usr/include"
+
+# Get python 3.6.4 from homebrew, workaround for https://github.com/pyenv/pyenv/issues/1066 (can't use 3.7 yet)
+brew uninstall python --ignore-dependencies
+brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/10cdf659af8c56c629fba94347b25346d0770875/Formula/python.rb
+brew link --overwrite python
+
 
 # Install and upgrade brew dependencies
-brew install swig ykpers libyubikey libusb pyenv wget zlib python openssl@1.1
-brew upgrade swig ykpers libyubikey libusb pyenv wget zlib python openssl@1.1
-
-# Qt 5.10.1 needed on macOS because of https://bugreports.qt.io/browse/QTBUG-67663
-brew uninstall --ignore-dependencies qt
-brew install -v https://gist.githubusercontent.com/dagheyman/ebe0c373cdd71f83239633b9db7c285e/raw/f70fbe450c86ed360a8bf4daea7effce70d3e094/qt.rb
+brew install swig ykpers libyubikey libusb qt pyenv wget zlib openssl@1.1
+brew upgrade swig ykpers libyubikey libusb qt pyenv wget zlib openssl@1.1
 brew link qt -f
 
 # Download, build and install pyotherside qml plugin
@@ -63,15 +65,21 @@ sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '*.pyc
 sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '__pycache__' -delete
 
 # Move pymodules from app bundle to site-packages, to be accepted by codesign
-mv yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/
+mv yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/
 rm -rf yubioath-desktop.app/Contents/MacOS/pymodules
 
 # Point pyotherside to relative custom Python, currently points to homebrew python
-sudo install_name_tool -change /usr/local/opt/python/Frameworks/Python.framework/Versions/3.7/Python @executable_path/../Frameworks/Python.framework/Versions/3.7/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
+sudo install_name_tool -change /usr/local/opt/python/Frameworks/Python.framework/Versions/3.6/Python @executable_path/../Frameworks/Python.framework/Versions/3.6/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
 
 # Fix linking for python and openssl .so's
-sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so
-sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so
-sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_hashlib.cpython-37m-darwin.so
-sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_hashlib.cpython-37m-darwin.so
+sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_ssl.cpython-36m-darwin.so
+sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_ssl.cpython-36m-darwin.so
+sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_hashlib.cpython-36m-darwin.so
+sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/_hashlib.cpython-36m-darwin.so
 sudo install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1c/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/libssl.1.1.dylib
+
+# Fix linking to dependencies for libykpers
+sudo install_name_tool -change /usr/local/opt/libyubikey/lib/libyubikey.0.dylib @executable_path/../Frameworks/libyubikey.0.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.1.dylib
+sudo install_name_tool -change /usr/local/opt/libyubikey/lib/libyubikey.0.dylib @executable_path/../Frameworks/libyubikey.0.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.dylib
+sudo install_name_tool -change /usr/local/opt/json-c/lib/libjson-c.4.dylib @executable_path/../Frameworks/libjson-c.4.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.1.dylib
+sudo install_name_tool -change /usr/local/opt/json-c/lib/libjson-c.4.dylib @executable_path/../Frameworks/libjson-c.4.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.dylib
