@@ -60,7 +60,7 @@ Pane {
                     icon.color: iconButtonNormal
                     icon.width: 20
                     icon.height: 20
-                    text: "Copy to clipboard"
+                    text: qsTr("Copy to clipboard")
                     onTriggered: calculateCard(true)
                 }
                 MenuItem {
@@ -76,19 +76,9 @@ Pane {
                     icon.color: iconButtonNormal
                     icon.width: 20
                     icon.height: 20
-                    text: favorite ? "Remove as favorite" : "Set as favorite"
+                    text: favorite ? qsTr("Remove as favorite") : qsTr("Set as favorite")
                     onTriggered: toggleFavorite()
                 }
-                /*
-                MenuItem {
-                    icon.source: favoriteDefault ? "../images/favorite.svg" : "../images/favorite_border.svg"
-                    icon.color: iconButtonNormal
-                    icon.width: 20
-                    icon.height: 20
-                    text: favoriteDefault ? "Remove as default" : "Make default"
-                    onTriggered: toggleDefault()
-                }
-                */
                 MenuSeparator {
                     padding: 0
                     topPadding: 4
@@ -105,7 +95,7 @@ Pane {
                     icon.width: 20
                     icon.height: 20
                     enabled: !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
-                    text: "Add credential"
+                    text: qsTr("Add credential")
                     onTriggered: yubiKey.scanQr()
                 }
                 MenuItem {
@@ -113,14 +103,14 @@ Pane {
                     icon.color: iconButtonNormal
                     icon.width: 20
                     icon.height: 20
-                    text: "Settings"
+                    text: qsTr("Settings")
                     onTriggered: navigator.goToSettings()
                 }
             }
         }
 
         ToolTip {
-            text: "Double-click to initiate touch required"
+            text: qsTr("Double-click to initiate touch")
             delay: 1000
             parent: credentialCard
             visible: touchCredential && parent.hovered
@@ -182,7 +172,7 @@ Pane {
 
     function copyCode(code) {
         clipBoard.push(code)
-        navigator.snackBar("Code copied to clipboard")
+        navigator.snackBar(qsTr("Code copied to clipboard"))
     }
 
     function calculateCard(copy) {
@@ -190,7 +180,7 @@ Pane {
                                       && !hotpCredentialInCoolDown)
                 || customPeriodCredentialNoTouch) {
             if (touchCredential) {
-                navigator.snackBar("Touch your YubiKey")
+                navigator.snackBar(qsTr("Touch your YubiKey"))
             }
             if (hotpCredential) {
                 hotpTouchTimer.start()
@@ -229,7 +219,7 @@ Pane {
                         }
                     } else {
                         if (resp.error_id === 'access_denied') {
-                            navigator.snackBarError("Touch credential timed out")
+                            navigator.snackBarError(qsTr("Touch credential timed out"))
                         } else {
                             navigator.snackBarError(navigator.getErrorMessage(
                                                         resp.error_id))
@@ -251,7 +241,7 @@ Pane {
     function deleteCard() {
         navigator.confirm(
                     "Delete " + formattedName() + " ?",
-                    "This will permanently delete the credential from the YubiKey, and your ability to generate codes for it.",
+                    qsTr("This will permanently delete the credential from the YubiKey, and your ability to generate codes for it."),
                     function () {
                         if (settings.otpMode) {
                             yubiKey.otpDeleteCredential(credential,
@@ -264,7 +254,7 @@ Pane {
                                                                 entries.deleteEntry(
                                                                             credential.key)
                                                                 navigator.snackBar(
-                                                                            "Credential deleted")
+                                                                            qsTr("Credential deleted"))
                                                             } else {
                                                                 navigator.snackBarError(
                                                                             resp.error_id)
@@ -283,7 +273,7 @@ Pane {
                                                                          credential.key)
                                                              yubiKey.updateNextCalculateAll()
                                                              navigator.snackBar(
-                                                                         "Credential deleted")
+                                                                          qsTr("Credential deleted"))
                                                          } else {
                                                              navigator.snackBarError(
                                                                          resp.error_id)
@@ -320,7 +310,7 @@ Pane {
         id: hotpTouchTimer
         triggeredOnStart: false
         interval: 500
-        onTriggered: navigator.snackBar("Touch your YubiKey")
+        onTriggered: navigator.snackBar(qsTr("Touch your YubiKey"))
     }
 
 

@@ -34,7 +34,6 @@ SortedListModel {
         for (var i = 0; i < entries.length; i++) {
             updateEntry(entries[i])
         }
-        // TODO: clear out deleted ones ?
     }
 
     function deleteEntry(key) {

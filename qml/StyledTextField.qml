@@ -47,7 +47,7 @@ Item {
 
     function labelTextValue() {
         if (!validateInput()) {
-            return "Error"
+            return qsTr("Error")
         } else if (textField.activeFocus || textField.text.length > 0)
             return required ? labelText + " *" : labelText
         else {
@@ -108,19 +108,19 @@ Item {
                 id: contextMenu
 
                 MenuItem {
-                    text: "Cut"
+                    text: qsTr("Cut")
                     onTriggered: {
                         textField.cut()
                     }
                 }
                 MenuItem {
-                    text: "Copy"
+                    text: qsTr("Copy")
                     onTriggered: {
                         textField.copy()
                     }
                 }
                 MenuItem {
-                    text: "Paste"
+                    text: qsTr("Paste")
                     onTriggered: {
                         textField.paste()
                     }
