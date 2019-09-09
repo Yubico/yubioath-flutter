@@ -227,12 +227,11 @@ ApplicationWindow {
     Settings {
         id: settings
 
-        property bool otpMode
-
         // Can be 0 (off), 6, 7 or 8
         property int slot1digits
         property int slot2digits
 
+        property bool otpMode
         property bool useCustomReader
         property string customReaderName
 

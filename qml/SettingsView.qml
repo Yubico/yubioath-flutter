@@ -360,10 +360,11 @@ ScrollView {
             }
 
             StyledExpansionPanel {
-                id: authenticatorModePanel
-                label: "Authenticator Mode"
+                id: interfacePanel
+                label: "Interface"
                 description: "Configure how to read credentials from the YubiKey."
-                property bool otpModeSelected: authenticatorModeCombobox.currentIndex === 1
+                property bool otpModeSelected: interfaceCombobox.currentIndex === 2
+                property bool customReaderSelected: interfaceCombobox.currentIndex === 1
                 property bool aboutToChange: (otpModeSelected !== settings.otpMode)
                                              || (slot1DigitsComboBox.currentIndex
                                                  !== getComboBoxIndex(
@@ -371,8 +372,8 @@ ScrollView {
                                              || (slot2DigitsComboBox.currentIndex
                                                  !== getComboBoxIndex(
                                                      settings.slot2digits))
-                                             || customReaderCheckBox.checked !== settings.useCustomReader
-                                             || readerFilter.text !== settings.customReaderName
+                                             || customReaderSelected !== settings.useCustomReader
+                                             || readerFilter.text !== settings.customReaderName && readerFilter.text.length > 0
 
                 function isValidMode() {
                     return aboutToChange
@@ -382,19 +383,19 @@ ScrollView {
                                 || !otpModeSelected)
                 }
 
-                function setAuthenticatorMode() {
+                function setInterface() {
                     settings.slot1digits = otpModeDigits.get(
                                 slot1DigitsComboBox.currentIndex).value
                     settings.slot2digits = otpModeDigits.get(
                                 slot2DigitsComboBox.currentIndex).value
                     settings.otpMode = otpModeSelected
-
-                    settings.useCustomReader = customReaderCheckBox.checked
+                    settings.useCustomReader = customReaderSelected
                     settings.customReaderName = readerFilter.text
                     yubiKey.clearCurrentDeviceAndEntries()
                     yubiKey.refreshDevicesDefault()
                     navigator.goToSettings()
-                    navigator.snackBar("Authenticator mode changed")
+                    navigator.snackBar("Interface changed")
+                    interfacePanel.isExpanded = false
                 }
 
                 function getComboBoxIndex(digits) {
@@ -414,20 +415,31 @@ ScrollView {
 
                 ColumnLayout {
 
+
                     RowLayout {
                         Layout.fillWidth: true
                         StyledComboBox {
-                            id: authenticatorModeCombobox
-                            label: "Authenticator Mode"
-                            model: ["CCID (recommended)", "OTP"]
-                            currentIndex: settings.otpMode ? 1 : 0
+                            id: interfaceCombobox
+                            label: "Interface"
+                            model: ["CCID (recommended)", "CCID - Custom reader", "OTP"]
+                            currentIndex: getCurrentIndex()
+
+                            function getCurrentIndex() {
+                                if (settings.otpMode) {
+                                    return 2
+                                }
+                                if (settings.useCustomReader && !settings.otpMode) {
+                                    return 1
+                                }
+                                // default
+                                return 0
+                            }
                         }
                     }
                 }
 
                 RowLayout {
-                    visible: authenticatorModeCombobox.currentText.indexOf(
-                                 "OTP") > -1
+                    visible: interfacePanel.otpModeSelected
                     Label {
                         Layout.fillWidth: true
                         font.pixelSize: 11
@@ -440,14 +452,14 @@ ScrollView {
                 }
 
                 RowLayout {
-                    visible: authenticatorModePanel.otpModeSelected
+                    visible: interfacePanel.otpModeSelected
 
                     StyledComboBox {
                         id: slot1DigitsComboBox
                         label: "Slot 1 Digits"
                         comboBox.textRole: "text"
                         model: otpModeDigits
-                        currentIndex: authenticatorModePanel.getComboBoxIndex(
+                        currentIndex: interfacePanel.getComboBoxIndex(
                                           settings.slot1digits)
                     }
 
@@ -460,30 +472,20 @@ ScrollView {
                         label: "Slot 2 Digits"
                         comboBox.textRole: "text"
                         model: otpModeDigits
-                        currentIndex: authenticatorModePanel.getComboBoxIndex(
+                        currentIndex: interfacePanel.getComboBoxIndex(
                                           settings.slot2digits)
                     }
                 }
 
                 ColumnLayout {
-                    visible: !authenticatorModePanel.otpModeSelected
-
-                    CheckBox {
-                        id: customReaderCheckBox
-                        text: "Use custom smart card reader"
-                        checked: settings.useCustomReader
-                        padding: 0
-                        indicator.width: 16
-                        indicator.height: 16
-                        Material.foreground: formText
-                    }
+                    visible: interfacePanel.customReaderSelected
 
                     RowLayout {
                         visible: yubiKey.availableReaders.length > 0
                         StyledComboBox {
                             id: connectedReaders
-                            enabled: customReaderCheckBox.checked
-                            visible: customReaderCheckBox.checked
+                            enabled: yubiKey.availableReaders.length > 0
+                            visible: yubiKey.availableReaders.length > 0
                             label: "Connected readers"
                             model: yubiKey.availableReaders
                         }
@@ -491,16 +493,16 @@ ScrollView {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             text: "Use as filter"
                             flat: true
-                            enabled: customReaderCheckBox.checked
-                            visible: customReaderCheckBox.checked
+                            enabled: yubiKey.availableReaders.length > 0
+                            visible: yubiKey.availableReaders.length > 0
                             onClicked: readerFilter.text = connectedReaders.currentText
                         }
                     }
 
                     StyledTextField {
                         id: readerFilter
-                        enabled: customReaderCheckBox.checked
-                        visible: customReaderCheckBox.checked
+                        enabled: interfacePanel.customReaderSelected
+                        visible: interfacePanel.customReaderSelected
                         labelText: qsTr("Custom reader filter")
                         text: settings.customReaderName
                     }
@@ -509,8 +511,8 @@ ScrollView {
                 StyledButton {
                     Layout.alignment: Qt.AlignRight | Qt.AlignTop
                     text: "Apply"
-                    enabled: authenticatorModePanel.isValidMode()
-                    onClicked: authenticatorModePanel.setAuthenticatorMode()
+                    enabled: interfacePanel.isValidMode()
+                    onClicked: interfacePanel.setInterface()
                 }
             }
 
