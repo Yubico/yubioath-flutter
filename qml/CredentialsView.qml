@@ -94,6 +94,7 @@ ScrollView {
         model: filteredCredentials()
         cellWidth: 362
         cellHeight: 82
+        Accessible.role: Accessible.MenuItem
         delegate: CredentialCard {
             credential: model.credential
             code: model.code

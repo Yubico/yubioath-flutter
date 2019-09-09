@@ -197,6 +197,11 @@ ApplicationWindow {
     }
 
     Shortcut {
+        sequence: StandardKey.Find
+        onActivated: toolBar.searchField.forceActiveFocus()
+    }
+
+    Shortcut {
         sequence: StandardKey.Preferences
         onActivated: navigator.goToSettings()
     }

@@ -76,7 +76,7 @@ ColumnLayout {
         }
         Label {
             text: {
-                var t = yubiKey.availableReaders.filter(reader => reader.includes(settings.customReaderName)).toString()
+                var t = yubiKey.availableReaders.filter(reader => reader.toLowerCase().includes(settings.customReaderName.toLowerCase())).toString()
                 if (t.length === 0)
                     t = "Custom reader not found. Make sure reader is attached and/or verify settings."
                 return t
