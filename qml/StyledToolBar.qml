@@ -116,6 +116,8 @@ ToolBar {
                     opacity: 0.8
                 }
 
+                Accessible.role: Accessible.EditableText
+                Accessible.searchEdit: true
                 onTextChanged: forceActiveFocus()
 
                 MouseArea {
@@ -203,16 +205,18 @@ ToolBar {
                 enabled: shouldShowCredentialOptions()
                          && !app.currentCredentialCard.hotpCredentialInCoolDown
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                onClicked: app.currentCredentialCard.calculateCard(true)
 
-                Keys.onReturnPressed: app.currentCredentialCard.calculateCard(
-                                          true)
-                Keys.onEnterPressed: app.currentCredentialCard.calculateCard(
-                                         true)
+                onClicked: app.currentCredentialCard.calculateCard(true)
+                Keys.onReturnPressed: app.currentCredentialCard.calculateCard(true)
+                Keys.onEnterPressed: app.currentCredentialCard.calculateCard(true)
 
                 KeyNavigation.left: searchField
                 KeyNavigation.right: deleteCredentialBtn
                 KeyNavigation.tab: deleteCredentialBtn
+
+                Accessible.role: Accessible.Button
+                Accessible.name: "Copy"
+                Accessible.description: "Copy to clipboard"
 
                 ToolTip {
                     text: qsTr("Copy code to clipboard")
@@ -237,14 +241,18 @@ ToolBar {
                 id: deleteCredentialBtn
                 visible: shouldShowCredentialOptions()
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                onClicked: app.currentCredentialCard.deleteCard()
 
+                onClicked: app.currentCredentialCard.deleteCard()
                 Keys.onReturnPressed: app.currentCredentialCard.deleteCard()
                 Keys.onEnterPressed: app.currentCredentialCard.deleteCard()
 
                 KeyNavigation.left: copyCredentialBtn
                 KeyNavigation.right: favoriteBtn
                 KeyNavigation.tab: favoriteBtn
+
+                Accessible.role: Accessible.Button
+                Accessible.name: "Delete"
+                Accessible.description: "Delete credential"
 
                 ToolTip {
                     text: qsTr("Delete credential")
@@ -273,9 +281,14 @@ ToolBar {
                 onClicked: app.currentCredentialCard.toggleFavorite()
                 Keys.onReturnPressed: app.currentCredentialCard.toggleFavorite()
                 Keys.onEnterPressed: app.currentCredentialCard.toggleFavorite()
+
                 KeyNavigation.left: deleteCredentialBtn
                 KeyNavigation.right: settingsBtn
                 KeyNavigation.tab: settingsBtn
+
+                Accessible.role: Accessible.Button
+                Accessible.name: "Favorite"
+                Accessible.description: "Favorite credential"
 
                 ToolTip {
                     text: shouldShowCredentialOptions()
@@ -316,6 +329,10 @@ ToolBar {
                 KeyNavigation.right: settingsBtn
                 KeyNavigation.tab: settingsBtn
 
+                Accessible.role: Accessible.Button
+                Accessible.name: "Add"
+                Accessible.description: "Add credential"
+
                 ToolTip {
                     text: qsTr("Add a new credential")
                     delay: 1000
@@ -344,10 +361,13 @@ ToolBar {
                 Keys.onReturnPressed: navigator.goToSettings()
                 Keys.onEnterPressed: navigator.goToSettings()
 
-                KeyNavigation.left: shouldShowCredentialOptions(
-                                        ) ? favoriteBtn : addCredentialBtn
+                KeyNavigation.left: addCredentialBtn
                 KeyNavigation.right: moreBtn
                 KeyNavigation.tab: moreBtn
+
+                Accessible.role: Accessible.Button
+                Accessible.name: "Settings"
+                Accessible.description: "Go to settings"
 
                 ToolTip {
                     text: qsTr("Settings")
@@ -380,6 +400,10 @@ ToolBar {
                 KeyNavigation.left: settingsBtn
                 KeyNavigation.right: navigator
                 KeyNavigation.tab: navigator
+
+                Accessible.role: Accessible.Button
+                Accessible.name: "Info"
+                Accessible.description: "Information"
 
                 ToolTip {
                     text: qsTr("Information")
