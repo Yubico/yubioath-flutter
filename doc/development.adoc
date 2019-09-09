@@ -5,6 +5,11 @@ the backend logic to be written in Python 3. The python library yubikey-manager 
 and may be installed from pip or other package managers. If a specific version, (or branch or commit) is needed for development,
 point to that version in requirements.txt.
 
+
+== Build requirements
+
+Yubico Authenticator currently requires Qt version 5.12 or higher.
+
 == Working with the code
 
 === Install dependencies
@@ -28,9 +33,10 @@ Build and install the Qt5 plugin http://pyotherside.readthedocs.io/en/latest/#bu
 
     $ sudo add-apt-repository -y ppa:yubico/stable
     $ sudo apt update
-    $ sudo apt install python3-yubikey-manager qml-module-qt-labs-settings qml-module-qtquick-dialogs \
-      qml-module-qtquick-controls qt5-default libqt5svg5-dev qtdeclarative5-dev qtbase5-dev \
-      qml-module-io-thp-pyotherside
+    $ sudo apt install python3-yubikey-manager
+
+Install Qt 5.12+ with offical installer.
+Build and install the Qt5 plugin http://pyotherside.readthedocs.io/en/latest/#building-pyotherside[PyOtherSide]
 
 === Setup the repository
 
