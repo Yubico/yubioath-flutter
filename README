@@ -7,12 +7,12 @@ Cross-platform application for generating Open Authentication (OATH) time-based 
 image:screenshot.png[]
 
 === Features
-* Keep your OATH secrets safe by storing them on a YubiKey and generate the codes with this application.
-* Add a credential by scanning a QR code on the screen.
-* Supports 6, 7 or 8 digit codes.
-* Supports TOTP credentials with any time period.
-* Require touch on YubiKey to generate code.
-* Protect your credentials with a device password.
+* Add a credential by scanning a QR code on the screen
+* Favorite your most used credentials for easy access
+* Keep your secret seeds safe by storing them on a YubiKey
+* Require a touch on YubiKey to generate the code
+* Protect your credentials with a device password
+* Connect an external smart card reader and use the YubiKey over NFC
 
 === Supported devices
 Usage of this software requires a compatible YubiKey device. Yubico
