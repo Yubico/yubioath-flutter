@@ -24,7 +24,7 @@ ColumnLayout {
         }
 
         Label {
-            text: "No credentials found"
+            text: qsTr("No credentials found")
             Layout.rowSpan: 1
             wrapMode: Text.WordWrap
             font.pixelSize: 16
@@ -34,7 +34,7 @@ ColumnLayout {
             color: formText
         }
         Label {
-            text: "No credentials matching your search criteria. Check your spelling and try again."
+            text: qsTr("No credentials matching your search criteria. Check your spelling and try again.")
             horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 320
             Layout.maximumWidth: app.width - dynamicMargin

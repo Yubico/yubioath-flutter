@@ -169,7 +169,7 @@ Pane {
                     enabled: false
                 }
                 ToolTip {
-                    text: isExpanded ? "Show less" : "Show more"
+                    text: isExpanded ? qsTr("Show less") : qsTr("Show more")
                     delay: 1000
                     parent: expandButton
                     visible: parent.hovered

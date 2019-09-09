@@ -11,7 +11,7 @@ ScrollView {
 
     id: newCredentialViewId
     objectName: 'newCredentialView'
-    property string title: "New Credential"
+    property string title: qsTr("New Credential")
 
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical.width: 8
@@ -38,7 +38,7 @@ ScrollView {
         function callback(resp) {
             if (resp.success) {
                 yubiKey.calculateAll(navigator.goToCredentials)
-                navigator.snackBar("Credential added")
+                navigator.snackBar(qsTr("Credential added"))
             } else {
                 navigator.snackBarError(navigator.getErrorMessage(
                                             resp.error_id))
@@ -59,8 +59,8 @@ ScrollView {
                         if (resp.status[parseInt(
                                             otpSlotComboBox.currentText) - 1]) {
                             navigator.confirm(
-                                        "Overwrite?",
-                                        "The slot is already configured, do you want to overwrite it?",
+                                        qsTr("Overwrite?"),
+                                        qsTr("The slot is already configured, do you want to overwrite it?"),
                                         _otpAddCredential)
                         } else {
                             _otpAddCredential()
@@ -136,8 +136,8 @@ ScrollView {
                     initialStep: !manualEntry ? 2 : 1
 
                     StyledStepperPanel {
-                        label: "Make sure QR code is fully visible on screen"
-                        description: "Press the button to scan when ready."
+                        label: qsTr("Make sure QR code is fully visible on screen")
+                        description: qsTr("Press the button to scan when ready.")
                         id: retryPane
                         Layout.fillWidth: true
                         Component.onCompleted: retry.forceActiveFocus()
@@ -155,16 +155,16 @@ ScrollView {
 
                             StyledButton {
                                 id: retry
-                                text: "Scan"
-                                toolTipText: "Scan a QR code on the screen"
+                                text: qsTr("Scan")
+                                toolTipText: qsTr("Scan a QR code on the screen")
                                 focus: true
                                 onClicked: yubiKey.scanQr(true)
                                 Keys.onReturnPressed: yubiKey.scanQr(true)
                                 Keys.onEnterPressed: yubiKey.scanQr(true)
                             }
                             StyledButton {
-                                text: "Enter manually"
-                                toolTipText: "Enter credential details manually"
+                                text: qsTr("Enter manually")
+                                toolTipText: qsTr("Enter credential details manually")
                                 flat: true
                                 onClicked: manualEntryPane.expandAction()
                                 Material.foreground: formText
@@ -175,8 +175,8 @@ ScrollView {
                     }
 
                     StyledStepperPanel {
-                        label: "Add credential"
-                        description: !manualEntry ? "Edit and confirm settings" : "Use manual entry if there's no QR code available."
+                        label: qsTr("Add credential")
+                        description: !manualEntry ? qsTr("Edit and confirm settings") : qsTr("Use manual entry if there's no QR code available.")
                         id: manualEntryPane
 
                         ColumnLayout {
@@ -184,7 +184,7 @@ ScrollView {
 
                             StyledTextField {
                                 id: issuerLbl
-                                labelText: "Issuer"
+                                labelText: qsTr("Issuer")
                                 Layout.fillWidth: true
                                 text: credential
                                       && credential.issuer ? credential.issuer : ""
@@ -193,7 +193,7 @@ ScrollView {
                             }
                             StyledTextField {
                                 id: nameLbl
-                                labelText: "Account name"
+                                labelText: qsTr("Account name")
                                 Layout.fillWidth: true
                                 required: true
                                 text: credential && credential.name ? credential.name : ""
@@ -202,13 +202,13 @@ ScrollView {
                             }
                             StyledTextField {
                                 id: secretKeyLbl
-                                labelText: "Secret key"
+                                labelText: qsTr("Secret key")
                                 Layout.fillWidth: true
                                 required: true
                                 text: credential
                                       && credential.secret ? credential.secret : ""
                                 visible: manualEntry
-                                validateText: "Invalid Base32 format (valid characters are A-Z and 2-7)"
+                                validateText: qsTr("Invalid Base32 format (valid characters are A-Z and 2-7)")
                                 validateRegExp: /^[2-7a-zA-Z]+=*$/
                                 Layout.bottomMargin: 12
                                 onSubmit: addCredential()
@@ -217,7 +217,7 @@ ScrollView {
                             RowLayout {
                                 Layout.fillWidth: true
                                 StyledComboBox {
-                                    label: "Slot"
+                                    label: qsTr("Slot")
                                     id: otpSlotComboBox
                                     model: getEnabledOtpSlots()
                                 }
@@ -228,7 +228,7 @@ ScrollView {
                                 CheckBox {
                                     id: requireTouchCheckBox
                                     checked: settings.requireTouch
-                                    text: "Require touch"
+                                    text: qsTr("Require touch")
                                     padding: 0
                                     indicator.width: 16
                                     indicator.height: 16
@@ -240,8 +240,8 @@ ScrollView {
 
                             StyledExpansionPanel {
                                 id: advancedSettingsPanel
-                                label: "Advanced settings"
-                                description: "Note: Changing these may result in unexpected behavior."
+                                label: qsTr("Advanced settings")
+                                description: qsTr("Note: Changing these may result in unexpected behavior.")
                                 visible: manualEntry && !settings.otpMode
                                 dropShadow: false
                                 backgroundColor: "transparent"
@@ -262,7 +262,7 @@ ScrollView {
                                         }
                                         StyledComboBox {
                                             id: algoComboBox
-                                            label: "Algorithm"
+                                            label: qsTr("Algorithm")
                                             model: {
                                                 var algos = ["SHA1", "SHA256"]
                                                 if (yubiKey.supportsOathSha512()) {
@@ -279,7 +279,7 @@ ScrollView {
                                         StyledTextField {
                                             id: periodLbl
                                             visible: oathTypeComboBox.currentIndex === 0
-                                            labelText: "Period"
+                                            labelText: qsTr("Period")
                                             text: credential && credential.period ? credential.period : "30"
                                             horizontalAlignment: Text.Alignleft
                                             validator: IntValidator {
@@ -293,7 +293,7 @@ ScrollView {
                                         }
                                         StyledComboBox {
                                             id: digitsComboBox
-                                            label: "Digits"
+                                            label: qsTr("Digits")
                                             model: ["6", "7", "8"]
                                             selectedValue: credential && credential.digits ? credential.digits : ""
                                         }
@@ -303,8 +303,8 @@ ScrollView {
 
                             StyledButton {
                                 id: addBtn
-                                text: "Add"
-                                toolTipText: "Add credential to YubiKey"
+                                text: qsTr("Add")
+                                toolTipText: qsTr("Add credential to YubiKey")
                                 enabled: settings.otpMode ? secretKeyLbl.validated && acceptableInput() :  secretKeyLbl.validated && acceptableInput() && nameLbl.validated
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                                 onClicked: addCredential()

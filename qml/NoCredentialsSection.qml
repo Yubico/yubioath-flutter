@@ -24,7 +24,7 @@ ColumnLayout {
         }
 
         Label {
-            text: "No credentials"
+            text: qsTr("No credentials")
             Layout.rowSpan: 1
             wrapMode: Text.WordWrap
             font.pixelSize: 16
@@ -35,7 +35,7 @@ ColumnLayout {
         }
 
         Label {
-            text: "Add credentials to this YubiKey in order to be able to generate security codes from it."
+            text: qsTr("Add credentials to this YubiKey in order to be able to generate security codes from it.")
             horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 320
             Layout.maximumWidth: app.width - dynamicMargin
@@ -50,7 +50,7 @@ ColumnLayout {
 
         StyledButton {
             id: addBtn
-            text: "Add"
+            text: qsTr("Add")
             enabled: true
             focus: true
             Layout.alignment: Qt.AlignCenter | Qt.AlignVCenter

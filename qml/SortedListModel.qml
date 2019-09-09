@@ -1,4 +1,4 @@
-// Heavyliy based on: https://gist.github.com/stephenquan/fcad6ecd4b28051c61cf48853e39c9e4
+// Based on: https://gist.github.com/stephenquan/fcad6ecd4b28051c61cf48853e39c9e4
 
 // Implements a convenient ListModel that contains sorted items.
 // properties:

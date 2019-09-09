@@ -127,8 +127,8 @@ ApplicationWindow {
     function calculateFavorite(credential, text) {
         if (credential && credential.touch) {
             sysTrayIcon.showMessage(
-                        "Touch required",
-                        "Touch your YubiKey now to generate code for protected credential.",
+                        qsTr("Touch required"),
+                        qsTr("Touch your YubiKey now to generate code for protected credential."),
                         SystemTrayIcon.NoIcon)
         }
         if (settings.otpMode) {
@@ -136,7 +136,7 @@ ApplicationWindow {
                 if (resp.success) {
                     clipBoard.push(resp.code.value)
                     sysTrayIcon.showMessage(
-                                "Copied to clipboard",
+                                qsTr("Copied to clipboard"),
                                 "The code for " + text + " is now in the clipboard.",
                                 SystemTrayIcon.NoIcon)
                 } else {
@@ -152,12 +152,12 @@ ApplicationWindow {
                 if (resp.success) {
                     clipBoard.push(resp.code.value)
                     sysTrayIcon.showMessage(
-                                "Copied to clipboard",
+                                qsTr("Copied to clipboard"),
                                 "The code for " + text + " is now in the clipboard.",
                                 SystemTrayIcon.NoIcon)
                 } else {
                     sysTrayIcon.showMessage(
-                                "Error",
+                                qsTr("Error"),
                                 "calculate failed: " + resp.error_id,
                                 SystemTrayIcon.NoIcon)
                     console.log("calculate failed:", resp.error_id)

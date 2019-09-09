@@ -28,10 +28,10 @@ ColumnLayout {
         Label {
             text: {
                 if (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable)) {
-                    return "Unsupported device"
+                    return qsTr("Unsupported device")
                 }
                 else {
-                    return "Insert your YubiKey"
+                    return qsTr("Insert your YubiKey")
                 }
             }
             font.pixelSize: 16
@@ -43,7 +43,7 @@ ColumnLayout {
         Label {
             text: {
                 if (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable)) {
-                    return "Yubico Authenticator requires a CCID/OTP enabled and compatible YubiKey."
+                    return qsTr("Yubico Authenticator requires a CCID/OTP enabled and compatible YubiKey.")
                 }
                 else {
                     return ""
@@ -63,7 +63,7 @@ ColumnLayout {
         }
 
         Label {
-            text: settings.useCustomReader ? "Interface: CCID - Custom reader" : "Interface: OTP"
+            text: settings.useCustomReader ? qsTr("Interface: CCID - Custom reader") : qsTr("Interface: OTP")
             visible: settings.useCustomReader || settings.otpMode
             Layout.minimumWidth: 320
             Layout.maximumWidth: app.width - dynamicMargin
@@ -78,7 +78,7 @@ ColumnLayout {
             text: {
                 var t = yubiKey.availableReaders.filter(reader => reader.includes(settings.customReaderName)).toString()
                 if (t.length === 0)
-                    t = "Custom reader not found. Make sure reader is attached and/or verify settings."
+                    t = qsTr("Custom reader not found. Make sure reader is attached and/or verify settings.")
                 return t
             }
             visible: settings.useCustomReader

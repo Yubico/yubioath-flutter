@@ -38,8 +38,8 @@ Dialog {
 
     property string heading
     property string message
-    property string buttonCancel: "Cancel"
-    property string buttonAccept: "Accept"
+    property string buttonCancel: qsTr("Cancel")
+    property string buttonAccept: qsTr("Accept")
 
     ColumnLayout {
         width: parent.width

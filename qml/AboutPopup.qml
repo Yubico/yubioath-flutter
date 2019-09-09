@@ -33,9 +33,9 @@ Dialog {
             return yubiKey.currentDevice.usbInterfacesEnabled.join('+')
         } else if (yubiKey.availableDevices.length > 0
                    && !yubiKey.availableDevices.some(dev => dev.selectable)) {
-            return "No compatible device found"
+            return qsTr("No compatible device found")
         } else {
-            return "No device found"
+            return qsTr("No device found")
         }
     }
 
@@ -101,7 +101,7 @@ Dialog {
             }
 
             Label {
-                text: !!yubiKey.currentDevice ? "Enabled interfaces: " + getDeviceDescription() : ""
+                text: !!yubiKey.currentDevice ? qsTr("Enabled interfaces: ") + getDeviceDescription() : ""
                 color: formText
                 font.pixelSize: 13
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
@@ -176,7 +176,7 @@ Dialog {
 
             StyledButton {
                 id: btnCancel
-                text: "Close"
+                text: qsTr("Close")
                 flat: true
                 enabled: true
                 font.capitalization: Font.capitalization

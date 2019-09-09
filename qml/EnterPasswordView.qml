@@ -11,7 +11,7 @@ ScrollView {
 
     id: enterPasswordViewId
     objectName: 'enterPasswordView'
-    property string title: "Unlock YubiKey"
+    property string title: qsTr("Unlock YubiKey")
 
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical.width: 8
@@ -82,7 +82,7 @@ ScrollView {
 
                 Label {
                     Layout.topMargin: 16
-                    text: "To prevent unauthorized access this YubiKey is protected with a password."
+                    text: qsTr("To prevent unauthorized access this YubiKey is protected with a password.")
                     Layout.maximumWidth: app.width - dynamicMargin
                                          < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
                     Layout.rowSpan: 1
@@ -117,7 +117,7 @@ ScrollView {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                         id: rememberPasswordCheckBox
                         font.pixelSize: 12
-                        text: "Remember password"
+                        text: qsTr("Remember password")
                         leftPadding: 0
                         KeyNavigation.backtab: passwordField.textField
                         KeyNavigation.tab: unlockBtn
@@ -131,8 +131,8 @@ ScrollView {
                     }
                     StyledButton {
                         id: unlockBtn
-                        text: "Unlock"
-                        toolTipText: "Unlock YubiKey"
+                        text: qsTr("Unlock")
+                        toolTipText: qsTr("Unlock YubiKey")
                         enabled: passwordField.text.valueOf().length > 0
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         onClicked: validate()

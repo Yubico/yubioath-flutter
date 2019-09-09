@@ -101,7 +101,7 @@ ToolBar {
                 selectedTextColor: defaultBackground
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                placeholderText: "Quick Find"
+                placeholderText: qsTr("Quick Find")
                 placeholderTextColor: hovered || focus ? iconButtonHovered : iconButtonNormal
                 leftPadding: 28
                 rightPadding: 8
@@ -137,19 +137,19 @@ ToolBar {
                     id: contextMenu
 
                     MenuItem {
-                        text: "Cut"
+                        text: qsTr("Cut")
                         onTriggered: {
                             searchField.cut()
                         }
                     }
                     MenuItem {
-                        text: "Copy"
+                        text: qsTr("Copy")
                         onTriggered: {
                             searchField.copy()
                         }
                     }
                     MenuItem {
-                        text: "Paste"
+                        text: qsTr("Paste")
                         onTriggered: {
                             searchField.paste()
                         }
@@ -215,7 +215,7 @@ ToolBar {
                 KeyNavigation.tab: deleteCredentialBtn
 
                 ToolTip {
-                    text: "Copy code to clipboard"
+                    text: qsTr("Copy code to clipboard")
                     delay: 1000
                     parent: copyCredentialBtn
                     visible: parent.hovered
@@ -247,7 +247,7 @@ ToolBar {
                 KeyNavigation.tab: favoriteBtn
 
                 ToolTip {
-                    text: "Delete credential"
+                    text: qsTr("Delete credential")
                     delay: 1000
                     parent: deleteCredentialBtn
                     visible: parent.hovered
@@ -279,7 +279,7 @@ ToolBar {
 
                 ToolTip {
                     text: shouldShowCredentialOptions()
-                          && app.currentCredentialCard.favorite ? "Remove as favorite" : "Set as favorite"
+                          && app.currentCredentialCard.favorite ? qsTr("Remove as favorite") : qsTr("Set as favorite")
                     delay: 1000
                     parent: favoriteBtn
                     visible: parent.hovered
@@ -317,7 +317,7 @@ ToolBar {
                 KeyNavigation.tab: settingsBtn
 
                 ToolTip {
-                    text: "Add a new credential"
+                    text: qsTr("Add a new credential")
                     delay: 1000
                     parent: addCredentialBtn
                     visible: parent.hovered
@@ -350,7 +350,7 @@ ToolBar {
                 KeyNavigation.tab: moreBtn
 
                 ToolTip {
-                    text: "Settings"
+                    text: qsTr("Settings")
                     delay: 1000
                     parent: settingsBtn
                     visible: parent.hovered
@@ -382,7 +382,7 @@ ToolBar {
                 KeyNavigation.tab: navigator
 
                 ToolTip {
-                    text: "Information"
+                    text: qsTr("Information")
                     delay: 1000
                     parent: moreBtn
                     visible: parent.hovered

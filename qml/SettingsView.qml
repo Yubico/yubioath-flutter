@@ -32,9 +32,9 @@ ScrollView {
             return yubiKey.currentDevice.usbInterfacesEnabled.join('+')
         } else if (yubiKey.availableDevices.length > 0
                    && !yubiKey.availableDevices.some(dev => dev.selectable)) {
-            return "No compatible device found"
+            return qsTr("No compatible device found")
         } else {
-            return "No device found"
+            return qsTr("No device found")
         }
     }
 
@@ -84,7 +84,7 @@ ScrollView {
     function setPassword() {
         yubiKey.setPassword(newPasswordField.text, false, function (resp) {
             if (resp.success) {
-                navigator.snackBar("Password set")
+                navigator.snackBar(qsTr("Password set"))
                 yubiKey.currentDevice.hasPassword = true
                 passwordManagementPanel.isExpanded = false
             } else {
@@ -100,7 +100,7 @@ ScrollView {
             if (resp.success) {
                 yubiKey.removePassword(function (resp) {
                     if (resp.success) {
-                        navigator.snackBar("Password removed")
+                        navigator.snackBar(qsTr("Password removed"))
                         yubiKey.currentDevice.hasPassword = false
                         passwordManagementPanel.isExpanded = false
                     } else {
@@ -116,21 +116,21 @@ ScrollView {
         })
     }
 
-    property string title: "Settings"
+    property string title: qsTr("Settings")
 
     ListModel {
         id: themes
 
         ListElement {
-            text: "System Default"
+            text: qsTr("System Default")
             value: Material.System
         }
         ListElement {
-            text: "Light Mode"
+            text: qsTr("Light Mode")
             value: Material.Light
         }
         ListElement {
-            text: "Dark Mode"
+            text: qsTr("Dark Mode")
             value: Material.Dark
         }
     }
@@ -169,11 +169,11 @@ ScrollView {
 
         StyledExpansionContainer {
             id: keyPane
-            sectionTitle: "Device"
+            sectionTitle: qsTr("Device")
 
             StyledExpansionPanel {
                 id: currentDevicePanel
-                label: !!yubiKey.currentDevice ? getDeviceLabel(yubiKey.currentDevice) : "Insert your YubiKey"
+                label: !!yubiKey.currentDevice ? getDeviceLabel(yubiKey.currentDevice) : qsTr("Insert your YubiKey")
                 description: getDeviceDescription()
                 keyImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : "../images/yubikeys-large-transparent"
                 isTopPanel: true
@@ -233,8 +233,8 @@ ScrollView {
 
             StyledExpansionPanel {
                 id: passwordManagementPanel
-                label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? "Change Password" : "Set Password"
-                description: "For additional security and to prevent unauthorized access the YubiKey may be protected with a password."
+                label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change Password") : qsTr("Set Password")
+                description: qsTr("For additional security and to prevent unauthorized access the YubiKey may be protected with a password.")
                 visible: !!yubiKey.currentDevice && !settings.otpMode
 
                 ColumnLayout {
@@ -273,8 +273,8 @@ ScrollView {
                             text: "Remove"
                             flat: true
                             onClicked: navigator.confirm(
-                                           "Remove password?",
-                                           "A password will not be required to access the credentials anymore.",
+                                           qsTr("Remove password?"),
+                                           qsTr("A password will not be required to access the credentials anymore."),
                                            function () {
                                                removePassword()
                                            })
@@ -290,15 +290,15 @@ ScrollView {
             }
 
             StyledExpansionPanel {
-                label: "Reset"
-                description: "Warning: Resetting the OATH application will delete all credentials and restore factory defaults."
+                label: qsTr("Reset")
+                description: qsTr("Warning: Resetting the OATH application will delete all credentials and restore factory defaults.")
                 isEnabled: false
                 visible: !!yubiKey.currentDevice && !settings.otpMode
                 toolButtonIcon: "../images/reset.svg"
-                toolButtonToolTip: "Reset OATH Application"
+                toolButtonToolTip: qsTr("Reset OATH Application")
                 toolButton.onClicked: navigator.confirm(
-                                          "Reset OATH application?",
-                                          "This will delete all credentials and restore factory defaults.",
+                                          qsTr("Reset OATH application?"),
+                                          qsTr("This will delete all credentials and restore factory defaults."),
                                           function () {
                                               navigator.goToLoading()
                                               yubiKey.reset(function (resp) {
@@ -306,7 +306,7 @@ ScrollView {
                                                   if (resp.success) {
                                                       entries.clear()
                                                       navigator.snackBar(
-                                                                  "Reset completed")
+                                                                  qsTr("Reset completed"))
                                                       yubiKey.currentDeviceValidated = true
                                                       yubiKey.currentDevice.hasPassword = false
                                                   } else {
@@ -323,11 +323,11 @@ ScrollView {
 
         StyledExpansionContainer {
             id: appPane
-            sectionTitle: "Application"
+            sectionTitle: qsTr("Application")
 
             StyledExpansionPanel {
-                label: "Appearance"
-                description: "Change the appearance of the application."
+                label: qsTr("Appearance")
+                description: qsTr("Change the appearance of the application.")
                 isTopPanel: true
 
                 ColumnLayout {
@@ -336,7 +336,7 @@ ScrollView {
                         Layout.fillWidth: true
                         StyledComboBox {
                             id: themeComboBox
-                            label: "Theme"
+                            label: qsTr("Theme")
                             comboBox.textRole: "text"
                             model: themes
                             onCurrentIndexChanged: {
@@ -361,8 +361,8 @@ ScrollView {
 
             StyledExpansionPanel {
                 id: interfacePanel
-                label: "Interface"
-                description: "Configure how to read credentials from the YubiKey."
+                label: qsTr("Interface")
+                description: qsTr("Configure how to read credentials from the YubiKey.")
                 property bool otpModeSelected: interfaceCombobox.currentIndex === 2
                 property bool customReaderSelected: interfaceCombobox.currentIndex === 1
                 property bool aboutToChange: (otpModeSelected !== settings.otpMode)
@@ -394,7 +394,7 @@ ScrollView {
                     yubiKey.clearCurrentDeviceAndEntries()
                     yubiKey.refreshDevicesDefault()
                     navigator.goToSettings()
-                    navigator.snackBar("Interface changed")
+                    navigator.snackBar(qsTr("Interface changed"))
                     interfacePanel.isExpanded = false
                 }
 
@@ -420,7 +420,7 @@ ScrollView {
                         Layout.fillWidth: true
                         StyledComboBox {
                             id: interfaceCombobox
-                            label: "Interface"
+                            label: qsTr("Interface")
                             model: ["CCID (recommended)", "CCID - Custom reader", "OTP"]
                             currentIndex: getCurrentIndex()
 
@@ -444,7 +444,7 @@ ScrollView {
                         Layout.fillWidth: true
                         font.pixelSize: 11
                         color: formLabel
-                        text: "Using the OTP slots should be considered for special cases only."
+                        text: qsTr("Using the OTP slots should be considered for special cases only.")
                         wrapMode: Text.WordWrap
                         Layout.rowSpan: 1
                         bottomPadding: 8
@@ -456,7 +456,7 @@ ScrollView {
 
                     StyledComboBox {
                         id: slot1DigitsComboBox
-                        label: "Slot 1 Digits"
+                        label: qsTr("Slot 1 Digits")
                         comboBox.textRole: "text"
                         model: otpModeDigits
                         currentIndex: interfacePanel.getComboBoxIndex(
@@ -469,7 +469,7 @@ ScrollView {
 
                     StyledComboBox {
                         id: slot2DigitsComboBox
-                        label: "Slot 2 Digits"
+                        label: qsTr("Slot 2 Digits")
                         comboBox.textRole: "text"
                         model: otpModeDigits
                         currentIndex: interfacePanel.getComboBoxIndex(
@@ -486,12 +486,12 @@ ScrollView {
                             id: connectedReaders
                             enabled: yubiKey.availableReaders.length > 0
                             visible: yubiKey.availableReaders.length > 0
-                            label: "Connected readers"
+                            label: qsTr("Connected readers")
                             model: yubiKey.availableReaders
                         }
                         StyledButton {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            text: "Use as filter"
+                            text: qsTr("Use as filter")
                             flat: true
                             enabled: yubiKey.availableReaders.length > 0
                             visible: yubiKey.availableReaders.length > 0
@@ -518,14 +518,14 @@ ScrollView {
 
             StyledExpansionPanel {
                 label: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
-                description: "Configure where and how the application is visible."
+                description: qsTr("Configure where and how the application is visible.")
                 isBottomPanel: true
 
                 ColumnLayout {
                     CheckBox {
                         id: sysTrayCheckbox
                         checked: settings.closeToTray
-                        text: Qt.platform.os === "osx" ? "Show in menu bar" : "Show in system tray"
+                        text: Qt.platform.os === "osx" ? qsTr("Show in menu bar") : qsTr("Show in system tray")
                         padding: 0
                         indicator.width: 16
                         indicator.height: 16
@@ -542,7 +542,7 @@ ScrollView {
                         id: hideOnLaunchCheckbox
                         enabled: sysTrayCheckbox.checked
                         checked: settings.hideOnLaunch
-                        text: "Hide on launch"
+                        text: qsTr("Hide on launch")
                         padding: 0
                         indicator.width: 16
                         indicator.height: 16
