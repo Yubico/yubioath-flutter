@@ -142,6 +142,10 @@ Python {
         return device.name.startsWith('YubiKey 5')
     }
 
+    function isYubiKeyFIPS(device) {
+        return device.name === 'YubiKey FIPS'
+    }
+
     function getYubiKeyImageSource(currentDevice) {
         if (isYubiKey4(currentDevice)) {
             return "../images/yk4series.png"
@@ -149,11 +153,9 @@ Python {
         if (isYubiKeyEdge(currentDevice)) {
             return "../images/ykedge.png"
         }
-
         if (isSecurityKeyNfc(currentDevice)) {
             return "../images/sky3.png"
         }
-
         if (isSecurityKeyByYubico(currentDevice)) {
             return "../images/sky2.png"
         }
@@ -184,11 +186,9 @@ Python {
         if (isYubiKey5A(currentDevice)) {
             return "../images/yk4.png"
         }
-
         if (isYubiKey5Ci(currentDevice)) {
             return "../images/yk5ci.png"
         }
-
         if (isYubiKey5Family(currentDevice)) {
             return "../images/yk5series.png"
         }
@@ -342,9 +342,9 @@ Python {
     }
 
     function supportsOathSha512() {
-        // TODO: FIPS keys also does not support this
         return !!currentDevice && !!currentDevice.version && parseInt(
                     currentDevice.version.split('.').join("")) >= 431
+                && !isYubiKeyFIPS(currentDevice)
     }
 
     function scanQr(toastIfError) {
