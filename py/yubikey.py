@@ -175,7 +175,7 @@ class Controller(object):
             if dev:
                 return OathContextManager(dev)
             else:
-                raise ValueError('not_one_device_custom_reader')
+                raise ValueError('no_device_custom_reader')
 
         return OathContextManager(
             open_device(TRANSPORT.CCID, serial=self._current_serial))
@@ -282,7 +282,7 @@ class Controller(object):
                 })
                 return success({'devices': self._devices})
             else:
-                return failure('not_one_device_custom_reader')
+                return success({'devices': []})
         else:
             self._reader_filter = None
             # Forget current serial and derived key if no descriptors
