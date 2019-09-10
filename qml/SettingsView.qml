@@ -70,6 +70,7 @@ ScrollView {
     }
 
     function changePassword() {
+        navigator.goToLoading()
         yubiKey.validate(currentPasswordField.text, false, function (resp) {
             if (resp.success) {
                 setPassword()
@@ -78,10 +79,12 @@ ScrollView {
                 console.log("change password failed:", resp.error_id)
             }
             clearPasswordFields()
+            navigator.goToSettings()
         })
     }
 
     function setPassword() {
+        navigator.goToLoading()
         yubiKey.setPassword(newPasswordField.text, false, function (resp) {
             if (resp.success) {
                 navigator.snackBar(qsTr("Password set"))
@@ -92,10 +95,12 @@ ScrollView {
                 console.log("set password failed:", resp.error_id)
             }
             clearPasswordFields()
+            navigator.goToSettings()
         })
     }
 
     function removePassword() {
+        navigator.goToLoading()
         yubiKey.validate(currentPasswordField.text, false, function (resp) {
             if (resp.success) {
                 yubiKey.removePassword(function (resp) {
@@ -108,11 +113,13 @@ ScrollView {
                         console.log("remove password failed:", resp.error_id)
                     }
                     clearPasswordFields()
+                    navigator.goToSettings()
                 })
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
                 console.log("remove password failed:", resp.error_id)
             }
+
         })
     }
 
@@ -302,13 +309,13 @@ ScrollView {
                                           function () {
                                               navigator.goToLoading()
                                               yubiKey.reset(function (resp) {
-                                                  navigator.goToSettings()
                                                   if (resp.success) {
                                                       entries.clear()
                                                       navigator.snackBar(
                                                                   qsTr("Reset completed"))
                                                       yubiKey.currentDeviceValidated = true
                                                       yubiKey.currentDevice.hasPassword = false
+
                                                   } else {
                                                       navigator.snackBarError(
                                                                   navigator.getErrorMessage(
@@ -316,6 +323,7 @@ ScrollView {
                                                       console.log("reset failed:",
                                                                   resp.error_id)
                                                   }
+                                                  navigator.goToSettings()
                                               })
                                           })
             }
