@@ -391,13 +391,13 @@ class Controller(object):
         valid_to = valid_from + 30
         entries = []
 
-        if slot1_digits:
+        def calc(slot, digits, label):
             try:
                 code, touch = self._otp_get_code_or_touch(
-                    1, slot1_digits, timestamp)
+                    slot, digits, timestamp)
                 entries.append({
                     'credential': cred_to_dict(
-                        Credential("Slot 1".encode(), OATH_TYPE.TOTP, touch)),
+                        Credential(label.encode(), OATH_TYPE.TOTP, touch)),
                     'code': code_to_dict(
                         Code(code, valid_from, valid_to)) if code else None
                 })
@@ -407,21 +407,11 @@ class Controller(object):
                 else:
                     raise
 
+        if slot1_digits:
+            calc(1, slot1_digits, "Slot 1")
+
         if slot2_digits:
-            try:
-                code, touch = self._otp_get_code_or_touch(
-                    2, slot2_digits, timestamp)
-                entries.append({
-                    'credential': cred_to_dict(
-                        Credential("Slot 2".encode(), OATH_TYPE.TOTP, touch)),
-                    'code': code_to_dict(
-                        Code(code, valid_from, valid_to)) if code else None
-                })
-            except YkpersError as e:
-                if e.errno == 4:
-                    pass
-                else:
-                    raise
+            calc(2, slot2_digits, "Slot 2")
 
         return success({'entries': entries})
 
