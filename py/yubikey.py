@@ -370,14 +370,14 @@ class Controller(object):
                 if e.sw == SW.INCORRECT_PARAMETERS:
                     return failure('validate_failed')
 
-    def _otp_get_code_or_touch(self, slot, digits, timestamp):
+    def _otp_get_code_or_touch(self, slot, digits, timestamp, wait_for_touch=False):
         code = None
         touch = False
         with self._open_otp() as otp_controller:
             try:
                 code = otp_controller.calculate(
                     slot, challenge=timestamp, totp=True,
-                    digits=int(digits), wait_for_touch=False)
+                    digits=int(digits), wait_for_touch=wait_for_touch)
             except YkpersError as e:
                 if e.errno == 11:  # Operation would block, touch credential
                     touch = True
@@ -428,14 +428,11 @@ class Controller(object):
     def otp_calculate(self, slot, digits, credential, timestamp):
         valid_from = timestamp - (timestamp % 30)
         valid_to = valid_from + 30
-        with self._open_otp() as otp_controller:
-            code = otp_controller.calculate(
-                slot, challenge=timestamp, totp=True,
-                digits=int(digits), wait_for_touch=True)
-            return success({
-                'credential': credential,
-                'code': code_to_dict(Code(code, valid_from, valid_to))
-            })
+        code, _ = self._otp_get_code_or_touch(slot, digits, timestamp, wait_for_touch=True)
+        return success({
+            'credential': credential,
+            'code': code_to_dict(Code(code, valid_from, valid_to))
+        })
 
     def otp_slot_status(self):
         with self._open_otp() as otp_controller:
