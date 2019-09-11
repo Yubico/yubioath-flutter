@@ -14,7 +14,7 @@ ColumnLayout {
 
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        Layout.topMargin: -80
+        Layout.bottomMargin: 16
 
         StyledImage {
             source: "../images/search.svg"
