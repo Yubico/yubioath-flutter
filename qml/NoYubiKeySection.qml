@@ -12,9 +12,10 @@ ColumnLayout {
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
 
+    height: parent.height
+
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        Layout.topMargin: -32
 
         StyledImage {
             id: yubikeys
@@ -61,6 +62,16 @@ ColumnLayout {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             color: formLabel
         }
+    }
+
+    ColumnLayout {
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+        Layout.topMargin: 4
+        Layout.bottomMargin: 16
+
+        Item {
+            height: 1
+        }
 
         Label {
             text: settings.useCustomReader ? qsTr("Interface: CCID - Custom reader") : qsTr("Interface: OTP")
@@ -78,7 +89,7 @@ ColumnLayout {
             text: {
                 var t = yubiKey.availableReaders.filter(reader => reader.toLowerCase().includes(settings.customReaderName.toLowerCase())).toString()
                 if (t.length === 0)
-                    t = qsTr("Custom reader not found. Make sure reader is attached and/or verify settings.")
+                    t = qsTr("Custom reader not found!")
                 return t
             }
             visible: settings.useCustomReader
@@ -90,8 +101,10 @@ ColumnLayout {
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             color: formLabel
-            maximumLineCount: 2
+            maximumLineCount: 1
             elide: Text.ElideRight
         }
     }
+
 }
+
