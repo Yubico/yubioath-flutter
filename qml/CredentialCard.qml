@@ -326,6 +326,8 @@ Pane {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             size: 40
             letter: getIconLetter()
+            Accessible.ignored: true
+
             StyledImage {
                 id: favoriteIcon
                 anchors.bottom: parent.bottom
