@@ -1,0 +1,90 @@
+name: macOS
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: macOS-10.14
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install dependencies from hombrew
+        run: |
+          brew upgrade
+          brew bundle --file=./.travis/Brewfile
+          brew link qt -f
+
+      - name: Build custom Python as a framework
+        run: |
+          wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz
+          tar -xzvf Python-3.7.4.tgz
+          cd Python-3.7.4
+          ./configure CPPFLAGS="-I$(brew --prefix openssl@1.1)/include" LDFLAGS="-L$(brew --prefix openssl@1.1)/lib" MACOSX_DEPLOYMENT_TARGET=10.13 CC=clang --enable-framework --with-openssl=$(brew --prefix openssl@1.1) --enable-optimizations
+          sudo make altinstall
+          cd ..
+
+      - name: Download, build, install pyotherside QML plugin
+        run: |
+          wget https://github.com/thp/pyotherside/archive/1.5.8.tar.gz
+          tar -xzvf 1.5.8.tar.gz
+          echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-1.5.8/src/src.pro
+          cd pyotherside-1.5.8
+          qmake PYTHON_CONFIG=/Library/Frameworks/Python.framework/Versions/3.7/bin/python3.7m-config
+          make
+          sudo make install
+          cd ..
+
+      - name: Build yubioath-desktop
+        run: |
+          qmake
+          make
+          macdeployqt yubioath-desktop.app/ -qmldir=qml/ -appstore-compliant
+
+      - name: Copy over dylibs from homebrew
+        run: |
+          sudo find /usr/local/Cellar/json-c/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+          sudo find /usr/local/Cellar/ykpers/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+          sudo find /usr/local/Cellar/libyubikey/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+          sudo find /usr/local/Cellar/libusb/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+          sudo find /usr/local/Cellar/openssl@1.1/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+
+      - name: Copy over Python.framework to app bundle
+        run: |
+          cp -a /Library/Frameworks/Python.framework yubioath-desktop.app/Contents/Frameworks/
+          sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '*.pyc' -delete
+          sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '__pycache__' -delete
+
+      - name: Point pyotherside to relative Python
+        run: |
+          sudo install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.7/Python @executable_path/../Frameworks/Python.framework/Versions/3.7/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
+
+      - name: Point custom Python share objects to relative openssl (from brew)
+        run: |
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_hashlib.cpython-37m-darwin.so
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_hashlib.cpython-37m-darwin.so
+          sudo install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1c/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/libssl.1.1.dylib
+
+      - name: Point ykpers dependencies to relative dylibs
+        run: |
+          sudo install_name_tool -change /usr/local/opt/libyubikey/lib/libyubikey.0.dylib @executable_path/../Frameworks/libyubikey.0.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.1.dylib
+          sudo install_name_tool -change /usr/local/opt/libyubikey/lib/libyubikey.0.dylib @executable_path/../Frameworks/libyubikey.0.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.dylib
+          sudo install_name_tool -change /usr/local/opt/json-c/lib/libjson-c.4.dylib @executable_path/../Frameworks/libjson-c.4.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.1.dylib
+          sudo install_name_tool -change /usr/local/opt/json-c/lib/libjson-c.4.dylib @executable_path/../Frameworks/libjson-c.4.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.dylib
+
+      - name: Rename and archive app bundle
+        run: |
+          export REF=$(echo ${GITHUB_REF} | tr / -)
+          mv yubioath-desktop.app Yubico\ Authenticator.app
+          tar -czf yubioath-desktop-${REF}.app.tar.gz Yubico\ Authenticator.app
+
+      - name: Push artifact to s3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          export REF=$(echo ${GITHUB_REF} | tr / -)
+          aws s3 mv yubioath-desktop-${REF}.app.tar.gz s3://yubico-builds/yubioath-desktop/yubioath-desktop-${REF}.app.tar.gz --acl public-read
