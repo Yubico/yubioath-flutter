@@ -51,6 +51,7 @@ Pane {
                     contextMenu.popup()
                 } else {
                     credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
+                    navigator.forceActiveFocus()
                 }
             }
             Menu {
