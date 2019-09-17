@@ -10,6 +10,8 @@ StackView {
         }
     }
 
+    Accessible.ignored: true
+
     function clearAndPush(view) {
         clear()
         push(view, StackView.Immediate)

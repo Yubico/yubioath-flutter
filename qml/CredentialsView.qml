@@ -8,6 +8,8 @@ ScrollView {
     id: pane
     objectName: 'credentialsView'
 
+    Accessible.ignored: true
+
     property var filtered: 0
 
     contentHeight: filteredCredentials().count > 0 ? grid.contentHeight : app.height - toolBar.height
@@ -61,22 +63,26 @@ ScrollView {
         height: app.height
         width: app.width
         enabled: entries.count > 0
+        Accessible.ignored: true
     }
 
     NoCredentialsSection {
         visible: entries.count === 0 && !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
         enabled: visible
+        Accessible.ignored: true
     }
 
     NoResultsSection {
         visible: entries.count > 0 && !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
                  && filteredCredentials().count === 0
         enabled: visible
+        Accessible.ignored: true
     }
 
     NoYubiKeySection {
         visible: !yubiKey.availableDevices.some(dev => dev.selectable)
         enabled: visible
+        Accessible.ignored: true
     }
 
     GridView {
@@ -95,6 +101,7 @@ ScrollView {
         cellWidth: 362
         cellHeight: 82
         Accessible.role: Accessible.MenuItem
+        Accessible.focusable: true
         delegate: CredentialCard {
             credential: model.credential
             code: model.code
