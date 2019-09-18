@@ -40,9 +40,15 @@ ScrollView {
                 yubiKey.calculateAll(navigator.goToCredentials)
                 navigator.snackBar(qsTr("Credential added"))
             } else {
-                navigator.snackBarError(navigator.getErrorMessage(
-                                            resp.error_id))
-                console.log("addCredential failed:", resp.error_id)
+                if (resp.error_id === 'credential_already_exists') {
+                    navigator.confirm(
+                        qsTr("Overwrite?"),
+                        qsTr("A credential with this name already exists, do you want to overwrite it?"),
+                                                        _ccidAddCredentialOverwrite)
+                } else {
+                    navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+                    console.log("addCredential failed:", resp.error_id)
+                }
             }
         }
 
@@ -50,6 +56,26 @@ ScrollView {
             yubiKey.otpAddCredential(otpSlotComboBox.currentText,
                                      secretKeyLbl.text,
                                      requireTouchCheckBox.checked, callback)
+        }
+
+        function _ccidAddCredential(overwrite) {
+            yubiKey.ccidAddCredential(nameLbl.text, secretKeyLbl.text,
+                                          issuerLbl.text,
+                                          oathTypeComboBox.currentText,
+                                          algoComboBox.currentText,
+                                          digitsComboBox.currentText,
+                                          periodLbl.text,
+                                          requireTouchCheckBox.checked,
+                                          overwrite,
+                                          callback)
+        }
+
+        function _ccidAddCredentialOverwrite() {
+            _ccidAddCredential(true)
+        }
+
+        function _ccidAddCredentialNoOverwrite() {
+            _ccidAddCredential(false)
         }
 
         if (acceptableInput()) {
@@ -71,13 +97,7 @@ ScrollView {
                     }
                 })
             } else {
-                yubiKey.ccidAddCredential(nameLbl.text, secretKeyLbl.text,
-                                          issuerLbl.text,
-                                          oathTypeComboBox.currentText,
-                                          algoComboBox.currentText,
-                                          digitsComboBox.currentText,
-                                          periodLbl.text,
-                                          requireTouchCheckBox.checked, callback)
+                _ccidAddCredentialNoOverwrite()
             }
             settings.requireTouch = requireTouchCheckBox.checked
         }

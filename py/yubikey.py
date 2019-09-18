@@ -335,15 +335,20 @@ class Controller(object):
 
     def ccid_add_credential(
             self, name, secret, issuer, oath_type,
-            algo, digits, period, touch):
+            algo, digits, period, touch, overwrite=False):
         secret = parse_b32_key(secret)
         with self._open_oath() as oath_controller:
             try:
                 self._unlock(oath_controller)
-                oath_controller.put(CredentialData(
+                cred_data = CredentialData(
                     secret, issuer, name, OATH_TYPE[oath_type], ALGO[algo],
                     int(digits), int(period), 0, touch
-                ))
+                )
+                if not overwrite:
+                    key = cred_data.make_key()
+                    if key in [cred.key for cred in oath_controller.list()]:
+                        return failure('credential_already_exists')
+                oath_controller.put(cred_data)
             except APDUError as e:
                 # NEO doesn't return a no space error if full,
                 # but a command aborted error. Assume it's because of
