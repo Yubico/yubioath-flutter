@@ -24,14 +24,14 @@ which can be done by using the https://developers.yubico.com/yubikey-manager-qt/
 
 === Installation
 
-==== Windows and macOS
-Installers are available https://developers.yubico.com/yubioath-desktop/Releases/[here].
+Downloads for all supported operating systems are available https://developers.yubico.com/yubioath-desktop/Releases/[here].
 
-==== Ubuntu
+=== System Requirements
+The following operating systems are considered supported. The application may still run on other platforms.
 
-    $ sudo apt-add-repository ppa:yubico/stable
-    $ sudo apt update
-    $ sudo apt install yubioath-desktop
+* Windows 7 or later
+* macOS High Sierra 10.13 or later
+* Ubuntu 16.04 LTS or later
 
 === CLI
 
