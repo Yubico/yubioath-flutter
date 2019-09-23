@@ -56,6 +56,11 @@ jobs:
           sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '*.pyc' -delete
           sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '__pycache__' -delete
 
+      - name: Move python dependencies to site-packages (required by codesign)
+        run: |
+          mv yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/
+          rm -rf yubioath-desktop.app/Contents/MacOS/pymodules
+
       - name: Point pyotherside to relative Python
         run: |
           sudo install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.7/Python @executable_path/../Frameworks/Python.framework/Versions/3.7/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
