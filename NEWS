@@ -1,11 +1,11 @@
-* Version 5.0.0 (unreleased)
+* Version 5.0.0 (released 2019-09-23)
  ** New UI based on Material Design and Qt Quick Controls 2
  ** Add Dark Mode and Light Mode
  ** Feature: Allow switching between connected YubiKeys
  ** Feature: Select favorite credentials, available from the System Tray/Menu Bar
- ** Feature: Use and external smart card reader, making it possible to use the YubiKey over NFC
  ** Show some information about the connected YubiKey, such as firmware version and serial number
- ** Add experimental accessability support
+ ** Add experimental support for external smart card readers, enabling the use of a YubiKey over NFC
+ ** Add initial accessability support
 
 * Version 4.3.6b (released 2019-06-11)
  ** Fixes problem where YubiKey was not being detected on macOS.
