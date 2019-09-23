@@ -58,7 +58,7 @@ jobs:
 
       - name: Move python dependencies to site-packages (required by codesign)
         run: |
-          mv yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/
+          rsync -a yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/
           rm -rf yubioath-desktop.app/Contents/MacOS/pymodules
 
       - name: Point pyotherside to relative Python
