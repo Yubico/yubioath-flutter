@@ -90,7 +90,7 @@ ApplicationWindow {
     function enableLogging(logLevel) {
         yubiKey.enableLogging(logLevel, null)
     }
-    function enableLoggingToFile(logLevellogFile) {
+    function enableLoggingToFile(logLevel, logFile) {
         yubiKey.enableLogging(logLevel, logFile)
     }
     function disableLogging() {
