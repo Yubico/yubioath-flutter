@@ -30,7 +30,6 @@ Pane {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 text: sectionTitle
                 color: Material.primary
-                font.pixelSize: 14
                 font.weight: Font.Medium
                 topPadding: 8
                 bottomPadding: 8

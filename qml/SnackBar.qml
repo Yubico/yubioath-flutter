@@ -48,7 +48,6 @@ ToolTip {
             text: message
             color: isDark() ? defaultDarkForeground : defaultLight
             opacity: 0.87
-            font.pixelSize: 14
             leftPadding: 8
             rightPadding: 0
             wrapMode: Text.WordWrap

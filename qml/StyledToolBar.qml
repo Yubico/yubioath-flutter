@@ -70,7 +70,7 @@ ToolBar {
             id: titleLbl
             visible: showTitleLbl
             text: showTitleLbl ? navigator.currentItem.title : ""
-            font.pixelSize: 16
+            font.pixelSize: Qt.application.font.pixelSize * 1.2
             Layout.leftMargin: backBtn.visible ? -32 : 0
             Layout.rightMargin: shouldShowSettings() ? -80 : 0
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter

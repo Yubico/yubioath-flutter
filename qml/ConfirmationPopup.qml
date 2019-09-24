@@ -49,7 +49,7 @@ Dialog {
         Label {
             id: confirmationHeading
             text: heading
-            font.pixelSize: 15
+            font.pixelSize: Qt.application.font.pixelSize * 1.3
             font.weight: Font.Medium
             width: parent.width
             wrapMode: Text.WordWrap
@@ -60,7 +60,6 @@ Dialog {
             id: confirmationLbl
             text: message
             color: formText
-            font.pixelSize: 13
             lineHeight: 1.2
             wrapMode: Text.WordWrap
             Layout.topMargin: 16

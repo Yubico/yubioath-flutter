@@ -13,7 +13,7 @@ Rectangle {
     Label {
         text: letter.toUpperCase()
         font.bold: true
-        font.pixelSize: 24
+        font.pixelSize: Qt.application.font.pixelSize * 1.8
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         color: yubicoWhite

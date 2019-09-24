@@ -359,7 +359,7 @@ Pane {
             spacing: 0
             Label {
                 id: codeLbl
-                font.pixelSize: 24
+                font.pixelSize: Qt.application.font.pixelSize * 1.8
                 color: Material.primary
                 text: getCodeLblValue()
             }
@@ -367,7 +367,6 @@ Pane {
                 id: nameLbl
                 text: formattedName()
                 Layout.maximumWidth: 265
-                font.pixelSize: 12
                 maximumLineCount: 3
                 wrapMode: Text.Wrap
                 color: formText

@@ -24,7 +24,6 @@ Item {
 
         Label {
             text: label
-            font.pixelSize: 10
             color: formLabel
         }
 
@@ -32,7 +31,6 @@ Item {
             id: comboBox
             Layout.fillWidth: true
             implicitWidth: container.width
-            font.pixelSize: 13
             flat: true
             Material.accent: isDark(
                                  ) ? defaultDarkForeground : defaultLightForeground
@@ -52,7 +50,6 @@ Item {
             }
             contentItem: Text {
                 color: formText
-                font.pixelSize: 13
                 text: parent.displayText
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft

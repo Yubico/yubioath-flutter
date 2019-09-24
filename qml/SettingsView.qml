@@ -450,7 +450,6 @@ ScrollView {
                     visible: interfacePanel.otpModeSelected
                     Label {
                         Layout.fillWidth: true
-                        font.pixelSize: 11
                         color: formLabel
                         text: qsTr("Using the OTP slots should be considered for special cases only.")
                         wrapMode: Text.WordWrap

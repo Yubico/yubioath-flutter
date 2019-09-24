@@ -58,8 +58,7 @@ Item {
     Column {
 
         Label {
-            font.pixelSize: 10
-            height: 10
+            height: Qt.application.font.pixelSize
             color: validateInput() ? formLabel : yubicoRed
             text: labelTextValue()
         }
@@ -69,7 +68,6 @@ Item {
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             selectByMouse: true
             implicitWidth: textFieldContainer.width
-            font.pixelSize: 13
             Keys.onEscapePressed: textField.focus = false
             Keys.onReturnPressed: {
                 textField.focus = false
@@ -130,7 +128,6 @@ Item {
         }
 
         Label {
-            font.pixelSize: 10
             color: yubicoRed
             text: validateText
             visible: !validateInput()

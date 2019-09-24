@@ -108,7 +108,6 @@ Pane {
                     anchors { horizontalCenter: parent.horizontalCenter; verticalCenter: parent.verticalCenter; }
                     text: step
                     visible: !isCompleted
-                    font.pixelSize: 13
                     color: yubicoWhite
                 }
 
@@ -143,7 +142,7 @@ Pane {
                 Label {
                     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                     text: label
-                    font.pixelSize: 13
+                    wrapMode: Text.WordWrap
                     font.weight: isExpanded ? Font.Medium : Font.Normal
                     color: formText
                     Layout.fillWidth: true
@@ -151,7 +150,6 @@ Pane {
                 Label {
                     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                     Layout.fillWidth: true
-                    font.pixelSize: 11
                     color: formLabel
                     text: description
                     wrapMode: Text.WordWrap

@@ -88,7 +88,6 @@ ScrollView {
                     Layout.rowSpan: 1
                     lineHeight: 1.2
                     wrapMode: Text.WordWrap
-                    font.pixelSize: 13
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     color: formText
                     Layout.fillWidth: true
@@ -116,7 +115,6 @@ ScrollView {
                     CheckBox {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                         id: rememberPasswordCheckBox
-                        font.pixelSize: 12
                         text: qsTr("Remember password")
                         leftPadding: 0
                         KeyNavigation.backtab: passwordField.textField

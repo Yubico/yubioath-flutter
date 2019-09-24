@@ -12,7 +12,7 @@ ApplicationWindow {
     id: app
 
     width: 360
-    height: 620
+    height: 700
     minimumWidth: 360
     minimumHeight: 208
     visible: false

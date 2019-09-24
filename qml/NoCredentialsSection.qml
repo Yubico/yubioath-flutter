@@ -27,7 +27,7 @@ ColumnLayout {
             text: qsTr("No credentials")
             Layout.rowSpan: 1
             wrapMode: Text.WordWrap
-            font.pixelSize: 16
+            font.pixelSize: Qt.application.font.pixelSize * 1.2
             font.weight: Font.Normal
             lineHeight: 1.5
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
@@ -43,7 +43,6 @@ ColumnLayout {
             Layout.rowSpan: 1
             lineHeight: 1.1
             wrapMode: Text.WordWrap
-            font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             color: formLabel
         }

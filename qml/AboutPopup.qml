@@ -69,7 +69,6 @@ Dialog {
 
             Label {
                 text: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : ""
-                font.pixelSize: 13
                 font.weight: Font.Medium
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 width: parent.width
@@ -81,7 +80,6 @@ Dialog {
                 text: !!yubiKey.currentDevice ? "Serial number: " + yubiKey.currentDevice.serial : ""
                 visible: !!yubiKey.currentDevice && yubiKey.currentDevice.serial
                 color: formText
-                font.pixelSize: 13
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 wrapMode: Text.WordWrap
                 Layout.maximumWidth: parent.width
@@ -93,7 +91,6 @@ Dialog {
                 text: !!yubiKey.currentDevice ? "Firmware version: " + yubiKey.currentDevice.version : ""
                 visible: !!yubiKey.currentDevice && yubiKey.currentDevice.version
                 color: formText
-                font.pixelSize: 13
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 wrapMode: Text.WordWrap
                 Layout.maximumWidth: parent.width
@@ -103,7 +100,6 @@ Dialog {
             Label {
                 text: !!yubiKey.currentDevice ? qsTr("Enabled interfaces: ") + getDeviceDescription() : ""
                 color: formText
-                font.pixelSize: 13
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 wrapMode: Text.WordWrap
                 Layout.maximumWidth: parent.width
@@ -138,7 +134,6 @@ Dialog {
 
         Label {
             text: qsTr("Yubico Authenticator ") + appVersion
-            font.pixelSize: 13
             font.weight: Font.Medium
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             width: parent.width
@@ -151,7 +146,6 @@ Dialog {
                            new Date(),
                            "yyyy") + ", Yubico AB.")
             color: formText
-            font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
@@ -161,7 +155,6 @@ Dialog {
         Label {
             text: qsTr("All rights reserved.")
             color: formText
-            font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width

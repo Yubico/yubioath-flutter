@@ -130,7 +130,7 @@ Pane {
                     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                     text: label
                     color: Material.primary
-                    font.pixelSize: 14
+                    font.pixelSize: Qt.application.font.pixelSize * 1.1
                     font.weight: Font.Medium
                     Layout.fillWidth: true
                 }
@@ -138,7 +138,6 @@ Pane {
                 Label {
                     visible: !isSectionTitle
                     text: label
-                    font.pixelSize: 13
                     font.bold: false
                     color: formText
                     Layout.fillWidth: true
@@ -146,7 +145,6 @@ Pane {
                 Label {
                     Layout.alignment: Qt.AlignRight | Qt.AlignTop
                     Layout.fillWidth: true
-                    font.pixelSize: 11
                     color: formLabel
                     text: description
                     wrapMode: Text.WordWrap
