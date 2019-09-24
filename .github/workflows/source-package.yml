@@ -1,0 +1,30 @@
+name: Build a source package
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+        # Don't use checkout, we need a full clone for this workflow
+      - name: Clone repository
+        run: |
+          git clone https://github.com/yubico/yubioath-desktop
+
+      - name: Build a .tar.gz source package
+        run: |
+          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
+          cd yubioath-desktop
+          git checkout $REF
+          git archive --format=tar.gz -o yubioath-desktop-$REF.tar.gz --prefix yubioath-desktop/ $REF
+
+      - name: Push artifact to s3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
+          cd yubioath-desktop
+          aws s3 mv yubioath-desktop-$REF.tar.gz s3://yubico-builds/yubioath-desktop/yubioath-desktop-${REF}.tar.gz --acl public-read
