@@ -83,12 +83,12 @@ int main(int argc, char *argv[])
 
     if (cliParser.isSet("log-level")) {
         if (cliParser.isSet("log-file")) {
-            QMetaObject::invokeMethod(engine.rootObjects().first(), "enableLoggingToFile", Q_ARG(QVariant, cliParser.value("log-level")), Q_ARG(QVariant, cliParser.value("log-file")));
+            QMetaObject::invokeMethod(root, "enableLoggingToFile", Q_ARG(QVariant, cliParser.value("log-level")), Q_ARG(QVariant, cliParser.value("log-file")));
         } else {
-            QMetaObject::invokeMethod(engine.rootObjects().first(), "enableLogging", Q_ARG(QVariant, cliParser.value("log-level")));
+            QMetaObject::invokeMethod(root, "enableLogging", Q_ARG(QVariant, cliParser.value("log-level")));
         }
     } else {
-        QMetaObject::invokeMethod(engine.rootObjects().first(), "disableLogging");
+        QMetaObject::invokeMethod(root, "disableLogging");
     }
 
 
