@@ -29,11 +29,12 @@ SortedListModel {
         sort()
     }
 
-    function updateEntries(entries) {
+    function updateEntries(entries, cb) {
         // Update new ones
         for (var i = 0; i < entries.length; i++) {
             updateEntry(entries[i])
         }
+        cb()
     }
 
     function deleteEntry(key) {
