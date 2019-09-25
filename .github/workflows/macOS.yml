@@ -13,7 +13,7 @@ jobs:
       - name: Install dependencies from hombrew
         run: |
           brew upgrade
-          brew bundle --file=./.travis/Brewfile
+          brew bundle --file=./.github/workflows/Brewfile
           brew link qt -f
 
       - name: Build custom Python as a framework
