@@ -216,6 +216,7 @@ Python {
         currentDevice = null
         entries.clear()
         nextCalculateAll = -1
+        currentDeviceValidated = false
     }
 
     function refreshReaders() {
@@ -289,14 +290,17 @@ Python {
     }
 
     function calculateAll(cb) {
+
         function callback(resp) {
+
             if (resp.success) {
-                entries.updateEntries(resp.entries)
-                updateNextCalculateAll()
-                currentDeviceValidated = true
-                if (cb) {
-                    cb()
-                }
+                entries.updateEntries(resp.entries, function() {
+                    updateNextCalculateAll()
+                    currentDeviceValidated = true
+                    if (cb) {
+                        cb()
+                    }
+                })
             } else {
                 if (resp.error_id === 'access_denied') {
                     entries.clear()
