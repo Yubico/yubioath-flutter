@@ -15,7 +15,7 @@ jobs:
 
       - name: Build a .tar.gz source package
         run: |
-          export REF=${GITHUB_REF#refs/*/}
+          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
           cd yubioath-desktop
           git checkout $REF
           git archive --format=tar.gz -o yubioath-desktop-$REF.tar.gz --prefix yubioath-desktop/ $REF
@@ -25,6 +25,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          export REF=${GITHUB_REF#refs/*/}
+          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
           cd yubioath-desktop
           aws s3 mv yubioath-desktop-$REF.tar.gz s3://yubico-builds/yubioath-desktop/yubioath-desktop-${REF}.tar.gz --acl public-read

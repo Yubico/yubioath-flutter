@@ -12,7 +12,7 @@ jobs:
 
       - name: Build docker image that produces the AppImage
         run: |
-          export REF=$(echo ${GITHUB_REF} | tr / -)
+          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
           docker build -t xenial-appimage -f docker/xenial-appimage/Dockerfile .
           id=$(docker create --privileged xenial-appimage)
           docker start --attach $id
@@ -23,5 +23,5 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          export REF=$(echo ${GITHUB_REF} | tr / -)
+          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
           aws s3 mv yubioath-desktop-${REF}.AppImage s3://yubico-builds/yubioath-desktop/yubioath-desktop-${REF}.AppImage --acl public-read
