@@ -17,8 +17,8 @@ jobs:
         run: |
           export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
           cd yubioath-desktop
-          git checkout $REF
-          git archive --format=tar.gz -o yubioath-desktop-$REF.tar.gz --prefix yubioath-desktop/ $REF
+          git checkout $GITHUB_SHA
+          git archive --format=tar.gz -o yubioath-desktop-$REF.tar.gz --prefix yubioath-desktop/ $GITHUB_SHA
 
       - name: Push artifact to s3
         env:
