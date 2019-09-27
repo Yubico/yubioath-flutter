@@ -1,6 +1,7 @@
 name: Build a source package
 
-on: [push, pull_request]
+# TODO: enable this workflow for pull_request (will require a different way to do the archive)
+on: [push]
 
 jobs:
   build:
