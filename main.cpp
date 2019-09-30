@@ -5,28 +5,53 @@
 #include <QtGlobal>
 #include <QtWidgets>
 #include <QQuickWindow>
-
+#include <QQuickStyle>
 #include <singleapplication.h>
 
 #include "screenshot.h"
-#include "systemtray.h"
+
 
 int main(int argc, char *argv[])
 {
-    // Global menubar is broken for qt5 apps in Ubuntu Unity, see:
-    // https://bugs.launchpad.net/ubuntu/+source/appmenu-qt5/+bug/1323853
-    // This workaround enables a local menubar.
-    qputenv("UBUNTU_MENUPROXY","0");
-
     // Don't write .pyc files.
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 
-    SingleApplication app(argc, argv);
-    app.setApplicationName("Yubico Authenticator");
-    app.setOrganizationName("Yubico");
-    app.setOrganizationDomain("com.yubico");
+    // Use Material "Dense" variant, recommended for Desktop
+    qputenv("QT_QUICK_CONTROLS_MATERIAL_VARIANT", "Dense");
 
-    QString app_dir = app.applicationDirPath();
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+    SingleApplication app(argc, argv);
+    application.setApplicationName("Yubico Authenticator");
+    application.setApplicationVersion(APP_VERSION);
+    application.setOrganizationName("Yubico");
+    application.setOrganizationDomain("com.yubico");
+
+    QQuickStyle::setStyle("Material");
+
+    QCommandLineParser cliParser;
+    cliParser.setApplicationDescription("Yubico Authenticator for Desktop");
+    cliParser.addHelpOption();
+    cliParser.addVersionOption();
+    cliParser.addOptions({
+        {"log-level", QCoreApplication::translate("main", "Enable logging at verbosity <LEVEL>: DEBUG, INFO, WARNING, ERROR, CRITICAL"), QCoreApplication::translate("main", "LEVEL")},
+        {"log-file", QCoreApplication::translate("main", "Print logs to <FILE> instead of standard output; ignored without --log-level"), QCoreApplication::translate("main", "FILE")},
+    });
+
+    cliParser.process(application);
+
+    // A lock file is used, to ensure only one running instance at the time.
+    QString tmpDir = QDir::tempPath();
+    QLockFile lockFile(tmpDir + "/yubioath-desktop.lock");
+    if(!lockFile.tryLock(100)){
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setText("Yubico Authenticator is already running.");
+        msgBox.exec();
+        return 1;
+    }
+
+    QString app_dir = application.applicationDirPath();
     QString main_qml = "/qml/main.qml";
     QString path_prefix;
     QString url_prefix;
@@ -48,72 +73,39 @@ int main(int argc, char *argv[])
     ScreenShot screenshot;
     QQmlApplicationEngine engine;
 
-    SystemTray *trayIcon = new SystemTray();
-    trayIcon->setIcon(QIcon(path_prefix + "/images/windowicon.png"));
-
     engine.rootContext()->setContextProperty("appDir", app_dir);
     engine.rootContext()->setContextProperty("urlPrefix", url_prefix);
     engine.rootContext()->setContextProperty("appVersion", APP_VERSION);
     engine.rootContext()->setContextProperty("ScreenShot", &screenshot);
-    engine.rootContext()->setContextProperty("SysTrayIcon", trayIcon);
-    engine.rootContext()->setContextProperty("app", &app);
+    engine.rootContext()->setContextProperty("application", &application);
     engine.load(QUrl(url_prefix + main_qml));
 
 
     QObject *root = engine.rootObjects().first();
 
-    if (argc > 2 && strcmp(argv[1], "--log-level") == 0) {
-        if (argc > 4 && strcmp(argv[3], "--log-file") == 0) {
-            QMetaObject::invokeMethod(root, "enableLoggingToFile", Q_ARG(QVariant, argv[2]), Q_ARG(QVariant, argv[4]));
+
+    if (cliParser.isSet("log-level")) {
+        if (cliParser.isSet("log-file")) {
+            QMetaObject::invokeMethod(root, "enableLoggingToFile", Q_ARG(QVariant, cliParser.value("log-level")), Q_ARG(QVariant, cliParser.value("log-file")));
         } else {
-            QMetaObject::invokeMethod(root, "enableLogging", Q_ARG(QVariant, argv[2]));
+            QMetaObject::invokeMethod(root, "enableLogging", Q_ARG(QVariant, cliParser.value("log-level")));
         }
     } else {
         QMetaObject::invokeMethod(root, "disableLogging");
     }
 
+
     QQuickWindow *qmlWindow = qobject_cast<QQuickWindow *>(root);
 
     // Set icon in the window, doesn't effect desktop icons.
     qmlWindow->setIcon(QIcon(path_prefix + "/images/windowicon.png"));
-    // Show root window unless explicitly hidden in settings.
-    if (qmlWindow->property("hideOnLaunch").toBool() == false) {
-        qmlWindow->show();
-    }
-
-    // This is the current system tray icon.
-    // Should probably be replaced by QML when all supported platforms are on > Qt 5.8
-    // See http://doc-snapshots.qt.io/qt5-5.8/qml-qt-labs-platform-systemtrayicon.html
-    QAction *showAction = new QAction(QObject::tr("&Show credentials"), qmlWindow);
-    // The call to hide doesn't make much sense but makes it work on macOS when hidden from the dock.
-    root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::hide);
-    root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::show);
-    root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::raise);
-    root->connect(showAction, &QAction::triggered, qmlWindow, &QQuickWindow::requestActivate);
-    QAction *quitAction = new QAction(QObject::tr("&Quit"), qmlWindow);
-    root->connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);
-    QMenu *trayIconMenu = new QMenu();
-    trayIconMenu->addAction(showAction);
-    trayIconMenu->addSeparator();
-    trayIconMenu->addAction(quitAction);
-    trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setToolTip("Yubico Authenticator");
-    #ifndef Q_OS_DARWIN
-    // Double-click should show credentials.
-    // Double-click in systemtray icons is not supported on macOS.
-    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(show()));
-    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(raise()));
-    root->connect(trayIcon,SIGNAL(doubleClicked()), qmlWindow,SLOT(requestActivate()));
-    #endif
 
     // Starting a second instance application should raise the qmlWindow. Replicated steps as above
-    root->connect(&app, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::hide);
-    root->connect(&app, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::show);
-    root->connect(&app, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::raise);
-    root->connect(&app, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::requestActivate);
+    root->connect(&application, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::hide);
+    root->connect(&application, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::show);
+    root->connect(&application, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::raise);
+    root->connect(&application, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::requestActivate);
 
-    // Explicitly hide trayIcon on exit
-    const int status = app.exec();
-    trayIcon->hide();
+    const int status = application.exec();
     return status;
 }

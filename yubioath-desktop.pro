@@ -1,21 +1,21 @@
 TEMPLATE = app
-QT += qml quick widgets
+QT += qml quick widgets quickcontrols2
 CONFIG += c++11
 
 include(singleapplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 
-SOURCES += main.cpp systemtray.cpp
-HEADERS += screenshot.h systemtray.h
+SOURCES += main.cpp
+HEADERS += screenshot.h
 
 # This is the internal verson number, Windows requires 4 digits.
 win32|win64 {
-    VERSION = 4.3.5.0
+    VERSION = 5.0.0.0
 } else {
-    VERSION = 4.3.5
+    VERSION = 5.0.0
 }
 # This is the version shown on the About page
-DEFINES += APP_VERSION=\\\"4.3.5\\\"
+DEFINES += APP_VERSION=\\\"5.0.0\\\"
 
 message(Version of this build: $$VERSION)
 
@@ -56,7 +56,6 @@ RC_ICONS = resources/icons/yubioath.ico
 macx {
     ICON = resources/icons/yubioath.icns
     QMAKE_INFO_PLIST = resources/mac/Info.plist.in
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9 # Mavericks
     QMAKE_POST_LINK += cp -rnf pymodules/lib/python3*/site-packages/ yubioath-desktop.app/Contents/MacOS/pymodules/
 }
 
@@ -70,4 +69,4 @@ lupdate_only {
 DISTFILES += \
     py/* \
     py/qr/* \
-    qml/*
+    qml/* \
