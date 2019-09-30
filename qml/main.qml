@@ -91,6 +91,16 @@ ApplicationWindow {
 
     Component.onDestruction: saveScreenLayout()
 
+
+    FontLoader {
+        id: roboto;
+        name: "Roboto"
+        source: "../fonts/Roboto-Regular.ttf"
+    }
+
+    font.family: roboto.name
+
+
     function enableLogging(logLevel) {
         yubiKey.enableLogging(logLevel, null)
     }
