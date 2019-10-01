@@ -360,17 +360,16 @@ Pane {
             Label {
                 id: codeLbl
                 font.pixelSize: 24
-                color: Material.primary
+                color: credentialCardCode
                 text: getCodeLblValue()
             }
             Label {
                 id: nameLbl
                 text: formattedName()
-                Layout.maximumWidth: 265
+                Layout.maximumWidth: 260
                 font.pixelSize: 12
-                maximumLineCount: 3
-                wrapMode: Text.Wrap
-                color: formText
+                elide: Text.ElideRight
+                color: credentialCardIssuer
             }
 
         }
@@ -386,7 +385,7 @@ Pane {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-            colorCircle: Material.primary
+            colorCircle: credentialCardIssuer
             visible: code && code.value && credential
                      && credential.oath_type === "TOTP" ? true : false
             onTimesUp: {
@@ -407,7 +406,7 @@ Pane {
             iconHeight: 18
             source: "../images/touch.svg"
             visible: touchCredentialNoCode
-            color: Material.primary
+            color: credentialCardIssuer
         }
 
         StyledImage {
@@ -418,7 +417,7 @@ Pane {
             visible: hotpCredential
             anchors.bottom: parent.bottom
             anchors.right: parent.right
-            color: hotpCredentialInCoolDown ? yubicoGrey : Material.primary
+            color: hotpCredentialInCoolDown ? credentialCardHOTPCoolDown : credentialCardIssuer
         }
     }
 }
