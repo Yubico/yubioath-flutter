@@ -91,14 +91,25 @@ ApplicationWindow {
 
     Component.onDestruction: saveScreenLayout()
 
-
     FontLoader {
-        id: roboto;
-        name: "Roboto"
+        id: robotoRegular;
+        name: "Roboto-Regular"
         source: "../fonts/Roboto-Regular.ttf"
     }
 
-    font.family: roboto.name
+    FontLoader {
+        id: robotoMedium;
+        name: "Roboto-Medium"
+        source: "../fonts/Roboto-Medium.ttf"
+    }
+
+    FontLoader {
+        id: robotoLight;
+        name: "Roboto-Light"
+        source: "../fonts/Roboto-Light.ttf"
+    }
+
+    font.family: robotoRegular.name
 
 
     function enableLogging(logLevel) {
