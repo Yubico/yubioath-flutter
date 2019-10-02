@@ -97,6 +97,16 @@ ApplicationWindow {
     }
 
     FontLoader {
+        id: robotoBold;
+        source: "../fonts/Roboto-Bold.ttf"
+    }
+
+    FontLoader {
+        id: robotoItalic;
+        source: "../fonts/Roboto-Italic.ttf"
+    }
+
+    FontLoader {
         id: robotoMedium;
         source: "../fonts/Roboto-Medium.ttf"
     }
