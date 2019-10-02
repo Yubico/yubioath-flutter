@@ -93,19 +93,16 @@ ApplicationWindow {
 
     FontLoader {
         id: robotoRegular;
-        name: "Roboto Regular"
         source: "../fonts/Roboto-Regular.ttf"
     }
 
     FontLoader {
         id: robotoMedium;
-        name: "Roboto Medium"
         source: "../fonts/Roboto-Medium.ttf"
     }
 
     FontLoader {
         id: robotoLight;
-        name: "Roboto Light"
         source: "../fonts/Roboto-Light.ttf"
     }
 
