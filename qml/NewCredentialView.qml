@@ -253,6 +253,7 @@ ScrollView {
                                     indicator.width: 16
                                     indicator.height: 16
                                     Material.foreground: formText
+                                    font.pixelSize: 13
                                 }
                                 visible: yubiKey.supportsTouchCredentials()
                                          || settings.otpMode

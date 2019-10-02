@@ -58,7 +58,7 @@ Item {
     Column {
 
         Label {
-            font.pixelSize: 10
+            font.pixelSize: 12
             height: 10
             color: validateInput() ? formLabel : yubicoRed
             text: labelTextValue()
@@ -134,7 +134,6 @@ Item {
             color: yubicoRed
             text: validateText
             visible: !validateInput()
-
         }
     }
 }

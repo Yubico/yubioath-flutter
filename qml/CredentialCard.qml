@@ -367,7 +367,7 @@ Pane {
                 id: nameLbl
                 text: formattedName()
                 Layout.maximumWidth: 260
-                font.pixelSize: 13
+                font.pixelSize: 14
                 elide: Text.ElideRight
                 color: credentialCardIssuer
             }
