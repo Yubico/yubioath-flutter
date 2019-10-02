@@ -29,6 +29,9 @@ ToolBar {
     property bool showBackBtn: navigator.depth > 1
     property bool showTitleLbl: !!navigator.currentItem
                                 && !!navigator.currentItem.title
+    property alias favoriteBtn: favoriteBtn
+    property alias settingsBtn: settingsBtn
+    property alias addCredentialBtn: addCredentialBtn
     property alias searchField: searchField
 
     function shouldShowSearch() {        
@@ -38,9 +41,7 @@ ToolBar {
     }
 
     function shouldShowSettings() {
-        return !!(navigator.currentItem
-                  && !shouldShowCredentialOptions()
-                  && navigator.currentItem.objectName !== 'settingsView'
+        return !!(navigator.currentItem && navigator.currentItem.objectName !== 'settingsView'
                   && navigator.currentItem.objectName !== 'newCredentialView')
     }
 
@@ -49,9 +50,16 @@ ToolBar {
                   && navigator.currentItem.objectName === 'credentialsView')
     }
 
+    function shouldShowToolbar() {
+        return !!(navigator.currentItem && navigator.currentItem.objectName !== 'loadingView')
+    }
+
     RowLayout {
         spacing: 0
         anchors.fill: parent
+        visible: shouldShowToolbar()
+        Layout.alignment: Qt.AlignTop
+
 
         ToolButton {
             id: backBtn
@@ -66,13 +74,50 @@ ToolBar {
             }
         }
 
+        ToolButton {
+            id: settingsBtn
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            visible: !backBtn.visible && shouldShowSettings()
+            onClicked: navigator.goToSettings()
+
+            Keys.onReturnPressed: navigator.goToSettings()
+            Keys.onEnterPressed: navigator.goToSettings()
+
+            KeyNavigation.left: navigator
+            KeyNavigation.backtab: navigator
+            KeyNavigation.right: searchField
+            KeyNavigation.tab: searchField
+
+            Accessible.role: Accessible.Button
+            Accessible.name: "Settings"
+            Accessible.description: "Go to settings"
+
+            ToolTip {
+                text: qsTr("Settings")
+                delay: 1000
+                parent: settingsBtn
+                visible: parent.hovered
+                Material.foreground: toolTipForeground
+                Material.background: toolTipBackground
+            }
+
+            icon.source: "../images/more.svg"
+            icon.color: hovered ? iconButtonHovered : iconButtonNormal
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                enabled: false
+            }
+        }
+
         Label {
             id: titleLbl
             visible: showTitleLbl
             text: showTitleLbl ? navigator.currentItem.title : ""
             font.pixelSize: 16
             Layout.leftMargin: backBtn.visible ? -32 : 0
-            Layout.rightMargin: shouldShowSettings() ? -80 : 0
+            Layout.rightMargin: navigator.currentItem && navigator.currentItem.objectName === 'newCredentialView' ? -78 : 0
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -102,13 +147,13 @@ ToolBar {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 placeholderText: qsTr("Quick Find")
-                placeholderTextColor: hovered || focus ? iconButtonHovered : iconButtonNormal
+                placeholderTextColor: hovered || activeFocus ? iconButtonHovered : iconButtonNormal
                 leftPadding: 28
                 rightPadding: 8
                 width: parent.width
                 horizontalAlignment: Qt.AlignLeft
                 verticalAlignment: Qt.AlignVCenter
-                color: hovered || focus ? iconButtonHovered : iconButtonNormal
+                color: hovered || activeFocus ? iconButtonHovered : iconButtonNormal
                 background: Rectangle {
                     color: getToolbarColor(searchField.focus)
                     height: 30
@@ -167,8 +212,9 @@ ToolBar {
                     navigator.forceActiveFocus()
                 }
 
+                KeyNavigation.backtab: settingsBtn
                 KeyNavigation.tab: shouldShowCredentialOptions(
-                                       ) ? copyCredentialBtn : addCredentialBtn
+                                       ) ? copyCredentialBtn : infoBtn
 
                 Keys.onEscapePressed: exitSearchMode(true)
                 Keys.onDownPressed: exitSearchMode(false)
@@ -190,7 +236,7 @@ ToolBar {
                     iconHeight: 20
                     iconWidth: 20
                     source: "../images/search.svg"
-                    color: searchField.hovered || searchField.focus ? iconButtonHovered : iconButtonNormal
+                    color: searchField.hovered || searchField.activeFocus ? iconButtonHovered : iconButtonNormal
                 }
             }
         }
@@ -283,8 +329,8 @@ ToolBar {
                 Keys.onEnterPressed: app.currentCredentialCard.toggleFavorite()
 
                 KeyNavigation.left: deleteCredentialBtn
-                KeyNavigation.right: settingsBtn
-                KeyNavigation.tab: settingsBtn
+                KeyNavigation.right: navigator
+                KeyNavigation.tab: navigator
 
                 Accessible.role: Accessible.Button
                 Accessible.name: "Favorite"
@@ -312,6 +358,42 @@ ToolBar {
             }
 
             ToolButton {
+                id: infoBtn
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                visible: addCredentialBtn.visible
+                onClicked: navigator.about()
+
+                Keys.onReturnPressed: navigator.about()
+                Keys.onEnterPressed: navigator.about()
+
+                KeyNavigation.left: searchField
+                KeyNavigation.right: addCredentialBtn
+                KeyNavigation.tab: addCredentialBtn
+
+                Accessible.role: Accessible.Button
+                Accessible.name: "Info"
+                Accessible.description: "Information"
+
+                ToolTip {
+                    text: qsTr("Information")
+                    delay: 1000
+                    parent: infoBtn
+                    visible: parent.hovered
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
+                }
+
+                icon.source: "../images/info.svg"
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
+            }
+
+            ToolButton {
                 id: addCredentialBtn
                 visible: !!yubiKey.currentDevice
                          && yubiKey.currentDeviceValidated
@@ -325,9 +407,9 @@ ToolBar {
                 Keys.onReturnPressed: yubiKey.scanQr()
                 Keys.onEnterPressed: yubiKey.scanQr()
 
-                KeyNavigation.left: searchField
-                KeyNavigation.right: settingsBtn
-                KeyNavigation.tab: settingsBtn
+                KeyNavigation.left: infoBtn
+                KeyNavigation.right: navigator
+                KeyNavigation.tab: navigator
 
                 Accessible.role: Accessible.Button
                 Accessible.name: "Add"
@@ -351,79 +433,6 @@ ToolBar {
                     enabled: false
                 }
             }
-
-            ToolButton {
-                id: settingsBtn
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: shouldShowSettings()
-                onClicked: navigator.goToSettings()
-
-                Keys.onReturnPressed: navigator.goToSettings()
-                Keys.onEnterPressed: navigator.goToSettings()
-
-                KeyNavigation.left: addCredentialBtn
-                KeyNavigation.right: moreBtn
-                KeyNavigation.tab: moreBtn
-
-                Accessible.role: Accessible.Button
-                Accessible.name: "Settings"
-                Accessible.description: "Go to settings"
-
-                ToolTip {
-                    text: qsTr("Settings")
-                    delay: 1000
-                    parent: settingsBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: "../images/cogwheel.svg"
-                icon.color: hovered ? iconButtonHovered : iconButtonNormal
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                }
-            }
-
-            ToolButton {
-                id: moreBtn
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: shouldShowSettings()
-                onClicked: navigator.about()
-
-                Keys.onReturnPressed: navigator.about()
-                Keys.onEnterPressed: navigator.about()
-
-                KeyNavigation.left: settingsBtn
-                KeyNavigation.right: navigator
-                KeyNavigation.tab: navigator
-
-                Accessible.role: Accessible.Button
-                Accessible.name: "Info"
-                Accessible.description: "Information"
-
-                ToolTip {
-                    text: qsTr("Information")
-                    delay: 1000
-                    parent: moreBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: "../images/info.svg"
-                icon.color: hovered ? iconButtonHovered : iconButtonNormal
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                }
-            }
-
         }
     }
 }
