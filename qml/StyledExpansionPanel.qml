@@ -146,7 +146,7 @@ Pane {
                 Label {
                     Layout.alignment: Qt.AlignRight | Qt.AlignTop
                     Layout.fillWidth: true
-                    font.pixelSize: 11
+                    font.pixelSize: 12
                     color: formLabel
                     text: description
                     wrapMode: Text.WordWrap

@@ -241,7 +241,7 @@ ScrollView {
             StyledExpansionPanel {
                 id: passwordManagementPanel
                 label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change Password") : qsTr("Set Password")
-                description: qsTr("For additional security and to prevent unauthorized access the YubiKey may be protected with a password.")
+                description: qsTr("For additional security the YubiKey may be protected with a password.")
                 visible: !!yubiKey.currentDevice && !settings.otpMode
 
                 ColumnLayout {
@@ -298,7 +298,7 @@ ScrollView {
 
             StyledExpansionPanel {
                 label: qsTr("Reset")
-                description: qsTr("Warning: Resetting the OATH application will delete all credentials and restore factory defaults.")
+                description: qsTr("Warning: Reset will delete all credentials and restore factory defaults.")
                 isEnabled: false
                 visible: !!yubiKey.currentDevice && !settings.otpMode
                 toolButtonIcon: "../images/reset.svg"
@@ -370,7 +370,7 @@ ScrollView {
             StyledExpansionPanel {
                 id: interfacePanel
                 label: qsTr("Interface")
-                description: qsTr("Configure how to read credentials from the YubiKey.")
+                description: qsTr("Configure how credentials are read from the YubiKey.")
                 property bool otpModeSelected: interfaceCombobox.currentIndex === 2
                 property bool customReaderSelected: interfaceCombobox.currentIndex === 1
                 property bool aboutToChange: (otpModeSelected !== settings.otpMode)
@@ -450,9 +450,9 @@ ScrollView {
                     visible: interfacePanel.otpModeSelected
                     Label {
                         Layout.fillWidth: true
-                        font.pixelSize: 11
+                        font.pixelSize: 12
                         color: formLabel
-                        text: qsTr("Using the OTP slots should be considered for special cases only.")
+                        text: qsTr("Using OTP slots should be considered for special cases only.")
                         wrapMode: Text.WordWrap
                         Layout.rowSpan: 1
                         bottomPadding: 8
