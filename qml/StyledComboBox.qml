@@ -24,7 +24,7 @@ Item {
 
         Label {
             text: label
-            font.pixelSize: 10
+            font.pixelSize: 12
             color: formLabel
         }
 

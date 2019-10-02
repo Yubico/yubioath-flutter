@@ -261,7 +261,7 @@ ScrollView {
                             StyledExpansionPanel {
                                 id: advancedSettingsPanel
                                 label: qsTr("Advanced settings")
-                                description: qsTr("Note: Changing these may result in unexpected behavior.")
+                                description: qsTr("Changing these may result in unexpected behavior.")
                                 visible: manualEntry && !settings.otpMode
                                 dropShadow: false
                                 backgroundColor: "transparent"
