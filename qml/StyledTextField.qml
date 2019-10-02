@@ -59,7 +59,7 @@ Item {
 
         Label {
             font.pixelSize: 12
-            height: 10
+            height: 13
             color: validateInput() ? formLabel : yubicoRed
             text: labelTextValue()
         }
