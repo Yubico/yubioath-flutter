@@ -93,24 +93,23 @@ ApplicationWindow {
 
     FontLoader {
         id: robotoRegular;
-        name: "Roboto-Regular"
+        name: "Roboto Regular"
         source: "../fonts/Roboto-Regular.ttf"
     }
 
     FontLoader {
         id: robotoMedium;
-        name: "Roboto-Medium"
+        name: "Roboto Medium"
         source: "../fonts/Roboto-Medium.ttf"
     }
 
     FontLoader {
         id: robotoLight;
-        name: "Roboto-Light"
+        name: "Roboto Light"
         source: "../fonts/Roboto-Light.ttf"
     }
 
     font.family: robotoRegular.name
-
 
     function enableLogging(logLevel) {
         yubiKey.enableLogging(logLevel, null)
