@@ -28,6 +28,7 @@ SystemTrayIcon {
         MenuItem {
             text: qsTr("Show Yubico Authenticator")
             onTriggered: {
+                app.hide()
                 app.show()
                 raise()
                 requestActivate()
