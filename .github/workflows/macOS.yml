@@ -85,11 +85,11 @@ jobs:
           export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
           mv yubioath-desktop.app Yubico\ Authenticator.app
           tar -czf yubioath-desktop-${REF}.app.tar.gz Yubico\ Authenticator.app
+          mkdir deploy
+          mv yubioath-desktop-${REF}.app.tar.gz deploy
 
-      - name: Push artifact to s3
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
-          aws s3 mv yubioath-desktop-${REF}.app.tar.gz s3://yubico-builds/yubioath-desktop/yubioath-desktop-${REF}.app.tar.gz --acl public-read
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: yubioath-desktop-macos-app-bundle
+          path: deploy
