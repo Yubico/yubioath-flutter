@@ -17,11 +17,11 @@ jobs:
           id=$(docker create --privileged xenial-appimage)
           docker start --attach $id
           docker cp $id:/yubioath-desktop/Yubico_Authenticator-x86_64.AppImage yubioath-desktop-${REF}.AppImage
+          mkdir deploy
+          mv yubioath-desktop-${REF}.AppImage deploy
 
-      - name: Push artifact to s3
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
-          aws s3 mv yubioath-desktop-${REF}.AppImage s3://yubico-builds/yubioath-desktop/yubioath-desktop-${REF}.AppImage --acl public-read
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: yubioath-desktop-appimage
+          path: deploy
