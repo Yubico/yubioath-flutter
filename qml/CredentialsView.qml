@@ -33,7 +33,7 @@ ScrollView {
                                                                 })
             for (var i = 0; i < entries.count; i++) {
                 var entry = entries.get(i)
-                if (entry !== null && entry !== undefined) {
+                if (!!entry && !!entry.credential) {
                     if (entry.credential.key.toLowerCase().indexOf(
                                 toolBar.searchField.text.toLowerCase(
                                     )) !== -1) {
