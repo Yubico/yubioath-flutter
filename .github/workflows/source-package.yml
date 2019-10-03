@@ -27,4 +27,4 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: yubioath-desktop-source-package
-          path: deploy
+          path: yubioath-desktop/deploy
