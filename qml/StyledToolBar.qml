@@ -76,7 +76,7 @@ ToolBar {
 
         ToolButton {
             id: settingsBtn
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             visible: !backBtn.visible && shouldShowSettings()
             onClicked: navigator.goToSettings()
 
