@@ -164,7 +164,11 @@ ToolBar {
                 Accessible.role: Accessible.EditableText
                 Accessible.searchEdit: true
                 onTextChanged: forceActiveFocus()
-
+                onVisibleChanged: {
+                    if (!visible) {
+                        exitSearchMode(true)
+                    }
+                }
                 MouseArea {
                     anchors.fill: parent
                     acceptedButtons: Qt.RightButton
