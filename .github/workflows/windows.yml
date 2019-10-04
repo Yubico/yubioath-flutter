@@ -1,0 +1,110 @@
+name: windows
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-2019
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set environment variables
+        run: |
+          set a=C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt
+          set b=%a%;C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared
+          set c=%b%;C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um
+          set d=%c%;C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\winrt
+          set e=%d%;C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.23.28105\include
+          set f=%e%;C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.23.28105\lib\x64
+          echo ::set-env name=INCLUDE::%f%
+
+          set a=C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt
+          set b=%a%;C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um
+          set c=%b%;C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.23.28105\lib\x64
+          set d=%c%;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.18362.0\ucrt\x64
+          set e=%d%;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.18362.0\um\x64
+          echo ::set-env name=LIB::%e%
+
+          set a=C:\Program Files (x86)\Windows Kits\10\bin\10.0.18362.0\x64
+          set b=%a%;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.18362.0\um\x64
+          set c=%b%;C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.23.28105\bin\Hostx64\x64
+          set d=%c%;D:\a\yubioath-desktop\yubioath-desktop\Qt5.12.4\5.12.4\msvc2017_64\bin
+          set e=%d%;D:\a\yubioath-desktop\yubioath-desktop\jom
+          set f=%e%;C:\hostedtoolcache\windows\Python\3.6.8\x64\
+          set g=%f%;C:\hostedtoolcache\windows\Python\3.6.8\x64\Scripts
+          set h=%g%;C:\Program Files\Git\bin
+          set i=%h%;C:\Program Files\7-Zip
+          set j=%i%;D:\a\yubioath-desktop\yubioath-desktop\Qt5.12.4\5.12.4\msvc2017_64\bin
+          echo ::set-env name=PATH::%j%
+
+          echo ::set-env name=VCINSTALLDIR::C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC
+
+      - name: Install QT and jom
+        run: |
+          pip install aqtinstall
+          python -m aqt install 5.12.4 windows desktop win64_msvc2017_64
+
+          mkdir jom
+          wget http://download.qt.io/official_releases/jom/jom.zip -OutFile jom/jom.zip
+          cd jom
+          7z x jom.zip
+
+          cd ..
+          mkdir lib
+          wget https://github.com/thp/pyotherside/archive/1.5.3.zip -OutFile lib/pyotherside-1.5.3.zip
+          cd lib
+          7z x pyotherside-1.5.3.zip
+
+          cd pyotherside-1.5.3
+          (Get-Content .\src\qmldir).replace('pyothersideplugin', 'pyothersideplugin1') | Set-Content .\src\qmldir
+          Clear-Content python.pri          
+          Add-Content python.pri "PYTHON_CONFIG = python3-config`nQMAKE_LIBS += -LC:\hostedtoolcache\windows\Python\3.6.8\x64\libs -lpython36`nQMAKE_CXXFLAGS += -IC:\hostedtoolcache\windows\Python\3.6.8\x64\include`n"
+        shell: powershell
+
+      - name: Build Pyotherside and Yubico Authenticator
+        run: |
+          cd lib\pyotherside-1.5.3
+          qmake
+          jom
+          jom install
+
+          cd ..\..
+          qmake
+          jom
+          
+      - name: Copy ykpers and libusb dll files
+        run: |
+          wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.20.0-win64.zip -OutFile lib/ykpers-1.20.0-win64.zip
+          cd lib
+          7z x ykpers-1.20.0-win64.zip
+          Copy-Item .\bin\*.dll ..\release -Force
+
+          wget https://github.com/libusb/libusb/releases/download/v1.0.22/libusb-1.0.22.7z -OutFile libusb-1.0.22.7z
+          7z x libusb-1.0.22.7z
+          Copy-Item .\MS64\dll\*.dll ..\release -Force
+
+          cd ..\release
+          wget https://www.python.org/ftp/python/3.6.8/python-3.6.8-embed-amd64.zip -OutFile python-3.6.8-embed-amd64.zip
+          7z x python-3.6.8-embed-amd64.zip
+
+          cd ..
+          windeployqt .\release\yubioath-desktop.exe --qmldir=qml --no-translations --angle --release
+          Copy-Item .\pymodules .\release -recurse
+
+          Get-ChildItem -File -Include *.pyc -Recurse | Remove-Item -Force
+          Get-ChildItem -Include __pycache__ -Recurse | Remove-Item -Force
+          Get-ChildItem -Include *.cpp -Recurse | Remove-Item -Force
+          Get-ChildItem -Include *.obj -Recurse | Remove-Item -Force
+          
+          7z a yubioath-desktop-test-win.zip release
+          mkdir deploy
+          cp yubioath-desktop-test-win.zip deploy
+        shell: powershell
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: yubioath-desktop-app-bundle
+          path: deploy
