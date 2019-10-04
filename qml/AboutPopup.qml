@@ -19,6 +19,7 @@ Dialog {
 
     onClosed: {
         navigator.focus = true
+        navigator.isShowingAbout = false
     }
 
     onRejected: {
@@ -26,7 +27,10 @@ Dialog {
         navigator.focus = true
     }
 
-    Component.onCompleted: btnCancel.forceActiveFocus()
+    Component.onCompleted: {
+        navigator.isShowingAbout = true
+        btnCancel.forceActiveFocus()
+    }
 
     function getDeviceDescription() {
         if (!!yubiKey.currentDevice) {

@@ -252,6 +252,12 @@ ApplicationWindow {
     }
 
     Shortcut {
+        sequence: StandardKey.Italic
+        onActivated: navigator.about()
+        context: Qt.ApplicationShortcut
+    }
+
+    Shortcut {
         sequence: StandardKey.FullScreen
         onActivated: visibility = visibility
                      === Window.FullScreen ? Window.Windowed : Window.FullScreen
