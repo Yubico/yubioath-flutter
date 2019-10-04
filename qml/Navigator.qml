@@ -9,6 +9,7 @@ StackView {
             currentItem.forceActiveFocus()
         }
     }
+    property bool isShowingAbout
 
     Accessible.ignored: true
 
@@ -89,8 +90,10 @@ StackView {
     }
 
     function about() {
-        var popup = aboutPopup.createObject(app)
-        popup.open()
+        if (!isShowingAbout) {
+            var popup = aboutPopup.createObject(app)
+            popup.open()
+        }
     }
 
     function snackBar(message) {
