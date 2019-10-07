@@ -6,7 +6,6 @@ import "utils.js" as Utils
 Rectangle {
 
     property string letter: getIconLetter()
-    property var _credential
     property int size: 40
     width: size
     height: size
@@ -286,7 +285,7 @@ Rectangle {
        See: https://github.com/Yubico/yubioath-android/blob/master/app/src/main/kotlin/com/yubico/yubioath/ui/main/IconManager.kt#L67
     */
     function getIconColor() {
-        let iconKey = _credential.issuer ? _credential.issuer : ":" + _credential.name
+        let iconKey = credential.issuer ? credential.issuer : ":" + credential.name
         let hashCode = Utils.hashCode(iconKey)
         if (app.isDark()) {
             return darkThemeIconColors[Math.abs(hashCode) % darkThemeIconColors.length]
@@ -296,8 +295,8 @@ Rectangle {
     }
 
     function getIconLetter() {
-        return _credential.issuer ? _credential.issuer.charAt(
-                                       0) : _credential.name.charAt(0)
+        return credential.issuer ? credential.issuer.charAt(
+                                       0) : credential.name.charAt(0)
     }
 
     Label {
