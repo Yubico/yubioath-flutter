@@ -138,7 +138,6 @@ Rectangle {
 
     Label {
         text: letter.toUpperCase()
-        font.bold: true
         font.pixelSize: 24
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
