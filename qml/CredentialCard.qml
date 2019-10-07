@@ -321,7 +321,6 @@ Pane {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             size: 40
             Accessible.ignored: true
-            _credential: credential
 
             StyledImage {
                 id: favoriteIcon
