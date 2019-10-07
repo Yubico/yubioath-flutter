@@ -1,6 +1,6 @@
 name: windows
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -98,13 +98,15 @@ jobs:
           Get-ChildItem -Include *.cpp -Recurse | Remove-Item -Force
           Get-ChildItem -Include *.obj -Recurse | Remove-Item -Force
           
-          7z a yubioath-desktop-test-win.zip release
+          $arr = $env:GITHUB_REF -split '/'
+          $branch = $arr[2]
+          7z a yubioath-desktop-$branch-win64.zip release
           mkdir deploy
-          cp yubioath-desktop-test-win.zip deploy
+          cp yubioath-desktop-$branch-win64.zip deploy
         shell: powershell
 
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
-          name: yubioath-desktop-app-bundle
+          name: yubioath-desktop-win64
           path: deploy
