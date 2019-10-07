@@ -5,13 +5,13 @@ import "utils.js" as Utils
 
 Rectangle {
 
-    property string letter: "A"
+    property string letter: getIconLetter()
     property var _credential
     property int size: 40
     width: size
     height: size
     radius: width * 0.5
-    color: getIconColor(_credential)
+    color: getIconColor()
 
     readonly property var iconColors: [
         '#EF5350',
@@ -126,9 +126,14 @@ Rectangle {
        This is a copy of the icon color picker algorithm found in the current Android version of YA.
        See: https://github.com/Yubico/yubioath-android/blob/master/app/src/main/kotlin/com/yubico/yubioath/ui/main/IconManager.kt#L67
     */
-    function getIconColor(credential) {
-        let iconKey = credential.issuer ? credential.issuer : ":" + credential.name
+    function getIconColor() {
+        let iconKey = _credential.issuer ? _credential.issuer : ":" + _credential.name
         return iconColors[Math.abs(Utils.hashCode(iconKey)) % iconColors.length]
+    }
+
+    function getIconLetter() {
+        return _credential.issuer ? _credential.issuer.charAt(
+                                       0) : _credential.name.charAt(0)
     }
 
     Label {

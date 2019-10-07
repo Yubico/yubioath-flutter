@@ -139,11 +139,6 @@ Pane {
         }
     }
 
-    function getIconLetter() {
-        return credential.issuer ? credential.issuer.charAt(
-                                       0) : credential.name.charAt(0)
-    }
-
     function formattedCode(code) {
         // Add a space in the code for easier reading.
         if (!!code) {
@@ -326,7 +321,6 @@ Pane {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             size: 40
             Accessible.ignored: true
-            letter: getIconLetter()
             _credential: credential
 
             StyledImage {
