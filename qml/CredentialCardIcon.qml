@@ -7,31 +7,36 @@ Rectangle {
 
     property string letter: getIconLetter()
     property int size: 40
-    property var materialShade: isDark() ? Material.Shade300 : Material.Shade300
+    property var shade: isDark() ? Material.Shade200 : Material.Shade800
     width: size
     height: size
     radius: width * 0.5
     color: getIconColor()
 
+    /*
+      For Light Mode we are intentionally violating accessibility guidelines for the following colors:
+      LightGreen, Lime, Yellow, Amber, Orange
+    */
     readonly property var iconColors: [
-        Material.color(Material.Red, materialShade),
-        Material.color(Material.Pink, materialShade),
-        Material.color(Material.Purple, materialShade),
-        Material.color(Material.DeepPurple, materialShade),
-        Material.color(Material.Indigo, materialShade),
-        Material.color(Material.Blue, materialShade),
-        Material.color(Material.LightBlue, materialShade),
-        Material.color(Material.Cyan, materialShade),
-        Material.color(Material.Teal, materialShade),
-        Material.color(Material.Green, materialShade),
-        Material.color(Material.LightGreen, materialShade),
-        Material.color(Material.Lime, materialShade),
-        Material.color(Material.Yellow, materialShade),
-        Material.color(Material.Amber, materialShade),
-        Material.color(Material.Orange, materialShade),
-        Material.color(Material.DeepOrange, materialShade),
-        Material.color(Material.Brown, materialShade),
-        Material.color(Material.BlueGrey, materialShade),
+        Material.color(Material.Red, shade),
+        Material.color(Material.Pink, shade),
+        Material.color(Material.Purple, shade),
+        Material.color(Material.DeepPurple, shade),
+        Material.color(Material.Indigo, shade),
+        Material.color(Material.Blue, shade),
+        Material.color(Material.LightBlue, shade),
+        Material.color(Material.Cyan, shade),
+        Material.color(Material.Teal, shade),
+        Material.color(Material.Green, shade),
+        Material.color(Material.LightGreen, shade),
+        Material.color(Material.Lime, shade),
+        Material.color(Material.Yellow, shade),
+        Material.color(Material.Amber, shade),
+        Material.color(Material.Orange, shade),
+        Material.color(Material.DeepOrange, shade),
+        Material.color(Material.Brown, shade),
+        Material.color(Material.Grey, shade),
+        Material.color(Material.BlueGrey, shade),
     ]
 
     /*
