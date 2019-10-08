@@ -237,7 +237,7 @@ Pane {
     function deleteCard() {
         navigator.confirm(
                     "Delete " + formattedName() + " ?",
-                    qsTr("This will permanently delete the credential from the YubiKey, and your ability to generate codes for it."),
+                    qsTr("This will permanently delete the account from the YubiKey, and your ability to generate codes for it."),
                     function () {
                         if (settings.otpMode) {
                             yubiKey.otpDeleteCredential(credential,
@@ -250,7 +250,7 @@ Pane {
                                                                 entries.deleteEntry(
                                                                             credential.key)
                                                                 navigator.snackBar(
-                                                                            qsTr("Credential deleted"))
+                                                                            qsTr("Account deleted"))
                                                             } else {
                                                                 navigator.snackBarError(
                                                                             resp.error_id)
@@ -269,7 +269,7 @@ Pane {
                                                                          credential.key)
                                                              yubiKey.updateNextCalculateAll()
                                                              navigator.snackBar(
-                                                                          qsTr("Credential deleted"))
+                                                                          qsTr("Account deleted"))
                                                          } else {
                                                              navigator.snackBarError(
                                                                          resp.error_id)

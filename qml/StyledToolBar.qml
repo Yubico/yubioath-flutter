@@ -416,11 +416,11 @@ ToolBar {
                 KeyNavigation.tab: navigator
 
                 Accessible.role: Accessible.Button
-                Accessible.name: "Add"
-                Accessible.description: "Add credential"
+                Accessible.name: qsTr("Add")
+                Accessible.description: qsTr("Add account")
 
                 ToolTip {
-                    text: qsTr("Add a new credential")
+                    text: qsTr("Add a new account")
                     delay: 1000
                     parent: addCredentialBtn
                     visible: parent.hovered

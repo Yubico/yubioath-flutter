@@ -24,7 +24,7 @@ ColumnLayout {
         }
 
         Label {
-            text: qsTr("No credentials")
+            text: qsTr("No accounts")
             Layout.rowSpan: 1
             wrapMode: Text.WordWrap
             font.pixelSize: 16
@@ -35,7 +35,7 @@ ColumnLayout {
         }
 
         Label {
-            text: qsTr("Add credentials to this YubiKey in order to be able to generate security codes from it.")
+            text: qsTr("Add accounts to this YubiKey in order to be able to generate security codes from it.")
             horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 320
             Layout.maximumWidth: app.width - dynamicMargin

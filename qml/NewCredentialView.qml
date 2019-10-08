@@ -11,7 +11,7 @@ ScrollView {
 
     id: newCredentialViewId
     objectName: 'newCredentialView'
-    property string title: qsTr("New Credential")
+    property string title: qsTr("Add Account")
 
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical.width: 8
@@ -38,12 +38,12 @@ ScrollView {
         function callback(resp) {
             if (resp.success) {
                 yubiKey.calculateAll(navigator.goToCredentials)
-                navigator.snackBar(qsTr("Credential added"))
+                navigator.snackBar(qsTr("Account added"))
             } else {
                 if (resp.error_id === 'credential_already_exists') {
                     navigator.confirm(
                         qsTr("Overwrite?"),
-                        qsTr("A credential with this name already exists, do you want to overwrite it?"),
+                        qsTr("A account with this name already exists, do you want to overwrite it?"),
                                                         _ccidAddCredentialOverwrite)
                 } else {
                     navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
@@ -184,7 +184,7 @@ ScrollView {
                             }
                             StyledButton {
                                 text: qsTr("Enter manually")
-                                toolTipText: qsTr("Enter credential details manually")
+                                toolTipText: qsTr("Enter account details manually")
                                 flat: true
                                 onClicked: manualEntryPane.expandAction()
                                 Material.foreground: formText
@@ -195,7 +195,7 @@ ScrollView {
                     }
 
                     StyledStepperPanel {
-                        label: qsTr("Add credential")
+                        label: qsTr("Add account")
                         description: !manualEntry ? qsTr("Edit and confirm settings") : qsTr("Use manual entry if there's no QR code available.")
                         id: manualEntryPane
 
@@ -325,7 +325,7 @@ ScrollView {
                             StyledButton {
                                 id: addBtn
                                 text: qsTr("Add")
-                                toolTipText: qsTr("Add credential to YubiKey")
+                                toolTipText: qsTr("Add account to YubiKey")
                                 enabled: settings.otpMode ? secretKeyLbl.validated && acceptableInput() :  secretKeyLbl.validated && acceptableInput() && nameLbl.validated
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                                 onClicked: addCredential()
