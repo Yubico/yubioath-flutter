@@ -161,7 +161,7 @@ ApplicationWindow {
         if (credential && credential.touch) {
             sysTrayIcon.showMessage(
                         qsTr("Touch required"),
-                        qsTr("Touch your YubiKey now to generate code for protected credential."),
+                        qsTr("Touch your YubiKey now to generate security code."),
                         SystemTrayIcon.NoIcon)
         }
         if (settings.otpMode) {

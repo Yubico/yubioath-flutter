@@ -281,7 +281,7 @@ ScrollView {
                             flat: true
                             onClicked: navigator.confirm(
                                            qsTr("Remove password?"),
-                                           qsTr("A password will not be required to access the credentials anymore."),
+                                           qsTr("A password will not be required to access the accounts anymore."),
                                            function () {
                                                removePassword()
                                            })
@@ -298,14 +298,14 @@ ScrollView {
 
             StyledExpansionPanel {
                 label: qsTr("Reset")
-                description: qsTr("Warning: Reset will delete all credentials and restore factory defaults.")
+                description: qsTr("Warning: Reset will delete all accounts from the YubiKey and restore factory defaults.")
                 isEnabled: false
                 visible: !!yubiKey.currentDevice && !settings.otpMode
                 toolButtonIcon: "../images/reset.svg"
                 toolButtonToolTip: qsTr("Reset OATH Application")
                 toolButton.onClicked: navigator.confirm(
                                           qsTr("Reset OATH application?"),
-                                          qsTr("This will delete all credentials and restore factory defaults."),
+                                          qsTr("This will delete all accounts and restore factory defaults."),
                                           function () {
                                               navigator.goToLoading()
                                               yubiKey.reset(function (resp) {
@@ -370,7 +370,7 @@ ScrollView {
             StyledExpansionPanel {
                 id: interfacePanel
                 label: qsTr("Interface")
-                description: qsTr("Configure how credentials are read from the YubiKey.")
+                description: qsTr("Configure how to communicate with the YubiKey.")
                 property bool otpModeSelected: interfaceCombobox.currentIndex === 2
                 property bool customReaderSelected: interfaceCombobox.currentIndex === 1
                 property bool aboutToChange: (otpModeSelected !== settings.otpMode)
