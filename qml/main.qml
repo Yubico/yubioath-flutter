@@ -53,7 +53,7 @@ ApplicationWindow {
     property string credentialCardCurrentItem: isDark() ? "#4a4a4a" : "#e5e5e5"
     property string credentialCardHovered: isDark() ? "#3e3e3e" : "#efefef"
     property string credentialCardNormal: isDark() ? "#363636" : "#ffffff"
-    property string credentialCardCode: isDark() ? "#d8d8d8" : "#828282"
+    property string credentialCardCode: isDark() ? "#dfdfdf" : "#7c7c7c"
     property string credentialCardIssuer: "#aaaaaa"
     property string credentialCardNFCTimeout: isDark()? "#555555" : "#dddddd"
     property string credentialCardHOTPCoolDown: "#777777"
