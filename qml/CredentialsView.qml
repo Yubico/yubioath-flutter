@@ -98,7 +98,7 @@ ScrollView {
         enabled: visible
         keyNavigationWraps: false
         model: filteredCredentials()
-        cellWidth: app.width >= 300 && app.width <= 360 ? app.width + 2 : 362
+        cellWidth: app.width <= 360 ? app.width + 2 : 362
         cellHeight: 82
         Accessible.role: Accessible.MenuItem
         Accessible.focusable: true
