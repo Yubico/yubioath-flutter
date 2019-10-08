@@ -30,13 +30,13 @@ jobs:
           set a=C:\Program Files (x86)\Windows Kits\10\bin\10.0.18362.0\x64
           set b=%a%;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.18362.0\um\x64
           set c=%b%;C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.23.28105\bin\Hostx64\x64
-          set d=%c%;D:\a\yubioath-desktop\yubioath-desktop\Qt5.12.4\5.12.4\msvc2017_64\bin
+          set d=%c%;D:\a\yubioath-desktop\yubioath-desktop\Qt5.13.1\5.13.1\msvc2017_64\bin
           set e=%d%;D:\a\yubioath-desktop\yubioath-desktop\jom
           set f=%e%;C:\hostedtoolcache\windows\Python\3.6.8\x64\
           set g=%f%;C:\hostedtoolcache\windows\Python\3.6.8\x64\Scripts
           set h=%g%;C:\Program Files\Git\bin
           set i=%h%;C:\Program Files\7-Zip
-          set j=%i%;D:\a\yubioath-desktop\yubioath-desktop\Qt5.12.4\5.12.4\msvc2017_64\bin
+          set j=%i%;D:\a\yubioath-desktop\yubioath-desktop\Qt5.13.1\5.13.1\msvc2017_64\bin
           echo ::set-env name=PATH::%j%
 
           echo ::set-env name=VCINSTALLDIR::C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC
@@ -44,7 +44,7 @@ jobs:
       - name: Install QT and jom
         run: |
           pip install aqtinstall
-          python -m aqt install 5.12.4 windows desktop win64_msvc2017_64
+          python -m aqt install 5.13.1 windows desktop win64_msvc2017_64
 
           mkdir jom
           wget http://download.qt.io/official_releases/jom/jom.zip -OutFile jom/jom.zip
