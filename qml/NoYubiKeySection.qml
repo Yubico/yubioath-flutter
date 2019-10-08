@@ -7,7 +7,7 @@ import QtGraphicalEffects 1.0
 ColumnLayout {
 
     readonly property int dynamicWidth: 600
-    readonly property int dynamicMargin: 64
+    readonly property int dynamicMargin: 32
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
@@ -51,7 +51,7 @@ ColumnLayout {
                 }
             }
             visible: (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable))
-            Layout.minimumWidth: 320
+            Layout.minimumWidth: 300
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             horizontalAlignment: Qt.AlignHCenter
@@ -76,7 +76,7 @@ ColumnLayout {
         Label {
             text: settings.useCustomReader ? qsTr("Interface: CCID - Custom reader") : qsTr("Interface: OTP")
             visible: settings.useCustomReader || settings.otpMode
-            Layout.minimumWidth: 320
+            Layout.minimumWidth: 300
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             horizontalAlignment: Qt.AlignHCenter
@@ -93,7 +93,7 @@ ColumnLayout {
                 return t
             }
             visible: settings.useCustomReader
-            Layout.minimumWidth: 320
+            Layout.minimumWidth: 300
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             horizontalAlignment: Qt.AlignHCenter
