@@ -69,7 +69,7 @@ Pane {
                     icon.color: iconButtonNormal
                     icon.width: 20
                     icon.height: 20
-                    text: "Delete credential"
+                    text: "Delete account"
                     onTriggered: deleteCard()
                 }
                 MenuItem {
@@ -96,7 +96,7 @@ Pane {
                     icon.width: 20
                     icon.height: 20
                     enabled: !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
-                    text: qsTr("Add credential")
+                    text: qsTr("Add account")
                     onTriggered: yubiKey.scanQr()
                 }
                 MenuItem {
