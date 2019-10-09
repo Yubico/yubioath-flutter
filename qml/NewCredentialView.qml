@@ -43,7 +43,7 @@ ScrollView {
                 if (resp.error_id === 'credential_already_exists') {
                     navigator.confirm(
                         qsTr("Overwrite?"),
-                        qsTr("A account with this name already exists, do you want to overwrite it?"),
+                        qsTr("An account with this name already exists, do you want to overwrite it?"),
                                                         _ccidAddCredentialOverwrite)
                 } else {
                     navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
