@@ -228,7 +228,7 @@ ScrollView {
                                 text: credential
                                       && credential.secret ? credential.secret : ""
                                 visible: manualEntry
-                                validateText: qsTr("Invalid Base32 format (valid characters are A-Z and 2-7)")
+                                validateText: qsTr("Invalid Base32 format (A-Z and 2-7)")
                                 validateRegExp: /^[2-7a-zA-Z]+=*$/
                                 Layout.bottomMargin: 12
                                 onSubmit: addCredential()

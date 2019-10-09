@@ -49,7 +49,7 @@ Dialog {
         Label {
             id: confirmationHeading
             text: heading
-            font.pixelSize: 15
+            font.pixelSize: 14
             font.weight: Font.Medium
             width: parent.width
             wrapMode: Text.WordWrap

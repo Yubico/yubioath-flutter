@@ -238,7 +238,7 @@ Pane {
     function deleteCard() {
         navigator.confirm(
                     "Delete " + formattedName() + " ?",
-                    qsTr("This will permanently delete the account from the YubiKey, and your ability to generate codes for it."),
+                    qsTr("This will permanently delete the account from the YubiKey, as well as your ability to generate security codes for it. Make sure 2FA has been disabled BEFORE proceeding."),
                     function () {
                         if (settings.otpMode) {
                             yubiKey.otpDeleteCredential(credential,
