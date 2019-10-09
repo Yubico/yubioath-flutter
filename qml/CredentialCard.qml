@@ -216,7 +216,7 @@ Pane {
                         }
                     } else {
                         if (resp.error_id === 'access_denied') {
-                            navigator.snackBarError(qsTr("Touch credential timed out"))
+                            navigator.snackBarError(qsTr("Touch timed out"))
                         } else {
                             navigator.snackBarError(navigator.getErrorMessage(
                                                         resp.error_id))
