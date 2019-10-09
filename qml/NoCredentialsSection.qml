@@ -7,7 +7,7 @@ import QtGraphicalEffects 1.0
 ColumnLayout {
 
     readonly property int dynamicWidth: 380
-    readonly property int dynamicMargin: 64
+    readonly property int dynamicMargin: 32
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
@@ -37,7 +37,7 @@ ColumnLayout {
         Label {
             text: qsTr("Add accounts to this YubiKey in order to be able to generate security codes from it.")
             horizontalAlignment: Qt.AlignHCenter
-            Layout.minimumWidth: 320
+            Layout.minimumWidth: 300
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             Layout.rowSpan: 1

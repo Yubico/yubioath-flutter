@@ -156,7 +156,7 @@ ScrollView {
                     initialStep: !manualEntry ? 2 : 1
 
                     StyledStepperPanel {
-                        label: qsTr("Make sure QR code is fully visible on screen")
+                        label: qsTr("Make sure QR code is fully visible")
                         description: qsTr("Press the button to scan when ready.")
                         id: retryPane
                         Layout.fillWidth: true

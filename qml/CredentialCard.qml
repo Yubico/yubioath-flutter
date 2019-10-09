@@ -9,7 +9,8 @@ Pane {
 
     id: credentialCard
 
-    implicitWidth: 360
+    implicitWidth: app.width <= 360 ? app.width : 360
+
     implicitHeight: 80
 
     Material.elevation: 0
@@ -360,12 +361,19 @@ Pane {
             Label {
                 id: nameLbl
                 text: formattedName()
-                Layout.maximumWidth: 260
+                Layout.maximumWidth: app.width <= 360 ? app.width - 95 : 265
                 font.pixelSize: 14
                 elide: Text.ElideRight
                 color: credentialCardIssuer
             }
-
+            ToolTip {
+                text: qsTr(nameLbl.text)
+                delay: 1000
+                parent: nameLbl
+                visible: nameLbl.truncated && credentialCard.hovered
+                Material.foreground: toolTipForeground
+                Material.background: toolTipBackground
+            }
         }
 
         Accessible.role: Accessible.ListItem
