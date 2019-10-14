@@ -10,9 +10,12 @@ SystemTrayIcon {
         case SystemTrayIcon.DoubleClick:
             showWindow()
             break;
+        case SystemTrayIcon.Trigger:
+            sysTrayInstantiator.model = getFavoriteEntries()
+            sysTrayMenu.open()
+            break;
         default:
             sysTrayInstantiator.model = getFavoriteEntries()
-            sysTrayMenu.visible = true
             break;
         }
     }
