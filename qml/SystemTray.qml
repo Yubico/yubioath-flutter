@@ -6,18 +6,10 @@ SystemTrayIcon {
     visible: settings.closeToTray
     icon.source: "../images/windowicon.png"
     onActivated: {
-        switch (reason) {
-        case SystemTrayIcon.DoubleClick:
+        if (reason !== SystemTrayIcon.Context) {
             showWindow()
-            break;
-        case SystemTrayIcon.Trigger:
-            sysTrayInstantiator.model = getFavoriteEntries()
-            sysTrayMenu.open()
-            break;
-        default:
-            sysTrayInstantiator.model = getFavoriteEntries()
-            break;
         }
+        sysTrayInstantiator.model = getFavoriteEntries()
     }
 
     function showWindow() {
