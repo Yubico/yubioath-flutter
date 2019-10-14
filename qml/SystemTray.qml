@@ -35,7 +35,7 @@ SystemTrayIcon {
         }
 
         MenuSeparator {
-            visible: sysTrayInstantiator.model.length > 0
+            visible: sysTrayInstantiator.model.count > 0
         }
 
         MenuItem {
