@@ -5,8 +5,20 @@ import QtQml 2.12
 SystemTrayIcon {
     visible: settings.closeToTray
     icon.source: "../images/windowicon.png"
-    onActivated: sysTrayInstantiator.model = getFavoriteEntries()
+    onActivated: {
+        if(reason === SystemTrayIcon.DoubleClick) {
+            showWindow()
+        } else {
+            sysTrayInstantiator.model = getFavoriteEntries()
+        }
+    }
 
+    function showWindow() {
+        app.hide()
+        app.show()
+        raise()
+        requestActivate()
+    }
 
     menu: Menu {
         id: sysTrayMenu
@@ -27,12 +39,7 @@ SystemTrayIcon {
 
         MenuItem {
             text: qsTr("Show Yubico Authenticator")
-            onTriggered: {
-                app.hide()
-                app.show()
-                raise()
-                requestActivate()
-            }
+            onTriggered: showWindow()
         }
 
         MenuSeparator {
