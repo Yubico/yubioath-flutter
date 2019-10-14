@@ -6,10 +6,14 @@ SystemTrayIcon {
     visible: settings.closeToTray
     icon.source: "../images/windowicon.png"
     onActivated: {
-        if(reason === SystemTrayIcon.DoubleClick) {
+        switch (reason) {
+        case SystemTrayIcon.DoubleClick:
             showWindow()
-        } else {
+            break;
+        default:
             sysTrayInstantiator.model = getFavoriteEntries()
+            sysTrayMenu.visible = true
+            break;
         }
     }
 
