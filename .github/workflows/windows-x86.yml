@@ -1,0 +1,104 @@
+name: windows 32bit
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: windows-2019
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Download dependencies
+        run: |
+          wget https://download.qt.io/official_releases/jom/jom.zip -OutFile jom.zip
+          wget https://github.com/thp/pyotherside/archive/1.5.3.zip -OutFile pyotherside-1.5.3.zip
+          wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.20.0-win32.zip -OutFile ykpers-1.20.0-win32.zip
+          wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.20.0-win32.zip.sig -OutFile ykpers-1.20.0-win32.zip.sig
+          wget https://github.com/libusb/libusb/releases/download/v1.0.22/libusb-1.0.22.7z -OutFile libusb-1.0.22.7z
+          wget https://www.python.org/ftp/python/3.6.8/python-3.6.8-embed-win32.zip -OutFile python-3.6.8-embed-win32.zip
+        shell: powershell
+
+      - name: Fetch GPG keys
+        run: gpg --no-default-keyring --keyring yubico --recv-keys 0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A
+
+      - name: Verify signature/checksums of downloaded files
+        run: |
+          sha256sum -c ./.github/workflows/windows-x86-libs.sha256sum
+          gpg --no-default-keyring --keyring yubico --verify ykpers-1.20.0-win32.zip.sig ykpers-1.20.0-win32.zip
+
+      - name: Install swig
+        run: choco install swig
+
+      - name: Install Qt and Jom
+        run: |
+          pip install aqtinstall
+          python -m aqt install 5.13.1 windows desktop win32_msvc2017
+          7z x jom.zip
+        shell: powershell
+
+      - name: Prepare pyotherside
+        run: |
+          7z x pyotherside-1.5.3.zip
+          cd pyotherside-1.5.3
+          (Get-Content .\src\qmldir).replace('pyothersideplugin', 'pyothersideplugin1') | Set-Content .\src\qmldir
+          Clear-Content python.pri
+          Add-Content python.pri "PYTHON_CONFIG = python3-config`nQMAKE_LIBS += -LC:\hostedtoolcache\windows\Python\3.6.8\x86\libs -lpython36`nQMAKE_CXXFLAGS += -IC:\hostedtoolcache\windows\Python\3.6.8\x86\include`n"
+        shell: powershell
+
+      - name: Build and install pyotherside
+        run: |
+          set PATH=D:\a\yubioath-desktop\yubioath-desktop\Qt5.13.1\5.13.1\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x86
+          cd pyotherside-1.5.3
+          qmake
+          jom
+          jom install
+
+      - name: Build app
+        run: |
+          set PATH=C:\hostedtoolcache\windows\Python\3.6.8\x86\Scripts;C:\hostedtoolcache\windows\Python\3.6.8\x86;D:\a\yubioath-desktop\yubioath-desktop\Qt5.13.1\5.13.1\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x86
+          qmake
+          jom
+
+      - name: Copy ykpers and libusb dll files
+        run: |
+          7z x ykpers-1.20.0-win32.zip
+          Copy-Item .\bin\*.dll .\release -Force
+
+          7z x libusb-1.0.22.7z
+          Copy-Item .\MS32\dll\*.dll .\release -Force
+
+          cd .\release
+          7z x ..\python-3.6.8-embed-win32.zip
+        shell: powershell
+
+      - name: Run windeployqt
+        run: |
+          set PATH=D:\a\yubioath-desktop\yubioath-desktop\Qt5.13.1\5.13.1\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x86
+          windeployqt .\release\yubioath-desktop.exe --qmldir=.\qml --no-translations --angle --release
+
+      - name: Copy over files and create .zip archive
+        run: |
+          Copy-Item .\pymodules .\release -recurse
+          Get-ChildItem -File -Include *.pyc -Recurse | Remove-Item -Force
+          Get-ChildItem -Include __pycache__ -Recurse | Remove-Item -Force
+          Get-ChildItem -Include *.cpp -Recurse | Remove-Item -Force
+          Get-ChildItem -Include *.obj -Recurse | Remove-Item -Force
+
+          $arr = $env:GITHUB_REF -split '/'
+          $branch = $arr[2]
+          7z a yubioath-desktop-$branch-win32.zip .\release
+
+          mkdir deploy
+          cp yubioath-desktop-$branch-win32.zip deploy
+        shell: powershell
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: yubioath-desktop-win32
+          path: deploy
