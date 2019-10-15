@@ -35,6 +35,7 @@ jobs:
           7z x jom.zip
 
       - name: Prepare pyotherside
+        run: |
           7z x pyotherside-1.5.3.zip
           cd pyotherside-1.5.3
           (Get-Content .\src\qmldir).replace('pyothersideplugin', 'pyothersideplugin1') | Set-Content .\src\qmldir
