@@ -6,13 +6,8 @@ SystemTrayIcon {
     visible: settings.closeToTray
     icon.source: "../images/windowicon.png"
     onActivated: {
-        // on Windows, toggle main window if anything but right click
-        if (reason !== SystemTrayIcon.Context && Qt.platform.os === "windows") {
-            if (app.active) {
-                app.hide()
-            } else {
-                showWindow()
-            }
+        if (reason === SystemTrayIcon.DoubleClick) {
+            showWindow()
         } else {
             sysTrayInstantiator.model = getFavoriteEntries()
         }
