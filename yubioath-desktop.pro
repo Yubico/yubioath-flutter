@@ -6,12 +6,12 @@ HEADERS += screenshot.h
 
 # This is the internal verson number, Windows requires 4 digits.
 win32|win64 {
-    VERSION = 5.0.0.0
+    VERSION = 5.0.1.0
 } else {
-    VERSION = 5.0.0
+    VERSION = 5.0.1
 }
 # This is the version shown on the About page
-DEFINES += APP_VERSION=\\\"5.0.0\\\"
+DEFINES += APP_VERSION=\\\"5.0.1\\\"
 
 message(Version of this build: $$VERSION)
 
