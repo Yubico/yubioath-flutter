@@ -93,6 +93,12 @@ jobs:
           cp yubioath-desktop-$branch-win64.zip deploy
         shell: powershell
 
+      - name: Run GUI
+        shell: bash
+        run: |
+          ./release/yubioath-desktop --version
+          ./release/yubioath-desktop --help
+
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
