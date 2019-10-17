@@ -1,25 +1,20 @@
 name: Build a source package
 
-# TODO: enable this workflow for pull_request (will require a different way to do the archive)
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
-        # Don't use checkout, we need a full clone for this workflow
-      - name: Clone repository
-        run: |
-          git clone https://github.com/yubico/yubioath-desktop
+      - uses: actions/checkout@v1
 
       - name: Build a .tar.gz source package
         run: |
           export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
-          cd yubioath-desktop
-          git checkout $REF
-          git archive --format=tar.gz -o yubioath-desktop-$REF.tar.gz --prefix yubioath-desktop/ $REF
+          cd ..
+          tar zcvf yubioath-desktop-$REF.tar.gz --exclude-vcs yubioath-desktop
           mkdir deploy
           mv yubioath-desktop-$REF.tar.gz deploy
 
@@ -27,4 +22,4 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: yubioath-desktop-source-package
-          path: yubioath-desktop/deploy
+          path: ../deploy
