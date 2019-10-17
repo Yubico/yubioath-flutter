@@ -13,8 +13,7 @@ jobs:
       - name: Build a .tar.gz source package
         run: |
           export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
-          cd ..
-          tar zcvf yubioath-desktop-$REF.tar.gz --exclude-vcs yubioath-desktop
+          git archive --format=tar.gz --prefix=yubioath-desktop/ -o yubioath-desktop-$REF.tar.gz HEAD
           mkdir deploy
           mv yubioath-desktop-$REF.tar.gz deploy
 
@@ -22,4 +21,4 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: yubioath-desktop-source-package
-          path: ../deploy
+          path: deploy
