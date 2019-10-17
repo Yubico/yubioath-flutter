@@ -88,6 +88,16 @@ jobs:
           mkdir deploy
           mv yubioath-desktop-${REF}.app.tar.gz deploy
 
+      - name: Uninstall runtime dependencies
+        run: |
+          brew uninstall openssl@1.1 python ykpers --ignore-dependencies
+          sudo rm -rf /usr/local/Cellar/qt
+
+      - name: Run GUI
+        run: |
+          ./Yubico\ Authenticator.app/Contents/MacOS/yubioath-desktop --version
+          ./Yubico\ Authenticator.app/Contents/MacOS/yubioath-desktop --help
+
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
