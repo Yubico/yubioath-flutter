@@ -35,7 +35,7 @@ Pane {
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {
                    return credentialCardCurrentItem
-               } else if (cardMouseArea.containsMouse) {
+               } else if (cardMouseArea.containsMouse || favoriteBtn.hovered) {
                    return credentialCardHovered
                } else {
                    return credentialCardNormal
@@ -115,7 +115,7 @@ Pane {
             text: qsTr("Double-click to initiate touch")
             delay: 1000
             parent: credentialCard
-            visible: touchCredential && parent.hovered
+            visible: touchCredential && parent.hovered && !favoriteBtn.hovered
             Material.foreground: toolTipForeground
             Material.background: toolTipBackground
         }
@@ -319,21 +319,11 @@ Pane {
             id: icon
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
+            anchors.leftMargin: 4
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             size: 40
             Accessible.ignored: true
 
-            StyledImage {
-                id: favoriteIcon
-                anchors.bottom: parent.bottom
-                anchors.right: parent.right
-                anchors.bottomMargin: -5
-                iconWidth: 15
-                iconHeight: 15
-                source: "../images/star.svg"
-                visible: favorite && !favoriteDefault
-                color: "#f7bd0c"
-            }
             StyledImage {
                 id: favoriteDefaultIcon
                 anchors.bottom: parent.bottom
@@ -355,13 +345,13 @@ Pane {
             Label {
                 id: codeLbl
                 font.pixelSize: 24
-                color: credentialCardCode
+                color: hovered || credentialCard.GridView.isCurrentItem ? iconButtonHovered : credentialCardCode
                 text: getCodeLblValue()
             }
             Label {
                 id: nameLbl
                 text: formattedName()
-                Layout.maximumWidth: app.width <= 360 ? app.width - 95 : 265
+                Layout.maximumWidth: app.width <= 360 ? app.width - 100 : 260
                 font.pixelSize: 14
                 elide: Text.ElideRight
                 color: credentialCardIssuer
@@ -370,7 +360,7 @@ Pane {
                 text: qsTr(nameLbl.text)
                 delay: 1000
                 parent: nameLbl
-                visible: nameLbl.truncated && credentialCard.hovered
+                visible: nameLbl.truncated && credentialCard.hovered && !favoriteBtn
                 Material.foreground: toolTipForeground
                 Material.background: toolTipBackground
             }
@@ -381,13 +371,65 @@ Pane {
         Accessible.name: (credential.issuer ? credential.issuer : credential.name)
         Accessible.description: getCodeLblValue()
 
+        ToolButton {
+            id: favoriteBtn
+            Layout.alignment: Qt.AlignRight | Qt.AlignTop
+            visible: favorite || credentialCard.hovered || credentialCard.GridView.isCurrentItem
+//            visible: true
+
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.rightMargin: -6
+            anchors.topMargin: -8
+
+            onClicked: toggleFavorite()
+            Keys.onReturnPressed: toggleFavorite()
+            Keys.onEnterPressed: toggleFavorite()
+
+            Accessible.role: Accessible.Button
+            Accessible.name: "Favorite"
+            Accessible.description: "Favorite credential"
+
+            ToolTip {
+                text: favorite ? qsTr("Remove as favorite") : qsTr("Set as favorite")
+                delay: 1000
+                parent: favoriteBtn
+                visible: parent.hovered
+                Material.foreground: toolTipForeground
+                Material.background: toolTipBackground
+            }
+
+            icon.source: favorite ? "../images/star.svg" : "../images/star_border.svg"
+            icon.color: {
+                if (hovered) {
+                    return iconButtonHovered
+                } else if (favorite) {
+                    return iconFavorite
+                } else {
+                    return iconButtonCard
+                }
+            }
+
+            implicitHeight: 30
+            implicitWidth: 30
+
+            MouseArea {
+                id: favoriteMouseArea
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                propagateComposedEvents: true
+                enabled: false
+            }
+        }
+
         CredentialCardTimer {
             period: credential && credential.period ? credential.period : 0
             validTo: code && code.valid_to ? code.valid_to : 0
             anchors.bottom: parent.bottom
             anchors.right: parent.right
+            anchors.rightMargin: 3
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-            colorCircle: credentialCardIssuer
+            colorCircle: credentialCardIcon
             visible: code && code.value && credential
                      && credential.oath_type === "TOTP" ? true : false
             onTimesUp: {
@@ -404,22 +446,27 @@ Pane {
             id: touchIcon
             anchors.bottom: parent.bottom
             anchors.right: parent.right
+            anchors.rightMargin: 0
             iconWidth: 18
             iconHeight: 18
             source: "../images/touch.svg"
             visible: touchCredentialNoCode
-            color: credentialCardIssuer
+            color: credentialCardIcon
+            Layout.alignment: Qt.AlignRight
         }
 
         StyledImage {
             id: hotpIcon
-            source: "../images/refresh.svg"
-            iconWidth: 20
-            iconHeight: 20
-            visible: hotpCredential
             anchors.bottom: parent.bottom
             anchors.right: parent.right
-            color: hotpCredentialInCoolDown ? credentialCardHOTPCoolDown : credentialCardIssuer
+            anchors.rightMargin: -1
+            anchors.bottomMargin: -2
+            iconWidth: 20
+            iconHeight: 20
+            source: "../images/refresh.svg"
+            visible: hotpCredential
+            color: hotpCredentialInCoolDown ? credentialCardHOTPCoolDown : credentialCardIcon
+            Layout.alignment: Qt.AlignRight
         }
     }
 }

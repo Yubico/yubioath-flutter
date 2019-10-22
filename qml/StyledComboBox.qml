@@ -15,8 +15,8 @@ Item {
     property alias displayText: comboBox.displayText
 
     id: container
-    height: 50
-    implicitHeight: 50
+    height: 47
+    implicitHeight: 47
     Layout.bottomMargin: 8
     Layout.fillWidth: true
 

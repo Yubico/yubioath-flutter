@@ -32,7 +32,7 @@ Item {
     id: textFieldContainer
     height: 47
     implicitHeight: 47
-    Layout.bottomMargin: 4
+    Layout.bottomMargin: 8
     Layout.fillWidth: true
 
     function validateInput() {
@@ -59,7 +59,6 @@ Item {
 
         Label {
             font.pixelSize: 12
-            height: 13
             color: validateInput() ? formLabel : yubicoRed
             text: labelTextValue()
         }
@@ -76,7 +75,20 @@ Item {
                 textFieldContainer.submit()
             }
             Material.accent: validateInput() ? yubicoGreen : yubicoRed
-            height: 39
+            Rectangle {
+                color: {
+                    if (parent.activeFocus) {
+                        return validateInput() ? yubicoGreen : yubicoRed
+                    } else {
+                        return parent.hovered ? formText : formUnderline
+                    }
+                }
+                height: parent.hovered ? 2 : 1
+                width: parent.width
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 8
+            }
+            height: 41
             activeFocusOnTab: true
             focus: true
             color: formText
