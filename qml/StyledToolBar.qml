@@ -29,7 +29,6 @@ ToolBar {
     property bool showBackBtn: navigator.depth > 1
     property bool showTitleLbl: !!navigator.currentItem
                                 && !!navigator.currentItem.title
-    property alias favoriteBtn: favoriteBtn
     property alias settingsBtn: settingsBtn
     property alias addCredentialBtn: addCredentialBtn
     property alias searchField: searchField
@@ -43,6 +42,10 @@ ToolBar {
     function shouldShowSettings() {
         return !!(navigator.currentItem && navigator.currentItem.objectName !== 'settingsView'
                   && navigator.currentItem.objectName !== 'newCredentialView')
+    }
+
+    function shouldShowInfo() {
+        return !!(navigator.currentItem && navigator.currentItem.objectName === 'settingsView')
     }
 
     function shouldShowCredentialOptions() {
@@ -116,8 +119,7 @@ ToolBar {
             visible: showTitleLbl
             text: showTitleLbl ? navigator.currentItem.title : ""
             font.pixelSize: 16
-            Layout.leftMargin: backBtn.visible ? -32 : 0
-            Layout.rightMargin: navigator.currentItem && navigator.currentItem.objectName === 'newCredentialView' ? -78 : 0
+            Layout.leftMargin: settingsBtn.visible ? -32 : 0
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -217,9 +219,11 @@ ToolBar {
                 }
 
                 KeyNavigation.backtab: settingsBtn
+                KeyNavigation.left: settingsBtn
                 KeyNavigation.tab: shouldShowCredentialOptions(
-                                       ) ? copyCredentialBtn : infoBtn
-
+                                       ) ? copyCredentialBtn : addCredentialBtn
+                KeyNavigation.right: shouldShowCredentialOptions(
+                                       ) ? copyCredentialBtn : addCredentialBtn
                 Keys.onEscapePressed: exitSearchMode(true)
                 Keys.onDownPressed: exitSearchMode(false)
                 Keys.onReturnPressed: {
@@ -251,16 +255,15 @@ ToolBar {
 
             ToolButton {
                 id: copyCredentialBtn
-                visible: shouldShowCredentialOptions()
-                enabled: shouldShowCredentialOptions()
-                         && !app.currentCredentialCard.hotpCredentialInCoolDown
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                visible: shouldShowCredentialOptions()
 
                 onClicked: app.currentCredentialCard.calculateCard(true)
                 Keys.onReturnPressed: app.currentCredentialCard.calculateCard(true)
                 Keys.onEnterPressed: app.currentCredentialCard.calculateCard(true)
 
                 KeyNavigation.left: searchField
+                KeyNavigation.backtab: searchField
                 KeyNavigation.right: deleteCredentialBtn
                 KeyNavigation.tab: deleteCredentialBtn
 
@@ -289,23 +292,23 @@ ToolBar {
 
             ToolButton {
                 id: deleteCredentialBtn
-                visible: shouldShowCredentialOptions()
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                visible: shouldShowCredentialOptions()
 
                 onClicked: app.currentCredentialCard.deleteCard()
                 Keys.onReturnPressed: app.currentCredentialCard.deleteCard()
                 Keys.onEnterPressed: app.currentCredentialCard.deleteCard()
 
                 KeyNavigation.left: copyCredentialBtn
-                KeyNavigation.right: favoriteBtn
-                KeyNavigation.tab: favoriteBtn
+                KeyNavigation.right: addCredentialBtn
+                KeyNavigation.tab: addCredentialBtn
 
                 Accessible.role: Accessible.Button
                 Accessible.name: "Delete"
-                Accessible.description: "Delete credential"
+                Accessible.description: "Delete account"
 
                 ToolTip {
-                    text: qsTr("Delete credential")
+                    text: qsTr("Delete account")
                     delay: 1000
                     parent: deleteCredentialBtn
                     visible: parent.hovered
@@ -324,55 +327,18 @@ ToolBar {
             }
 
             ToolButton {
-                id: favoriteBtn
-                visible: shouldShowCredentialOptions()
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-
-                onClicked: app.currentCredentialCard.toggleFavorite()
-                Keys.onReturnPressed: app.currentCredentialCard.toggleFavorite()
-                Keys.onEnterPressed: app.currentCredentialCard.toggleFavorite()
-
-                KeyNavigation.left: deleteCredentialBtn
-                KeyNavigation.right: navigator
-                KeyNavigation.tab: navigator
-
-                Accessible.role: Accessible.Button
-                Accessible.name: "Favorite"
-                Accessible.description: "Favorite credential"
-
-                ToolTip {
-                    text: shouldShowCredentialOptions()
-                          && app.currentCredentialCard.favorite ? qsTr("Remove as favorite") : qsTr("Set as favorite")
-                    delay: 1000
-                    parent: favoriteBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: shouldShowCredentialOptions()
-                             && app.currentCredentialCard.favorite ? "../images/star.svg" : "../images/star_border.svg"
-                icon.color: hovered ? iconButtonHovered : iconButtonNormal
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                }
-            }
-
-            ToolButton {
                 id: infoBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: addCredentialBtn.visible
+                visible: shouldShowInfo()
                 onClicked: navigator.about()
 
                 Keys.onReturnPressed: navigator.about()
                 Keys.onEnterPressed: navigator.about()
 
-                KeyNavigation.left: searchField
-                KeyNavigation.right: addCredentialBtn
-                KeyNavigation.tab: addCredentialBtn
+                KeyNavigation.left: backBtn
+                KeyNavigation.backtab: backBtn
+                KeyNavigation.right: navigator
+                KeyNavigation.tab: navigator
 
                 Accessible.role: Accessible.Button
                 Accessible.name: "Info"
@@ -403,7 +369,6 @@ ToolBar {
                          && yubiKey.currentDeviceValidated
                          && navigator.currentItem
                          && navigator.currentItem.objectName === 'credentialsView'
-                         && !app.currentCredentialCard
 
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
@@ -411,7 +376,8 @@ ToolBar {
                 Keys.onReturnPressed: yubiKey.scanQr()
                 Keys.onEnterPressed: yubiKey.scanQr()
 
-                KeyNavigation.left: infoBtn
+                KeyNavigation.left: app.currentCredentialCard ? deleteCredentialBtn : searchField
+                KeyNavigation.backtab: app.currentCredentialCard ? deleteCredentialBtn : searchField
                 KeyNavigation.right: navigator
                 KeyNavigation.tab: navigator
 
@@ -437,6 +403,7 @@ ToolBar {
                     enabled: false
                 }
             }
+
         }
     }
 }

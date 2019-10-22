@@ -108,8 +108,7 @@ ScrollView {
         }
         focus: visible
         Component.onCompleted: currentIndex = -1
-        KeyNavigation.backtab: !!(app.currentCredentialCard && navigator.currentItem
-                                  && navigator.currentItem.objectName === 'credentialsView') ? toolBar.favoriteBtn : toolBar.addCredentialBtn
+        KeyNavigation.backtab: toolBar.addCredentialBtn
         KeyNavigation.tab: toolBar.settingsBtn
         KeyNavigation.up: paneScrollBar.position === 0 ? toolBar.searchField : null
         interactive: false
