@@ -205,8 +205,6 @@ Pane {
                         code = resp.code
                         credential = resp.credential
 
-                        entries.updateEntry(resp)
-
                         if (copy) {
                             copyCode(resp.code.value)
                         }
@@ -214,6 +212,8 @@ Pane {
                         if (hotpCredential) {
                             coolDownHotpCredential()
                         }
+
+                        entries.updateEntry(resp)
                     } else {
                         if (resp.error_id === 'access_denied') {
                             navigator.snackBarError(qsTr("Touch timed out"))
