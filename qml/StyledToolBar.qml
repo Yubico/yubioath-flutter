@@ -130,7 +130,6 @@ ToolBar {
         ToolButton {
             id: searchBtn
             visible: showSearch
-            Layout.leftMargin: 8
             Layout.minimumHeight: 30
             Layout.maximumHeight: 30
             Layout.fillWidth: true

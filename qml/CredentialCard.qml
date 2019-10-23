@@ -35,7 +35,7 @@ Pane {
     background: Rectangle {
         color: if (credentialCard.GridView.isCurrentItem) {
                    return credentialCardCurrentItem
-               } else if (cardMouseArea.containsMouse || favoriteBtn.hovered) {
+               } else if (cardMouseArea.containsMouse) {
                    return credentialCardHovered
                } else {
                    return credentialCardNormal
@@ -372,7 +372,6 @@ Pane {
             id: favoriteBtn
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
             visible: favorite || credentialCard.hovered || credentialCard.GridView.isCurrentItem
-//            visible: true
 
             anchors.top: parent.top
             anchors.right: parent.right
@@ -382,6 +381,7 @@ Pane {
             onClicked: toggleFavorite()
             Keys.onReturnPressed: toggleFavorite()
             Keys.onEnterPressed: toggleFavorite()
+            focusPolicy: Qt.NoFocus
 
             Accessible.role: Accessible.Button
             Accessible.name: "Favorite"
@@ -398,7 +398,7 @@ Pane {
 
             icon.source: favorite ? "../images/star.svg" : "../images/star_border.svg"
             icon.color: {
-                if (hovered) {
+                if (hovered && !favorite) {
                     return iconButtonHovered
                 } else if (favorite) {
                     return iconFavorite

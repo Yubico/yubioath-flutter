@@ -227,7 +227,7 @@ ApplicationWindow {
     }
 
     Shortcut {
-        sequence: "Ctrl+D"
+        sequence: "Ctrl+D"  // This becomes Cmd + D on macOS
         enabled: !!currentCredentialCard
         onActivated: app.currentCredentialCard.toggleFavorite()
     }
