@@ -187,10 +187,10 @@ Pane {
                 yubiKey.otpCalculate(credential, function (resp) {
                     if (resp.success) {
                         hotpTouchTimer.stop()
-                        entries.updateEntry(resp)
                         if (copy) {
                             copyCode(resp.code.value)
                         }
+                        entries.updateEntry(resp)
                     } else {
                         navigator.snackBarError(resp.error_id)
                         console.log("calculate failed:", resp.error_id)
@@ -204,15 +204,12 @@ Pane {
                         // makes the UI update instantly.
                         code = resp.code
                         credential = resp.credential
-
                         if (copy) {
                             copyCode(resp.code.value)
                         }
-
                         if (hotpCredential) {
                             coolDownHotpCredential()
                         }
-
                         entries.updateEntry(resp)
                     } else {
                         if (resp.error_id === 'access_denied') {
