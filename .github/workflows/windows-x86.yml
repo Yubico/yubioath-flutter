@@ -55,6 +55,7 @@ jobs:
           qmake
           jom
           jom install
+        shell: cmd
 
       - name: Build app
         run: |
@@ -62,6 +63,7 @@ jobs:
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x86
           qmake
           jom
+        shell: cmd
 
       - name: Copy ykpers and libusb dll files
         run: |
@@ -80,6 +82,7 @@ jobs:
           set PATH=D:\a\yubioath-desktop\yubioath-desktop\Qt5.13.1\5.13.1\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x86
           windeployqt .\release\yubioath-desktop.exe --qmldir=.\qml --no-translations --angle --release
+        shell: cmd
 
       - name: Copy over files and create .zip archive
         run: |

@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-ScrollView {
+Flickable {
 
     readonly property int dynamicWidth: 864
     readonly property int dynamicMargin: 32
@@ -13,8 +13,15 @@ ScrollView {
     objectName: 'enterPasswordView'
     property string title: qsTr("Unlock YubiKey")
 
-    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-    ScrollBar.vertical.width: 8
+    ScrollBar.vertical: ScrollBar {
+        width: 8
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        hoverEnabled: true
+        z: 2
+    }
+    boundsBehavior: Flickable.StopAtBounds
 
     contentWidth: app.width
 
@@ -42,9 +49,6 @@ ScrollView {
                              })
         }
     }
-
-    spacing: 0
-    padding: 0
 
     Component.onCompleted: {
         passwordField.textField.forceActiveFocus()

@@ -9,11 +9,12 @@ Pane {
 
     id: credentialCard
 
-    implicitWidth: app.width <= 360 ? app.width : 360
-
-    implicitHeight: 80
-
-    Material.elevation: 0
+    Layout.minimumWidth: 300
+    Layout.minimumHeight: 82
+    width: 300
+    height: 82
+    implicitWidth: 300
+    implicitHeight: 82
 
     property var code
     property var credential
@@ -33,6 +34,15 @@ Pane {
     property bool favoriteDefault: settings.favoriteDefault === credential.key
 
     background: Rectangle {
+        anchors.left: parent.left
+        anchors.top: parent.top
+        Layout.minimumWidth: 298
+        Layout.minimumHeight: 80
+        width: parent.width - 2
+        implicitWidth: parent.width - 2
+        height: 80
+        implicitHeight: 80
+
         color: if (credentialCard.GridView.isCurrentItem) {
                    return credentialCardCurrentItem
                } else if (cardMouseArea.containsMouse) {
@@ -348,7 +358,7 @@ Pane {
             Label {
                 id: nameLbl
                 text: formattedName()
-                Layout.maximumWidth: app.width <= 360 ? app.width - 100 : 260
+                Layout.maximumWidth: credentialCard.width - 100
                 font.pixelSize: 14
                 elide: Text.ElideRight
                 color: credentialCardIssuer
