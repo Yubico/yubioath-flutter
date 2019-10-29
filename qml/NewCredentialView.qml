@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-ScrollView {
+Flickable {
 
     readonly property int dynamicWidth: 864
     readonly property int dynamicMargin: 32
@@ -13,8 +13,15 @@ ScrollView {
     objectName: 'newCredentialView'
     property string title: qsTr("Add Account")
 
-    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-    ScrollBar.vertical.width: 8
+    ScrollBar.vertical: ScrollBar {
+        width: 8
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        hoverEnabled: true
+        z: 2
+    }
+    boundsBehavior: Flickable.StopAtBounds
 
     property var credential
     property bool manualEntry
@@ -105,9 +112,6 @@ ScrollView {
 
 
     Keys.onEscapePressed: navigator.home()
-
-    spacing: 8
-    padding: 0
 
     function getEnabledOtpSlots() {
         var res = []

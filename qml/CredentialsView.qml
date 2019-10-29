@@ -4,25 +4,14 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-ScrollView {
+Pane {
     id: pane
     objectName: 'credentialsView'
 
+    anchors.fill: parent
     Accessible.ignored: true
-
-    property var filtered: 0
-
-    contentHeight: filteredCredentials().count > 0 ? grid.contentHeight : app.height - toolBar.height
-
-    ScrollBar.vertical: ScrollBar {
-        id: paneScrollBar
-        width: 8
-        anchors.top: pane.top
-        anchors.right: pane.right
-        anchors.bottom: pane.bottom
-        hoverEnabled: true
-        z: 2
-    }
+    padding: 0
+    spacing: 0
 
     property string title: ""
 
@@ -58,14 +47,6 @@ ScrollView {
         }
     }
 
-    MouseArea {
-        onClicked: grid.currentIndex = -1
-        height: app.height
-        width: app.width
-        enabled: entries.count > 0
-        Accessible.ignored: true
-    }
-
     NoCredentialsSection {
         visible: entries.count === 0 && !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
         enabled: visible
@@ -87,34 +68,54 @@ ScrollView {
 
     GridView {
         id: grid
+        property var columnWidth: app.width/model.count
+        property var idealCellHeight: 82
+        property var idealCellWidth: columnWidth > 300 ? columnWidth : 300
+        anchors.fill: parent
+        ScrollBar.vertical: ScrollBar {
+            id: paneScrollBar
+            width: 8
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            hoverEnabled: true
+        }
         displayMarginBeginning: cellHeight
-        displayMarginEnd: cellHeight
-        width: (Math.min(model.count, Math.floor(parent.width / cellWidth)) * cellWidth) || cellWidth
-        height: (Math.min(model.count, Math.floor((parent.height - toolBar.height) / cellHeight)) * cellHeight) || cellHeight
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
         onCurrentItemChanged: app.currentCredentialCard = currentItem
         visible: entries.count > 0
         enabled: visible
         keyNavigationWraps: false
         model: filteredCredentials()
-        cellWidth: app.width <= 360 ? app.width + 2 : 362
-        cellHeight: 82
+        cellHeight: idealCellHeight
+        cellWidth: width / Math.floor(width / idealCellWidth)
         Accessible.role: Accessible.MenuItem
         Accessible.focusable: true
         delegate: CredentialCard {
             credential: model.credential
             code: model.code
+            // The delegate size is equal to the cell size...
+            height: GridView.view.cellHeight
+            width: GridView.view.cellWidth
+            Rectangle {
+                // ... but visible part is not. Here the width is set to the ideal size.
+                // The visible part of the delegate is centered in the delegate, which means
+                // the grid appears centered
+                anchors.centerIn: parent
+                width: parent.GridView.view ? parent.GridView.view.idealCellWidth : 0
+                height: parent.height
+            }
+        }
+        boundsBehavior: Flickable.StopAtBounds
+        move: Transition {
+            NumberAnimation { properties: "x,y"; duration: 250 }
         }
         focus: visible
         Component.onCompleted: currentIndex = -1
         KeyNavigation.backtab: toolBar.addCredentialBtn
         KeyNavigation.tab: toolBar.settingsBtn
         KeyNavigation.up: paneScrollBar.position === 0 ? toolBar.searchField : null
-        interactive: false
-        highlightFollowsCurrentItem: false
-        Keys.onPressed: interactive = true
-        Keys.onReleased: interactive = false
+        interactive: true
+        highlightFollowsCurrentItem: true
         Keys.onEscapePressed: {
             toolBar.searchField.text = ""
             navigator.forceActiveFocus()
