@@ -51,7 +51,8 @@ Flickable {
                     navigator.confirm(
                         qsTr("Overwrite?"),
                         qsTr("An account with this name already exists, do you want to overwrite it?"),
-                                                        _ccidAddCredentialOverwrite)
+                        "",
+                        _ccidAddCredentialOverwrite)
                 } else {
                     navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
                     console.log("addCredential failed:", resp.error_id)
@@ -93,7 +94,8 @@ Flickable {
                                             otpSlotComboBox.currentText) - 1]) {
                             navigator.confirm(
                                         qsTr("Overwrite?"),
-                                        qsTr("The slot is already configured, do you want to overwrite it?"),
+                                        qsTr("This slot is already configured, do you want to overwrite it?"),
+                                        "",
                                         _otpAddCredential)
                         } else {
                             _otpAddCredential()

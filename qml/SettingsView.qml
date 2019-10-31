@@ -27,16 +27,16 @@ Flickable {
     Keys.onEscapePressed: navigator.home()
 
     function getDeviceLabel(device) {
-        if (!!device.serial) {
-            return ("%1 [#%2]").arg(device.name).arg(device.serial)
-        }  else {
+        if (!!device) {
             return ("%1").arg(device.name)
+        } else {
+            return qsTr("Insert your YubiKey")
         }
     }
 
-    function getDeviceDescription() {
-        if (!!yubiKey.currentDevice) {
-            return yubiKey.currentDevice.usbInterfacesEnabled.join('+')
+    function getDeviceDescription(device) {
+        if (!!device) {
+            return qsTr("Serial number: %1").arg(!!device.serial ? device.serial : "Not Available")
         } else if (yubiKey.availableDevices.length > 0
                    && !yubiKey.availableDevices.some(dev => dev.selectable)) {
             return qsTr("No compatible device found")
@@ -44,7 +44,6 @@ Flickable {
             return qsTr("No device found")
         }
     }
-
 
     function clearPasswordFields() {
         currentPasswordField.text = ""
@@ -184,8 +183,8 @@ Flickable {
 
             StyledExpansionPanel {
                 id: currentDevicePanel
-                label: !!yubiKey.currentDevice ? getDeviceLabel(yubiKey.currentDevice) : qsTr("Insert your YubiKey")
-                description: getDeviceDescription()
+                label: getDeviceLabel(yubiKey.currentDevice)
+                description: getDeviceDescription(yubiKey.currentDevice)
                 keyImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : "../images/yubikeys-large-transparent"
                 isTopPanel: true
                 Layout.fillWidth: true
@@ -200,14 +199,15 @@ Flickable {
 
                     Repeater {
                         model: yubiKey.availableDevices
-                        RadioButton {
+                        StyledRadioButton {
                             Layout.fillWidth: true
                             objectName: index
                             checked: !!yubiKey.currentDevice
                                      && modelData.serial === yubiKey.currentDevice.serial
                             text: getDeviceLabel(modelData)
+                            description: getDeviceDescription(modelData)
                             enabled: modelData.selectable
-                            ButtonGroup.group: deviceButtonGroup
+                            buttonGroup: deviceButtonGroup
                         }
                     }
 
@@ -285,6 +285,7 @@ Flickable {
                             flat: true
                             onClicked: navigator.confirm(
                                            qsTr("Remove password?"),
+                                           "",
                                            qsTr("A password will not be required to access the accounts anymore."),
                                            function () {
                                                removePassword()
@@ -302,14 +303,15 @@ Flickable {
 
             StyledExpansionPanel {
                 label: qsTr("Reset")
-                description: qsTr("Warning: Reset will delete all accounts from the YubiKey and restore factory defaults.")
+                description: qsTr("Warning: Reset will delete all accounts and restore factory defaults.")
                 isEnabled: false
                 visible: !!yubiKey.currentDevice && !settings.otpMode
                 toolButtonIcon: "../images/reset.svg"
-                toolButtonToolTip: qsTr("Reset OATH Application")
+                toolButtonToolTip: qsTr("Reset device")
                 toolButton.onClicked: navigator.confirm(
-                                          qsTr("Reset OATH application?"),
-                                          qsTr("This will delete all accounts and restore factory defaults."),
+                                          qsTr("Reset device?"),
+                                          qsTr("This will delete all accounts and restore factory defaults of your YubiKey."),
+                                          qsTr("There is NO going back from here, if you do not know what you are doing, do NOT do this."),
                                           function () {
                                               navigator.goToLoading()
                                               yubiKey.reset(function (resp) {
@@ -339,7 +341,7 @@ Flickable {
 
             StyledExpansionPanel {
                 label: qsTr("Appearance")
-                description: qsTr("Change the appearance of the application.")
+                description: qsTr("Change the visual appearance of the application.")
                 isTopPanel: true
 
                 ColumnLayout {

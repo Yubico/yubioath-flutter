@@ -6,11 +6,11 @@ Dialog {
     margins: 0
     spacing: 0
     modal: true
+    focus: true
+
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2
-
-    width: app.width > 600 ? 600 : app.width * 0.90
-    focus: true
+    width: app.width * 0.9 > 600 ? 600 : app.width * 0.9
 
     background: Rectangle {
         color: defaultBackground
@@ -29,7 +29,6 @@ Dialog {
 
     Component.onCompleted: {
         navigator.isShowingAbout = true
-        btnCancel.forceActiveFocus()
     }
 
     function getDeviceDescription() {
@@ -170,24 +169,6 @@ Dialog {
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
             width: parent.width
-        }
-
-        DialogButtonBox {
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Layout.topMargin: 14
-            Layout.rightMargin: -22
-            Layout.bottomMargin: -22
-
-            StyledButton {
-                id: btnCancel
-                text: qsTr("Close")
-                flat: true
-                enabled: true
-                font.capitalization: Font.capitalization
-                DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
-                Keys.onReturnPressed: reject()
-                onClicked: reject()
-            }
         }
     }
 }

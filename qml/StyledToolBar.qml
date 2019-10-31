@@ -148,7 +148,7 @@ ToolBar {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 placeholderText: qsTr("Quick Find")
-                placeholderTextColor: hovered || activeFocus ? iconButtonHovered : iconButtonNormal
+                placeholderTextColor: iconButtonNormal
                 leftPadding: 28
                 rightPadding: 8
                 width: parent.width

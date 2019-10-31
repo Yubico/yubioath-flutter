@@ -150,7 +150,8 @@ Pane {
                     color: formLabel
                     text: description
                     wrapMode: Text.WordWrap
-                    Layout.rowSpan: 1
+                    maximumLineCount: isExpanded ? 4 : 2
+                    elide: Text.ElideRight
                     lineHeight: 1.1
                     visible: description
                 }

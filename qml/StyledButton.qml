@@ -7,12 +7,13 @@ import QtGraphicalEffects 1.0
 Button {
 
     property alias toolTipText: buttonToolTip.text
+    property bool critical: false
 
     id: button
     font.capitalization: Font.capitalization
     font.weight: Font.Medium
-    Material.foreground: button.flat ? Material.primary : yubicoWhite
-    Material.background: button.flat ? "transparent" : Material.primary
+    Material.foreground: button.flat ? (critical ? yubicoRed : Material.primary) : yubicoWhite
+    Material.background: button.flat ? "transparent" : (critical ? yubicoRed : Material.primary)
     Material.elevation: button.flat ? 0 : 1
 
     ToolTip {
