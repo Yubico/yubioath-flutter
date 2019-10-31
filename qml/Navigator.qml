@@ -80,10 +80,11 @@ StackView {
                                             }), StackView.Immediate)
     }
 
-    function confirm(heading, message, cb) {
+    function confirm(heading, primaryMessage, secondaryMessage, cb) {
         var popup = confirmationPopup.createObject(app, {
                                                        "heading": heading,
-                                                       "message": message,
+                                                       "primaryMessage": primaryMessage,
+                                                       "secondaryMessage": secondaryMessage,
                                                        "acceptedCb": cb
                                                    })
         popup.open()

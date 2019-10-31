@@ -76,14 +76,6 @@ Pane {
                     onTriggered: calculateCard(true)
                 }
                 MenuItem {
-                    icon.source: "../images/delete.svg"
-                    icon.color: iconButtonNormal
-                    icon.width: 20
-                    icon.height: 20
-                    text: "Delete account"
-                    onTriggered: deleteCard()
-                }
-                MenuItem {
                     icon.source: favorite ? "../images/star.svg" : "../images/star_border.svg"
                     icon.color: iconButtonNormal
                     icon.width: 20
@@ -91,32 +83,13 @@ Pane {
                     text: favorite ? qsTr("Remove as favorite") : qsTr("Set as favorite")
                     onTriggered: toggleFavorite()
                 }
-                MenuSeparator {
-                    padding: 0
-                    topPadding: 4
-                    bottomPadding: 4
-                    contentItem: Rectangle {
-                        implicitWidth: 200
-                        implicitHeight: 1
-                        color: formUnderline
-                    }
-                }
                 MenuItem {
-                    icon.source: "../images/add.svg"
+                    icon.source: "../images/delete.svg"
                     icon.color: iconButtonNormal
                     icon.width: 20
                     icon.height: 20
-                    enabled: !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
-                    text: qsTr("Add account")
-                    onTriggered: yubiKey.scanQr()
-                }
-                MenuItem {
-                    icon.source: "../images/cogwheel.svg"
-                    icon.color: iconButtonNormal
-                    icon.width: 20
-                    icon.height: 20
-                    text: qsTr("Settings")
-                    onTriggered: navigator.goToSettings()
+                    text: "Delete account"
+                    onTriggered: deleteCard()
                 }
             }
         }
@@ -244,8 +217,9 @@ Pane {
 
     function deleteCard() {
         navigator.confirm(
-                    "Delete " + formattedName() + " ?",
-                    qsTr("This will permanently delete the account from the YubiKey, as well as your ability to generate security codes for it. Make sure 2FA has been disabled BEFORE proceeding."),
+                    qsTr("Delete %1 ?").arg(formattedName()),
+                    qsTr("This will permanently delete the account from your YubiKey."),
+                    qsTr("You will not be able to generate security codes for the account anymore. Make sure 2FA has been disabled before proceeding."),
                     function () {
                         if (settings.otpMode) {
                             yubiKey.otpDeleteCredential(credential,
