@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.2
+import QtQuick.Controls.Material 2.2
 
 Dialog {
     padding: 16
@@ -36,9 +37,12 @@ Dialog {
     Component.onCompleted: btnCancel.forceActiveFocus()
 
     property var acceptedCb
+    property bool warning: true
+    property bool buttons: true
+    property bool copySecret: false
     property string heading
-    property string primaryMessage
-    property string secondaryMessage
+    property string message
+    property string description
     property string buttonCancel: qsTr("Cancel")
     property string buttonAccept: qsTr("Accept")
 
@@ -57,13 +61,14 @@ Dialog {
             padding: 12
             rightPadding: 16
             bottomPadding: 8
-            visible: primaryMessage
+            visible: message
             width: parent.width
-            Layout.topMargin: 16
+            Layout.minimumWidth: parent.width
             Layout.maximumWidth: parent.width
-            Layout.fillWidth: true
+            Layout.topMargin: 16
             background: Rectangle {
-                color: yubicoRed
+                color: warning ? yubicoRed : yubicoGreen
+                radius: 4
             }
 
             RowLayout {
@@ -72,7 +77,7 @@ Dialog {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 
                 StyledImage {
-                    source: "../images/warning.svg"
+                    source: warning ? "../images/warning.svg" : "../images/info.svg"
                     color: yubicoWhite
                     iconWidth: 32
                     iconHeight: 32
@@ -81,7 +86,7 @@ Dialog {
                 }
 
                 Label {
-                    text: primaryMessage
+                    text: message
                     color: yubicoWhite
                     font.pixelSize: 13
                     font.weight: Font.Bold
@@ -96,38 +101,76 @@ Dialog {
 
         Label {
             Layout.topMargin: 16
-            text: secondaryMessage
+            text: description
             color: formText
             font.pixelSize: 13
             lineHeight: 1.2
-            visible: secondaryMessage
+            visible: description
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
         }
 
-        DialogButtonBox {
+        ToolButton {
+            id: copySecretBtn
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Layout.topMargin: 8
+            Layout.topMargin: -8
             Layout.rightMargin: -8
             Layout.bottomMargin: -8
+            visible: copySecret
+            DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+
+            Keys.onReturnPressed: accept()
+            onClicked: accept()
+
+            Accessible.role: Accessible.Button
+            Accessible.name: "Copy"
+            Accessible.description: "Copy secret key to clipboard"
+
+            ToolTip {
+                text: qsTr("Copy secret key to clipboard")
+                delay: 1000
+                parent: copySecretBtn
+                visible: parent.hovered
+                Material.foreground: toolTipForeground
+                Material.background: toolTipBackground
+            }
+
+            icon.source: "../images/copy.svg"
+            icon.color: hovered ? iconButtonHovered : iconButtonNormal
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                enabled: false
+            }
+        }
+
+        DialogButtonBox {
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.topMargin: 0
+            Layout.bottomMargin: -16
+            Layout.rightMargin: -8
+            padding: 0
+            visible: buttons
 
             StyledButton {
                 id: btnAccept
                 text: qsTr(buttonAccept)
                 flat: true
                 enabled: true
-                critical: primaryMessage
+                critical: warning
                 font.capitalization: Font.capitalization
                 DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
                 KeyNavigation.tab: btnCancel
                 Keys.onReturnPressed: accept()
                 onClicked: accept()
             }
+
             StyledButton {
                 id: btnCancel
                 text: qsTr(buttonCancel)
                 flat: true
-                critical: primaryMessage
+                critical: warning
                 enabled: true
                 font.capitalization: Font.capitalization
                 DialogButtonBox.buttonRole: DialogButtonBox.RejectRole

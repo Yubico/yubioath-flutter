@@ -290,6 +290,7 @@ ApplicationWindow {
 
         property bool closeToTray
         property bool hideOnLaunch
+        property bool hideBackupReminder
         property bool requireTouch: true
 
         property int theme: Material.System

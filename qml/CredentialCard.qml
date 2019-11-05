@@ -216,11 +216,11 @@ Pane {
     }
 
     function deleteCard() {
-        navigator.confirm(
-                    qsTr("Delete %1 ?").arg(formattedName()),
-                    qsTr("This will permanently delete the account from your YubiKey."),
-                    qsTr("You will not be able to generate security codes for the account anymore. Make sure 2FA has been disabled before proceeding."),
-                    function () {
+        navigator.confirm({
+                    "heading": qsTr("Delete %1 ?").arg(formattedName()),
+                    "message": qsTr("This will permanently delete the account from your YubiKey."),
+                    "description": qsTr("You will not be able to generate security codes for the account anymore. Make sure 2FA has been disabled before proceeding."),
+                    "acceptedCb": function () {
                         if (settings.otpMode) {
                             yubiKey.otpDeleteCredential(credential,
                                                         function (resp) {
@@ -259,7 +259,8 @@ Pane {
                                                          }
                                                      })
                         }
-                    })
+                    }
+                  })
     }
 
     function getCodeLblValue() {
