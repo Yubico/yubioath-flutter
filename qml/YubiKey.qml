@@ -354,6 +354,7 @@ Python {
     }
 
     function scanQr(toastIfError) {
+        currentCredentialCard = null
         navigator.goToLoading()
         parseQr(ScreenShot.capture(), function (resp) {
             if (resp.success) {

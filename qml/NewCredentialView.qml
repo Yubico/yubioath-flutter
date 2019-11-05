@@ -45,14 +45,29 @@ Flickable {
         function callback(resp) {
             if (resp.success) {
                 yubiKey.calculateAll(navigator.goToCredentials)
-                navigator.snackBar(qsTr("Account added"))
+                if (!settings.hideBackupReminder) {
+                    navigator.confirm({
+                                          "heading": qsTr("Account added. Create backup?"),
+                                          "message": qsTr("Secrets are stored safely on YubiKey. Backups can only be created during setup."),
+                                          "description": qsTr("To create a backup, change YubiKey and repeat the 'Add account' procedure BEFORE verifying with the issuer. The secret key may also be copied and stored somewhere safe."),
+                                          "warning": false,
+                                          "copySecret": true,
+                                          "buttons": false,
+                                          "acceptedCb": function () {
+                                            clipBoard.push(secretKeyLbl.text)
+                                            navigator.snackBar(qsTr("Secret copied to clipboard"))
+                                        }
+                                })
+                } else {
+                    navigator.snackBar(qsTr("Account added"))
+                }
             } else {
                 if (resp.error_id === 'credential_already_exists') {
-                    navigator.confirm(
-                        qsTr("Overwrite?"),
-                        qsTr("An account with this name already exists, do you want to overwrite it?"),
-                        "",
-                        _ccidAddCredentialOverwrite)
+                    navigator.confirm({
+                                    "heading": qsTr("Overwrite?"),
+                                    "message": qsTr("An account with this name already exists, do you want to overwrite it?"),
+                                    "acceptedCb": _ccidAddCredentialOverwrite
+                                      })
                 } else {
                     navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
                     console.log("addCredential failed:", resp.error_id)
@@ -92,11 +107,11 @@ Flickable {
                     if (resp.success) {
                         if (resp.status[parseInt(
                                             otpSlotComboBox.currentText) - 1]) {
-                            navigator.confirm(
-                                        qsTr("Overwrite?"),
-                                        qsTr("This slot is already configured, do you want to overwrite it?"),
-                                        "",
-                                        _otpAddCredential)
+                            navigator.confirm({
+                                            "heading": qsTr("Overwrite?"),
+                                            "message": qsTr("This slot is already configured, do you want to overwrite it?"),
+                                            "acceptedCb": _otpAddCredential
+                                              })
                         } else {
                             _otpAddCredential()
                         }
