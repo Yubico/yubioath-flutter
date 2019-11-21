@@ -4,7 +4,7 @@
   <?define ProductName="Yubico Authenticator" ?>
 
    <Product Id="*" UpgradeCode="12345678-1234-1234-1234-111111111111" Name="$(var.ProductName)" Version="$(var.ProductVersion)" Manufacturer="Yubico AB" Language="1033">
-      <Package InstallerVersion="301" Compressed="yes" InstallScope="perMachine" Platform="x64" Description="$(var.ProductName) $(var.ProductVersion)" />
+      <Package InstallerVersion="301" Compressed="yes" InstallScope="perMachine" Platform="x86" Description="$(var.ProductName) $(var.ProductVersion)" />
       <Media Id="1" Cabinet="yubioathdesktop.cab" EmbedCab="yes"/>
 
       <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
@@ -28,7 +28,7 @@
       </UI>
 
       <Directory Id="TARGETDIR" Name="SourceDir">
-         <Directory Id="ProgramFiles64Folder" Name="PFiles">
+         <Directory Id="ProgramFilesFolder" Name="PFiles">
             <Directory Id="YubicoDir" Name="Yubico">
                 <Directory Id="INSTALLDIR" Name="Yubico Authenticator">
                 </Directory>
@@ -46,12 +46,12 @@
                   Target="[#fil9AD596424AE112BC3458900952B5BE58]"
                   WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
           <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
-          <RegistryValue Root="HKCU" Key="Software\Yubico\Yubico Authenticator" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+          <RegistryValue Root="HKCU" Key="SOFTWARE\Yubico\Yubico Authenticator" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
         </Component>
       </DirectoryRef>
 
       <DirectoryRef Id="TARGETDIR">
-        <Merge Id="VCRedist" SourceFile="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.23.27820\MergeModules\Microsoft_VC142_CRT_x64.msm" DiskId="1" Language="0"/>
+        <Merge Id="VCRedist" SourceFile="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.23.27820\MergeModules\Microsoft_VC142_CRT_x86.msm" DiskId="1" Language="0"/>
       </DirectoryRef>
 
       <Feature Id="VCRedist" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
