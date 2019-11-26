@@ -24,7 +24,6 @@ from ykman.otp import OtpController
 from ykman.settings import Settings
 from qr import qrparse, qrdecode
 import signal
-signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 logger = logging.getLogger(__name__)
@@ -533,3 +532,9 @@ def init_with_logging(log_level, log_file=None):
 def init():
     global controller
     controller = Controller()
+
+    try:
+        # TODO: We should probably do this in the C++/QML layer instead
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+    except Exception as e:
+        logger.error('Failed to set signal handlers', exc_info=e)
