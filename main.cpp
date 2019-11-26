@@ -14,7 +14,10 @@ void handleExitSignal(int sig) {
   QCoreApplication::quit();
 }
 
-void setupUnixSignals() {
+void setupSignalHandlers() {
+#ifdef _WIN32
+  signal(SIGINT, handleExitSignal);
+#else
   struct sigaction sa;
   sa.sa_handler = handleExitSignal;
   sigset_t signal_mask;
@@ -22,11 +25,12 @@ void setupUnixSignals() {
   sa.sa_mask = signal_mask;
   sa.sa_flags = 0;
   sigaction(SIGINT, &sa, nullptr);
+#endif
 }
 
 int main(int argc, char *argv[])
 {
-    setupUnixSignals();
+    setupSignalHandlers();
 
     // Don't write .pyc files.
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
