@@ -30,13 +30,15 @@ Item {
                 Label {
                     id: controlItem
                     leftPadding: control.indicator.width + control.spacing + control.x
-                    color: formText
+                    color: primaryColor
+                    opacity: control.enabled ? highEmphasis : disabledEmphasis
                 }
 
                 Label {
                     id: controlDescription
                     leftPadding: control.indicator.width + control.spacing + control.x
-                    color: formLabel
+                    color: primaryColor
+                    opacity: control.enabled ? lowEmphasis : disabledEmphasis
                     visible: description
                 }
             }

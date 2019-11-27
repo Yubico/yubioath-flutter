@@ -10,7 +10,7 @@ Button {
     property bool critical: false
 
     id: button
-    font.capitalization: Font.capitalization
+    font.capitalization: Font.MixedCase
     font.weight: Font.Medium
     Material.foreground: button.flat ? (critical ? yubicoRed : Material.primary) : yubicoWhite
     Material.background: button.flat ? "transparent" : (critical ? yubicoRed : Material.primary)

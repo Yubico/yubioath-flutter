@@ -18,7 +18,7 @@ ColumnLayout {
 
         StyledImage {
             source: "../images/people.svg"
-            color: app.isDark() ? defaultLightForeground : defaultLightOverlay
+            color: defaultImageOverlay
             iconWidth: 80
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
@@ -31,7 +31,8 @@ ColumnLayout {
             font.weight: Font.Normal
             lineHeight: 1.5
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            color: formText
+            color: primaryColor
+            opacity: highEmphasis
         }
 
         Label {
@@ -45,7 +46,8 @@ ColumnLayout {
             wrapMode: Text.WordWrap
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            color: formLabel
+            color: primaryColor
+            opacity: lowEmphasis
         }
 
         StyledButton {

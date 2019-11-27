@@ -18,7 +18,7 @@ ColumnLayout {
 
         StyledImage {
             source: "../images/search.svg"
-            color: app.isDark() ? defaultLightForeground : defaultLightOverlay
+            color: defaultImageOverlay
             iconWidth: 80
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
@@ -31,7 +31,8 @@ ColumnLayout {
             font.weight: Font.Normal
             lineHeight: 1.5
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            color: formText
+            color: primaryColor
+            opacity: highEmphasis
         }
         Label {
             text: qsTr("No accounts matching your search criteria. Check your spelling and try again.")
@@ -44,7 +45,8 @@ ColumnLayout {
             wrapMode: Text.WordWrap
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            color: formLabel
+            color: primaryColor
+            opacity: lowEmphasis
         }
     }
 }

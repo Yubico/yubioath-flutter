@@ -17,6 +17,7 @@ Item {
     property string validateText
     property variant validateRegExp
     property alias textField: textField
+    property bool isValidated: validateInput()
     property bool validated: {
         if (validateInput()) {
             if (required && textField.text.length > 0) {
@@ -59,7 +60,8 @@ Item {
 
         Label {
             font.pixelSize: 12
-            color: validateInput() ? formLabel : yubicoRed
+            color: isValidated ? primaryColor : yubicoRed
+            opacity: isValidated ? lowEmphasis : fullEmphasis
             text: labelTextValue()
         }
 
@@ -74,11 +76,11 @@ Item {
                 textField.focus = false
                 textFieldContainer.submit()
             }
-            Material.accent: validateInput() ? yubicoGreen : yubicoRed
+            Material.accent: isValidated ? yubicoGreen : yubicoRed
             Rectangle {
                 color: {
                     if (parent.activeFocus) {
-                        return validateInput() ? yubicoGreen : yubicoRed
+                        return isValidated ? yubicoGreen : yubicoRed
                     } else {
                         return parent.hovered ? formText : formUnderline
                     }
@@ -91,7 +93,8 @@ Item {
             height: 41
             activeFocusOnTab: true
             focus: true
-            color: formText
+            color: primaryColor
+            opacity: highEmphasis
             placeholderText: {
                 if (textField.activeFocus) {
                     return ""
@@ -145,7 +148,7 @@ Item {
             font.pixelSize: 10
             color: yubicoRed
             text: validateText
-            visible: !validateInput()
+            visible: !isValidated
         }
     }
 }

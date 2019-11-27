@@ -24,8 +24,8 @@ Dialog {
     }
 
     onAccepted: {
-        acceptedCb()
         close()
+        acceptedCb()
         navigator.focus = true
     }
 
@@ -36,15 +36,57 @@ Dialog {
 
     Component.onCompleted: btnCancel.forceActiveFocus()
 
+    property var issuer
     property var acceptedCb
+    property var entry: !!name ? getAddedCredential() : null
+    property var currentDevice
     property bool warning: true
     property bool buttons: true
-    property bool copySecret: false
+    property bool doNotAskForCopy: false
+    property bool showCode: name !== ""
+    property bool touch
+    property bool isKeyChanged: currentDevice && !!yubiKey.currentDevice && !(yubiKey.currentDevice.hasPassword && !yubiKey.currentDeviceValidated)
+                                ? JSON.stringify(yubiKey.currentDevice) !== JSON.stringify(currentDevice)
+                                : false
+    property string name
     property string heading
     property string message
     property string description
     property string buttonCancel: qsTr("Cancel")
     property string buttonAccept: qsTr("Accept")
+
+    function getAddedCredential() {
+        for (var i = 0; i <= entries.count; i++) {
+            var entry = entries.get(i)
+            if (!!entry && !!entry.credential) {
+                if (entry.credential.issuer === issuer
+                        && entry.credential.name === name
+                        && entry.credential.touch === touch) {
+                    return entry
+                }
+            }
+        }
+        return null
+    }
+
+    function getDeviceLabel(device) {
+        if (!!device) {
+            return ("%1").arg(device.name)
+        } else {
+            return qsTr("Insert your YubiKey")
+        }
+    }
+
+    function getDeviceDescription(device) {
+        if (!!device) {
+            return qsTr("Serial number: %1").arg(!!device.serial ? device.serial : "Not Available")
+        } else if (yubiKey.availableDevices.length > 0
+                   && !yubiKey.availableDevices.some(dev => dev.selectable)) {
+            return qsTr("No compatible device found")
+        } else {
+            return qsTr("No device found")
+        }
+    }
 
     ColumnLayout {
         width: parent.width
@@ -61,7 +103,7 @@ Dialog {
             padding: 12
             rightPadding: 16
             bottomPadding: 8
-            visible: message
+            visible: message || showCode
             width: parent.width
             Layout.minimumWidth: parent.width
             Layout.maximumWidth: parent.width
@@ -83,6 +125,7 @@ Dialog {
                     iconHeight: 32
                     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                     Layout.maximumWidth: 32
+                    visible: !entry && !showCode
                 }
 
                 Label {
@@ -95,6 +138,33 @@ Dialog {
                     wrapMode: Text.WordWrap
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     Layout.fillWidth: true
+                    visible: !entry && !showCode
+                }
+
+                Pane {
+                    padding: 0
+                    Layout.margins: 0
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    visible: showCode
+                    height: 32
+                    Layout.alignment: Qt.AlignCenter | Qt.AlignTop
+                    background: Rectangle {
+                        color: "transparent"
+                    }
+                    CredentialCard {
+                        id: credentialCode
+                        isKeyChanged: btnAccept.enabled
+                        Layout.margins: 0
+                        spacing: 0
+                        padding: 0
+                        width: parent.width
+                        height: parent.height
+                        Layout.alignment: Qt.AlignCenter | Qt.AlignTop
+                        showFullCredentialCard: false
+                        credential: !!entry ? entry.credential : null
+                        code: !!entry ? entry.code : null
+                    }
                 }
             }
         }
@@ -102,48 +172,90 @@ Dialog {
         Label {
             Layout.topMargin: 16
             text: description
-            color: formText
+            color: primaryColor
+            opacity: highEmphasis
             font.pixelSize: 13
             lineHeight: 1.2
-            visible: description
+            visible: description && !entry
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
         }
 
-        ToolButton {
-            id: copySecretBtn
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Layout.topMargin: -8
-            Layout.rightMargin: -8
-            Layout.bottomMargin: -8
-            visible: copySecret
-            DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
 
-            Keys.onReturnPressed: accept()
-            onClicked: accept()
-
-            Accessible.role: Accessible.Button
-            Accessible.name: "Copy"
-            Accessible.description: "Copy secret key to clipboard"
-
-            ToolTip {
-                text: qsTr("Copy secret key to clipboard")
-                delay: 1000
-                parent: copySecretBtn
-                visible: parent.hovered
-                Material.foreground: toolTipForeground
-                Material.background: toolTipBackground
+        StyledExpansionPanel {
+            id: currentDevicePanel
+            label: qsTr("Create a copy of this account?")
+            description: {
+                if(isKeyChanged) {
+                    return qsTr("Proceed to create copy of account")
+                }
+                if (isEnabled) {
+                    return qsTr("Select YubiKey to use as a copy")
+                }
+                return qsTr("Insert another YubiKey to create a copy")
+            }
+            isTopPanel: true
+            visible: showCode && !doNotAskForCopy
+            Layout.fillWidth: true
+            Layout.topMargin: 0
+            Layout.bottomMargin: -16
+            isEnabled: yubiKey.availableDevices.length > 1
+            backgroundColor: "transparent"
+            Layout.rightMargin: yubiKey.availableDevices.length > 1 ? -16 : 0
+            dropShadow: false
+            ButtonGroup {
+                id: deviceButtonGroup
             }
 
-            icon.source: "../images/copy.svg"
-            icon.color: hovered ? iconButtonHovered : iconButtonNormal
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.topMargin: -16
 
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                enabled: false
+                Repeater {
+                    model: yubiKey.availableDevices
+                    StyledRadioButton {
+                        Layout.fillWidth: true
+                        objectName: index
+                        checked: !!yubiKey.currentDevice
+                                 && modelData.serial === yubiKey.currentDevice.serial
+                        text: getDeviceLabel(modelData)
+                        description: getDeviceDescription(modelData)
+                        enabled: !!currentDevice && modelData.serial !== currentDevice.serial && modelData.selectable
+                        buttonGroup: deviceButtonGroup
+                    }
+                }
+
+                StyledButton {
+                    id: selectBtn
+                    Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                    text: qsTr("Select")
+                    enabled: {
+                        if (!!yubiKey.availableDevices && !!deviceButtonGroup.checkedButton) {
+                            var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
+                            return dev !== yubiKey.currentDevice
+                        } else {
+                            return false
+                        }
+                    }
+                    onClicked: {
+                        yubiKey.refreshDevicesDefault()
+                        var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
+                        yubiKey.selectCurrentSerial(dev.serial,
+                                                    function (resp) {
+                                                        if (resp.success) {
+                                                            entries.clear()
+                                                            yubiKey.currentDevice = dev
+                                                            currentDevicePanel.expandAction()
+                                                            yubiKey.calculateAll()
+                                                        } else {
+                                                            console.log("select device failed", resp.error_id)
+                                                        }
+                                                    })
+                    }
+                }
             }
         }
+
 
         DialogButtonBox {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -151,15 +263,14 @@ Dialog {
             Layout.bottomMargin: -16
             Layout.rightMargin: -8
             padding: 0
-            visible: buttons
+            visible: buttons || isKeyChanged
 
             StyledButton {
                 id: btnAccept
                 text: qsTr(buttonAccept)
                 flat: true
-                enabled: true
+                enabled: currentDevice ? isKeyChanged : true
                 critical: warning
-                font.capitalization: Font.capitalization
                 DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
                 KeyNavigation.tab: btnCancel
                 Keys.onReturnPressed: accept()
@@ -172,7 +283,6 @@ Dialog {
                 flat: true
                 critical: warning
                 enabled: true
-                font.capitalization: Font.capitalization
                 DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
                 KeyNavigation.tab: btnAccept
                 Keys.onReturnPressed: reject()

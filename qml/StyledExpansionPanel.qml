@@ -16,7 +16,7 @@ Pane {
     property string label
     property string description
     property string keyImage
-    property string backgroundColor: isDark() ? defaultDarkLighter : defaultLightDarker
+    property string backgroundColor: defaultElevated
 
     property bool isEnabled: true
     property bool isExpanded: false
@@ -40,25 +40,8 @@ Pane {
     Layout.topMargin: isExpanded && dropShadow && !isTopPanel ? 9 : -4
     Layout.bottomMargin: isExpanded && dropShadow && !isBottomPanel ? 11 : -3
 
-    background: Rectangle {
-        color: backgroundColor
-        layer.enabled: dropShadow
-        layer.effect: DropShadow {
-            radius: 3
-            samples: radius * 2
-            verticalOffset: 2
-            horizontalOffset: 0
-            color: formDropShdaow
-            transparentBorder: true
-        }
-        MouseArea {
-            onClicked: expandAction()
-            width: parent.width
-            height: parent.height < 74 ? parent.height : 74
-            enabled: isEnabled
-            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-        }
-    }
+    Material.background: backgroundColor
+    Material.elevation: dropShadow ? 1 : 0
 
     function expandAction() {
         function collapseAll() {
@@ -95,7 +78,7 @@ Pane {
                 id: rectangle
                 width: 40
                 height: 40
-                color: credentialCardCurrentItem
+                color: formHighlightItem
                 radius: width * 0.5
                 visible: keyImage
                 Layout.rightMargin: 8
@@ -140,14 +123,16 @@ Pane {
                     text: label
                     font.pixelSize: 13
                     font.bold: false
-                    color: formText
+                    color: primaryColor
+                    opacity: highEmphasis
                     Layout.fillWidth: true
                 }
                 Label {
                     Layout.alignment: Qt.AlignRight | Qt.AlignTop
                     Layout.fillWidth: true
                     font.pixelSize: 13
-                    color: formLabel
+                    color: primaryColor
+                    opacity: lowEmphasis
                     text: description
                     wrapMode: Text.WordWrap
                     maximumLineCount: isExpanded ? 4 : 2
@@ -162,7 +147,8 @@ Pane {
                 onClicked: expandAction()
                 icon.width: 24
                 icon.source: isExpanded ? "../images/up.svg" : "../images/down.svg"
-                icon.color: hovered ? iconButtonHovered : iconButtonNormal
+                icon.color: primaryColor
+                opacity: hovered ? fullEmphasis : lowEmphasis
                 visible: isEnabled
                 MouseArea {
                     anchors.fill: parent
@@ -183,7 +169,8 @@ Pane {
                 id: toolButton
                 icon.width: 24
                 icon.source: toolButtonIcon
-                icon.color: hovered ? iconButtonHovered : iconButtonNormal
+                icon.color: primaryColor
+                opacity: hovered ? fullEmphasis : lowEmphasis
                 visible: !isEnabled && !!toolButtonIcon
                 MouseArea {
                     anchors.fill: parent

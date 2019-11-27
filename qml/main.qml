@@ -24,57 +24,43 @@ ApplicationWindow {
     Accessible.ignored: true
 
     readonly property string yubicoGreen: "#9aca3c"
-    readonly property string yubicoBlue: "#284c61"
     readonly property string yubicoWhite: "#ffffff"
-    readonly property string yubicoGrey: "#939598"
-    readonly property string yubicoRed: "#dc4b4c"
+    readonly property string yubicoRed: Material.color(Material.Red, Material.Shade600)
 
-    readonly property string defaultDark: "#303030"
-    readonly property string defaultDarkLighter: "#383838"
-    readonly property string defaultDarkOverlay: "#4a4a4a"
-    readonly property string defaultDarkForeground: "#fafafa"
-
-    readonly property string defaultLight: "#fafafa"
-    readonly property string defaultLightDarker: "#ffffff"
-    readonly property string defaultLightOverlay: "#dddddd"
-    readonly property string defaultLightForeground: "#565656"
+    property string primaryColor: isDark() ? "#ffffff" : "#303030"
 
     readonly property string defaultBackground: isDark() ? "#303030" : "#f7f8f9"
+    readonly property string defaultElevated: isDark() ? "#383838" : "#ffffff"
+    readonly property string defaultImageOverlay: isDark() ? "#565656" : "#dddddd"
+    readonly property string defaultForeground: isDark() ? "#fafafa" : "#565656"
 
     property string formUnderline: isDark() ? "#737373" : "#d8d8d8"
-    property string formLabel: isDark() ? "#c0c0c0" : "#909090"
     property string formText: isDark() ? "#f0f0f0" : "#606060"
     property string formPlaceholderText: isDark() ? "#808080" : "#b0b0b0"
-    property string formDropShdaow: isDark() ? "#1f1f1f" : "#cbcbcb"
     property string formImageOverlay: isDark() ? "#d8d8d8" : "#727272"
-    property string formTitleUnderline: isDark() ? "#424242" : "#ffffff"
     property string formStepBackground: isDark() ? "#565656" : "#bbbbbb"
-
-    property string credentialCardCurrentItem: isDark() ? "#4a4a4a" : "#e9e9e9"
-    property string credentialCardHovered: isDark() ? "#3e3e3e" : "#f4f4f4"
-    property string credentialCardNormal: isDark() ? "#363636" : "#ffffff"
-    property string credentialCardCode: isDark() ? "#dfdfdf" : "#7c7c7c"
-    property string credentialCardIssuer: isDark() ? "#aaaaaa" : "#999999"
-    property string credentialCardIcon: "#aaaaaa"
-    property string credentialCardNFCTimeout: isDark()? "#555555" : "#dddddd"
-    property string credentialCardHOTPCoolDown: "#777777"
-
-    property string iconButtonNormal: isDark() ? "#B7B7B7" : "#767676"
-    property string iconButtonHovered: isDark() ? "#ffffff" : "#202020"
-    property string iconButtonCard: isDark() ? "#707070" : "#c0c0c0"
-    property string iconFavorite: "#f7bd0c"
+    property string formHighlightItem: isDark() ? "#4a4a4a" : "#e9e9e9"
 
     property string toolTipForeground: app.isDark() ? "#fafafa" : "#fbfbfb"
     property string toolTipBackground: app.isDark() ? "#4a4a4a" : "#7f7f7f"
+
+    property var fullEmphasis: 1.0
+    property var highEmphasis: 0.87
+    property var lowEmphasis: 0.60
+    property var disabledEmphasis: 0.38
+
+    property var cardSelectedEmphasis: 0.08
+    property var cardHoveredEmphasis: 0.05
+    property var cardNormalEmphasis: isDark() ? 0.03 : 1.0
 
     property var currentCredentialCard
 
     Material.theme: settings.theme
     Material.primary: yubicoGreen
     Material.accent: yubicoGreen
-    Material.foreground: isDark(
-                             ) ? defaultDarkForeground : defaultLightForeground
+    Material.foreground: defaultForeground
     Material.background: defaultBackground
+
     header: StyledToolBar {
         id: toolBar
     }
@@ -290,7 +276,6 @@ ApplicationWindow {
 
         property bool closeToTray
         property bool hideOnLaunch
-        property bool hideBackupReminder
         property bool requireTouch: true
 
         property int theme: Material.System
@@ -305,7 +290,6 @@ ApplicationWindow {
         property int desktopAvailableHeight
 
         property var favorites: []
-        property string favoriteDefault
 
         onCloseToTrayChanged: updateTrayVisibility()
         onThemeChanged: {

@@ -56,6 +56,7 @@ Flickable {
 
     ColumnLayout {
         anchors.fill: parent
+        anchors.topMargin: 16
         Layout.fillHeight: true
         Layout.fillWidth: true
 
@@ -64,19 +65,8 @@ Flickable {
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
             Layout.topMargin: 0
-
-            background: Rectangle {
-                color: isDark() ? defaultDarkLighter : defaultLightDarker
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    radius: 3
-                    samples: radius * 2
-                    verticalOffset: 2
-                    horizontalOffset: 0
-                    color: formDropShdaow
-                    transparentBorder: true
-                }
-            }
+            Material.elevation: 1
+            Material.background: defaultElevated
 
             ColumnLayout {
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -94,7 +84,8 @@ Flickable {
                     wrapMode: Text.WordWrap
                     font.pixelSize: 13
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                    color: formText
+                    color: primaryColor
+                    opacity: highEmphasis
                     Layout.fillWidth: true
                     bottomPadding: 8
                     Layout.leftMargin: 8

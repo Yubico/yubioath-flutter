@@ -11,7 +11,7 @@ ToolTip {
     property string buttonColor: Material.primary
     property string backgroundColor: "#333333"
     property bool fullWidth: false
-    readonly property int dynamicWidth: 480
+    readonly property int dynamicWidth: 640
     readonly property int dynamicMargin: 16
 
     id: tooltip
@@ -26,15 +26,15 @@ ToolTip {
     height: 48
     padding: 0
     background: Rectangle {
-        color: backgroundColor
+        color: primaryColor
         radius: fullWidth ? 0 : 4
-        layer.enabled: true
+        layer.enabled: !fullWidth
         layer.effect: DropShadow {
-            radius: 4
+            radius: 2
             samples: radius * 2
-            verticalOffset: 3
-            horizontalOffset: 3
-            color: isDark() ? "#282828" : "#d3d3d3"
+            verticalOffset: 1
+            horizontalOffset: 0
+            color: formHighlightItem
             transparentBorder: true
         }
     }
@@ -46,9 +46,9 @@ ToolTip {
         Label {
             id: snackLbl
             text: message
-            color: isDark() ? defaultDarkForeground : defaultLight
-            opacity: 0.87
-            font.pixelSize: 14
+            color: defaultElevated
+            opacity: highEmphasis
+            font.pixelSize: 13
             leftPadding: 8
             rightPadding: 0
             wrapMode: Text.WordWrap
