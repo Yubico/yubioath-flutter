@@ -2,14 +2,36 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <stdlib.h>
+#include <signal.h>
 #include <QtGlobal>
 #include <QtWidgets>
 #include <QQuickWindow>
 #include <QQuickStyle>
 #include "screenshot.h"
 
+void handleExitSignal(int sig) {
+  printf("Exiting due to signal %d\n", sig);
+  QCoreApplication::quit();
+}
+
+void setupSignalHandlers() {
+#ifdef _WIN32
+  signal(SIGINT, handleExitSignal);
+#else
+  struct sigaction sa;
+  sa.sa_handler = handleExitSignal;
+  sigset_t signal_mask;
+  sigemptyset(&signal_mask);
+  sa.sa_mask = signal_mask;
+  sa.sa_flags = 0;
+  sigaction(SIGINT, &sa, nullptr);
+#endif
+}
+
 int main(int argc, char *argv[])
 {
+    setupSignalHandlers();
+
     // Don't write .pyc files.
     qputenv("PYTHONDONTWRITEBYTECODE", "1");
 

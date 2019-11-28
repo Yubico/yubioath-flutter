@@ -23,8 +23,6 @@ from ykman.oath import (
 from ykman.otp import OtpController
 from ykman.settings import Settings
 from qr import qrparse, qrdecode
-import signal
-signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 logger = logging.getLogger(__name__)
