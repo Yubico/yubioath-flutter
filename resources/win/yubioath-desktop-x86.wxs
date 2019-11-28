@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?define ProductVersion="5.0.1" ?>
+  <?define ProductName="Yubico Authenticator" ?>
+
+   <Product Id="*" UpgradeCode="12345678-1234-1234-1234-111111111111" Name="$(var.ProductName)" Version="$(var.ProductVersion)" Manufacturer="Yubico AB" Language="1033">
+      <Package InstallerVersion="301" Compressed="yes" InstallScope="perMachine" Platform="x86" Description="$(var.ProductName) $(var.ProductVersion)" />
+      <Media Id="1" Cabinet="yubioathdesktop.cab" EmbedCab="yes"/>
+
+      <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+      <UI>
+          <UIRef Id="WixUI_InstallDir" />
+          <Publish Dialog="WelcomeDlg"
+            Control="Next"
+            Event="NewDialog"
+            Value="InstallDirDlg"
+            Order="2">1</Publish>
+          <Publish Dialog="InstallDirDlg"
+            Control="Back"
+            Event="NewDialog"
+            Value="WelcomeDlg"
+            Order="2">1</Publish>
+          <Publish Dialog="ExitDialog"
+            Control="Finish" 
+            Event="DoAction" 
+            Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+      </UI>
+
+      <Directory Id="TARGETDIR" Name="SourceDir">
+         <Directory Id="ProgramFilesFolder" Name="PFiles">
+            <Directory Id="YubicoDir" Name="Yubico">
+                <Directory Id="INSTALLDIR" Name="Yubico Authenticator">
+                </Directory>
+            </Directory>
+         </Directory>
+         <Directory Id="ProgramMenuFolder">
+            <Directory Id="ApplicationProgramsFolder" Name="Yubico Authenticator"/>
+        </Directory>
+      </Directory>
+
+      <DirectoryRef Id="ApplicationProgramsFolder">
+        <Component Id="ApplicationShortcut" Guid="*">
+          <Shortcut Id="ApplicationStartMenuShortcut" 
+                  Name="Yubico Authenticator"
+                  Target="[#fil9AD596424AE112BC3458900952B5BE58]"
+                  WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+          <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
+          <RegistryValue Root="HKCU" Key="SOFTWARE\Yubico\Yubico Authenticator" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        </Component>
+      </DirectoryRef>
+
+      <DirectoryRef Id="TARGETDIR">
+        <Merge Id="VCRedist" SourceFile="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.23.27820\MergeModules\Microsoft_VC142_CRT_x86.msm" DiskId="1" Language="0"/>
+      </DirectoryRef>
+
+      <Feature Id="VCRedist" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+        <MergeRef Id="VCRedist"/>
+      </Feature>
+
+      <Feature Id="DefaultFeature" Level="1">
+         <ComponentGroupRef Id="ApplicationFiles"/>
+      </Feature>
+
+      <Feature Id="MainApplication" Title="Main Application" Level="1">
+        <ComponentRef Id="ApplicationShortcut" />   
+      </Feature>
+
+      <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch Yubico Authenticator" />
+
+      <Property Id="WixShellExecTarget" Value="[#fil9AD596424AE112BC3458900952B5BE58]" />
+      <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+   </Product>
+</Wix>

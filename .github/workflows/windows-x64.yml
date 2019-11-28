@@ -45,7 +45,7 @@ jobs:
 
       - name: Build and install pyotherside
         run: |
-          set PATH=D:\a\yubioath-desktop\yubioath-desktop\Qt5.13.1\5.13.1\msvc2017_64\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.13.1\msvc2017_64\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x64
           cd pyotherside-1.5.3
           qmake
@@ -55,7 +55,7 @@ jobs:
 
       - name: Build app
         run: |
-          set PATH=D:\a\yubioath-desktop\yubioath-desktop\Qt5.13.1\5.13.1\msvc2017_64\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.13.1\msvc2017_64\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x64
           qmake
           jom
@@ -75,12 +75,13 @@ jobs:
 
       - name: Run windeployqt
         run: |
-          set PATH=D:\a\yubioath-desktop\yubioath-desktop\Qt5.13.1\5.13.1\msvc2017_64\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.13.1\msvc2017_64\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x64
           windeployqt .\release\yubioath-desktop.exe --qmldir=qml --no-translations --angle --release
         shell: cmd
 
-      - name: Copy over files and create .zip archive
+      - name: Copy over files to release folder
+        shell: powershell
         run: |
           Copy-Item .\pymodules .\release -recurse
           Get-ChildItem -File -Include *.pyc -Recurse | Remove-Item -Force
@@ -88,13 +89,42 @@ jobs:
           Get-ChildItem -Include *.cpp -Recurse | Remove-Item -Force
           Get-ChildItem -Include *.obj -Recurse | Remove-Item -Force
 
+      - name: Create .zip artifact
+        shell: powershell
+        run: |
           $arr = $env:GITHUB_REF -split '/'
           $branch = $arr[2]
-
           7z a yubioath-desktop-$branch-win64.zip release
           mkdir deploy
           cp yubioath-desktop-$branch-win64.zip deploy
+
+      - name: Install Visual Studio C++ 2019 Redistributable MSMs
+        shell: cmd
+        run: |
+          choco install visualstudio2019community --package-parameters "--add Microsoft.VisualStudio.Component.VC.Redist.MSM"
+
+      - name: Create an unsigned .msi installer package
+        shell: cmd
+        run: |
+          set PATH=%WIX%\bin;%PATH%
+          set SRCDIR=.\release\
+          heat dir .\release -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
+          candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs -arch x64
+          light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop.msi
+          cp yubioath-desktop.msi deploy
+
+      - name: Run installer
+        shell: cmd
+        run: |
+          msiexec /i yubioath-desktop.msi /quiet /l .\log.txt
+          cat .\log.txt
+
+      - name: Rename installer
         shell: powershell
+        run: |
+          $arr = $env:GITHUB_REF -split '/'
+          $branch = $arr[2]
+          mv .\deploy\yubioath-desktop.msi .\deploy\yubioath-desktop-$branch-win64.msi
 
       - name: Run GUI
         shell: bash
