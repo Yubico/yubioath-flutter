@@ -30,11 +30,13 @@ Flickable {
     contentHeight: content.implicitHeight + dynamicMargin
 
     function acceptableInput() {
+        // trim spaces to accurately count length, parse_b32_key later trims them
+        var secretKeyTrimmed = secretKeyLbl.text.replace(/ /g, "")
         if (settings.otpMode) {
-            return secretKeyLbl.text.length > 0 && secretKeyLbl.text.length <= 32
+            return secretKeyTrimmed.length > 0 && secretKeyTrimmed.length <= 32
         } else {
             var nameAndKey = nameLbl.text.length > 0
-                    && secretKeyLbl.text.length > 0
+                    && secretKeyTrimmed.length > 0
             var okTotalLength = (nameLbl.text.length + issuerLbl.text.length) < 60
             return nameAndKey && okTotalLength
         }
@@ -250,7 +252,7 @@ Flickable {
                                       && credential.secret ? credential.secret : ""
                                 visible: manualEntry
                                 validateText: qsTr("Invalid Base32 format (A-Z and 2-7)")
-                                validateRegExp: /^[2-7a-zA-Z]+=*$/
+                                validateRegExp: /^[2-7a-zA-Z ]+[= ]*$/
                                 Layout.bottomMargin: 12
                                 onSubmit: addCredential()
                             }
