@@ -21,7 +21,7 @@ jobs:
         shell: powershell
 
       - name: Fetch GPG keys
-        run: gpg --no-default-keyring --keyring yubico --recv-keys 0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A
+        run: gpg --no-default-keyring --keyring yubico --keyserver hkps://keys.openpgp.org --recv-keys 0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A
 
       - name: Verify signature/checksums of downloaded files
         run: |
