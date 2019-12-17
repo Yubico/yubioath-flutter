@@ -41,7 +41,7 @@
 
       <DirectoryRef Id="ApplicationProgramsFolder">
         <Component Id="ApplicationShortcut" Guid="*">
-          <Shortcut Id="ApplicationStartMenuShortcut" 
+          <Shortcut Id="ApplicationStartMenuShortcut"
                   Name="Yubico Authenticator"
                   Target="[!fil9AD596424AE112BC3458900952B5BE58]"
                   WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
