@@ -225,10 +225,11 @@ Pane {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         MouseArea {
-            hoverEnabled: true
+            enabled: codeLabelText !== ""
+            hoverEnabled: enabled
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton
-            cursorShape: Qt.PointingHandCursor
+            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
             onClicked: calculateCard(true)
             onDoubleClicked: calculateCard(true)
         }

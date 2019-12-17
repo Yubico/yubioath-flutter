@@ -3,7 +3,9 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
-import Qt.labs.platform 1.1
+import Qt.labs.platform 1.1 as PopUpMenu
+import QtQml 2.12
+
 
 ToolBar {
     id: toolBar
@@ -25,7 +27,7 @@ ToolBar {
     property bool showBackBtn: navigator.depth > 1
     property bool showTitleLbl: !!navigator.currentItem
                                 && !!navigator.currentItem.title
-    property alias settingsBtn: settingsBtn
+    property alias moreBtn: moreBtn
     property alias addCredentialBtn: addCredentialBtn
     property alias searchField: searchField
 
@@ -53,6 +55,20 @@ ToolBar {
         return !!(navigator.currentItem && navigator.currentItem.objectName !== 'loadingView')
     }
 
+    function changeActiveKey(index, modelData) {
+        yubiKey.refreshDevicesDefault()
+        yubiKey.selectCurrentSerial(modelData.serial,
+                                    function (resp) {
+                                        if (resp.success) {
+                                            entries.clear()
+                                            yubiKey.currentDevice = modelData
+                                            yubiKey.calculateAll()
+                                        } else {
+                                            console.log("select device failed", resp.error_id)
+                                        }
+                                    })
+    }
+
     RowLayout {
         spacing: 0
         anchors.fill: parent
@@ -75,10 +91,10 @@ ToolBar {
         }
 
         ToolButton {
-            id: settingsBtn
+            id: moreBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             visible: !backBtn.visible && shouldShowSettings()
-            onClicked: navigator.goToSettings()
+            onClicked: dropDownMenu.open()
 
             Keys.onReturnPressed: navigator.goToSettings()
             Keys.onEnterPressed: navigator.goToSettings()
@@ -89,13 +105,13 @@ ToolBar {
             KeyNavigation.tab: searchField
 
             Accessible.role: Accessible.Button
-            Accessible.name: "Settings"
-            Accessible.description: "Go to settings"
+            Accessible.name: "More"
+            Accessible.description: "More dropdown menu"
 
             ToolTip {
-                text: qsTr("Settings")
+                text: qsTr("More")
                 delay: 1000
-                parent: settingsBtn
+                parent: moreBtn
                 visible: parent.hovered
                 Material.foreground: toolTipForeground
                 Material.background: toolTipBackground
@@ -110,6 +126,50 @@ ToolBar {
                 cursorShape: Qt.PointingHandCursor
                 enabled: false
             }
+
+            Menu {
+                id: dropDownMenu
+                y: 40
+
+                Instantiator {
+                    id: dropDownMenuInstantiator
+                    model: yubiKey.availableDevices
+                    onObjectAdded: dropDownMenu.insertItem(index + 4, object)
+                    onObjectRemoved: dropDownMenu.removeItem(object)
+                    delegate: MenuItem {
+                        text: modelData.name
+                        icon.source: !!yubiKey.currentDevice
+                                     && modelData.serial === yubiKey.currentDevice.serial ? "../images/check.svg" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAABCAQAAAB0m0auAAAADElEQVR42mNkIBIAAABSAAI2VLqiAAAAAElFTkSuQmCC"
+                        icon.color: primaryColor
+                        opacity: highEmphasis
+                        icon.width: 20
+                        icon.height: 20
+                        enabled: modelData.selectable
+                        onTriggered: changeActiveKey(index, modelData)
+                    }
+                }
+                MenuItem {
+                    icon.source: "../images/info.svg"
+                    icon.color: primaryColor
+                    opacity: highEmphasis
+                    icon.width: 20
+                    icon.height: 20
+                    text: qsTr("Information")
+                    onTriggered: navigator.about()
+                }
+                MenuItem {
+                    icon.source: "../images/cogwheel.svg"
+                    icon.color: primaryColor
+                    opacity: highEmphasis
+                    icon.width: 20
+                    icon.height: 20
+                    text: qsTr("Settings")
+                    onTriggered: navigator.goToSettings()
+                }
+                MenuSeparator {
+                }
+            }
+
         }
 
         Label {
@@ -117,7 +177,7 @@ ToolBar {
             visible: showTitleLbl
             text: showTitleLbl ? navigator.currentItem.title : ""
             font.pixelSize: 16
-            Layout.leftMargin: settingsBtn.visible ? -32 : 0
+            Layout.leftMargin: moreBtn.visible || (!!navigator.currentItem && navigator.currentItem.objectName === 'settingsView') ? -32 : 0
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -186,22 +246,22 @@ ToolBar {
                     }
                 }
 
-                Menu {
+                PopUpMenu.Menu {
                     id: contextMenu
 
-                    MenuItem {
+                    PopUpMenu.MenuItem {
                         text: qsTr("Cut")
                         onTriggered: {
                             searchField.cut()
                         }
                     }
-                    MenuItem {
+                    PopUpMenu.MenuItem {
                         text: qsTr("Copy")
                         onTriggered: {
                             searchField.copy()
                         }
                     }
-                    MenuItem {
+                    PopUpMenu.MenuItem {
                         text: qsTr("Paste")
                         onTriggered: {
                             searchField.paste()
@@ -218,8 +278,8 @@ ToolBar {
                     navigator.forceActiveFocus()
                 }
 
-                KeyNavigation.backtab: settingsBtn
-                KeyNavigation.left: settingsBtn
+                KeyNavigation.backtab: moreBtn
+                KeyNavigation.left: moreBtn
                 KeyNavigation.tab: shouldShowCredentialOptions(
                                        ) ? copyCredentialBtn : addCredentialBtn
                 KeyNavigation.right: shouldShowCredentialOptions(
@@ -320,44 +380,6 @@ ToolBar {
                 }
 
                 icon.source: "../images/delete.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                }
-            }
-
-            ToolButton {
-                id: infoBtn
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: shouldShowInfo()
-                onClicked: navigator.about()
-
-                Keys.onReturnPressed: navigator.about()
-                Keys.onEnterPressed: navigator.about()
-
-                KeyNavigation.left: backBtn
-                KeyNavigation.backtab: backBtn
-                KeyNavigation.right: navigator
-                KeyNavigation.tab: navigator
-
-                Accessible.role: Accessible.Button
-                Accessible.name: "Info"
-                Accessible.description: "Information"
-
-                ToolTip {
-                    text: qsTr("Information")
-                    delay: 1000
-                    parent: infoBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: "../images/info.svg"
                 icon.color: primaryColor
                 opacity: hovered ? fullEmphasis : lowEmphasis
 

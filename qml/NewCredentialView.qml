@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 Flickable {
 
-    readonly property int dynamicWidth: 864
+    readonly property int dynamicWidth: 648
     readonly property int dynamicMargin: 32
 
     id: newCredentialViewId
