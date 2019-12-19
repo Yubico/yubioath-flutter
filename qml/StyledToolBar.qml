@@ -146,6 +146,15 @@ ToolBar {
                         icon.height: 20
                         enabled: modelData.selectable
                         onTriggered: changeActiveKey(index, modelData)
+                        Label {
+                            y: 28
+                            x: 50
+                            text: qsTr("#%1").arg(modelData.serial)
+                            font.pixelSize: 10
+                            color: primaryColor
+                            opacity: lowEmphasis
+                        }
+                        topInset: 10
                     }
                 }
                 MenuItem {
