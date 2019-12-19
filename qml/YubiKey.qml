@@ -230,11 +230,27 @@ Python {
     }
 
     function refreshDevicesDefault() {
+        function addUniquenessFlag(devices) {
+            var nameCounts = devices
+                .map(dev => dev.name)
+                .reduce(
+                    (counts, name) => {
+                        counts[name] = (counts[name] || 0) + 1;
+                        return counts;
+                    },
+                    {}
+                );
+            devices.forEach(dev => {
+                dev.nameUnique = nameCounts[dev.name] <= 1;
+            })
+            return devices;
+        }
+
         poller.running = false
         let customReaderName = settings.useCustomReader ? settings.customReaderName : null
         refreshDevices(settings.otpMode, customReaderName, function (resp) {
             if (resp.success) {
-                availableDevices = resp.devices
+                availableDevices = addUniquenessFlag(resp.devices)
                 // no current device, or current device is no longer available, pick a new one
                 if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
                     // new device is being loaded, clear any old device

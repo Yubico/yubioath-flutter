@@ -153,6 +153,7 @@ ToolBar {
                             font.pixelSize: 10
                             color: primaryColor
                             opacity: lowEmphasis
+                            visible: !modelData.nameUnique && modelData.serial
                         }
                         topInset: 10
                     }
