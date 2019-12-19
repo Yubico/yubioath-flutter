@@ -147,7 +147,7 @@ ToolBar {
                         enabled: modelData.selectable
                         onTriggered: changeActiveKey(index, modelData)
                         Label {
-                            y: 28
+                            y: 22
                             x: 50
                             text: qsTr("#%1").arg(modelData.serial)
                             font.pixelSize: 10
@@ -155,7 +155,8 @@ ToolBar {
                             opacity: lowEmphasis
                             visible: !modelData.nameUnique && modelData.serial
                         }
-                        topInset: 10
+                        height: implicitHeight + (modelData.nameUnique ? 0 : 10)
+                        topPadding: modelData.nameUnique ? null : -(height - implicitHeight)/2
                     }
                 }
                 MenuItem {
