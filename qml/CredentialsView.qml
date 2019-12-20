@@ -72,7 +72,7 @@ Pane {
     GridView {
         id: grid
         property var columnWidth: app.width/model.count
-        property var idealCellHeight: 82
+        property var idealCellHeight: 76
         property var idealCellWidth: columnWidth > 300 ? columnWidth : 300
         anchors.fill: parent
         ScrollBar.vertical: ScrollBar {

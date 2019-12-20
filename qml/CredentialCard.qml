@@ -240,9 +240,9 @@ Pane {
         anchors.left: parent.left
         anchors.top: parent.top
         Layout.minimumWidth: 299
-        Layout.minimumHeight: 81
+        Layout.minimumHeight: 75
         width: parent.width - 1
-        height: 81
+        height: parent.height - 1
         color: yubicoWhite
         opacity: if (credentialCard.GridView.isCurrentItem) {
                    return cardSelectedEmphasis
@@ -356,7 +356,7 @@ Pane {
             Label {
                 id: nameLbl
                 text: formattedName()
-                Layout.maximumWidth: credentialCard.width - 100
+                Layout.maximumWidth: credentialCard.width - 106
                 font.pixelSize: 14
                 elide: Text.ElideRight
                 color: primaryColor
@@ -366,7 +366,7 @@ Pane {
                 text: qsTr(nameLbl.text)
                 delay: 1000
                 parent: nameLbl
-                visible: nameLbl.truncated && credentialCard.hovered && !favoriteBtn
+                visible: nameLbl.truncated && credentialCard.hovered && !favoriteBtn.hovered
                 Material.foreground: toolTipForeground
                 Material.background: toolTipBackground
             }
@@ -385,7 +385,7 @@ Pane {
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.rightMargin: -6
-            anchors.topMargin: 0
+            anchors.topMargin: -2
 
             onClicked: toggleFavorite()
             Keys.onReturnPressed: toggleFavorite()
@@ -426,7 +426,7 @@ Pane {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             anchors.rightMargin: 3
-            anchors.bottomMargin: 8
+            anchors.bottomMargin: 6
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             colorCircle: icon.color
             visible: showFullCredentialCard && (code && code.value && credential
@@ -446,7 +446,7 @@ Pane {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             anchors.rightMargin: 0
-            anchors.bottomMargin: 8
+            anchors.bottomMargin: 6
             iconWidth: 18
             iconHeight: 18
             source: "../images/touch.svg"
@@ -460,7 +460,7 @@ Pane {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             anchors.rightMargin: -1
-            anchors.bottomMargin: 4
+            anchors.bottomMargin: 2
             iconWidth: 20
             iconHeight: 20
             source: "../images/refresh.svg"

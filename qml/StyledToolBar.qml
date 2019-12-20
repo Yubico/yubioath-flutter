@@ -63,6 +63,7 @@ ToolBar {
                                             entries.clear()
                                             yubiKey.currentDevice = modelData
                                             yubiKey.calculateAll()
+                                            navigator.home()
                                         } else {
                                             console.log("select device failed", resp.error_id)
                                         }
@@ -147,8 +148,8 @@ ToolBar {
                         enabled: modelData.selectable
                         onTriggered: changeActiveKey(index, modelData)
                         Label {
-                            y: 22
-                            x: 50
+                            y: 23
+                            x: 52
                             text: qsTr("#%1").arg(modelData.serial)
                             font.pixelSize: 10
                             color: primaryColor
@@ -156,7 +157,7 @@ ToolBar {
                             visible: !modelData.nameUnique && modelData.serial
                         }
                         height: implicitHeight + (modelData.nameUnique ? 0 : 10)
-                        topPadding: modelData.nameUnique ? null : -(height - implicitHeight)/2
+                        topPadding: modelData.nameUnique ? 8 : -5
                     }
                 }
                 MenuItem {
