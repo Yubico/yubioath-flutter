@@ -42,26 +42,27 @@ Flickable {
         }
     }
 
-    function addCredentialNoCopy() {
-        addCredential(true)
-    }
-
-    function addCredential(copy = false) {
+    function addCredential() {
 
         function callback(resp) {
             if (resp.success) {
                 yubiKey.calculateAll(navigator.goToCredentials)
-                navigator.confirm({
-                                      "heading": qsTr("Account added. This is your verification code."),
-                                      "currentDevice": !!yubiKey.currentDevice && yubiKey.currentDevice,
-                                      "issuer": issuerLbl.text.length > 0 ? issuerLbl.text : null,
-                                      "name": nameLbl.text,
-                                      "touch": yubiKey.supportsTouchCredentials() || settings.otpMode ? requireTouchCheckBox.checked : false,
-                                      "warning": false,
-                                      "doNotAskForCopy": copy,
-                                      "buttons": false,
-                                      "acceptedCb": addCredentialNoCopy
-                            })
+                if (!settings.hideBackupReminder) {
+                    navigator.confirm({
+                                          "heading": qsTr("Account added. Create backup?"),
+                                          "message": qsTr("Secrets are stored safely on YubiKey. Backups can only be created during setup."),
+                                          "description": qsTr("To create a backup, change YubiKey and repeat the 'Add account' procedure BEFORE verifying with the issuer. The secret key may also be copied and stored somewhere safe."),
+                                          "warning": false,
+                                          "copySecret": true,
+                                          "buttons": false,
+                                          "acceptedCb": function () {
+                                            clipBoard.push(secretKeyLbl.text)
+                                            navigator.snackBar(qsTr("Secret copied to clipboard"))
+                                        }
+                                })
+                } else {
+                    navigator.snackBar(qsTr("Account added"))
+                }
             } else {
                 if (resp.error_id === 'credential_already_exists') {
                     navigator.confirm({
@@ -154,8 +155,19 @@ Flickable {
             Layout.fillWidth: true
             Layout.maximumWidth: dynamicWidth + dynamicMargin
             Layout.topMargin: 0
-            Material.elevation: 1
-            Material.background: defaultElevated
+
+            background: Rectangle {
+                color: isDark() ? defaultDarkLighter : defaultLightDarker
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    radius: 3
+                    samples: radius * 2
+                    verticalOffset: 2
+                    horizontalOffset: 0
+                    color: formDropShdaow
+                    transparentBorder: true
+                }
+            }
 
             ColumnLayout {
                 width: app.width - dynamicMargin
@@ -175,7 +187,7 @@ Flickable {
 
                         StyledImage {
                             source: "../images/qr-monitor.svg"
-                            color: defaultImageOverlay
+                            color: app.isDark() ? defaultLightForeground : defaultLightOverlay
                             iconWidth: 140
                             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                             Layout.margins: 16
@@ -194,10 +206,11 @@ Flickable {
                                 Keys.onEnterPressed: yubiKey.scanQr(true)
                             }
                             StyledButton {
-                                text: qsTr("Manual")
+                                text: qsTr("Enter manually")
                                 toolTipText: qsTr("Enter account details manually")
                                 flat: true
                                 onClicked: manualEntryPane.expandAction()
+                                Material.foreground: formText
                                 Keys.onReturnPressed: manualEntryPane.expandAction()
                                 Keys.onEnterPressed: manualEntryPane.expandAction()
                             }
@@ -262,6 +275,7 @@ Flickable {
                                     padding: 0
                                     indicator.width: 16
                                     indicator.height: 16
+                                    Material.foreground: formText
                                     font.pixelSize: 13
                                 }
                                 visible: yubiKey.supportsTouchCredentials()

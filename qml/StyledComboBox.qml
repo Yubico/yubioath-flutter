@@ -25,8 +25,7 @@ Item {
         Label {
             text: label
             font.pixelSize: 12
-            color: primaryColor
-            opacity: lowEmphasis
+            color: formLabel
         }
 
         ComboBox {
@@ -35,6 +34,8 @@ Item {
             implicitWidth: container.width
             font.pixelSize: 13
             flat: true
+            Material.accent: isDark(
+                                 ) ? defaultDarkForeground : defaultLightForeground
             indicator: Rectangle {
                 id: rectangle
                 anchors.right: parent.right
@@ -46,13 +47,11 @@ Item {
                     source: "../images/arrow-down.svg"
                     iconWidth: 24
                     iconHeight: 24
-                    color: primaryColor
-                    opacity: highEmphasis
+                    color: formText
                 }
             }
             contentItem: Text {
-                color: primaryColor
-                opacity: highEmphasis
+                color: formText
                 font.pixelSize: 13
                 text: parent.displayText
                 verticalAlignment: Text.AlignVCenter

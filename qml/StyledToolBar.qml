@@ -15,9 +15,13 @@ ToolBar {
 
     function getToolbarColor(isActive) {
         if (!isActive) {
-            return 0
+            return "transparent"
         } else {
-            return 0.05
+            if (isDark()) {
+                return defaultDarkLighter
+            } else {
+                return "#e8e8e9"
+            }
         }
     }
 
@@ -65,8 +69,7 @@ ToolBar {
             visible: showBackBtn
             onClicked: navigator.home()
             icon.source: "../images/back.svg"
-            icon.color: primaryColor
-            opacity: hovered ? fullEmphasis : lowEmphasis
+            icon.color: hovered ? iconButtonHovered : iconButtonNormal
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
@@ -102,8 +105,7 @@ ToolBar {
             }
 
             icon.source: "../images/more.svg"
-            icon.color: primaryColor
-            opacity: hovered ? fullEmphasis : lowEmphasis
+            icon.color: hovered ? iconButtonHovered : iconButtonNormal
 
             MouseArea {
                 anchors.fill: parent
@@ -122,8 +124,7 @@ ToolBar {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             Layout.fillWidth: true
-            color: primaryColor
-            opacity: lowEmphasis
+            color: iconButtonNormal
         }
 
         ToolButton {
@@ -134,8 +135,7 @@ ToolBar {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             background: Rectangle {
-                color: primaryColor
-                opacity: getToolbarColor(searchBtn.hovered)
+                color: getToolbarColor(searchBtn.hovered)
                 height: 30
                 radius: 4
             }
@@ -147,20 +147,19 @@ ToolBar {
                 selectedTextColor: defaultBackground
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                placeholderText: qsTr("Quick find")
-                placeholderTextColor: isDark() ? "#B7B7B7" : "#767676"
+                placeholderText: qsTr("Quick Find")
+                placeholderTextColor: iconButtonNormal
                 leftPadding: 28
                 rightPadding: 8
                 width: parent.width
                 horizontalAlignment: Qt.AlignLeft
                 verticalAlignment: Qt.AlignVCenter
-                color: primaryColor
-                opacity: hovered || activeFocus ? fullEmphasis : lowEmphasis
+                color: hovered || activeFocus ? iconButtonHovered : iconButtonNormal
                 background: Rectangle {
-                    color: primaryColor
+                    color: getToolbarColor(searchField.focus)
                     height: 30
                     radius: 4
-                    opacity: getToolbarColor(searchField.focus)
+                    opacity: 0.8
                 }
 
                 Accessible.role: Accessible.EditableText
@@ -244,9 +243,7 @@ ToolBar {
                     iconHeight: 20
                     iconWidth: 20
                     source: "../images/search.svg"
-                    color: primaryColor
-                    opacity: searchField.hovered || searchField.activeFocus ? fullEmphasis : lowEmphasis
-
+                    color: searchField.hovered || searchField.activeFocus ? iconButtonHovered : iconButtonNormal
                 }
             }
         }
@@ -283,8 +280,7 @@ ToolBar {
                 }
 
                 icon.source: "../images/copy.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
 
                 MouseArea {
                     anchors.fill: parent
@@ -320,8 +316,7 @@ ToolBar {
                 }
 
                 icon.source: "../images/delete.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
 
                 MouseArea {
                     anchors.fill: parent
@@ -358,8 +353,7 @@ ToolBar {
                 }
 
                 icon.source: "../images/info.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
 
                 MouseArea {
                     anchors.fill: parent
@@ -400,8 +394,7 @@ ToolBar {
                 }
 
                 icon.source: "../images/add.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
+                icon.color: hovered ? iconButtonHovered : iconButtonNormal
 
                 MouseArea {
                     anchors.fill: parent

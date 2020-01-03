@@ -5,13 +5,13 @@ import "utils.js" as Utils
 
 Rectangle {
 
-    property string letter: !!credential ? getIconLetter() : ""
+    property string letter: getIconLetter()
     property int size: 40
-    property var shade: isDark() ? Material.Shade200 : Material.Shade400
+    property var shade: isDark() ? Material.Shade200 : Material.Shade600
     width: size
     height: size
     radius: width * 0.5
-    color: !!credential ? getIconColor() : primaryColor
+    color: getIconColor()
 
     /*
       For Light Mode we are intentionally violating accessibility guidelines for the following colors:
@@ -57,9 +57,8 @@ Rectangle {
     Label {
         text: letter.toUpperCase()
         font.pixelSize: 24
-        font.weight: Font.Light
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        color: defaultElevated
+        color: credentialCardNormal
     }
 }

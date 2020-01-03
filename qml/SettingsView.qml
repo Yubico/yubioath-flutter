@@ -135,15 +135,15 @@ Flickable {
         id: themes
 
         ListElement {
-            text: qsTr("System default")
+            text: qsTr("System Default")
             value: Material.System
         }
         ListElement {
-            text: qsTr("Light mode")
+            text: qsTr("Light Mode")
             value: Material.Light
         }
         ListElement {
-            text: qsTr("Dark mode")
+            text: qsTr("Dark Mode")
             value: Material.Dark
         }
     }
@@ -244,7 +244,7 @@ Flickable {
 
             StyledExpansionPanel {
                 id: passwordManagementPanel
-                label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change password") : qsTr("Set password")
+                label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change Password") : qsTr("Set Password")
                 description: qsTr("For additional security the YubiKey may be protected with a password.")
                 visible: !!yubiKey.currentDevice && !settings.otpMode
 
@@ -253,7 +253,7 @@ Flickable {
                     StyledTextField {
                         id: currentPasswordField
                         visible: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                        labelText: qsTr("Current password")
+                        labelText: qsTr("Current Password")
                         echoMode: TextInput.Password
                         Keys.onEnterPressed: submitPassword()
                         Keys.onReturnPressed: submitPassword()
@@ -261,7 +261,7 @@ Flickable {
                     }
                     StyledTextField {
                         id: newPasswordField
-                        labelText: qsTr("New password")
+                        labelText: qsTr("New Password")
                         echoMode: TextInput.Password
                         Keys.onEnterPressed: submitPassword()
                         Keys.onReturnPressed: submitPassword()
@@ -269,7 +269,7 @@ Flickable {
                     }
                     StyledTextField {
                         id: confirmPasswordField
-                        labelText: qsTr("Confirm password")
+                        labelText: qsTr("Confirm Password")
                         echoMode: TextInput.Password
                         Keys.onEnterPressed: submitPassword()
                         Keys.onReturnPressed: submitPassword()
@@ -286,7 +286,7 @@ Flickable {
                             onClicked: navigator.confirm({
                                                        "heading": qsTr("Remove password?"),
                                                        "message": qsTr("A password will not be required to access the accounts anymore."),
-                                                       "warning": false,
+                                                       "warning": true,
                                                        "acceptedCb": function () {
                                                            removePassword()
                                                        }
@@ -437,7 +437,7 @@ Flickable {
                         StyledComboBox {
                             id: interfaceCombobox
                             label: qsTr("Interface")
-                            model: ["CCID (recommended)", "CCID with custom reader", "OTP"]
+                            model: ["CCID (recommended)", "CCID - Custom reader", "OTP"]
                             currentIndex: getCurrentIndex()
 
                             function getCurrentIndex() {
@@ -459,8 +459,7 @@ Flickable {
                     Label {
                         Layout.fillWidth: true
                         font.pixelSize: 12
-                        color: primaryColor
-                        opacity: lowEmphasis
+                        color: formLabel
                         text: qsTr("Using OTP slots should be considered for special cases only.")
                         wrapMode: Text.WordWrap
                         Layout.rowSpan: 1
@@ -473,7 +472,7 @@ Flickable {
 
                     StyledComboBox {
                         id: slot1DigitsComboBox
-                        label: qsTr("Slot 1 digits")
+                        label: qsTr("Slot 1 Digits")
                         comboBox.textRole: "text"
                         model: otpModeDigits
                         currentIndex: interfacePanel.getComboBoxIndex(
@@ -486,7 +485,7 @@ Flickable {
 
                     StyledComboBox {
                         id: slot2DigitsComboBox
-                        label: qsTr("Slot 2 digits")
+                        label: qsTr("Slot 2 Digits")
                         comboBox.textRole: "text"
                         model: otpModeDigits
                         currentIndex: interfacePanel.getComboBoxIndex(
@@ -507,7 +506,7 @@ Flickable {
                             model: yubiKey.availableReaders
                         }
                         StyledButton {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             text: qsTr("Use as filter")
                             flat: true
                             enabled: yubiKey.availableReaders.length > 0
@@ -552,6 +551,7 @@ Flickable {
                             }
                             settings.closeToTray = checked
                         }
+                        Material.foreground: formText
                     }
 
                     CheckBox {
@@ -563,7 +563,20 @@ Flickable {
                         indicator.width: 16
                         indicator.height: 16
                         onCheckStateChanged: settings.hideOnLaunch = checked
+                        Material.foreground: formText
                     }
+
+                    CheckBox {
+                        id: promptForBackupKey
+                        checked: settings.hideBackupReminder
+                        text: qsTr("Hide backup reminder")
+                        padding: 0
+                        indicator.width: 16
+                        indicator.height: 16
+                        onCheckStateChanged: settings.hideBackupReminder = checked
+                        Material.foreground: formText
+                    }
+
                 }
             }
         }

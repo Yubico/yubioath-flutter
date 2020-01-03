@@ -20,7 +20,7 @@ ColumnLayout {
         StyledImage {
             id: yubikeys
             source: "../images/ykfamily.svg"
-            color: defaultImageOverlay
+            color: app.isDark() ? defaultLightForeground : defaultLightOverlay
             iconWidth: 200
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             bottomPadding: 16
@@ -39,8 +39,7 @@ ColumnLayout {
             font.weight: Font.Normal
             lineHeight: 1.5
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            color: primaryColor
-            opacity: highEmphasis
+            color: formText
         }
         Label {
             text: {
@@ -61,8 +60,7 @@ ColumnLayout {
             wrapMode: Text.WordWrap
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            color: primaryColor
-            opacity: lowEmphasis
+            color: formLabel
         }
     }
 
@@ -85,8 +83,7 @@ ColumnLayout {
             wrapMode: Text.WordWrap
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            color: primaryColor
-            opacity: lowEmphasis
+            color: formLabel
         }
         Label {
             text: {
@@ -103,8 +100,7 @@ ColumnLayout {
             wrapMode: Text.WordWrap
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            color: primaryColor
-            opacity: lowEmphasis
+            color: formLabel
             maximumLineCount: 1
             elide: Text.ElideRight
         }

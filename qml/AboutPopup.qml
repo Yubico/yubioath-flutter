@@ -56,7 +56,7 @@ Dialog {
                 id: rectangle
                 width: 140
                 height: 140
-                color: formHighlightItem
+                color: credentialCardCurrentItem
                 radius: width * 0.5
                 Layout.margins: 16
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
@@ -83,8 +83,7 @@ Dialog {
             Label {
                 text: !!yubiKey.currentDevice ? "Serial number: " + yubiKey.currentDevice.serial : ""
                 visible: !!yubiKey.currentDevice && yubiKey.currentDevice.serial
-                color: primaryColor
-                opacity: highEmphasis
+                color: formText
                 font.pixelSize: 13
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 wrapMode: Text.WordWrap
@@ -96,8 +95,7 @@ Dialog {
             Label {
                 text: !!yubiKey.currentDevice ? "Firmware version: " + yubiKey.currentDevice.version : ""
                 visible: !!yubiKey.currentDevice && yubiKey.currentDevice.version
-                color: primaryColor
-                opacity: highEmphasis
+                color: formText
                 font.pixelSize: 13
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 wrapMode: Text.WordWrap
@@ -107,8 +105,7 @@ Dialog {
 
             Label {
                 text: !!yubiKey.currentDevice ? qsTr("Enabled interfaces: ") + getDeviceDescription() : ""
-                color: primaryColor
-                opacity: highEmphasis
+                color: formText
                 font.pixelSize: 13
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 wrapMode: Text.WordWrap
@@ -128,7 +125,7 @@ Dialog {
                     context.beginPath();
                     context.lineWidth = 1;
                     context.moveTo(0, height / 2);
-                    context.strokeStyle = formHighlightItem
+                    context.strokeStyle = credentialCardCurrentItem
                     context.lineTo(width, height / 2);
                     context.stroke();
                 }
@@ -156,8 +153,7 @@ Dialog {
             text: qsTr("Copyright © " + Qt.formatDateTime(
                            new Date(),
                            "yyyy") + ", Yubico AB.")
-            color: primaryColor
-            opacity: highEmphasis
+            color: formText
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             wrapMode: Text.WordWrap
@@ -167,8 +163,7 @@ Dialog {
 
         Label {
             text: qsTr("All rights reserved.")
-            color: primaryColor
-            opacity: highEmphasis
+            color: formText
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             wrapMode: Text.WordWrap

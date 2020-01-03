@@ -126,7 +126,7 @@ Pane {
                     context.beginPath();
                     context.lineWidth = 1;
                     context.moveTo(width / 2, circle.height + 5);
-                    context.strokeStyle = formHighlightItem
+                    context.strokeStyle = credentialCardCurrentItem
                     context.lineTo(width / 2, height);
                     context.stroke();
                     }
@@ -145,16 +145,14 @@ Pane {
                     text: label
                     font.pixelSize: 13
                     font.weight: isExpanded ? Font.Medium : Font.Normal
-                    color: primaryColor
-                    opacity: highEmphasis
+                    color: formText
                     Layout.fillWidth: true
                 }
                 Label {
                     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                     Layout.fillWidth: true
                     font.pixelSize: 13
-                    color: primaryColor
-                    opacity: lowEmphasis
+                    color: formLabel
                     text: description
                     wrapMode: Text.WordWrap
                     Layout.rowSpan: 1
