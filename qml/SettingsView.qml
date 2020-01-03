@@ -283,14 +283,13 @@ Flickable {
                             enabled: currentPasswordField.text.length > 0
                             text: "Remove"
                             flat: true
-                            onClicked: navigator.confirm({
-                                                       "heading": qsTr("Remove password?"),
-                                                       "message": qsTr("A password will not be required to access the accounts anymore."),
-                                                       "warning": true,
-                                                       "acceptedCb": function () {
-                                                           removePassword()
-                                                       }
-                                                         })
+                            onClicked: navigator.confirm(
+                                           qsTr("Remove password?"),
+                                           "",
+                                           qsTr("A password will not be required to access the accounts anymore."),
+                                           function () {
+                                               removePassword()
+                                           })
                         }
                         StyledButton {
                             id: applyPassword
@@ -309,31 +308,30 @@ Flickable {
                 visible: !!yubiKey.currentDevice && !settings.otpMode
                 toolButtonIcon: "../images/reset.svg"
                 toolButtonToolTip: qsTr("Reset device")
-                toolButton.onClicked: navigator.confirm({
-                                                  "heading": qsTr("Reset device?"),
-                                                  "message": qsTr("This will delete all accounts and restore factory defaults of your YubiKey."),
-                                                  "description": qsTr("There is NO going back from here, if you do not know what you are doing, do NOT do this."),
-                                                  "acceptedCb": function () {
-                                                      navigator.goToLoading()
-                                                      yubiKey.reset(function (resp) {
-                                                          if (resp.success) {
-                                                              entries.clear()
-                                                              navigator.snackBar(
-                                                                          qsTr("Reset completed"))
-                                                              yubiKey.currentDeviceValidated = true
-                                                              yubiKey.currentDevice.hasPassword = false
+                toolButton.onClicked: navigator.confirm(
+                                          qsTr("Reset device?"),
+                                          qsTr("This will delete all accounts and restore factory defaults of your YubiKey."),
+                                          qsTr("There is NO going back from here, if you do not know what you are doing, do NOT do this."),
+                                          function () {
+                                              navigator.goToLoading()
+                                              yubiKey.reset(function (resp) {
+                                                  if (resp.success) {
+                                                      entries.clear()
+                                                      navigator.snackBar(
+                                                                  qsTr("Reset completed"))
+                                                      yubiKey.currentDeviceValidated = true
+                                                      yubiKey.currentDevice.hasPassword = false
 
-                                                          } else {
-                                                              navigator.snackBarError(
-                                                                          navigator.getErrorMessage(
-                                                                              resp.error_id))
-                                                              console.log("reset failed:",
-                                                                          resp.error_id)
-                                                          }
-                                                          navigator.goToSettings()
-                                                      })
+                                                  } else {
+                                                      navigator.snackBarError(
+                                                                  navigator.getErrorMessage(
+                                                                      resp.error_id))
+                                                      console.log("reset failed:",
+                                                                  resp.error_id)
                                                   }
-                                                        })
+                                                  navigator.goToSettings()
+                                              })
+                                          })
             }
         }
 
@@ -533,7 +531,7 @@ Flickable {
             }
 
             StyledExpansionPanel {
-                label: "Options"
+                label: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
                 description: qsTr("Configure where and how the application is visible.")
                 isBottomPanel: true
 
@@ -565,18 +563,6 @@ Flickable {
                         onCheckStateChanged: settings.hideOnLaunch = checked
                         Material.foreground: formText
                     }
-
-                    CheckBox {
-                        id: promptForBackupKey
-                        checked: settings.hideBackupReminder
-                        text: qsTr("Hide backup reminder")
-                        padding: 0
-                        indicator.width: 16
-                        indicator.height: 16
-                        onCheckStateChanged: settings.hideBackupReminder = checked
-                        Material.foreground: formText
-                    }
-
                 }
             }
         }
