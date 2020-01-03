@@ -43,7 +43,7 @@
         <Component Id="ApplicationShortcut" Guid="*">
           <Shortcut Id="ApplicationStartMenuShortcut" 
                   Name="Yubico Authenticator"
-                  Target="[#fil9AD596424AE112BC3458900952B5BE58]"
+                  Target="[!fil9AD596424AE112BC3458900952B5BE58]"
                   WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
           <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
           <RegistryValue Root="HKCU" Key="Software\Yubico\Yubico Authenticator" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
@@ -51,7 +51,7 @@
       </DirectoryRef>
 
       <DirectoryRef Id="TARGETDIR">
-        <Merge Id="VCRedist" SourceFile="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.23.27820\MergeModules\Microsoft_VC142_CRT_x64.msm" DiskId="1" Language="0"/>
+        <Merge Id="VCRedist" SourceFile="$(env.MERGEDPATH)" DiskId="1" Language="0"/>
       </DirectoryRef>
 
       <Feature Id="VCRedist" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
