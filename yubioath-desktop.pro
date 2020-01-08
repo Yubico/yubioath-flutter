@@ -25,7 +25,7 @@ win32|win64 {
     PYTHON_BIN = python3
 }
 
-buildqrc.commands = ${PYTHON_BIN} build_qrc.py ${QMAKE_FILE_IN}
+buildqrc.commands = $$PYTHON_BIN build_qrc.py ${QMAKE_FILE_IN}
 buildqrc.input = QRC_JSON
 buildqrc.output = ${QMAKE_FILE_IN_BASE}.qrc
 buildqrc.variable_out = RESOURCES
