@@ -20,12 +20,12 @@ DEFINES += APP_VERSION=\\\"5.0.1\\\"
 message(Version of this build: $$VERSION)
 
 win32|win64 {
-    PYTHON_BIN = python
+    PYTHON_CMD = python
 } else {
-    PYTHON_BIN = python3
+    PYTHON_CMD = python3
 }
 
-buildqrc.commands = $$PYTHON_BIN build_qrc.py ${QMAKE_FILE_IN}
+buildqrc.commands = $$PYTHON_CMD build_qrc.py ${QMAKE_FILE_IN}
 buildqrc.input = QRC_JSON
 buildqrc.output = ${QMAKE_FILE_IN_BASE}.qrc
 buildqrc.variable_out = RESOURCES
@@ -36,7 +36,7 @@ QMAKE_EXTRA_COMPILERS += buildqrc
 QRC_JSON = resources.json
 
 # Generate first time
-system($$PYTHON_BIN build_qrc.py resources.json)
+system($$PYTHON_CMD build_qrc.py resources.json)
 
 # Install python dependencies with pip on mac and win
 win32|macx {
