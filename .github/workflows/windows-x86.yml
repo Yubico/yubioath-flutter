@@ -41,7 +41,7 @@ jobs:
 
       - name: Install Qt and Jom
         run: |
-          pip install aqtinstall
+          pip install aqtinstall==0.6
           python -m aqt install 5.13.1 windows desktop win32_msvc2017
           7z x jom.zip
         shell: powershell
