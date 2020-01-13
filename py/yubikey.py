@@ -125,6 +125,18 @@ def catch_error(f):
     return wrapped
 
 
+def usb_selectable(dev, otp_mode):
+    if otp_mode:
+        return dev.mode.has_transport(TRANSPORT.OTP)
+    else:
+        return dev.mode.has_transport(TRANSPORT.CCID) and (
+            dev.config.usb_enabled & APPLICATION.OATH)
+
+
+def nfc_selectable(dev):
+    return dev.config.nfc_enabled & APPLICATION.OATH
+
+
 class OathContextManager(object):
     def __init__(self, dev):
         self._dev = dev
@@ -228,13 +240,9 @@ class Controller(object):
             for dev in list_devices(transport):
                 if not descs_to_match:
                     return res
-                serial = dev.serial
 
-                if otp_mode:
-                    selectable = dev.mode.has_transport(TRANSPORT.OTP)
-                else:
-                    selectable = dev.mode.has_transport(TRANSPORT.CCID) and (
-                        dev.config.usb_enabled & APPLICATION.OATH)
+                serial = dev.serial
+                selectable = usb_selectable(dev, otp_mode)
 
                 if selectable and not otp_mode and transport == TRANSPORT.CCID:
                     controller = OathController(dev.driver)
@@ -272,7 +280,8 @@ class Controller(object):
             self._reader_filter = reader_filter
             dev = self._get_dev_from_reader()
             if dev:
-                if dev.config.nfc_enabled & APPLICATION.OATH:
+                selectable = nfc_selectable(dev)
+                if selectable:
                     controller = OathController(dev.driver)
                     has_password = controller.locked
                 else:
@@ -285,7 +294,7 @@ class Controller(object):
                     'serial': dev.serial or '',
                     'usbInterfacesEnabled': str(dev.mode).split('+'),
                     'hasPassword': has_password,
-                    'selectable': dev.config.nfc_enabled & APPLICATION.OATH,
+                    'selectable': selectable,
                     'validated': True
                 })
                 return success({'devices': self._devices})
