@@ -272,8 +272,11 @@ class Controller(object):
             self._reader_filter = reader_filter
             dev = self._get_dev_from_reader()
             if dev:
-                controller = OathController(dev.driver)
-                has_password = controller.locked
+                if dev.config.nfc_enabled & APPLICATION.OATH:
+                    controller = OathController(dev.driver)
+                    has_password = controller.locked
+                else:
+                    has_password = False
                 self._devices.append({
                     'name': dev.device_name,
                     'version': '.'.join(
@@ -282,7 +285,7 @@ class Controller(object):
                     'serial': dev.serial or '',
                     'usbInterfacesEnabled': str(dev.mode).split('+'),
                     'hasPassword': has_password,
-                    'selectable': True,
+                    'selectable': dev.config.nfc_enabled & APPLICATION.OATH,
                     'validated': True
                 })
                 return success({'devices': self._devices})
