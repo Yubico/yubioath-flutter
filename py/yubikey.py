@@ -11,7 +11,7 @@ from binascii import a2b_hex, b2a_hex
 from ykman.descriptor import (
     get_descriptors, list_devices, open_device,
     FailedOpeningDeviceException, Descriptor)
-from ykman.util import (TRANSPORT, parse_b32_key)
+from ykman.util import (TRANSPORT, APPLICATION, parse_b32_key)
 from ykman.device import YubiKey
 from ykman.driver_otp import YkpersError
 from ykman.driver_ccid import (
@@ -101,6 +101,7 @@ def catch_error(f):
     def wrapped(*args, **kwargs):
         try:
             return f(*args, **kwargs)
+
         except YkpersError as e:
             if e.errno == 3:
                 return failure('write error')
@@ -228,8 +229,12 @@ class Controller(object):
                 if not descs_to_match:
                     return res
                 serial = dev.serial
-                selectable = dev.mode.has_transport(
-                    TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
+
+                if otp_mode:
+                    selectable = dev.mode.has_transport(TRANSPORT.OTP)
+                else:
+                    selectable = dev.mode.has_transport(TRANSPORT.CCID) and (
+                        dev.config.usb_enabled & APPLICATION.OATH)
 
                 if selectable and not otp_mode and transport == TRANSPORT.CCID:
                     controller = OathController(dev.driver)
@@ -375,7 +380,8 @@ class Controller(object):
                 if e.sw == SW.INCORRECT_PARAMETERS:
                     return failure('validate_failed')
 
-    def _otp_get_code_or_touch(self, slot, digits, timestamp, wait_for_touch=False):
+    def _otp_get_code_or_touch(
+            self, slot, digits, timestamp, wait_for_touch=False):
         code = None
         touch = False
         with self._open_otp() as otp_controller:
@@ -423,7 +429,8 @@ class Controller(object):
     def otp_calculate(self, slot, digits, credential, timestamp):
         valid_from = timestamp - (timestamp % 30)
         valid_to = valid_from + 30
-        code, _ = self._otp_get_code_or_touch(slot, digits, timestamp, wait_for_touch=True)
+        code, _ = self._otp_get_code_or_touch(
+            slot, digits, timestamp, wait_for_touch=True)
         return success({
             'credential': credential,
             'code': code_to_dict(Code(code, valid_from, valid_to))
