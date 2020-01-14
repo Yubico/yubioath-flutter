@@ -48,19 +48,22 @@ Pane {
     }
 
     NoCredentialsSection {
-        visible: entries.count === 0 && !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
+        id: noCredentialsSection
+        visible: entries.count === 0 && (!!yubiKey.currentDevice && yubiKey.currentDeviceValidated)
         enabled: visible
         Accessible.ignored: true
     }
 
     NoResultsSection {
-        visible: entries.count > 0 && !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
+        id: noResultsSection
+        visible: entries.count > 0 && (!!yubiKey.currentDevice && yubiKey.currentDeviceValidated)
                  && filteredCredentials().count === 0
         enabled: visible
         Accessible.ignored: true
     }
 
     NoYubiKeySection {
+        id: noYubiKeySection
         visible: !yubiKey.availableDevices.some(dev => dev.selectable)
         enabled: visible
         Accessible.ignored: true
@@ -69,7 +72,7 @@ Pane {
     GridView {
         id: grid
         property var columnWidth: app.width/model.count
-        property var idealCellHeight: 82
+        property var idealCellHeight: 76
         property var idealCellWidth: columnWidth > 300 ? columnWidth : 300
         anchors.fill: parent
         ScrollBar.vertical: ScrollBar {
@@ -112,7 +115,7 @@ Pane {
         focus: visible
         Component.onCompleted: currentIndex = -1
         KeyNavigation.backtab: toolBar.addCredentialBtn
-        KeyNavigation.tab: toolBar.settingsBtn
+        KeyNavigation.tab: toolBar.moreBtn
         KeyNavigation.up: paneScrollBar.position === 0 ? toolBar.searchField : null
         interactive: true
         highlightFollowsCurrentItem: true

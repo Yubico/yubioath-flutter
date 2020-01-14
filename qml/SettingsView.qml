@@ -6,9 +6,6 @@ import QtGraphicalEffects 1.0
 
 Flickable {
 
-    readonly property int dynamicWidth: 864
-    readonly property int dynamicMargin: 32
-
     id: settingsPanel
     objectName: 'settingsView'
     contentWidth: app.width
@@ -285,7 +282,7 @@ Flickable {
                             flat: true
                             onClicked: navigator.confirm({
                                                        "heading": qsTr("Remove password?"),
-                                                       "message": qsTr("A password will not be required to access the accounts anymore."),
+                                                       "description": qsTr("A password will not be required to access the accounts anymore."),
                                                        "warning": false,
                                                        "acceptedCb": function () {
                                                            removePassword()
@@ -534,7 +531,7 @@ Flickable {
             }
 
             StyledExpansionPanel {
-                label: "Options"
+                label: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
                 description: qsTr("Configure where and how the application is visible.")
                 isBottomPanel: true
 
