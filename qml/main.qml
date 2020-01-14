@@ -51,9 +51,10 @@ ApplicationWindow {
 
     property var cardSelectedEmphasis: 0.08
     property var cardHoveredEmphasis: 0.05
-    property var cardNormalEmphasis: isDark() ? 0.03 : 1.0
+    property var cardNormalEmphasis: 0.03
 
     property var currentCredentialCard
+    property string iconFavorite: "#f7bd0c"
 
     Material.theme: settings.theme
     Material.primary: yubicoGreen

@@ -50,20 +50,9 @@ Flickable {
 
         function callback(resp) {
             if (resp.success) {
-                yubiKey.calculateAll(navigator.goToCredentials)
-                navigator.confirm({
-                                      "heading": qsTr("Account added. This is your verification code."),
-                                      "currentDevice": !!yubiKey.currentDevice && yubiKey.currentDevice,
-                                      "issuer": issuerLbl.text.length > 0 ? issuerLbl.text : null,
-                                      "name": nameLbl.text,
-                                      "touch": yubiKey.supportsTouchCredentials() || settings.otpMode ? requireTouchCheckBox.checked : false,
-                                      "warning": false,
-                                      "doNotAskForCopy": copy,
-                                      "buttons": false,
-                                      "acceptedCb": addCredentialNoCopy
-                            })
-            } else {
-                if (resp.error_id === 'credential_already_exists') {
+                    yubiKey.calculateAll(navigator.goToCredentials)
+                    navigator.snackBar(qsTr("Account added"))
+                } else {                if (resp.error_id === 'credential_already_exists') {
                     navigator.confirm({
                                     "heading": qsTr("Overwrite?"),
                                     "message": qsTr("An account with this name already exists, do you want to overwrite it?"),
@@ -212,6 +201,7 @@ Flickable {
                         ColumnLayout {
                             Layout.topMargin: 8
 
+
                             StyledTextField {
                                 id: issuerLbl
                                 labelText: qsTr("Issuer")
@@ -316,6 +306,7 @@ Flickable {
                                                 bottom: 15
                                                 top: 60
                                             }
+                                            Layout.maximumWidth: oathTypeComboBox.width
                                         }
                                         Item {
                                             visible: oathTypeComboBox.currentIndex === 0

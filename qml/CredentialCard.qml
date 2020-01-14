@@ -249,7 +249,7 @@ Pane {
                } else if (cardMouseArea.containsMouse) {
                    return cardHoveredEmphasis
                } else {
-                   return cardNormalEmphasis
+                   return isDark() ? cardNormalEmphasis : 1.0
                }
         MouseArea {
             id: cardMouseArea
@@ -406,8 +406,8 @@ Pane {
             }
 
             icon.source: favorite ? "../images/star.svg" : "../images/star_border.svg"
-            icon.color: hovered || favorite ? icon.color : primaryColor
-            opacity: hovered || favorite ? fullEmphasis : disabledEmphasis
+            icon.color: hovered || favorite ? iconFavorite : primaryColor
+            opacity: hovered || favorite ? highEmphasis : disabledEmphasis
             implicitHeight: 30
             implicitWidth: 30
 
@@ -428,7 +428,6 @@ Pane {
             anchors.rightMargin: 3
             anchors.bottomMargin: 6
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-            colorCircle: icon.color
             visible: showFullCredentialCard && (code && code.value && credential
                      && credential.oath_type === "TOTP" ? true : false)
             onTimesUp: {
@@ -451,7 +450,8 @@ Pane {
             iconHeight: 18
             source: "../images/touch.svg"
             visible: showFullCredentialCard && touchCredentialNoCode
-            color: icon.color
+            color: primaryColor
+            opacity: lowEmphasis
             Layout.alignment: Qt.AlignRight
         }
 
@@ -465,8 +465,8 @@ Pane {
             iconHeight: 20
             source: "../images/refresh.svg"
             visible: showFullCredentialCard && hotpCredential
-            color: icon.color
-            opacity: hotpCredentialInCoolDown ? lowEmphasis : fullEmphasis
+            color: primaryColor
+            opacity: hotpCredentialInCoolDown ? disabledEmphasis : lowEmphasis
             Layout.alignment: Qt.AlignRight
         }
     }

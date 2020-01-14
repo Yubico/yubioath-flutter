@@ -179,11 +179,71 @@ Flickable {
             sectionTitle: qsTr("Device")
 
             StyledExpansionPanel {
+                id: currentDevicePanel
+                label: getDeviceLabel(yubiKey.currentDevice)
+                description: getDeviceDescription(yubiKey.currentDevice)
+                keyImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : "../images/yubikeys-large-transparent"
+                isTopPanel: true
+                Layout.fillWidth: true
+                isEnabled: yubiKey.availableDevices.length > 1
+
+                ButtonGroup {
+                    id: deviceButtonGroup
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+
+                    Repeater {
+                        model: yubiKey.availableDevices
+                        StyledRadioButton {
+                            Layout.fillWidth: true
+                            objectName: index
+                            checked: !!yubiKey.currentDevice
+                                     && modelData.serial === yubiKey.currentDevice.serial
+                            text: getDeviceLabel(modelData)
+                            description: getDeviceDescription(modelData)
+                            enabled: modelData.selectable
+                            buttonGroup: deviceButtonGroup
+                        }
+                    }
+
+                    StyledButton {
+                        id: selectBtn
+                        Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                        text: "Select"
+                        enabled: {
+                            if (!!yubiKey.availableDevices && !!deviceButtonGroup.checkedButton) {
+                                var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
+                                return dev !== yubiKey.currentDevice
+                            } else {
+                                return false
+                            }
+                        }
+                        onClicked: {
+                            yubiKey.refreshDevicesDefault()
+                            var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
+                            yubiKey.selectCurrentSerial(dev.serial,
+                                                        function (resp) {
+                                                            if (resp.success) {
+                                                                entries.clear()
+                                                                yubiKey.currentDevice = dev
+                                                                currentDevicePanel.expandAction()
+                                                                yubiKey.calculateAll()
+                                                            } else {
+                                                                console.log("select device failed", resp.error_id)
+                                                            }
+                                                        })
+                        }
+                    }
+                }
+            }
+
+            StyledExpansionPanel {
                 id: passwordManagementPanel
                 label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change password") : qsTr("Set password")
                 description: qsTr("For additional security the YubiKey may be protected with a password.")
                 visible: !!yubiKey.currentDevice && !settings.otpMode
-                isTopPanel: true
 
                 ColumnLayout {
 

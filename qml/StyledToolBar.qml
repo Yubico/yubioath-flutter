@@ -95,8 +95,8 @@ ToolBar {
             id: moreBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             visible: !backBtn.visible && shouldShowSettings()
-            onClicked: dropDownMenu.open()
 
+            onClicked: navigator.goToSettings()
             Keys.onReturnPressed: navigator.goToSettings()
             Keys.onEnterPressed: navigator.goToSettings()
 
@@ -127,61 +127,6 @@ ToolBar {
                 cursorShape: Qt.PointingHandCursor
                 enabled: false
             }
-
-            Menu {
-                id: dropDownMenu
-                y: 40
-
-                Instantiator {
-                    id: dropDownMenuInstantiator
-                    model: yubiKey.availableDevices
-                    onObjectAdded: dropDownMenu.insertItem(index + 4, object)
-                    onObjectRemoved: dropDownMenu.removeItem(object)
-                    delegate: MenuItem {
-                        text: modelData.name
-                        icon.source: !!yubiKey.currentDevice
-                                     && modelData.serial === yubiKey.currentDevice.serial ? "../images/check.svg" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAABCAQAAAB0m0auAAAADElEQVR42mNkIBIAAABSAAI2VLqiAAAAAElFTkSuQmCC"
-                        icon.color: primaryColor
-                        opacity: highEmphasis
-                        icon.width: 20
-                        icon.height: 20
-                        enabled: modelData.selectable
-                        onTriggered: changeActiveKey(index, modelData)
-                        Label {
-                            y: 23
-                            x: 52
-                            text: qsTr("#%1").arg(modelData.serial)
-                            font.pixelSize: 10
-                            color: primaryColor
-                            opacity: lowEmphasis
-                            visible: !modelData.nameUnique && modelData.serial
-                        }
-                        height: implicitHeight + (modelData.nameUnique ? 0 : 10)
-                        topPadding: modelData.nameUnique ? 8 : -5
-                    }
-                }
-                MenuItem {
-                    icon.source: "../images/info.svg"
-                    icon.color: primaryColor
-                    opacity: highEmphasis
-                    icon.width: 20
-                    icon.height: 20
-                    text: qsTr("Information")
-                    onTriggered: navigator.about()
-                }
-                MenuItem {
-                    icon.source: "../images/cogwheel.svg"
-                    icon.color: primaryColor
-                    opacity: highEmphasis
-                    icon.width: 20
-                    icon.height: 20
-                    text: qsTr("Settings")
-                    onTriggered: navigator.goToSettings()
-                }
-                MenuSeparator {
-                }
-            }
-
         }
 
         Label {
@@ -189,7 +134,7 @@ ToolBar {
             visible: showTitleLbl
             text: showTitleLbl ? navigator.currentItem.title : ""
             font.pixelSize: 16
-            Layout.leftMargin: moreBtn.visible || (!!navigator.currentItem && navigator.currentItem.objectName === 'settingsView') ? -32 : 0
+            Layout.leftMargin: moreBtn.visible ? -32 : 0
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -401,6 +346,45 @@ ToolBar {
                     enabled: false
                 }
             }
+
+            ToolButton {
+                id: infoBtn
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                visible: shouldShowInfo()
+                onClicked: navigator.about()
+
+                Keys.onReturnPressed: navigator.about()
+                Keys.onEnterPressed: navigator.about()
+
+                KeyNavigation.left: backBtn
+                KeyNavigation.backtab: backBtn
+                KeyNavigation.right: navigator
+                KeyNavigation.tab: navigator
+
+                Accessible.role: Accessible.Button
+                Accessible.name: "Info"
+                Accessible.description: "Information"
+
+                ToolTip {
+                    text: qsTr("Information")
+                    delay: 1000
+                    parent: infoBtn
+                    visible: parent.hovered
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
+                }
+
+                icon.source: "../images/info.svg"
+                icon.color: primaryColor
+                opacity: hovered ? fullEmphasis : lowEmphasis
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
+            }
+
 
             ToolButton {
                 id: addCredentialBtn
