@@ -330,8 +330,9 @@ Flickable {
                                                           navigator.goToSettings()
                                                       })
                                                   }
-                                                        })
+               })
             }
+
         }
 
         StyledExpansionContainer {
@@ -562,6 +563,26 @@ Flickable {
                         onCheckStateChanged: settings.hideOnLaunch = checked
                     }
                 }
+            }
+
+            StyledExpansionPanel {
+                label: qsTr("Clear passwords")
+                description: qsTr("All locally remembered passwords will be cleared.")
+                isEnabled: false
+                visible: true
+                toolButtonIcon: "../images/reset.svg"
+                toolButtonToolTip: qsTr("Clear")
+                toolButton.onClicked: navigator.confirm({
+                                                  "heading": qsTr("Clear passwords?"),
+                                                  "message": qsTr("This will clear all locally stored passwords."),
+                                                  "description": qsTr("A password prompt will appear next time a YubiKey with a password set is selected."),
+                                                  "acceptedCb": function() {
+                                                    yubiKey.clearLocalPasswords(function (resp) {
+                                                      if (resp.success) {
+                                                        navigator.snackBar(qsTr("Passwords cleared"))
+                                                      }
+                  })}
+               })
             }
         }
     }

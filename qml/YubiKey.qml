@@ -442,6 +442,11 @@ Python {
         doCall('yubikey.controller.ccid_remove_password', [], cb)
     }
 
+    function clearLocalPasswords(cb) {
+        doCall('yubikey.controller.ccid_clear_local_passwords', [], cb)
+    }
+
+
     function validate(password, remember, cb) {
         doCall('yubikey.controller.ccid_validate', [password, remember], cb)
     }
