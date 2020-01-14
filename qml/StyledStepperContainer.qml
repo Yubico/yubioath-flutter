@@ -9,7 +9,7 @@ Pane {
 
     default property alias children: inner_space.data
 
-    readonly property int dynamicWidth: 864
+    readonly property int dynamicWidth: 648
     readonly property int dynamicMargin: 32
 
     property int initialStep: 1

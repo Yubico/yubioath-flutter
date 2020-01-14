@@ -34,7 +34,6 @@ Item {
     property int size: 12
     property real arcBegin: 360
     property real arcEnd: 360
-    property string colorCircle
 
     onArcBeginChanged: canvas.requestPaint()
     onArcEndChanged: canvas.requestPaint()
@@ -51,7 +50,8 @@ Item {
             var end = Math.PI * (parent.arcEnd / 180)
             ctx.reset()
             ctx.beginPath()
-            ctx.fillStyle = root.colorCircle
+            ctx.fillStyle = primaryColor
+            ctx.globalAlpha = lowEmphasis
             ctx.moveTo(x, y)
             ctx.arc(x, y, width / 2, end, start, false)
             ctx.lineTo(x, y)
