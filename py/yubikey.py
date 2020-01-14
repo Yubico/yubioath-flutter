@@ -137,6 +137,9 @@ def nfc_selectable(dev):
     return dev.config.nfc_enabled & APPLICATION.OATH
 
 
+def is_nfc(reader_name):
+    return "yubico" not in reader_name.lower()
+
 class OathContextManager(object):
     def __init__(self, dev):
         self._dev = dev
@@ -280,7 +283,10 @@ class Controller(object):
             self._reader_filter = reader_filter
             dev = self._get_dev_from_reader()
             if dev:
-                selectable = nfc_selectable(dev)
+                if is_nfc(self._reader_filter):
+                    selectable = nfc_selectable(dev)
+                else:
+                    selectable = usb_selectable(dev, otp_mode)
                 if selectable:
                     controller = OathController(dev.driver)
                     has_password = controller.locked
