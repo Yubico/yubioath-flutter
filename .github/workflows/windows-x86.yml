@@ -109,8 +109,8 @@ jobs:
       - name: Create an unsigned .msi installer package
         run: |
           $env:PATH += ";$env:WIX\bin"
-          $env:SRCDIR=".\release\"
-          $env:MERGEDPATH=Get-ChildItem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\*\MergeModules\Microsoft_VC142_CRT_x86.msm"
+          $env:SRCDIR = ".\release\"
+          $env:MERGEDPATH = Get-ChildItem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\*\MergeModules\Microsoft_VC142_CRT_x86.msm"
           heat dir .\release -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
           candle .\fragment.wxs .\resources\win\yubioath-desktop-x86.wxs -arch x86
           light fragment.wixobj yubioath-desktop-x86.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop-x86.msi
