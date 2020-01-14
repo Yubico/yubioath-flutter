@@ -11,7 +11,7 @@ from binascii import a2b_hex, b2a_hex
 from ykman.descriptor import (
     get_descriptors, list_devices, open_device,
     FailedOpeningDeviceException, Descriptor)
-from ykman.util import (TRANSPORT, parse_b32_key)
+from ykman.util import (TRANSPORT, APPLICATION, parse_b32_key)
 from ykman.device import YubiKey
 from ykman.driver_otp import YkpersError
 from ykman.driver_ccid import (
@@ -101,6 +101,7 @@ def catch_error(f):
     def wrapped(*args, **kwargs):
         try:
             return f(*args, **kwargs)
+
         except YkpersError as e:
             if e.errno == 3:
                 return failure('write error')
@@ -123,6 +124,21 @@ def catch_error(f):
             return unknown_failure(e)
     return wrapped
 
+
+def usb_selectable(dev, otp_mode):
+    if otp_mode:
+        return dev.mode.has_transport(TRANSPORT.OTP)
+    else:
+        return dev.mode.has_transport(TRANSPORT.CCID) and (
+            dev.config.usb_enabled & APPLICATION.OATH)
+
+
+def nfc_selectable(dev):
+    return dev.config.nfc_enabled & APPLICATION.OATH
+
+
+def is_nfc(reader_name):
+    return "yubico" not in reader_name.lower()
 
 class OathContextManager(object):
     def __init__(self, dev):
@@ -227,9 +243,9 @@ class Controller(object):
             for dev in list_devices(transport):
                 if not descs_to_match:
                     return res
+
                 serial = dev.serial
-                selectable = dev.mode.has_transport(
-                    TRANSPORT.OTP if otp_mode else TRANSPORT.CCID)
+                selectable = usb_selectable(dev, otp_mode)
 
                 if selectable and not otp_mode and transport == TRANSPORT.CCID:
                     controller = OathController(dev.driver)
@@ -267,8 +283,15 @@ class Controller(object):
             self._reader_filter = reader_filter
             dev = self._get_dev_from_reader()
             if dev:
-                controller = OathController(dev.driver)
-                has_password = controller.locked
+                if is_nfc(self._reader_filter):
+                    selectable = nfc_selectable(dev)
+                else:
+                    selectable = usb_selectable(dev, otp_mode)
+                if selectable:
+                    controller = OathController(dev.driver)
+                    has_password = controller.locked
+                else:
+                    has_password = False
                 self._devices.append({
                     'name': dev.device_name,
                     'version': '.'.join(
@@ -277,7 +300,7 @@ class Controller(object):
                     'serial': dev.serial or '',
                     'usbInterfacesEnabled': str(dev.mode).split('+'),
                     'hasPassword': has_password,
-                    'selectable': True,
+                    'selectable': selectable,
                     'validated': True
                 })
                 return success({'devices': self._devices})
@@ -375,7 +398,8 @@ class Controller(object):
                 if e.sw == SW.INCORRECT_PARAMETERS:
                     return failure('validate_failed')
 
-    def _otp_get_code_or_touch(self, slot, digits, timestamp, wait_for_touch=False):
+    def _otp_get_code_or_touch(
+            self, slot, digits, timestamp, wait_for_touch=False):
         code = None
         touch = False
         with self._open_otp() as otp_controller:
@@ -423,7 +447,8 @@ class Controller(object):
     def otp_calculate(self, slot, digits, credential, timestamp):
         valid_from = timestamp - (timestamp % 30)
         valid_to = valid_from + 30
-        code, _ = self._otp_get_code_or_touch(slot, digits, timestamp, wait_for_touch=True)
+        code, _ = self._otp_get_code_or_touch(
+            slot, digits, timestamp, wait_for_touch=True)
         return success({
             'credential': credential,
             'code': code_to_dict(Code(code, valid_from, valid_to))
