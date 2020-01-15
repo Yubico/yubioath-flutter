@@ -570,7 +570,7 @@ Flickable {
                 description: qsTr("Delete all saved passwords.")
                 isEnabled: false
                 visible: true
-                toolButtonIcon: "../images/clear.svg"
+                toolButtonIcon: "../images/delete.svg"
                 toolButtonToolTip: qsTr("Clear")
                 toolButton.onClicked: navigator.confirm({
                                                   "heading": qsTr("Clear passwords?"),
