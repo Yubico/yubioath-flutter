@@ -89,11 +89,11 @@ ToolBar {
             KeyNavigation.tab: searchField
 
             Accessible.role: Accessible.Button
-            Accessible.name: "More"
-            Accessible.description: "More dropdown menu"
+            Accessible.name: "Settings"
+            Accessible.description: "Settings button"
 
             ToolTip {
-                text: qsTr("More")
+                text: qsTr("Settings")
                 delay: 1000
                 parent: moreBtn
                 visible: parent.hovered
