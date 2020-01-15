@@ -567,15 +567,15 @@ Flickable {
 
             StyledExpansionPanel {
                 label: qsTr("Clear passwords")
-                description: qsTr("All locally remembered passwords will be cleared.")
+                description: qsTr("Delete all saved passwords.")
                 isEnabled: false
                 visible: true
-                toolButtonIcon: "../images/reset.svg"
+                toolButtonIcon: "../images/clear.svg"
                 toolButtonToolTip: qsTr("Clear")
                 toolButton.onClicked: navigator.confirm({
                                                   "heading": qsTr("Clear passwords?"),
-                                                  "message": qsTr("This will clear all locally stored passwords."),
-                                                  "description": qsTr("A password prompt will appear next time a YubiKey with a password set is selected."),
+                                                  "message": qsTr("This will delete all saved passwords."),
+                                                  "description": qsTr("A password prompt will appear the next time a YubiKey with a password is used."),
                                                   "acceptedCb": function() {
                                                     yubiKey.clearLocalPasswords(function (resp) {
                                                       if (resp.success) {
