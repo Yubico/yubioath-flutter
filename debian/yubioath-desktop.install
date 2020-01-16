@@ -1,2 +1,2 @@
 resources/yubioath-desktop.desktop usr/share/applications
-resources/icons/yubioath.png usr/share/pixmaps
+resources/icons/com.yubico.YubiOath.png usr/share/pixmaps
