@@ -1,7 +1,7 @@
 !include "MUI2.nsh"
 !include "nsProcess.nsh"
 
-!define MUI_ICON "../../resources/icons/yubioath.ico"
+!define MUI_ICON "../../resources/icons/com.yubico.yubioath.ico"
 
 ;Start Menu Folder Page Configuration
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "Yubico\Yubico Authenticator"

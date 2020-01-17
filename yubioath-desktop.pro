@@ -56,11 +56,11 @@ macx {
 include(deployment.pri)
 
 # Icon file
-RC_ICONS = resources/icons/yubioath.ico
+RC_ICONS = resources/icons/com.yubico.yubioath.ico
 
 # Mac specific configuration
 macx {
-    ICON = resources/icons/yubioath.icns
+    ICON = resources/icons/com.yubico.yubioath.icns
     QMAKE_INFO_PLIST = resources/mac/Info.plist.in
     QMAKE_POST_LINK += cp -rnf pymodules/lib/python3*/site-packages/ yubioath-desktop.app/Contents/MacOS/pymodules/
 }
