@@ -3,7 +3,7 @@ name: windows 64 bit
 on: [push, pull_request]
 
 env:
-  PYTHON_VER: '3.8.0'
+  PYTHON_VER: '3.8.1'
   PYTHON_VER_DIRNAME: 'python38'
 
 jobs:
