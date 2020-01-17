@@ -11,7 +11,7 @@
       <WixVariable Id="WixUIDialogBmp" Value="resources\icons\yubico-msi-background.png" />
       <WixVariable Id="WixUIBannerBmp" Value="resources\icons\yubico-msi-y-banner.png" />
 
-      <Icon Id="icon.ico" SourceFile="resources\icons\yubioath.ico"/>
+      <Icon Id="icon.ico" SourceFile="resources\icons\com.yubico.yubioath.ico"/>
       <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
       <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
