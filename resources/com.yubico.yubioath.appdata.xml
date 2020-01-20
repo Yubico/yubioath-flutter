@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.yubico.yubioath</id>
+  <launchable type="desktop-id">com.yubico.yubioath.desktop</launchable>
+
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>BSD-2-Clause</project_license>
+
+  <name>Yubico Authenticator</name>
+  <summary>Graphical interface for displaying OATH codes with a YubiKey</summary>
+  <url type="homepage">https://developers.yubico.com/yubioath-desktop/</url>
+  <content_rating type="oars-1.1"/>
+
+  <developer_name>Yubico</developer_name>
+  <update_contact>andrey@sitnik.ru</update_contact>
+
+  <description>
+    <p>Generating Open Authentication (OATH) time-based TOTP and event-based HOTP one-time password codes, with the help of a YubiKey that protects the shared secrets.</p>
+    <p>Features:</p>
+    <ul>
+      <li>Add a credential by scanning a QR code on the screen</li>
+      <li>Favorite your most used credentials for easy access</li>
+      <li>Keep your secret seeds safe by storing them on a YubiKey</li>
+      <li>Require a touch on YubiKey to generate the code</li>
+      <li>Protect your credentials with a device password</li>
+      <li>Connect an external smart card reader and use the YubiKey over NFC</li>
+    </ul>
+  </description>
+
+  <screenshots>
+    ​<screenshot type="default">
+      <image type="source" width="850" height="393">https://raw.githubusercontent.com/Yubico/yubioath-desktop/master/screenshot.png</image>
+      <caption>Different modes and themes</caption>
+    </screenshot>
+  </screenshots>
+
+  <releases>
+    <release version="5.0.1" date="2019-05-29">
+      <description>
+        <ul>
+          <li>New colors for the account icons.</li>
+          <li>Use Roboto font on all platforms.</li>
+          <li>Increase some text sizes for better readability.</li>
+          <li>Change icon for the Settings button and move it to the left.</li>
+          <li>SysTray: Open application on double-click.</li>
+          <li>Terminology: Use "Accounts" instead of "Credentials".</li>
+          <li>Bugfix: Clear old accounts correctly when switching between devices.</li>
+          <li>Add keyboard shortcut (Ctrl/Cmd + i) for info popup.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="5.0.0" date="2019-09-23">
+      <description>
+        <ul>
+          <li>New UI based on Material Design and Qt Quick Controls 2</li>
+          <li>Add Dark Mode and Light Mode</li>
+          <li>Feature: Allow switching between connected YubiKeys</li>
+          <li>Feature: Select favorite credentials, available from the System Tray/Menu Bar</li>
+          <li>Show some information about the connected YubiKey, such as firmware version and serial number</li>
+          <li>Add experimental support for external smart card readers, enabling the use of a YubiKey over NFC</li>
+          <li>Add initial accessability support</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+</component>
