@@ -1,2 +1,2 @@
-resources/yubioath-desktop.desktop usr/share/applications
+resources/com.yubico.yubioath.desktop usr/share/applications
 resources/icons/com.yubico.yubioath.svg usr/share/pixmaps
