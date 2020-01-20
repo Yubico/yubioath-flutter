@@ -10,12 +10,12 @@ win32|win64 {
     QMAKE_TARGET_COMPANY = Yubico
     QMAKE_TARGET_PRODUCT = Yubico Authenticator
     QMAKE_TARGET_DESCRIPTION = Yubico Authenticator
-    QMAKE_TARGET_COPYRIGHT = Copyright (c) 2019 Yubico AB
+    QMAKE_TARGET_COPYRIGHT = Copyright (c) 2020 Yubico AB
 } else {
     VERSION = 5.0.2
 }
 # This is the version shown on the About page
-DEFINES += APP_VERSION=\\\"5.0.2\\\"
+DEFINES += APP_VERSION=\\\"5.0.2-RC1\\\"
 
 message(Version of this build: $$VERSION)
 

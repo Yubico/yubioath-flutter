@@ -1,9 +1,9 @@
 * Version 5.0.2 (unreleased)
- ** Allow spaces in secret key when adding accounts.
- ** UI: Move favorite button to the credential card.
- ** UI: Improved scrolling behaviour.
- ** Windows: Improve how .DLL files are loaded.
- ** Windows: Experimental support for .MSI installers.
+ ** Allow spaces in secret key when adding accounts
+ ** UI: Move favorite button to the credential card
+ ** UI: Improved scrolling behaviour
+ ** Windows: Improve how .DLL files are loaded, thanks to Marius Gabriel Mihai for reporting this!
+ ** Windows: Experimental support for .MSI installers
 
 * Version 5.0.1 (released 2019-10-16)
  ** New colors for the account icons.
