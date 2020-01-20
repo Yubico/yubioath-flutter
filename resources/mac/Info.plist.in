@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
         <key>CFBundleIconFile</key>
-        <string>yubioath.icns</string>
+        <string>com.yubico.yubioath.icns</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleSignature</key>
