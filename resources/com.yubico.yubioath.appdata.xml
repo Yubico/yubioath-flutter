@@ -12,7 +12,6 @@
   <content_rating type="oars-1.1"/>
 
   <developer_name>Yubico</developer_name>
-  <update_contact>dag@yubico.com</update_contact>
 
   <description>
     <p>Generating Open Authentication (OATH) time-based TOTP and event-based HOTP one-time password codes, with the help of a YubiKey that protects the shared secrets.</p>
