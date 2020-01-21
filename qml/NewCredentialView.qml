@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 Flickable {
 
-    readonly property int dynamicWidth: 864
+    readonly property int dynamicWidth: 648
     readonly property int dynamicMargin: 32
 
     id: newCredentialViewId
@@ -50,18 +50,8 @@ Flickable {
 
         function callback(resp) {
             if (resp.success) {
-                yubiKey.calculateAll(navigator.goToCredentials)
-                navigator.confirm({
-                                      "heading": qsTr("Account added. This is your verification code."),
-                                      "currentDevice": !!yubiKey.currentDevice && yubiKey.currentDevice,
-                                      "issuer": issuerLbl.text.length > 0 ? issuerLbl.text : null,
-                                      "name": nameLbl.text,
-                                      "touch": yubiKey.supportsTouchCredentials() || settings.otpMode ? requireTouchCheckBox.checked : false,
-                                      "warning": false,
-                                      "doNotAskForCopy": copy,
-                                      "buttons": false,
-                                      "acceptedCb": addCredentialNoCopy
-                            })
+                    yubiKey.calculateAll(navigator.goToCredentials)
+                    navigator.snackBar(qsTr("Account added"))
             } else {
                 if (resp.error_id === 'credential_already_exists') {
                     navigator.confirm({
@@ -316,6 +306,7 @@ Flickable {
                                                 bottom: 15
                                                 top: 60
                                             }
+                                            Layout.maximumWidth: oathTypeComboBox.width
                                         }
                                         Item {
                                             visible: oathTypeComboBox.currentIndex === 0

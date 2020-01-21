@@ -12,8 +12,6 @@ Pane {
     property var code
     property var credential
 
-    property var showFullCredentialCard: true
-
     property bool touchCredentialNoCode: touchCredential && (!code
                                                              || !code.value)
     property bool hotpCredential: !!credential && (credential
@@ -205,50 +203,20 @@ Pane {
     property string codeLabelText: getCodeLblValue()
     property var isKeyChanged: false
 
-    Label {
-        visible: !showFullCredentialCard
-        font.pixelSize: codeLabelText !== "" ? 24 : 18
-        width: parent.width
-        color: yubicoWhite
-        text: {
-            if (codeLabelText !== "") {
-                return codeLabelText
-            } else if (isKeyChanged) {
-                return qsTr("Ready to copy")
-            } else {
-                return qsTr("No YubiKey available")
-            }
-        }
-        font.weight: Font.Normal
-        anchors.fill: parent
-        Layout.alignment: Qt.AlignCenter | Qt.AlignVCenter
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        MouseArea {
-            hoverEnabled: true
-            anchors.fill: parent
-            acceptedButtons: Qt.LeftButton
-            cursorShape: Qt.PointingHandCursor
-            onClicked: calculateCard(true)
-            onDoubleClicked: calculateCard(true)
-        }
-    }
-
     background: Rectangle {
-        visible: showFullCredentialCard
         anchors.left: parent.left
         anchors.top: parent.top
         Layout.minimumWidth: 299
-        Layout.minimumHeight: 81
+        Layout.minimumHeight: 75
         width: parent.width - 1
-        height: 81
+        height: parent.height - 1
         color: yubicoWhite
         opacity: if (credentialCard.GridView.isCurrentItem) {
                    return cardSelectedEmphasis
                } else if (cardMouseArea.containsMouse) {
                    return cardHoveredEmphasis
                } else {
-                   return cardNormalEmphasis
+                   return isDark() ? cardNormalEmphasis : 1.0
                }
         MouseArea {
             id: cardMouseArea
@@ -257,13 +225,11 @@ Pane {
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             onDoubleClicked: calculateCard(true)
             onClicked: {
-                if (showFullCredentialCard) {
-                    if (mouse.button === Qt.RightButton) {
-                        contextMenu.popup()
-                    } else {
-                        credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
-                        navigator.forceActiveFocus()
-                    }
+                if (mouse.button === Qt.RightButton) {
+                    contextMenu.popup()
+                } else {
+                    credentialCard.GridView.isCurrentItem ? credentialCard.GridView.view.currentIndex = -1 : credentialCard.GridView.view.currentIndex = index
+                    navigator.forceActiveFocus()
                 }
             }
             Menu {
@@ -327,7 +293,6 @@ Pane {
     Item {
 
         anchors.fill: parent
-        visible: showFullCredentialCard
 
         CredentialCardIcon {
             id: icon
@@ -355,7 +320,7 @@ Pane {
             Label {
                 id: nameLbl
                 text: formattedName()
-                Layout.maximumWidth: credentialCard.width - 100
+                Layout.maximumWidth: credentialCard.width - 106
                 font.pixelSize: 14
                 elide: Text.ElideRight
                 color: primaryColor
@@ -365,7 +330,7 @@ Pane {
                 text: qsTr(nameLbl.text)
                 delay: 1000
                 parent: nameLbl
-                visible: nameLbl.truncated && credentialCard.hovered && !favoriteBtn
+                visible: nameLbl.truncated && credentialCard.hovered && !favoriteBtn.hovered
                 Material.foreground: toolTipForeground
                 Material.background: toolTipBackground
             }
@@ -379,12 +344,12 @@ Pane {
         ToolButton {
             id: favoriteBtn
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
-            visible: showFullCredentialCard && (favorite || credentialCard.hovered || credentialCard.GridView.isCurrentItem)
+            visible: favorite || credentialCard.hovered || credentialCard.GridView.isCurrentItem
 
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.rightMargin: -6
-            anchors.topMargin: 0
+            anchors.topMargin: -2
 
             onClicked: toggleFavorite()
             Keys.onReturnPressed: toggleFavorite()
@@ -405,8 +370,8 @@ Pane {
             }
 
             icon.source: favorite ? "../images/star.svg" : "../images/star_border.svg"
-            icon.color: hovered || favorite ? icon.color : primaryColor
-            opacity: hovered || favorite ? fullEmphasis : disabledEmphasis
+            icon.color: hovered || favorite ? iconFavorite : primaryColor
+            opacity: hovered || favorite ? highEmphasis : disabledEmphasis
             implicitHeight: 30
             implicitWidth: 30
 
@@ -425,11 +390,9 @@ Pane {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             anchors.rightMargin: 3
-            anchors.bottomMargin: 8
+            anchors.bottomMargin: 6
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-            colorCircle: icon.color
-            visible: showFullCredentialCard && (code && code.value && credential
-                     && credential.oath_type === "TOTP" ? true : false)
+            visible: code && code.value && credential && credential.oath_type === "TOTP" ? true : false
             onTimesUp: {
                 if (touchCredential) {
                     clearExpiredCode()
@@ -445,12 +408,13 @@ Pane {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             anchors.rightMargin: 0
-            anchors.bottomMargin: 8
+            anchors.bottomMargin: 6
             iconWidth: 18
             iconHeight: 18
             source: "../images/touch.svg"
-            visible: showFullCredentialCard && touchCredentialNoCode
-            color: icon.color
+            visible: touchCredentialNoCode
+            color: primaryColor
+            opacity: lowEmphasis
             Layout.alignment: Qt.AlignRight
         }
 
@@ -459,13 +423,13 @@ Pane {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             anchors.rightMargin: -1
-            anchors.bottomMargin: 4
+            anchors.bottomMargin: 2
             iconWidth: 20
             iconHeight: 20
             source: "../images/refresh.svg"
-            visible: showFullCredentialCard && hotpCredential
-            color: icon.color
-            opacity: hotpCredentialInCoolDown ? lowEmphasis : fullEmphasis
+            visible: hotpCredential
+            color: primaryColor
+            opacity: hotpCredentialInCoolDown ? disabledEmphasis : lowEmphasis
             Layout.alignment: Qt.AlignRight
         }
     }

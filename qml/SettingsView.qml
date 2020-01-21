@@ -6,9 +6,6 @@ import QtGraphicalEffects 1.0
 
 Flickable {
 
-    readonly property int dynamicWidth: 864
-    readonly property int dynamicMargin: 32
-
     id: settingsPanel
     objectName: 'settingsView'
     contentWidth: app.width
@@ -285,7 +282,7 @@ Flickable {
                             flat: true
                             onClicked: navigator.confirm({
                                                        "heading": qsTr("Remove password?"),
-                                                       "message": qsTr("A password will not be required to access the accounts anymore."),
+                                                       "description": qsTr("A password will not be required to access the accounts anymore."),
                                                        "warning": false,
                                                        "acceptedCb": function () {
                                                            removePassword()
@@ -333,8 +330,9 @@ Flickable {
                                                           navigator.goToSettings()
                                                       })
                                                   }
-                                                        })
+               })
             }
+
         }
 
         StyledExpansionContainer {
@@ -534,7 +532,7 @@ Flickable {
             }
 
             StyledExpansionPanel {
-                label: "Options"
+                label: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
                 description: qsTr("Configure where and how the application is visible.")
                 isBottomPanel: true
 
@@ -565,6 +563,26 @@ Flickable {
                         onCheckStateChanged: settings.hideOnLaunch = checked
                     }
                 }
+            }
+
+            StyledExpansionPanel {
+                label: qsTr("Clear passwords")
+                description: qsTr("Delete all saved passwords.")
+                isEnabled: false
+                visible: true
+                toolButtonIcon: "../images/delete.svg"
+                toolButtonToolTip: qsTr("Clear")
+                toolButton.onClicked: navigator.confirm({
+                                                  "heading": qsTr("Clear passwords?"),
+                                                  "message": qsTr("This will delete all saved passwords."),
+                                                  "description": qsTr("A password prompt will appear the next time a YubiKey with a password is used."),
+                                                  "acceptedCb": function() {
+                                                    yubiKey.clearLocalPasswords(function (resp) {
+                                                      if (resp.success) {
+                                                        navigator.snackBar(qsTr("Passwords cleared"))
+                                                      }
+                  })}
+               })
             }
         }
     }

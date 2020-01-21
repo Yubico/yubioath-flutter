@@ -3,7 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
-import Qt.labs.platform 1.1
+import Qt.labs.platform 1.1 as PopUpMenu
 
 ToolBar {
     id: toolBar
@@ -25,7 +25,7 @@ ToolBar {
     property bool showBackBtn: navigator.depth > 1
     property bool showTitleLbl: !!navigator.currentItem
                                 && !!navigator.currentItem.title
-    property alias settingsBtn: settingsBtn
+    property alias moreBtn: moreBtn
     property alias addCredentialBtn: addCredentialBtn
     property alias searchField: searchField
 
@@ -75,11 +75,11 @@ ToolBar {
         }
 
         ToolButton {
-            id: settingsBtn
+            id: moreBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             visible: !backBtn.visible && shouldShowSettings()
-            onClicked: navigator.goToSettings()
 
+            onClicked: navigator.goToSettings()
             Keys.onReturnPressed: navigator.goToSettings()
             Keys.onEnterPressed: navigator.goToSettings()
 
@@ -90,12 +90,12 @@ ToolBar {
 
             Accessible.role: Accessible.Button
             Accessible.name: "Settings"
-            Accessible.description: "Go to settings"
+            Accessible.description: "Settings button"
 
             ToolTip {
                 text: qsTr("Settings")
                 delay: 1000
-                parent: settingsBtn
+                parent: moreBtn
                 visible: parent.hovered
                 Material.foreground: toolTipForeground
                 Material.background: toolTipBackground
@@ -117,7 +117,7 @@ ToolBar {
             visible: showTitleLbl
             text: showTitleLbl ? navigator.currentItem.title : ""
             font.pixelSize: 16
-            Layout.leftMargin: settingsBtn.visible ? -32 : 0
+            Layout.leftMargin: moreBtn.visible ? -32 : 0
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -186,22 +186,22 @@ ToolBar {
                     }
                 }
 
-                Menu {
+                PopUpMenu.Menu {
                     id: contextMenu
 
-                    MenuItem {
+                    PopUpMenu.MenuItem {
                         text: qsTr("Cut")
                         onTriggered: {
                             searchField.cut()
                         }
                     }
-                    MenuItem {
+                    PopUpMenu.MenuItem {
                         text: qsTr("Copy")
                         onTriggered: {
                             searchField.copy()
                         }
                     }
-                    MenuItem {
+                    PopUpMenu.MenuItem {
                         text: qsTr("Paste")
                         onTriggered: {
                             searchField.paste()
@@ -218,8 +218,8 @@ ToolBar {
                     navigator.forceActiveFocus()
                 }
 
-                KeyNavigation.backtab: settingsBtn
-                KeyNavigation.left: settingsBtn
+                KeyNavigation.backtab: moreBtn
+                KeyNavigation.left: moreBtn
                 KeyNavigation.tab: shouldShowCredentialOptions(
                                        ) ? copyCredentialBtn : addCredentialBtn
                 KeyNavigation.right: shouldShowCredentialOptions(
@@ -367,6 +367,7 @@ ToolBar {
                     enabled: false
                 }
             }
+
 
             ToolButton {
                 id: addCredentialBtn

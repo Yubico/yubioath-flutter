@@ -2,6 +2,10 @@ name: windows 32bit
 
 on: [push, pull_request]
 
+env:
+  PYTHON_VER: '3.8.1'
+  PYTHON_VER_DIRNAME: 'python38'
+
 jobs:
   build:
 
@@ -9,6 +13,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+        with:
+          python-version: ${{ env.PYTHON_VER }}
+          architecture: 'x86'
 
       - name: Download dependencies
         run: |
@@ -17,7 +25,7 @@ jobs:
           wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.20.0-win32.zip -OutFile ykpers-1.20.0-win32.zip
           wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.20.0-win32.zip.sig -OutFile ykpers-1.20.0-win32.zip.sig
           wget https://github.com/libusb/libusb/releases/download/v1.0.22/libusb-1.0.22.7z -OutFile libusb-1.0.22.7z
-          wget https://www.python.org/ftp/python/3.6.8/python-3.6.8-embed-win32.zip -OutFile python-3.6.8-embed-win32.zip
+          wget https://www.python.org/ftp/python/$env:PYTHON_VER/python-$env:PYTHON_VER-embed-win32.zip -OutFile python-$env:PYTHON_VER-embed-win32.zip
         shell: powershell
 
       - name: Fetch GPG keys
@@ -33,7 +41,7 @@ jobs:
 
       - name: Install Qt and Jom
         run: |
-          pip install aqtinstall
+          pip install aqtinstall==0.6
           python -m aqt install 5.13.1 windows desktop win32_msvc2017
           7z x jom.zip
         shell: powershell
@@ -44,7 +52,7 @@ jobs:
           cd pyotherside-1.5.3
           (Get-Content .\src\qmldir).replace('pyothersideplugin', 'pyothersideplugin1') | Set-Content .\src\qmldir
           Clear-Content python.pri
-          Add-Content python.pri "PYTHON_CONFIG = python3-config`nQMAKE_LIBS += -LC:\hostedtoolcache\windows\Python\3.6.8\x86\libs -lpython36`nQMAKE_CXXFLAGS += -IC:\hostedtoolcache\windows\Python\3.6.8\x86\include`n"
+          Add-Content python.pri "PYTHON_CONFIG = python3-config`nQMAKE_LIBS += -LC:\hostedtoolcache\windows\Python\$env:PYTHON_VER\x86\libs -l$env:PYTHON_VER_DIRNAME`nQMAKE_CXXFLAGS += -IC:\hostedtoolcache\windows\Python\$env:PYTHON_VER\x86\include`n"
         shell: powershell
 
       - name: Build and install pyotherside
@@ -59,23 +67,11 @@ jobs:
 
       - name: Build app
         run: |
-          set PATH=C:\hostedtoolcache\windows\Python\3.6.8\x86\Scripts;C:\hostedtoolcache\windows\Python\3.6.8\x86;D:\a\yubioath-desktop\yubioath-desktop\5.13.1\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          set PATH=C:\hostedtoolcache\windows\Python\$env:PYTHON_VER\x86\Scripts;C:\hostedtoolcache\windows\Python\$env:PYTHON_VER\x86;D:\a\yubioath-desktop\yubioath-desktop\5.13.1\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x86
           qmake
           jom
         shell: cmd
-
-      - name: Copy ykpers and libusb dll files
-        run: |
-          7z x ykpers-1.20.0-win32.zip
-          Copy-Item .\bin\*.dll .\release -Force
-
-          7z x libusb-1.0.22.7z
-          Copy-Item .\MS32\dll\*.dll .\release -Force
-
-          cd .\release
-          7z x ..\python-3.6.8-embed-win32.zip
-        shell: powershell
 
       - name: Run windeployqt
         run: |
@@ -92,6 +88,15 @@ jobs:
           Get-ChildItem -Include *.cpp -Recurse | Remove-Item -Force
           Get-ChildItem -Include *.obj -Recurse | Remove-Item -Force
 
+          7z x ykpers-1.20.0-win32.zip
+          Copy-Item .\bin\*.dll .\release\pymodules\ykman\native -Force
+
+          7z x libusb-1.0.22.7z
+          Copy-Item .\MS32\dll\*.dll .\release\pymodules\ykman\native -Force
+
+          cd .\release
+          7z x ..\python-$env:PYTHON_VER-embed-win32.zip
+
       - name: Create .zip artifact
         run: |
           $arr = $env:GITHUB_REF -split '/'
@@ -107,14 +112,12 @@ jobs:
           choco install visualstudio2019community --package-parameters "--add Microsoft.VisualStudio.Component.VC.Redist.MSM"
 
       - name: Create an unsigned .msi installer package
-        shell: cmd
         run: |
-          cd "C:\Program Files (x86)\Microsoft Visual Studio"
-          ls
-          set PATH=%WIX%\bin;%PATH%
-          set SRCDIR=.\release\
+          $env:PATH += ";$env:WIX\bin"
+          $env:SRCDIR = ".\release\"
+          $env:MERGEDPATH = Get-ChildItem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\*\MergeModules\Microsoft_VC142_CRT_x86.msm"
           heat dir .\release -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
-          candle .\fragment.wxs .\resources\win\yubioath-desktop-x86.wxs -arch x86
+          candle .\fragment.wxs .\resources\win\yubioath-desktop-x86.wxs -ext WixUtilExtension -arch x86
           light fragment.wixobj yubioath-desktop-x86.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop-x86.msi
           cp yubioath-desktop-x86.msi deploy
 

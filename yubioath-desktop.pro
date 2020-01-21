@@ -6,20 +6,26 @@ HEADERS += screenshot.h
 
 # This is the internal verson number, Windows requires 4 digits.
 win32|win64 {
-    VERSION = 5.0.1.0
+    VERSION = 5.0.2.0
     QMAKE_TARGET_COMPANY = Yubico
     QMAKE_TARGET_PRODUCT = Yubico Authenticator
     QMAKE_TARGET_DESCRIPTION = Yubico Authenticator
-    QMAKE_TARGET_COPYRIGHT = Copyright (c) 2017 Yubico AB
+    QMAKE_TARGET_COPYRIGHT = Copyright (c) 2020 Yubico AB
 } else {
-    VERSION = 5.0.1
+    VERSION = 5.0.2
 }
 # This is the version shown on the About page
-DEFINES += APP_VERSION=\\\"5.0.1\\\"
+DEFINES += APP_VERSION=\\\"5.0.2-RC1\\\"
 
 message(Version of this build: $$VERSION)
 
-buildqrc.commands = python build_qrc.py ${QMAKE_FILE_IN}
+win32|win64 {
+    PYTHON_CMD = python
+} else {
+    PYTHON_CMD = python3
+}
+
+buildqrc.commands = $$PYTHON_CMD build_qrc.py ${QMAKE_FILE_IN}
 buildqrc.input = QRC_JSON
 buildqrc.output = ${QMAKE_FILE_IN_BASE}.qrc
 buildqrc.variable_out = RESOURCES
@@ -30,7 +36,7 @@ QMAKE_EXTRA_COMPILERS += buildqrc
 QRC_JSON = resources.json
 
 # Generate first time
-system(python build_qrc.py resources.json)
+system($$PYTHON_CMD build_qrc.py resources.json)
 
 # Install python dependencies with pip on mac and win
 win32|macx {
@@ -50,11 +56,11 @@ macx {
 include(deployment.pri)
 
 # Icon file
-RC_ICONS = resources/icons/yubioath.ico
+RC_ICONS = resources/icons/com.yubico.yubioath.ico
 
 # Mac specific configuration
 macx {
-    ICON = resources/icons/yubioath.icns
+    ICON = resources/icons/com.yubico.yubioath.icns
     QMAKE_INFO_PLIST = resources/mac/Info.plist.in
     QMAKE_POST_LINK += cp -rnf pymodules/lib/python3*/site-packages/ yubioath-desktop.app/Contents/MacOS/pymodules/
 }
