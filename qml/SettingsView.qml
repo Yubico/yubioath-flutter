@@ -534,7 +534,6 @@ Flickable {
             StyledExpansionPanel {
                 label: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
                 description: qsTr("Configure where and how the application is visible.")
-                isBottomPanel: true
 
                 ColumnLayout {
                     CheckBox {
@@ -570,6 +569,7 @@ Flickable {
                 description: qsTr("Delete all saved passwords.")
                 isEnabled: false
                 visible: true
+                isBottomPanel: true
                 toolButtonIcon: "../images/delete.svg"
                 toolButtonToolTip: qsTr("Clear")
                 toolButton.onClicked: navigator.confirm({
