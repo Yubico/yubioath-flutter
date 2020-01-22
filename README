@@ -23,12 +23,16 @@ which can be done by using the https://developers.yubico.com/yubikey-manager-qt/
 
 Downloads for all supported operating systems are available https://developers.yubico.com/yubioath-desktop/Releases/[here].
 
+
 === System Requirements
 The following operating systems are considered supported. The application may still run on other platforms.
 
 * Windows 7 or later
 * macOS High Sierra 10.13 or later
 * Ubuntu 16.04 LTS or later
+
+On Linux systems, make sure the `pcscd` service is installed and running.
+
 
 === CLI
 
