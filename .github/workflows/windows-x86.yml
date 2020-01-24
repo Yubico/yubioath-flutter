@@ -42,7 +42,7 @@ jobs:
       - name: Install Qt and Jom
         run: |
           pip install aqtinstall==0.6
-          python -m aqt install 5.13.1 windows desktop win32_msvc2017
+          python -m aqt install 5.14.0 windows desktop win32_msvc2017
           7z x jom.zip
         shell: powershell
 
@@ -57,7 +57,7 @@ jobs:
 
       - name: Build and install pyotherside
         run: |
-          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.13.1\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.14.0\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x86
           cd pyotherside-1.5.3
           qmake
@@ -67,7 +67,7 @@ jobs:
 
       - name: Build app
         run: |
-          set PATH=C:\hostedtoolcache\windows\Python\$env:PYTHON_VER\x86\Scripts;C:\hostedtoolcache\windows\Python\$env:PYTHON_VER\x86;D:\a\yubioath-desktop\yubioath-desktop\5.13.1\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          set PATH=C:\hostedtoolcache\windows\Python\$env:PYTHON_VER\x86\Scripts;C:\hostedtoolcache\windows\Python\$env:PYTHON_VER\x86;D:\a\yubioath-desktop\yubioath-desktop\5.14.0\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x86
           qmake
           jom
@@ -75,7 +75,7 @@ jobs:
 
       - name: Run windeployqt
         run: |
-          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.13.1\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.14.0\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x86
           windeployqt .\release\yubioath-desktop.exe --qmldir=.\qml --no-translations --angle --release
         shell: cmd
