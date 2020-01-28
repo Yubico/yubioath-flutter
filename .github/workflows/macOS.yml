@@ -24,20 +24,20 @@ jobs:
 
       - name: Build custom Python as a framework
         run: |
-          wget https://www.python.org/ftp/python/$PYTHON_VER/Python-$PYTHON_VER.tgz
-          tar -xzvf Python-$PYTHON_VER.tgz
-          cd Python-$PYTHON_VER
+          wget https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tgz
+          tar -xzvf Python-${PYTHON_VER}.tgz
+          cd Python-${PYTHON_VER}
           ./configure CPPFLAGS="-I$(brew --prefix openssl@1.1)/include" LDFLAGS="-L$(brew --prefix openssl@1.1)/lib" MACOSX_DEPLOYMENT_TARGET=10.13 CC=clang --enable-framework --with-openssl=$(brew --prefix openssl@1.1) --enable-optimizations
           sudo make altinstall
           cd ..
 
       - name: Download, build, install pyotherside QML plugin
         run: |
-          wget https://github.com/thp/pyotherside/archive/$PYOTHERSIDE_VER.tar.gz
-          tar -xzvf $PYOTHERSIDE_VER.tar.gz
-          echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-$PYOTHERSIDE_VER/src/src.pro
-          cd pyotherside-$PYOTHERSIDE_VER
-          qmake PYTHON_CONFIG=/Library/Frameworks/Python.framework/Versions/$PYTHON_VER_SHORT/bin/python$PYTHON_VER_SHORTm-config
+          wget https://github.com/thp/pyotherside/archive/${PYOTHERSIDE_VER}.tar.gz
+          tar -xzvf ${PYOTHERSIDE_VER}.tar.gz
+          echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-${PYOTHERSIDE_VER}/src/src.pro
+          cd pyotherside-${PYOTHERSIDE_VER}
+          qmake PYTHON_CONFIG=/Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/bin/python${PYTHON_VER_SHORT}m-config
           make
           sudo make install
           cd ..
@@ -64,19 +64,19 @@ jobs:
 
       - name: Move python dependencies to site-packages (required by codesign)
         run: |
-          rsync -a yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/$PYTHON_VER_SHORT/lib/python$PYTHON_VER_SHORT/site-packages/
+          rsync -a yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/site-packages/
           rm -rf yubioath-desktop.app/Contents/MacOS/pymodules
 
       - name: Point pyotherside to relative Python
         run: |
-          sudo install_name_tool -change /Library/Frameworks/Python.framework/Versions/$PYTHON_VER_SHORT/Python @executable_path/../Frameworks/Python.framework/Versions/$PYTHON_VER_SHORT/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
+          sudo install_name_tool -change /Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Python @executable_path/../Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
 
       - name: Point custom Python share objects to relative openssl (from brew)
         run: |
-          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/$PYTHON_VER_SHORT/lib/python$PYTHON_VER_SHORT/lib-dynload/_ssl.cpython-$PYTHON_VER_SHORT_COMPACTm-darwin.so
-          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/$PYTHON_VER_SHORT/lib/python$PYTHON_VER_SHORT/lib-dynload/_ssl.cpython-$PYTHON_VER_SHORT_COMPACTm-darwin.so
-          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/$PYTHON_VER_SHORT/lib/python$PYTHON_VER_SHORT/lib-dynload/_hashlib.cpython-$PYTHON_VER_SHORT_COMPACTm-darwin.so
-          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/$PYTHON_VER_SHORT/lib/python$PYTHON_VER_SHORT/lib-dynload/_hashlib.cpython-$PYTHON_VER_SHORT_COMPACTm-darwin.so
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_hashlib.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_hashlib.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
           sudo install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1d/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/libssl.1.1.dylib
 
       - name: Point ykpers dependencies to relative dylibs
