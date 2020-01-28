@@ -26,10 +26,10 @@ RUN curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-instal
     && pyenv update \
     && pyenv install --force 3.7.4 \
     && pyenv global 3.7.4 \
-    && wget https://github.com/thp/pyotherside/archive/1.5.8.tar.gz \
-    && tar -xzvf 1.5.8.tar.gz \
-    && echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-1.5.8/src/src.pro \
-    && cd pyotherside-1.5.8/src \
+    && wget https://github.com/thp/pyotherside/archive/1.5.9.tar.gz \
+    && tar -xzvf 1.5.9.tar.gz \
+    && echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-1.5.9/src/src.pro \
+    && cd pyotherside-1.5.9/src \
     && qmake \
     && make \
     && make install
