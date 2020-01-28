@@ -3,7 +3,7 @@
   <id>com.yubico.yubioath</id>
   <launchable type="desktop-id">com.yubico.yubioath.desktop</launchable>
 
-  <metadata_license>CC0-1.0</metadata_license>
+  <metadata_license>MIT</metadata_license>
   <project_license>BSD-2-Clause</project_license>
 
   <name>Yubico Authenticator</name>
