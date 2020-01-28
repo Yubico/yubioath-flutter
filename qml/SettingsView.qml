@@ -196,6 +196,11 @@ Flickable {
 
                     Repeater {
                         model: yubiKey.availableDevices
+                        onModelChanged: {
+                            if (yubiKey.availableDevices.length < 2) {
+                                currentDevicePanel.isExpanded = false
+                            }
+                        }
                         StyledRadioButton {
                             Layout.fillWidth: true
                             objectName: index
