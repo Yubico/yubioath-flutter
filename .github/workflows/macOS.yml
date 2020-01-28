@@ -18,9 +18,9 @@ jobs:
 
       - name: Build custom Python as a framework
         run: |
-          wget https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz
-          tar -xzvf Python-3.8.1.tgz
-          cd Python-3.8.1
+          wget https://www.python.org/ftp/python/3.7.6/Python-3.7.6.tgz
+          tar -xzvf Python-3.7.6.tgz
+          cd Python-3.7.6
           ./configure CPPFLAGS="-I$(brew --prefix openssl@1.1)/include" LDFLAGS="-L$(brew --prefix openssl@1.1)/lib" MACOSX_DEPLOYMENT_TARGET=10.13 CC=clang --enable-framework --with-openssl=$(brew --prefix openssl@1.1) --enable-optimizations
           sudo make altinstall
           cd ..
@@ -31,7 +31,7 @@ jobs:
           tar -xzvf 1.5.9.tar.gz
           echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-1.5.9/src/src.pro
           cd pyotherside-1.5.9
-          qmake PYTHON_CONFIG=/Library/Frameworks/Python.framework/Versions/3.8/bin/python3.8m-config
+          qmake PYTHON_CONFIG=/Library/Frameworks/Python.framework/Versions/3.7/bin/python3.7m-config
           make
           sudo make install
           cd ..
@@ -58,19 +58,19 @@ jobs:
 
       - name: Move python dependencies to site-packages (required by codesign)
         run: |
-          rsync -a yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/
+          rsync -a yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/
           rm -rf yubioath-desktop.app/Contents/MacOS/pymodules
 
       - name: Point pyotherside to relative Python
         run: |
-          sudo install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.8/Python @executable_path/../Frameworks/Python.framework/Versions/3.8/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
+          sudo install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.7/Python @executable_path/../Frameworks/Python.framework/Versions/3.7/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
 
       - name: Point custom Python share objects to relative openssl (from brew)
         run: |
-          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.8/lib/python3.8/lib-dynload/_ssl.cpython-38m-darwin.so
-          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.8/lib/python3.8/lib-dynload/_ssl.cpython-38m-darwin.so
-          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.8/lib/python3.8/lib-dynload/_hashlib.cpython-38m-darwin.so
-          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.8/lib/python3.8/lib-dynload/_hashlib.cpython-38m-darwin.so
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_hashlib.cpython-37m-darwin.so
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/3.7/lib/python3.7/lib-dynload/_hashlib.cpython-37m-darwin.so
           sudo install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1d/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/libssl.1.1.dylib
 
       - name: Point ykpers dependencies to relative dylibs
