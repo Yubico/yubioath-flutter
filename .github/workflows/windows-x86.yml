@@ -60,7 +60,7 @@ jobs:
         run: |
           set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.14.0\msvc2017\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x86
-          cd pyotherside-$env:PYOTHERSIDE_VER
+          cd pyotherside-%PYOTHERSIDE_VER%
           qmake
           jom
           jom install
