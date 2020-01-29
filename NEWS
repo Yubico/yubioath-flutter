@@ -1,9 +1,10 @@
-* Version 5.0.2 (unreleased)
+* Version 5.0.2 (released 2020-01-29)
  ** Allow spaces in secret key when adding accounts
  ** UI: Move favorite button to the credential card
  ** UI: Improved scrolling behaviour
- ** Windows: Improve how .DLL files are loaded, thanks to Marius Gabriel Mihai for reporting this!
- ** Windows: Experimental support for .MSI installers
+ ** Windows: Improve how .dll files are loaded, thanks to Marius Gabriel Mihai for reporting this!
+ ** Windows: Initial support for .msi installers. If upgrading from the .exe installer, make sure
+to uninstall the older version before using the .msi
 
 * Version 5.0.1 (released 2019-10-16)
  ** New colors for the account icons.
