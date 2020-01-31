@@ -18,6 +18,7 @@ jobs:
 
       - name: Install dependencies from hombrew
         run: |
+          brew update
           brew upgrade
           brew bundle --file=./.github/workflows/Brewfile
           brew link qt -f
