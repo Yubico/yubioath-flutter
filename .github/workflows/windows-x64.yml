@@ -43,7 +43,7 @@ jobs:
       - name: Install QT and jom
         run: |
           pip install aqtinstall
-          python -m aqt install 5.14.0 windows desktop win64_msvc2017_64
+          python -m aqt install 5.14.1 windows desktop win64_msvc2017_64
           7z x jom.zip
 
       - name: Prepare pyotherside
@@ -57,7 +57,7 @@ jobs:
 
       - name: Build and install pyotherside
         run: |
-          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.14.0\msvc2017_64\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.14.1\msvc2017_64\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x64
           cd pyotherside-%PYOTHERSIDE_VER%
           qmake
@@ -67,7 +67,7 @@ jobs:
 
       - name: Build app
         run: |
-          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.14.0\msvc2017_64\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.14.1\msvc2017_64\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x64
           qmake
           jom
@@ -75,7 +75,7 @@ jobs:
 
       - name: Run windeployqt
         run: |
-          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.14.0\msvc2017_64\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
+          set PATH=D:\a\yubioath-desktop\yubioath-desktop\5.14.1\msvc2017_64\bin;D:\a\yubioath-desktop\yubioath-desktop;%PATH%
           call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat x64
           windeployqt .\release\yubioath-desktop.exe --qmldir=qml --no-translations --angle --release
         shell: cmd
