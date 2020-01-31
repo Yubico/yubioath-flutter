@@ -46,6 +46,7 @@ RUN mkdir -p yubioath-desktop/appDir/usr \
     && qmake \
     && make \
     && cp resources/com.yubico.yubioath.desktop appDir/ \
+    && cp resources/com.yubico.yubioath.appdata.xml appDir/ \
     && cp resources/icons/com.yubico.yubioath.svg appDir/ \
     && cp ./yubioath-desktop appDir/usr/bin/ \
     && wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" \
