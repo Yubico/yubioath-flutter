@@ -1,0 +1,34 @@
+name: Build snap package
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build snap
+        run: |
+          sudo snap install snapcraft --classic
+          sudo chown root:root /
+          sudo apt-get remove -qy lxd lxd-client
+          sudo snap install lxd
+          sudo lxd init --auto
+          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
+          sudo snapcraft --use-lxd
+          mkdir deploy
+          mv yubioath-desktop*.snap yubioath-desktop-${REF}.snap
+          cp yubioath-desktop*.snap deploy
+
+      - name: Install snap
+        run: |
+          sudo snap install yubioath-desktop*.snap --devmode
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: yubioath-desktop-snap
+          path: deploy
