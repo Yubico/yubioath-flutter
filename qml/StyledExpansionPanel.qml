@@ -32,6 +32,7 @@ Pane {
 
     Layout.alignment: Qt.AlignCenter | Qt.AlignTop
     Layout.fillWidth: true
+    Layout.minimumHeight: isExpanded ? panelHeader.height + expandedContent.height + 40 : panelHeader.height + 20
     Layout.maximumWidth: dynamicWidth + dynamicMargin
 
     Layout.leftMargin: -16
@@ -39,6 +40,7 @@ Pane {
 
     Layout.topMargin: isExpanded && dropShadow && !isTopPanel ? 9 : -4
     Layout.bottomMargin: isExpanded && dropShadow && !isBottomPanel ? 11 : -3
+    bottomPadding: panelDescription.lineCount > 1 ? 8 : 6
 
     Material.background: backgroundColor
     Material.elevation: dropShadow ? 1 : 0
@@ -63,6 +65,19 @@ Pane {
         }
     }
 
+    MouseArea {
+        onClicked: expandAction()
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin: -16
+        anchors.rightMargin: -16
+        anchors.topMargin: -16
+        height: panelHeader.height + 40
+        enabled: isEnabled
+        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+    }
+
     ColumnLayout {
 
         anchors.horizontalCenter: parent.horizontalCenter
@@ -73,6 +88,7 @@ Pane {
         RowLayout {
             Layout.leftMargin: -12
             Layout.rightMargin: -24
+            id: panelHeader
 
             Rectangle {
                 id: rectangle
@@ -82,6 +98,8 @@ Pane {
                 radius: width * 0.5
                 visible: keyImage
                 Layout.rightMargin: 8
+                Layout.topMargin: 0
+                Layout.bottomMargin: 6
                 Image {
                     id: key
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -105,7 +123,9 @@ Pane {
             ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.topMargin: 0
+                Layout.bottomMargin: 0
                 visible: label
 
                 Label {
@@ -128,6 +148,7 @@ Pane {
                     Layout.fillWidth: true
                 }
                 Label {
+                    id: panelDescription
                     Layout.alignment: Qt.AlignRight | Qt.AlignTop
                     Layout.fillWidth: true
                     font.pixelSize: 13
