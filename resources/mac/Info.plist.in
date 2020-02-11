@@ -6,6 +6,10 @@
         <string>com.yubico.yubioath.icns</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
+        <key>CFBundleSupportedPlatforms</key>
+        <array>
+                <string>MacOSX</string>
+        </array>
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleExecutable</key>
