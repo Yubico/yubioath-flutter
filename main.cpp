@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QDesktopWidget>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <stdlib.h>
@@ -45,6 +46,21 @@ int main(int argc, char *argv[])
     application.setApplicationVersion(APP_VERSION);
     application.setOrganizationName("Yubico");
     application.setOrganizationDomain("com.yubico");
+
+    // Get x and y coordinates of all monitors
+    QVariantList monitorAreas;
+    for (QScreen* screen : QGuiApplication::screens())  {
+        QRect monitorArea = screen->geometry();
+
+        QVariantMap coordinates;
+
+        coordinates.insert("xMin", monitorArea.x());
+        coordinates.insert("xMax", monitorArea.x() + monitorArea.width());
+        coordinates.insert("yMin", monitorArea.y());
+        coordinates.insert("yMax", monitorArea.y() + monitorArea.height());
+
+        monitorAreas << coordinates;
+    }
 
     QQuickStyle::setStyle("Material");
 
@@ -97,6 +113,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("appVersion", APP_VERSION);
     engine.rootContext()->setContextProperty("ScreenShot", &screenshot);
     engine.rootContext()->setContextProperty("application", &application);
+    engine.rootContext()->setContextProperty("monitorAreas", monitorAreas);
     engine.load(QUrl(url_prefix + main_qml));
 
 
