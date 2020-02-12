@@ -31,6 +31,10 @@ jobs:
           ./configure CPPFLAGS="-I$(brew --prefix openssl@1.1)/include" LDFLAGS="-L$(brew --prefix openssl@1.1)/lib" MACOSX_DEPLOYMENT_TARGET=10.13 CC=clang --enable-framework --with-openssl=$(brew --prefix openssl@1.1) --enable-optimizations
           sudo make altinstall
           cd ..
+          sudo env LDFLAGS="-L$(brew --prefix openssl@1.1)/lib" CFLAGS="-I$(brew --prefix openssl@1.1)/include" MACOSX_DEPLOYMENT_TARGET=10.13 /Library/Frameworks/Python.framework/Versions/3.7/bin/pip3.7 install cryptography --no-binary :all: --ignore-installed --force-reinstall --no-cache
+          sudo env LDFLAGS="-L$(brew --prefix openssl@1.1)/lib" CFLAGS="-I$(brew --prefix openssl@1.1)/include" MACOSX_DEPLOYMENT_TARGET=10.13 /Library/Frameworks/Python.framework/Versions/3.7/bin/pip3.7 install git+https://github.com/dagheyman/pyscard.git --no-binary :all: --ignore-installed --force-reinstall --no-cache
+          sudo env LDFLAGS="-L$(brew --prefix openssl@1.1)/lib" CFLAGS="-I$(brew --prefix openssl@1.1)/include" MACOSX_DEPLOYMENT_TARGET=10.13 /Library/Frameworks/Python.framework/Versions/3.7/bin/pip3.7 install -r requirements.txt --no-binary :all:
+          sudo sed -i '' 's/org.python.python/com.yubico.python/g' /Library/Frameworks/Python.framework/Versions/3.7/Resources/Python.app/Contents/Info.plist
 
       - name: Download, build, install pyotherside QML plugin
         run: |
@@ -63,11 +67,6 @@ jobs:
           sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '*.pyc' -delete
           sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '__pycache__' -delete
 
-      - name: Move python dependencies to site-packages (required by codesign)
-        run: |
-          rsync -a yubioath-desktop.app/Contents/MacOS/pymodules/* yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/site-packages/
-          rm -rf yubioath-desktop.app/Contents/MacOS/pymodules
-
       - name: Point pyotherside to relative Python
         run: |
           sudo install_name_tool -change /Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Python @executable_path/../Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
@@ -79,7 +78,8 @@ jobs:
           sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_hashlib.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
           sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_hashlib.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
           sudo install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1d/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/libssl.1.1.dylib
-
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/site-packages/cryptography/hazmat/bindings/_openssl.abi3.so
+          sudo install_name_tool -change /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/site-packages/cryptography/hazmat/bindings/_openssl.abi3.so
       - name: Point ykpers dependencies to relative dylibs
         run: |
           sudo install_name_tool -change /usr/local/opt/libyubikey/lib/libyubikey.0.dylib @executable_path/../Frameworks/libyubikey.0.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.1.dylib
