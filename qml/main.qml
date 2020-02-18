@@ -139,6 +139,30 @@ ApplicationWindow {
                 && (settings.desktopAvailableHeight === Screen.desktopAvailableHeight)
         app.x = (savedScreenLayout) ? settings.x : Screen.width / 2 - app.width / 2
         app.y = (savedScreenLayout) ? settings.y : Screen.height / 2 - app.height / 2
+
+        function isWindowPositionInsideSomeMonitor() {
+            for (var i = 0; i < monitorAreas.length; i++)  {
+                var xMin = monitorAreas[i].xMin
+                var xMax = monitorAreas[i].xMax
+                var yMin = monitorAreas[i].yMin
+                var yMax = monitorAreas[i].yMax
+
+                if (app.x > xMin && app.x < xMax) {
+                    if (app.y > yMin && app.y < yMax) {
+                        return true
+                    }
+                }
+            }
+            return false
+        }
+
+        // If app.x and app.y are outside of the available screen geometry,
+        // put the app in the middle of the screen.
+        if (!isWindowPositionInsideSomeMonitor()) {
+            app.x = Screen.width / 2 - app.width / 2
+            app.y = Screen.height / 2 - app.height / 2
+        }
+
     }
 
     function updateTrayVisibility() {
