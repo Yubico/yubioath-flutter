@@ -19,7 +19,9 @@ jobs:
       - name: Install dependencies from hombrew
         run: |
           brew update
-          brew upgrade
+          brew uninstall --ignore-dependencies openssl@1.1
+          brew cleanup -s
+          MACOSX_DEPLOYMENT_TARGET=10.13 brew install openssl@1.1 --build-from-source
           brew bundle --file=./.github/workflows/Brewfile
           brew link qt -f
 
