@@ -43,7 +43,12 @@ jobs:
       - name: Install python dependencies from source
         run: |
           sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.7/bin/pip3.7 install cryptography --no-binary :all: --ignore-installed --force-reinstall --no-cache
-          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.7/bin/pip3.7 install git+https://github.com/dagheyman/pyscard.git --no-binary :all: --ignore-installed --force-reinstall --no-cache
+          /Library/Frameworks/Python.framework/Versions/3.7/bin/pip3.7 download pyscard --no-binary :all:
+          tar -xvf pyscard*
+          cd pyscard*
+          git apply ../.github/workflows/macos-pyscard-patch.patch
+          cd ..
+          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.7/bin/pip3.7 install ./pyscard* --no-binary :all: --ignore-installed --force-reinstall --no-cache
           sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.7/bin/pip3.7 install -r requirements.txt --no-binary :all:
 
       - name: Change id for bundled Python

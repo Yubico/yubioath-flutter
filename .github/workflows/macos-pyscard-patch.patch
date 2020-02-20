@@ -1,0 +1,27 @@
+From 0b04f048c46c1c79af200585abb3414ac7358702 Mon Sep 17 00:00:00 2001
+From: Dag Heyman <dag@yubico.com>
+Date: Thu, 20 Feb 2020 14:49:08 +0100
+Subject: [PATCH] macOS: never compile with 32bit support
+
+This makes the library compatible with the
+macOS App Store.
+---
+ setup.py | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/setup.py b/setup.py
+index 939e60f..e8ae7fc 100755
+--- a/setup.py
++++ b/setup.py
+@@ -65,9 +65,8 @@
+     platform_sources = []
+     platform_libraries = []
+     platform_include_dirs = []
+-    platform_extra_compile_args = ['-v', '-arch', 'i386',
+-                                   '-arch', 'x86_64', '-ggdb']
+-    platform_extra_link_args = ['-arch', 'i386', '-arch', 'x86_64', '-ggdb']
++    platform_extra_compile_args = ['-v', '-arch', 'x86_64', '-ggdb']
++    platform_extra_link_args = ['-arch', 'x86_64', '-ggdb']
+ 
+ # Other (GNU/Linux, etc.)
+ #
