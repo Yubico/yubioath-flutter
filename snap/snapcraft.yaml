@@ -42,9 +42,6 @@ apps:
       - u2f-devices
       - hidraw
       - hardware-observe
-      - network
-      - network-bind
-      - network-observe
       - ykman-config
     extensions: [gnome-3-28]
 
