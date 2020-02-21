@@ -27,8 +27,14 @@ Pane {
 
     property bool favorite: !!credential ? settings.favorites.includes(credential.key) : false
 
+    property string searchQuery: toolBar.searchField.text
+
     Layout.fillHeight: true
     Layout.fillWidth: true
+
+    function colorizeMatch(s) {
+        return s.replace(RegExp(searchQuery, "gi"), "<span style=\"background-color:'#ffeb3b';color:'#333333';\">$&</span>") + " "
+    }
 
     function toggleFavorite() {
         if (favorite) {
@@ -319,7 +325,8 @@ Pane {
             }
             Label {
                 id: nameLbl
-                text: formattedName()
+                text: searchQuery.length > 0 ? colorizeMatch(formattedName()) : formattedName()
+                textFormat: TextEdit.RichText
                 Layout.maximumWidth: credentialCard.width - 106
                 font.pixelSize: 14
                 elide: Text.ElideRight

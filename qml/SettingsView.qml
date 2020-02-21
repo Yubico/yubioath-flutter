@@ -126,7 +126,7 @@ Flickable {
         })
     }
 
-    property string title: qsTr("Settings")
+    property string title: qsTr("")
 
     ListModel {
         id: themes
@@ -248,7 +248,7 @@ Flickable {
                 id: passwordManagementPanel
                 label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change password") : qsTr("Set password")
                 description: qsTr("For additional security the YubiKey may be protected with a password.")
-                visible: !!yubiKey.currentDevice && !settings.otpMode
+                visible: !!yubiKey.currentDevice && !settings.otpMode && isVisible
 
                 ColumnLayout {
 
@@ -308,7 +308,7 @@ Flickable {
                 label: qsTr("Reset")
                 description: qsTr("Warning: Reset will delete all accounts and restore factory defaults.")
                 isEnabled: false
-                visible: !!yubiKey.currentDevice && !settings.otpMode
+                visible: !!yubiKey.currentDevice && !settings.otpMode && isVisible
                 toolButtonIcon: "../images/reset.svg"
                 toolButtonToolTip: qsTr("Reset device")
                 toolButton.onClicked: navigator.confirm({
@@ -573,7 +573,6 @@ Flickable {
                 label: qsTr("Clear passwords")
                 description: qsTr("Delete all saved passwords.")
                 isEnabled: false
-                visible: true
                 isBottomPanel: true
                 toolButtonIcon: "../images/delete.svg"
                 toolButtonToolTip: qsTr("Clear")

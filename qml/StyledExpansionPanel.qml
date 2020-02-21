@@ -17,12 +17,15 @@ Pane {
     property string description
     property string keyImage
     property string backgroundColor: defaultElevated
+    property string searchQuery: toolBar.searchField.text
+    property string searchText: label.concat(":", description)
 
     property bool isEnabled: true
     property bool isExpanded: false
     property bool isTopPanel: false
     property bool isBottomPanel: false
     property bool isSectionTitle: false
+    property bool isVisible: searchQuery.length > 0 ? searchText.match(RegExp(searchQuery, "i")) : true
     property bool dropShadow: true
 
     property string toolButtonIcon
@@ -44,12 +47,16 @@ Pane {
 
     Material.background: backgroundColor
     Material.elevation: dropShadow ? 1 : 0
+    visible: isVisible
+
+    function colorizeMatch(s) {
+        return s.replace(RegExp(searchQuery, "gi"), "<span style=\"background-color:'#ffeb3b';color:'#333333';\">$&</span>") + " "
+    }
 
     function expandAction() {
         function collapseAll() {
             for (var i = 0; i < parent.children.length; ++i) {
-                if (!!parent.children[i] &&
-                        parent.children[i].toString().indexOf("StyledExpansionPanel") === 0) {
+                if (!!parent.children[i] && parent.children[i].toString().startsWith("StyledExpansionPanel")) {
                     parent.children[i].isExpanded = false
                 }
             }
@@ -140,7 +147,8 @@ Pane {
 
                 Label {
                     visible: !isSectionTitle
-                    text: label
+                    text: searchQuery.length > 0 ? colorizeMatch(label) : label
+                    textFormat: TextEdit.RichText
                     font.pixelSize: 13
                     font.bold: false
                     color: primaryColor
@@ -154,7 +162,8 @@ Pane {
                     font.pixelSize: 13
                     color: primaryColor
                     opacity: lowEmphasis
-                    text: description
+                    text: searchQuery.length > 0 ? colorizeMatch(description) : description
+                    textFormat: TextEdit.RichText
                     wrapMode: Text.WordWrap
                     maximumLineCount: isExpanded ? 4 : 2
                     elide: Text.ElideRight

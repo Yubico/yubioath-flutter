@@ -14,20 +14,15 @@ Pane {
     spacing: 0
 
     property string title: ""
+    property string searchQuery: toolBar.searchField.text.toLowerCase()
 
     function filteredCredentials() {
-        if (entries !== null && toolBar.searchField.text.length > 0) {
-            var filteredEntries = entriesComponent.createObject(app, {
-
-                                                                })
+        if (entries !== null && searchQuery.length > 0) {
+            var filteredEntries = entriesComponent.createObject(app)
             for (var i = 0; i < entries.count; i++) {
                 var entry = entries.get(i)
-                if (!!entry && !!entry.credential) {
-                    if (entry.credential.key.toLowerCase().indexOf(
-                                toolBar.searchField.text.toLowerCase(
-                                    )) !== -1) {
-                        filteredEntries.append(entry)
-                    }
+                if (!!entry && !!entry.credential && entry.credential.key.toLowerCase().indexOf(searchQuery) !== -1) {
+                    filteredEntries.append(entry)
                 }
             }
             return filteredEntries
