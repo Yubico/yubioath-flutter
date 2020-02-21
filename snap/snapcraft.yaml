@@ -110,7 +110,12 @@ parts:
     override-build: |
       eval "$(pyenv init -)"
       pyenv global 3.8.1
-      pip3 install git+git://github.com/dagheyman/pyscard.git#egg=pyscard
+      pip3 download --no-binary :all: pyscard
+      tar -xvf pyscard*
+      cd pyscard*
+      patch setup.py ../.github/workflows/snap-pyscard-patch.patch
+      pip3 install .
+      cd ..
       pip3 install -r requirements.txt
     override-stage: |
       snapcraftctl stage
