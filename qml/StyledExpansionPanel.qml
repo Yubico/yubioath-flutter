@@ -25,7 +25,7 @@ Pane {
     property bool isTopPanel: false
     property bool isBottomPanel: false
     property bool isSectionTitle: false
-    property bool isVisible: searchQuery.length > 0 ? searchText.match(RegExp(searchQuery, "i")) : true
+    property bool isVisible: searchQuery.length > 0 ? searchText.match(RegExp(escapeRegExp(searchQuery), "i")) : true
     property bool dropShadow: true
 
     property string toolButtonIcon
@@ -50,7 +50,11 @@ Pane {
     visible: isVisible
 
     function colorizeMatch(s) {
-        return s.replace(RegExp(searchQuery, "gi"), "<span style=\"background-color:'#ffeb3b';color:'#333333';\">$&</span>") + " "
+        return s.replace(RegExp(escapeRegExp(searchQuery), "gi"), "<span style=\"background-color:'#ffeb3b';color:'#333333';\">$&</span>") + " "
+    }
+
+    function escapeRegExp(s) {
+      return s.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
     }
 
     function expandAction() {
