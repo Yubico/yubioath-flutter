@@ -347,6 +347,7 @@ Flickable {
             StyledExpansionPanel {
                 label: qsTr("Appearance")
                 description: qsTr("Change the visual appearance of the application.")
+                metadata: "dark light mode theme"
                 isTopPanel: true
 
                 ColumnLayout {
@@ -382,6 +383,8 @@ Flickable {
                 id: interfacePanel
                 label: qsTr("Interface")
                 description: qsTr("Configure how to communicate with the YubiKey.")
+                metadata: "ccid otp slot custom readers nfc"
+
                 property bool otpModeSelected: interfaceCombobox.currentIndex === 2
                 property bool customReaderSelected: interfaceCombobox.currentIndex === 1
                 property bool aboutToChange: (otpModeSelected !== settings.otpMode)

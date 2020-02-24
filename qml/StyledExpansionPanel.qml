@@ -15,10 +15,11 @@ Pane {
 
     property string label
     property string description
+    property string metadata
     property string keyImage
     property string backgroundColor: defaultElevated
     property string searchQuery: toolBar.searchField.text
-    property string searchText: label.concat(":", description)
+    property string searchText: label.concat(":", description, ":", metadata)
 
     property bool isEnabled: true
     property bool isExpanded: false
