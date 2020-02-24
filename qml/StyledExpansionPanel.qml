@@ -26,7 +26,7 @@ Pane {
     property bool isTopPanel: false
     property bool isBottomPanel: false
     property bool isSectionTitle: false
-    property bool isVisible: searchQuery.length > 0 ? searchText.match(RegExp(escapeRegExp(searchQuery.trim()), "gi")) : true
+    property bool isVisible: searchQuery.length > 0 ? searchText.match(RegExp(escapeRegExp(searchQuery.trim()), "i")) : true
     property bool dropShadow: true
 
     property string toolButtonIcon
@@ -55,7 +55,7 @@ Pane {
     }
 
     function escapeRegExp(s) {
-      return s.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/ /g, "|")
+      return s.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, "|")
     }
 
     function expandAction() {
