@@ -14,14 +14,14 @@ Pane {
     spacing: 0
 
     property string title: ""
-    property string searchQuery: toolBar.searchField.text.toLowerCase()
+    property string searchQuery: toolBar.searchField.text
 
     function filteredCredentials() {
         if (entries !== null && searchQuery.length > 0) {
             var filteredEntries = entriesComponent.createObject(app)
             for (var i = 0; i < entries.count; i++) {
                 var entry = entries.get(i)
-                if (!!entry && !!entry.credential && entry.credential.key.toLowerCase().indexOf(searchQuery) !== -1) {
+                if (!!entry && !!entry.credential && entry.credential.key.match(escapeRegExp(searchQuery, "i"))) {
                     filteredEntries.append(entry)
                 }
             }

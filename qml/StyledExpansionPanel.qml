@@ -26,7 +26,7 @@ Pane {
     property bool isTopPanel: false
     property bool isBottomPanel: false
     property bool isSectionTitle: false
-    property bool isVisible: searchQuery.length > 0 ? searchText.match(RegExp(escapeRegExp(searchQuery.trim()), "i")) : true
+    property bool isVisible: searchQuery.length > 0 ? searchText.match(escapeRegExp(searchQuery, "i")) : true
     property bool dropShadow: true
 
     property string toolButtonIcon
@@ -49,14 +49,6 @@ Pane {
     Material.background: backgroundColor
     Material.elevation: dropShadow ? 1 : 0
     visible: isVisible
-
-    function colorizeMatch(s) {
-        return s.replace(RegExp(escapeRegExp(searchQuery.trim()), "gi"), "<span style=\"background-color:'#ffeb3b';color:'#333333';\">$&</span>") + " "
-    }
-
-    function escapeRegExp(s) {
-      return s.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, "|")
-    }
 
     function expandAction() {
         function collapseAll() {
@@ -152,7 +144,7 @@ Pane {
 
                 Label {
                     visible: !isSectionTitle
-                    text: searchQuery.length > 0 ? colorizeMatch(label) : label
+                    text: searchQuery.length > 0 ? colorizeMatch(label, searchQuery) : label
                     textFormat: TextEdit.RichText
                     font.pixelSize: 13
                     font.bold: false
@@ -167,7 +159,7 @@ Pane {
                     font.pixelSize: 13
                     color: primaryColor
                     opacity: lowEmphasis
-                    text: searchQuery.length > 0 ? colorizeMatch(description) : description
+                    text: searchQuery.length > 0 ? colorizeMatch(description, searchQuery) : description
                     textFormat: TextEdit.RichText
                     wrapMode: Text.WordWrap
                     maximumLineCount: isExpanded ? 4 : 2

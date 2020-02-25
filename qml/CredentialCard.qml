@@ -32,10 +32,6 @@ Pane {
     Layout.fillHeight: true
     Layout.fillWidth: true
 
-    function colorizeMatch(s) {
-        return s.replace(RegExp(searchQuery, "gi"), "<span style=\"background-color:'#ffeb3b';color:'#333333';\">$&</span>") + " "
-    }
-
     function toggleFavorite() {
         if (favorite) {
             settings.favorites = settings.favorites.filter(fav => fav !== credential.key)
@@ -325,7 +321,7 @@ Pane {
             }
             Label {
                 id: nameLbl
-                text: searchQuery.length > 0 ? colorizeMatch(formattedName()) : formattedName()
+                text: searchQuery.length > 0 ? colorizeMatch(formattedName(), searchQuery) : formattedName()
                 textFormat: TextEdit.RichText
                 Layout.maximumWidth: credentialCard.width - 106
                 font.pixelSize: 14
