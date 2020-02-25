@@ -8,6 +8,9 @@ env:
   PYTHON_VER_SHORT_COMPACT: '37'
   PYOTHERSIDE_VER: '1.5.9'
   OPENSSL_VER: '1.1.1d'
+  LIBYUBIKEY_VER: '1.13'
+  LIBYKPERS_VER: '1.20.0'
+  LIBUSB_VER: '1.0.23'
 
 jobs:
   build:
@@ -20,7 +23,7 @@ jobs:
       - name: Install dependencies from homebrew
         run: |
           brew update
-          brew bundle --file=./.github/workflows/Brewfile
+          brew install swig qt zlib
           brew link qt -f
 
       - name: Build OpenSSL
@@ -64,6 +67,30 @@ jobs:
           make
           sudo make install
 
+      - name: Build libyubikey
+        run: |
+          wget https://developers.yubico.com/yubico-c/Releases/libyubikey-${LIBYUBIKEY_VER}.tar.gz
+          tar -xzvf libyubikey-${LIBYUBIKEY_VER}.tar.gz
+          cd libyubikey-${LIBYUBIKEY_VER}
+          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 ./configure --with-backend=osx --prefix=/opt/libyubikey
+          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 make install
+
+      - name: Build libykpers
+        run: |
+          wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-${LIBYKPERS_VER}.tar.gz
+          tar -xzvf ykpers-${LIBYKPERS_VER}.tar.gz
+          cd ykpers-${LIBYKPERS_VER}
+          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 ./configure --disable-dependency-tracking --disable-silent-rules --with-backend=osx --with-libyubikey-prefix=/opt/libyubikey --prefix=/opt/ykpers
+          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 make install
+
+      - name: Build libusb
+        run: |
+          wget https://github.com/libusb/libusb/releases/download/v${LIBUSB_VER}/libusb-${LIBUSB_VER}.tar.bz2
+          tar -xzvf libusb-${LIBUSB_VER}.tar.bz2
+          cd libusb-${LIBUSB_VER}
+          ./configure --disable-dependency-tracking --prefix=/opt/libusb
+          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 make install
+
       - name: Build yubioath-desktop
         run: |
           qmake
@@ -72,11 +99,10 @@ jobs:
 
       - name: Copy over dynamic libraries
         run: |
-          sudo find /usr/local/Cellar/json-c/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
-          sudo find /usr/local/Cellar/ykpers/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
-          sudo find /usr/local/Cellar/libyubikey/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
-          sudo find /usr/local/Cellar/libusb/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+          sudo find /opt/libyubikey/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+          sudo find /opt/ykpers/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
           sudo find /opt/openssl/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
+          sudo find /opt/libusb/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
 
       - name: Copy over Python.framework to app bundle
         run: |
@@ -88,7 +114,7 @@ jobs:
         run: |
           sudo install_name_tool -change /Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Python @executable_path/../Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
 
-      - name: Point custom Python share objects to relative openssl (from brew)
+      - name: Point custom Python share objects to relative openssl dylibs
         run: |
           sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
           sudo install_name_tool -change /opt/openssl/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
@@ -100,10 +126,8 @@ jobs:
 
       - name: Point ykpers dependencies to relative dylibs
         run: |
-          sudo install_name_tool -change /usr/local/opt/libyubikey/lib/libyubikey.0.dylib @executable_path/../Frameworks/libyubikey.0.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.1.dylib
-          sudo install_name_tool -change /usr/local/opt/libyubikey/lib/libyubikey.0.dylib @executable_path/../Frameworks/libyubikey.0.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.dylib
-          sudo install_name_tool -change /usr/local/opt/json-c/lib/libjson-c.4.dylib @executable_path/../Frameworks/libjson-c.4.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.1.dylib
-          sudo install_name_tool -change /usr/local/opt/json-c/lib/libjson-c.4.dylib @executable_path/../Frameworks/libjson-c.4.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.dylib
+          sudo install_name_tool -change /opt/libyubikey/lib/libyubikey.0.dylib @executable_path/../Frameworks/libyubikey.0.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.1.dylib
+          sudo install_name_tool -change /opt/libyubikey/lib/libyubikey.0.dylib @executable_path/../Frameworks/libyubikey.0.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.dylib
 
       - name: Rename and archive app bundle
         run: |
@@ -115,7 +139,7 @@ jobs:
 
       - name: Uninstall runtime dependencies
         run: |
-          brew uninstall python ykpers --ignore-dependencies
+          brew uninstall openssl@1.1 python libusb --ignore-dependencies
           sudo rm -rf /usr/local/Cellar/qt
 
       - name: Run GUI
