@@ -26,7 +26,7 @@ Pane {
     property bool isTopPanel: false
     property bool isBottomPanel: false
     property bool isSectionTitle: false
-    property bool isVisible: searchQuery.length > 0 ? searchText.match(escapeRegExp(searchQuery, "i")) : true
+    property bool isVisible: true
     property bool dropShadow: true
 
     property string toolButtonIcon
@@ -48,7 +48,7 @@ Pane {
 
     Material.background: backgroundColor
     Material.elevation: dropShadow ? 1 : 0
-    visible: isVisible
+    visible: searchQuery.length > 0 ? isVisible && searchText.match(escapeRegExp(searchQuery, "i")) : isVisible
 
     function expandAction() {
         function collapseAll() {

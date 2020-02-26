@@ -22,7 +22,7 @@ Pane {
     visible: {
         if (toolBar.searchField.text.length > 0) {
             for (var i = 0; i < children.length; ++i) {
-                if (!!children[i] && children[i].toString().startsWith("StyledExpansionPanel") && children[i].isVisible) {
+                if (!!children[i] && children[i].toString().startsWith("StyledExpansionPanel") && children[i].visible) {
                     return true
                 }
             }
