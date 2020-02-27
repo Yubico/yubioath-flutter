@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies from homebrew
         run: |
           brew update
-          brew install swig qt zlib gnupg curl
+          brew install swig qt zlib gnupg curl coreutils
           brew link qt -f
 
       - name: Setup GPG
@@ -69,6 +69,7 @@ jobs:
       - name: Build PyOtherSide QML plugin
         run: |
           wget https://github.com/thp/pyotherside/archive/${PYOTHERSIDE_VER}.tar.gz
+          echo "189cb0b973e40fcb6b95fd51b0bcd6cc8494b514d49ffe966ec488cf05bbf51e ${PYOTHERSIDE_VER}.tar.gz" | sha256sum -c -
           tar -xzvf ${PYOTHERSIDE_VER}.tar.gz
           echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-${PYOTHERSIDE_VER}/src/src.pro
           cd pyotherside-${PYOTHERSIDE_VER}
@@ -79,8 +80,8 @@ jobs:
       - name: Build libyubikey
         run: |
           wget https://developers.yubico.com/yubico-c/Releases/libyubikey-${LIBYUBIKEY_VER}.tar.gz
-          wget https://developers.yubico.com/yubico-c/Releases/libyubikey-${LIBYUBIKEY_VER}.tar.gz.asc
-          gpg --verify libyubikey-${LIBYUBIKEY_VER}.tar.gz.asc
+          wget https://developers.yubico.com/yubico-c/Releases/libyubikey-${LIBYUBIKEY_VER}.tar.gz.sig
+          gpg --verify libyubikey-${LIBYUBIKEY_VER}.tar.gz.sig
           tar -xzvf libyubikey-${LIBYUBIKEY_VER}.tar.gz
           cd libyubikey-${LIBYUBIKEY_VER}
           sudo env MACOSX_DEPLOYMENT_TARGET=10.13 ./configure --with-backend=osx --prefix=/opt/libyubikey
@@ -89,8 +90,8 @@ jobs:
       - name: Build libykpers
         run: |
           wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-${LIBYKPERS_VER}.tar.gz
-          wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-${LIBYKPERS_VER}.tar.gz.asc
-          gpg --verify ykpers-${LIBYKPERS_VER}.tar.gz.asc
+          wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-${LIBYKPERS_VER}.tar.gz.sig
+          gpg --verify ykpers-${LIBYKPERS_VER}.tar.gz.sig
           tar -xzvf ykpers-${LIBYKPERS_VER}.tar.gz
           cd ykpers-${LIBYKPERS_VER}
           sudo env MACOSX_DEPLOYMENT_TARGET=10.13 ./configure --disable-dependency-tracking --disable-silent-rules --with-backend=osx --with-libyubikey-prefix=/opt/libyubikey --prefix=/opt/ykpers
@@ -99,6 +100,7 @@ jobs:
       - name: Build libusb
         run: |
           wget https://github.com/libusb/libusb/releases/download/v${LIBUSB_VER}/libusb-${LIBUSB_VER}.tar.bz2
+          echo "db11c06e958a82dac52cf3c65cb4dd2c3f339c8a988665110e0d24d19312ad8d libusb-${LIBUSB_VER}.tar.bz2" | sha256sum -c -
           tar -xzvf libusb-${LIBUSB_VER}.tar.bz2
           cd libusb-${LIBUSB_VER}
           ./configure --disable-dependency-tracking --prefix=/opt/libusb
