@@ -23,12 +23,19 @@ jobs:
       - name: Install dependencies from homebrew
         run: |
           brew update
-          brew install swig qt zlib
+          brew install swig qt zlib gnupg curl coreutils
           brew link qt -f
+
+      - name: Setup GPG
+        run: |
+          gpg --keyserver hkps://keys.openpgp.org --recv-keys 0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A 2D347EA6AA65421D
+          gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C 8657ABB260F056B1E5190839D9C4D26D0E604491
 
       - name: Build OpenSSL
         run: |
           wget https://www.openssl.org/source/openssl-${OPENSSL_VER}.tar.gz
+          wget https://www.openssl.org/source/openssl-${OPENSSL_VER}.tar.gz.asc
+          gpg --verify openssl-${OPENSSL_VER}.tar.gz.asc
           tar -xzvf openssl-${OPENSSL_VER}.tar.gz
           cd openssl-${OPENSSL_VER}
           sudo env MACOSX_DEPLOYMENT_TARGET=10.13 ./config --prefix=/opt/openssl
@@ -38,6 +45,8 @@ jobs:
       - name: Build Python as a framework
         run: |
           wget https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tgz
+          wget https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tgz.asc
+          gpg --verify Python-${PYTHON_VER}.tgz.asc
           tar -xzvf Python-${PYTHON_VER}.tgz
           cd Python-${PYTHON_VER}
           ./configure MACOSX_DEPLOYMENT_TARGET=10.13 CPPFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" CC=clang --enable-framework --with-openssl=/opt/openssl --enable-optimizations
@@ -60,6 +69,7 @@ jobs:
       - name: Build PyOtherSide QML plugin
         run: |
           wget https://github.com/thp/pyotherside/archive/${PYOTHERSIDE_VER}.tar.gz
+          echo "189cb0b973e40fcb6b95fd51b0bcd6cc8494b514d49ffe966ec488cf05bbf51e ${PYOTHERSIDE_VER}.tar.gz" | sha256sum -c -
           tar -xzvf ${PYOTHERSIDE_VER}.tar.gz
           echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-${PYOTHERSIDE_VER}/src/src.pro
           cd pyotherside-${PYOTHERSIDE_VER}
@@ -70,6 +80,8 @@ jobs:
       - name: Build libyubikey
         run: |
           wget https://developers.yubico.com/yubico-c/Releases/libyubikey-${LIBYUBIKEY_VER}.tar.gz
+          wget https://developers.yubico.com/yubico-c/Releases/libyubikey-${LIBYUBIKEY_VER}.tar.gz.sig
+          gpg --verify libyubikey-${LIBYUBIKEY_VER}.tar.gz.sig
           tar -xzvf libyubikey-${LIBYUBIKEY_VER}.tar.gz
           cd libyubikey-${LIBYUBIKEY_VER}
           sudo env MACOSX_DEPLOYMENT_TARGET=10.13 ./configure --with-backend=osx --prefix=/opt/libyubikey
@@ -78,6 +90,8 @@ jobs:
       - name: Build libykpers
         run: |
           wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-${LIBYKPERS_VER}.tar.gz
+          wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-${LIBYKPERS_VER}.tar.gz.sig
+          gpg --verify ykpers-${LIBYKPERS_VER}.tar.gz.sig
           tar -xzvf ykpers-${LIBYKPERS_VER}.tar.gz
           cd ykpers-${LIBYKPERS_VER}
           sudo env MACOSX_DEPLOYMENT_TARGET=10.13 ./configure --disable-dependency-tracking --disable-silent-rules --with-backend=osx --with-libyubikey-prefix=/opt/libyubikey --prefix=/opt/ykpers
@@ -86,6 +100,7 @@ jobs:
       - name: Build libusb
         run: |
           wget https://github.com/libusb/libusb/releases/download/v${LIBUSB_VER}/libusb-${LIBUSB_VER}.tar.bz2
+          echo "db11c06e958a82dac52cf3c65cb4dd2c3f339c8a988665110e0d24d19312ad8d libusb-${LIBUSB_VER}.tar.bz2" | sha256sum -c -
           tar -xzvf libusb-${LIBUSB_VER}.tar.bz2
           cd libusb-${LIBUSB_VER}
           ./configure --disable-dependency-tracking --prefix=/opt/libusb
