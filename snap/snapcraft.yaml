@@ -5,11 +5,6 @@ base: core18
 grade: devel
 confinement: strict
 
-plugs:
-  ykman-config:
-    interface: personal-files
-    write:
-      - $HOME/.ykman
 apps:
   pcscd:
     command: usr/sbin/pcscd --foreground --auto-exit
@@ -42,7 +37,6 @@ apps:
       - u2f-devices
       - hidraw
       - hardware-observe
-      - ykman-config
     extensions: [gnome-3-28]
 
 parts:
@@ -111,6 +105,12 @@ parts:
       tar -xvf pyscard*
       cd pyscard*
       patch setup.py ../.github/workflows/snap-pyscard-patch.patch
+      pip3 install .
+      cd ..
+      pip3 download --no-binary :all: yubikey-manager
+      tar -xvf yubikey-manager*
+      cd yubikey-manager*
+      patch ykman/settings.py ../.github/workflows/snap-ykman-settings.patch
       pip3 install .
       cd ..
       pip3 install -r requirements.txt
