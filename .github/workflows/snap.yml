@@ -19,6 +19,8 @@ jobs:
           sudo lxd init --auto
           export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
           sudo snapcraft --use-lxd
+          sudo snap install review-tools --edge
+          sudo snap-review yubioath-desktop*
           mkdir deploy
           mv yubioath-desktop*.snap yubioath-desktop-${REF}.snap
           cp yubioath-desktop*.snap deploy
