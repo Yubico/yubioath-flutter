@@ -19,6 +19,14 @@ jobs:
           python-version: ${{ env.PYTHON_VER }}
           architecture: 'x64'
 
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2.4.1
+        with:
+          version: '5.14.1'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2017_64'
+
       - name: Download dependencies
         run: |
           wget https://download.qt.io/official_releases/jom/jom.zip -OutFile jom.zip
@@ -42,8 +50,6 @@ jobs:
 
       - name: Install QT and jom
         run: |
-          pip install aqtinstall
-          python -m aqt install 5.14.1 windows desktop win64_msvc2017_64
           7z x jom.zip
 
       - name: Prepare pyotherside
