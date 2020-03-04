@@ -26,6 +26,7 @@ jobs:
           host: 'windows'
           target: 'desktop'
           arch: 'win64_msvc2017_64'
+          aqtversion: '==0.8a2'
 
       - name: Download dependencies
         run: |
