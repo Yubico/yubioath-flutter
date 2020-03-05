@@ -19,6 +19,15 @@ jobs:
           python-version: ${{ env.PYTHON_VER }}
           architecture: 'x86'
 
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2.4.1
+        with:
+          version: '5.14.1'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win32_msvc2017'
+          aqtversion: '==0.8a3'
+
       - name: Download dependencies
         run: |
           wget https://download.qt.io/official_releases/jom/jom.zip -OutFile jom.zip
@@ -40,10 +49,8 @@ jobs:
       - name: Install swig
         run: choco install swig
 
-      - name: Install Qt and Jom
+      - name: Install Jom
         run: |
-          pip install aqtinstall==0.8a2
-          python -m aqt install 5.14.1 windows desktop win32_msvc2017
           7z x jom.zip
         shell: powershell
 

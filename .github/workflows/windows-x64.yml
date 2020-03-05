@@ -49,7 +49,7 @@ jobs:
       - name: Install swig
         run: choco install swig
 
-      - name: Install QT and jom
+      - name: Install jom
         run: |
           7z x jom.zip
 
