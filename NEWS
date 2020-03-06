@@ -1,3 +1,5 @@
+* Version 5.0.3 (unreleased)
+
 * Version 5.0.2 (released 2020-01-29)
  ** Allow spaces in secret key when adding accounts
  ** UI: Move favorite button to the credential card
