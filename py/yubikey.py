@@ -6,6 +6,7 @@ import logging
 import types
 import time
 import ykman.logging_setup
+import smartcard.pcsc.PCSCExceptions
 from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
 from ykman.descriptor import (
@@ -117,6 +118,8 @@ def catch_error(f):
             raise
         except CCIDError:
             return failure('ccid_error')
+        except smartcard.pcsc.PCSCExceptions.EstablishContextException:
+            return failure('no_pcscd')
         except Exception as e:
             if str(e) == 'Incorrect padding':
                 return failure('incorrect_padding')
