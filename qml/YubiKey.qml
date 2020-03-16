@@ -130,6 +130,10 @@ Python {
         return device.name === 'YubiKey 5C Nano'
     }
 
+    function isYubiKey5CNFC(device) {
+        return device.name === 'YubiKey 5C NFC'
+    }
+
     function isYubiKey5A(device) {
         return device.name === 'YubiKey 5A'
     }
@@ -182,6 +186,9 @@ Python {
         }
         if (isYubiKey5CNano(currentDevice)) {
             return "../images/yk5cnano.png"
+        }
+        if (isYubiKey5CNFC(currentDevice)) {
+            return "../images/yk5cnfc.png"
         }
         if (isYubiKey5A(currentDevice)) {
             return "../images/yk4.png"
