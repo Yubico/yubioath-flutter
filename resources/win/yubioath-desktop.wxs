@@ -62,6 +62,7 @@
                   WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
           <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
           <RegistryValue Root="HKCU" Key="Software\Yubico\Yubico Authenticator" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+          <RegistryValue Root="HKCU" Key="Software\Yubico\Yubico Authenticator" Name="theme" Type="integer" Value="1" KeyPath="yes"/>
           <util:RemoveFolderEx Id="Remove" On="install" Property="INSTALLDIR" />
         </Component>
       </DirectoryRef>
