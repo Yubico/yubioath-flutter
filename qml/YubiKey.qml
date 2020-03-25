@@ -246,7 +246,6 @@ Python {
                 if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
                     // new device is being loaded, clear any old device
                     clearCurrentDeviceAndEntries()
-                    navigator.goToLoading()
                     if (availableDevices.some(dev => dev.selectable)) {
                         // pick the first selectable device
                         currentDevice = resp.devices.find(dev => dev.selectable)
@@ -316,11 +315,6 @@ Python {
                     currentDevice.hasPassword = true
                     currentDeviceValidated = false
                     navigator.goToEnterPasswordIfNotInSettings()
-                } else if (resp.error_id === 'open_device_failed') {
-                    clearCurrentDeviceAndEntries()
-                    yubiKey.availableDevices = []
-                    navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
-                    navigator.goToCredentialsIfNotInSettings()
                 } else {
                     clearCurrentDeviceAndEntries()
                     console.log("calculateAll failed:", resp.error_id)
