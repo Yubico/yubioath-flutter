@@ -6,7 +6,7 @@ HEADERS += screenshot.h
 
 # This is the internal verson number, Windows requires 4 digits.
 win32|win64 {
-    VERSION = 5.0.3.0
+    VERSION = 5.0.3.1
     QMAKE_TARGET_COMPANY = Yubico
     QMAKE_TARGET_PRODUCT = Yubico Authenticator
     QMAKE_TARGET_DESCRIPTION = Yubico Authenticator
