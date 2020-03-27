@@ -33,7 +33,7 @@ Flickable {
 
     function getDeviceDescription(device) {
         if (!!device) {
-            return qsTr("Serial number: %1").arg(!!device.serial ? device.serial : "Not Available")
+            return qsTr("Serial number: %1").arg(!!device.serial ? device.serial : "Not available")
         } else if (yubiKey.availableDevices.length > 0
                    && !yubiKey.availableDevices.some(dev => dev.selectable)) {
             return qsTr("No compatible device found")
@@ -537,7 +537,7 @@ Flickable {
             }
 
             StyledExpansionPanel {
-                label: Qt.platform.os === "osx" ? "Menu Bar" : "System Tray"
+                label: Qt.platform.os === "osx" ? "Menu bar" : "System tray"
                 description: qsTr("Configure where and how the application is visible.")
 
                 ColumnLayout {
