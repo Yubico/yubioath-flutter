@@ -243,101 +243,6 @@ Flickable {
                     }
                 }
             }
-
-            StyledExpansionPanel {
-                id: passwordManagementPanel
-                label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change password") : qsTr("Set password")
-                description: qsTr("For additional security the YubiKey may be protected with a password.")
-                isVisible: !!yubiKey.currentDevice && !settings.otpMode
-
-                ColumnLayout {
-
-                    StyledTextField {
-                        id: currentPasswordField
-                        visible: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                        labelText: qsTr("Current password")
-                        echoMode: TextInput.Password
-                        Keys.onEnterPressed: submitPassword()
-                        Keys.onReturnPressed: submitPassword()
-                        onSubmit: submitPassword()
-                    }
-                    StyledTextField {
-                        id: newPasswordField
-                        labelText: qsTr("New password")
-                        echoMode: TextInput.Password
-                        Keys.onEnterPressed: submitPassword()
-                        Keys.onReturnPressed: submitPassword()
-                        onSubmit: submitPassword()
-                    }
-                    StyledTextField {
-                        id: confirmPasswordField
-                        labelText: qsTr("Confirm password")
-                        echoMode: TextInput.Password
-                        Keys.onEnterPressed: submitPassword()
-                        Keys.onReturnPressed: submitPassword()
-                        onSubmit: submitPassword()
-                    }
-                    RowLayout {
-                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                        StyledButton {
-                            id: removePasswordBtn
-                            visible: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                            enabled: currentPasswordField.text.length > 0
-                            text: "Remove"
-                            flat: true
-                            onClicked: navigator.confirm({
-                                                       "heading": qsTr("Remove password?"),
-                                                       "description": qsTr("A password will not be required to access the accounts anymore."),
-                                                       "warning": false,
-                                                       "acceptedCb": function () {
-                                                           removePassword()
-                                                       }
-                                                         })
-                        }
-                        StyledButton {
-                            id: applyPassword
-                            text: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? "Change" : "Set"
-                            enabled: acceptableInput()
-                            onClicked: submitPassword()
-                        }
-                    }
-                }
-            }
-
-            StyledExpansionPanel {
-                label: qsTr("Reset")
-                description: qsTr("Warning: Reset will delete all accounts and restore factory defaults.")
-                isEnabled: false
-                isVisible: !!yubiKey.currentDevice && !settings.otpMode
-                toolButtonIcon: "../images/reset.svg"
-                toolButtonToolTip: qsTr("Reset device")
-                toolButton.onClicked: navigator.confirm({
-                                                  "heading": qsTr("Reset device?"),
-                                                  "message": qsTr("This will delete all accounts and restore factory defaults of your YubiKey."),
-                                                  "description": qsTr("There is NO going back from here, if you do not know what you are doing, do NOT do this."),
-                                                  "acceptedCb": function () {
-                                                      navigator.goToLoading()
-                                                      yubiKey.reset(function (resp) {
-                                                          if (resp.success) {
-                                                              entries.clear()
-                                                              navigator.snackBar(
-                                                                          qsTr("Reset completed"))
-                                                              yubiKey.currentDeviceValidated = true
-                                                              yubiKey.currentDevice.hasPassword = false
-
-                                                          } else {
-                                                              navigator.snackBarError(
-                                                                          navigator.getErrorMessage(
-                                                                              resp.error_id))
-                                                              console.log("reset failed:",
-                                                                          resp.error_id)
-                                                          }
-                                                          navigator.goToSettings()
-                                                      })
-                                                  }
-               })
-            }
-
         }
 
         StyledExpansionContainer {
@@ -380,8 +285,28 @@ Flickable {
             }
 
             StyledExpansionPanel {
+                label: qsTr("Clear passwords")
+                description: qsTr("Delete all saved passwords.")
+                isEnabled: false
+                isBottomPanel: true
+                toolButtonIcon: "../images/delete.svg"
+                toolButtonToolTip: qsTr("Clear")
+                toolButton.onClicked: navigator.confirm({
+                                                  "heading": qsTr("Clear passwords?"),
+                                                  "message": qsTr("This will delete all saved passwords."),
+                                                  "description": qsTr("A password prompt will appear the next time a YubiKey with a password is used."),
+                                                  "acceptedCb": function() {
+                                                    yubiKey.clearLocalPasswords(function (resp) {
+                                                      if (resp.success) {
+                                                        navigator.snackBar(qsTr("Passwords cleared"))
+                                                      }
+                  })}
+               })
+            }
+
+            StyledExpansionPanel {
                 id: interfacePanel
-                label: qsTr("Interface")
+                label: qsTr("Custom reader")
                 description: qsTr("Configure how to communicate with the YubiKey.")
                 metadata: "ccid otp slot custom readers nfc"
 
@@ -571,26 +496,273 @@ Flickable {
                     }
                 }
             }
+        }
+
+        StyledExpansionContainer {
+            sectionTitle: qsTr("Interfaces")
+            visible: !!yubiKey.currentDevice
 
             StyledExpansionPanel {
-                label: qsTr("Clear passwords")
-                description: qsTr("Delete all saved passwords.")
+                label: qsTr("Interfaces")
+                description: qsTr("Enable/disable active interfaces on the YubiKey")
+                isTopPanel: true
+                isVisible: true
+
+                ColumnLayout {
+                    Text {
+                        text: "There's nothing to see here"
+                    }
+                }
+            }
+        }
+
+        StyledExpansionContainer {
+            id: oathSettings
+            sectionTitle: qsTr("Security Codes (OATH)")
+            visible: !!yubiKey.currentDevice
+
+            StyledExpansionPanel {
+                id: passwordManagementPanel
+                label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change password") : qsTr("Set password")
+                description: qsTr("For additional security the YubiKey may be protected with a password.")
+                isTopPanel: true
+                isVisible: true
+
+                ColumnLayout {
+
+                    StyledTextField {
+                        id: currentPasswordField
+                        visible: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
+                        labelText: qsTr("Current password")
+                        echoMode: TextInput.Password
+                        Keys.onEnterPressed: submitPassword()
+                        Keys.onReturnPressed: submitPassword()
+                        onSubmit: submitPassword()
+                    }
+                    StyledTextField {
+                        id: newPasswordField
+                        labelText: qsTr("New password")
+                        echoMode: TextInput.Password
+                        Keys.onEnterPressed: submitPassword()
+                        Keys.onReturnPressed: submitPassword()
+                        onSubmit: submitPassword()
+                    }
+                    StyledTextField {
+                        id: confirmPasswordField
+                        labelText: qsTr("Confirm password")
+                        echoMode: TextInput.Password
+                        Keys.onEnterPressed: submitPassword()
+                        Keys.onReturnPressed: submitPassword()
+                        onSubmit: submitPassword()
+                    }
+                    RowLayout {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                        StyledButton {
+                            id: removePasswordBtn
+                            visible: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
+                            enabled: currentPasswordField.text.length > 0
+                            text: "Remove"
+                            flat: true
+                            onClicked: navigator.confirm({
+                                                       "heading": qsTr("Remove password?"),
+                                                       "description": qsTr("A password will not be required to access the accounts anymore."),
+                                                       "warning": false,
+                                                       "acceptedCb": function () {
+                                                           removePassword()
+                                                       }
+                                                         })
+                        }
+                        StyledButton {
+                            id: applyPassword
+                            text: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? "Change" : "Set"
+                            enabled: acceptableInput()
+                            onClicked: submitPassword()
+                        }
+                    }
+                }
+            }
+
+            StyledExpansionPanel {
+                label: qsTr("Reset")
+                description: qsTr("Warning: Reset will delete all accounts and restore factory defaults.")
                 isEnabled: false
-                isBottomPanel: true
-                toolButtonIcon: "../images/delete.svg"
-                toolButtonToolTip: qsTr("Clear")
+                isVisible: true
+                toolButtonIcon: "../images/reset.svg"
+                toolButtonToolTip: qsTr("Reset device")
                 toolButton.onClicked: navigator.confirm({
-                                                  "heading": qsTr("Clear passwords?"),
-                                                  "message": qsTr("This will delete all saved passwords."),
-                                                  "description": qsTr("A password prompt will appear the next time a YubiKey with a password is used."),
-                                                  "acceptedCb": function() {
-                                                    yubiKey.clearLocalPasswords(function (resp) {
-                                                      if (resp.success) {
-                                                        navigator.snackBar(qsTr("Passwords cleared"))
-                                                      }
-                  })}
+                                                  "heading": qsTr("Reset device?"),
+                                                  "message": qsTr("This will delete all accounts and restore factory defaults of your YubiKey."),
+                                                  "description": qsTr("There is NO going back from here, if you do not know what you are doing, do NOT do this."),
+                                                  "acceptedCb": function () {
+                                                      navigator.goToLoading()
+                                                      yubiKey.reset(function (resp) {
+                                                          if (resp.success) {
+                                                              entries.clear()
+                                                              navigator.snackBar(
+                                                                          qsTr("Reset completed"))
+                                                              yubiKey.currentDeviceValidated = true
+                                                              yubiKey.currentDevice.hasPassword = false
+
+                                                          } else {
+                                                              navigator.snackBarError(
+                                                                          navigator.getErrorMessage(
+                                                                              resp.error_id))
+                                                              console.log("reset failed:",
+                                                                          resp.error_id)
+                                                          }
+                                                          navigator.goToSettings()
+                                                      })
+                                                  }
                })
             }
+
+        }
+
+        StyledExpansionContainer {
+            sectionTitle: qsTr("Slot configuration")
+            visible: !!yubiKey.currentDevice
+
+            StyledExpansionPanel {
+                label: qsTr("Short touch (slot 1)")
+                description: qsTr("This slot is condfigured")
+                isTopPanel: true
+                isVisible: true
+
+                ColumnLayout {
+                    Text {
+                        text: "There's nothing to see here"
+                    }
+                }
+            }
+
+            StyledExpansionPanel {
+                label: qsTr("Long touch (slot 2)")
+                description: qsTr("This slot is empty")
+                isVisible: true
+
+                ColumnLayout {
+                    Text {
+                        text: "There's nothing to see here"
+                    }
+                }
+            }
+
+            StyledExpansionPanel {
+                label: qsTr("Swap configuration")
+                description: qsTr("Reverse the slot configuration")
+                isVisible: true
+
+                ColumnLayout {
+                    Text {
+                        text: "There's nothing to see here"
+                    }
+                }
+            }
+        }
+
+        StyledExpansionContainer {
+            sectionTitle: qsTr("PIV certificates")
+            visible: !!yubiKey.currentDevice
+
+            StyledExpansionPanel {
+                label: qsTr("PIN management")
+                description: qsTr("PIN, PUK, Management Key")
+                isTopPanel: true
+                isVisible: true
+
+                ColumnLayout {
+                    Text {
+                        text: "There's nothing to see here"
+                    }
+                }
+            }
+
+            StyledExpansionPanel {
+                label: qsTr("Certificates")
+                description: qsTr("No certificates loaded")
+                isVisible: true
+
+                ColumnLayout {
+                    Text {
+                        text: "There's nothing to see here"
+                    }
+                }
+            }
+
+            StyledExpansionPanel {
+                label: qsTr("Setup for macOS")
+                description: qsTr("Login to macOS with your YubiKey")
+                isVisible: true
+
+                ColumnLayout {
+                    Text {
+                        text: "There's nothing to see here"
+                    }
+                }
+            }
+
+            StyledExpansionPanel {
+                label: qsTr("Reset")
+                description: qsTr("Warning: reset will delete all certificates and restore factory defaults")
+                isTopPanel: true
+                isVisible: true
+
+                ColumnLayout {
+                    Text {
+                        text: "There's nothing to see here"
+                    }
+                }
+            }
+
+        }
+
+        StyledExpansionContainer {
+            sectionTitle: qsTr("Security Keys (FIDO2)")
+            visible: !!yubiKey.currentDevice
+
+            StyledExpansionPanel {
+                label: qsTr("Create a PIN")
+                description: qsTr("Protect your security key with a PIN")
+                metadata: "fido2"
+                isTopPanel: true
+                isVisible: true
+
+                ColumnLayout {
+                    Text {
+                        text: "There's nothing to see here"
+                    }
+                }
+            }
+
+            StyledExpansionPanel {
+                label: qsTr("Manage sign-in data")
+                description: qsTr("View and delete the sifgn-in data stored on your secuirty key")
+                metadata: "fido2"
+                isVisible: true
+
+                ColumnLayout {
+                    Text {
+                        text: "There's nothing to see here"
+                    }
+                }
+            }
+
+            StyledExpansionPanel {
+                label: qsTr("Reset your security key")
+                description: qsTr("This will erase all data on the security key, including its PIN")
+                metadata: "fido2"
+                isVisible: true
+
+                ColumnLayout {
+                    Text {
+                        text: "There's nothing to see here"
+                    }
+                }
+            }
+        }
+
+        Item {
+            height: 32
         }
     }
 }
