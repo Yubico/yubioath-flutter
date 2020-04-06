@@ -1,4 +1,9 @@
 * Version 5.0.3 (unreleased)
+ ** macOS: Make the app available in the macOS App Store
+ ** Windows: Make the app available in the Microsoft Store (for Windows 10 20.04 and higher)
+ ** Linux: Make the app available in the Snap Store
+ ** Add support for YubiKey 5C NFC
+ ** Bugfix: Make sure the application is always visible on Windows
 
 * Version 5.0.2 (released 2020-01-29)
  ** Allow spaces in secret key when adding accounts
