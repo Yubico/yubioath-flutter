@@ -45,7 +45,7 @@ ColumnLayout {
         Label {
             text: {
                 if (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable)) {
-                    return qsTr("Yubico Authenticator requires a CCID/OTP enabled and compatible YubiKey.")
+                    return qsTr("Yubico Authenticator requires a CCID enabled and compatible YubiKey.")
                 }
                 else {
                     return ""
@@ -76,8 +76,8 @@ ColumnLayout {
         }
 
         Label {
-            text: settings.useCustomReader ? qsTr("Interface: CCID - Custom reader") : qsTr("Interface: OTP")
-            visible: settings.useCustomReader || settings.otpMode
+            text: qsTr("Interface: CCID - Custom reader")
+            visible: settings.useCustomReader
             Layout.minimumWidth: 300
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
