@@ -126,7 +126,7 @@ Flickable {
         })
     }
 
-    property string title: qsTr("Settings")
+    property string title: qsTr("")
 
     ListModel {
         id: themes
@@ -228,7 +228,7 @@ Flickable {
                 id: passwordManagementPanel
                 label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change password") : qsTr("Set password")
                 description: qsTr("For additional security the YubiKey may be protected with a password.")
-                visible: !!yubiKey.currentDevice
+                isVisible: !!yubiKey.currentDevice
 
                 ColumnLayout {
 
@@ -288,7 +288,8 @@ Flickable {
                 label: qsTr("Reset")
                 description: qsTr("Warning: Reset will delete all accounts and restore factory defaults.")
                 isEnabled: false
-                visible: !!yubiKey.currentDevice
+                isVisible: !!yubiKey.currentDevice
+
                 toolButtonIcon: "../images/reset.svg"
                 toolButtonToolTip: qsTr("Reset device")
                 toolButton.onClicked: navigator.confirm({
@@ -327,6 +328,7 @@ Flickable {
             StyledExpansionPanel {
                 label: qsTr("Appearance")
                 description: qsTr("Change the visual appearance of the application.")
+                metadata: "dark light mode theme"
                 isTopPanel: true
 
                 ColumnLayout {
@@ -362,6 +364,8 @@ Flickable {
                 id: interfacePanel
                 label: qsTr("Interface")
                 description: qsTr("Configure how to communicate with the YubiKey.")
+                metadata: "ccid otp slot custom readers nfc"
+
                 property bool customReaderSelected: interfaceCombobox.currentIndex === 1
                 property bool aboutToChange: customReaderSelected !== settings.useCustomReader
                                              || readerFilter.text !== settings.customReaderName && readerFilter.text.length > 0
@@ -494,7 +498,6 @@ Flickable {
                 label: qsTr("Clear passwords")
                 description: qsTr("Delete all saved passwords.")
                 isEnabled: false
-                visible: true
                 isBottomPanel: true
                 toolButtonIcon: "../images/delete.svg"
                 toolButtonToolTip: qsTr("Clear")

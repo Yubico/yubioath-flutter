@@ -27,6 +27,8 @@ Pane {
 
     property bool favorite: !!credential ? settings.favorites.includes(credential.key) : false
 
+    property string searchQuery: toolBar.searchField.text
+
     Layout.fillHeight: true
     Layout.fillWidth: true
 
@@ -288,7 +290,8 @@ Pane {
             }
             Label {
                 id: nameLbl
-                text: formattedName()
+                text: searchQuery.length > 0 ? colorizeMatch(formattedName(), searchQuery) : formattedName()
+                textFormat: TextEdit.RichText
                 Layout.maximumWidth: credentialCard.width - 106
                 font.pixelSize: 14
                 elide: Text.ElideRight
