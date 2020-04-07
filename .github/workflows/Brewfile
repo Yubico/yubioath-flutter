@@ -1,8 +1,0 @@
-brew "swig"
-brew "ykpers"
-brew "libyubikey"
-brew "libusb"
-brew "qt"
-brew "zlib"
-brew "openssl@1.1"
-brew "awscli"

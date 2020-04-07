@@ -130,6 +130,10 @@ Python {
         return device.name === 'YubiKey 5C Nano'
     }
 
+    function isYubiKey5CNFC(device) {
+        return device.name === 'YubiKey 5C NFC'
+    }
+
     function isYubiKey5A(device) {
         return device.name === 'YubiKey 5A'
     }
@@ -183,6 +187,9 @@ Python {
         if (isYubiKey5CNano(currentDevice)) {
             return "../images/yk5cnano.png"
         }
+        if (isYubiKey5CNFC(currentDevice)) {
+            return "../images/yk5cnfc.png"
+        }
         if (isYubiKey5A(currentDevice)) {
             return "../images/yk4.png"
         }
@@ -232,14 +239,13 @@ Python {
     function refreshDevicesDefault() {
         poller.running = false
         let customReaderName = settings.useCustomReader ? settings.customReaderName : null
-        refreshDevices(settings.otpMode, customReaderName, function (resp) {
+        refreshDevices(customReaderName, function (resp) {
             if (resp.success) {
                 availableDevices = resp.devices
                 // no current device, or current device is no longer available, pick a new one
                 if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
                     // new device is being loaded, clear any old device
                     clearCurrentDeviceAndEntries()
-
                     if (availableDevices.some(dev => dev.selectable)) {
                         // pick the first selectable device
                         currentDevice = resp.devices.find(dev => dev.selectable)
@@ -280,15 +286,12 @@ Python {
             }
         }
 
-        if (settings.useCustomReader && !settings.otpMode) {
+        if (settings.useCustomReader) {
             checkReaders(settings.customReaderName, callback)
         } else {
             checkDescriptors(callback)
         }
-
-        if (!settings.otpMode) {
-            refreshReaders()
-        }
+        refreshReaders()
     }
 
     function calculateAll(cb) {
@@ -317,11 +320,9 @@ Python {
             }
         }
 
-        if (settings.otpMode) {
-            otpCalculateAll(callback)
-        } else {
-            ccidCalculateAll(callback)
-        }
+
+       ccidCalculateAll(callback)
+
     }
 
     function updateNextCalculateAll() {
@@ -374,14 +375,8 @@ Python {
         doCall('yubikey.controller.ccid_calculate_all', [now], cb)
     }
 
-    function otpCalculateAll(cb) {
-        var now = Utils.getNow()
-        doCall('yubikey.controller.otp_calculate_all',
-               [settings.slot1digits, settings.slot2digits, now], cb)
-    }
-
-    function refreshDevices(otpMode, customReader, cb) {
-        doCall('yubikey.controller.refresh_devices', [otpMode, customReader], cb)
+    function refreshDevices(customReader, cb) {
+        doCall('yubikey.controller.refresh_devices', [customReader], cb)
     }
 
     function selectCurrentSerial(serial, cb) {
@@ -395,23 +390,6 @@ Python {
                [credential, nowAndMargin], cb)
     }
 
-    function otpCalculate(credential, cb) {
-        var margin = credential.touch ? 10 : 0
-        var nowAndMargin = Utils.getNow() + margin
-        var slot = (credential.key === "Slot 1") ? 1 : 2
-        var digits = (slot === 1) ? settings.slot1digits : settings.slot2digits
-        doCall('yubikey.controller.otp_calculate',
-               [slot, digits, credential, nowAndMargin], cb)
-    }
-
-    function otpDeleteCredential(credential, cb) {
-        var slot = (credential.key === "Slot 1") ? 1 : 2
-        doCall('yubikey.controller.otp_delete_credential', [slot], cb)
-    }
-
-    function otpAddCredential(slot, key, touch, cb) {
-        doCall('yubikey.controller.otp_add_credential', [slot, key, touch], cb)
-    }
 
     function ccidAddCredential(name, key, issuer, oathType, algo, digits, period, touch, overwrite, cb) {
         doCall('yubikey.controller.ccid_add_credential',

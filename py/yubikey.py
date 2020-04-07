@@ -6,6 +6,7 @@ import logging
 import types
 import time
 import ykman.logging_setup
+import smartcard.pcsc.PCSCExceptions
 from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
 from ykman.descriptor import (
@@ -117,6 +118,8 @@ def catch_error(f):
             raise
         except CCIDError:
             return failure('ccid_error')
+        except smartcard.pcsc.PCSCExceptions.EstablishContextException:
+            return failure('no_pcscd')
         except Exception as e:
             if str(e) == 'Incorrect padding':
                 return failure('incorrect_padding')
@@ -125,11 +128,8 @@ def catch_error(f):
     return wrapped
 
 
-def usb_selectable(dev, otp_mode):
-    if otp_mode:
-        return dev.mode.has_transport(TRANSPORT.OTP)
-    else:
-        return dev.mode.has_transport(TRANSPORT.CCID) and (
+def usb_selectable(dev):
+    return dev.mode.has_transport(TRANSPORT.CCID) and (
             dev.config.usb_enabled & APPLICATION.OATH)
 
 
@@ -232,7 +232,7 @@ class Controller(object):
             return YubiKey(Descriptor.from_driver(drv), drv)
         return None
 
-    def _get_devices(self, otp_mode=False):
+    def _get_devices(self):
         res = []
         descs_to_match = self._descs[:]
         handled_serials = set()
@@ -245,9 +245,9 @@ class Controller(object):
                     return res
 
                 serial = dev.serial
-                selectable = usb_selectable(dev, otp_mode)
+                selectable = usb_selectable(dev)
 
-                if selectable and not otp_mode and transport == TRANSPORT.CCID:
+                if selectable and transport == TRANSPORT.CCID:
                     controller = OathController(dev.driver)
                     has_password = controller.locked
                 else:
@@ -276,17 +276,17 @@ class Controller(object):
                         descs_to_match.remove(matching_descriptor)
         return res
 
-    def refresh_devices(self, otp_mode=False, reader_filter=None):
+    def refresh_devices(self, reader_filter=None):
         self._devices = []
 
-        if not otp_mode and reader_filter:
+        if reader_filter:
             self._reader_filter = reader_filter
             dev = self._get_dev_from_reader()
             if dev:
                 if is_nfc(self._reader_filter):
                     selectable = nfc_selectable(dev)
                 else:
-                    selectable = usb_selectable(dev, otp_mode)
+                    selectable = usb_selectable(dev)
                 if selectable:
                     controller = OathController(dev.driver)
                     has_password = controller.locked
@@ -315,7 +315,7 @@ class Controller(object):
                 self._current_derived_key = None
                 return success({'devices': []})
 
-            self._devices = self._get_devices(otp_mode)
+            self._devices = self._get_devices()
 
             # If no current serial, or current serial seems removed,
             # select the first serial found.
@@ -398,76 +398,9 @@ class Controller(object):
                 if e.sw == SW.INCORRECT_PARAMETERS:
                     return failure('validate_failed')
 
-    def _otp_get_code_or_touch(
-            self, slot, digits, timestamp, wait_for_touch=False):
-        code = None
-        touch = False
-        with self._open_otp() as otp_controller:
-            try:
-                code = otp_controller.calculate(
-                    slot, challenge=timestamp, totp=True,
-                    digits=int(digits), wait_for_touch=wait_for_touch)
-            except YkpersError as e:
-                if e.errno == 11:  # Operation would block, touch credential
-                    touch = True
-                else:
-                    raise
-            return code, touch
-
-    def otp_calculate_all(
-            self, slot1_digits, slot2_digits, timestamp):
-        valid_from = timestamp - (timestamp % 30)
-        valid_to = valid_from + 30
-        entries = []
-
-        def calc(slot, digits, label):
-            try:
-                code, touch = self._otp_get_code_or_touch(
-                    slot, digits, timestamp)
-                entries.append({
-                    'credential': cred_to_dict(
-                        Credential(label.encode(), OATH_TYPE.TOTP, touch)),
-                    'code': code_to_dict(
-                        Code(code, valid_from, valid_to)) if code else None
-                })
-            except YkpersError as e:
-                if e.errno == 4:
-                    pass
-                else:
-                    raise
-
-        if slot1_digits:
-            calc(1, slot1_digits, "Slot 1")
-
-        if slot2_digits:
-            calc(2, slot2_digits, "Slot 2")
-
-        return success({'entries': entries})
-
-    def otp_calculate(self, slot, digits, credential, timestamp):
-        valid_from = timestamp - (timestamp % 30)
-        valid_to = valid_from + 30
-        code, _ = self._otp_get_code_or_touch(
-            slot, digits, timestamp, wait_for_touch=True)
-        return success({
-            'credential': credential,
-            'code': code_to_dict(Code(code, valid_from, valid_to))
-        })
-
     def otp_slot_status(self):
         with self._open_otp() as otp_controller:
             return success({'status': otp_controller.slot_status})
-
-    def otp_add_credential(self, slot, key, touch):
-        key = parse_b32_key(key)
-        with self._open_otp() as otp_controller:
-            otp_controller.program_chalresp(int(slot), key, touch)
-        return success()
-
-    def otp_delete_credential(self, slot):
-        with self._open_otp() as otp_controller:
-            otp_controller.zap_slot(slot)
-        return success()
 
     def _unlock(self, controller):
         if controller.locked:
