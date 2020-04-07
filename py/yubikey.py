@@ -267,8 +267,16 @@ class Controller(object):
                                 str(x) for x in dev.version
                                 ) if dev.version else '',
                             'serial': serial or '',
-                            'usbInterfacesEnabled': str(
-                                dev.mode).split('+'),
+                            'usbAppEnabled': [a.name for a in APPLICATION if a & dev.config.usb_enabled],
+                            'usbAppSupported': [a.name for a in APPLICATION if a & dev.config.usb_supported],
+                            'nfcAppEnabled': [a.name for a in APPLICATION if a & dev.config.nfc_enabled],
+                            'nfcAppSupported': [a.name for a in APPLICATION if a & dev.config.nfc_enabled],
+                            'usbInterfacesSupported': [t.name for t in TRANSPORT if t & dev.config.usb_supported],
+                            'usbInterfacesEnabled': str(dev.mode).split('+'),
+                            'canWriteConfig': dev.can_write_config,
+                            'configurationLocked': dev.config.configuration_locked,
+                            'formFactor': dev.config.form_factor,
+
                             'hasPassword': has_password,
                             'selectable': selectable,
                             'validated': not has_password
