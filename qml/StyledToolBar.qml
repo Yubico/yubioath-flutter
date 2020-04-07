@@ -32,7 +32,7 @@ ToolBar {
     function shouldShowSearch() {        
         return !!(navigator.currentItem
                   && navigator.currentItem.objectName === 'credentialsView'
-                  && entries.count > 0 && !settings.otpMode)
+                  && entries.count > 0)
     }
 
     function shouldShowSettings() {

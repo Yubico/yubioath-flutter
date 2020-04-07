@@ -145,26 +145,6 @@ Flickable {
         }
     }
 
-    ListModel {
-        id: otpModeDigits
-
-        ListElement {
-            text: "Off"
-            value: 0
-        }
-        ListElement {
-            text: "6"
-            value: 6
-        }
-        ListElement {
-            text: "7"
-            value: 7
-        }
-        ListElement {
-            text: "8"
-            value: 8
-        }
-    }
 
     ColumnLayout {
         id: content
@@ -248,7 +228,7 @@ Flickable {
                 id: passwordManagementPanel
                 label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change password") : qsTr("Set password")
                 description: qsTr("For additional security the YubiKey may be protected with a password.")
-                visible: !!yubiKey.currentDevice && !settings.otpMode
+                visible: !!yubiKey.currentDevice
 
                 ColumnLayout {
 
@@ -308,7 +288,7 @@ Flickable {
                 label: qsTr("Reset")
                 description: qsTr("Warning: Reset will delete all accounts and restore factory defaults.")
                 isEnabled: false
-                visible: !!yubiKey.currentDevice && !settings.otpMode
+                visible: !!yubiKey.currentDevice
                 toolButtonIcon: "../images/reset.svg"
                 toolButtonToolTip: qsTr("Reset device")
                 toolButton.onClicked: navigator.confirm({
@@ -382,32 +362,15 @@ Flickable {
                 id: interfacePanel
                 label: qsTr("Interface")
                 description: qsTr("Configure how to communicate with the YubiKey.")
-                property bool otpModeSelected: interfaceCombobox.currentIndex === 2
                 property bool customReaderSelected: interfaceCombobox.currentIndex === 1
-                property bool aboutToChange: (otpModeSelected !== settings.otpMode)
-                                             || (slot1DigitsComboBox.currentIndex
-                                                 !== getComboBoxIndex(
-                                                     settings.slot1digits))
-                                             || (slot2DigitsComboBox.currentIndex
-                                                 !== getComboBoxIndex(
-                                                     settings.slot2digits))
-                                             || customReaderSelected !== settings.useCustomReader
+                property bool aboutToChange: customReaderSelected !== settings.useCustomReader
                                              || readerFilter.text !== settings.customReaderName && readerFilter.text.length > 0
 
                 function isValidMode() {
                     return aboutToChange
-                            && ((otpModeSelected
-                                 && (slot1DigitsComboBox.currentIndex !== 0
-                                     || slot2DigitsComboBox.currentIndex !== 0))
-                                || !otpModeSelected)
                 }
 
                 function setInterface() {
-                    settings.slot1digits = otpModeDigits.get(
-                                slot1DigitsComboBox.currentIndex).value
-                    settings.slot2digits = otpModeDigits.get(
-                                slot2DigitsComboBox.currentIndex).value
-                    settings.otpMode = otpModeSelected
                     settings.useCustomReader = customReaderSelected
                     settings.customReaderName = readerFilter.text
                     yubiKey.clearCurrentDeviceAndEntries()
@@ -440,60 +403,18 @@ Flickable {
                         StyledComboBox {
                             id: interfaceCombobox
                             label: qsTr("Interface")
-                            model: ["CCID (recommended)", "CCID with custom reader", "OTP"]
+                            model: ["CCID (recommended)", "CCID with custom reader"]
                             currentIndex: getCurrentIndex()
 
                             function getCurrentIndex() {
-                                if (settings.otpMode) {
-                                    return 2
-                                }
-                                if (settings.useCustomReader && !settings.otpMode) {
+
+                                if (settings.useCustomReader) {
                                     return 1
                                 }
                                 // default
                                 return 0
                             }
                         }
-                    }
-                }
-
-                RowLayout {
-                    visible: interfacePanel.otpModeSelected
-                    Label {
-                        Layout.fillWidth: true
-                        font.pixelSize: 12
-                        color: primaryColor
-                        opacity: lowEmphasis
-                        text: qsTr("Using OTP slots should be considered for special cases only.")
-                        wrapMode: Text.WordWrap
-                        Layout.rowSpan: 1
-                        bottomPadding: 8
-                    }
-                }
-
-                RowLayout {
-                    visible: interfacePanel.otpModeSelected
-
-                    StyledComboBox {
-                        id: slot1DigitsComboBox
-                        label: qsTr("Slot 1 digits")
-                        comboBox.textRole: "text"
-                        model: otpModeDigits
-                        currentIndex: interfacePanel.getComboBoxIndex(
-                                          settings.slot1digits)
-                    }
-
-                    Item {
-                        width: 16
-                    }
-
-                    StyledComboBox {
-                        id: slot2DigitsComboBox
-                        label: qsTr("Slot 2 digits")
-                        comboBox.textRole: "text"
-                        model: otpModeDigits
-                        currentIndex: interfacePanel.getComboBoxIndex(
-                                          settings.slot2digits)
                     }
                 }
 
