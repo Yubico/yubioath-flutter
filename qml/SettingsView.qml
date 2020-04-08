@@ -34,9 +34,6 @@ Flickable {
     function getDeviceDescription(device) {
         if (!!device) {
             return qsTr("Serial number: %1").arg(!!device.serial ? device.serial : "Not available")
-        } else if (yubiKey.availableDevices.length > 0
-                   && !yubiKey.availableDevices.some(dev => dev.selectable)) {
-            return qsTr("No compatible device found")
         } else {
             return qsTr("No device found")
         }
@@ -188,7 +185,6 @@ Flickable {
                                      && modelData.serial === yubiKey.currentDevice.serial
                             text: getDeviceLabel(modelData)
                             description: getDeviceDescription(modelData)
-                            enabled: modelData.selectable
                             buttonGroup: deviceButtonGroup
                         }
                     }

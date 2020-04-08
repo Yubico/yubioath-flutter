@@ -128,17 +128,9 @@ def catch_error(f):
     return wrapped
 
 
-def usb_selectable(dev):
-    return dev.mode.has_transport(TRANSPORT.CCID) and (
-            dev.config.usb_enabled & APPLICATION.OATH)
-
-
-def nfc_selectable(dev):
-    return dev.config.nfc_enabled & APPLICATION.OATH
-
-
 def is_nfc(reader_name):
     return "yubico" not in reader_name.lower()
+
 
 class OathContextManager(object):
     def __init__(self, dev):
@@ -245,13 +237,6 @@ class Controller(object):
                     return res
 
                 serial = dev.serial
-                selectable = usb_selectable(dev)
-
-                if selectable and transport == TRANSPORT.CCID:
-                    controller = OathController(dev.driver)
-                    has_password = controller.locked
-                else:
-                    has_password = False
 
                 if serial not in handled_serials:
                     handled_serials.add(serial)
@@ -261,28 +246,25 @@ class Controller(object):
                                 dev.driver.key_type, dev.driver.mode)]
                     if len(matches) > 0:
                         matching_descriptor = matches[0]
-                        res.append({
-                            'name': dev.device_name,
-                            'version': '.'.join(
-                                str(x) for x in dev.version
-                                ) if dev.version else '',
-                            'serial': serial or '',
-                            'usbAppEnabled': [a.name for a in APPLICATION if a & dev.config.usb_enabled],
-                            'usbAppSupported': [a.name for a in APPLICATION if a & dev.config.usb_supported],
-                            'nfcAppEnabled': [a.name for a in APPLICATION if a & dev.config.nfc_enabled],
-                            'nfcAppSupported': [a.name for a in APPLICATION if a & dev.config.nfc_enabled],
-                            'usbInterfacesSupported': [t.name for t in TRANSPORT if t & dev.config.usb_supported],
-                            'usbInterfacesEnabled': str(dev.mode).split('+'),
-                            'canWriteConfig': dev.can_write_config,
-                            'configurationLocked': dev.config.configuration_locked,
-                            'formFactor': dev.config.form_factor,
-
-                            'hasPassword': has_password,
-                            'selectable': selectable,
-                            'validated': not has_password
-                        })
+                        res.append(self._serialise_dev(dev))
                         descs_to_match.remove(matching_descriptor)
         return res
+
+    def _serialise_dev(self, dev):
+        return {
+            'name': dev.device_name,
+            'version': '.'.join(str(x) for x in dev.version) if dev.version else '',
+            'serial': dev.serial or '',
+            'usbAppEnabled': [a.name for a in APPLICATION if a & dev.config.usb_enabled],
+            'usbAppSupported': [a.name for a in APPLICATION if a & dev.config.usb_supported],
+            'nfcAppEnabled': [a.name for a in APPLICATION if a & dev.config.nfc_enabled],
+            'nfcAppSupported': [a.name for a in APPLICATION if a & dev.config.nfc_enabled],
+            'usbInterfacesSupported': [t.name for t in TRANSPORT if t & dev.config.usb_supported],
+            'usbInterfacesEnabled': str(dev.mode).split('+'),
+            'canWriteConfig': dev.can_write_config,
+            'configurationLocked': dev.config.configuration_locked,
+            'formFactor': dev.config.form_factor
+       }
 
     def refresh_devices(self, reader_filter=None):
         self._devices = []
@@ -291,26 +273,7 @@ class Controller(object):
             self._reader_filter = reader_filter
             dev = self._get_dev_from_reader()
             if dev:
-                if is_nfc(self._reader_filter):
-                    selectable = nfc_selectable(dev)
-                else:
-                    selectable = usb_selectable(dev)
-                if selectable:
-                    controller = OathController(dev.driver)
-                    has_password = controller.locked
-                else:
-                    has_password = False
-                self._devices.append({
-                    'name': dev.device_name,
-                    'version': '.'.join(
-                        str(x) for x in dev.version
-                        ) if dev.version else '',
-                    'serial': dev.serial or '',
-                    'usbInterfacesEnabled': str(dev.mode).split('+'),
-                    'hasPassword': has_password,
-                    'selectable': selectable,
-                    'validated': True
-                })
+                self._devices.append(self._serialise_dev(dev))
                 return success({'devices': self._devices})
             else:
                 return success({'devices': []})
