@@ -148,8 +148,8 @@ ToolBar {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 placeholderText: !!(navigator.currentItem && navigator.currentItem.objectName !== 'settingsView')
-                                 ? qsTr("Quick find")
-                                 : qsTr("Quick find in Settings")
+                                 ? qsTr("Search accounts")
+                                 : qsTr("Search settings")
                 placeholderTextColor: isDark() ? "#B7B7B7" : "#767676"
                 leftPadding: 28
                 rightPadding: 8
