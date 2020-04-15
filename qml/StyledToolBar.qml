@@ -31,8 +31,8 @@ ToolBar {
 
     function shouldShowSearch() {        
         return !!(navigator.currentItem
-                  && navigator.currentItem.objectName === 'credentialsView'
-                  && entries.count > 0)
+                  && navigator.currentItem.objectName === 'credentialsView' && entries.count > 0)
+               || !!(navigator.currentItem && navigator.currentItem.objectName === 'settingsView')
     }
 
     function shouldShowSettings() {
@@ -147,7 +147,9 @@ ToolBar {
                 selectedTextColor: defaultBackground
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                placeholderText: qsTr("Quick find")
+                placeholderText: !!(navigator.currentItem && navigator.currentItem.objectName !== 'settingsView')
+                                 ? qsTr("Search accounts")
+                                 : qsTr("Search settings")
                 placeholderTextColor: isDark() ? "#B7B7B7" : "#767676"
                 leftPadding: 28
                 rightPadding: 8

@@ -196,6 +196,14 @@ ApplicationWindow {
 
     }
 
+    function colorizeMatch(string, query) {
+        return string.replace(escapeRegExp(query.trim(), "gi"), "<span style=\"background-color:'#ffeb3b';color:'#333333';\">$&</span>") + " "
+    }
+
+    function escapeRegExp(string, flags) {
+      return RegExp(string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, "|"), flags)
+    }
+
     function getFavoriteEntries() {
         var favs = entriesComponent.createObject(app, {
         })

@@ -15,14 +15,18 @@ Pane {
 
     property string label
     property string description
+    property string metadata
     property string keyImage
     property string backgroundColor: defaultElevated
+    property string searchQuery: toolBar.searchField.text
+    property string searchText: label.concat(":", description, ":", metadata)
 
     property bool isEnabled: true
     property bool isExpanded: false
     property bool isTopPanel: false
     property bool isBottomPanel: false
     property bool isSectionTitle: false
+    property bool isVisible: true
     property bool dropShadow: true
 
     property string toolButtonIcon
@@ -44,12 +48,12 @@ Pane {
 
     Material.background: backgroundColor
     Material.elevation: dropShadow ? 1 : 0
+    visible: searchQuery.length > 0 ? isVisible && searchText.match(escapeRegExp(searchQuery, "i")) : isVisible
 
     function expandAction() {
         function collapseAll() {
             for (var i = 0; i < parent.children.length; ++i) {
-                if (!!parent.children[i] &&
-                        parent.children[i].toString().indexOf("StyledExpansionPanel") === 0) {
+                if (!!parent.children[i] && parent.children[i].toString().startsWith("StyledExpansionPanel")) {
                     parent.children[i].isExpanded = false
                 }
             }
@@ -140,7 +144,8 @@ Pane {
 
                 Label {
                     visible: !isSectionTitle
-                    text: label
+                    text: searchQuery.length > 0 ? colorizeMatch(label, searchQuery) : label
+                    textFormat: TextEdit.RichText
                     font.pixelSize: 13
                     font.bold: false
                     color: primaryColor
@@ -154,7 +159,8 @@ Pane {
                     font.pixelSize: 13
                     color: primaryColor
                     opacity: lowEmphasis
-                    text: description
+                    text: searchQuery.length > 0 ? colorizeMatch(description, searchQuery) : description
+                    textFormat: TextEdit.RichText
                     wrapMode: Text.WordWrap
                     maximumLineCount: isExpanded ? 4 : 2
                     elide: Text.ElideRight
