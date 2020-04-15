@@ -2,7 +2,7 @@ name: yubioath-desktop
 adopt-info: yubioath-desktop
 icon: resources/icons/com.yubico.yubioath.svg
 base: core18
-grade: devel
+grade: stable
 confinement: strict
 
 apps:
