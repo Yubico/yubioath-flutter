@@ -13,4 +13,5 @@ jobs:
       - name: Validate appdata file
         run: |
           sudo apt install appstream-util
+          appstream-util --version
           appstream-util validate-relax resources/com.yubico.yubioath.appdata.xml
