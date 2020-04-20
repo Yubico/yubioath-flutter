@@ -40,6 +40,7 @@ ApplicationWindow {
     property string formImageOverlay: isDark() ? "#d8d8d8" : "#727272"
     property string formStepBackground: isDark() ? "#565656" : "#bbbbbb"
     property string formHighlightItem: isDark() ? "#4a4a4a" : "#e9e9e9"
+    property string formButtonBorder: isDark() ? "#5f6368" : "#dadce0"
 
     property string toolTipForeground: app.isDark() ? "#fafafa" : "#fbfbfb"
     property string toolTipBackground: app.isDark() ? "#4a4a4a" : "#7f7f7f"

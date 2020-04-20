@@ -129,6 +129,7 @@ Pane {
                     "heading": qsTr("Delete %1 ?").arg(formattedName()),
                     "message": qsTr("This will permanently delete the account from your YubiKey."),
                     "description": qsTr("You will not be able to generate security codes for the account anymore. Make sure 2FA has been disabled before proceeding."),
+                    "buttonAccept": qsTr("Delete account"),
                     "acceptedCb": function () {
 
                             yubiKey.deleteCredential(credential,

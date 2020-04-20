@@ -89,7 +89,7 @@ Dialog {
                     text: message
                     color: yubicoWhite
                     font.pixelSize: 13
-                    font.weight: Font.Bold
+                    font.weight: Font.Medium
                     lineHeight: 1.2
                     leftPadding: 12
                     wrapMode: Text.WordWrap
@@ -114,16 +114,15 @@ Dialog {
 
         DialogButtonBox {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Layout.topMargin: 0
-            Layout.bottomMargin: -16
-            Layout.rightMargin: -8
+            Layout.topMargin: 8
+            Layout.bottomMargin: -8
             padding: 0
             visible: buttons
 
             StyledButton {
                 id: btnAccept
                 text: qsTr(buttonAccept)
-                flat: true
+                primary: true
                 enabled: true
                 critical: warning
                 DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
@@ -135,7 +134,6 @@ Dialog {
             StyledButton {
                 id: btnCancel
                 text: qsTr(buttonCancel)
-                flat: true
                 critical: warning
                 enabled: true
                 DialogButtonBox.buttonRole: DialogButtonBox.RejectRole

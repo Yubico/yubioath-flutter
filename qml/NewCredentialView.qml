@@ -53,6 +53,7 @@ Flickable {
                     navigator.confirm({
                                     "heading": qsTr("Overwrite?"),
                                     "message": qsTr("An account with this name already exists, do you want to overwrite it?"),
+                                    "buttonAccept": qsTr("Overwrite"),
                                     "acceptedCb": _ccidAddCredentialOverwrite
                                       })
                 } else {
@@ -138,6 +139,7 @@ Flickable {
                                 text: qsTr("Scan")
                                 toolTipText: qsTr("Scan a QR code on the screen")
                                 focus: true
+                                primary: true
                                 onClicked: yubiKey.scanQr(true)
                                 Keys.onReturnPressed: yubiKey.scanQr(true)
                                 Keys.onEnterPressed: yubiKey.scanQr(true)
@@ -145,7 +147,6 @@ Flickable {
                             StyledButton {
                                 text: qsTr("Manual")
                                 toolTipText: qsTr("Enter account details manually")
-                                flat: true
                                 onClicked: manualEntryPane.expandAction()
                                 Keys.onReturnPressed: manualEntryPane.expandAction()
                                 Keys.onEnterPressed: manualEntryPane.expandAction()
