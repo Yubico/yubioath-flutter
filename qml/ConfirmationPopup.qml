@@ -77,7 +77,7 @@ Dialog {
 
                 StyledImage {
                     source: warning ? "../images/warning.svg" : "../images/info.svg"
-                    color: yubicoWhite
+                    color: defaultBackground
                     iconWidth: 32
                     iconHeight: 32
                     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
@@ -87,7 +87,7 @@ Dialog {
 
                 Label {
                     text: message
-                    color: yubicoWhite
+                    color: defaultBackground
                     font.pixelSize: 13
                     font.weight: Font.Medium
                     lineHeight: 1.2

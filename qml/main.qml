@@ -23,9 +23,9 @@ ApplicationWindow {
 
     Accessible.ignored: true
 
-    readonly property string yubicoGreen: "#9aca3c"
+    readonly property string yubicoGreen: isDark() ? "#b1cf77" : "#9aca3c"
     readonly property string yubicoWhite: "#ffffff"
-    readonly property string yubicoRed: Material.color(Material.Red, Material.Shade600)
+    readonly property string yubicoRed: isDark() ? "#cf6679" : "#b00020"
 
     property string primaryColor: isDark() ? "#ffffff" : "#303030"
 

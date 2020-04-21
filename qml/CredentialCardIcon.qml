@@ -7,7 +7,7 @@ Rectangle {
 
     property string letter: !!credential ? getIconLetter() : ""
     property int size: 40
-    property var shade: isDark() ? Material.Shade200 : Material.Shade400
+    property var shade: isDark() ? Material.Shade200 : Material.Shade500
     width: size
     height: size
     radius: width * 0.5
