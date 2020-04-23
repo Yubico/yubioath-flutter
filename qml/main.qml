@@ -158,7 +158,7 @@ ApplicationWindow {
 
         // If app.x and app.y are outside of the available screen geometry,
         // put the app in the middle of the screen.
-        if (!isWindowPositionInsideSomeMonitor()) {
+        if (!isWindowPositionInsideSomeMonitor() && (Qt.platform.os == "windows")) {
             app.x = Screen.width / 2 - app.width / 2
             app.y = Screen.height / 2 - app.height / 2
         }
