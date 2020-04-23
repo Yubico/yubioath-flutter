@@ -15,7 +15,7 @@ ApplicationWindow {
     height: 502
     minimumWidth: 300
     minimumHeight: 196
-    visible: false
+    visible: !(settings.closeToTray && settings.hideOnLaunch)
 
     flags: Qt.Window | Qt.WindowFullscreenButtonHint | Qt.WindowTitleHint
            | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
@@ -76,7 +76,6 @@ ApplicationWindow {
         updateTrayVisibility()
         ensureMinimumWindowSize()
         ensureValidWindowPosition()
-        app.visible = !(settings.closeToTray && settings.hideOnLaunch)
     }
 
     Component.onDestruction: saveScreenLayout()
