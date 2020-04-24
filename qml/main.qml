@@ -21,8 +21,6 @@ ApplicationWindow {
            | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
            | Qt.WindowCloseButtonHint | Qt.WindowFullscreenButtonHint
 
-    Accessible.ignored: true
-
     readonly property string yubicoGreen: "#9aca3c"
     readonly property string yubicoWhite: "#ffffff"
     readonly property string yubicoRed: Material.color(Material.Red, Material.Shade600)
