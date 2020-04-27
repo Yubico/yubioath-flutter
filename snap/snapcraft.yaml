@@ -35,7 +35,6 @@ apps:
       - x11
       - raw-usb
       - u2f-devices
-      - hidraw
       - hardware-observe
     extensions: [gnome-3-28]
 
