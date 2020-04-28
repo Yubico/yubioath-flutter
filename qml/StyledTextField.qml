@@ -61,7 +61,7 @@ Item {
         Label {
             font.pixelSize: 12
             color: isValidated ? primaryColor : yubicoRed
-            opacity: isValidated ? lowEmphasis : fullEmphasis
+            opacity: enabled ? (isValidated ? lowEmphasis : fullEmphasis) : disabledEmphasis
             text: labelTextValue()
         }
 
@@ -94,7 +94,7 @@ Item {
             activeFocusOnTab: true
             focus: true
             color: primaryColor
-            opacity: highEmphasis
+            opacity: enabled ? highEmphasis : disabledEmphasis
             placeholderText: {
                 if (textField.activeFocus) {
                     return ""

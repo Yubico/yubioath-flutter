@@ -26,7 +26,7 @@ Item {
             text: label
             font.pixelSize: 12
             color: primaryColor
-            opacity: lowEmphasis
+            opacity: enabled ? lowEmphasis : disabledEmphasis
         }
 
         ComboBox {
@@ -47,12 +47,12 @@ Item {
                     iconWidth: 24
                     iconHeight: 24
                     color: primaryColor
-                    opacity: highEmphasis
+                    opacity: enabled ? highEmphasis : disabledEmphasis
                 }
             }
             contentItem: Text {
                 color: primaryColor
-                opacity: highEmphasis
+                opacity: enabled ? highEmphasis : disabledEmphasis
                 font.pixelSize: 13
                 text: parent.displayText
                 verticalAlignment: Text.AlignVCenter

@@ -363,12 +363,11 @@ Flickable {
 
             StyledExpansionPanel {
                 id: interfacePanel
-                label: qsTr("Interface")
-                description: qsTr("Configure how to communicate with the YubiKey.")
+                label: qsTr("Custom reader")
+                description: qsTr("Specify a custom reader for YubiKey.")
                 metadata: "ccid otp slot custom readers nfc"
 
-                property bool customReaderSelected: interfaceCombobox.currentIndex === 1
-                property bool aboutToChange: customReaderSelected !== settings.useCustomReader
+                property bool aboutToChange: customReaderCheckbox.checked !== settings.useCustomReader
                                              || readerFilter.text !== settings.customReaderName && readerFilter.text.length > 0
 
                 function isValidMode() {
@@ -376,7 +375,7 @@ Flickable {
                 }
 
                 function setInterface() {
-                    settings.useCustomReader = customReaderSelected
+                    settings.useCustomReader = customReaderCheckbox.checked
                     settings.customReaderName = readerFilter.text
                     yubiKey.clearCurrentDeviceAndEntries()
                     yubiKey.refreshDevicesDefault()
@@ -385,46 +384,32 @@ Flickable {
                     interfacePanel.isExpanded = false
                 }
 
-                function getComboBoxIndex(digits) {
-                    switch (digits) {
-                    case 0:
-                        return 0
-                    case 6:
-                        return 1
-                    case 7:
-                        return 2
-                    case 8:
-                        return 3
-                    default:
-                        return 0
-                    }
-                }
-
                 ColumnLayout {
-
-
-                    RowLayout {
+                    CheckBox {
+                        id: customReaderCheckbox
+                        checked: settings.useCustomReader
+                        text: qsTr("Enable custom reader")
+                        padding: 0
+                        indicator.width: 16
+                        indicator.height: 16
+                    }
+                    Label {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
                         Layout.fillWidth: true
-                        StyledComboBox {
-                            id: interfaceCombobox
-                            label: qsTr("Interface")
-                            model: ["CCID (recommended)", "CCID with custom reader"]
-                            currentIndex: getCurrentIndex()
-
-                            function getCurrentIndex() {
-
-                                if (settings.useCustomReader) {
-                                    return 1
-                                }
-                                // default
-                                return 0
-                            }
-                        }
+                        font.pixelSize: 13
+                        color: primaryColor
+                        opacity: lowEmphasis
+                        text: "Specify a custom reader, useful for example when using a NFC reader."
+                        textFormat: TextEdit.RichText
+                        wrapMode: Text.WordWrap
+                        elide: Text.ElideRight
+                        lineHeight: 1.1
                     }
                 }
 
                 ColumnLayout {
-                    visible: interfacePanel.customReaderSelected
+                    Layout.topMargin: 8
+                    visible: customReaderCheckbox.checked
 
                     RowLayout {
                         visible: yubiKey.availableReaders.length > 0
@@ -447,8 +432,6 @@ Flickable {
 
                     StyledTextField {
                         id: readerFilter
-                        enabled: interfacePanel.customReaderSelected
-                        visible: interfacePanel.customReaderSelected
                         labelText: qsTr("Custom reader filter")
                         text: settings.customReaderName
                     }
