@@ -8,7 +8,9 @@
 
   <name>Yubico Authenticator</name>
   <summary>Graphical interface for displaying OATH codes with a YubiKey</summary>
-  <url type="homepage">https://support.yubico.com/support/tickets/new</url>
+  <url type="homepage">https://www.yubico.com/products/services-software/download/yubico-authenticator/</url>
+  <url type="contact">https://support.yubico.com/support/tickets/new</url>
+  <url type="bugtracker">https://github.com/Yubico/yubioath-desktop/issues</url>
   <content_rating type="oars-1.1"/>
 
   <developer_name>Yubico</developer_name>
