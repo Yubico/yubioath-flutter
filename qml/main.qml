@@ -21,9 +21,9 @@ ApplicationWindow {
            | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
            | Qt.WindowCloseButtonHint | Qt.WindowFullscreenButtonHint
 
-    Accessible.ignored: true
 
     readonly property string yubicoGreen: isDark() ? "#b1cf77" : "#9aca3c"
+
     readonly property string yubicoWhite: "#ffffff"
     readonly property string yubicoRed: isDark() ? "#cf6679" : "#b00020"
 
@@ -159,7 +159,7 @@ ApplicationWindow {
 
         // If app.x and app.y are outside of the available screen geometry,
         // put the app in the middle of the screen.
-        if (!isWindowPositionInsideSomeMonitor()) {
+        if (!isWindowPositionInsideSomeMonitor() && (Qt.platform.os == "windows")) {
             app.x = Screen.width / 2 - app.width / 2
             app.y = Screen.height / 2 - app.height / 2
         }

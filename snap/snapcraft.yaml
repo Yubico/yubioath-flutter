@@ -2,7 +2,7 @@ name: yubioath-desktop
 adopt-info: yubioath-desktop
 icon: resources/icons/com.yubico.yubioath.svg
 base: core18
-grade: devel
+grade: stable
 confinement: strict
 
 apps:
@@ -35,7 +35,6 @@ apps:
       - x11
       - raw-usb
       - u2f-devices
-      - hidraw
       - hardware-observe
     extensions: [gnome-3-28]
 

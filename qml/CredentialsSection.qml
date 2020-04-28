@@ -57,9 +57,9 @@ import QtGraphicalEffects 1.0
             navigator.forceActiveFocus()
             currentIndex = -1
         }
-        Keys.onSpacePressed: calculate()
-        Keys.onEnterPressed: calculate()
-        Keys.onReturnPressed: calculate()
+        Keys.onSpacePressed: currentItem.calculateCard(true)
+        Keys.onEnterPressed: currentItem.calculateCard(true)
+        Keys.onReturnPressed: currentItem.calculateCard(true)
         Keys.onDeletePressed: {
             if (currentIndex !== -1) {
                 currentItem.deleteCard()

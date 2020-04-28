@@ -247,6 +247,11 @@ class Controller(object):
                 serial = dev.serial
                 selectable = usb_selectable(dev)
 
+                if dev.version:
+                    version = '.'.join(str(x) for x in dev.version)
+                else:
+                    version = ""
+
                 if selectable and transport == TRANSPORT.CCID:
                     controller = OathController(dev.driver)
                     has_password = controller.locked
@@ -255,17 +260,30 @@ class Controller(object):
 
                 if serial not in handled_serials:
                     handled_serials.add(serial)
-                    matches = [
+
+                    matches_all = [
+                        d for d in self._descs[:] if (
+                            d.key_type, d.mode) == (
+                                dev.driver.key_type, dev.driver.mode)]
+
+                    matches_left = [
                         d for d in descs_to_match if (
                             d.key_type, d.mode) == (
                                 dev.driver.key_type, dev.driver.mode)]
-                    if len(matches) > 0:
-                        matching_descriptor = matches[0]
+
+                    if len(matches_left) > 0:
+
+                        if len(matches_all) == 1 and version == "":
+                            # Only one matching descriptor of all descriptors,
+                            # try reading any missing version from it
+                            descriptor = matches_all[0]
+                            if descriptor.version:
+                                version = '.'.join(
+                                    str(x) for x in descriptor.version)
+
                         res.append({
                             'name': dev.device_name,
-                            'version': '.'.join(
-                                str(x) for x in dev.version
-                                ) if dev.version else '',
+                            'version': version,
                             'serial': serial or '',
                             'usbInterfacesEnabled': str(
                                 dev.mode).split('+'),
@@ -273,7 +291,8 @@ class Controller(object):
                             'selectable': selectable,
                             'validated': not has_password
                         })
-                        descs_to_match.remove(matching_descriptor)
+
+                        descs_to_match.remove(matches_left[0])
         return res
 
     def refresh_devices(self, reader_filter=None):

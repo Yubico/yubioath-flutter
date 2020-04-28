@@ -30,12 +30,6 @@ Pane {
         return entries
     }
 
-    function calculate() {
-        if (grid.currentIndex !== -1) {
-            grid.currentItem.calculateCard(true)
-        }
-    }
-
     Component {
         id: entriesComponent
         EntriesModel {
