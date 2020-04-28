@@ -102,14 +102,14 @@ Pane {
                         anchors.fill: check
                         visible: isCompleted
                         source: check
-                        color: yubicoWhite
+                        color: defaultBackground
                 }
                 Label {
                     anchors { horizontalCenter: parent.horizontalCenter; verticalCenter: parent.verticalCenter; }
                     text: step
                     visible: !isCompleted
                     font.pixelSize: 13
-                    color: yubicoWhite
+                    color: defaultBackground
                 }
 
 

@@ -264,11 +264,11 @@ Flickable {
                             visible: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
                             enabled: currentPasswordField.text.length > 0
                             text: "Remove"
-                            flat: true
                             onClicked: navigator.confirm({
                                                        "heading": qsTr("Remove password?"),
                                                        "description": qsTr("A password will not be required to access the accounts anymore."),
                                                        "warning": false,
+                                                       "buttonAccept": qsTr("Remove password"),
                                                        "acceptedCb": function () {
                                                            removePassword()
                                                        }
@@ -296,6 +296,7 @@ Flickable {
                                                   "heading": qsTr("Reset device?"),
                                                   "message": qsTr("This will delete all accounts and restore factory defaults of your YubiKey."),
                                                   "description": qsTr("There is NO going back from here, if you do not know what you are doing, do NOT do this."),
+                                                  "buttonAccept": qsTr("Reset device"),
                                                   "acceptedCb": function () {
                                                       navigator.goToLoading()
                                                       yubiKey.reset(function (resp) {
@@ -435,7 +436,7 @@ Flickable {
                             model: yubiKey.availableReaders
                         }
                         StyledButton {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             text: qsTr("Use as filter")
                             flat: true
                             enabled: yubiKey.availableReaders.length > 0
@@ -505,6 +506,7 @@ Flickable {
                                                   "heading": qsTr("Clear passwords?"),
                                                   "message": qsTr("This will delete all saved passwords."),
                                                   "description": qsTr("A password prompt will appear the next time a YubiKey with a password is used."),
+                                                  "buttonAccept": qsTr("Clear passwords"),
                                                   "acceptedCb": function() {
                                                     yubiKey.clearLocalPasswords(function (resp) {
                                                       if (resp.success) {

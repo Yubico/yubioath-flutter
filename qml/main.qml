@@ -23,9 +23,9 @@ ApplicationWindow {
 
     Accessible.ignored: true
 
-    readonly property string yubicoGreen: "#9aca3c"
+    readonly property string yubicoGreen: isDark() ? "#b1cf77" : "#9aca3c"
     readonly property string yubicoWhite: "#ffffff"
-    readonly property string yubicoRed: Material.color(Material.Red, Material.Shade600)
+    readonly property string yubicoRed: isDark() ? "#cf6679" : "#b00020"
 
     property string primaryColor: isDark() ? "#ffffff" : "#303030"
 
@@ -40,6 +40,7 @@ ApplicationWindow {
     property string formImageOverlay: isDark() ? "#d8d8d8" : "#727272"
     property string formStepBackground: isDark() ? "#565656" : "#bbbbbb"
     property string formHighlightItem: isDark() ? "#4a4a4a" : "#e9e9e9"
+    property string formButtonBorder: isDark() ? "#5f6368" : "#dadce0"
 
     property string toolTipForeground: app.isDark() ? "#fafafa" : "#fbfbfb"
     property string toolTipBackground: app.isDark() ? "#4a4a4a" : "#7f7f7f"

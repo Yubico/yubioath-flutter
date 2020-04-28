@@ -1,20 +1,54 @@
-import QtQuick 2.9
-import QtQuick.Controls 2.2
+import QtQuick 2.11
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
-import QtGraphicalEffects 1.0
+import QtQuick.Controls.impl 2.4
+import QtQuick.Controls.Material 2.4
+import QtQuick.Controls.Material.impl 2.4
 
 Button {
 
     property alias toolTipText: buttonToolTip.text
     property bool critical: false
+    property bool primary: false
 
     id: button
+
+    flat: false
     font.capitalization: Font.MixedCase
     font.weight: Font.Medium
-    Material.foreground: button.flat ? (critical ? yubicoRed : Material.primary) : yubicoWhite
-    Material.background: button.flat ? "transparent" : (critical ? yubicoRed : Material.primary)
-    Material.elevation: button.flat ? 0 : 1
+    font.pixelSize: 13
+    font.bold: false
+    implicitHeight: 32
+    leftPadding: 16
+    rightPadding: 16
+    Layout.minimumWidth: 66
+
+    Material.foreground: primary ? defaultBackground : (critical ? yubicoRed : Material.primary)
+
+    background: Rectangle {
+            color: primary ? (critical ? yubicoRed : Material.primary) : "transparent"
+            opacity: parent.hovered ? highEmphasis : fullEmphasis
+            border.color: formButtonBorder
+            border.width: primary || flat ? 0 : 1
+            radius: 4
+            visible: border
+            enabled: border
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+    }
+
+    Ripple {
+        clipRadius: 2
+        width: parent.width
+        height: parent.height
+        pressed: button.pressed
+        anchor: button
+        active: button.down || button.visualFocus || button.hovered
+        color: button.Material.rippleColor
+    }
 
     ToolTip {
         id: buttonToolTip
@@ -25,6 +59,7 @@ Button {
         Material.foreground: toolTipForeground
         Material.background: toolTipBackground
     }
+
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor

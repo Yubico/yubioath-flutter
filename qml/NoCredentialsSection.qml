@@ -55,6 +55,7 @@ ColumnLayout {
             text: qsTr("Add")
             enabled: true
             focus: true
+            primary: true
             Layout.alignment: Qt.AlignCenter | Qt.AlignVCenter
             onClicked: yubiKey.scanQr()
             Keys.onReturnPressed: yubiKey.scanQr()
