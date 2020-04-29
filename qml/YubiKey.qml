@@ -246,12 +246,12 @@ Python {
                 if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
                     // new device is being loaded, clear any old device
                     clearCurrentDeviceAndEntries()
-                    if (availableDevices.some(dev => dev.selectable)) {
-                        // pick the first selectable device
-                        currentDevice = resp.devices.find(dev => dev.selectable)
+                    if (availableDevices.some(dev => dev.usbAppEnabled.includes("OATH"))) {
+                        // pick the first device with oath enabled over USB
+                        currentDevice = resp.devices.find(dev => dev.usbAppEnabled.includes("OATH"))
                         calculateAll(navigator.goToCredentialsIfNotInSettings)
                     } else {
-                        // no selectable device (will land in no Insert YubiKey view)
+                        // no device with oath enabled over USB (will land in no Insert YubiKey view)
                         navigator.goToCredentialsIfNotInSettings()
                     }
                 } else {
@@ -277,7 +277,7 @@ Python {
                     refreshDevicesDefault()
                 }
                 if (timeToCalculateAll() && !!currentDevice
-                        && currentDeviceValidated) {
+                        && currentDeviceValidated && currentDevice.usbAppEnabled.includes("OATH")) {
                     calculateAll()
                 }
             } else {

@@ -54,7 +54,7 @@ Pane {
     NoYubiKeySection {
         id: noYubiKeySection
         // Make this section the default view to show when there is errors.
-        visible: !yubiKey.availableDevices.some(dev => dev.selectable) || (!credentialsSection.visible && !noResultsSection.visible && !noCredentialsSection.visible)
+        visible: !yubiKey.availableDevices || (!credentialsSection.visible && !noResultsSection.visible && !noCredentialsSection.visible)
         enabled: visible
         Accessible.ignored: true
     }

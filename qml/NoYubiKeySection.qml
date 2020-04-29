@@ -27,42 +27,13 @@ ColumnLayout {
         }
 
         Label {
-            text: {
-                if (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable)) {
-                    return qsTr("Unsupported device")
-                }
-                else {
-                    return qsTr("Insert your YubiKey")
-                }
-            }
+            text: qsTr("Insert your YubiKey")
             font.pixelSize: 16
             font.weight: Font.Normal
             lineHeight: 1.5
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             color: primaryColor
             opacity: highEmphasis
-        }
-        Label {
-            text: {
-                if (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable)) {
-                    return qsTr("Yubico Authenticator requires a CCID enabled and compatible YubiKey.")
-                }
-                else {
-                    return ""
-                }
-            }
-            visible: (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable))
-            Layout.minimumWidth: 300
-            Layout.maximumWidth: app.width - dynamicMargin
-                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
-            horizontalAlignment: Qt.AlignHCenter
-            Layout.rowSpan: 1
-            lineHeight: 1.1
-            wrapMode: Text.WordWrap
-            font.pixelSize: 13
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            color: primaryColor
-            opacity: lowEmphasis
         }
     }
 
