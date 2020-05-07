@@ -23,10 +23,8 @@ jobs:
       - name: Install dependencies from homebrew
         run: |
           brew update
+          brew uninstall gettext
           brew install swig qt zlib curl coreutils
-          brew reinstall gettext
-          brew unlink gettext && brew link gettext -f
-          brew doctor
           brew link qt -f
 
       - name: Setup GPG
