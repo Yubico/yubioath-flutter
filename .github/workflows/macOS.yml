@@ -73,7 +73,7 @@ jobs:
           tar -xzvf ${PYOTHERSIDE_VER}.tar.gz
           echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-${PYOTHERSIDE_VER}/src/src.pro
           cd pyotherside-${PYOTHERSIDE_VER}
-          qmake PYTHON_CONFIG=/Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/bin/python${PYTHON_VER_SHORT}m-config
+          qmake PYTHON_CONFIG=/Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/bin/python${PYTHON_VER_SHORT}-config
           make
           sudo make install
 
@@ -131,10 +131,10 @@ jobs:
 
       - name: Point custom Python share objects to relative openssl dylibs
         run: |
-          sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
-          sudo install_name_tool -change /opt/openssl/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
-          sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_hashlib.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
-          sudo install_name_tool -change /opt/openssl/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_hashlib.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
+          sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}-darwin.so
+          sudo install_name_tool -change /opt/openssl/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}-darwin.so
+          sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_hashlib.cpython-${PYTHON_VER_SHORT_COMPACT}-darwin.so
+          sudo install_name_tool -change /opt/openssl/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_hashlib.cpython-${PYTHON_VER_SHORT_COMPACT}-darwin.so
           sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/libssl.1.1.dylib
           sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/site-packages/cryptography/hazmat/bindings/_openssl.abi3.so
           sudo install_name_tool -change /opt/openssl/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/site-packages/cryptography/hazmat/bindings/_openssl.abi3.so
