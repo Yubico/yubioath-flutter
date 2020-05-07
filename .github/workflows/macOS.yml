@@ -54,6 +54,7 @@ jobs:
           ./configure MACOSX_DEPLOYMENT_TARGET=10.13 CPPFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" CC=clang --enable-framework --with-openssl=/opt/openssl --enable-optimizations
           sudo make altinstall
           otool -L /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/config-3.8-darwin/libpython3.8.dylib
+          sudo ln -s /opt/local/lib/libintl.8.dylib /usr/local/lib/libintl.8.dylib
 
       - name: Install python dependencies from source
         run: |
