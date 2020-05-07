@@ -24,6 +24,7 @@ jobs:
         run: |
           brew update
           brew install swig qt zlib curl coreutils gettext
+          brew link gettext -f
           brew link qt -f
 
       - name: Setup GPG
