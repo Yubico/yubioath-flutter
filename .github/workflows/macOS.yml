@@ -29,7 +29,7 @@ jobs:
       - name: Setup GPG
         run: |
           gpg --keyserver hkps://keys.openpgp.org --recv-keys 0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A 2D347EA6AA65421D e3ff2839c048b25c084debe9b26995e310250568
-          gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C 8657ABB260F056B1E5190839D9C4D26D0E60449
+          gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C 8657ABB260F056B1E5190839D9C4D26D0E604491
 
       - name: Build OpenSSL
         run: |
