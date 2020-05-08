@@ -355,6 +355,5 @@ ApplicationWindow {
         id: navigator
         anchors.fill: parent
         focus: true
-        Keys.forwardTo: toolBar.searchField
     }
 }
