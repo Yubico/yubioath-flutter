@@ -49,8 +49,12 @@ jobs:
           gpg --verify Python-${PYTHON_VER}.tgz.asc
           tar -xzvf Python-${PYTHON_VER}.tgz
           cd Python-${PYTHON_VER}
+          brew uninstall gettext --ignore-dependencies
           ./configure MACOSX_DEPLOYMENT_TARGET=10.13 CPPFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" CC=clang --enable-framework --with-openssl=/opt/openssl --enable-optimizations
           sudo make altinstall
+          brew reinstall gettext
+
+
 
       - name: Install python dependencies from source
         run: |
