@@ -72,7 +72,7 @@ jobs:
           echo "189cb0b973e40fcb6b95fd51b0bcd6cc8494b514d49ffe966ec488cf05bbf51e ${PYOTHERSIDE_VER}.tar.gz" | sha256sum -c -
           tar -xzvf ${PYOTHERSIDE_VER}.tar.gz
           echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-${PYOTHERSIDE_VER}/src/src.pro
-          echo "QMAKE_LIBS = $$system(echo "-L/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/config-3.8-darwin -lpython3.8 -ldl -framework CoreFoundation")" >> pyotherside-${PYOTHERSIDE_VER}/src/python/python.pri
+          echo "QMAKE_LIBS = $$system(echo "-L/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/config-3.8-darwin -lpython3.8 -ldl -framework CoreFoundation")" >> pyotherside-${PYOTHERSIDE_VER}/src/python.pri
           cd pyotherside-${PYOTHERSIDE_VER}
           qmake PYTHON_CONFIG=/Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/bin/python${PYTHON_VER_SHORT}-config
           make
