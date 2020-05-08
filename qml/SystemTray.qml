@@ -4,7 +4,8 @@ import QtQml 2.12
 
 SystemTrayIcon {
     visible: settings.closeToTray
-    icon.source: "../images/windowicon.png"
+    icon.source: Qt.platform.os == "osx" ? "../images/menubaricon.png" : "../images/windowicon.png"
+    icon.mask: Qt.platform.os == "osx"
     onActivated: {
         if (reason === SystemTrayIcon.DoubleClick) {
             showWindow()
