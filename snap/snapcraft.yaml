@@ -45,9 +45,9 @@ parts:
     build-packages:
       - software-properties-common
     override-pull: |
-      add-apt-repository -y ppa:beineri/opt-qt-5.14.1-bionic
+      add-apt-repository -y ppa:beineri/opt-qt-5.14.2-bionic
       apt-get -qq update
-      apt-get install -y qt514-meta-full
+      apt-get install -y qt514-meta-minimal qt514svg qt514quickcontrols2 qt514graphicaleffects qt514declarative qt514wayland qt514x11extras
 
   ppa-ykpers:
     plugin: nil
@@ -79,15 +79,15 @@ parts:
     override-build: |
       eval "$(pyenv init -)"
       pyenv update
-      pyenv install --force 3.8.1
-      pyenv global 3.8.1
+      pyenv install --force 3.8.2
+      pyenv global 3.8.2
       pip3 install --upgrade pip
     override-stage: |
       snapcraftctl stage
-      rsync -a /root/.pyenv/versions/3.8.1/* /root/stage/usr/
+      rsync -a /root/.pyenv/versions/3.8.2/* /root/stage/usr/
     override-prime: |
       snapcraftctl prime
-      rsync -a /root/.pyenv/versions/3.8.1/* /root/prime/usr/
+      rsync -a /root/.pyenv/versions/3.8.2/* /root/prime/usr/
 
   python-deps:
     plugin: dump
@@ -99,7 +99,7 @@ parts:
       - PATH: /root/.pyenv/bin:$PATH
     override-build: |
       eval "$(pyenv init -)"
-      pyenv global 3.8.1
+      pyenv global 3.8.2
       pip3 download --no-binary :all: pyscard
       tar -xvf pyscard*
       cd pyscard*
@@ -115,10 +115,10 @@ parts:
       pip3 install -r requirements.txt
     override-stage: |
       snapcraftctl stage
-      rsync -a /root/.pyenv/versions/3.8.1/* /root/stage/usr/
+      rsync -a /root/.pyenv/versions/3.8.2/* /root/stage/usr/
     override-prime: |
       snapcraftctl prime
-      rsync -a /root/.pyenv/versions/3.8.1/* /root/prime/usr/
+      rsync -a /root/.pyenv/versions/3.8.2/* /root/prime/usr/
 
   pyotherside:
     plugin: qmake
@@ -138,7 +138,7 @@ parts:
       - INSTALL_ROOT: $SNAPCRAFT_PART_INSTALL
     override-build: |
       eval "$(pyenv init -)"
-      pyenv global 3.8.1
+      pyenv global 3.8.2
       snapcraftctl build
 
   pcsc-lite:
