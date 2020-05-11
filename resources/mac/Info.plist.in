@@ -19,7 +19,7 @@
         <key>CFBundleName</key>
         <string>Yubico Authenticator</string>
         <key>CFBundleVersion</key>
-        <string>2</string>
+        <string>1</string>
         <key>CFBundleShortVersionString</key>
         <string>@FULL_VERSION@</string>
         <key>LSApplicationCategoryType</key>
