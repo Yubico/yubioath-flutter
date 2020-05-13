@@ -19,7 +19,7 @@
         <key>CFBundleName</key>
         <string>Yubico Authenticator</string>
         <key>CFBundleVersion</key>
-        <string>2</string>
+        <string>1</string>
         <key>CFBundleShortVersionString</key>
         <string>@FULL_VERSION@</string>
         <key>LSApplicationCategoryType</key>
@@ -32,5 +32,7 @@
         <string>True</string>
         <key>NSSupportsAutomaticGraphicsSwitching</key>
         <true/>
+        <key>NSRequiresAquaSystemAppearance</key>
+        <string>False</string>
 </dict>
 </plist>

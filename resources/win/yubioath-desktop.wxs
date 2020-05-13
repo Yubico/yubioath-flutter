@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
 	xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <?define ProductVersion="5.0.3" ?>
+  <?define ProductVersion="5.0.4" ?>
   <?define ProductName="Yubico Authenticator" ?>
 
    <Product Id="*" UpgradeCode="fcbafc57-6409-47b8-b861-20bda48cd4f6" Name="$(var.ProductName)" Version="$(var.ProductVersion)" Manufacturer="Yubico AB" Language="1033">

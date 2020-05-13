@@ -3,11 +3,11 @@ name: macOS
 on: [push, pull_request]
 
 env:
-  PYTHON_VER: '3.7.6'
-  PYTHON_VER_SHORT: '3.7'
-  PYTHON_VER_SHORT_COMPACT: '37'
+  PYTHON_VER: '3.8.2'
+  PYTHON_VER_SHORT: '3.8'
+  PYTHON_VER_SHORT_COMPACT: '38'
   PYOTHERSIDE_VER: '1.5.9'
-  OPENSSL_VER: '1.1.1f'
+  OPENSSL_VER: '1.1.1g'
   LIBYUBIKEY_VER: '1.13'
   LIBYKPERS_VER: '1.20.0'
   LIBUSB_VER: '1.0.23'
@@ -28,7 +28,7 @@ jobs:
 
       - name: Setup GPG
         run: |
-          gpg --keyserver hkps://keys.openpgp.org --recv-keys 0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A 2D347EA6AA65421D
+          gpg --keyserver hkps://keys.openpgp.org --recv-keys 0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A 2D347EA6AA65421D e3ff2839c048b25c084debe9b26995e310250568
           gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C 8657ABB260F056B1E5190839D9C4D26D0E604491
 
       - name: Build OpenSSL
@@ -49,22 +49,29 @@ jobs:
           gpg --verify Python-${PYTHON_VER}.tgz.asc
           tar -xzvf Python-${PYTHON_VER}.tgz
           cd Python-${PYTHON_VER}
+          # Make sure gettext is not installed when configuring Python,
+          # otherwise it seems to break the linking for PyOtherSide build later.
+          # Re-intall after, because it's needed for wget.
+          brew uninstall gettext --ignore-dependencies
           ./configure MACOSX_DEPLOYMENT_TARGET=10.13 CPPFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" CC=clang --enable-framework --with-openssl=/opt/openssl --enable-optimizations
           sudo make altinstall
+          brew reinstall gettext
+
+
 
       - name: Install python dependencies from source
         run: |
-          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.7/bin/pip3.7 install cryptography --no-binary :all: --ignore-installed --force-reinstall --no-cache
-          /Library/Frameworks/Python.framework/Versions/3.7/bin/pip3.7 download pyscard --no-binary :all:
+          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.8/bin/pip3.8 install cryptography --no-binary :all: --ignore-installed --force-reinstall --no-cache
+          /Library/Frameworks/Python.framework/Versions/3.8/bin/pip3.8 download pyscard --no-binary :all:
           tar -xvf pyscard*
           cd pyscard*
           patch setup.py ../.github/workflows/macos-pyscard-patch.patch
           cd ..
-          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.7/bin/pip3.7 install ./pyscard* --no-binary :all: --ignore-installed --force-reinstall --no-cache
-          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.7/bin/pip3.7 install -r requirements.txt --no-binary :all:
+          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.8/bin/pip3.8 install ./pyscard* --no-binary :all: --ignore-installed --force-reinstall --no-cache
+          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.8/bin/pip3.8 install -r requirements.txt --no-binary :all:
 
       - name: Change id for bundled Python
-        run: sudo sed -i '' 's/org.python.python/com.yubico.python/g' /Library/Frameworks/Python.framework/Versions/3.7/Resources/Python.app/Contents/Info.plist
+        run: sudo sed -i '' 's/org.python.python/com.yubico.python/g' /Library/Frameworks/Python.framework/Versions/3.8/Resources/Python.app/Contents/Info.plist
 
       - name: Build PyOtherSide QML plugin
         run: |
@@ -73,7 +80,7 @@ jobs:
           tar -xzvf ${PYOTHERSIDE_VER}.tar.gz
           echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-${PYOTHERSIDE_VER}/src/src.pro
           cd pyotherside-${PYOTHERSIDE_VER}
-          qmake PYTHON_CONFIG=/Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/bin/python${PYTHON_VER_SHORT}m-config
+          qmake PYTHON_CONFIG=/Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/bin/python${PYTHON_VER_SHORT}-config
           make
           sudo make install
 
@@ -131,10 +138,10 @@ jobs:
 
       - name: Point custom Python share objects to relative openssl dylibs
         run: |
-          sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
-          sudo install_name_tool -change /opt/openssl/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
-          sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_hashlib.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
-          sudo install_name_tool -change /opt/openssl/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_hashlib.cpython-${PYTHON_VER_SHORT_COMPACT}m-darwin.so
+          sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}-darwin.so
+          sudo install_name_tool -change /opt/openssl/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}-darwin.so
+          sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_hashlib.cpython-${PYTHON_VER_SHORT_COMPACT}-darwin.so
+          sudo install_name_tool -change /opt/openssl/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_hashlib.cpython-${PYTHON_VER_SHORT_COMPACT}-darwin.so
           sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/libssl.1.1.dylib
           sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/site-packages/cryptography/hazmat/bindings/_openssl.abi3.so
           sudo install_name_tool -change /opt/openssl/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/site-packages/cryptography/hazmat/bindings/_openssl.abi3.so

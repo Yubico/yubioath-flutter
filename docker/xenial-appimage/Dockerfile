@@ -2,7 +2,7 @@ FROM ubuntu:xenial
 RUN apt-get update -qq \
     && apt-get install -qq software-properties-common \
     && add-apt-repository -y ppa:yubico/stable \
-    && add-apt-repository -y ppa:beineri/opt-qt-5.14.1-xenial \
+    && add-apt-repository -y ppa:beineri/opt-qt-5.14.2-xenial \
     && apt-get -qq update \
     && apt-get -qq upgrade
 RUN apt-get install -y git make build-essential libssl-dev zlib1g-dev libbz2-dev \
@@ -23,8 +23,8 @@ ENV LD_LIBRARY_PATH=$QT_BASE_DIR/lib/x86_64-linux-gnu:$QT_BASE_DIR/lib:$LD_LIBRA
 RUN curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash \
     && eval "$(pyenv init -)" \
     && pyenv update \
-    && pyenv install --force 3.8.1 \
-    && pyenv global 3.8.1 \
+    && pyenv install --force 3.8.2 \
+    && pyenv global 3.8.2 \
     && wget https://github.com/thp/pyotherside/archive/1.5.9.tar.gz \
     && tar -xzvf 1.5.9.tar.gz \
     && echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> pyotherside-1.5.9/src/src.pro \
@@ -35,11 +35,11 @@ RUN curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-instal
 COPY . yubioath-desktop
 RUN mkdir -p yubioath-desktop/appDir/usr \
     && eval "$(pyenv init -)" \
-    && pyenv global 3.8.1 \
+    && pyenv global 3.8.2 \
     && cd yubioath-desktop \
     && pip3 install --upgrade pip \
     && pip3 install -r requirements.txt \
-    && cp -R /root/.pyenv/versions/3.8.1/* appDir/usr \
+    && cp -R /root/.pyenv/versions/3.8.2/* appDir/usr \
     && apt-get download libykpers-1-1 \
     && dpkg -x libykpers*.deb appDir/ \
     && qmake \
