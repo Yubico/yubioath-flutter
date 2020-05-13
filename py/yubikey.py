@@ -263,8 +263,7 @@ class Controller(object):
                             # try reading any missing version from it
                             descriptor = matches_all[0]
                             if descriptor.version and not dev.version:
-                                dev.version = '.'.join(
-                                    str(x) for x in descriptor.version)
+                                dev._desc_version = '.'.join(str(x) for x in descriptor.version)
                         res.append(self._serialise_dev(dev))
                         descs_to_match.remove(matches_left[0])
         return res
@@ -272,7 +271,7 @@ class Controller(object):
     def _serialise_dev(self, dev):
         return {
             'name': dev.device_name,
-            'version': '.'.join(str(x) for x in dev.version) if dev.version else '',
+            'version': '.'.join(str(x) for x in dev.version) if dev.version else dev._desc_version if dev._desc_version else '',
             'serial': dev.serial or '',
             'usbAppEnabled': [a.name for a in APPLICATION if a & dev.config.usb_enabled],
             'usbAppSupported': [a.name for a in APPLICATION if a & dev.config.usb_supported],
