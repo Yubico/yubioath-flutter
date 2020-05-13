@@ -13,6 +13,7 @@ Item {
     property alias validator: textField.validator
     property alias horizontalAlignment: textField.horizontalAlignment
     property bool required: false
+    property bool noedit: false
     property string labelText
     property string validateText
     property variant validateRegExp
@@ -61,7 +62,7 @@ Item {
         Label {
             font.pixelSize: 12
             color: isValidated ? primaryColor : yubicoRed
-            opacity: enabled ? (isValidated ? lowEmphasis : fullEmphasis) : disabledEmphasis
+            opacity: enabled || noedit ? (isValidated ? lowEmphasis : fullEmphasis) : disabledEmphasis
             text: labelTextValue()
         }
 
@@ -94,7 +95,7 @@ Item {
             activeFocusOnTab: true
             focus: true
             color: primaryColor
-            opacity: enabled ? highEmphasis : disabledEmphasis
+            opacity: enabled || noedit ? highEmphasis : disabledEmphasis
             placeholderText: {
                 if (textField.activeFocus) {
                     return ""

@@ -1,3 +1,12 @@
+* Version 5.0.4 (unreleased)
+ ** New app icons on all platforms
+ ** Adjust the behaviour of the search bar, do not search accounts without having focus
+ ** Bugfix: Fix keyboard shortcut to copy account code
+ ** Bugfix: Show firmware version for YubiKey NEO correctly
+ ** Windows: Show correct version number in .msi installers
+ ** macOS: Fix issue with window positioning
+ ** Linux: Fix the app icon and desktop entry for the Snap package.
+
 * Version 5.0.3 (released 2020-04-14)
  ** macOS: Make the app available in the macOS App Store
  ** Windows: Make the app available in the Microsoft Store (for Windows 10 20.04 and higher)

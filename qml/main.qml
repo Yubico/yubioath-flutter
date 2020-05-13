@@ -14,7 +14,7 @@ ApplicationWindow {
     width: 300
     height: 502
     minimumWidth: 300
-    minimumHeight: 196
+    minimumHeight: 348
     visible: false
 
     flags: Qt.Window | Qt.WindowFullscreenButtonHint | Qt.WindowTitleHint
@@ -344,6 +344,5 @@ ApplicationWindow {
         id: navigator
         anchors.fill: parent
         focus: true
-        Keys.forwardTo: toolBar.searchField
     }
 }
