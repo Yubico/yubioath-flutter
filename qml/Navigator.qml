@@ -65,23 +65,38 @@ StackView {
         }
     }
 
-    function goToNewCredentialManual() {
+    function confirmScanningForQR() {
+        confirmNewCredentialMethod({
+            "description": qsTr("To add an account follow the instructions provided by the service. Make sure the QR code is fully visible."),
+            "warning": false,
+            "vertical": true,
+            "image": "../images/qr-monitor.svg",
+            "buttonCancel": qsTr("Manual mode"),
+            "buttonAccept": qsTr("Scan QR code on screen"),
+            "cancelCb": function () {
+                    goToNewCredential()
+                },
+            "acceptedCb": function () {
+                    yubiKey.scanQr(true)
+                }
+          })
+    }
+
+    function goToNewCredential(credential) {
         if (currentItem.objectName !== 'newCredentialView') {
             push(newCredentialView.createObject(app, {
-                                                    "manualEntry": true
+                                                    "credential": credential
                                                 }), StackView.Immediate)
         }
     }
 
-    function goToNewCredentialAuto(credential) {
-        push(newCredentialView.createObject(app, {
-                                                "credential": credential,
-                                                "manualEntry": false
-                                            }), StackView.Immediate)
-    }
-
     function confirm(options) {
         var popup = confirmationPopup.createObject(app, options)
+        popup.open()
+    }
+
+    function confirmNewCredentialMethod(options) {
+        var popup = newCredentialPopup.createObject(app, options)
         popup.open()
     }
 
@@ -166,6 +181,12 @@ StackView {
     Component {
         id: confirmationPopup
         ConfirmationPopup {
+        }
+    }
+
+    Component {
+        id: newCredentialPopup
+        NewCredentialPopup {
         }
     }
 

@@ -1,5 +1,5 @@
 import QtQuick 2.9
-import QtQuick.Controls 2.2
+import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.2
 import QtQuick.Controls.Material 2.2
 
@@ -9,6 +9,9 @@ Dialog {
     spacing: 0
     modal: true
     focus: true
+    Overlay.modal: Rectangle {
+        color: "#66000000"
+    }
 
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2
@@ -25,20 +28,27 @@ Dialog {
 
     onAccepted: {
         close()
-        acceptedCb()
+        if(acceptedCb) {
+            acceptedCb()
+        }
         navigator.focus = true
     }
 
     onRejected: {
         close()
+        if (cancelCb) {
+            cancelCb()
+        }
         navigator.focus = true
     }
 
-    Component.onCompleted: btnCancel.forceActiveFocus()
+    Component.onCompleted: btnAccept.forceActiveFocus()
 
+    property var cancelCb
     property var acceptedCb
     property bool warning: true
     property bool buttons: true
+    property string image
     property string heading
     property string message
     property string description
@@ -47,6 +57,7 @@ Dialog {
 
     ColumnLayout {
         width: parent.width
+        spacing: 0
 
         Label {
             text: heading
@@ -54,61 +65,50 @@ Dialog {
             font.weight: Font.Medium
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
+            visible: heading
         }
 
-        Pane {
-            padding: 12
-            rightPadding: 16
-            bottomPadding: 8
-            visible: message
+        RowLayout {
+            spacing: 0
             width: parent.width
-            Layout.minimumWidth: parent.width
-            Layout.maximumWidth: parent.width
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             Layout.topMargin: 16
-            background: Rectangle {
-                color: warning ? yubicoRed : yubicoGreen
-                radius: 4
+            visible: message
+
+            StyledImage {
+                source: warning ? "../images/warning.svg" : "../images/info.svg"
+                color: warning ? yubicoRed : defaultForeground
+                iconWidth: 32
+                iconHeight: 32
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+                Layout.maximumWidth: 48
+                visible: message
             }
 
-            RowLayout {
-                spacing: 0
-                width: parent.width
+            Label {
+                text: message
+                color: primaryColor
+                opacity: highEmphasis
+                font.pixelSize: 13
+                font.weight: Font.Medium
+                lineHeight: 1.2
+                wrapMode: Text.WordWrap
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-
-                StyledImage {
-                    source: warning ? "../images/warning.svg" : "../images/info.svg"
-                    color: defaultBackground
-                    iconWidth: 32
-                    iconHeight: 32
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                    Layout.maximumWidth: 32
-                    visible: message
-                }
-
-                Label {
-                    text: message
-                    color: defaultBackground
-                    font.pixelSize: 13
-                    font.weight: Font.Medium
-                    lineHeight: 1.2
-                    leftPadding: 12
-                    wrapMode: Text.WordWrap
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                    Layout.fillWidth: true
-                    visible: message
-                }
+                Layout.fillWidth: true
+                visible: message
             }
         }
 
         Label {
-            Layout.topMargin: 16
             text: description
             color: primaryColor
-            opacity: highEmphasis
+            opacity: lowEmphasis
             font.pixelSize: 13
             lineHeight: 1.2
             visible: description
+            textFormat: TextEdit.RichText
             wrapMode: Text.WordWrap
+            Layout.topMargin: 16
             Layout.maximumWidth: parent.width
         }
 
@@ -122,7 +122,6 @@ Dialog {
             StyledButton {
                 id: btnAccept
                 text: qsTr(buttonAccept)
-                primary: true
                 enabled: true
                 critical: warning
                 DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole

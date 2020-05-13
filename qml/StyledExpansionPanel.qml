@@ -50,6 +50,8 @@ Pane {
     Material.elevation: dropShadow ? 1 : 0
     visible: searchQuery.length > 0 ? isVisible && searchText.match(escapeRegExp(searchQuery, "i")) : isVisible
 
+    activeFocusOnTab: true
+
     function expandAction() {
         function collapseAll() {
             for (var i = 0; i < parent.children.length; ++i) {
@@ -177,6 +179,7 @@ Pane {
                 icon.color: primaryColor
                 opacity: hovered ? fullEmphasis : lowEmphasis
                 visible: isEnabled
+                focus: true
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor

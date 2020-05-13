@@ -238,7 +238,7 @@ ApplicationWindow {
     Shortcut {
         sequence: StandardKey.Open
         enabled: !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
-        onActivated: yubiKey.scanQr()
+        onActivated: navigator.confirmScanningForQR()
     }
 
     Shortcut {

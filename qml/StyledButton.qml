@@ -5,6 +5,8 @@ import QtQuick.Controls.Material 2.2
 import QtQuick.Controls.impl 2.4
 import QtQuick.Controls.Material 2.4
 import QtQuick.Controls.Material.impl 2.4
+import QtQuick.Templates 2.4 as T
+
 
 Button {
 
@@ -23,6 +25,8 @@ Button {
     leftPadding: 16
     rightPadding: 16
     Layout.minimumWidth: 66
+    activeFocusOnTab: true
+    focus: true
 
     Material.foreground: primary ? defaultBackground : (critical ? yubicoRed : Material.primary)
 
@@ -32,8 +36,7 @@ Button {
             border.color: formButtonBorder
             border.width: primary || flat ? 0 : 1
             radius: 4
-            visible: border
-            enabled: border
+            visible: !flat
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top

@@ -36,6 +36,7 @@ Item {
     implicitHeight: 47
     Layout.bottomMargin: 8
     Layout.fillWidth: true
+    activeFocusOnTab: true
 
     function validateInput() {
         if (validateRegExp !== undefined) {
@@ -61,8 +62,8 @@ Item {
 
         Label {
             font.pixelSize: 12
-            color: isValidated ? primaryColor : yubicoRed
-            opacity: enabled || noedit ? (isValidated ? lowEmphasis : fullEmphasis) : disabledEmphasis
+            color: isValidated ? (textField.activeFocus ? yubicoGreen : primaryColor) : yubicoRed
+            opacity: enabled || noedit ? (isValidated && !textField.activeFocus ? lowEmphasis : fullEmphasis) : disabledEmphasis
             text: labelTextValue()
         }
 
@@ -92,7 +93,6 @@ Item {
                 anchors.bottomMargin: 8
             }
             height: 41
-            activeFocusOnTab: true
             focus: true
             color: primaryColor
             opacity: enabled || noedit ? highEmphasis : disabledEmphasis

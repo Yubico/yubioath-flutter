@@ -359,13 +359,13 @@ Python {
         navigator.goToLoading()
         parseQr(ScreenShot.capture(), function (resp) {
             if (resp.success) {
-                navigator.goToNewCredentialAuto(resp)
+                navigator.goToNewCredential(resp)
             } else {
                 if (toastIfError) {
                     navigator.snackBarError(navigator.getErrorMessage(
                                                 resp.error_id))
                 }
-                navigator.goToNewCredentialManual()
+                navigator.confirmScanningForQR()
             }
         })
     }

@@ -58,8 +58,8 @@ ColumnLayout {
                 font.pixelSize: 16
                 font.weight: Font.Normal
                 lineHeight: 1.8
-                color: primaryColor
-                opacity: highEmphasis
+                color: yubicoGreen
+                opacity: fullEmphasis
             }
 
             StyledTextField {
@@ -92,11 +92,10 @@ ColumnLayout {
                 StyledButton {
                     id: addBtn
                     text: qsTr("Add account")
-                    primary: true
                     focus: true
-                    onClicked: yubiKey.scanQr()
-                    Keys.onReturnPressed: yubiKey.scanQr()
-                    Keys.onEnterPressed: yubiKey.scanQr()
+                    onClicked: confirmScanningForQR()
+                    Keys.onReturnPressed: confirmScanningForQR()
+                    Keys.onEnterPressed: confirmScanningForQR()
                 }
             }
         }
