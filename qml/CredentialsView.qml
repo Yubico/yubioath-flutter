@@ -38,7 +38,7 @@ Pane {
 
     NoCredentialsSection {
         id: noCredentialsSection
-        visible: entries.count === 0 && (!!yubiKey.currentDevice && yubiKey.currentDeviceValidated)
+        visible: entries.count === 0 && (!!yubiKey.currentDevice)
         enabled: visible
         Accessible.ignored: true
     }
