@@ -93,9 +93,9 @@ ColumnLayout {
                     id: addBtn
                     text: qsTr("Add account")
                     focus: true
-                    onClicked: confirmScanningForQR()
-                    Keys.onReturnPressed: confirmScanningForQR()
-                    Keys.onEnterPressed: confirmScanningForQR()
+                    onClicked: navigator.goToNewCredential()
+                    Keys.onReturnPressed: navigator.goToNewCredential()
+                    Keys.onEnterPressed: navigator.goToNewCredential()
                 }
             }
         }

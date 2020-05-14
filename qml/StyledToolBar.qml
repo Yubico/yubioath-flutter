@@ -381,9 +381,9 @@ ToolBar {
 
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
-                onClicked: navigator.confirmScanningForQR()
-                Keys.onReturnPressed: navigator.confirmScanningForQR()
-                Keys.onEnterPressed: navigator.confirmScanningForQR()
+                onClicked: navigator.goToNewCredential()
+                Keys.onReturnPressed: navigator.goToNewCredential()
+                Keys.onEnterPressed: navigator.goToNewCredential()
 
                 KeyNavigation.left: app.currentCredentialCard ? deleteCredentialBtn : searchField
                 KeyNavigation.backtab: app.currentCredentialCard ? deleteCredentialBtn : searchField

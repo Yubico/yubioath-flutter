@@ -65,6 +65,7 @@ Dialog {
             font.weight: Font.Medium
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
+            Layout.bottomMargin: 16
             visible: heading
         }
 
@@ -72,7 +73,7 @@ Dialog {
             spacing: 0
             width: parent.width
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            Layout.topMargin: 16
+            Layout.bottomMargin: 16
             visible: message
 
             StyledImage {
@@ -108,7 +109,6 @@ Dialog {
             visible: description
             textFormat: TextEdit.RichText
             wrapMode: Text.WordWrap
-            Layout.topMargin: 16
             Layout.maximumWidth: parent.width
         }
 
