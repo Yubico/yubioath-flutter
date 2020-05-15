@@ -119,6 +119,12 @@ jobs:
         run: |
           choco install visualstudio2019community --package-parameters "--add Microsoft.VisualStudio.Component.VC.Redist.MSM"
 
+      - name: DPI awareness
+        shell: powershell
+        run: |
+          $env:PATH += ";C:\Program Files (x86)\Windows Kits\10\bin\10.0.18362.0\x64"
+          mt.exe -manifest .\resources\win\yubioath-desktop.exe.manifest -outputresource:.\release\yubioath-desktop.exe
+
       - name: Create an unsigned .msi installer package
         run: |
           $env:PATH += ";$env:WIX\bin"
