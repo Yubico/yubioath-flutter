@@ -15,6 +15,7 @@ Python {
 
     property var currentDevice
     property bool currentDeviceValidated
+    property bool currentDeviceOathEnabled: !!currentDevice && currentDevice.usbAppEnabled.includes("OATH")
 
     signal enableLogging(string logLevel, string logFile)
     signal disableLogging
@@ -246,12 +247,12 @@ Python {
                 if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
                     // new device is being loaded, clear any old device
                     clearCurrentDeviceAndEntries()
-                    if (availableDevices.some(dev => dev.selectable)) {
-                        // pick the first selectable device
-                        currentDevice = resp.devices.find(dev => dev.selectable)
+                    // Just pick the first device
+                    currentDevice = availableDevices[0]
+                    // If oath is enabled, do a calculate all
+                    if (currentDeviceOathEnabled) {
                         calculateAll(navigator.goToCredentialsIfNotInSettings)
-                    } else {
-                        // no selectable device (will land in no Insert YubiKey view)
+                    } else {                 
                         navigator.goToCredentialsIfNotInSettings()
                     }
                 } else {
@@ -277,7 +278,7 @@ Python {
                     refreshDevicesDefault()
                 }
                 if (timeToCalculateAll() && !!currentDevice
-                        && currentDeviceValidated) {
+                        && currentDeviceValidated && currentDeviceOathEnabled) {
                     calculateAll()
                 }
             } else {
