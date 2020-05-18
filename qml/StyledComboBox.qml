@@ -19,14 +19,15 @@ Item {
     implicitHeight: 47
     Layout.bottomMargin: 8
     Layout.fillWidth: true
+    activeFocusOnTab: true
 
     Column {
 
         Label {
             text: label
             font.pixelSize: 12
-            color: primaryColor
-            opacity: enabled ? lowEmphasis : disabledEmphasis
+            color:  comboBox.activeFocus ? yubicoGreen : primaryColor
+            opacity: enabled ? (!comboBox.activeFocus ? lowEmphasis : fullEmphasis) : disabledEmphasis
         }
 
         ComboBox {
@@ -35,6 +36,7 @@ Item {
             implicitWidth: container.width
             font.pixelSize: 13
             flat: true
+            focus: true
             indicator: Rectangle {
                 id: rectangle
                 anchors.right: parent.right

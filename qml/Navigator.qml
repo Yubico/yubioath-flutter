@@ -65,19 +65,12 @@ StackView {
         }
     }
 
-    function goToNewCredentialManual() {
+    function goToNewCredential(credential) {
         if (currentItem.objectName !== 'newCredentialView') {
             push(newCredentialView.createObject(app, {
-                                                    "manualEntry": true
+                                                    "credential": credential
                                                 }), StackView.Immediate)
         }
-    }
-
-    function goToNewCredentialAuto(credential) {
-        push(newCredentialView.createObject(app, {
-                                                "credential": credential,
-                                                "manualEntry": false
-                                            }), StackView.Immediate)
     }
 
     function confirm(options) {

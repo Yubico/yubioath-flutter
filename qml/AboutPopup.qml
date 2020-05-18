@@ -1,5 +1,5 @@
 import QtQuick 2.9
-import QtQuick.Controls 2.2
+import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.2
 
 Dialog {
@@ -7,6 +7,9 @@ Dialog {
     spacing: 0
     modal: true
     focus: true
+    Overlay.modal: Rectangle {
+        color: "#66000000"
+    }
 
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2

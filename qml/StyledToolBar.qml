@@ -22,7 +22,7 @@ ToolBar {
     }
 
     property bool showSearch: shouldShowSearch()
-    property bool showBackBtn: navigator.depth > 1
+    property bool showBackBtn: navigator.depth > 1 && !!navigator.currentItem
     property bool showTitleLbl: !!navigator.currentItem
                                 && !!navigator.currentItem.title
     property alias moreBtn: moreBtn
@@ -117,7 +117,8 @@ ToolBar {
             visible: showTitleLbl
             text: showTitleLbl ? navigator.currentItem.title : ""
             font.pixelSize: 16
-            Layout.leftMargin: moreBtn.visible ? -32 : 0
+            //Layout.leftMargin: moreBtn.visible ? -32 : 0
+            Layout.leftMargin: -37
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -380,9 +381,9 @@ ToolBar {
 
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
-                onClicked: yubiKey.scanQr()
-                Keys.onReturnPressed: yubiKey.scanQr()
-                Keys.onEnterPressed: yubiKey.scanQr()
+                onClicked: navigator.goToNewCredential()
+                Keys.onReturnPressed: navigator.goToNewCredential()
+                Keys.onEnterPressed: navigator.goToNewCredential()
 
                 KeyNavigation.left: app.currentCredentialCard ? deleteCredentialBtn : searchField
                 KeyNavigation.backtab: app.currentCredentialCard ? deleteCredentialBtn : searchField

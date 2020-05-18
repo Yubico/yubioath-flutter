@@ -18,6 +18,7 @@ ToolTip {
     timeout: 3000
     x: (app.width - width) / 2
     y: app.height
+    z: 2
     width: fullWidth ? app.width : app.width - dynamicMargin
                        < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
     leftMargin: fullWidth ? 0 : 8

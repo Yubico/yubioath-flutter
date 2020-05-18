@@ -58,8 +58,8 @@ ColumnLayout {
                 font.pixelSize: 16
                 font.weight: Font.Normal
                 lineHeight: 1.8
-                color: primaryColor
-                opacity: highEmphasis
+                color: yubicoGreen
+                opacity: fullEmphasis
             }
 
             StyledTextField {
@@ -95,9 +95,9 @@ ColumnLayout {
                     enabled: yubiKey.currentDeviceOathEnabled
                     primary: true
                     focus: true
-                    onClicked: yubiKey.scanQr()
-                    Keys.onReturnPressed: yubiKey.scanQr()
-                    Keys.onEnterPressed: yubiKey.scanQr()
+                    onClicked: navigator.goToNewCredential()
+                    Keys.onReturnPressed: navigator.goToNewCredential()
+                    Keys.onEnterPressed: navigator.goToNewCredential()
                 }
             }
         }

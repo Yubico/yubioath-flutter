@@ -128,7 +128,7 @@ Pane {
         navigator.confirm({
                     "heading": qsTr("Delete %1 ?").arg(formattedName()),
                     "message": qsTr("This will permanently delete the account from your YubiKey."),
-                    "description": qsTr("You will not be able to generate security codes for the account anymore. Make sure 2FA has been disabled before proceeding."),
+                    "description": qsTr("Before proceeding:<ul style=\"-qt-list-indent: 1;\"><li>You will not be able to generate security codes for the account anymore.<li>Make sure 2FA has been disabled on the web service.</ul>"),
                     "buttonAccept": qsTr("Delete account"),
                     "acceptedCb": function () {
 

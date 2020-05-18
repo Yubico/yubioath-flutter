@@ -355,22 +355,6 @@ Python {
                 && !isYubiKeyFIPS(currentDevice)
     }
 
-    function scanQr(toastIfError) {
-        currentCredentialCard = null
-        navigator.goToLoading()
-        parseQr(ScreenShot.capture(), function (resp) {
-            if (resp.success) {
-                navigator.goToNewCredentialAuto(resp)
-            } else {
-                if (toastIfError) {
-                    navigator.snackBarError(navigator.getErrorMessage(
-                                                resp.error_id))
-                }
-                navigator.goToNewCredentialManual()
-            }
-        })
-    }
-
     function ccidCalculateAll(cb) {
         var now = Math.floor(Date.now() / 1000)
         doCall('yubikey.controller.ccid_calculate_all', [now], cb)
