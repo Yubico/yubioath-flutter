@@ -283,6 +283,7 @@ class Controller(object):
             'configurationLocked': dev.config.configuration_locked,
             'formFactor': dev.config.form_factor,
             'hasPassword': False, # Could be true but we dont know yet
+            'isNfc': dev._driver.is_nfc
        }
 
     def refresh_devices(self, reader_filter=None):
