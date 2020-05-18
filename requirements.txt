@@ -1,2 +1,2 @@
-git+https://github.com/Yubico/yubikey-manager.git
+git+https://github.com/Yubico/yubikey-manager.git@51
 ./py/qr
