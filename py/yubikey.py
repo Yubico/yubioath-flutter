@@ -276,7 +276,7 @@ class Controller(object):
             'usbAppEnabled': [a.name for a in APPLICATION if a & dev.config.usb_enabled],
             'usbAppSupported': [a.name for a in APPLICATION if a & dev.config.usb_supported],
             'nfcAppEnabled': [a.name for a in APPLICATION if a & dev.config.nfc_enabled],
-            'nfcAppSupported': [a.name for a in APPLICATION if a & dev.config.nfc_enabled],
+            'nfcAppSupported': [a.name for a in APPLICATION if a & dev.config.nfc_supported],
             'usbInterfacesSupported': [t.name for t in TRANSPORT if t & dev.config.usb_supported],
             'usbInterfacesEnabled': str(dev.mode).split('+'),
             'canWriteConfig': dev.can_write_config,
