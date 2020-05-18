@@ -78,11 +78,6 @@ StackView {
         popup.open()
     }
 
-    function confirmNewCredentialMethod(options) {
-        var popup = newCredentialPopup.createObject(app, options)
-        popup.open()
-    }
-
     function about() {
         if (!isShowingAbout) {
             var popup = aboutPopup.createObject(app)
