@@ -31,17 +31,6 @@ Dialog {
         navigator.isShowingAbout = true
     }
 
-    function getDeviceDescription() {
-        if (!!yubiKey.currentDevice) {
-            return yubiKey.currentDevice.usbInterfacesEnabled.join('+')
-        } else if (yubiKey.availableDevices.length > 0
-                   && !yubiKey.availableDevices.some(dev => dev.selectable)) {
-            return qsTr("No compatible device found")
-        } else {
-            return qsTr("No device found")
-        }
-    }
-
     ColumnLayout {
         width: parent.width
         Layout.fillWidth: true
@@ -106,7 +95,7 @@ Dialog {
             }
 
             Label {
-                text: !!yubiKey.currentDevice ? qsTr("Enabled interfaces: ") + getDeviceDescription() : ""
+                text: !!yubiKey.currentDevice ? qsTr("Enabled interfaces: ") + yubiKey.currentDevice.usbInterfacesEnabled.join('+') : ""
                 color: primaryColor
                 opacity: highEmphasis
                 font.pixelSize: 13
