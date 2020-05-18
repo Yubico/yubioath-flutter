@@ -27,7 +27,7 @@ Item {
             text: label
             font.pixelSize: 12
             color:  comboBox.activeFocus ? yubicoGreen : primaryColor
-            opacity: enabled || noedit ? (!comboBox.activeFocus ? lowEmphasis : fullEmphasis) : disabledEmphasis
+            opacity: enabled ? (!comboBox.activeFocus ? lowEmphasis : fullEmphasis) : disabledEmphasis
         }
 
         ComboBox {
