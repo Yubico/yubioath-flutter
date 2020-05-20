@@ -68,9 +68,12 @@ StyledExpansionPanel {
         }
     }
 
-    ColumnLayout {
+    RowLayout {
         Layout.topMargin: 16
-        Layout.alignment: Qt.AlignRight | Qt.AlignTop
+
+        Item {
+            Layout.fillWidth: true
+        }
 
         StyledButton {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop

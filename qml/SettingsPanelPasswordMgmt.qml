@@ -6,9 +6,10 @@ import QtGraphicalEffects 1.0
 
 StyledExpansionPanel {
     id: passwordManagementPanel
-    label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change password") : qsTr("Set password")
-    description: qsTr("For additional security the YubiKey may be protected with a password.")
+    label: qsTr("Manage password")
+    description: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? "Password is set" : "Password is not set"
     isVisible: yubiKey.currentDeviceOathEnabled
+    isTopPanel: true
 
     function clearPasswordFields() {
         currentPasswordField.text = ""

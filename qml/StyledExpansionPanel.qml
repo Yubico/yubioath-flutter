@@ -36,7 +36,7 @@ Pane {
 
     Layout.alignment: Qt.AlignCenter | Qt.AlignTop
     Layout.fillWidth: true
-    Layout.minimumHeight: isExpanded ? panelHeader.height + expandedContent.height + 40 : panelHeader.height + 20
+    Layout.minimumHeight: isExpanded ? panelHeader.height + expandedContent.height + 48 : panelHeader.height + 19
     Layout.maximumWidth: dynamicWidth + dynamicMargin
 
     Layout.leftMargin: -16
@@ -55,7 +55,7 @@ Pane {
     function expandAction() {
         function collapseAll() {
             for (var i = 0; i < parent.children.length; ++i) {
-                if (!!parent.children[i] && parent.children[i].toString().startsWith("StyledExpansionPanel")) {
+                if (!!parent.children[i] && parent.children[i].toString().startsWith("SettingsPanel")) {
                     parent.children[i].isExpanded = false
                 }
             }
@@ -72,14 +72,15 @@ Pane {
     }
 
     MouseArea {
+        id: panelMouseArea
         onClicked: expandAction()
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.leftMargin: -16
         anchors.rightMargin: -16
-        anchors.topMargin: -16
-        height: panelHeader.height + 40
+        anchors.topMargin: -12
+        height: panelHeader.implicitHeight + 19
         enabled: isEnabled
         cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
     }
@@ -162,9 +163,9 @@ Pane {
                     color: primaryColor
                     opacity: lowEmphasis
                     text: searchQuery.length > 0 ? colorizeMatch(description, searchQuery) : description
-                    textFormat: TextEdit.RichText
+                    textFormat: searchQuery.length > 0 ? TextEdit.RichText : TextEdit.PlainText
                     wrapMode: Text.WordWrap
-                    maximumLineCount: isExpanded ? 4 : 2
+                    maximumLineCount: isExpanded ? 4 : 1
                     elide: Text.ElideRight
                     lineHeight: 1.1
                     visible: description

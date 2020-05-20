@@ -13,10 +13,11 @@ Item {
     property alias checked: control.checked
 
     height: 40
-    Layout.bottomMargin: 8
+    Layout.bottomMargin: 16
     activeFocusOnTab: true
 
     RowLayout {
+        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 
         CheckBox {
             id: control

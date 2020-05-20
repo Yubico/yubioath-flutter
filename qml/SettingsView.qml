@@ -28,8 +28,6 @@ Flickable {
     ColumnLayout {
         id: content
         anchors.fill: parent
-        Layout.fillHeight: true
-        Layout.fillWidth: true
         Layout.alignment: Qt.AlignTop
         spacing: 0
 
@@ -37,8 +35,6 @@ Flickable {
             title: qsTr("Device")
 
             SettingsPanelCurrentDevice {}
-            SettingsPanelPasswordMgmt {}
-            SettingsPanelResetDevice {}
         }
 
         StyledExpansionContainer {
@@ -48,6 +44,13 @@ Flickable {
             SettingsPanelCustomReader {}
             SettingsPanelSystemTray {}
             SettingsPanelClearPasswords {}
+        }
+
+        StyledExpansionContainer {
+            title: qsTr("Security Codes (OATH)")
+
+            SettingsPanelPasswordMgmt {}
+            SettingsPanelResetDevice {}
         }
 
     }
