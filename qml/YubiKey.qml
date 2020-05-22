@@ -15,7 +15,19 @@ Python {
 
     property var currentDevice
     property bool currentDeviceValidated
-    property bool currentDeviceOathEnabled: !!currentDevice && currentDevice.usbAppEnabled.includes("OATH")
+    //property bool currentDeviceOathEnabled: currentDeviceOathEnabled() //!!currentDevice && (!currentDevice.isNfc && currentDevice.usbAppEnabled.includes("OATH")) ||currentDevice.isNfc && currentDevice.nfcAppEnabled.includes("OATH")
+
+    function currentDeviceOathEnabled() {
+        if (!!currentDevice) {
+            if (currentDevice.isNfc) {
+                return currentDevice.nfcAppEnabled.includes("OATH")
+            } else {
+                return currentDevice.usbAppEnabled.includes("OATH")
+            }
+        } else {
+            return false
+        }
+    }
 
     signal enableLogging(string logLevel, string logFile)
     signal disableLogging
@@ -288,7 +300,12 @@ Python {
         }
 
         if (settings.useCustomReader) {
-            checkReaders(settings.customReaderName, callback)
+            if (!currentDevice) {
+                checkReaders(settings.customReaderName, callback)
+            } else if (timeToCalculateAll() && !!currentDevice
+                    && currentDeviceValidated && currentDeviceOathEnabled) {
+                calculateAll()
+            }
         } else {
             checkDescriptors(callback)
         }
@@ -313,10 +330,15 @@ Python {
                     currentDevice.hasPassword = true
                     currentDeviceValidated = false
                     navigator.goToEnterPasswordIfNotInSettings()
+                } else if (resp.error_id === 'no_device_custom_reader') {
+                    //TODO: gray out codes
+                    clearCurrentDeviceAndEntries()
                 } else {
                     clearCurrentDeviceAndEntries()
                     console.log("calculateAll failed:", resp.error_id)
-                    refreshDevicesDefault()
+                    if (!settings.useCustomReader) {
+                        refreshDevicesDefault()
+                    }
                 }
             }
         }

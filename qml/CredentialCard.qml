@@ -106,6 +106,9 @@ Pane {
                     } else {
                         if (resp.error_id === 'access_denied') {
                             navigator.snackBarError(qsTr("Touch timed out"))
+                        } else if (resp.error_id === 'no_device_custom_reader') {
+                          //TODO: gray out codes
+                          yubiKey.clearCurrentDeviceAndEntries()
                         } else {
                             navigator.snackBarError(navigator.getErrorMessage(
                                                         resp.error_id))

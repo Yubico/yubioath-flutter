@@ -271,7 +271,8 @@ class Controller(object):
     def _serialise_dev(self, dev):
         return {
             'name': dev.device_name,
-            'version': '.'.join(str(x) for x in dev.version) if dev.version else dev._desc_version if dev._desc_version else '',
+             # TODO desc version might not exist
+            'version': '.'.join(str(x) for x in dev.version) if dev.version else '', #dev._desc_version if dev._desc_version else '',
             'serial': dev.serial or '',
             'usbAppEnabled': [a.name for a in APPLICATION if a & dev.config.usb_enabled],
             'usbAppSupported': [a.name for a in APPLICATION if a & dev.config.usb_supported],
@@ -283,7 +284,7 @@ class Controller(object):
             'configurationLocked': dev.config.configuration_locked,
             'formFactor': dev.config.form_factor,
             'hasPassword': False, # Could be true but we dont know yet
-            'isNfc': dev._driver.is_nfc
+            'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey") #dev._driver.is_nfc
        }
 
     def refresh_devices(self, reader_filter=None):

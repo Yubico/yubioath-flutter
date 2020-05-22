@@ -223,7 +223,7 @@ Flickable {
                 id: passwordManagementPanel
                 label: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change password") : qsTr("Set password")
                 description: qsTr("For additional security the YubiKey may be protected with a password.")
-                isVisible: yubiKey.currentDeviceOathEnabled
+                isVisible: yubiKey.currentDeviceOathEnabled()
 
                 ColumnLayout {
 
@@ -283,7 +283,7 @@ Flickable {
                 label: qsTr("Reset")
                 description: qsTr("Warning: Reset will delete all accounts and restore factory defaults.")
                 isEnabled: false
-                isVisible: yubiKey.currentDeviceOathEnabled
+                isVisible: yubiKey.currentDeviceOathEnabled()
 
                 toolButtonIcon: "../images/reset.svg"
                 toolButtonToolTip: qsTr("Reset device")
