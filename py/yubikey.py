@@ -283,7 +283,7 @@ class Controller(object):
             'configurationLocked': dev.config.configuration_locked,
             'formFactor': dev.config.form_factor,
             'hasPassword': False, # Could be true but we dont know yet
-            'isNfc': dev._driver.is_nfc
+            'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey")
        }
 
     def refresh_devices(self, reader_filter=None):
