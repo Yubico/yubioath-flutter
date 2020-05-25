@@ -12,7 +12,7 @@ Pane {
     readonly property int dynamicWidth: 648
     readonly property int dynamicMargin: 32
 
-    property string sectionTitle
+    property string title
 
     Layout.alignment: Qt.AlignCenter | Qt.AlignTop
     Layout.fillWidth: true
@@ -22,7 +22,7 @@ Pane {
     visible: {
         if (toolBar.searchField.text.length > 0) {
             for (var i = 0; i < children.length; ++i) {
-                if (!!children[i] && children[i].toString().startsWith("StyledExpansionPanel") && children[i].visible) {
+                if (!!children[i] && children[i].toString().startsWith("SettingsPanel") && children[i].visible) {
                     return true
                 }
             }
@@ -39,7 +39,7 @@ Pane {
         RowLayout {
             Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                text: sectionTitle
+                text: title
                 color: Material.primary
                 font.pixelSize: 14
                 font.weight: Font.Medium

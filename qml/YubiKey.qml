@@ -264,7 +264,8 @@ Python {
                     // If oath is enabled, do a calculate all
                     if (currentDeviceOathEnabled) {
                         calculateAll(navigator.goToCredentialsIfNotInSettings)
-                    } else {                 
+                    } else {
+                        currentDeviceValidated = true
                         navigator.goToCredentialsIfNotInSettings()
                     }
                 } else {
