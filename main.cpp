@@ -8,7 +8,10 @@
 #include <QtWidgets>
 #include <QQuickWindow>
 #include <QQuickStyle>
+#include <singleapplication.h>
+
 #include "screenshot.h"
+
 
 void handleExitSignal(int sig) {
   printf("Exiting due to signal %d\n", sig);
@@ -41,7 +44,7 @@ int main(int argc, char *argv[])
 
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    QApplication application(argc, argv);
+    SingleApplication application(argc, argv);
     application.setApplicationName("Yubico Authenticator");
     application.setApplicationVersion(APP_VERSION);
     application.setOrganizationName("Yubico");
@@ -135,6 +138,12 @@ int main(int argc, char *argv[])
 
     // Set icon in the window, doesn't effect desktop icons.
     qmlWindow->setIcon(QIcon(path_prefix + "/images/windowicon.png"));
+
+    // Starting a second instance application should raise the qmlWindow. Replicated steps as above
+    root->connect(&application, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::hide);
+    root->connect(&application, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::show);
+    root->connect(&application, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::raise);
+    root->connect(&application, &SingleApplication::instanceStarted, qmlWindow, &QQuickWindow::requestActivate);
 
     const int status = application.exec();
     return status;

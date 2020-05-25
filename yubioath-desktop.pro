@@ -1,6 +1,10 @@
 TEMPLATE = app
 QT += qml quick widgets quickcontrols2
 CONFIG += c++11
+
+include(singleapplication/singleapplication.pri)
+DEFINES += QAPPLICATION_CLASS=QApplication
+
 SOURCES += main.cpp
 HEADERS += screenshot.h
 
