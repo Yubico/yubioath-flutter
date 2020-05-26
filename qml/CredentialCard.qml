@@ -81,10 +81,12 @@ Pane {
         if (touchCredentialNoCode || (hotpCredential
                                       && !hotpCredentialInCoolDown)
                 || customPeriodCredentialNoTouch) {
-            if (touchCredential) {
+
+            if (touchCredential && !yubiKey.currentDevice.isNfc) {
                 navigator.snackBar(qsTr("Touch your YubiKey"))
             }
-            if (hotpCredential) {
+
+            if (hotpCredential && !yubiKey.currentDevice.isNfc) {
                 hotpTouchTimer.start()
             }
 
@@ -105,7 +107,13 @@ Pane {
                         entries.updateEntry(resp)
                     } else {
                         if (resp.error_id === 'access_denied') {
-                            navigator.snackBarError(qsTr("Touch timed out"))
+                            if (!yubiKey.currentDevice.isNfc) {
+                                navigator.snackBarError(qsTr("Touch timed out"))
+                            } else {
+                                navigator.snackBar(qsTr("Re-tap your YubiKey"))
+                            }
+                        } else if (resp.error_id === 'no_device_custom_reader') {
+                            yubiKey.clearCurrentDeviceAndEntries()
                         } else {
                             navigator.snackBarError(navigator.getErrorMessage(
                                                         resp.error_id))

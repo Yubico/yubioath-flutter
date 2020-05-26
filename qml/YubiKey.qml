@@ -302,7 +302,12 @@ Python {
         }
 
         if (settings.useCustomReader) {
-            checkReaders(settings.customReaderName, callback)
+            if (!currentDevice) {
+                checkReaders(settings.customReaderName, callback)
+            } else if (timeToCalculateAll() && !!currentDevice
+                    && currentDeviceValidated && yubiKey.currentDeviceEnabled("OATH")) {
+                calculateAll()
+            }
         } else {
             checkDescriptors(callback)
         }
@@ -327,10 +332,14 @@ Python {
                     currentDevice.hasPassword = true
                     currentDeviceValidated = false
                     navigator.goToEnterPasswordIfNotInSettings()
+                } else if (resp.error_id === 'no_device_custom_reader') {
+                    clearCurrentDeviceAndEntries()
                 } else {
                     clearCurrentDeviceAndEntries()
                     console.log("calculateAll failed:", resp.error_id)
-                    refreshDevicesDefault()
+                    if (!settings.useCustomReader) {
+                        refreshDevicesDefault()
+                    }
                 }
             }
         }
