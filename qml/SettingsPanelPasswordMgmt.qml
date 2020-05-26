@@ -8,7 +8,7 @@ StyledExpansionPanel {
     id: passwordManagementPanel
     label: qsTr("Manage password")
     description: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? "Password is set" : "Password is not set"
-    isVisible: yubiKey.currentDeviceOathEnabled
+    isVisible: yubiKey.currentDeviceEnabled("OATH")
     isTopPanel: true
 
     function clearPasswordFields() {

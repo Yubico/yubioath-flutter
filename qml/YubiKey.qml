@@ -15,7 +15,20 @@ Python {
 
     property var currentDevice
     property bool currentDeviceValidated
-    property bool currentDeviceOathEnabled: !!currentDevice && currentDevice.usbAppEnabled.includes("OATH")
+
+    // Check if a application such as OATH, PIV, etc
+    // is enabled on the current device.
+    function currentDeviceEnabled(app) {
+        if (!!currentDevice) {
+            if (currentDevice.isNfc) {
+                return currentDevice.nfcAppEnabled.includes(app)
+            } else {
+                return currentDevice.usbAppEnabled.includes(app)
+            }
+        } else {
+            return false
+        }
+    }
 
     signal enableLogging(string logLevel, string logFile)
     signal disableLogging
@@ -250,7 +263,7 @@ Python {
                     // Just pick the first device
                     currentDevice = availableDevices[0]
                     // If oath is enabled, do a calculate all
-                    if (currentDeviceOathEnabled) {
+                    if (yubiKey.currentDeviceEnabled("OATH")) {
                         calculateAll(navigator.goToCredentialsIfNotInSettings)
                     } else {
                         currentDeviceValidated = true
@@ -279,7 +292,7 @@ Python {
                     refreshDevicesDefault()
                 }
                 if (timeToCalculateAll() && !!currentDevice
-                        && currentDeviceValidated && currentDeviceOathEnabled) {
+                        && currentDeviceValidated && yubiKey.currentDeviceEnabled("OATH")) {
                     calculateAll()
                 }
             } else {

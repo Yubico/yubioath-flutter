@@ -269,9 +269,17 @@ class Controller(object):
         return res
 
     def _serialise_dev(self, dev):
+
+        def _get_version(dev):
+            if dev.version:
+                return '.'.join(str(x) for x in dev.version)
+            if dev._desc_version:
+                return '.'.join(str(x) for x in dev._desc_version)
+            return ''
+
         return {
             'name': dev.device_name,
-            'version': '.'.join(str(x) for x in dev.version) if dev.version else dev._desc_version if dev._desc_version else '',
+            'version': _get_version(dev),
             'serial': dev.serial or '',
             'usbAppEnabled': [a.name for a in APPLICATION if a & dev.config.usb_enabled],
             'usbAppSupported': [a.name for a in APPLICATION if a & dev.config.usb_supported],

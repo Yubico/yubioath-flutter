@@ -8,7 +8,7 @@ StyledExpansionPanel {
     label: qsTr("Reset")
     description: qsTr("Warning: Reset will delete all accounts and restore factory defaults.")
     isEnabled: false
-    isVisible: yubiKey.currentDeviceOathEnabled
+    isVisible: yubiKey.currentDeviceEnabled("OATH")
 
     toolButtonIcon: "../images/reset.svg"
     toolButtonToolTip: qsTr("Reset device")

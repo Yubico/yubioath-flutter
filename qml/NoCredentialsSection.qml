@@ -92,7 +92,7 @@ ColumnLayout {
                 StyledButton {
                     id: addBtn
                     text: qsTr("Add account")
-                    enabled: yubiKey.currentDeviceOathEnabled
+                    enabled: yubiKey.currentDeviceEnabled("OATH")
                     primary: true
                     focus: true
                     onClicked: navigator.goToNewCredential()
