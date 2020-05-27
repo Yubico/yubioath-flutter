@@ -18,32 +18,24 @@ Pane {
     Layout.fillWidth: true
     Layout.maximumWidth: dynamicWidth + dynamicMargin
     spacing: 0
-    Layout.margins: 0
-    visible: {
-        if (toolBar.searchField.text.length > 0) {
-            for (var i = 0; i < children.length; ++i) {
-                if (!!children[i] && children[i].toString().startsWith("SettingsPanel") && children[i].visible) {
-                    return true
-                }
-            }
-            return false
-        }
-        return true
-    }
+    topPadding: 0
+    bottomPadding: 0
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
-        width: app.width - dynamicMargin < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+        width: parent.width
         spacing: 8
 
         RowLayout {
             Label {
+                id: containerLabel
+                visible: inner_space.visibleChildren.length > 1
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 text: title
                 color: Material.primary
                 font.pixelSize: 14
                 font.weight: Font.Medium
-                topPadding: 8
+                topPadding: 24
                 bottomPadding: 8
                 Layout.fillWidth: true
             }

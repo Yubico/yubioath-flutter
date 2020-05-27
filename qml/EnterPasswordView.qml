@@ -89,7 +89,7 @@ Flickable {
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             id: rememberPasswordCheckBox
             text: qsTr("Remember password")
-            description: qsTr("Don't ask agan on this device.")
+            description: qsTr("Don't ask again on this device.")
             KeyNavigation.backtab: passwordField.textField
             KeyNavigation.tab: unlockBtn
             Layout.bottomMargin: 32

@@ -89,7 +89,7 @@ Pane {
 
         anchors.horizontalCenter: parent.horizontalCenter
         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-        width: parent.width - dynamicMargin < dynamicWidth ? parent.width - dynamicMargin : dynamicWidth
+        width: parent.width - dynamicMargin
         spacing: 16
 
         RowLayout {
