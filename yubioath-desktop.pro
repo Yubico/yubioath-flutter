@@ -15,7 +15,7 @@ win32|win64 {
     VERSION = 5.0.4
 }
 # This is the version shown on the About page
-DEFINES += APP_VERSION=\\\"5.0.4-beta1\\\"
+DEFINES += APP_VERSION=\\\"5.0.4\\\"
 
 message(Version of this build: $$VERSION)
 
