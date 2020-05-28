@@ -119,6 +119,10 @@ StackView {
             return qsTr('Failed to read from slots')
         case 'failed_to_parse_uri':
             return qsTr('Failed to read credential from QR code')
+        case 'wrong_lock_code':
+            return qsTr('Wrong lock code')
+        case 'interface_config_locked':
+            return qsTr('Configuration locked')
         case 'no_pcscd':
             return qsTr('Is the pcscd/smart card service running?')
         default:
