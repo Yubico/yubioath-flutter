@@ -10,6 +10,7 @@ Flickable {
     objectName: 'settingsView'
     contentWidth: app.width
     contentHeight: content.implicitHeight
+    bottomMargin: app.height - 40
 
     ScrollBar.vertical: ScrollBar {
         width: 8
@@ -53,5 +54,12 @@ Flickable {
             SettingsPanelResetDevice {}
         }
 
+        StyledExpansionContainer {
+            title: qsTr("One-Time Password (OTP)")
+
+            SettingsPanelOtp { slot: 1 }
+            SettingsPanelOtp { slot: 2 }
+            SettingsPanelOtpSwap {}
+        }
     }
 }

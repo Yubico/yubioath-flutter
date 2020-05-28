@@ -78,7 +78,7 @@ Dialog {
 
             StyledImage {
                 source: warning ? "../images/warning.svg" : "../images/info.svg"
-                color: warning ? yubicoRed : defaultForeground
+                color: warning ? yubicoRed : yubicoGreen
                 iconWidth: 32
                 iconHeight: 32
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
