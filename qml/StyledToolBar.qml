@@ -62,7 +62,7 @@ ToolBar {
 
         ToolButton {
             id: backBtn
-            visible: showBackBtn
+            visible: false // showBackBtn
             onClicked: navigator.home()
             icon.source: "../images/back.svg"
             icon.color: primaryColor
@@ -77,9 +77,9 @@ ToolBar {
         ToolButton {
             id: moreBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            visible: !backBtn.visible && shouldShowSettings()
+            visible: true // !backBtn.visible && shouldShowSettings()
 
-            onClicked: navigator.goToSettings()
+            onClicked: drawer.visible ? drawer.visible = false : drawer.visible = true // navigator.goToSettings()
             Keys.onReturnPressed: navigator.goToSettings()
             Keys.onEnterPressed: navigator.goToSettings()
 
@@ -332,45 +332,6 @@ ToolBar {
                     enabled: false
                 }
             }
-
-            ToolButton {
-                id: infoBtn
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: shouldShowInfo()
-                onClicked: navigator.about()
-
-                Keys.onReturnPressed: navigator.about()
-                Keys.onEnterPressed: navigator.about()
-
-                KeyNavigation.left: backBtn
-                KeyNavigation.backtab: backBtn
-                KeyNavigation.right: navigator
-                KeyNavigation.tab: navigator
-
-                Accessible.role: Accessible.Button
-                Accessible.name: "Info"
-                Accessible.description: "Information"
-
-                ToolTip {
-                    text: qsTr("Information")
-                    delay: 1000
-                    parent: infoBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: "../images/info.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                }
-            }
-
 
             ToolButton {
                 id: addCredentialBtn

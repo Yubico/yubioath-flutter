@@ -32,12 +32,6 @@ Flickable {
         spacing: 0
 
         StyledExpansionContainer {
-            title: qsTr("Device")
-
-            SettingsPanelCurrentDevice {}
-        }
-
-        StyledExpansionContainer {
             title: qsTr("Application")
 
             SettingsPanelAppearance {}

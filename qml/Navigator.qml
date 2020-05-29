@@ -24,6 +24,12 @@ StackView {
         }
     }
 
+    function goToAbout() {
+        if (currentItem.objectName !== 'aboutView') {
+            push(aboutView, StackView.Immediate)
+        }
+    }
+
     function goToLoading() {
         if (currentItem.objectName !== 'loadingView') {
             push(loadingView, StackView.Immediate)
@@ -76,13 +82,6 @@ StackView {
     function confirm(options) {
         var popup = confirmationPopup.createObject(app, options)
         popup.open()
-    }
-
-    function about() {
-        if (!isShowingAbout) {
-            var popup = aboutPopup.createObject(app)
-            popup.open()
-        }
     }
 
     function snackBar(message) {
@@ -139,6 +138,12 @@ StackView {
     }
 
     Component {
+        id: aboutView
+        AboutView {
+        }
+    }
+
+    Component {
         id: newCredentialView
         NewCredentialView {
         }
@@ -159,12 +164,6 @@ StackView {
     Component {
         id: confirmationPopup
         ConfirmationPopup {
-        }
-    }
-
-    Component {
-        id: aboutPopup
-        AboutPopup {
         }
     }
 

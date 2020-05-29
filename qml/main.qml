@@ -67,6 +67,10 @@ ApplicationWindow {
         id: toolBar
     }
 
+    NavigationDrawer {
+        id: drawer
+    }
+
     // Don't refresh credentials when window is minimized or hidden
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
     property bool isInForeground: visibility != 3 && visibility != 0
@@ -265,7 +269,7 @@ ApplicationWindow {
 
     Shortcut {
         sequence: StandardKey.Italic
-        onActivated: navigator.about()
+        onActivated: navigator.goToAbout()
         context: Qt.ApplicationShortcut
     }
 
