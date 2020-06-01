@@ -8,13 +8,15 @@ Pane {
     id: pane
     objectName: 'credentialsView'
 
-    anchors.fill: parent
     Accessible.ignored: true
     padding: 0
     spacing: 0
 
     property string title: ""
     property string searchQuery: toolBar.searchField.text
+
+    width: appWidth
+    height: app.height - toolBar.height
 
     function filteredCredentials() {
         if (entries !== null && searchQuery.length > 0) {

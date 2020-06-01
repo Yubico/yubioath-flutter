@@ -38,8 +38,8 @@ ColumnLayout {
             text: qsTr("No accounts matching your search criteria. Check your spelling and try again.")
             horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 300
-            Layout.maximumWidth: app.width - dynamicMargin
-                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+            Layout.maximumWidth: appWidth - dynamicMargin
+                                 < dynamicWidth ? appWidth - dynamicMargin : dynamicWidth
             Layout.rowSpan: 1
             lineHeight: 1.1
             wrapMode: Text.WordWrap

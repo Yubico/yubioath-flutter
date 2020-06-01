@@ -4,14 +4,26 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
-Pane {
+Flickable {
     id: panel
     objectName: 'aboutView'
-
+    contentWidth: appWidth
+    contentHeight: content.implicitHeight + 32
     anchors.fill: parent
+
+    ScrollBar.vertical: ScrollBar {
+        width: 8
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        hoverEnabled: true
+        z: 2
+    }
+    boundsBehavior: Flickable.StopAtBounds
+
+    Keys.onEscapePressed: navigator.home()
+
     Accessible.ignored: true
-    padding: 0
-    spacing: 0
 
     property string title: ""
 
@@ -21,10 +33,9 @@ Pane {
     property string deviceImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : ""
 
     ColumnLayout {
-
+        id: content
         anchors.horizontalCenter: parent.horizontalCenter
-
-        width: app.width * 0.9 > 600 ? 600 : app.width * 0.9
+        width: appWidth * 0.9 > 600 ? 600 : appWidth * 0.9
         Layout.fillWidth: true
 
         GridLayout {
@@ -94,17 +105,27 @@ Pane {
             Rectangle {
                 width: 80
                 height: 80
-                color: "#9aca3c"
+                color: isDark() ? formHighlightItem : yubicoGreen
                 radius: width * 0.5
                 Layout.bottomMargin: 16
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                StyledImage {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    iconWidth: 50
+                    iconHeight: 50
+                    color: primaryColor
+                    opacity: fullEmphasis
+                    source: "../images/logo-mask.svg"
+                    visible: isDark()
+                }
                 Image {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    sourceSize.width: 60
-                    source: "../images/yubioath.png"
-                    fillMode: Image.PreserveAspectFit
-                    visible: parent.visible
+                    source: "../images/logo-small.png"
+                    sourceSize.width: 56
+                    sourceSize.height: 56
+                    visible: !isDark()
                 }
             }
 

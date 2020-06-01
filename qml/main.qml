@@ -13,17 +13,17 @@ ApplicationWindow {
 
     width: 300
     height: 502
-    minimumWidth: 300
+    minimumWidth: drawer.visible ? drawer.width + 300 : 300
     minimumHeight: 348
-    visible: false
+    visible: false    
 
     flags: Qt.Window | Qt.WindowFullscreenButtonHint | Qt.WindowTitleHint
            | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
            | Qt.WindowCloseButtonHint | Qt.WindowFullscreenButtonHint
 
+    property int appWidth: !drawer.visible || drawer.sticky ? app.width : app.width-drawer.width
 
     readonly property string yubicoGreen: isDark() ? "#b1cf77" : "#9aca3c"
-
     readonly property string yubicoWhite: "#ffffff"
     readonly property string yubicoRed: isDark() ? "#cf6679" : "#b00020"
 

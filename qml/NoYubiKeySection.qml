@@ -50,8 +50,8 @@ ColumnLayout {
             text: qsTr("Interface: CCID - Custom reader")
             visible: settings.useCustomReader
             Layout.minimumWidth: 300
-            Layout.maximumWidth: app.width - dynamicMargin
-                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+            Layout.maximumWidth: appWidth - dynamicMargin
+                                 < dynamicWidth ? appWidth - dynamicMargin : dynamicWidth
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.WordWrap
             font.pixelSize: 13
@@ -68,8 +68,8 @@ ColumnLayout {
             }
             visible: settings.useCustomReader
             Layout.minimumWidth: 300
-            Layout.maximumWidth: app.width - dynamicMargin
-                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+            Layout.maximumWidth: appWidth - dynamicMargin
+                                 < dynamicWidth ? appWidth - dynamicMargin : dynamicWidth
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.WordWrap
             font.pixelSize: 13

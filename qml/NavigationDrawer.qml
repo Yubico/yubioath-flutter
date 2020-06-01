@@ -10,12 +10,17 @@ import QtGraphicalEffects 1.12
 Drawer {
     id: drawer
     width: 210
+    modal: sticky
+    interactive: sticky
     height: app.height
+
+    property bool sticky: app.width < 510
+
     Overlay.modal: Rectangle {
         color: "#66000000"
     }
 
-    property string deviceName: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : "Insert your YubiKey"
+    property string deviceName: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : "Insert YubiKey"
     property string deviceSerial: !!yubiKey.currentDevice && !!yubiKey.currentDevice.serial ? yubiKey.currentDevice.serial : ""
     property string deviceVersion: !!yubiKey.currentDevice && !!yubiKey.currentDevice.version ? yubiKey.currentDevice.version : ""
     property string deviceImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : "../images/ykfamily.svg"
@@ -28,19 +33,20 @@ Drawer {
     ColumnLayout {
         Rectangle {
             id: ykCircle
-            width: 70
-            height: 70
+            width: 60
+            height: 60
             color: formHighlightItem
             radius: width * 0.5
-            Layout.topMargin: 32
-            Layout.bottomMargin: 16
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+            Layout.topMargin: 16
+            Layout.leftMargin: 16
+            Layout.bottomMargin: 8
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
             visible: !!yubiKey.currentDevice
             Image {
                 id: ykImage
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
-                sourceSize.width: 50
+                sourceSize.width: 40
                 source: deviceImage
                 fillMode: Image.PreserveAspectFit
             }
@@ -49,26 +55,37 @@ Drawer {
             id: yubikeys
             source: "../images/ykfamily.svg"
             color: defaultImageOverlay
-            Layout.topMargin: 32
+            Layout.topMargin: 16
+            Layout.leftMargin: 16
+            Layout.bottomMargin: 8
             iconHeight: 70
-            Layout.bottomMargin: 16
             visible: !ykCircle.visible
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         }
 
         Label {
             text: deviceName
             font.pixelSize: 16
             font.weight: Font.Normal
-            lineHeight: 1.8
+            Layout.leftMargin: 16
             color: primaryColor
             opacity: highEmphasis
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+        }
+
+        Label {
+            text: "%1 account%2".arg(!entries ? "0" : entries.count).arg(entries.count !== 1 ? "s" : "")
+            font.pixelSize: 12
+            font.weight: Font.Normal
+            Layout.leftMargin: 16
+            color: primaryColor
+            opacity: highEmphasis
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         }
 
         Canvas {
             id: canvas
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             Layout.fillWidth: true
             Layout.fillHeight: true
             width: 210

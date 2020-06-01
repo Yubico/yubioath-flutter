@@ -12,6 +12,11 @@ StackView {
     property bool isShowingAbout
 
     Accessible.ignored: true
+    width: appWidth
+
+    transform: Translate {
+        x: drawer.sticky ? 0 : drawer.position * drawer.width
+    }
 
     function clearAndPush(view) {
         clear()

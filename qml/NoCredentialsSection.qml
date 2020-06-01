@@ -14,7 +14,7 @@ ColumnLayout {
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
 
-    width: app.width * 0.9 > 600 ? 600 : app.width * 0.9
+    width: appWidth * 0.9 > 600 ? 600 : appWidth * 0.9
     height: parent.height
     Layout.fillWidth: true
 

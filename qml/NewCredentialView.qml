@@ -26,6 +26,7 @@ Flickable {
         z: 2
     }
 
+    width: appWidth
     boundsBehavior: Flickable.StopAtBounds
     contentHeight: app.height-toolBar.height > content.implicitHeight + dynamicMargin
                    ? app.height-toolBar.height
@@ -121,8 +122,8 @@ Flickable {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         spacing: 4
-        width: app.width - dynamicMargin < dynamicWidth
-               ? app.width - dynamicMargin
+        width: appWidth - dynamicMargin < dynamicWidth
+               ? appWidth - dynamicMargin
                : dynamicWidth
 
         Label {

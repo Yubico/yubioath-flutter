@@ -13,6 +13,12 @@ ToolBar {
         opacity: 0.7
     }
 
+    transform: Translate {
+        x: drawer.sticky ? 0 : drawer.position * drawer.width
+    }
+
+    width: appWidth
+
     function getToolbarColor(isActive) {
         if (!isActive) {
             return 0
@@ -89,11 +95,11 @@ ToolBar {
             KeyNavigation.tab: searchField
 
             Accessible.role: Accessible.Button
-            Accessible.name: "Settings"
-            Accessible.description: "Settings button"
+            Accessible.name: "Menu"
+            Accessible.description: "Menu button"
 
             ToolTip {
-                text: qsTr("Settings")
+                text: qsTr("Menu")
                 delay: 1000
                 parent: moreBtn
                 visible: parent.hovered
@@ -101,7 +107,7 @@ ToolBar {
                 Material.background: toolTipBackground
             }
 
-            icon.source: "../images/more.svg"
+            icon.source: "../images/menu.svg"
             icon.color: primaryColor
             opacity: hovered ? fullEmphasis : lowEmphasis
 

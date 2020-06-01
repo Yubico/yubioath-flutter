@@ -8,7 +8,7 @@ Flickable {
 
     id: settingsPanel
     objectName: 'settingsView'
-    contentWidth: app.width
+    contentWidth: appWidth
     contentHeight: content.implicitHeight
 
     ScrollBar.vertical: ScrollBar {

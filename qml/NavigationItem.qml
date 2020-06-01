@@ -41,7 +41,9 @@ Pane {
         onClicked: {
             if(isEnabled && !isActive) {
                 activated(true);
-                drawer.visible = false
+                if(drawer.sticky) {
+                    drawer.visible = false
+                }
             }
         }
     }
@@ -52,9 +54,9 @@ Pane {
         StyledImage {
             id: image
             iconHeight: 20
-            topInset: -2
+            topInset: 0
             leftInset: -24
-            bottomInset: -2
+            bottomInset: 0
             color: item.isActive ? defaultBackground : primaryColor
             opacity: isEnabled ? ((item.hovered && !item.isActive) || isActive ? highEmphasis : lowEmphasis) : disabledEmphasis
         }
