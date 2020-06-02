@@ -17,7 +17,7 @@ Drawer {
     property bool sticky: app.width < 510
 
     Overlay.modal: Rectangle {
-        color: "#66000000"
+        color: "#33000000"
     }
 
     property string deviceName: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : "Insert YubiKey"
@@ -27,7 +27,7 @@ Drawer {
 
     background: Rectangle {
         anchors.fill: parent
-        color: defaultBackground
+        color: defaultElevated
     }
 
     ColumnLayout {

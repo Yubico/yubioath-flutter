@@ -13,7 +13,7 @@ ApplicationWindow {
 
     width: 300
     height: 502
-    minimumWidth: drawer.visible ? drawer.width + 300 : 300
+    minimumWidth: 300
     minimumHeight: 348
     visible: false    
 

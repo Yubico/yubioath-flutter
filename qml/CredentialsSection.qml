@@ -10,7 +10,7 @@ import QtGraphicalEffects 1.0
         property var idealCellHeight: 76
         property var idealCellWidth: columnWidth > 300 ? columnWidth : 300
         anchors.fill: parent
-        width: appWidth
+        width: parent.width
         ScrollBar.vertical: ScrollBar {
             id: paneScrollBar
             width: 8

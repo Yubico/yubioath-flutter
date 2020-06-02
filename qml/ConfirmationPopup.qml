@@ -10,7 +10,7 @@ Dialog {
     modal: true
     focus: true
     Overlay.modal: Rectangle {
-        color: "#66000000"
+        color: "#55000000"
     }
 
     x: (parent.width - width) / 2

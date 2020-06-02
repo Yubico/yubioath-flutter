@@ -115,7 +115,7 @@ Flickable {
                     iconWidth: 50
                     iconHeight: 50
                     color: primaryColor
-                    opacity: fullEmphasis
+                    opacity: highEmphasis
                     source: "../images/logo-mask.svg"
                     visible: isDark()
                 }
