@@ -151,12 +151,11 @@ Pane {
                                                                          credential.key)
 
                                                              yubiKey.updateNextCalculateAll()
-
                                                              navigator.snackBar(
                                                                           qsTr("Account deleted"))
                                                          } else {
                                                              navigator.snackBarError(
-                                                                         resp.error_id)
+                                                                         navigator.getErrorMessage(resp.error_id))
                                                              console.log("delete failed:", resp.error_id)
                                                          }
                                                      })
