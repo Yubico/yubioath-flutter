@@ -8,7 +8,7 @@ import QtGraphicalEffects 1.0
         id: grid
         property var columnWidth: width/model.count
         property var idealCellHeight: 76
-        property var idealCellWidth: columnWidth > 300 ? columnWidth : 300
+        property var idealCellWidth: columnWidth > 268 ? columnWidth : 268
         anchors.fill: parent
         width: parent.width
         ScrollBar.vertical: ScrollBar {

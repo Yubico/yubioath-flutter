@@ -27,7 +27,6 @@ ToolBar {
         }
     }
 
-    property bool showSearch: shouldShowSearch()
     property bool showBackBtn: navigator.depth > 1 && !!navigator.currentItem
     property bool showTitleLbl: !!navigator.currentItem
                                 && !!navigator.currentItem.title
@@ -35,19 +34,25 @@ ToolBar {
     property alias addCredentialBtn: addCredentialBtn
     property alias searchField: searchField
 
-    function shouldShowSearch() {        
-        return !!(navigator.currentItem
-                  && navigator.currentItem.objectName === 'credentialsView' && entries.count > 0)
-               || !!(navigator.currentItem && navigator.currentItem.objectName === 'settingsView')
+    property string searchFieldPlaceholder: {
+        if(!!(navigator.currentItem)) {
+            switch (navigator.currentItem.objectName) {
+            case "settingsView":
+                return qsTr("Search settings")
+            case "aboutView":
+                return qsTr("Search configuration")
+            case "credentialsView":
+                return entries.count > 0 ? qsTr("Search accounts") : ""
+            default:
+                return ""
+            }
+        }
+        return ""
     }
 
     function shouldShowSettings() {
         return !!(navigator.currentItem && navigator.currentItem.objectName !== 'settingsView'
                   && navigator.currentItem.objectName !== 'newCredentialView')
-    }
-
-    function shouldShowInfo() {
-        return !!(navigator.currentItem && navigator.currentItem.objectName === 'settingsView')
     }
 
     function shouldShowCredentialOptions() {
@@ -85,9 +90,13 @@ ToolBar {
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             visible: true // !backBtn.visible && shouldShowSettings()
 
-            onClicked: drawer.visible ? drawer.visible = false : drawer.visible = true // navigator.goToSettings()
-            Keys.onReturnPressed: navigator.goToSettings()
-            Keys.onEnterPressed: navigator.goToSettings()
+            function toggleMenu() {
+                drawer.visible =! drawer.visible
+            }
+
+            onClicked: toggleMenu()
+            Keys.onReturnPressed: toggleMenu()
+            Keys.onEnterPressed: toggleMenu()
 
             KeyNavigation.left: navigator
             KeyNavigation.backtab: navigator
@@ -135,7 +144,7 @@ ToolBar {
 
         ToolButton {
             id: searchBtn
-            visible: showSearch
+            visible: searchField.placeholderText != ""
             Layout.minimumHeight: 30
             Layout.maximumHeight: 30
             Layout.fillWidth: true
@@ -149,14 +158,12 @@ ToolBar {
 
             TextField {
                 id: searchField
-                visible: showSearch
+                visible: parent.visible
                 selectByMouse: true
                 selectedTextColor: defaultBackground
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                placeholderText: !!(navigator.currentItem && navigator.currentItem.objectName !== 'settingsView')
-                                 ? qsTr("Search accounts")
-                                 : qsTr("Search settings")
+                placeholderText: searchFieldPlaceholder
                 placeholderTextColor: isDark() ? "#B7B7B7" : "#767676"
                 leftPadding: 28
                 rightPadding: 8

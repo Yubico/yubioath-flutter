@@ -48,6 +48,7 @@ Dialog {
     property var acceptedCb
     property bool warning: true
     property bool buttons: true
+    property bool noicon: false
     property string image
     property string heading
     property string message
@@ -83,7 +84,7 @@ Dialog {
                 iconHeight: 32
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
                 Layout.maximumWidth: 48
-                visible: message
+                visible: message && !noicon
             }
 
             Label {

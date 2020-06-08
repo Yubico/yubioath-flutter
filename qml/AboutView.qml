@@ -7,9 +7,11 @@ import QtGraphicalEffects 1.0
 Flickable {
     id: panel
     objectName: 'aboutView'
-    contentWidth: appWidth
-    contentHeight: content.implicitHeight + 32
+    contentWidth: appWidth - 32
+    contentHeight: content.implicitHeight + app.height
     anchors.fill: parent
+    leftMargin: 16
+    rightMargin: 16
 
     ScrollBar.vertical: ScrollBar {
         width: 8
@@ -35,41 +37,26 @@ Flickable {
     ColumnLayout {
         id: content
         anchors.horizontalCenter: parent.horizontalCenter
-        width: appWidth * 0.9 > 600 ? 600 : appWidth * 0.9
+        width: parent.width
         Layout.fillWidth: true
+        spacing: 0
 
         GridLayout {
-            id: detailsGrid
+            id: deviceInformation
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            Layout.topMargin: 32
+            Layout.topMargin: 24
             Layout.fillWidth: true
             visible: !!yubiKey.currentDevice
             width: parent.width
             columns: 2
             columnSpacing: 16
 
-            Rectangle {
-                width: 80
-                height: 80
-                color: formHighlightItem
-                radius: width * 0.5
-                Layout.bottomMargin: 16
-                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                Image {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    sourceSize.width: 60
-                    source: deviceImage
-                    fillMode: Image.PreserveAspectFit
-                    visible: parent.visible
-                }
-            }
-
             ColumnLayout {
+                Layout.leftMargin: 12
                 Label {
                     text: deviceName
-                    font.pixelSize: 16
-                    font.weight: Font.Normal
+                    font.pixelSize: 14
+                    font.weight: Font.Medium
                     lineHeight: 1.8
                     color: yubicoGreen
                     opacity: fullEmphasis
@@ -91,85 +78,39 @@ Flickable {
                     noedit: true
                 }
             }
-        }
-
-        GridLayout {
-            id: yaVersionInfo
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            Layout.topMargin: 32
-            Layout.fillWidth: true
-            width: parent.width
-            columns: 2
-            columnSpacing: 16
 
             Rectangle {
                 width: 80
                 height: 80
-                color: isDark() ? formHighlightItem : yubicoGreen
+                color: formHighlightItem
                 radius: width * 0.5
                 Layout.bottomMargin: 16
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                StyledImage {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    iconWidth: 50
-                    iconHeight: 50
-                    color: primaryColor
-                    opacity: highEmphasis
-                    source: "../images/logo-mask.svg"
-                    visible: isDark()
-                }
                 Image {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    source: "../images/logo-small.png"
-                    sourceSize.width: 56
-                    sourceSize.height: 56
-                    visible: !isDark()
+                    sourceSize.width: 60
+                    source: deviceImage
+                    fillMode: Image.PreserveAspectFit
+                    visible: parent.visible
                 }
             }
 
-            ColumnLayout {
-                Label {
-                    text: "Yubico Authenticator"
-                    font.pixelSize: 16
-                    font.weight: Font.Normal
-                    lineHeight: 1.8
-                    color: yubicoGreen
-                    opacity: fullEmphasis
-                }
+        }
 
-                StyledTextField {
-                    labelText: qsTr("Version")
-                    text: appVersion
-                    enabled: false
-                    noedit: true
-                }
+        ColumnLayout {
+            id: deviceConfiguration
+            width: parent.width
+            spacing: 0
 
-                Label {
-                    text: qsTr("Copyright © " + Qt.formatDateTime(
-                                   new Date(),
-                                   "yyyy") + ", Yubico AB.")
-                    color: primaryColor
-                    opacity: lowEmphasis
-                    font.pixelSize: 11
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                    wrapMode: Text.WordWrap
-                    Layout.maximumWidth: parent.width
-                    width: parent.width
-                }
+            StyledExpansionContainer {
+                id: sectionAuthenticatorApp
+                title: qsTr("Security Codes")
 
-                Label {
-                    text: qsTr("All rights reserved.")
-                    color: primaryColor
-                    opacity: lowEmphasis
-                    font.pixelSize: 11
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                    wrapMode: Text.WordWrap
-                    Layout.maximumWidth: parent.width
-                    width: parent.width
-                }
+                SettingsPanelPasswordMgmt {}
+                SettingsPanelResetDevice {}
             }
+
         }
     }
 }

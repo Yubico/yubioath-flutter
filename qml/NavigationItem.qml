@@ -27,7 +27,7 @@ Pane {
 
     background: Rectangle {
         anchors.fill: parent
-        color: item.isActive ? yubicoGreen : (item.hovered ? defaultElevated : "transparent")
+        color: item.isActive ? yubicoGreen : (item.hovered ? defaultHovered : "transparent")
         radius: 4
     }
 
@@ -55,7 +55,7 @@ Pane {
             id: image
             iconHeight: 20
             topInset: 0
-            leftInset: -24
+            leftInset: -32
             bottomInset: 0
             color: item.isActive ? defaultBackground : primaryColor
             opacity: isEnabled ? ((item.hovered && !item.isActive) || isActive ? highEmphasis : lowEmphasis) : disabledEmphasis

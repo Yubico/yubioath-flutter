@@ -14,9 +14,9 @@ Pane {
 
     property string title
 
-    Layout.alignment: Qt.AlignCenter | Qt.AlignTop
+    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
     Layout.fillWidth: true
-    Layout.maximumWidth: dynamicWidth + dynamicMargin
+    //Layout.maximumWidth: dynamicWidth + dynamicMargin
     spacing: 0
     topPadding: 0
     bottomPadding: 0

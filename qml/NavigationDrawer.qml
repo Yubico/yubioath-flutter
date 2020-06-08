@@ -103,12 +103,20 @@ Drawer {
 
         NavigationItem {
             icon: "../images/people.svg"
-            text: "Accounts"
+            text: "Authenticator app"
             onActivated: navigator.home()
-            visible: !!yubiKey.currentDevice
+            visible: !!yubiKey.currentDevice && yubiKey.currentDevice
             isActive: !!(navigator.currentItem)
                       && (navigator.currentItem.objectName === 'credentialsView'
                       || navigator.currentItem.objectName === 'enterPasswordView')
+        }
+        NavigationItem {
+            icon: "../images/info.svg"
+            text: "YubiKey"
+            visible: !!yubiKey.currentDevice
+            onActivated: navigator.goToAbout()
+            isActive: !!(navigator.currentItem)
+                      && (navigator.currentItem.objectName === 'aboutView')
         }
         NavigationItem {
             icon: "../images/cogwheel.svg"
@@ -118,11 +126,16 @@ Drawer {
                       && (navigator.currentItem.objectName === 'settingsView')
         }
         NavigationItem {
-            icon: "../images/info.svg"
+            icon: "../images/help.svg"
             text: "About"
-            onActivated: navigator.goToAbout()
-            isActive: !!(navigator.currentItem)
-                      && (navigator.currentItem.objectName === 'aboutView')
+            onActivated: navigator.confirm({
+                       "message": qsTr("Yubico Authenticator v%1").arg(appVersion),
+                       "description": qsTr("Copyright © " + Qt.formatDateTime(new Date(),"yyyy") + ", Yubico AB." +
+                                           qsTr("\n\nAll rights reserved.")),
+                       "warning": false,
+                       "buttons": false,
+                       "noicon": true
+                   })
         }
     }
 }

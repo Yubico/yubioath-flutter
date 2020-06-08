@@ -21,7 +21,7 @@ ApplicationWindow {
            | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
            | Qt.WindowCloseButtonHint | Qt.WindowFullscreenButtonHint
 
-    property int appWidth: !drawer.visible || drawer.sticky ? app.width : app.width-drawer.width
+    property int appWidth: drawer.position < 1 || drawer.sticky ? app.width : app.width-drawer.width
 
     readonly property string yubicoGreen: isDark() ? "#b1cf77" : "#9aca3c"
     readonly property string yubicoWhite: "#ffffff"
@@ -31,6 +31,7 @@ ApplicationWindow {
 
     readonly property string defaultBackground: isDark() ? "#303030" : "#f7f8f9"
     readonly property string defaultElevated: isDark() ? "#383838" : "#ffffff"
+    readonly property string defaultHovered: isDark() ? "#424242" : "#eeeeee"
     readonly property string defaultImageOverlay: isDark() ? "#565656" : "#dddddd"
     readonly property string defaultForeground: isDark() ? "#fafafa" : "#565656"
 

@@ -6,100 +6,60 @@ import QtGraphicalEffects 1.0
 
 ColumnLayout {
 
-    property string deviceName: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : ""
-    property string deviceSerial: !!yubiKey.currentDevice && !!yubiKey.currentDevice.serial ? yubiKey.currentDevice.serial : ""
-    property string deviceVersion: !!yubiKey.currentDevice && !!yubiKey.currentDevice.version ? yubiKey.currentDevice.version : ""
-    property string deviceImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : ""
+    readonly property int dynamicWidth: 380
+    readonly property int dynamicMargin: 32
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
 
-    width: appWidth * 0.9 > 600 ? 600 : appWidth * 0.9
-    height: parent.height
-    Layout.fillWidth: true
+    ColumnLayout {
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        Layout.bottomMargin: 16
 
-    states: [
-                State {
-                    when: app.height < 420
-                    PropertyChanges { target: detailsGrid; columns: 2 }
-                    PropertyChanges { target: addBtn; text: qsTr("Add") }
-                }
-            ]
-
-    GridLayout {
-        id: detailsGrid
-        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-        Layout.topMargin: 32
-        Layout.fillWidth: true
-        width: parent.width
-        columns: 1
-        columnSpacing: 16
-
-        Rectangle {
-            width: 100
-            height: 100
-            color: formHighlightItem
-            radius: width * 0.5
-            Layout.bottomMargin: 16
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            Image {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
-                sourceSize.width: 80
-                source: deviceImage
-                fillMode: Image.PreserveAspectFit
-                visible: parent.visible
-            }
+        StyledImage {
+            source: "../images/people.svg"
+            color: defaultImageOverlay
+            iconWidth: 80
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
 
-        ColumnLayout {
-            Label {
-                text: deviceName
-                font.pixelSize: 16
-                font.weight: Font.Normal
-                lineHeight: 1.8
-                color: yubicoGreen
-                opacity: fullEmphasis
-            }
+        Label {
+            text: qsTr("No accounts")
+            Layout.rowSpan: 1
+            wrapMode: Text.WordWrap
+            font.pixelSize: 16
+            font.weight: Font.Normal
+            lineHeight: 1.5
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            color: primaryColor
+            opacity: highEmphasis
+        }
 
-            StyledTextField {
-                labelText: qsTr("Serial number")
-                text: deviceSerial
-                visible: text.length > 0
-                enabled: false
-                noedit: true
-            }
+        Label {
+            text: qsTr("Add accounts to this YubiKey in order to generate security codes.")
+            horizontalAlignment: Qt.AlignHCenter
+            Layout.minimumWidth: 300
+            Layout.maximumWidth: app.width - dynamicMargin
+                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+            Layout.rowSpan: 1
+            lineHeight: 1.1
+            wrapMode: Text.WordWrap
+            font.pixelSize: 13
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            color: primaryColor
+            opacity: lowEmphasis
+        }
 
-            StyledTextField {
-                labelText: qsTr("Firmware version")
-                text: deviceVersion
-                visible: text.length > 0
-                enabled: false
-                noedit: true
-            }
-
-            RowLayout {
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                spacing: 8
-                Layout.topMargin: 16
-                StyledButton {
-                    text: qsTr("Settings")
-                    focus: true
-                    onClicked: navigator.goToSettings()
-                    Keys.onReturnPressed: navigator.goToSettings()
-                    Keys.onEnterPressed: navigator.goToSettings()
-                }
-                StyledButton {
-                    id: addBtn
-                    text: qsTr("Add account")
-                    enabled: yubiKey.currentDeviceEnabled("OATH")
-                    primary: true
-                    focus: true
-                    onClicked: navigator.goToNewCredential()
-                    Keys.onReturnPressed: navigator.goToNewCredential()
-                    Keys.onEnterPressed: navigator.goToNewCredential()
-                }
-            }
+        StyledButton {
+            id: addBtn
+            text: qsTr("Add account")
+            enabled: true
+            focus: true
+            Layout.alignment: Qt.AlignCenter | Qt.AlignVCenter
+            onClicked: navigator.goToNewCredential()
+            Keys.onReturnPressed: navigator.goToNewCredential()
+            Keys.onEnterPressed: navigator.goToNewCredential()
+            Layout.topMargin: 8
         }
     }
 }
