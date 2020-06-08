@@ -13,11 +13,7 @@ ToolBar {
         opacity: 0.7
     }
 
-    transform: Translate {
-        x: drawer.sticky ? 0 : drawer.position * drawer.width
-    }
-
-    width: appWidth
+    width: app.width
 
     function getToolbarColor(isActive) {
         if (!isActive) {
@@ -39,8 +35,6 @@ ToolBar {
             switch (navigator.currentItem.objectName) {
             case "settingsView":
                 return qsTr("Search settings")
-            case "aboutView":
-                return qsTr("Search configuration")
             case "credentialsView":
                 return entries.count > 0 ? qsTr("Search accounts") : ""
             default:
@@ -88,15 +82,11 @@ ToolBar {
         ToolButton {
             id: moreBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            visible: true // !backBtn.visible && shouldShowSettings()
+            visible: true
 
-            function toggleMenu() {
-                drawer.visible =! drawer.visible
-            }
-
-            onClicked: toggleMenu()
-            Keys.onReturnPressed: toggleMenu()
-            Keys.onEnterPressed: toggleMenu()
+            onClicked: drawer.toggle()
+            Keys.onReturnPressed: drawer.toggle()
+            Keys.onEnterPressed: drawer.toggle()
 
             KeyNavigation.left: navigator
             KeyNavigation.backtab: navigator

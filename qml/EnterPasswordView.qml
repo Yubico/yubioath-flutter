@@ -23,7 +23,7 @@ Flickable {
     }
     boundsBehavior: Flickable.StopAtBounds
 
-    contentWidth: appWidth
+    contentWidth: app.width
 
     function clear() {
         passwordField.text = ""
@@ -60,8 +60,8 @@ Flickable {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         spacing: 4
-        width: appWidth - dynamicMargin
-               < dynamicWidth ? appWidth - dynamicMargin : dynamicWidth
+        width: app.width - dynamicMargin
+               < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
 
         Label {
             text: "Unlock YubiKey"

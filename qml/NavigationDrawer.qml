@@ -10,11 +10,10 @@ import QtGraphicalEffects 1.12
 Drawer {
     id: drawer
     width: 210
-    modal: sticky
-    interactive: sticky
-    height: app.height
-
-    property bool sticky: app.width < 510
+    modal: true
+    interactive: true
+    y: toolBar.height
+    height: app.height-toolBar.height
 
     Overlay.modal: Rectangle {
         color: "#33000000"
@@ -28,6 +27,10 @@ Drawer {
     background: Rectangle {
         anchors.fill: parent
         color: defaultElevated
+    }
+
+    function toggle() {
+        drawer.visible =! drawer.visible
     }
 
     ColumnLayout {

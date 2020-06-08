@@ -41,9 +41,7 @@ Pane {
         onClicked: {
             if(isEnabled && !isActive) {
                 activated(true);
-                if(drawer.sticky) {
-                    drawer.visible = false
-                }
+                drawer.visible = false
             }
         }
     }

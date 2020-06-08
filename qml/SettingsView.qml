@@ -8,7 +8,7 @@ Flickable {
 
     id: settingsPanel
     objectName: 'settingsView'
-    contentWidth: appWidth-32
+    contentWidth: app.width-32
     contentHeight: content.implicitHeight
     leftMargin: 16
     rightMargin: 16
@@ -42,14 +42,14 @@ Flickable {
                 SettingsPanelSystemTray {}
                 SettingsPanelClearPasswords {}
             }
-/*
+
             StyledExpansionContainer {
-                title: qsTr("Security Codes (OATH)")
+                title: qsTr("Authenticator app (OATH)")
 
                 SettingsPanelPasswordMgmt {}
                 SettingsPanelResetDevice {}
             }
-*/
+
         }
     }
 }

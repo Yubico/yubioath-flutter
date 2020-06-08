@@ -17,11 +17,11 @@ ToolTip {
 
     id: tooltip
     timeout: 3000
-    x: drawerWidth + (appWidth - width) / 2
+    x: drawerWidth + (app.width - width) / 2
     y: app.height
     z: 2
-    width: fullWidth ? appWidth : appWidth - dynamicMargin
-                       < dynamicWidth ? appWidth - dynamicMargin : dynamicWidth
+    width: fullWidth ? app.width : app.width - dynamicMargin
+                       < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
     leftMargin: fullWidth ? 0 : 8
     rightMargin: fullWidth ? 0 : 8
     bottomMargin: fullWidth ? 0 : 8

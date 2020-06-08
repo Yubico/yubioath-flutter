@@ -7,8 +7,8 @@ import QtGraphicalEffects 1.0
 Flickable {
     id: panel
     objectName: 'aboutView'
-    contentWidth: appWidth - 32
-    contentHeight: content.implicitHeight + app.height
+    contentWidth: app.width - 32
+    contentHeight: content.implicitHeight
     anchors.fill: parent
     leftMargin: 16
     rightMargin: 16
@@ -94,21 +94,6 @@ Flickable {
                     fillMode: Image.PreserveAspectFit
                     visible: parent.visible
                 }
-            }
-
-        }
-
-        ColumnLayout {
-            id: deviceConfiguration
-            width: parent.width
-            spacing: 0
-
-            StyledExpansionContainer {
-                id: sectionAuthenticatorApp
-                title: qsTr("Security Codes")
-
-                SettingsPanelPasswordMgmt {}
-                SettingsPanelResetDevice {}
             }
 
         }

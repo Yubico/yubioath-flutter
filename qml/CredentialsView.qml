@@ -12,12 +12,9 @@ Pane {
     padding: 0
     spacing: 0
 
-    x: !drawer.visible || drawer.sticky ? 0 : 12
-
     property string title: ""
     property string searchQuery: toolBar.searchField.text
 
-    width: !drawer.visible || drawer.sticky ? appWidth: appWidth - 24
     height: app.height - toolBar.height
 
     function filteredCredentials() {
