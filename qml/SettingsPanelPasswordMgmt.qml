@@ -49,6 +49,9 @@ StyledExpansionPanel {
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
                 console.log("change password failed:", resp.error_id)
+                if (resp.error_id === 'no_device_custom_reader') {
+                    yubiKey.clearCurrentDeviceAndEntries()
+                }
             }
             clearPasswordFields()
             navigator.goToSettings()
@@ -65,6 +68,9 @@ StyledExpansionPanel {
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
                 console.log("set password failed:", resp.error_id)
+                if (resp.error_id === 'no_device_custom_reader') {
+                    yubiKey.clearCurrentDeviceAndEntries()
+                }
             }
             clearPasswordFields()
             navigator.goToSettings()
@@ -83,6 +89,9 @@ StyledExpansionPanel {
                     } else {
                         navigator.snackBarError(getErrorMessage(resp.error_id))
                         console.log("remove password failed:", resp.error_id)
+                        if (resp.error_id === 'no_device_custom_reader') {
+                            yubiKey.clearCurrentDeviceAndEntries()
+                        }
                     }
                     clearPasswordFields()
                     navigator.goToSettings()

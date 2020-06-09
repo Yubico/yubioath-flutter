@@ -112,11 +112,12 @@ Pane {
                             } else {
                                 navigator.snackBar(qsTr("Re-tap your YubiKey"))
                             }
-                        } else if (resp.error_id === 'no_device_custom_reader') {
-                            yubiKey.clearCurrentDeviceAndEntries()
                         } else {
                             navigator.snackBarError(navigator.getErrorMessage(
                                                         resp.error_id))
+                            if (resp.error_id === 'no_device_custom_reader') {
+                                yubiKey.clearCurrentDeviceAndEntries()
+                            }
                         }
                         console.log("calculate failed:", resp.error_id)
                     }
@@ -157,7 +158,11 @@ Pane {
                                                              navigator.snackBarError(
                                                                          navigator.getErrorMessage(resp.error_id))
                                                              console.log("delete failed:", resp.error_id)
+                                                             if (resp.error_id === 'no_device_custom_reader') {
+                                                                 yubiKey.clearCurrentDeviceAndEntries()
+                                                             }
                                                          }
+
                                                      })
                         }
 
