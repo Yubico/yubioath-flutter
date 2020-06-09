@@ -33,7 +33,11 @@ StyledExpansionPanel {
                                                                   resp.error_id))
                                                   console.log("reset failed:",
                                                               resp.error_id)
+                                                  if (resp.error_id === 'no_device_custom_reader') {
+                                                      yubiKey.clearCurrentDeviceAndEntries()
+                                                  }
                                               }
+
                                               navigator.goToSettings()
                                           })
                                       }

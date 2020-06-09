@@ -273,7 +273,7 @@ class Controller(object):
         def _get_version(dev):
             if dev.version:
                 return '.'.join(str(x) for x in dev.version)
-            if dev._desc_version:
+            if hasattr(dev, '_desc_version') and dev._desc_version:
                 return '.'.join(str(x) for x in dev._desc_version)
             return ''
 
