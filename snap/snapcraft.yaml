@@ -62,6 +62,8 @@ parts:
   python:
     plugin: nil
     build-packages:
+      - curl
+      - rsync
       - git
       - zlib1g-dev
       - libbz2-dev
@@ -95,6 +97,7 @@ parts:
     after: [python]
     build-packages:
       - swig
+      - rsync
     build-environment:
       - PATH: /root/.pyenv/bin:$PATH
     override-build: |
