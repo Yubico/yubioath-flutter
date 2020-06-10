@@ -4,31 +4,17 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
-      - name: Build snap
-        run: |
-          sudo snap install snapcraft --classic
-          sudo chown root:root /
-          sudo apt-get remove -qy lxd lxd-client
-          sudo snap install lxd
-          sudo lxd init --auto
-          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
-          sudo snapcraft --use-lxd
-          mkdir deploy
-          mv yubioath-desktop*.snap yubioath-desktop-${REF}.snap
-          cp yubioath-desktop*.snap deploy
+    - uses: snapcore/action-build@v1
+      id: snapcraft
 
-      - name: Install snap
-        run: |
-          sudo snap install yubioath-desktop*.snap --devmode
+    - name: Install snap
+      run: sudo snap install --dangerous ${{ steps.snapcraft.outputs.snap }}
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: yubioath-desktop-snap
-          path: deploy
+    - uses: actions/upload-artifact@v2
+      with:
+        name: snap
+        path: ${{ steps.snapcraft.outputs.snap }}
