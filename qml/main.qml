@@ -208,6 +208,13 @@ ApplicationWindow {
       return RegExp(string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, "|"), flags)
     }
 
+    function isCurrentObjectName(objectnames) {
+        if (!!(navigator && navigator.currentItem)) {
+            return objectnames.includes(navigator.currentItem.objectName)
+        }
+        return false
+    }
+
     function getFavoriteEntries() {
         var favs = entriesComponent.createObject(app, {
         })

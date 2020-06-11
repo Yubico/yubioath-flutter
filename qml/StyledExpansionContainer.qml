@@ -14,12 +14,15 @@ Pane {
 
     property string title
 
-    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
     Layout.fillWidth: true
-    //Layout.maximumWidth: dynamicWidth + dynamicMargin
+    Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
     spacing: 0
     topPadding: 0
     bottomPadding: 0
+    Layout.topMargin: 4
+    Layout.bottomMargin: 4
+    Layout.leftMargin: app.width > dynamicWidth ? 16 : 0
+    Layout.rightMargin: app.width > dynamicWidth ? 16 : 0
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -33,8 +36,8 @@ Pane {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 text: title
                 color: Material.primary
-                font.pixelSize: 14
-                font.weight: Font.Medium
+                font.pixelSize: 16
+                font.weight: Font.Normal
                 topPadding: 24
                 bottomPadding: 8
                 Layout.fillWidth: true

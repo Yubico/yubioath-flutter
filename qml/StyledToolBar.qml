@@ -67,7 +67,7 @@ ToolBar {
 
         ToolButton {
             id: backBtn
-            visible: false // showBackBtn
+            visible: isCurrentObjectName('newCredentialView')
             onClicked: navigator.home()
             icon.source: "../images/back.svg"
             icon.color: primaryColor
@@ -82,7 +82,7 @@ ToolBar {
         ToolButton {
             id: moreBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            visible: true
+            visible: !isCurrentObjectName('newCredentialView')
 
             onClicked: drawer.toggle()
             Keys.onReturnPressed: drawer.toggle()
@@ -96,15 +96,6 @@ ToolBar {
             Accessible.role: Accessible.Button
             Accessible.name: "Menu"
             Accessible.description: "Menu button"
-
-            ToolTip {
-                text: qsTr("Menu")
-                delay: 1000
-                parent: moreBtn
-                visible: parent.hovered
-                Material.foreground: toolTipForeground
-                Material.background: toolTipBackground
-            }
 
             icon.source: "../images/menu.svg"
             icon.color: primaryColor

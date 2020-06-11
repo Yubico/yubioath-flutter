@@ -76,16 +76,6 @@ Drawer {
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         }
 
-        Label {
-            text: "%1 account%2".arg(!entries ? "0" : entries.count).arg(entries.count !== 1 ? "s" : "")
-            font.pixelSize: 12
-            font.weight: Font.Normal
-            Layout.leftMargin: 16
-            color: primaryColor
-            opacity: highEmphasis
-            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-        }
-
         Canvas {
             id: canvas
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
@@ -108,25 +98,21 @@ Drawer {
             icon: "../images/people.svg"
             text: "Authenticator app"
             onActivated: navigator.home()
-            visible: !!yubiKey.currentDevice && yubiKey.currentDevice
-            isActive: !!(navigator.currentItem)
-                      && (navigator.currentItem.objectName === 'credentialsView'
-                      || navigator.currentItem.objectName === 'enterPasswordView')
+            visible: !!yubiKey && yubiKey.currentDeviceEnabled("OATH") || settings.useCustomReader
+            isActive: isCurrentObjectName(['credentialsView', 'enterPasswordView', 'newCredentialView'])
         }
         NavigationItem {
-            icon: "../images/info.svg"
+            icon: "../images/yubikey-vertical.svg"
             text: "YubiKey"
-            visible: !!yubiKey.currentDevice
+            visible: true
             onActivated: navigator.goToAbout()
-            isActive: !!(navigator.currentItem)
-                      && (navigator.currentItem.objectName === 'aboutView')
+            isActive: isCurrentObjectName('yubiKeyView')
         }
         NavigationItem {
             icon: "../images/cogwheel.svg"
             text: "Settings"
             onActivated: navigator.goToSettings()
-            isActive: !!(navigator.currentItem)
-                      && (navigator.currentItem.objectName === 'settingsView')
+            isActive: isCurrentObjectName('settingsView')
         }
         NavigationItem {
             icon: "../images/help.svg"

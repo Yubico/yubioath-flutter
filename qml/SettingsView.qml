@@ -8,10 +8,11 @@ Flickable {
 
     id: settingsPanel
     objectName: 'settingsView'
-    contentWidth: app.width-32
-    contentHeight: content.implicitHeight
-    leftMargin: 16
-    rightMargin: 16
+    contentWidth: app.width
+    contentHeight: content.implicitHeight + 32
+
+    readonly property int dynamicWidth: 648
+    readonly property int dynamicMargin: 32
 
     ScrollBar.vertical: ScrollBar {
         width: 8
@@ -27,29 +28,26 @@ Flickable {
 
     property string title: qsTr("")
 
-    RowLayout {
+    ColumnLayout {
         width: settingsPanel.contentWidth
-        ColumnLayout {
-            id: content
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            spacing: 0
+        id: content
+        spacing: 0
 
-            StyledExpansionContainer {
-                title: qsTr("Application")
+        StyledExpansionContainer {
+            title: qsTr("Application")
 
-                SettingsPanelAppearance {}
-                SettingsPanelCustomReader {}
-                SettingsPanelSystemTray {}
-                SettingsPanelClearPasswords {}
-            }
-
-            StyledExpansionContainer {
-                title: qsTr("Authenticator app (OATH)")
-
-                SettingsPanelPasswordMgmt {}
-                SettingsPanelResetDevice {}
-            }
-
+            SettingsPanelAppearance {}
+            SettingsPanelCustomReader {}
+            SettingsPanelSystemTray {}
+            SettingsPanelClearPasswords {}
         }
-    }
+
+        StyledExpansionContainer {
+            title: qsTr("Authenticator app (OATH)")
+
+            SettingsPanelPasswordMgmt {}
+            SettingsPanelResetDevice {}
+        }
+
+}
 }

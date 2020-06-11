@@ -26,8 +26,8 @@ StackView {
     }
 
     function goToAbout() {
-        if (currentItem.objectName !== 'aboutView') {
-            push(aboutView, StackView.Immediate)
+        if (currentItem.objectName !== 'yubiKeyView') {
+            push(yubiKeyView, StackView.Immediate)
         }
     }
 
@@ -139,8 +139,8 @@ StackView {
     }
 
     Component {
-        id: aboutView
-        AboutView {
+        id: yubiKeyView
+        YubiKeyView {
         }
     }
 
