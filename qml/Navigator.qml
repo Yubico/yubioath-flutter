@@ -3,12 +3,14 @@ import QtQuick.Controls 2.2
 import "utils.js" as Utils
 
 StackView {
-    initialItem: credentialsView
+    initialItem: yubiKey.currentDeviceEnabled("OATH") ? credentialsView : yubiKeyView
+
     onCurrentItemChanged: {
         if (currentItem) {
             currentItem.forceActiveFocus()
         }
     }
+
     property bool isShowingAbout
 
     Accessible.ignored: true
@@ -47,16 +49,21 @@ StackView {
     function home() {
         if (!!yubiKey.currentDevice) {
 
-            // If locked, prompt for password
-            if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                    && !yubiKey.currentDeviceValidated) {
-                clearAndPush(enterPasswordView)
-                return
+            if (yubiKey.currentDeviceEnabled("OATH")) {
+                // If locked, prompt for password
+                if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
+                        && !yubiKey.currentDeviceValidated) {
+                    clearAndPush(enterPasswordView)
+                    return
+                }
+                navigator.goToCredentials()
+            } else {
+                goToYubiKeyView()
             }
-            navigator.goToCredentials()
         } else {
-            clearAndPush(credentialsView)
+            clearAndPush(yubiKeyView)
         }
+
     }
 
     function goToCredentials(force) {
@@ -71,6 +78,14 @@ StackView {
             clearAndPush(credentialsView)
         }
     }
+
+    function goToYubiKeyView() {
+        if (currentItem.objectName !== 'yubiKeyView'
+                && currentItem.objectName !== 'yubiKeyView') {
+            clearAndPush(yubiKeyView)
+        }
+    }
+
 
     function goToNewCredential(credential) {
         if (currentItem.objectName !== 'newCredentialView') {

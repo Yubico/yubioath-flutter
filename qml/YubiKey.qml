@@ -267,7 +267,7 @@ Python {
                         calculateAll(navigator.goToCredentialsIfNotInSettings)
                     } else {
                         currentDeviceValidated = true
-                        navigator.goToCredentialsIfNotInSettings()
+                        navigator.home()
                     }
                 } else {
                     // the same one but potentially updated
@@ -278,7 +278,7 @@ Python {
                 availableDevices = []
                 availableReaders = []
                 clearCurrentDeviceAndEntries()
-                navigator.goToCredentialsIfNotInSettings()
+                navigator.home()
             }
             poller.running = true
         })
