@@ -136,6 +136,8 @@ StackView {
             return qsTr('Failed to read credential from QR code')
         case 'no_pcscd':
             return qsTr('Is the pcscd/smart card service running?')
+        case 'no_device_custom_reader':
+            return qsTr('No device found')
         default:
             return qsTr('Unknown error')
         }
