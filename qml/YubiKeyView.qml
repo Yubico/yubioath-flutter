@@ -40,34 +40,6 @@ Flickable {
                                      .replace("CCID","Smart card (CCID)")
                                      .replace("FIDO","WebAuthn (FIDO)")
 
-    function getFormFactor() {
-        if (!!(yubiKey.currentDevice)) {
-            const formfactor = {
-                USB_A_KEYCHAIN: 0x01,
-                USB_A_NANO: 0x02,
-                USB_C_KEYCHAIN: 0x03,
-                USB_C_NANO: 0x04,
-                USB_C_LIGHTNING: 0x05
-            }
-
-            switch (yubiKey.currentDevice.formFactor) {
-                case formfactor.USB_A_KEYCHAIN:
-                    return 'Keychain (USB-A)'
-                case formfactor.USB_A_NANO:
-                    return 'Nano (USB-A)'
-                case formfactor.USB_C_KEYCHAIN:
-                    return 'Keychain (USB-C)'
-                case formfactor.USB_C_NANO:
-                    return 'Nano (USB-C)'
-                case formfactor.USB_C_LIGHTNING:
-                    return 'Keychain (USB-C, Lightning)'
-                default:
-                    return ''
-            }
-        }
-        return ''
-    }
-
     NoYubiKeySection {
         id: noYubiKeySection
         // Make this section the default view to show when there is errors.
@@ -118,13 +90,6 @@ Flickable {
             noedit: true
         }
         StyledTextField {
-            labelText: qsTr("Serial number")
-            text: deviceSerial
-            visible: text.length > 0
-            enabled: false
-            noedit: true
-        }
-        StyledTextField {
             labelText: qsTr("Firmware version")
             text: deviceVersion
             visible: text.length > 0
@@ -132,37 +97,9 @@ Flickable {
             noedit: true
         }
         StyledTextField {
-            labelText: qsTr("Form factor")
-            text: getFormFactor()
+            labelText: qsTr("Serial number")
+            text: deviceSerial
             visible: text.length > 0
-            enabled: false
-            noedit: true
-        }
-        Label {
-            text: "Configurable settings"
-            font.pixelSize: 16
-            font.weight: Font.Normal
-            lineHeight: 1.8
-            Layout.topMargin: 16
-            color: yubicoGreen
-            opacity: fullEmphasis
-            visible: usbInterfaces.visible || nfcInterfaces.visible
-        }
-        StyledTextField {
-            id: usbInterfaces
-            labelText: qsTr("Enabled USB interfaces")
-            text: deviceFormFactor
-            visible: text.length > 0
-            enabled: false
-            noedit: true
-        }
-        StyledTextField {
-            id: nfcInterfaces
-            labelText: qsTr("NFC interface")
-            text: !!yubiKey.currentDevice && yubiKey.currentDevice.nfcAppEnabled.length > 0
-                  ? "Enabled"
-                  : "Disabled"
-            visible: !!yubiKey.currentDevice && yubiKey.currentDevice.nfcAppSupported.length > 0
             enabled: false
             noedit: true
         }

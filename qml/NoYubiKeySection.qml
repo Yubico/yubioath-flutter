@@ -27,13 +27,30 @@ ColumnLayout {
         }
 
         Label {
-            text: qsTr("Insert your YubiKey")
+            text: yubiKey.availableDevices.length > 0 && !yubiKey.currentDeviceEnabled("OATH")
+                  ? qsTr("Unsupported device")
+                  : qsTr("Insert your YubiKey")
             font.pixelSize: 16
             font.weight: Font.Normal
             lineHeight: 1.5
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             color: primaryColor
             opacity: highEmphasis
+        }
+        Label {
+            text: qsTr("Authenticator app requires a YubiKey with Smart card (CCID) interface enabled.")
+            visible: yubiKey.availableDevices.length > 0 && !yubiKey.currentDeviceEnabled("OATH")
+            horizontalAlignment: Qt.AlignHCenter
+            Layout.minimumWidth: 300
+            Layout.maximumWidth: app.width - dynamicMargin
+                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+            Layout.rowSpan: 1
+            lineHeight: 1.1
+            wrapMode: Text.WordWrap
+            font.pixelSize: 13
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            color: primaryColor
+            opacity: lowEmphasis
         }
     }
 

@@ -97,14 +97,12 @@ Drawer {
         NavigationItem {
             icon: "../images/people.svg"
             text: "Authenticator app"
-            onActivated: navigator.home()
-            visible: !!yubiKey && yubiKey.currentDeviceEnabled("OATH") || settings.useCustomReader
+            onActivated: navigator.goToCredentials()
             isActive: isCurrentObjectName(['credentialsView', 'enterPasswordView', 'newCredentialView'])
         }
         NavigationItem {
             icon: "../images/yubikey-vertical.svg"
             text: "YubiKey"
-            visible: true
             onActivated: navigator.goToAbout()
             isActive: isCurrentObjectName('yubiKeyView')
         }
