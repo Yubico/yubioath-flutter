@@ -29,19 +29,18 @@ Pane {
         anchors.fill: parent
         color: item.isActive ? yubicoGreen : (item.hovered ? defaultHovered : "transparent")
         radius: 4
-    }
-
-    MouseArea {
-        id: itemMouseArea
-        enabled: !isActive && isEnabled
-        hoverEnabled: !isActive && isEnabled
-        anchors.fill: parent
-        acceptedButtons: Qt.LeftButton
-        cursorShape: !isEnabled || isActive ? Qt.ArrowCursor : Qt.PointingHandCursor
-        onClicked: {
-            if(isEnabled && !isActive) {
-                activated(true);
-                drawer.visible = false
+        MouseArea {
+            id: itemMouseArea
+            enabled: !isActive && isEnabled
+            hoverEnabled: !isActive && isEnabled
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton
+            cursorShape: !isEnabled || isActive ? Qt.ArrowCursor : Qt.PointingHandCursor
+            onClicked: {
+                if(isEnabled && !isActive) {
+                    activated(true);
+                    drawer.visible = false
+                }
             }
         }
     }
@@ -52,14 +51,14 @@ Pane {
         StyledImage {
             id: image
             iconHeight: 20
+            Layout.leftMargin: -16
             topInset: 0
-            leftInset: -32
             bottomInset: 0
             color: item.isActive ? defaultBackground : primaryColor
             opacity: isEnabled ? ((item.hovered && !item.isActive) || isActive ? highEmphasis : lowEmphasis) : disabledEmphasis
         }
         Label {
-            Layout.leftMargin: 8
+            Layout.leftMargin: 0
             id: label
             font.pixelSize: 13
             font.weight: Font.Medium
