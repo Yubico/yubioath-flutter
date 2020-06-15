@@ -35,10 +35,6 @@ Flickable {
     property string deviceSerial: !!yubiKey.currentDevice && !!yubiKey.currentDevice.serial ? yubiKey.currentDevice.serial : ""
     property string deviceVersion: !!yubiKey.currentDevice && !!yubiKey.currentDevice.version ? yubiKey.currentDevice.version : ""
     property string deviceImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : ""
-    property string deviceFormFactor: !!yubiKey.currentDevice
-                                      && yubiKey.currentDevice.usbInterfacesEnabled.join(', ')
-                                     .replace("CCID","Smart card (CCID)")
-                                     .replace("FIDO","WebAuthn (FIDO)")
 
     NoYubiKeySection {
         id: noYubiKeySection

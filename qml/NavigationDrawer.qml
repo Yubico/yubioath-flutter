@@ -60,7 +60,6 @@ Drawer {
             color: defaultImageOverlay
             Layout.topMargin: 16
             Layout.leftMargin: 16
-            Layout.bottomMargin: 8
             iconHeight: 70
             visible: !ykCircle.visible
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
@@ -71,6 +70,8 @@ Drawer {
             font.pixelSize: 16
             font.weight: Font.Normal
             Layout.leftMargin: 16
+            Layout.topMargin: 8
+            Layout.bottomMargin: 8
             color: primaryColor
             opacity: highEmphasis
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
