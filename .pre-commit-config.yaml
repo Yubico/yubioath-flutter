@@ -10,3 +10,8 @@
     language: system
     entry: flake8 ./py
     files: \.py
+  - id: qmlformat
+    name: qmlformat
+    entry: qmlformat -i
+    language: system
+    files: \.qml$
