@@ -1,43 +1,46 @@
+import QtGraphicalEffects 1.0
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
-import QtGraphicalEffects 1.0
+import QtQuick.Layouts 1.3
 
 Pane {
     id: pane
-    objectName: 'credentialsView'
-
-    anchors.fill: parent
-    Accessible.ignored: true
-    padding: 0
-    spacing: 0
 
     property string title: ""
     property string searchQuery: toolBar.searchField.text
 
     function filteredCredentials() {
         if (entries !== null && searchQuery.length > 0) {
-            var filteredEntries = entriesComponent.createObject(app)
+            var filteredEntries = entriesComponent.createObject(app);
             for (var i = 0; i < entries.count; i++) {
-                var entry = entries.get(i)
-                if (!!entry && !!entry.credential && entry.credential.key.match(escapeRegExp(searchQuery, "i"))) {
-                    filteredEntries.append(entry)
-                }
+                var entry = entries.get(i);
+                if (!!entry && !!entry.credential && entry.credential.key.match(escapeRegExp(searchQuery, "i")))
+                    filteredEntries.append(entry);
+
             }
-            return filteredEntries
+            return filteredEntries;
         }
-        return entries
+        return entries;
     }
+
+    objectName: "credentialsView"
+    anchors.fill: parent
+    Accessible.ignored: true
+    padding: 0
+    spacing: 0
 
     Component {
         id: entriesComponent
+
         EntriesModel {
         }
+
     }
 
     NoCredentialsSection {
         id: noCredentialsSection
+
         visible: entries.count === 0 && (!!yubiKey.currentDevice) && yubiKey.currentDeviceValidated
         enabled: visible
         Accessible.ignored: true
@@ -45,14 +48,15 @@ Pane {
 
     NoResultsSection {
         id: noResultsSection
-        visible: entries.count > 0 && (!!yubiKey.currentDevice && yubiKey.currentDeviceValidated)
-                 && filteredCredentials().count === 0
+
+        visible: entries.count > 0 && (!!yubiKey.currentDevice && yubiKey.currentDeviceValidated) && filteredCredentials().count === 0
         enabled: visible
         Accessible.ignored: true
     }
 
     NoYubiKeySection {
         id: noYubiKeySection
+
         // Make this section the default view to show when there is errors.
         visible: !yubiKey.availableDevices || (!credentialsSection.visible && !noResultsSection.visible && !noCredentialsSection.visible)
         enabled: visible
@@ -61,6 +65,7 @@ Pane {
 
     CredentialsSection {
         id: credentialsSection
+
         visible: entries.count > 0
         enabled: visible
     }

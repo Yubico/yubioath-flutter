@@ -1,10 +1,11 @@
+import QtGraphicalEffects 1.0
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.2
 import QtQuick.Controls.Material 2.2
-import QtGraphicalEffects 1.0
+import QtQuick.Layouts 1.2
 
 ToolTip {
+    id: tooltip
 
     property string message: "Default message"
     property string buttonText: "Dismiss"
@@ -14,31 +15,16 @@ ToolTip {
     readonly property int dynamicWidth: 640
     readonly property int dynamicMargin: 16
 
-    id: tooltip
     timeout: 3000
     x: (app.width - width) / 2
     y: app.height
     z: 2
-    width: fullWidth ? app.width : app.width - dynamicMargin
-                       < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+    width: fullWidth ? app.width : app.width - dynamicMargin < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
     leftMargin: fullWidth ? 0 : 8
     rightMargin: fullWidth ? 0 : 8
     bottomMargin: fullWidth ? 0 : 8
     height: 48
     padding: 0
-    background: Rectangle {
-        color: primaryColor
-        radius: fullWidth ? 0 : 4
-        layer.enabled: !fullWidth
-        layer.effect: DropShadow {
-            radius: 2
-            samples: radius * 2
-            verticalOffset: 1
-            horizontalOffset: 0
-            color: formHighlightItem
-            transparentBorder: true
-        }
-    }
 
     RowLayout {
         spacing: 8
@@ -46,6 +32,7 @@ ToolTip {
 
         Label {
             id: snackLbl
+
             text: message
             color: defaultElevated
             opacity: highEmphasis
@@ -58,11 +45,30 @@ ToolTip {
 
         StyledButton {
             id: snackBtn
+
             flat: true
             text: buttonText
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             Material.foreground: buttonColor
             onClicked: tooltip.close()
         }
+
     }
+
+    background: Rectangle {
+        color: primaryColor
+        radius: fullWidth ? 0 : 4
+        layer.enabled: !fullWidth
+
+        layer.effect: DropShadow {
+            radius: 2
+            samples: radius * 2
+            verticalOffset: 1
+            horizontalOffset: 0
+            color: formHighlightItem
+            transparentBorder: true
+        }
+
+    }
+
 }

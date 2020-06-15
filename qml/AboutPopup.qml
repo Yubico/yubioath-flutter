@@ -7,31 +7,19 @@ Dialog {
     spacing: 0
     modal: true
     focus: true
-    Overlay.modal: Rectangle {
-        color: "#66000000"
-    }
-
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2
     width: app.width * 0.9 > 600 ? 600 : app.width * 0.9
-
-    background: Rectangle {
-        color: defaultBackground
-        radius: 4
-    }
-
     onClosed: {
-        navigator.focus = true
-        navigator.isShowingAbout = false
+        navigator.focus = true;
+        navigator.isShowingAbout = false;
     }
-
     onRejected: {
-        close()
-        navigator.focus = true
+        close();
+        navigator.focus = true;
     }
-
     Component.onCompleted: {
-        navigator.isShowingAbout = true
+        navigator.isShowingAbout = true;
     }
 
     ColumnLayout {
@@ -46,12 +34,14 @@ Dialog {
 
             Rectangle {
                 id: rectangle
+
                 width: 140
                 height: 140
                 color: formHighlightItem
                 radius: width * 0.5
                 Layout.margins: 16
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+
                 Image {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -60,6 +50,7 @@ Dialog {
                     fillMode: Image.PreserveAspectFit
                     visible: parent.visible
                 }
+
             }
 
             Label {
@@ -82,7 +73,6 @@ Dialog {
                 wrapMode: Text.WordWrap
                 Layout.maximumWidth: parent.width
                 width: parent.width
-
             }
 
             Label {
@@ -98,7 +88,7 @@ Dialog {
             }
 
             Label {
-                text: !!yubiKey.currentDevice ? qsTr("Enabled interfaces: ") + yubiKey.currentDevice.usbInterfacesEnabled.join('+') : ""
+                text: !!yubiKey.currentDevice ? qsTr("Enabled interfaces: ") + yubiKey.currentDevice.usbInterfacesEnabled.join("+") : ""
                 color: primaryColor
                 opacity: highEmphasis
                 font.pixelSize: 13
@@ -110,6 +100,7 @@ Dialog {
 
             Canvas {
                 id: canvas
+
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -120,11 +111,12 @@ Dialog {
                     context.beginPath();
                     context.lineWidth = 1;
                     context.moveTo(0, height / 2);
-                    context.strokeStyle = formHighlightItem
+                    context.strokeStyle = formHighlightItem;
                     context.lineTo(width, height / 2);
                     context.stroke();
                 }
             }
+
         }
 
         Image {
@@ -145,9 +137,7 @@ Dialog {
         }
 
         Label {
-            text: qsTr("Copyright © " + Qt.formatDateTime(
-                           new Date(),
-                           "yyyy") + ", Yubico AB.")
+            text: qsTr("Copyright © " + Qt.formatDateTime(new Date(), "yyyy") + ", Yubico AB.")
             color: primaryColor
             opacity: highEmphasis
             font.pixelSize: 13
@@ -167,5 +157,16 @@ Dialog {
             Layout.maximumWidth: parent.width
             width: parent.width
         }
+
     }
+
+    Overlay.modal: Rectangle {
+        color: "#66000000"
+    }
+
+    background: Rectangle {
+        color: defaultBackground
+        radius: 4
+    }
+
 }

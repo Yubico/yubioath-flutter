@@ -1,18 +1,15 @@
+import QtGraphicalEffects 1.0
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
-import QtGraphicalEffects 1.0
+import QtQuick.Layouts 1.3
 
 Pane {
-
     id: expansionPanel
 
     default property alias children: inner_space.data
-
     readonly property int dynamicWidth: 648
     readonly property int dynamicMargin: 32
-
     property string label
     property string description
     property string metadata
@@ -20,7 +17,6 @@ Pane {
     property string backgroundColor: defaultElevated
     property string searchQuery: toolBar.searchField.text
     property string searchText: label.concat(":", description, ":", metadata)
-
     property bool isEnabled: true
     property bool isExpanded: false
     property bool isTopPanel: false
@@ -28,51 +24,47 @@ Pane {
     property bool isSectionTitle: false
     property bool isVisible: true
     property bool dropShadow: true
-
     property string toolButtonIcon
     property string toolButtonToolTip
     property alias toolButton: toolButton
     property alias expandedContent: expandedContent
 
-    Layout.alignment: Qt.AlignCenter | Qt.AlignTop
-    Layout.fillWidth: true
-    Layout.minimumHeight: isExpanded ? panelHeader.height + expandedContent.height + 48 : panelHeader.height + 19
-    Layout.maximumWidth: dynamicWidth + dynamicMargin
-
-    Layout.leftMargin: -16
-    Layout.rightMargin: -16
-
-    Layout.topMargin: isExpanded && dropShadow && !isTopPanel ? 9 : -4
-    Layout.bottomMargin: isExpanded && dropShadow && !isBottomPanel ? 11 : -3
-    bottomPadding: panelDescription.lineCount > 1 ? 8 : 6
-
-    Material.background: backgroundColor
-    Material.elevation: dropShadow ? 1 : 0
-    visible: searchQuery.length > 0 ? isVisible && searchText.match(escapeRegExp(searchQuery, "i")) : isVisible
-
-    activeFocusOnTab: true
-
     function expandAction() {
-        function collapseAll() {
-            for (var i = 0; i < parent.children.length; ++i) {
-                if (!!parent.children[i] && parent.children[i].toString().startsWith("SettingsPanel")) {
-                    parent.children[i].isExpanded = false
-                }
-            }
-        }
-
         if (isEnabled) {
             if (isExpanded) {
-                isExpanded = false
+                isExpanded = false;
             } else {
-                collapseAll()
-                isExpanded = true
+                collapseAll();
+                isExpanded = true;
             }
         }
     }
 
+    function collapseAll() {
+        for (var i = 0; i < parent.children.length; ++i) {
+            if (!!parent.children[i] && parent.children[i].toString().startsWith("SettingsPanel"))
+                parent.children[i].isExpanded = false;
+
+        }
+    }
+
+    Layout.alignment: Qt.AlignCenter | Qt.AlignTop
+    Layout.fillWidth: true
+    Layout.minimumHeight: isExpanded ? panelHeader.height + expandedContent.height + 48 : panelHeader.height + 19
+    Layout.maximumWidth: dynamicWidth + dynamicMargin
+    Layout.leftMargin: -16
+    Layout.rightMargin: -16
+    Layout.topMargin: isExpanded && dropShadow && !isTopPanel ? 9 : -4
+    Layout.bottomMargin: isExpanded && dropShadow && !isBottomPanel ? 11 : -3
+    bottomPadding: panelDescription.lineCount > 1 ? 8 : 6
+    Material.background: backgroundColor
+    Material.elevation: dropShadow ? 1 : 0
+    visible: searchQuery.length > 0 ? isVisible && searchText.match(escapeRegExp(searchQuery, "i")) : isVisible
+    activeFocusOnTab: true
+
     MouseArea {
         id: panelMouseArea
+
         onClicked: expandAction()
         anchors.top: parent.top
         anchors.left: parent.left
@@ -86,19 +78,20 @@ Pane {
     }
 
     ColumnLayout {
-
         anchors.horizontalCenter: parent.horizontalCenter
         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         width: parent.width - dynamicMargin
         spacing: 16
 
         RowLayout {
+            id: panelHeader
+
             Layout.leftMargin: -12
             Layout.rightMargin: -24
-            id: panelHeader
 
             Rectangle {
                 id: rectangle
+
                 width: 40
                 height: 40
                 color: formHighlightItem
@@ -107,8 +100,10 @@ Pane {
                 Layout.rightMargin: 8
                 Layout.topMargin: 0
                 Layout.bottomMargin: 6
+
                 Image {
                     id: key
+
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     sourceSize.width: 32
@@ -116,6 +111,7 @@ Pane {
                     fillMode: Image.PreserveAspectFit
                     visible: keyImage && !!yubiKey.currentDevice
                 }
+
                 StyledImage {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -125,6 +121,7 @@ Pane {
                     visible: keyImage && !key.visible
                     color: formImageOverlay
                 }
+
             }
 
             ColumnLayout {
@@ -155,8 +152,10 @@ Pane {
                     opacity: highEmphasis
                     Layout.fillWidth: true
                 }
+
                 Label {
                     id: panelDescription
+
                     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                     Layout.fillWidth: true
                     font.pixelSize: 13
@@ -170,10 +169,12 @@ Pane {
                     lineHeight: 1.1
                     visible: description
                 }
+
             }
 
             ToolButton {
                 id: expandButton
+
                 onClicked: expandAction()
                 icon.width: 24
                 icon.source: isExpanded ? "../images/up.svg" : "../images/down.svg"
@@ -181,11 +182,13 @@ Pane {
                 opacity: hovered ? fullEmphasis : lowEmphasis
                 visible: isEnabled
                 focus: true
+
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     enabled: false
                 }
+
                 ToolTip {
                     text: isExpanded ? qsTr("Show less") : qsTr("Show more")
                     delay: 1000
@@ -194,20 +197,24 @@ Pane {
                     Material.foreground: toolTipForeground
                     Material.background: toolTipBackground
                 }
+
             }
 
             ToolButton {
                 id: toolButton
+
                 icon.width: 24
                 icon.source: toolButtonIcon
                 icon.color: primaryColor
                 opacity: hovered ? fullEmphasis : lowEmphasis
                 visible: !isEnabled && !!toolButtonIcon
+
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     enabled: false
                 }
+
                 ToolTip {
                     text: toolButtonToolTip
                     delay: 1000
@@ -216,17 +223,24 @@ Pane {
                     Material.foreground: toolTipForeground
                     Material.background: toolTipBackground
                 }
+
             }
+
         }
 
         RowLayout {
             id: expandedContent
+
             visible: isExpanded
             Layout.leftMargin: -12
             Layout.rightMargin: -12
+
             ColumnLayout {
                 id: inner_space
             }
+
         }
+
     }
+
 }

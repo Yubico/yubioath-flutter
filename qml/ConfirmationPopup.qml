@@ -1,49 +1,9 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.3
-import QtQuick.Layouts 1.2
 import QtQuick.Controls.Material 2.2
+import QtQuick.Layouts 1.2
 
 Dialog {
-    padding: 16
-    margins: 0
-    spacing: 0
-    modal: true
-    focus: true
-    Overlay.modal: Rectangle {
-        color: "#66000000"
-    }
-
-    x: (parent.width - width) / 2
-    y: (parent.height - height) / 2
-    width: app.width * 0.9 > 600 ? 600 : app.width * 0.9
-
-    background: Rectangle {
-        color: defaultBackground
-        radius: 4
-    }
-
-    onClosed: {
-        navigator.focus = true
-    }
-
-    onAccepted: {
-        close()
-        if(acceptedCb) {
-            acceptedCb()
-        }
-        navigator.focus = true
-    }
-
-    onRejected: {
-        close()
-        if (cancelCb) {
-            cancelCb()
-        }
-        navigator.focus = true
-    }
-
-    Component.onCompleted: btnAccept.forceActiveFocus()
-
     property var cancelCb
     property var acceptedCb
     property bool warning: true
@@ -54,6 +14,33 @@ Dialog {
     property string description
     property string buttonCancel: qsTr("Cancel")
     property string buttonAccept: qsTr("Accept")
+
+    padding: 16
+    margins: 0
+    spacing: 0
+    modal: true
+    focus: true
+    x: (parent.width - width) / 2
+    y: (parent.height - height) / 2
+    width: app.width * 0.9 > 600 ? 600 : app.width * 0.9
+    onClosed: {
+        navigator.focus = true;
+    }
+    onAccepted: {
+        close();
+        if (acceptedCb)
+            acceptedCb();
+
+        navigator.focus = true;
+    }
+    onRejected: {
+        close();
+        if (cancelCb)
+            cancelCb();
+
+        navigator.focus = true;
+    }
+    Component.onCompleted: btnAccept.forceActiveFocus()
 
     ColumnLayout {
         width: parent.width
@@ -98,6 +85,7 @@ Dialog {
                 Layout.fillWidth: true
                 visible: message
             }
+
         }
 
         Label {
@@ -121,6 +109,7 @@ Dialog {
 
             StyledButton {
                 id: btnAccept
+
                 text: qsTr(buttonAccept)
                 enabled: true
                 critical: warning
@@ -132,6 +121,7 @@ Dialog {
 
             StyledButton {
                 id: btnCancel
+
                 text: qsTr(buttonCancel)
                 critical: warning
                 enabled: true
@@ -140,6 +130,18 @@ Dialog {
                 Keys.onReturnPressed: reject()
                 onClicked: reject()
             }
+
         }
+
     }
+
+    Overlay.modal: Rectangle {
+        color: "#66000000"
+    }
+
+    background: Rectangle {
+        color: defaultBackground
+        radius: 4
+    }
+
 }

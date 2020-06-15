@@ -1,57 +1,42 @@
+import QtGraphicalEffects 1.0
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
-import QtGraphicalEffects 1.0
+import QtQuick.Layouts 1.3
 
 Flickable {
+    id: enterPasswordViewId
 
     readonly property int dynamicWidth: 648
     readonly property int dynamicMargin: 32
-
-    id: enterPasswordViewId
-    objectName: 'enterPasswordView'
     property string title: ""
 
-    ScrollBar.vertical: ScrollBar {
-        width: 8
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        hoverEnabled: true
-        z: 2
-    }
-    boundsBehavior: Flickable.StopAtBounds
-
-    contentWidth: app.width
-
     function clear() {
-        passwordField.text = ""
-        rememberPasswordCheckBox.checked = false
+        passwordField.text = "";
+        rememberPasswordCheckBox.checked = false;
     }
 
     function validate() {
         if (passwordField.text.valueOf().length > 0) {
-            yubiKey.validate(passwordField.text,
-                             rememberPasswordCheckBox.checked, function (resp) {
-                                 if (resp.success) {
-                                     yubiKey.currentDeviceValidated = true
-                                     yubiKey.calculateAll(navigator.goToCredentials)
-                                 } else {
-                                     clear()
-                                     navigator.snackBarError(
-                                                 navigator.getErrorMessage(
-                                                     resp.error_id))
-                                     console.log("validate failed:",
-                                                 resp.error_id)
-                                     passwordField.textField.forceActiveFocus()
-                                 }
-                             })
+            yubiKey.validate(passwordField.text, rememberPasswordCheckBox.checked, function(resp) {
+                if (resp.success) {
+                    yubiKey.currentDeviceValidated = true;
+                    yubiKey.calculateAll(navigator.goToCredentials);
+                } else {
+                    clear();
+                    navigator.snackBarError(navigator.getErrorMessage(resp.error_id));
+                    console.log("validate failed:", resp.error_id);
+                    passwordField.textField.forceActiveFocus();
+                }
+            });
         }
     }
 
+    objectName: "enterPasswordView"
+    boundsBehavior: Flickable.StopAtBounds
+    contentWidth: app.width
     Component.onCompleted: {
-        passwordField.textField.forceActiveFocus()
+        passwordField.textField.forceActiveFocus();
     }
 
     ColumnLayout {
@@ -60,8 +45,7 @@ Flickable {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         spacing: 4
-        width: app.width - dynamicMargin
-               < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+        width: app.width - dynamicMargin < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
 
         Label {
             text: "Unlock YubiKey"
@@ -75,6 +59,7 @@ Flickable {
 
         StyledTextField {
             id: passwordField
+
             labelText: qsTr("Password")
             echoMode: TextInput.Password
             Keys.onEnterPressed: validate()
@@ -86,8 +71,9 @@ Flickable {
         }
 
         StyledCheckBox {
-            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             id: rememberPasswordCheckBox
+
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             text: qsTr("Remember password")
             description: qsTr("Don't ask again on this device.")
             KeyNavigation.backtab: passwordField.textField
@@ -97,6 +83,7 @@ Flickable {
 
         StyledButton {
             id: unlockBtn
+
             text: qsTr("Unlock")
             toolTipText: qsTr("Unlock YubiKey")
             enabled: passwordField.text.valueOf().length > 0
@@ -105,5 +92,16 @@ Flickable {
             KeyNavigation.backtab: rememberPasswordCheckBox
             KeyNavigation.tab: passwordField.textField
         }
+
     }
+
+    ScrollBar.vertical: ScrollBar {
+        width: 8
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        hoverEnabled: true
+        z: 2
+    }
+
 }

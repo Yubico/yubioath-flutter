@@ -1,11 +1,10 @@
+import QtGraphicalEffects 1.0
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
-import QtGraphicalEffects 1.0
+import QtQuick.Layouts 1.3
 
 ColumnLayout {
-
     readonly property int dynamicWidth: 380
     readonly property int dynamicMargin: 32
 
@@ -34,12 +33,12 @@ ColumnLayout {
             color: primaryColor
             opacity: highEmphasis
         }
+
         Label {
             text: qsTr("No accounts matching your search criteria. Check your spelling and try again.")
             horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 300
-            Layout.maximumWidth: app.width - dynamicMargin
-                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+            Layout.maximumWidth: app.width - dynamicMargin < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             Layout.rowSpan: 1
             lineHeight: 1.1
             wrapMode: Text.WordWrap
@@ -48,5 +47,7 @@ ColumnLayout {
             color: primaryColor
             opacity: lowEmphasis
         }
+
     }
+
 }

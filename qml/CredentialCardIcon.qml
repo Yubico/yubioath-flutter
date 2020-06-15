@@ -4,55 +4,34 @@ import QtQuick.Controls.Material 2.2
 import "utils.js" as Utils
 
 Rectangle {
-
-    property string letter: !!credential ? getIconLetter() : ""
-    property int size: 40
-    property var shade: isDark() ? Material.Shade200 : Material.Shade500
-    width: size
-    height: size
-    radius: width * 0.5
-    color: !!credential ? getIconColor() : primaryColor
-
     /*
       For Light Mode we are intentionally violating accessibility guidelines for the following colors:
       LightGreen, Lime, Yellow, Amber, Orange
     */
-    readonly property var iconColors: [
-        Material.color(Material.Red, shade),
-        Material.color(Material.Pink, shade),
-        Material.color(Material.Purple, shade),
-        Material.color(Material.DeepPurple, shade),
-        Material.color(Material.Indigo, shade),
-        Material.color(Material.Blue, shade),
-        Material.color(Material.LightBlue, shade),
-        Material.color(Material.Cyan, shade),
-        Material.color(Material.Teal, shade),
-        Material.color(Material.Green, shade),
-        Material.color(Material.LightGreen, shade),
-        Material.color(Material.Lime, shade),
-        Material.color(Material.Yellow, shade),
-        Material.color(Material.Amber, shade),
-        Material.color(Material.Orange, shade),
-        Material.color(Material.DeepOrange, shade),
-        Material.color(Material.Brown, shade),
-        Material.color(Material.Grey, shade),
-        Material.color(Material.BlueGrey, shade),
-    ]
-
     /*
        This is a copy of the icon color picker algorithm found in the current Android version of YA.
        See: https://github.com/Yubico/yubioath-android/blob/master/app/src/main/kotlin/com/yubico/yubioath/ui/main/IconManager.kt#L67
     */
+
+    property string letter: !!credential ? getIconLetter() : ""
+    property int size: 40
+    property var shade: isDark() ? Material.Shade200 : Material.Shade500
+    readonly property var iconColors: [Material.color(Material.Red, shade), Material.color(Material.Pink, shade), Material.color(Material.Purple, shade), Material.color(Material.DeepPurple, shade), Material.color(Material.Indigo, shade), Material.color(Material.Blue, shade), Material.color(Material.LightBlue, shade), Material.color(Material.Cyan, shade), Material.color(Material.Teal, shade), Material.color(Material.Green, shade), Material.color(Material.LightGreen, shade), Material.color(Material.Lime, shade), Material.color(Material.Yellow, shade), Material.color(Material.Amber, shade), Material.color(Material.Orange, shade), Material.color(Material.DeepOrange, shade), Material.color(Material.Brown, shade), Material.color(Material.Grey, shade), Material.color(Material.BlueGrey, shade)]
+
     function getIconColor() {
-        let iconKey = credential.issuer ? credential.issuer : ":" + credential.name
-        let hashCode = Utils.hashCode(iconKey)
-        return iconColors[Math.abs(hashCode) % iconColors.length]
+        let iconKey = credential.issuer ? credential.issuer : ":" + credential.name;
+        let hashCode = Utils.hashCode(iconKey);
+        return iconColors[Math.abs(hashCode) % iconColors.length];
     }
 
     function getIconLetter() {
-        return credential.issuer ? credential.issuer.charAt(
-                                       0) : credential.name.charAt(0)
+        return credential.issuer ? credential.issuer.charAt(0) : credential.name.charAt(0);
     }
+
+    width: size
+    height: size
+    radius: width * 0.5
+    color: !!credential ? getIconColor() : primaryColor
 
     Label {
         text: letter.toUpperCase()
@@ -62,4 +41,5 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         color: defaultElevated
     }
+
 }

@@ -1,11 +1,10 @@
+import QtGraphicalEffects 1.0
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
-import QtGraphicalEffects 1.0
+import QtQuick.Layouts 1.3
 
 ColumnLayout {
-
     property string deviceName: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : ""
     property string deviceSerial: !!yubiKey.currentDevice && !!yubiKey.currentDevice.serial ? yubiKey.currentDevice.serial : ""
     property string deviceVersion: !!yubiKey.currentDevice && !!yubiKey.currentDevice.version ? yubiKey.currentDevice.version : ""
@@ -13,21 +12,29 @@ ColumnLayout {
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
-
     width: app.width * 0.9 > 600 ? 600 : app.width * 0.9
     height: parent.height
     Layout.fillWidth: true
-
     states: [
-                State {
-                    when: app.height < 420
-                    PropertyChanges { target: detailsGrid; columns: 2 }
-                    PropertyChanges { target: addBtn; text: qsTr("Add") }
-                }
-            ]
+        State {
+            when: app.height < 420
+
+            PropertyChanges {
+                target: detailsGrid
+                columns: 2
+            }
+
+            PropertyChanges {
+                target: addBtn
+                text: qsTr("Add")
+            }
+
+        }
+    ]
 
     GridLayout {
         id: detailsGrid
+
         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         Layout.topMargin: 32
         Layout.fillWidth: true
@@ -42,6 +49,7 @@ ColumnLayout {
             radius: width * 0.5
             Layout.bottomMargin: 16
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+
             Image {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
@@ -50,6 +58,7 @@ ColumnLayout {
                 fillMode: Image.PreserveAspectFit
                 visible: parent.visible
             }
+
         }
 
         ColumnLayout {
@@ -82,6 +91,7 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 spacing: 8
                 Layout.topMargin: 16
+
                 StyledButton {
                     text: qsTr("Settings")
                     focus: true
@@ -89,8 +99,10 @@ ColumnLayout {
                     Keys.onReturnPressed: navigator.goToSettings()
                     Keys.onEnterPressed: navigator.goToSettings()
                 }
+
                 StyledButton {
                     id: addBtn
+
                     text: qsTr("Add account")
                     enabled: yubiKey.currentDeviceEnabled("OATH")
                     primary: true
@@ -99,7 +111,11 @@ ColumnLayout {
                     Keys.onReturnPressed: navigator.goToNewCredential()
                     Keys.onEnterPressed: navigator.goToNewCredential()
                 }
+
             }
+
         }
+
     }
+
 }

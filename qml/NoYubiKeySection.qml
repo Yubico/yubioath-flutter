@@ -1,17 +1,15 @@
+import QtGraphicalEffects 1.0
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
-import QtGraphicalEffects 1.0
+import QtQuick.Layouts 1.3
 
 ColumnLayout {
-
     readonly property int dynamicWidth: 600
     readonly property int dynamicMargin: 32
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
-
     height: parent.height
 
     ColumnLayout {
@@ -19,6 +17,7 @@ ColumnLayout {
 
         StyledImage {
             id: yubikeys
+
             source: "../images/ykfamily.svg"
             color: defaultImageOverlay
             iconWidth: 200
@@ -35,6 +34,7 @@ ColumnLayout {
             color: primaryColor
             opacity: highEmphasis
         }
+
     }
 
     ColumnLayout {
@@ -50,8 +50,7 @@ ColumnLayout {
             text: qsTr("Interface: CCID - Custom reader")
             visible: settings.useCustomReader
             Layout.minimumWidth: 300
-            Layout.maximumWidth: app.width - dynamicMargin
-                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+            Layout.maximumWidth: app.width - dynamicMargin < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.WordWrap
             font.pixelSize: 13
@@ -59,17 +58,20 @@ ColumnLayout {
             color: primaryColor
             opacity: lowEmphasis
         }
+
         Label {
             text: {
-                var t = yubiKey.availableReaders.filter(reader => reader.toLowerCase().includes(settings.customReaderName.toLowerCase())).toString()
+                var t = yubiKey.availableReaders.filter((reader) => {
+                    return reader.toLowerCase().includes(settings.customReaderName.toLowerCase());
+                }).toString();
                 if (t.length === 0)
-                    t = qsTr("Custom reader not found!")
-                return t
+                    t = qsTr("Custom reader not found!");
+
+                return t;
             }
             visible: settings.useCustomReader
             Layout.minimumWidth: 300
-            Layout.maximumWidth: app.width - dynamicMargin
-                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+            Layout.maximumWidth: app.width - dynamicMargin < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.WordWrap
             font.pixelSize: 13
@@ -79,7 +81,7 @@ ColumnLayout {
             maximumLineCount: 1
             elide: Text.ElideRight
         }
+
     }
 
 }
-
