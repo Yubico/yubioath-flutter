@@ -67,9 +67,30 @@ StackView {
     }
 
     function goToCredentials(force) {
-        if (currentItem.objectName !== 'credentialsView') {
-            clearAndPush(credentialsView)
-        }
+       if (yubiKey.currentDeviceEnabled("OATH")) {
+            yubiKey.calculateAll(function() {
+
+                if (currentItem.objectName !== 'enterPasswordView') {
+                    if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
+                            && !yubiKey.currentDeviceValidated) {
+                        clearAndPush(enterPasswordView)
+                        return
+                    }
+                }
+
+                if (currentItem.objectName !== 'credentialsView') {
+                    clearAndPush(credentialsView)
+                }
+
+            })
+
+       } else {
+           if (currentItem.objectName !== 'credentialsView') {
+               clearAndPush(credentialsView)
+           }
+       }
+
+
     }
 
     function goToCredentialsIfNotInSettings() {

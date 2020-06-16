@@ -264,10 +264,11 @@ Python {
                     currentDevice = availableDevices[0]
                     // If oath is enabled, do a calculate all
                     if (yubiKey.currentDeviceEnabled("OATH")) {
-                        calculateAll(navigator.goToCredentialsIfNotInSettings)
+                      //  calculateAll(navigator.goToCredentialsIfNotInSettings)
+                        calculateAll()
                     } else {
                         currentDeviceValidated = true
-                        navigator.home()
+                        //navigator.home()
                     }
                 } else {
                     // the same one but potentially updated
@@ -278,7 +279,7 @@ Python {
                 availableDevices = []
                 availableReaders = []
                 clearCurrentDeviceAndEntries()
-                navigator.home()
+               // navigator.home()
             }
             poller.running = true
         })
@@ -322,16 +323,12 @@ Python {
                 entries.updateEntries(resp.entries, function() {
                     updateNextCalculateAll()
                     currentDeviceValidated = true
-                    if (cb) {
-                        cb()
-                    }
                 })
             } else {
                 if (resp.error_id === 'access_denied') {
                     entries.clear()
                     currentDevice.hasPassword = true
                     currentDeviceValidated = false
-                    navigator.goToEnterPasswordIfNotInSettings()
                 } else if (resp.error_id === 'no_device_custom_reader') {
                     navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
                     clearCurrentDeviceAndEntries()
@@ -343,8 +340,10 @@ Python {
                     }
                 }
             }
+            if (cb) {
+                cb()
+            }
         }
-
 
        ccidCalculateAll(callback)
 

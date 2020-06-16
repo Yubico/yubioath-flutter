@@ -73,7 +73,7 @@ Flickable {
 
         function callback(resp) {
             if (resp.success) {
-                    yubiKey.calculateAll(navigator.goToCredentials)
+                    navigator.goToCredentials()
                     navigator.snackBar(qsTr("Account added"))
             } else {
                 if (resp.error_id === 'credential_already_exists') {
