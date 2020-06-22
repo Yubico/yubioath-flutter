@@ -256,6 +256,10 @@ Python {
         refreshDevices(customReaderName, function (resp) {
             if (resp.success) {
                 availableDevices = resp.devices
+                if (availableDevices.length === 0) {
+                    clearCurrentDeviceAndEntries()
+                    navigator.home()
+                }
                 // no current device, or current device is no longer available, pick a new one
                 if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
                     // new device is being loaded, clear any old device
