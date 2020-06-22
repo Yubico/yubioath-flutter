@@ -37,7 +37,6 @@ Pane {
     Layout.alignment: Qt.AlignCenter | Qt.AlignTop
     Layout.fillWidth: true
     Layout.minimumHeight: isExpanded ? panelHeader.height + expandedContent.height + 48 : panelHeader.height + 19
-    Layout.maximumWidth: dynamicWidth + dynamicMargin
 
     Layout.leftMargin: -16
     Layout.rightMargin: -16
@@ -87,7 +86,7 @@ Pane {
 
     ColumnLayout {
 
-        anchors.horizontalCenter: parent.horizontalCenter
+        x: 16
         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         width: parent.width - dynamicMargin
         spacing: 16

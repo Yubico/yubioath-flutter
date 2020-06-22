@@ -26,6 +26,7 @@ Flickable {
         z: 2
     }
 
+    width: app.width
     boundsBehavior: Flickable.StopAtBounds
     contentHeight: app.height-toolBar.height > content.implicitHeight + dynamicMargin
                    ? app.height-toolBar.height
@@ -72,7 +73,7 @@ Flickable {
 
         function callback(resp) {
             if (resp.success) {
-                    yubiKey.calculateAll(navigator.goToCredentials)
+                    navigator.goToCredentials()
                     navigator.snackBar(qsTr("Account added"))
             } else {
                 if (resp.error_id === 'credential_already_exists') {

@@ -13,10 +13,11 @@ ToolTip {
     property bool fullWidth: false
     readonly property int dynamicWidth: 640
     readonly property int dynamicMargin: 16
+    property int drawerWidth: drawer.visible ? drawer.width : 0
 
     id: tooltip
     timeout: 3000
-    x: (app.width - width) / 2
+    x: drawerWidth + (app.width - width) / 2
     y: app.height
     z: 2
     width: fullWidth ? app.width : app.width - dynamicMargin

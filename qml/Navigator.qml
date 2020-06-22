@@ -3,15 +3,18 @@ import QtQuick.Controls 2.2
 import "utils.js" as Utils
 
 StackView {
-    initialItem: credentialsView
+    initialItem: yubiKey.currentDeviceEnabled("OATH") ? credentialsView : yubiKeyView
+
     onCurrentItemChanged: {
         if (currentItem) {
             currentItem.forceActiveFocus()
         }
     }
+
     property bool isShowingAbout
 
     Accessible.ignored: true
+    width: app.width
 
     function clearAndPush(view) {
         clear()
@@ -24,6 +27,12 @@ StackView {
         }
     }
 
+    function goToAbout() {
+        if (currentItem.objectName !== 'yubiKeyView') {
+            push(yubiKeyView, StackView.Immediate)
+        }
+    }
+
     function goToLoading() {
         if (currentItem.objectName !== 'loadingView') {
             push(loadingView, StackView.Immediate)
@@ -32,7 +41,8 @@ StackView {
 
     function goToEnterPasswordIfNotInSettings() {
         if (currentItem.objectName !== 'enterPasswordView'
-                && currentItem.objectName !== 'settingsView') {
+                && currentItem.objectName !== 'settingsView'
+                && currentItem.objectName !== 'yubiKeyView') {
             clearAndPush(enterPasswordView, StackView.Immediate)
         }
     }
@@ -40,22 +50,48 @@ StackView {
     function home() {
         if (!!yubiKey.currentDevice) {
 
-            // If locked, prompt for password
-            if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                    && !yubiKey.currentDeviceValidated) {
-                clearAndPush(enterPasswordView)
-                return
+            if (yubiKey.currentDeviceEnabled("OATH")) {
+                // If locked, prompt for password
+                if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
+                        && !yubiKey.currentDeviceValidated) {
+                    clearAndPush(enterPasswordView)
+                    return
+                }
+                navigator.goToCredentials()
+            } else {
+                goToYubiKeyView()
             }
-            navigator.goToCredentials()
         } else {
-            clearAndPush(credentialsView)
+            clearAndPush(yubiKeyView)
         }
+
     }
 
     function goToCredentials(force) {
-        if (currentItem.objectName !== 'credentialsView') {
-            clearAndPush(credentialsView)
-        }
+       if (yubiKey.currentDeviceEnabled("OATH")) {
+            yubiKey.calculateAll(function() {
+
+                if (currentItem.objectName !== 'enterPasswordView') {
+                    if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
+                            && !yubiKey.currentDeviceValidated) {
+                        clearAndPush(enterPasswordView)
+                        return
+                    }
+                }
+
+                if (currentItem.objectName !== 'credentialsView') {
+                    clearAndPush(credentialsView)
+                }
+
+            })
+
+       } else {
+           if (currentItem.objectName !== 'credentialsView') {
+               clearAndPush(credentialsView)
+           }
+       }
+
+
     }
 
     function goToCredentialsIfNotInSettings() {
@@ -64,6 +100,14 @@ StackView {
             clearAndPush(credentialsView)
         }
     }
+
+    function goToYubiKeyView() {
+        if (currentItem.objectName !== 'yubiKeyView'
+                && currentItem.objectName !== 'yubiKeyView') {
+            clearAndPush(yubiKeyView)
+        }
+    }
+
 
     function goToNewCredential(credential) {
         if (currentItem.objectName !== 'newCredentialView') {
@@ -76,13 +120,6 @@ StackView {
     function confirm(options) {
         var popup = confirmationPopup.createObject(app, options)
         popup.open()
-    }
-
-    function about() {
-        if (!isShowingAbout) {
-            var popup = aboutPopup.createObject(app)
-            popup.open()
-        }
     }
 
     function snackBar(message) {
@@ -141,6 +178,12 @@ StackView {
     }
 
     Component {
+        id: yubiKeyView
+        YubiKeyView {
+        }
+    }
+
+    Component {
         id: newCredentialView
         NewCredentialView {
         }
@@ -161,12 +204,6 @@ StackView {
     Component {
         id: confirmationPopup
         ConfirmationPopup {
-        }
-    }
-
-    Component {
-        id: aboutPopup
-        AboutPopup {
         }
     }
 

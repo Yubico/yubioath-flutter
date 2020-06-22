@@ -21,9 +21,7 @@ ApplicationWindow {
            | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
            | Qt.WindowCloseButtonHint | Qt.WindowFullscreenButtonHint
 
-
     readonly property string yubicoGreen: isDark() ? "#b1cf77" : "#9aca3c"
-
     readonly property string yubicoWhite: "#ffffff"
     readonly property string yubicoRed: isDark() ? "#cf6679" : "#b00020"
 
@@ -31,6 +29,7 @@ ApplicationWindow {
 
     readonly property string defaultBackground: isDark() ? "#303030" : "#f7f8f9"
     readonly property string defaultElevated: isDark() ? "#383838" : "#ffffff"
+    readonly property string defaultHovered: isDark() ? "#424242" : "#eeeeee"
     readonly property string defaultImageOverlay: isDark() ? "#565656" : "#dddddd"
     readonly property string defaultForeground: isDark() ? "#fafafa" : "#565656"
 
@@ -65,6 +64,10 @@ ApplicationWindow {
 
     header: StyledToolBar {
         id: toolBar
+    }
+
+    NavigationDrawer {
+        id: drawer
     }
 
     // Don't refresh credentials when window is minimized or hidden
@@ -205,6 +208,13 @@ ApplicationWindow {
       return RegExp(string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, "|"), flags)
     }
 
+    function isCurrentObjectName(objectnames) {
+        if (!!(navigator && navigator.currentItem)) {
+            return objectnames.includes(navigator.currentItem.objectName)
+        }
+        return false
+    }
+
     function getFavoriteEntries() {
         var favs = entriesComponent.createObject(app, {
         })
@@ -265,7 +275,7 @@ ApplicationWindow {
 
     Shortcut {
         sequence: StandardKey.Italic
-        onActivated: navigator.about()
+        onActivated: navigator.goToAbout()
         context: Qt.ApplicationShortcut
     }
 

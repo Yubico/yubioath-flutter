@@ -8,13 +8,14 @@ Pane {
     id: pane
     objectName: 'credentialsView'
 
-    anchors.fill: parent
     Accessible.ignored: true
     padding: 0
     spacing: 0
 
     property string title: ""
     property string searchQuery: toolBar.searchField.text
+
+    height: app.height - toolBar.height
 
     function filteredCredentials() {
         if (entries !== null && searchQuery.length > 0) {
@@ -38,10 +39,11 @@ Pane {
 
     NoCredentialsSection {
         id: noCredentialsSection
-        visible: entries.count === 0 && (!!yubiKey.currentDevice) && yubiKey.currentDeviceValidated
+        visible: entries.count === 0 && (yubiKey.currentDeviceEnabled("OATH") && yubiKey.currentDeviceValidated)
         enabled: visible
         Accessible.ignored: true
     }
+
 
     NoResultsSection {
         id: noResultsSection
@@ -54,7 +56,8 @@ Pane {
     NoYubiKeySection {
         id: noYubiKeySection
         // Make this section the default view to show when there is errors.
-        visible: !yubiKey.availableDevices || (!credentialsSection.visible && !noResultsSection.visible && !noCredentialsSection.visible)
+        //visible: yubiKey.availableDevices.length === 0 || !yubiKey.currentDeviceEnabled("OATH")
+        visible: !credentialsSection.visible && !noResultsSection.visible && !noCredentialsSection.visible
         enabled: visible
         Accessible.ignored: true
     }
