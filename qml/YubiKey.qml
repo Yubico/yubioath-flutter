@@ -256,6 +256,10 @@ Python {
         refreshDevices(customReaderName, function (resp) {
             if (resp.success) {
                 availableDevices = resp.devices
+                if (availableDevices.length === 0) {
+                    clearCurrentDeviceAndEntries()
+                    navigator.home()
+                }
                 // no current device, or current device is no longer available, pick a new one
                 if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
                     // new device is being loaded, clear any old device
@@ -264,10 +268,9 @@ Python {
                     currentDevice = availableDevices[0]
                     // If oath is enabled, do a calculate all
                     if (yubiKey.currentDeviceEnabled("OATH")) {
-                        calculateAll(navigator.goToCredentialsIfNotInSettings)
+                        calculateAll()
                     } else {
                         currentDeviceValidated = true
-                        navigator.home()
                     }
                 } else {
                     // the same one but potentially updated
@@ -278,7 +281,6 @@ Python {
                 availableDevices = []
                 availableReaders = []
                 clearCurrentDeviceAndEntries()
-                navigator.home()
             }
             poller.running = true
         })
@@ -322,9 +324,6 @@ Python {
                 entries.updateEntries(resp.entries, function() {
                     updateNextCalculateAll()
                     currentDeviceValidated = true
-                    if (cb) {
-                        cb()
-                    }
                 })
             } else {
                 if (resp.error_id === 'access_denied') {
@@ -343,8 +342,10 @@ Python {
                     }
                 }
             }
+            if (cb) {
+                cb()
+            }
         }
-
 
        ccidCalculateAll(callback)
 
