@@ -208,6 +208,7 @@ parts:
       - qt514quickcontrols2
       - qt514svg
       - qt514graphicaleffects
+      - qtwayland5
       - libxkbcommon0
       - ttf-ubuntu-font-family
       - dmz-cursor-theme
