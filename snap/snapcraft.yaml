@@ -26,6 +26,7 @@ apps:
       QT_BASE_DIR: $SNAP/opt/qt514/
       QT_PLUGIN_PATH: $SNAP/opt/qt514/plugins/
       QML2_IMPORT_PATH: $SNAP/opt/qt514/qml/
+      DISABLE_WAYLAND: 1
     plugs:
       - desktop
       - desktop-legacy
