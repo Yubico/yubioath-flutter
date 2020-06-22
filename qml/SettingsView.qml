@@ -38,6 +38,11 @@ Flickable {
         }
 
         StyledExpansionContainer {
+
+            SettingsPanelInterfaces {}
+        }
+
+        StyledExpansionContainer {
             title: qsTr("Application")
 
             SettingsPanelAppearance {}
@@ -52,6 +57,8 @@ Flickable {
             SettingsPanelPasswordMgmt {}
             SettingsPanelResetDevice {}
         }
+
+
 
     }
 }
