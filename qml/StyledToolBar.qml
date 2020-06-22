@@ -13,6 +13,8 @@ ToolBar {
         opacity: 0.7
     }
 
+    width: app.width
+
     function getToolbarColor(isActive) {
         if (!isActive) {
             return 0
@@ -21,7 +23,6 @@ ToolBar {
         }
     }
 
-    property bool showSearch: shouldShowSearch()
     property bool showBackBtn: navigator.depth > 1 && !!navigator.currentItem
     property bool showTitleLbl: !!navigator.currentItem
                                 && !!navigator.currentItem.title
@@ -29,19 +30,23 @@ ToolBar {
     property alias addCredentialBtn: addCredentialBtn
     property alias searchField: searchField
 
-    function shouldShowSearch() {        
-        return !!(navigator.currentItem
-                  && navigator.currentItem.objectName === 'credentialsView' && entries.count > 0)
-               || !!(navigator.currentItem && navigator.currentItem.objectName === 'settingsView')
+    property string searchFieldPlaceholder: {
+        if(!!(navigator.currentItem)) {
+            switch (navigator.currentItem.objectName) {
+            case "settingsView":
+                return qsTr("Search settings")
+            case "credentialsView":
+                return entries.count > 0 ? qsTr("Search accounts") : ""
+            default:
+                return ""
+            }
+        }
+        return ""
     }
 
     function shouldShowSettings() {
         return !!(navigator.currentItem && navigator.currentItem.objectName !== 'settingsView'
                   && navigator.currentItem.objectName !== 'newCredentialView')
-    }
-
-    function shouldShowInfo() {
-        return !!(navigator.currentItem && navigator.currentItem.objectName === 'settingsView')
     }
 
     function shouldShowCredentialOptions() {
@@ -62,7 +67,7 @@ ToolBar {
 
         ToolButton {
             id: backBtn
-            visible: showBackBtn
+            visible: isCurrentObjectName('newCredentialView')
             onClicked: navigator.home()
             icon.source: "../images/back.svg"
             icon.color: primaryColor
@@ -77,11 +82,11 @@ ToolBar {
         ToolButton {
             id: moreBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            visible: !backBtn.visible && shouldShowSettings()
+            visible: !isCurrentObjectName('newCredentialView')
 
-            onClicked: navigator.goToSettings()
-            Keys.onReturnPressed: navigator.goToSettings()
-            Keys.onEnterPressed: navigator.goToSettings()
+            onClicked: drawer.toggle()
+            Keys.onReturnPressed: drawer.toggle()
+            Keys.onEnterPressed: drawer.toggle()
 
             KeyNavigation.left: navigator
             KeyNavigation.backtab: navigator
@@ -89,19 +94,10 @@ ToolBar {
             KeyNavigation.tab: searchField
 
             Accessible.role: Accessible.Button
-            Accessible.name: "Settings"
-            Accessible.description: "Settings button"
+            Accessible.name: "Menu"
+            Accessible.description: "Menu button"
 
-            ToolTip {
-                text: qsTr("Settings")
-                delay: 1000
-                parent: moreBtn
-                visible: parent.hovered
-                Material.foreground: toolTipForeground
-                Material.background: toolTipBackground
-            }
-
-            icon.source: "../images/more.svg"
+            icon.source: "../images/menu.svg"
             icon.color: primaryColor
             opacity: hovered ? fullEmphasis : lowEmphasis
 
@@ -129,7 +125,7 @@ ToolBar {
 
         ToolButton {
             id: searchBtn
-            visible: showSearch
+            visible: searchField.placeholderText != ""
             Layout.minimumHeight: 30
             Layout.maximumHeight: 30
             Layout.fillWidth: true
@@ -143,14 +139,12 @@ ToolBar {
 
             TextField {
                 id: searchField
-                visible: showSearch
+                visible: parent.visible
                 selectByMouse: true
                 selectedTextColor: defaultBackground
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                placeholderText: !!(navigator.currentItem && navigator.currentItem.objectName !== 'settingsView')
-                                 ? qsTr("Search accounts")
-                                 : qsTr("Search settings")
+                placeholderText: searchFieldPlaceholder
                 placeholderTextColor: isDark() ? "#B7B7B7" : "#767676"
                 leftPadding: 28
                 rightPadding: 8
@@ -334,48 +328,10 @@ ToolBar {
             }
 
             ToolButton {
-                id: infoBtn
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: shouldShowInfo()
-                onClicked: navigator.about()
-
-                Keys.onReturnPressed: navigator.about()
-                Keys.onEnterPressed: navigator.about()
-
-                KeyNavigation.left: backBtn
-                KeyNavigation.backtab: backBtn
-                KeyNavigation.right: navigator
-                KeyNavigation.tab: navigator
-
-                Accessible.role: Accessible.Button
-                Accessible.name: "Info"
-                Accessible.description: "Information"
-
-                ToolTip {
-                    text: qsTr("Information")
-                    delay: 1000
-                    parent: infoBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: "../images/info.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                }
-            }
-
-
-            ToolButton {
                 id: addCredentialBtn
                 visible: !!yubiKey.currentDevice
                          && yubiKey.currentDeviceValidated
+                         && yubiKey.currentDeviceEnabled("OATH")
                          && navigator.currentItem
                          && navigator.currentItem.objectName === 'credentialsView'
 

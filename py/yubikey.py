@@ -243,6 +243,12 @@ class Controller(object):
                 else:
                     version = ""
 
+                try:
+                    controller = OathController(dev.driver)
+                    dev.has_password = controller.locked
+                except Exception as e:
+                    logger.debug("Could not read out password for oath")
+
                 if serial not in handled_serials:
                     handled_serials.add(serial)
 
@@ -290,7 +296,7 @@ class Controller(object):
             'canWriteConfig': dev.can_write_config,
             'configurationLocked': dev.config.configuration_locked,
             'formFactor': dev.config.form_factor,
-            'hasPassword': False, # Could be true but we dont know yet
+            'hasPassword': dev.has_password or False,
             'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey")
        }
 
@@ -300,6 +306,13 @@ class Controller(object):
         if reader_filter:
             self._reader_filter = reader_filter
             dev = self._get_dev_from_reader()
+
+            try:
+                controller = OathController(dev.driver)
+                dev.has_password = controller.locked
+            except Exception as e:
+                logger.debug("Could not read out password for oath")
+
             if dev:
                 self._devices.append(self._serialise_dev(dev))
                 return success({'devices': self._devices})

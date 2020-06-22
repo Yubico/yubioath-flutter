@@ -10,6 +10,7 @@ StyledExpansionPanel {
     description: getDeviceDescription(yubiKey.currentDevice)
     keyImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : "../images/yubikeys-large-transparent"
     isTopPanel: true
+    isBottomPanel: true
     isEnabled: yubiKey.availableDevices.length > 1
 
     function getDeviceLabel(device) {
