@@ -41,7 +41,8 @@ StackView {
 
     function goToEnterPasswordIfNotInSettings() {
         if (currentItem.objectName !== 'enterPasswordView'
-                && currentItem.objectName !== 'settingsView') {
+                && currentItem.objectName !== 'settingsView'
+                && currentItem.objectName !== 'yubiKeyView') {
             clearAndPush(enterPasswordView, StackView.Immediate)
         }
     }

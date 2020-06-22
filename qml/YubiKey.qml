@@ -329,6 +329,7 @@ Python {
                     entries.clear()
                     currentDevice.hasPassword = true
                     currentDeviceValidated = false
+                    navigator.goToEnterPasswordIfNotInSettings()
                 } else if (resp.error_id === 'no_device_custom_reader') {
                     navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
                     clearCurrentDeviceAndEntries()
