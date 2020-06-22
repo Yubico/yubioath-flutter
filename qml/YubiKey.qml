@@ -30,6 +30,20 @@ Python {
         }
     }
 
+    // Check if a application such as OATH, PIV, etc
+    // is supported on the current device.
+    function currentDeviceSupported(app) {
+        if (!!currentDevice) {
+            if (currentDevice.isNfc) {
+                return currentDevice.nfcAppSupported.includes(app)
+            } else {
+                return currentDevice.usbAppSupported.includes(app)
+            }
+        } else {
+            return false
+        }
+    }
+
     signal enableLogging(string logLevel, string logFile)
     signal disableLogging
 
@@ -164,6 +178,11 @@ Python {
         return device.name === 'YubiKey FIPS'
     }
 
+    function supportsNewInterfaces(deviceName) {
+        return isYubiKeyPreview(deviceName) || isYubiKey5Family(deviceName)
+                || isSecurityKeyByYubico(deviceName) || isSecurityKeyNfc(deviceName)
+    }
+
     function getYubiKeyImageSource(currentDevice) {
         if (isYubiKey4(currentDevice)) {
             return "../images/yk4series.png"
@@ -231,6 +250,10 @@ Python {
 
     function checkReaders(filter, cb) {
         doCall('yubikey.controller.check_readers', [filter], cb)
+    }
+
+    function setMode(connections, cb) {
+        doCall('yubikey.controller.set_mode', [connections], cb)
     }
 
     function clearCurrentDeviceAndEntries() {
@@ -387,6 +410,11 @@ Python {
 
     function refreshDevices(customReader, cb) {
         doCall('yubikey.controller.refresh_devices', [customReader], cb)
+    }
+
+    function writeConfig(usbApplications, nfcApplications, cb) {
+        doCall('yubikey.controller.write_config',
+               [usbApplications, nfcApplications], cb) // TODO: lockcode
     }
 
     function selectCurrentSerial(serial, cb) {

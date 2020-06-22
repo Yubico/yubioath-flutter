@@ -12,8 +12,8 @@ from binascii import a2b_hex, b2a_hex
 from ykman.descriptor import (
     get_descriptors, list_devices, open_device,
     FailedOpeningDeviceException, Descriptor)
-from ykman.util import (TRANSPORT, APPLICATION, parse_b32_key)
-from ykman.device import YubiKey
+from ykman.util import (TRANSPORT, APPLICATION, Mode, parse_b32_key)
+from ykman.device import YubiKey, device_config
 from ykman.driver_otp import YkpersError
 from ykman.driver_ccid import (
     APDUError, CCIDError, list_readers,
@@ -27,6 +27,7 @@ from qr import qrparse, qrdecode
 
 
 logger = logging.getLogger(__name__)
+
 
 
 def as_json(f):
@@ -167,7 +168,6 @@ class Controller(object):
     _readers = []
 
     def __init__(self):
-
         self.settings = Settings('oath')
 
         # Wrap all args and return values as JSON.
@@ -339,6 +339,33 @@ class Controller(object):
                         self._current_serial = dev['serial']
                         break
             return success({'devices': self._devices})
+
+    def write_config(self, usb_applications, nfc_applications):
+
+        usb_enabled = 0x00
+        nfc_enabled = 0x00
+        for app in usb_applications:
+            usb_enabled |= APPLICATION[app]
+        for app in nfc_applications:
+            nfc_enabled |= APPLICATION[app]
+
+        with open_device(serial=self._current_serial) as dev:
+
+            dev.write_config(
+                device_config(
+                    usb_enabled=usb_enabled,
+                    nfc_enabled=nfc_enabled,
+                    ),
+                reboot=True)
+
+            return success()
+
+    def set_mode(self, interfaces):
+        with open_device(serial=self._current_serial) as dev:
+            transports = sum([TRANSPORT[i] for i in interfaces])
+            dev.mode = Mode(transports & TRANSPORT.usb_transports())
+        return success()
+
 
     def select_current_serial(self, serial):
         self._current_serial = serial

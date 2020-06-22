@@ -346,6 +346,11 @@ ApplicationWindow {
         id: yubiKey
     }
 
+    ReInsertYubiKeyPopup {
+        id: reInsertYubiKey
+    }
+
+
     SystemTray {
         id: sysTrayIcon
     }
