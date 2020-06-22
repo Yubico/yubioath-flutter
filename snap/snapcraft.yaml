@@ -104,7 +104,7 @@ parts:
       eval "$(pyenv init -)"
       pyenv global 3.8.2
       pip3 download --no-binary :all: pyscard
-      tar -xvf pyscard*
+      tar -xvf pyscard*.tar*
       cd pyscard*
       patch setup.py ../.github/workflows/snap-pyscard-patch.patch
       pip3 install .
