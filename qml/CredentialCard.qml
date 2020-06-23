@@ -304,7 +304,8 @@ Pane {
             Label {
                 id: nameLbl
                 text: searchQuery.length > 0 ? colorizeMatch(formattedName(), searchQuery) : formattedName()
-                textFormat: TextEdit.RichText
+                textFormat: searchQuery.length > 0 ? TextEdit.RichText : TextEdit.PlainText
+                clip: true
                 Layout.maximumWidth: credentialCard.width - 106
                 font.pixelSize: 14
                 elide: Text.ElideRight
