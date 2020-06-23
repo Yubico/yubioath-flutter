@@ -10,7 +10,7 @@ Pane {
 
     default property alias children: inner_space.data
 
-    readonly property int dynamicWidth: 648
+    readonly property int dynamicWidth: 460
     readonly property int dynamicMargin: 32
 
     property string label
@@ -38,8 +38,8 @@ Pane {
     Layout.fillWidth: true
     Layout.minimumHeight: isExpanded ? panelHeader.height + expandedContent.height + 48 : panelHeader.height + 19
 
-    Layout.leftMargin: -16
-    Layout.rightMargin: -16
+    Layout.leftMargin: -12
+    Layout.rightMargin: -12
 
     Layout.topMargin: isExpanded && dropShadow && !isTopPanel ? 9 : -4
     Layout.bottomMargin: isExpanded && dropShadow && !isBottomPanel ? 11 : -3

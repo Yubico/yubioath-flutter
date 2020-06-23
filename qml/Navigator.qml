@@ -3,7 +3,7 @@ import QtQuick.Controls 2.2
 import "utils.js" as Utils
 
 StackView {
-    initialItem: yubiKey.currentDeviceEnabled("OATH") ? credentialsView : yubiKeyView
+    initialItem: credentialsView
 
     onCurrentItemChanged: {
         if (currentItem) {
