@@ -242,28 +242,38 @@ ApplicationWindow {
     }
 
     Shortcut {
+        id: shortcutToggleFavorite
+        property string description: "Toggle favorite"
         sequence: "Ctrl+D"  // This becomes Cmd + D on macOS
         enabled: !!currentCredentialCard
         onActivated: app.currentCredentialCard.toggleFavorite()
     }
 
     Shortcut {
+        id: shortcutAddAccount
+        property string description: "Add account"
         sequence: StandardKey.Open
         enabled: !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
         onActivated: navigator.goToNewCredential()
     }
 
     Shortcut {
+        id: shortcutFind
+        property string description: "Find in page"
         sequence: StandardKey.Find
         onActivated: toolBar.searchField.forceActiveFocus()
     }
 
     Shortcut {
+        id: shortcutSettings
+        property string description: "Go to settings"
         sequence: StandardKey.Preferences
         onActivated: navigator.goToSettings()
     }
 
     Shortcut {
+        id: shortcutQuit
+        property string description: "Quit application"
         sequence: StandardKey.Quit
         context: Qt.ApplicationShortcut
         onActivated: Qt.quit()
@@ -276,8 +286,10 @@ ApplicationWindow {
     }
 
     Shortcut {
+        id: shortcutInfo
+        property string description: "Go to Configure YubiKey"
         sequence: StandardKey.Italic
-        onActivated: navigator.goToAbout()
+        onActivated: navigator.goToYubiKey()
         context: Qt.ApplicationShortcut
     }
 

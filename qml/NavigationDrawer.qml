@@ -104,7 +104,7 @@ Drawer {
         NavigationItem {
             icon: "../images/yubikey-vertical.svg"
             text: "Configure YubiKey"
-            onActivated: navigator.goToAbout()
+            onActivated: navigator.goToYubiKey()
             isActive: isCurrentObjectName('yubiKeyView')
         }
         NavigationItem {
@@ -115,15 +115,9 @@ Drawer {
         }
         NavigationItem {
             icon: "../images/help.svg"
-            text: "About"
-            onActivated: navigator.confirm({
-                       "message": qsTr("Yubico Authenticator v%1").arg(appVersion),
-                       "description": qsTr("Copyright © " + Qt.formatDateTime(new Date(),"yyyy") + ", Yubico AB." +
-                                           qsTr("\n\nAll rights reserved.")),
-                       "warning": false,
-                       "buttons": false,
-                       "noicon": true
-                   })
+            text: "About/Help"
+            onActivated: navigator.goToAbout()
+            isActive: isCurrentObjectName('aboutView')
         }
     }
 }
