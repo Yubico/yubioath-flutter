@@ -21,7 +21,7 @@ StyledExpansionPanel {
         settings.useCustomReader = customReaderCheckbox.checked
         settings.customReaderName = readerFilter.text
         yubiKey.clearCurrentDeviceAndEntries()
-        yubiKey.refreshDevicesDefault()
+        yubiKey.loadDevicesUsbOuter()
         navigator.goToSettings()
         navigator.snackBar(qsTr("Interface changed"))
         isExpanded = false

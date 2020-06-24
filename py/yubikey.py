@@ -300,45 +300,43 @@ class Controller(object):
             'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey")
        }
 
-    def refresh_devices(self, reader_filter=None):
-        self._devices = []
+    def load_devices_custom_reader(self, reader_filter):
+        self._reader_filter = reader_filter
+        dev = self._get_dev_from_reader()
 
-        if reader_filter:
-            self._reader_filter = reader_filter
-            dev = self._get_dev_from_reader()
+        try:
+            controller = OathController(dev.driver)
+            dev.has_password = controller.locked
+        except Exception as e:
+            logger.debug("Could not read out password for oath")
 
-            try:
-                controller = OathController(dev.driver)
-                dev.has_password = controller.locked
-            except Exception as e:
-                logger.debug("Could not read out password for oath")
-
-            if dev:
-                self._devices.append(self._serialise_dev(dev))
-                return success({'devices': self._devices})
-            else:
-                return success({'devices': []})
-        else:
-            self._reader_filter = None
-            # Forget current serial and derived key if no descriptors
-            # Return empty list of devices
-            if not self._descs:
-                self._current_serial = None
-                self._current_derived_key = None
-                return success({'devices': []})
-
-            self._devices = self._get_devices()
-
-            # If no current serial, or current serial seems removed,
-            # select the first serial found.
-            if not self._current_serial or (
-                    self._current_serial not in [
-                        dev['serial'] for dev in self._devices]):
-                for dev in self._devices:
-                    if dev['serial']:
-                        self._current_serial = dev['serial']
-                        break
+        if dev:
+            self._devices.append(self._serialise_dev(dev))
             return success({'devices': self._devices})
+        else:
+            return success({'devices': []})
+
+    def load_devices_usb(self):
+        self._devices = []
+        # Forget current serial and derived key if no descriptors
+        # Return empty list of devices
+        if not self._descs:
+            self._current_serial = None
+            self._current_derived_key = None
+            return success({'devices': []})
+
+        self._devices = self._get_devices()
+
+        # If no current serial, or current serial seems removed,
+        # select the first serial found.
+        if not self._current_serial or (
+                self._current_serial not in [
+                    dev['serial'] for dev in self._devices]):
+            for dev in self._devices:
+                if dev['serial']:
+                    self._current_serial = dev['serial']
+                    break
+        return success({'devices': self._devices})
 
     def write_config(self, usb_applications, nfc_applications):
 

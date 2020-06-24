@@ -273,16 +273,56 @@ Python {
         })
     }
 
-    function refreshDevicesDefault() {
-        poller.running = false
-        let customReaderName = settings.useCustomReader ? settings.customReaderName : null
-        refreshDevices(customReaderName, function (resp) {
+    function loadDevicesCustomReaderOuter(cb) {
+        yubiKey.loadDevicesCustomReader(settings.customReaderName, function(resp) {
             if (resp.success) {
                 availableDevices = resp.devices
+
                 if (availableDevices.length === 0) {
                     clearCurrentDeviceAndEntries()
                     navigator.home()
                 }
+
+                // no current device, or current device is no longer available, pick a new one
+                if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
+                    // new device is being loaded, clear any old device
+                    clearCurrentDeviceAndEntries()
+                    // Just pick the first device
+                    currentDevice = availableDevices[0]
+                    // If oath is enabled, do a calculate all
+                    if (yubiKey.currentDeviceEnabled("OATH")) {
+                        calculateAll()
+                    } else {
+                        currentDeviceValidated = true
+                    }
+                } else {
+                    // the same one but potentially updated
+                    currentDevice = resp.devices.find(dev => dev.serial === currentDevice.serial)
+                }
+            } else {
+                console.log("refreshing devices failed:", resp.error_id)
+                availableReaders = []
+                clearCurrentDeviceAndEntries()
+            }
+
+            if (cb) {
+                cb()
+            }
+
+        })
+    }
+
+    function loadDevicesUsbOuter(cb) {
+
+        yubiKey.loadDevicesUsb(function (resp) {
+            if (resp.success) {
+                availableDevices = resp.devices
+
+                if (availableDevices.length === 0) {
+                    clearCurrentDeviceAndEntries()
+                    navigator.home()
+                }
+
                 // no current device, or current device is no longer available, pick a new one
                 if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
                     // new device is being loaded, clear any old device
@@ -302,18 +342,37 @@ Python {
             } else {
                 console.log("refreshing devices failed:", resp.error_id)
                 availableDevices = []
-                availableReaders = []
                 clearCurrentDeviceAndEntries()
             }
-            poller.running = true
+
+            if (cb) {
+                cb()
+            }
         })
     }
 
     function pollCustomReader() {
         if (!currentDevice) {
-            checkReaders(settings.customReaderName, callback)
-        } else if (timeToCalculateAll() && !!currentDevice && currentDeviceValidated && yubiKey.currentDeviceEnabled("OATH")) {
-            calculateAll()
+            checkReaders(settings.customReaderName, function (resp) {
+                if (resp.success) {
+                    if (resp.needToRefresh) {
+                        poller.running = false
+                        loadDevicesCustomReaderOuter(function() {
+                            poller.running = true
+                        })
+                    } else {
+                        // Nothing changed
+                   }
+                    if (timeToCalculateAll() && !!currentDevice
+                            && currentDeviceValidated && yubiKey.currentDeviceEnabled("OATH")) {
+                        calculateAll()
+                    }
+
+                } else {
+                    console.log("check descriptors failed:", resp.error_id)
+                    clearCurrentDeviceAndEntries()
+                }
+            })
         }
         refreshReaders()
     }
@@ -323,25 +382,22 @@ Python {
         checkUsbDescriptorsChanged(function (resp) {
             if (resp.success) {
                 if (resp.usbDescriptorsChanged) {
-                    refreshDevicesDefault()
+                    poller.running = false
+                    loadDevicesUsbOuter(function() {
+                        poller.running = true
+                    })
                 } else {
                     // Nothing changed
                 }
-
-                // TODO: This should be in a callback to refresh devices
                 if (timeToCalculateAll() && !!currentDevice
                         && currentDeviceValidated && yubiKey.currentDeviceEnabled("OATH")) {
                     calculateAll()
                 }
-
             } else {
                 console.log("check descriptors failed:", resp.error_id)
                 clearCurrentDeviceAndEntries()
             }
         })
-
-
-
     }
 
     function calculateAll(cb) {
@@ -366,7 +422,7 @@ Python {
                     clearCurrentDeviceAndEntries()
                     console.log("calculateAll failed:", resp.error_id)
                     if (!settings.useCustomReader) {
-                        refreshDevicesDefault()
+                        loadDevicesUsbOuter()
                     }
                 }
             }
@@ -413,8 +469,12 @@ Python {
         doCall('yubikey.controller.ccid_calculate_all', [now], cb)
     }
 
-    function refreshDevices(customReader, cb) {
-        doCall('yubikey.controller.refresh_devices', [customReader], cb)
+    function loadDevicesCustomReader(customReaderName, cb) {
+        doCall('yubikey.controller.load_devices_custom_reader', [customReaderName],  cb)
+    }
+
+    function loadDevicesUsb(cb) {
+        doCall('yubikey.controller.load_devices_usb', [],  cb)
     }
 
     function writeConfig(usbApplications, nfcApplications, cb) {
