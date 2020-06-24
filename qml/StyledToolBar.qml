@@ -33,6 +33,8 @@ ToolBar {
     property string searchFieldPlaceholder: {
         if(!!(navigator.currentItem)) {
             switch (navigator.currentItem.objectName) {
+            case "yubiKeyView":
+                return yubiKey.availableDevices.length > 0 ? qsTr("Search configuration") : ""
             case "settingsView":
                 return qsTr("Search settings")
             case "credentialsView":
@@ -64,11 +66,11 @@ ToolBar {
         visible: shouldShowToolbar()
         Layout.alignment: Qt.AlignTop
 
-
         ToolButton {
             id: backBtn
             visible: isCurrentObjectName('newCredentialView')
             onClicked: navigator.home()
+            Layout.leftMargin: 4
             icon.source: "../images/back.svg"
             icon.color: primaryColor
             opacity: hovered ? fullEmphasis : lowEmphasis
@@ -82,6 +84,7 @@ ToolBar {
         ToolButton {
             id: moreBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            Layout.leftMargin: 4
             visible: !isCurrentObjectName('newCredentialView')
 
             onClicked: drawer.toggle()

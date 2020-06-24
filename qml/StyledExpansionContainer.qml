@@ -9,7 +9,7 @@ Pane {
 
     default property alias children: inner_space.data
 
-    readonly property int dynamicWidth: 648
+    readonly property int dynamicWidth: 460
     readonly property int dynamicMargin: 32
 
     property string title
@@ -19,8 +19,8 @@ Pane {
     spacing: 0
     topPadding: 0
     bottomPadding: 0
-    Layout.topMargin: 4
-    Layout.bottomMargin: 4
+    Layout.topMargin: containerLabel.visible ? 4 : 0
+    Layout.bottomMargin: containerLabel.visible ? 4 : 0
     Layout.leftMargin: app.width > dynamicWidth ? 16 : 0
     Layout.rightMargin: app.width > dynamicWidth ? 16 : 0
 
@@ -40,6 +40,7 @@ Pane {
                 font.weight: Font.Normal
                 topPadding: 24
                 bottomPadding: 8
+                Layout.leftMargin: app.width > dynamicWidth ? -12 : 4
                 Layout.fillWidth: true
             }
         }

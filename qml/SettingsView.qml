@@ -40,24 +40,12 @@ Flickable {
         }
 
         StyledExpansionContainer {
-
-            SettingsPanelInterfaces {}
-        }
-
-        StyledExpansionContainer {
-            title: qsTr("Application")
+            title: qsTr("General")
 
             SettingsPanelAppearance {}
             SettingsPanelCustomReader {}
             SettingsPanelSystemTray {}
             SettingsPanelClearPasswords {}
-        }
-
-        StyledExpansionContainer {
-            title: qsTr("Authenticator app (OATH)")
-
-            SettingsPanelPasswordMgmt {}
-            SettingsPanelResetDevice {}
         }
     }
 }

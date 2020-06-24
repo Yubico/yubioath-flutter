@@ -7,10 +7,10 @@ import QtGraphicalEffects 1.0
 Flickable {
     id: panel
     objectName: 'yubiKeyView'
-    contentWidth: app.width - 32
+    contentWidth: app.width
     contentHeight: content.visible ? content.implicitHeight + 32 : app.height - toolBar.height
-    leftMargin: 16
-    rightMargin: 16
+    leftMargin: 0
+    rightMargin: 0
 
     readonly property int dynamicWidth: 648
     readonly property int dynamicMargin: 32
@@ -47,57 +47,115 @@ Flickable {
     ColumnLayout {
         id: content
         visible: !noYubiKeySection.visible
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        spacing: 4
-        width: app.width - dynamicMargin
-               < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+        height: deviceInfo.implicitHeight + deviceConfig.implicitHeight
+        width: parent.width
+        spacing: 0
 
-        Rectangle {
-            width: 120
-            height: 120
-            color: formHighlightItem
-            radius: width * 0.5
+        ColumnLayout {
+            id: deviceInfo
+            visible: !toolBar.searchField.text.length > 0
+            spacing: 4
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-            Image {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
-                sourceSize.width: parent.width - 20
-                source: deviceImage
-                fillMode: Image.PreserveAspectFit
-                visible: parent.visible
+            width: parent.width
+            Layout.leftMargin: 16
+            Layout.topMargin: 32
+            Layout.rightMargin: 16
+            Layout.bottomMargin: 0
+
+            Rectangle {
+                width: 120
+                height: 120
+                color: formHighlightItem
+                radius: width * 0.5
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+                Image {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    sourceSize.width: parent.width - 20
+                    source: deviceImage
+                    fillMode: Image.PreserveAspectFit
+                    visible: parent.visible
+                }
+            }
+
+            Label {
+                text: "Device information"
+                font.pixelSize: 16
+                font.weight: Font.Normal
+                lineHeight: 1.8
+                Layout.topMargin: 24
+                color: yubicoGreen
+                opacity: fullEmphasis
+            }
+            StyledTextField {
+                labelText: qsTr("Device type")
+                text: deviceName
+                visible: text.length > 0
+                enabled: false
+                noedit: true
+            }
+            StyledTextField {
+                labelText: qsTr("Firmware version")
+                text: deviceVersion
+                visible: text.length > 0
+                enabled: false
+                noedit: true
+            }
+            StyledTextField {
+                labelText: qsTr("Serial number")
+                text: deviceSerial
+                visible: text.length > 0
+                enabled: false
+                noedit: true
+            }
+
+            ToolButton {
+                id: control
+                onClicked: showDeviceConfiguration = !showDeviceConfiguration
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                icon.width: 24
+                icon.source: showDeviceConfiguration  || toolBar.searchField.text.length > 0 ? "../images/arrow-up.svg" : "../images/arrow-down.svg"
+                icon.color: primaryColor
+                opacity: hovered ? fullEmphasis : lowEmphasis
+                focus: true
+                text: "Device configuration"
+                font.capitalization: Font.MixedCase
+                font.weight: Font.Medium
+                font.pixelSize: 13
+                font.bold: false
+                rightPadding: 14
+                Layout.topMargin: 16
+                Layout.bottomMargin: 0
+                height: 32
+                Layout.maximumHeight: 32
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
             }
         }
 
-        Label {
-            text: "Device information"
-            font.pixelSize: 16
-            font.weight: Font.Normal
-            lineHeight: 1.8
-            Layout.topMargin: 24
-            color: yubicoGreen
-            opacity: fullEmphasis
-        }
-        StyledTextField {
-            labelText: qsTr("Device type")
-            text: deviceName
-            visible: text.length > 0
-            enabled: false
-            noedit: true
-        }
-        StyledTextField {
-            labelText: qsTr("Firmware version")
-            text: deviceVersion
-            visible: text.length > 0
-            enabled: false
-            noedit: true
-        }
-        StyledTextField {
-            labelText: qsTr("Serial number")
-            text: deviceSerial
-            visible: text.length > 0
-            enabled: false
-            noedit: true
+        ColumnLayout {
+            id: deviceConfig
+            visible: showDeviceConfiguration || toolBar.searchField.text.length > 0
+            spacing: 0
+            width: parent.width
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+
+            StyledExpansionContainer {
+                title: qsTr("Interfaces")
+
+                SettingsPanelInterfaces {}
+            }
+
+            StyledExpansionContainer {
+                title: qsTr("Authenticator (OATH)")
+
+                SettingsPanelPasswordMgmt {}
+                SettingsPanelResetDevice {}
+            }
         }
     }
 }

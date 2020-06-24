@@ -56,6 +56,8 @@ ApplicationWindow {
     property var currentCredentialCard
     property string iconFavorite: "#f7bd0c"
 
+    property bool showDeviceConfiguration: false
+
     Material.theme: settings.theme
     Material.primary: yubicoGreen
     Material.accent: yubicoGreen

@@ -38,7 +38,7 @@ ColumnLayout {
             opacity: highEmphasis
         }
         Label {
-            text: qsTr("Authenticator app requires a YubiKey with Smart card (CCID) interface enabled.")
+            text: qsTr("Authenticator requires a YubiKey with Smart card (CCID) interface enabled.")
             visible: yubiKey.availableDevices.length > 0 && !yubiKey.currentDeviceEnabled("OATH")
             horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 300
