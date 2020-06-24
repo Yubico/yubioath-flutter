@@ -244,7 +244,7 @@ Python {
     }
 
 
-    function checkDescriptors(cb) {
+    function checkUsbDescriptorsChanged(cb) {
         doCall('yubikey.controller.check_descriptors', [], cb)
     }
 
@@ -309,34 +309,39 @@ Python {
         })
     }
 
-    function poll() {
+    function pollCustomReader() {
+        if (!currentDevice) {
+            checkReaders(settings.customReaderName, callback)
+        } else if (timeToCalculateAll() && !!currentDevice && currentDeviceValidated && yubiKey.currentDeviceEnabled("OATH")) {
+            calculateAll()
+        }
+        refreshReaders()
+    }
 
-        function callback(resp) {
+    function pollUsb() {
+
+        checkUsbDescriptorsChanged(function (resp) {
             if (resp.success) {
-                if (resp.needToRefresh) {
+                if (resp.usbDescriptorsChanged) {
                     refreshDevicesDefault()
+                } else {
+                    // Nothing changed
                 }
+
+                // TODO: This should be in a callback to refresh devices
                 if (timeToCalculateAll() && !!currentDevice
                         && currentDeviceValidated && yubiKey.currentDeviceEnabled("OATH")) {
                     calculateAll()
                 }
+
             } else {
                 console.log("check descriptors failed:", resp.error_id)
                 clearCurrentDeviceAndEntries()
             }
-        }
+        })
 
-        if (settings.useCustomReader) {
-            if (!currentDevice) {
-                checkReaders(settings.customReaderName, callback)
-            } else if (timeToCalculateAll() && !!currentDevice
-                    && currentDeviceValidated && yubiKey.currentDeviceEnabled("OATH")) {
-                calculateAll()
-            }
-        } else {
-            checkDescriptors(callback)
-        }
-        refreshReaders()
+
+
     }
 
     function calculateAll(cb) {

@@ -203,7 +203,7 @@ class Controller(object):
 
     def check_descriptors(self):
         return success({
-            'needToRefresh': self._descriptors_changed()
+            'usbDescriptorsChanged': self._descriptors_changed()
         })
 
     def _readers_changed(self, filter):
