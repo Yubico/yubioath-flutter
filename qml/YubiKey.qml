@@ -363,11 +363,6 @@ Python {
                     } else {
                         // Nothing changed
                    }
-                    if (timeToCalculateAll() && !!currentDevice
-                            && currentDeviceValidated && yubiKey.currentDeviceEnabled("OATH")) {
-                        calculateAll()
-                    }
-
                 } else {
                     console.log("check descriptors failed:", resp.error_id)
                     clearCurrentDeviceAndEntries()
@@ -389,15 +384,14 @@ Python {
                 } else {
                     // Nothing changed
                 }
-                if (timeToCalculateAll() && !!currentDevice
-                        && currentDeviceValidated && yubiKey.currentDeviceEnabled("OATH")) {
-                    calculateAll()
-                }
+
             } else {
                 console.log("check descriptors failed:", resp.error_id)
                 clearCurrentDeviceAndEntries()
             }
         })
+
+
     }
 
     function calculateAll(cb) {

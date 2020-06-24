@@ -341,7 +341,16 @@ ApplicationWindow {
         interval: 1000
         repeat: true
         running: app.isInForeground || settings.closeToTray
-        onTriggered: settings.useCustomReader ? yubiKey.pollCustomReader() : yubiKey.pollUsb()
+        onTriggered: {
+            settings.useCustomReader ? yubiKey.pollCustomReader() : yubiKey.pollUsb()
+
+            if (yubiKey.currentDeviceEnabled("OATH")) { // TODO: check if in authenticator view as well
+                if (yubiKey.timeToCalculateAll() && yubiKey.currentDeviceValidated) {
+                    yubiKey.calculateAll()
+                }
+            }
+
+        }
     }
 
     YubiKey {
