@@ -11,14 +11,16 @@ StackView {
         }
     }
 
-    property bool isShowingAbout
-
     Accessible.ignored: true
     width: app.width
 
     function clearAndPush(view) {
         clear()
         push(view, StackView.Immediate)
+    }
+
+    function isInAuthenticator() {
+        return currentItem.objectName === 'credentialsView'
     }
 
     function goToSettings() {

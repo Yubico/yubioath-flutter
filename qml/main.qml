@@ -344,7 +344,7 @@ ApplicationWindow {
         onTriggered: {
             settings.useCustomReader ? yubiKey.pollCustomReader() : yubiKey.pollUsb()
 
-            if (yubiKey.currentDeviceEnabled("OATH")) { // TODO: check if in authenticator view as well
+            if (yubiKey.currentDeviceEnabled("OATH") && navigator.isInAuthenticator()) {
                 if (yubiKey.timeToCalculateAll() && yubiKey.currentDevice.validated) {
                     yubiKey.calculateAll()
                 }
