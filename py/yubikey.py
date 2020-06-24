@@ -296,7 +296,7 @@ class Controller(object):
             'canWriteConfig': dev.can_write_config,
             'configurationLocked': dev.config.configuration_locked,
             'formFactor': dev.config.form_factor,
-            'hasPassword': dev.has_password or False,
+            'hasPassword': dev.has_password if hasattr(dev, 'has_password') else False,
             'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey")
        }
 

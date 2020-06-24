@@ -103,7 +103,7 @@ Drawer {
         }
         NavigationItem {
             icon: "../images/yubikey-vertical.svg"
-            text: "YubiKey config."
+            text: "Configure YubiKey"
             onActivated: navigator.goToAbout()
             isActive: isCurrentObjectName('yubiKeyView')
         }
