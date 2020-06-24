@@ -39,7 +39,7 @@ Pane {
 
     NoCredentialsSection {
         id: noCredentialsSection
-        visible: entries.count === 0 && (yubiKey.currentDeviceEnabled("OATH") && yubiKey.currentDeviceValidated)
+        visible: entries.count === 0 && (yubiKey.currentDeviceEnabled("OATH") && yubiKey.currentDevice.validated)
         enabled: visible
         Accessible.ignored: true
     }
@@ -47,7 +47,7 @@ Pane {
 
     NoResultsSection {
         id: noResultsSection
-        visible: entries.count > 0 && (!!yubiKey.currentDevice && yubiKey.currentDeviceValidated)
+        visible: entries.count > 0 && (!!yubiKey.currentDevice && yubiKey.currentDevice.validated)
                  && filteredCredentials().count === 0
         enabled: visible
         Accessible.ignored: true

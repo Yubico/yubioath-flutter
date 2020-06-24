@@ -53,7 +53,7 @@ StackView {
             if (yubiKey.currentDeviceEnabled("OATH")) {
                 // If locked, prompt for password
                 if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                        && !yubiKey.currentDeviceValidated) {
+                        && !yubiKey.currentDevice.validated) {
                     clearAndPush(enterPasswordView)
                     return
                 }
@@ -73,7 +73,7 @@ StackView {
 
                 if (currentItem.objectName !== 'enterPasswordView') {
                     if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                            && !yubiKey.currentDeviceValidated) {
+                            && !yubiKey.currentDevice.validated) {
                         clearAndPush(enterPasswordView)
                         return
                     }

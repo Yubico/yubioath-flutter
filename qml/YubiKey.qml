@@ -14,7 +14,6 @@ Python {
     property var availableReaders: []
 
     property var currentDevice
-    property bool currentDeviceValidated
 
     // Check if a application such as OATH, PIV, etc
     // is enabled on the current device.
@@ -260,7 +259,6 @@ Python {
         currentDevice = null
         entries.clear()
         nextCalculateAll = -1
-        currentDeviceValidated = false
     }
 
     function refreshReaders() {
@@ -292,8 +290,6 @@ Python {
                     // If oath is enabled, do a calculate all
                     if (yubiKey.currentDeviceEnabled("OATH")) {
                         calculateAll()
-                    } else {
-                        currentDeviceValidated = true
                     }
                 } else {
                     // the same one but potentially updated
@@ -332,8 +328,6 @@ Python {
                     // If oath is enabled, do a calculate all
                     if (yubiKey.currentDeviceEnabled("OATH")) {
                         calculateAll()
-                    } else {
-                        currentDeviceValidated = true
                     }
                 } else {
                     // the same one but potentially updated
@@ -401,13 +395,13 @@ Python {
             if (resp.success) {
                 entries.updateEntries(resp.entries, function() {
                     updateNextCalculateAll()
-                    currentDeviceValidated = true
+                    currentDevice.validated = true
                 })
             } else {
                 if (resp.error_id === 'access_denied') {
                     entries.clear()
                     currentDevice.hasPassword = true
-                    currentDeviceValidated = false
+                    currentDevice.validated = false
                     navigator.goToEnterPasswordIfNotInSettings()
                 } else if (resp.error_id === 'no_device_custom_reader') {
                     navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
