@@ -29,6 +29,7 @@ SortedListModel {
         sort()
     }
 
+    // TODO: should this really have a callback?
     function updateEntries(entries, cb) {
         // Update new ones
         for (var i = 0; i < entries.length; i++) {

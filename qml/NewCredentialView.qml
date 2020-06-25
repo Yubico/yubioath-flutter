@@ -73,7 +73,7 @@ Flickable {
 
         function callback(resp) {
             if (resp.success) {
-                    navigator.goToCredentials()
+                    navigator.goToAuthenticator()
                     navigator.snackBar(qsTr("Account added"))
             } else {
                 if (resp.error_id === 'credential_already_exists') {

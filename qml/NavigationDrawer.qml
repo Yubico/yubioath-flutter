@@ -98,7 +98,7 @@ Drawer {
         NavigationItem {
             icon: "../images/people.svg"
             text: "Authenticator"
-            onActivated: navigator.goToCredentials()
+            onActivated: navigator.goToAuthenticator()
             isActive: isCurrentObjectName(['credentialsView', 'enterPasswordView', 'newCredentialView'])
         }
         NavigationItem {

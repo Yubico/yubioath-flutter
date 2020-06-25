@@ -59,7 +59,7 @@ StackView {
                     clearAndPush(enterPasswordView)
                     return
                 }
-                navigator.goToCredentials()
+                navigator.goToAuthenticator()
             } else {
                 goToYubiKeyView()
             }
@@ -69,9 +69,11 @@ StackView {
 
     }
 
-    function goToCredentials(force) {
+    function goToAuthenticator(force) {
+
        if (yubiKey.currentDeviceEnabled("OATH")) {
-            yubiKey.calculateAll(function() {
+
+            yubiKey.oathCalculateAllOuter(function() {
 
                 if (currentItem.objectName !== 'enterPasswordView') {
                     if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword

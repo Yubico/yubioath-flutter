@@ -289,7 +289,7 @@ Python {
                     currentDevice = availableDevices[0]
                     // If oath is enabled, do a calculate all
                     if (yubiKey.currentDeviceEnabled("OATH")) {
-                        calculateAll()
+                        oathCalculateAllOuter()
                     }
                 } else {
                     // the same one but potentially updated
@@ -327,7 +327,7 @@ Python {
                     currentDevice = availableDevices[0]
                     // If oath is enabled, do a calculate all
                     if (yubiKey.currentDeviceEnabled("OATH")) {
-                        calculateAll()
+                        oathCalculateAllOuter()
                     }
                 } else {
                     // the same one but potentially updated
@@ -388,10 +388,10 @@ Python {
 
     }
 
-    function calculateAll(cb) {
+    function oathCalculateAllOuter(cb) {
 
-        function callback(resp) {
 
+        oathCalculateAll(function (resp) {
             if (resp.success) {
                 entries.updateEntries(resp.entries, function() {
                     updateNextCalculateAll()
@@ -417,10 +417,7 @@ Python {
             if (cb) {
                 cb()
             }
-        }
-
-       ccidCalculateAll(callback)
-
+        })
     }
 
     function updateNextCalculateAll() {
@@ -452,7 +449,7 @@ Python {
                 && !isYubiKeyFIPS(currentDevice)
     }
 
-    function ccidCalculateAll(cb) {
+    function oathCalculateAll(cb) {
         var now = Math.floor(Date.now() / 1000)
         doCall('yubikey.controller.ccid_calculate_all', [now], cb)
     }
