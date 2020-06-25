@@ -8,8 +8,6 @@ import "utils.js" as Utils
 StyledExpansionPanel {
     label: "Interfaces"
     description: qsTr("Enable/disable active interfaces on the YubiKey")
-    isTopPanel: true
-    isEnabled: true
 
     property var newApplicationsEnabledOverUsb: []
     property var newApplicationsEnabledOverNfc: []
@@ -164,6 +162,7 @@ StyledExpansionPanel {
                     width: 8
                 }
                 RowLayout {
+                    visible: ccidButton2.visible || fidoButton2.visible || otpButton2.visible
                     spacing: 0
                     Layout.maximumWidth: 40
                     Layout.minimumWidth: 40
@@ -208,14 +207,14 @@ StyledExpansionPanel {
 
                 CheckBox {
                     id: ccidButton1
-                    visible: yubiKey.currentDevice.usbAppSupported.includes("OATH") || yubiKey.currentDevice.usbAppSupported.includes("PIV") || yubiKey.currentDevice.usbAppSupported.includes("OPGP")
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.usbAppSupported.includes("OATH") || yubiKey.currentDevice.usbAppSupported.includes("PIV") || yubiKey.currentDevice.usbAppSupported.includes("OPGP")) : ""
                     checkState: ccidBtnGrpUsb.checkState
 
                 }
 
                 CheckBox {
                     id: ccidButton2
-                    visible: yubiKey.currentDevice.nfcAppSupported.includes("OATH") || yubiKey.currentDevice.nfcAppSupported.includes("PIV") || yubiKey.currentDevice.nfcAppSupported.includes("OPGP")
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.nfcAppSupported.includes("OATH") || yubiKey.currentDevice.nfcAppSupported.includes("PIV") || yubiKey.currentDevice.nfcAppSupported.includes("OPGP")) : ""
                     checkState: ccidBtnGrpNfc.checkState
                 }
 
@@ -254,19 +253,19 @@ StyledExpansionPanel {
                 CheckBox {
                     id: ccidChild1
                     ButtonGroup.group: ccidBtnGrpUsb
-                    checked: yubiKey.currentDevice.usbAppEnabled.includes("OATH")
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbAppEnabled.includes("OATH") : ""
                     onCheckedChanged: toggleEnabledOverUsb("OATH",
                                                            checked)
 
-                    visible: yubiKey.currentDevice.usbAppSupported.includes("OATH") && expandButton.isExpanded
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.usbAppSupported.includes("OATH") && expandButton.isExpanded) : ""
 
                 }
 
                 CheckBox {
                     id: ccidChild11
                     ButtonGroup.group: ccidBtnGrpNfc
-                    visible: yubiKey.currentDevice.nfcAppSupported.includes("OATH") && expandButton.isExpanded
-                    checked: yubiKey.currentDevice.nfcAppEnabled.includes("OATH")
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.nfcAppSupported.includes("OATH") && expandButton.isExpanded) : ""
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.nfcAppEnabled.includes("OATH") : ""
                     onCheckedChanged: toggleEnabledOverNfc("OATH",
                                                            checked)
                 }
@@ -286,19 +285,19 @@ StyledExpansionPanel {
                 CheckBox {
                     id: ccidChild2
                     ButtonGroup.group: ccidBtnGrpUsb
-                    checked: yubiKey.currentDevice.usbAppEnabled.includes("PIV")
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbAppEnabled.includes("PIV") : ""
                     onCheckedChanged: toggleEnabledOverUsb("PIV",
                                                            checked)
 
-                    visible: yubiKey.currentDevice.usbAppSupported.includes("PIV") && expandButton.isExpanded
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.usbAppSupported.includes("PIV") && expandButton.isExpanded) : ""
 
                 }
 
                 CheckBox {
                     id: ccidChild21
                     ButtonGroup.group: ccidBtnGrpNfc
-                    visible: yubiKey.currentDevice.nfcAppSupported.includes("PIV") && expandButton.isExpanded
-                    checked: yubiKey.currentDevice.nfcAppEnabled.includes("PIV")
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.nfcAppSupported.includes("PIV") && expandButton.isExpanded) : ""
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.nfcAppEnabled.includes("PIV") : ""
                     onCheckedChanged: toggleEnabledOverNfc("PIV",
                                                            checked)
                 }
@@ -318,19 +317,19 @@ StyledExpansionPanel {
                 CheckBox {
                     id: ccidChild3
                     ButtonGroup.group: ccidBtnGrpUsb
-                    checked: yubiKey.currentDevice.usbAppEnabled.includes("OPGP")
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbAppEnabled.includes("OPGP") : ""
                     onCheckedChanged: toggleEnabledOverUsb("OPGP",
                                                            checked)
 
-                    visible: yubiKey.currentDevice.usbAppSupported.includes("OPGP") && expandButton.isExpanded
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.usbAppSupported.includes("OPGP") && expandButton.isExpanded) : ""
 
                 }
 
                 CheckBox {
                     id: ccidChild31
                     ButtonGroup.group: ccidBtnGrpNfc
-                    visible: yubiKey.currentDevice.nfcAppSupported.includes("OPGP") && expandButton.isExpanded
-                    checked: yubiKey.currentDevice.nfcAppEnabled.includes("OPGP")
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.nfcAppSupported.includes("OPGP") && expandButton.isExpanded) : ""
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.nfcAppEnabled.includes("OPGP") : ""
                     onCheckedChanged: toggleEnabledOverNfc("OPGP",
                                                            checked)
                 }
@@ -370,14 +369,14 @@ StyledExpansionPanel {
 
                 CheckBox {
                     id: fidoButton1
-                    visible: yubiKey.currentDevice.usbAppSupported.includes("FIDO2") || yubiKey.currentDevice.usbAppSupported.includes("U2F")
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.usbAppSupported.includes("FIDO2") || yubiKey.currentDevice.usbAppSupported.includes("U2F")) : ""
                     checkState: fidoBtnGrpUsb.checkState
 
                 }
 
                 CheckBox {
                     id: fidoButton2
-                    visible: yubiKey.currentDevice.nfcAppSupported.includes("FIDO2") || yubiKey.currentDevice.nfcAppSupported.includes("U2F")
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.nfcAppSupported.includes("FIDO2") || yubiKey.currentDevice.nfcAppSupported.includes("U2F")) : ""
                     checkState: fidoBtnGrpNfc.checkState
 
                 }
@@ -416,17 +415,17 @@ StyledExpansionPanel {
                 CheckBox {
                     id: fidoChild1
                     ButtonGroup.group: fidoBtnGrpUsb
-                    checked: yubiKey.currentDevice.usbAppEnabled.includes("FIDO2")
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbAppEnabled.includes("FIDO2") : ""
                     onCheckedChanged: toggleEnabledOverUsb("FIDO2",
                                                            checked)
-                    visible: yubiKey.currentDevice.usbAppSupported.includes("FIDO2") && expandButton2.isExpanded
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.usbAppSupported.includes("FIDO2") && expandButton2.isExpanded) : ""
                 }
 
                 CheckBox {
                     id: fidoChild11
                     ButtonGroup.group: fidoBtnGrpNfc
-                    visible: yubiKey.currentDevice.nfcAppSupported.includes("FIDO2") && expandButton2.isExpanded
-                    checked: yubiKey.currentDevice.nfcAppEnabled.includes("FIDO2")
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.nfcAppSupported.includes("FIDO2") && expandButton2.isExpanded) : ""
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.nfcAppEnabled.includes("FIDO2") : ""
                     onCheckedChanged: toggleEnabledOverNfc("FIDO2",
                                                            checked)
                 }
@@ -446,17 +445,17 @@ StyledExpansionPanel {
                 CheckBox {
                     id: fidoChild2
                     ButtonGroup.group: fidoBtnGrpUsb
-                    checked: yubiKey.currentDevice.usbAppEnabled.includes("U2F")
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbAppEnabled.includes("U2F") : ""
                     onCheckedChanged: toggleEnabledOverUsb("U2F",
                                                            checked)
-                    visible: yubiKey.currentDevice.usbAppSupported.includes("U2F") && expandButton2.isExpanded
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.usbAppSupported.includes("U2F") && expandButton2.isExpanded) : ""
                 }
 
                 CheckBox {
                     id: fidoChild21
                     ButtonGroup.group: fidoBtnGrpNfc
-                    visible: yubiKey.currentDevice.nfcAppSupported.includes("U2F") && expandButton2.isExpanded
-                    checked: yubiKey.currentDevice.nfcAppEnabled.includes("U2F")
+                    visible: !!yubiKey.currentDevice ? (yubiKey.currentDevice.nfcAppSupported.includes("U2F") && expandButton2.isExpanded) : ""
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.nfcAppEnabled.includes("U2F") : ""
                     onCheckedChanged: toggleEnabledOverNfc("U2F",
                                                            checked)
                 }
@@ -479,21 +478,21 @@ StyledExpansionPanel {
                     text: "OTP"
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     Layout.minimumWidth: 130
-                    visible: yubiKey.currentDevice.usbAppSupported.includes("OTP")
+                    visible: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbAppSupported.includes("OTP") : ""
                 }
 
                 CheckBox {
                     id: otpButton1
-                    checked: yubiKey.currentDevice.usbAppEnabled.includes("OTP")
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbAppEnabled.includes("OTP") : ""
                     onCheckedChanged: toggleEnabledOverUsb("OTP",
                                                            checked)
-                    visible: yubiKey.currentDevice.usbAppSupported.includes("OTP")
+                    visible: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbAppSupported.includes("OTP") : ""
                 }
 
                 CheckBox {
                     id: otpButton2
-                    visible: yubiKey.currentDevice.nfcAppSupported.includes("OTP")
-                    checked: yubiKey.currentDevice.nfcAppEnabled.includes("OTP")
+                    visible: !!yubiKey.currentDevice ? yubiKey.currentDevice.nfcAppSupported.includes("OTP") : ""
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.nfcAppEnabled.includes("OTP") : ""
                     onCheckedChanged: toggleEnabledOverNfc("OTP",
                                                            checked)
                 }
@@ -513,7 +512,7 @@ StyledExpansionPanel {
                 Layout.alignment: Qt.AlignRight | Qt.AlignTop
                 Layout.topMargin: 16
                 text: "Set"
-                enabled: configurationHasChanged() && validCombination()
+                enabled: !!yubiKey.currentDevice && configurationHasChanged() && validCombination()
                 onClicked: configureInterfaces()
             }
 
@@ -556,7 +555,7 @@ StyledExpansionPanel {
             }
 
             RowLayout {
-                visible: yubiKey.currentDevice.usbInterfacesSupported.includes("OTP")
+                visible: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbInterfacesSupported.includes("OTP") : ""
                 Label {
                     text: "OTP"
                     Layout.minimumWidth: 130
@@ -565,13 +564,13 @@ StyledExpansionPanel {
 
                 CheckBox {
                     id: otpModeBtn
-                    checked: yubiKey.currentDevice.usbInterfacesEnabled.includes("OTP")
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbInterfacesEnabled.includes("OTP") : ""
 
                 }
             }
 
             RowLayout {
-                visible: yubiKey.currentDevice.usbInterfacesSupported.includes("FIDO")
+                visible: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbInterfacesSupported.includes("FIDO") : ""
                 Label {
                     text: "FIDO"
                     Layout.minimumWidth: 130
@@ -580,13 +579,13 @@ StyledExpansionPanel {
 
                 CheckBox {
                     id: fidoModeBtn
-                    checked: yubiKey.currentDevice.usbInterfacesEnabled.includes("FIDO")
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbInterfacesEnabled.includes("FIDO") : ""
 
                 }
             }
 
             RowLayout {
-                visible: yubiKey.currentDevice.usbInterfacesSupported.includes("CCID")
+                visible: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbInterfacesSupported.includes("CCID") : ""
                 Label {
                     text: "CCID (smart card)"
                     Layout.minimumWidth: 130
@@ -595,7 +594,7 @@ StyledExpansionPanel {
 
                 CheckBox {
                     id: ccidModeBtn
-                    checked: yubiKey.currentDevice.usbInterfacesEnabled.includes("CCID")
+                    checked: !!yubiKey.currentDevice ? yubiKey.currentDevice.usbInterfacesEnabled.includes("CCID") : ""
 
                 }
 
@@ -605,7 +604,7 @@ StyledExpansionPanel {
                 Layout.alignment: Qt.AlignRight | Qt.AlignTop
                 text: "Set"
                 onClicked: configureModes()
-                enabled: legacyConfigurationHasChanged() && legacyValidCombination()
+                enabled: !!yubiKey.currentDevice && legacyConfigurationHasChanged() && legacyValidCombination()
             }
         }
 
