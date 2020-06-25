@@ -115,7 +115,7 @@ Drawer {
         }
         NavigationItem {
             icon: "../images/help.svg"
-            text: "About/Help"
+            text: "About"
             onActivated: navigator.goToAbout()
             isActive: isCurrentObjectName('aboutView')
         }

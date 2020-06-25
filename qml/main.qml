@@ -230,12 +230,23 @@ ApplicationWindow {
     }
 
     Shortcut {
+        id: shortcutGoToHome
+        property string description: "Go to Authenticator"
+        sequence: "Esc"
+        enabled: false
+    }
+
+    Shortcut {
+        id: shortcutCopy
+        property string description: "Copy account"
         sequence: StandardKey.Copy
         enabled: !!currentCredentialCard
         onActivated: app.currentCredentialCard.calculateCard(true)
     }
 
     Shortcut {
+        id: shortcutDelete
+        property string description: "Delete account"
         sequence: StandardKey.Delete
         enabled: !!currentCredentialCard
         onActivated: app.currentCredentialCard.deleteCard()
@@ -259,14 +270,14 @@ ApplicationWindow {
 
     Shortcut {
         id: shortcutFind
-        property string description: "Find in page"
+        property string description: "Find in page with searchbar"
         sequence: StandardKey.Find
         onActivated: toolBar.searchField.forceActiveFocus()
     }
 
     Shortcut {
         id: shortcutSettings
-        property string description: "Go to settings"
+        property string description: "Go to Settings"
         sequence: StandardKey.Preferences
         onActivated: navigator.goToSettings()
     }
@@ -280,6 +291,8 @@ ApplicationWindow {
     }
 
     Shortcut {
+        id: shortcutClose
+        property string description: "Close application window"
         sequence: StandardKey.Close
         onActivated: app.close()
         context: Qt.ApplicationShortcut
@@ -294,6 +307,8 @@ ApplicationWindow {
     }
 
     Shortcut {
+        id: shortcutFullScreen
+        property string description: "Toggle full screen"
         sequence: StandardKey.FullScreen
         onActivated: visibility = visibility
                      === Window.FullScreen ? Window.Windowed : Window.FullScreen

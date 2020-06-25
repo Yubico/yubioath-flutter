@@ -34,7 +34,6 @@ Flickable {
     ColumnLayout {
         id: content
         Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-//        height: deviceInfo.implicitHeight + deviceConfig.implicitHeight
         width: parent.width
         spacing: 0
 
@@ -73,20 +72,50 @@ Flickable {
                     isEnabled: false
                     toolButtonIcon: "../images/launch.svg"
                     toolButtonToolTip: qsTr("Launch Authenticator website")
-                    toolButton.onClicked: Qt.openUrlExternally("https://www.yubico.com/products/services-software/download/yubico-authenticator/");
+                    toolButton.onClicked: Qt.openUrlExternally("https://support.yubico.com/support/home");
                 }
 
                 StyledExpansionPanel {
                     label: qsTr("Display keyboard shortcuts")
 
                     ColumnLayout {
+                        Label {
+                            text: "Global"
+                            color: primaryColor
+                            opacity: lowEmphasis
+                            font.pixelSize: 12
+                        }
                         Repeater {
-                            model: [shortcutFind, shortcutInfo, shortcutSettings, shortcutQuit]
+                            model: [shortcutGoToHome, shortcutInfo, shortcutSettings, shortcutFind, shortcutFullScreen, shortcutClose, shortcutQuit]
 
                             RowLayout {
                                 Label {
                                     text: modelData.nativeText
                                     opacity: lowEmphasis
+                                    Layout.leftMargin: 16
+                                    Layout.minimumWidth: 40
+                                }
+                                Label {
+                                    text: modelData.description
+                                    opacity: lowEmphasis
+                                }
+                            }
+                        }
+                        Label {
+                            text: "Authenticator"
+                            color: primaryColor
+                            opacity: lowEmphasis
+                            font.pixelSize: 12
+                            Layout.topMargin: 16
+                        }
+                        Repeater {
+                            model: [shortcutAddAccount, shortcutCopy, shortcutDelete, shortcutToggleFavorite]
+
+                            RowLayout {
+                                Label {
+                                    text: modelData.nativeText
+                                    opacity: lowEmphasis
+                                    Layout.leftMargin: 16
                                     Layout.minimumWidth: 40
                                 }
                                 Label {
@@ -104,14 +133,13 @@ Flickable {
                 Layout.topMargin: 24
 
                 Label {
-                    text: qsTr("Yubico Authenticator (v5.1.0)")
+                    text: qsTr("Yubico Authenticator (v%1)").arg(appVersion)
                     font.pixelSize: 13
                     color: primaryColor
                     opacity: lowEmphasis
                 }
                 Label {
-                    text: qsTr("Copyright © " + Qt.formatDateTime(new Date(),"yyyy") + " Yubico. " +
-                               qsTr("All rights reserved."))
+                    text: qsTr("Copyright © %1 Yubico. All rights reserved.").arg(Qt.formatDateTime(new Date(),"yyyy"))
                     font.pixelSize: 13
                     color: primaryColor
                     opacity: lowEmphasis
