@@ -128,22 +128,61 @@ StyledExpansionPanel {
 
         }
         ColumnLayout {
+            spacing: 0
+
             RowLayout {
                 Text {
                     id: text
                     text: "Interface"
-                    color: "white"
-                    Layout.minimumWidth: 200
+                    color: primaryColor
+                    opacity: lowEmphasis
+                    font.pixelSize: 12
+                    Layout.minimumWidth: 100
                 }
-                Text {
-                    id: text2
-                    text: "USB"
-                    color: "white"
+                RowLayout {
+                    spacing: 0
+                    Layout.maximumWidth: 40
+                    Layout.minimumWidth: 40
+                    StyledImage {
+                        source: "../images/usb.svg"
+                        color: primaryColor
+                        opacity: lowEmphasis
+                        padding: 0
+                        iconWidth: 16
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                    }
+                    Text {
+                        id: text2
+                        text: "USB"
+                        Layout.leftMargin: -16
+                        color: primaryColor
+                        opacity: lowEmphasis
+                        font.pixelSize: 12
+                    }
                 }
-                Text {
-                    id: text3
-                    text: "NFC"
-                    color: "white"
+                Item {
+                    width: 8
+                }
+                RowLayout {
+                    spacing: 0
+                    Layout.maximumWidth: 40
+                    Layout.minimumWidth: 40
+                    StyledImage {
+                        source: "../images/nfc.svg"
+                        color: primaryColor
+                        opacity: lowEmphasis
+                        padding: 0
+                        iconWidth: 16
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                    }
+                    Text {
+                        id: text3
+                        text: "NFC"
+                        Layout.leftMargin: -16
+                        color: primaryColor
+                        opacity: lowEmphasis
+                        font.pixelSize: 12
+                    }
                 }
             }
 
@@ -151,7 +190,7 @@ StyledExpansionPanel {
                 Label {
                     visible: ccidButton1.visible
                     text: "CCID (smart card)"
-                    Layout.minimumWidth: 200
+                    Layout.minimumWidth: 130
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 }
 
@@ -168,9 +207,6 @@ StyledExpansionPanel {
                     }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: ccidButton1
                     visible: yubiKey.currentDevice.usbAppSupported.includes("OATH") || yubiKey.currentDevice.usbAppSupported.includes("PIV") || yubiKey.currentDevice.usbAppSupported.includes("OPGP")
                     checkState: ccidBtnGrpUsb.checkState
@@ -178,9 +214,6 @@ StyledExpansionPanel {
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: ccidButton2
                     visible: yubiKey.currentDevice.nfcAppSupported.includes("OATH") || yubiKey.currentDevice.nfcAppSupported.includes("PIV") || yubiKey.currentDevice.nfcAppSupported.includes("OPGP")
                     checkState: ccidBtnGrpNfc.checkState
@@ -210,7 +243,8 @@ StyledExpansionPanel {
                 Label {
                     id: ccidChild1Text
                     text: "OATH"
-                    Layout.minimumWidth: 200
+                    Layout.leftMargin: 16
+                    Layout.minimumWidth: 114
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
                     visible: expandButton.isExpanded
@@ -218,9 +252,6 @@ StyledExpansionPanel {
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: ccidChild1
                     ButtonGroup.group: ccidBtnGrpUsb
                     checked: yubiKey.currentDevice.usbAppEnabled.includes("OATH")
@@ -232,9 +263,6 @@ StyledExpansionPanel {
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: ccidChild11
                     ButtonGroup.group: ccidBtnGrpNfc
                     visible: yubiKey.currentDevice.nfcAppSupported.includes("OATH") && expandButton.isExpanded
@@ -248,16 +276,14 @@ StyledExpansionPanel {
                 Label {
                     id: ccidChild2Text
                     text: "PIV"
-                    Layout.minimumWidth: 200
+                    Layout.leftMargin: 16
+                    Layout.minimumWidth: 114
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
                     visible: expandButton.isExpanded
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: ccidChild2
                     ButtonGroup.group: ccidBtnGrpUsb
                     checked: yubiKey.currentDevice.usbAppEnabled.includes("PIV")
@@ -269,9 +295,6 @@ StyledExpansionPanel {
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: ccidChild21
                     ButtonGroup.group: ccidBtnGrpNfc
                     visible: yubiKey.currentDevice.nfcAppSupported.includes("PIV") && expandButton.isExpanded
@@ -285,16 +308,14 @@ StyledExpansionPanel {
                 Label {
                     id: ccidChild3Text
                     text: "OpenPGP"
-                    Layout.minimumWidth: 200
+                    Layout.leftMargin: 16
+                    Layout.minimumWidth: 114
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
                     visible: expandButton.isExpanded
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: ccidChild3
                     ButtonGroup.group: ccidBtnGrpUsb
                     checked: yubiKey.currentDevice.usbAppEnabled.includes("OPGP")
@@ -306,9 +327,6 @@ StyledExpansionPanel {
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: ccidChild31
                     ButtonGroup.group: ccidBtnGrpNfc
                     visible: yubiKey.currentDevice.nfcAppSupported.includes("OPGP") && expandButton.isExpanded
@@ -318,6 +336,16 @@ StyledExpansionPanel {
                 }
 
 
+            }
+
+            Label {
+                text: "The CCID interfaces includes smart card, encryption and security codes functionality."
+                color: primaryColor
+                opacity: disabledEmphasis
+                font.pixelSize: 12
+                maximumLineCount: 2
+                Layout.maximumWidth: parent.width
+                wrapMode: Text.WordWrap
             }
 
             RowLayout {
@@ -336,14 +364,11 @@ StyledExpansionPanel {
                 Label {
                     visible: fidoButton1.visible || fidoButton2.visible
                     text: "FIDO (WebAuthn)"
-                    Layout.minimumWidth: 200
+                    Layout.minimumWidth: 130
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: fidoButton1
                     visible: yubiKey.currentDevice.usbAppSupported.includes("FIDO2") || yubiKey.currentDevice.usbAppSupported.includes("U2F")
                     checkState: fidoBtnGrpUsb.checkState
@@ -351,9 +376,6 @@ StyledExpansionPanel {
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: fidoButton2
                     visible: yubiKey.currentDevice.nfcAppSupported.includes("FIDO2") || yubiKey.currentDevice.nfcAppSupported.includes("U2F")
                     checkState: fidoBtnGrpNfc.checkState
@@ -384,16 +406,14 @@ StyledExpansionPanel {
                 Label {
                     id: fidoChild1Text
                     text: "FIDO2"
-                    Layout.minimumWidth: 200
+                    Layout.leftMargin: 16
+                    Layout.minimumWidth: 114
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
                     visible: expandButton2.isExpanded
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: fidoChild1
                     ButtonGroup.group: fidoBtnGrpUsb
                     checked: yubiKey.currentDevice.usbAppEnabled.includes("FIDO2")
@@ -403,9 +423,6 @@ StyledExpansionPanel {
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: fidoChild11
                     ButtonGroup.group: fidoBtnGrpNfc
                     visible: yubiKey.currentDevice.nfcAppSupported.includes("FIDO2") && expandButton2.isExpanded
@@ -420,15 +437,13 @@ StyledExpansionPanel {
                 Label {
                     id: fidoChild2Text
                     text: "FIDO U2F"
-                    Layout.minimumWidth: 200
+                    Layout.leftMargin: 16
+                    Layout.minimumWidth: 114
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     visible: expandButton2.isExpanded
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: fidoChild2
                     ButtonGroup.group: fidoBtnGrpUsb
                     checked: yubiKey.currentDevice.usbAppEnabled.includes("U2F")
@@ -438,9 +453,6 @@ StyledExpansionPanel {
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: fidoChild21
                     ButtonGroup.group: fidoBtnGrpNfc
                     visible: yubiKey.currentDevice.nfcAppSupported.includes("U2F") && expandButton2.isExpanded
@@ -452,18 +464,25 @@ StyledExpansionPanel {
 
             }
 
+            Label {
+                text: "The FIDO protocols is used in the W3C WebAuthn standard adopte by all web browsers."
+                color: primaryColor
+                opacity: disabledEmphasis
+                font.pixelSize: 12
+                maximumLineCount: 2
+                Layout.maximumWidth: parent.width
+                wrapMode: Text.WordWrap
+            }
+
             RowLayout {
                 Label {
                     text: "OTP"
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.minimumWidth: 200
+                    Layout.minimumWidth: 130
                     visible: yubiKey.currentDevice.usbAppSupported.includes("OTP")
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: otpButton1
                     checked: yubiKey.currentDevice.usbAppEnabled.includes("OTP")
                     onCheckedChanged: toggleEnabledOverUsb("OTP",
@@ -472,20 +491,27 @@ StyledExpansionPanel {
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: otpButton2
                     visible: yubiKey.currentDevice.nfcAppSupported.includes("OTP")
                     checked: yubiKey.currentDevice.nfcAppEnabled.includes("OTP")
                     onCheckedChanged: toggleEnabledOverNfc("OTP",
                                                            checked)
-
                 }
+            }
+
+            Label {
+                text: "Protocols for one-time passwords, challenge response, static passwords etc."
+                color: primaryColor
+                opacity: disabledEmphasis
+                font.pixelSize: 12
+                maximumLineCount: 2
+                Layout.maximumWidth: parent.width
+                wrapMode: Text.WordWrap
             }
 
             StyledButton {
                 Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                Layout.topMargin: 16
                 text: "Set"
                 enabled: configurationHasChanged() && validCombination()
                 onClicked: configureInterfaces()
@@ -515,7 +541,7 @@ StyledExpansionPanel {
                     id: text4
                     text: "Interface"
                     color: "white"
-                    Layout.minimumWidth: 200
+                    Layout.minimumWidth: 130
                 }
                 Text {
                     id: text5
@@ -533,14 +559,11 @@ StyledExpansionPanel {
                 visible: yubiKey.currentDevice.usbInterfacesSupported.includes("OTP")
                 Label {
                     text: "OTP"
-                    Layout.minimumWidth: 200
+                    Layout.minimumWidth: 130
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: otpModeBtn
                     checked: yubiKey.currentDevice.usbInterfacesEnabled.includes("OTP")
 
@@ -551,14 +574,11 @@ StyledExpansionPanel {
                 visible: yubiKey.currentDevice.usbInterfacesSupported.includes("FIDO")
                 Label {
                     text: "FIDO"
-                    Layout.minimumWidth: 200
+                    Layout.minimumWidth: 130
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: fidoModeBtn
                     checked: yubiKey.currentDevice.usbInterfacesEnabled.includes("FIDO")
 
@@ -569,14 +589,11 @@ StyledExpansionPanel {
                 visible: yubiKey.currentDevice.usbInterfacesSupported.includes("CCID")
                 Label {
                     text: "CCID (smart card)"
-                    Layout.minimumWidth: 200
+                    Layout.minimumWidth: 130
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 }
 
                 CheckBox {
-                    indicator.width: 16
-                    indicator.height: 16
-
                     id: ccidModeBtn
                     checked: yubiKey.currentDevice.usbInterfacesEnabled.includes("CCID")
 
