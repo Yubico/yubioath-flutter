@@ -35,8 +35,8 @@ Flickable {
             yubiKey.validate(passwordField.text,
                              rememberPasswordCheckBox.checked, function (resp) {
                                  if (resp.success) {
-                                     yubiKey.currentDeviceValidated = true
-                                     navigator.goToCredentials()
+                                     yubiKey.currentDevice.validated = true
+                                     navigator.goToAuthenticator()
                                  } else {
                                      clear()
                                      navigator.snackBarError(

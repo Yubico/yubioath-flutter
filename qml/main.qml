@@ -249,7 +249,7 @@ ApplicationWindow {
 
     Shortcut {
         sequence: StandardKey.Open
-        enabled: !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
+        enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.validated
         onActivated: navigator.goToNewCredential()
     }
 
@@ -341,7 +341,16 @@ ApplicationWindow {
         interval: 1000
         repeat: true
         running: app.isInForeground || settings.closeToTray
-        onTriggered: yubiKey.poll()
+        onTriggered: {
+            settings.useCustomReader ? yubiKey.pollCustomReader() : yubiKey.pollUsb()
+
+            if (yubiKey.currentDeviceEnabled("OATH") && navigator.isInAuthenticator()) {
+                if (yubiKey.timeToCalculateAll() && yubiKey.currentDevice.validated) {
+                    yubiKey.oathCaluclateAll()
+                }
+            }
+
+        }
     }
 
     YubiKey {

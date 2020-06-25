@@ -24,7 +24,7 @@ StyledExpansionPanel {
                                                   entries.clear()
                                                   navigator.snackBar(
                                                               qsTr("Reset completed"))
-                                                  yubiKey.currentDeviceValidated = true
+                                                  yubiKey.currentDevice.validated = true
                                                   yubiKey.currentDevice.hasPassword = false
 
                                               } else {

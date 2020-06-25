@@ -28,7 +28,7 @@ StyledExpansionPanel {
     }
 
     function acceptableInput() {
-        if (!!yubiKey.currentDevice && yubiKey.currentDeviceValidated) {
+        if (!!yubiKey.currentDevice && yubiKey.currentDevice.validated) {
             if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
                     && currentPasswordField.text.length == 0) {
                 return false

@@ -11,14 +11,16 @@ StackView {
         }
     }
 
-    property bool isShowingAbout
-
     Accessible.ignored: true
     width: app.width
 
     function clearAndPush(view) {
         clear()
         push(view, StackView.Immediate)
+    }
+
+    function isInAuthenticator() {
+        return currentItem.objectName === 'credentialsView'
     }
 
     function goToSettings() {
@@ -53,11 +55,11 @@ StackView {
             if (yubiKey.currentDeviceEnabled("OATH")) {
                 // If locked, prompt for password
                 if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                        && !yubiKey.currentDeviceValidated) {
+                        && !yubiKey.currentDevice.validated) {
                     clearAndPush(enterPasswordView)
                     return
                 }
-                navigator.goToCredentials()
+                navigator.goToAuthenticator()
             } else {
                 goToYubiKeyView()
             }
@@ -67,13 +69,15 @@ StackView {
 
     }
 
-    function goToCredentials(force) {
+    function goToAuthenticator(force) {
+
        if (yubiKey.currentDeviceEnabled("OATH")) {
-            yubiKey.calculateAll(function() {
+
+            yubiKey.oathCalculateAllOuter(function() {
 
                 if (currentItem.objectName !== 'enterPasswordView') {
                     if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                            && !yubiKey.currentDeviceValidated) {
+                            && !yubiKey.currentDevice.validated) {
                         clearAndPush(enterPasswordView)
                         return
                     }

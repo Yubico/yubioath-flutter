@@ -67,7 +67,7 @@ StyledExpansionPanel {
                 }
             }
             onClicked: {
-                yubiKey.refreshDevicesDefault()
+                yubiKey.loadDevicesUsbOuter()
                 var dev = yubiKey.availableDevices[deviceButtonGroup.checkedButton.objectName]
                 yubiKey.selectCurrentSerial(dev.serial,
                                             function (resp) {

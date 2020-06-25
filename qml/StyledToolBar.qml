@@ -333,7 +333,7 @@ ToolBar {
             ToolButton {
                 id: addCredentialBtn
                 visible: !!yubiKey.currentDevice
-                         && yubiKey.currentDeviceValidated
+                         && yubiKey.currentDevice.validated
                          && yubiKey.currentDeviceEnabled("OATH")
                          && navigator.currentItem
                          && navigator.currentItem.objectName === 'credentialsView'
