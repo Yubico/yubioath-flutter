@@ -26,6 +26,7 @@ apps:
       QT_BASE_DIR: $SNAP/opt/qt514/
       QT_PLUGIN_PATH: $SNAP/opt/qt514/plugins/
       QML2_IMPORT_PATH: $SNAP/opt/qt514/qml/
+      DISABLE_WAYLAND: 1
     plugs:
       - desktop
       - desktop-legacy
@@ -104,7 +105,7 @@ parts:
       eval "$(pyenv init -)"
       pyenv global 3.8.2
       pip3 download --no-binary :all: pyscard
-      tar -xvf pyscard*
+      tar -xvf pyscard*.tar*
       cd pyscard*
       patch setup.py ../.github/workflows/snap-pyscard-patch.patch
       pip3 install .
@@ -208,6 +209,7 @@ parts:
       - qt514quickcontrols2
       - qt514svg
       - qt514graphicaleffects
+      - qtwayland5
       - libxkbcommon0
       - ttf-ubuntu-font-family
       - dmz-cursor-theme
