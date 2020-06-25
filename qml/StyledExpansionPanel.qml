@@ -129,7 +129,7 @@ Pane {
             ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.alignment: Qt.AlignLeft | (description ? Qt.AlignTop : Qt.AlignVCenter)
                 Layout.topMargin: 0
                 Layout.bottomMargin: 0
                 visible: label
@@ -166,7 +166,6 @@ Pane {
                     wrapMode: Text.WordWrap
                     maximumLineCount: isExpanded ? 4 : 1
                     elide: Text.ElideRight
-                    lineHeight: 1.1
                     visible: description
                 }
             }

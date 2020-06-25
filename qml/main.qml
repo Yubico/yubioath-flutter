@@ -230,58 +230,85 @@ ApplicationWindow {
     }
 
     Shortcut {
+        id: shortcutGoToHome
+        property string description: "Go to Authenticator"
+        sequence: "Esc"
+        enabled: false
+    }
+
+    Shortcut {
+        id: shortcutCopy
+        property string description: "Copy account"
         sequence: StandardKey.Copy
         enabled: !!currentCredentialCard
         onActivated: app.currentCredentialCard.calculateCard(true)
     }
 
     Shortcut {
+        id: shortcutDelete
+        property string description: "Delete account"
         sequence: StandardKey.Delete
         enabled: !!currentCredentialCard
         onActivated: app.currentCredentialCard.deleteCard()
     }
 
     Shortcut {
+        id: shortcutToggleFavorite
+        property string description: "Toggle favorite"
         sequence: "Ctrl+D"  // This becomes Cmd + D on macOS
         enabled: !!currentCredentialCard
         onActivated: app.currentCredentialCard.toggleFavorite()
     }
 
     Shortcut {
+        id: shortcutAddAccount
+        property string description: "Add account"
         sequence: StandardKey.Open
         enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.validated
         onActivated: navigator.goToNewCredential()
     }
 
     Shortcut {
+        id: shortcutFind
+        property string description: "Find in page with searchbar"
         sequence: StandardKey.Find
         onActivated: toolBar.searchField.forceActiveFocus()
     }
 
     Shortcut {
+        id: shortcutSettings
+        property string description: "Go to Settings"
         sequence: StandardKey.Preferences
         onActivated: navigator.goToSettings()
     }
 
     Shortcut {
+        id: shortcutQuit
+        property string description: "Quit application"
         sequence: StandardKey.Quit
         context: Qt.ApplicationShortcut
         onActivated: Qt.quit()
     }
 
     Shortcut {
+        id: shortcutClose
+        property string description: "Close application window"
         sequence: StandardKey.Close
         onActivated: app.close()
         context: Qt.ApplicationShortcut
     }
 
     Shortcut {
+        id: shortcutInfo
+        property string description: "Go to Configure YubiKey"
         sequence: StandardKey.Italic
-        onActivated: navigator.goToAbout()
+        onActivated: navigator.goToYubiKey()
         context: Qt.ApplicationShortcut
     }
 
     Shortcut {
+        id: shortcutFullScreen
+        property string description: "Toggle full screen"
         sequence: StandardKey.FullScreen
         onActivated: visibility = visibility
                      === Window.FullScreen ? Window.Windowed : Window.FullScreen

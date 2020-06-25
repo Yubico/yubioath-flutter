@@ -30,6 +30,12 @@ StackView {
     }
 
     function goToAbout() {
+        if (currentItem.objectName !== 'aboutView') {
+            push(aboutView, StackView.Immediate)
+        }
+    }
+
+    function goToYubiKey() {
         if (currentItem.objectName !== 'yubiKeyView') {
             push(yubiKeyView, StackView.Immediate)
         }
@@ -104,14 +110,6 @@ StackView {
             clearAndPush(credentialsView)
         }
     }
-
-    function goToYubiKeyView() {
-        if (currentItem.objectName !== 'yubiKeyView'
-                && currentItem.objectName !== 'yubiKeyView') {
-            clearAndPush(yubiKeyView)
-        }
-    }
-
 
     function goToNewCredential(credential) {
         if (currentItem.objectName !== 'newCredentialView') {
@@ -188,6 +186,12 @@ StackView {
     Component {
         id: yubiKeyView
         YubiKeyView {
+        }
+    }
+
+    Component {
+        id: aboutView
+        AboutView {
         }
     }
 

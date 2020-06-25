@@ -32,7 +32,7 @@ Pane {
         RowLayout {
             Label {
                 id: containerLabel
-                visible: inner_space.visibleChildren.length > 1
+                visible: title && inner_space.visibleChildren.length > 1
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 text: title
                 color: Material.primary
