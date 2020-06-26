@@ -373,7 +373,7 @@ ApplicationWindow {
 
             if (yubiKey.currentDeviceEnabled("OATH") && navigator.isInAuthenticator()) {
                 if (yubiKey.timeToCalculateAll() && yubiKey.currentDevice.validated) {
-                    yubiKey.oathCaluclateAll()
+                    yubiKey.oathCalculateAllOuter()
                 }
             }
 
