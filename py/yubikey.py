@@ -302,6 +302,7 @@ class Controller(object):
        }
 
     def load_devices_custom_reader(self, reader_filter):
+        self._devices = []
         self._reader_filter = reader_filter
         dev = self._get_dev_from_reader()
 
@@ -348,16 +349,26 @@ class Controller(object):
         for app in nfc_applications:
             nfc_enabled |= APPLICATION[app]
 
-        with open_device(serial=self._current_serial) as dev:
 
+        if self._reader_filter:
+            dev = self._get_dev_from_reader()
             dev.write_config(
                 device_config(
                     usb_enabled=usb_enabled,
                     nfc_enabled=nfc_enabled,
                     ),
                 reboot=True)
+        else:
 
-            return success()
+            with open_device(serial=self._current_serial) as dev:
+                dev.write_config(
+                    device_config(
+                        usb_enabled=usb_enabled,
+                        nfc_enabled=nfc_enabled,
+                        ),
+                    reboot=True)
+
+        return success()
 
     def set_mode(self, interfaces):
         with open_device(serial=self._current_serial) as dev:
