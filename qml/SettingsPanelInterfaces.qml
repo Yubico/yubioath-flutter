@@ -74,7 +74,12 @@ StyledExpansionPanel {
         yubiKey.setMode(getEnabledInterfaces(), function (resp) {
             if (resp.success) {
                 if (!yubiKey.currentDevice.canWriteConfig) {
-                    reInsertYubiKey.open()
+                    navigator.confirm({
+                                "message": qsTr("Remove and re-insert your YubiKey!"),
+                                "buttons": false,
+                                "warning": false,
+                                "closePolicy": Popup.NoAutoClose
+                                })
                 } else {
                     navigator.home()
                 }
@@ -339,7 +344,6 @@ StyledExpansionPanel {
             Layout.maximumWidth: app.width - 48
             Layout.columnSpan: gridLayout.columns
             wrapMode: Text.WordWrap
-            Component.onCompleted: console.log(parent.width + "-" + parent.width)
         }
 
         // FIDO grouping
