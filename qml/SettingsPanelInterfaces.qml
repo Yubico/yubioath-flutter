@@ -24,7 +24,11 @@ StyledExpansionPanel {
                             function (resp) {
                                 if (resp.success) {
                                     navigator.snackBar(qsTr("Configured interfaces"))
-                                    navigator.home()
+                                    if (settings.useCustomReader) {
+                                        yubiKey.loadDevicesCustomReaderOuter()
+                                    } else {
+                                        yubiKey.loadDevicesUsbOuter()
+                                    }
                                 } else {
                                     navigator.snackBarError(
                                                 navigator.getErrorMessage(
