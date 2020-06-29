@@ -172,7 +172,7 @@ StyledExpansionPanel {
             }
             Text {
                 text: "USB"
-                Layout.leftMargin: -22
+                Layout.leftMargin: -20
                 color: primaryColor
                 opacity: lowEmphasis
                 font.pixelSize: 12
@@ -183,6 +183,9 @@ StyledExpansionPanel {
             visible: ccidButton2.visible || fidoButton2.visible || otpButton2.visible
             Layout.margins: 0
             spacing: 0
+            Item {
+                width: 8
+            }
             StyledImage {
                 source: "../images/nfc.svg"
                 color: primaryColor
