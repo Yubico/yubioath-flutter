@@ -69,7 +69,7 @@ ToolBar {
         ToolButton {
             id: backBtn
             visible: isCurrentObjectName('newCredentialView')
-            onClicked: navigator.home()
+            onClicked: navigator.goToAuthenticator()
             Layout.leftMargin: 4
             icon.source: "../images/back.svg"
             icon.color: primaryColor

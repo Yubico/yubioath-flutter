@@ -83,8 +83,6 @@ StyledExpansionPanel {
             if (resp.success) {
                 if (!yubiKey.currentDevice.canWriteConfig) {
                     reInsertYubiKey.open()
-                } else {
-                    navigator.home()
                 }
             } else {
                 navigator.snackBarError(

@@ -230,13 +230,6 @@ ApplicationWindow {
     }
 
     Shortcut {
-        id: shortcutGoToHome
-        property string description: "Go to Authenticator"
-        sequence: "Esc"
-        enabled: false
-    }
-
-    Shortcut {
         id: shortcutCopy
         property string description: "Copy account"
         sequence: StandardKey.Copy

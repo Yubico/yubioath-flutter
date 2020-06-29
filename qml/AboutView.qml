@@ -25,8 +25,6 @@ Flickable {
     }
     boundsBehavior: Flickable.StopAtBounds
 
-    Keys.onEscapePressed: navigator.home()
-
     Accessible.ignored: true
 
     property string title: ""
@@ -86,7 +84,7 @@ Flickable {
                             font.pixelSize: 12
                         }
                         Repeater {
-                            model: [shortcutGoToHome, shortcutInfo, shortcutSettings, shortcutFind, shortcutFullScreen, shortcutClose, shortcutQuit]
+                            model: [shortcutInfo, shortcutSettings, shortcutFind, shortcutFullScreen, shortcutClose, shortcutQuit]
 
                             RowLayout {
                                 Label {
