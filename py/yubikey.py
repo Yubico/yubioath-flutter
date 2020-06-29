@@ -269,7 +269,7 @@ class Controller(object):
                             # try reading any missing version from it
                             descriptor = matches_all[0]
                             if descriptor.version and not dev.version:
-                                dev._desc_version = '.'.join(str(x) for x in descriptor.version)
+                                dev._desc_version = descriptor.version
                         res.append(self._serialise_dev(dev))
                         descs_to_match.remove(matches_left[0])
         return res
