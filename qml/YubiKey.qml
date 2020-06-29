@@ -278,7 +278,6 @@ Python {
 
                 if (availableDevices.length === 0) {
                     clearCurrentDeviceAndEntries()
-                    navigator.home()
                 }
 
                 // no current device, or current device is no longer available, pick a new one
@@ -316,7 +315,6 @@ Python {
 
                 if (availableDevices.length === 0) {
                     clearCurrentDeviceAndEntries()
-                    navigator.home()
                 }
 
                 // no current device, or current device is no longer available, pick a new one

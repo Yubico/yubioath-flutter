@@ -53,39 +53,23 @@ StackView {
         }
     }
 
-    function home() {
-        if (!!yubiKey.currentDevice) {
-
-            if (yubiKey.currentDeviceEnabled("OATH")) {
-                navigator.goToAuthenticator()
-            } else {
-                navigator.goToYubiKey()
-            }
-        } else {
-            clearAndPush(yubiKeyView)
-        }
-
-    }
-
     function goToAuthenticator() {
 
-       if (yubiKey.currentDeviceEnabled("OATH")) {
+        // Before navigating to Authenticator view,
+        // Make sure credentials are up to date by doing
+        // a calculate all call.
 
-            yubiKey.oathCalculateAllOuter(function() {
+        function pushAuthenticatorView() {
+            if (currentItem.objectName !== 'credentialsView') {
+                clearAndPush(credentialsView)
+            }
+        }
 
-                if (currentItem.objectName !== 'credentialsView') {
-                    clearAndPush(credentialsView)
-                }
-
-            })
-
-       } else {
-           if (currentItem.objectName !== 'credentialsView') {
-               clearAndPush(credentialsView)
-           }
-       }
-
-
+        if (yubiKey.currentDeviceEnabled("OATH")) {
+            yubiKey.oathCalculateAllOuter(pushAuthenticatorView)
+        } else {
+            pushAuthenticatorView()
+        }
     }
 
     function goToCredentialsIfNotInSettings() {

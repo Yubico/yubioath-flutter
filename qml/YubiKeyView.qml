@@ -25,7 +25,6 @@ Flickable {
     }
     boundsBehavior: Flickable.StopAtBounds
 
-    Keys.onEscapePressed: navigator.home()
 
     Accessible.ignored: true
 

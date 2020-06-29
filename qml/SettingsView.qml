@@ -24,8 +24,6 @@ Flickable {
     }
     boundsBehavior: Flickable.StopAtBounds
 
-    Keys.onEscapePressed: navigator.home()
-
     property string title: qsTr("")
 
     ColumnLayout {
