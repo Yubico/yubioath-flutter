@@ -333,10 +333,8 @@ ToolBar {
             ToolButton {
                 id: addCredentialBtn
                 visible: !!yubiKey.currentDevice
-                         && yubiKey.currentDevice.validated
                          && yubiKey.currentDeviceEnabled("OATH")
-                         && navigator.currentItem
-                         && navigator.currentItem.objectName === 'credentialsView'
+                         && navigator.isInAuthenticator()
 
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 

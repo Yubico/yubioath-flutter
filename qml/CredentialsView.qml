@@ -39,15 +39,14 @@ Pane {
 
     NoCredentialsSection {
         id: noCredentialsSection
-        visible: entries.count === 0 && (yubiKey.currentDeviceEnabled("OATH") && yubiKey.currentDevice.validated)
+        visible: entries.count === 0 && yubiKey.currentDeviceEnabled("OATH")
         enabled: visible
         Accessible.ignored: true
     }
 
-
     NoResultsSection {
         id: noResultsSection
-        visible: entries.count > 0 && (!!yubiKey.currentDevice && yubiKey.currentDevice.validated)
+        visible: entries.count > 0 && !!yubiKey.currentDevice
                  && filteredCredentials().count === 0
         enabled: visible
         Accessible.ignored: true
@@ -56,7 +55,6 @@ Pane {
     NoYubiKeySection {
         id: noYubiKeySection
         // Make this section the default view to show when there is errors.
-        //visible: yubiKey.availableDevices.length === 0 || !yubiKey.currentDeviceEnabled("OATH")
         visible: !credentialsSection.visible && !noResultsSection.visible && !noCredentialsSection.visible
         enabled: visible
         Accessible.ignored: true

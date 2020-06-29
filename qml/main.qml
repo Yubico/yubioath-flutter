@@ -264,7 +264,7 @@ ApplicationWindow {
         id: shortcutAddAccount
         property string description: "Add account"
         sequence: StandardKey.Open
-        enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.validated
+        enabled: !!yubiKey.currentDevice
         onActivated: navigator.goToNewCredential()
     }
 
@@ -372,7 +372,7 @@ ApplicationWindow {
             settings.useCustomReader ? yubiKey.pollCustomReader() : yubiKey.pollUsb()
 
             if (yubiKey.currentDeviceEnabled("OATH") && navigator.isInAuthenticator()) {
-                if (yubiKey.timeToCalculateAll() && yubiKey.currentDevice.validated) {
+                if (yubiKey.timeToCalculateAll()) {
                     yubiKey.oathCalculateAllOuter()
                 }
             }

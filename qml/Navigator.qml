@@ -20,7 +20,7 @@ StackView {
     }
 
     function isInAuthenticator() {
-        return currentItem.objectName === 'credentialsView'
+        return !!currentItem && currentItem.objectName === 'credentialsView'
     }
 
     function goToSettings() {
@@ -47,10 +47,8 @@ StackView {
         }
     }
 
-    function goToEnterPasswordIfNotInSettings() {
-        if (currentItem.objectName !== 'enterPasswordView'
-                && currentItem.objectName !== 'settingsView'
-                && currentItem.objectName !== 'yubiKeyView') {
+    function goToEnterPassword() {
+        if (currentItem.objectName !== 'enterPasswordView') {
             clearAndPush(enterPasswordView, StackView.Immediate)
         }
     }
@@ -59,15 +57,9 @@ StackView {
         if (!!yubiKey.currentDevice) {
 
             if (yubiKey.currentDeviceEnabled("OATH")) {
-                // If locked, prompt for password
-                if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                        && !yubiKey.currentDevice.validated) {
-                    clearAndPush(enterPasswordView)
-                    return
-                }
                 navigator.goToAuthenticator()
             } else {
-                goToYubiKeyView()
+                navigator.goToYubiKey()
             }
         } else {
             clearAndPush(yubiKeyView)
@@ -75,19 +67,11 @@ StackView {
 
     }
 
-    function goToAuthenticator(force) {
+    function goToAuthenticator() {
 
        if (yubiKey.currentDeviceEnabled("OATH")) {
 
             yubiKey.oathCalculateAllOuter(function() {
-
-                if (currentItem.objectName !== 'enterPasswordView') {
-                    if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                            && !yubiKey.currentDevice.validated) {
-                        clearAndPush(enterPasswordView)
-                        return
-                    }
-                }
 
                 if (currentItem.objectName !== 'credentialsView') {
                     clearAndPush(credentialsView)
