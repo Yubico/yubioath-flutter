@@ -20,7 +20,7 @@ StackView {
     }
 
     function isInAuthenticator() {
-        return currentItem.objectName === 'credentialsView'
+        return !!currentItem && currentItem.objectName === 'credentialsView'
     }
 
     function goToSettings() {
@@ -47,61 +47,29 @@ StackView {
         }
     }
 
-    function goToEnterPasswordIfNotInSettings() {
-        if (currentItem.objectName !== 'enterPasswordView'
-                && currentItem.objectName !== 'settingsView'
-                && currentItem.objectName !== 'yubiKeyView') {
+    function goToEnterPassword() {
+        if (currentItem.objectName !== 'enterPasswordView') {
             clearAndPush(enterPasswordView, StackView.Immediate)
         }
     }
 
-    function home() {
-        if (!!yubiKey.currentDevice) {
+    function goToAuthenticator() {
 
-            if (yubiKey.currentDeviceEnabled("OATH")) {
-                // If locked, prompt for password
-                if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                        && !yubiKey.currentDevice.validated) {
-                    clearAndPush(enterPasswordView)
-                    return
-                }
-                navigator.goToAuthenticator()
-            } else {
-                goToYubiKeyView()
+        // Before navigating to Authenticator view,
+        // Make sure credentials are up to date by doing
+        // a calculate all call.
+
+        function pushAuthenticatorView() {
+            if (currentItem.objectName !== 'credentialsView') {
+                clearAndPush(credentialsView)
             }
-        } else {
-            clearAndPush(yubiKeyView)
         }
 
-    }
-
-    function goToAuthenticator(force) {
-
-       if (yubiKey.currentDeviceEnabled("OATH")) {
-
-            yubiKey.oathCalculateAllOuter(function() {
-
-                if (currentItem.objectName !== 'enterPasswordView') {
-                    if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                            && !yubiKey.currentDevice.validated) {
-                        clearAndPush(enterPasswordView)
-                        return
-                    }
-                }
-
-                if (currentItem.objectName !== 'credentialsView') {
-                    clearAndPush(credentialsView)
-                }
-
-            })
-
-       } else {
-           if (currentItem.objectName !== 'credentialsView') {
-               clearAndPush(credentialsView)
-           }
-       }
-
-
+        if (yubiKey.currentDeviceEnabled("OATH")) {
+            yubiKey.oathCalculateAllOuter(pushAuthenticatorView)
+        } else {
+            pushAuthenticatorView()
+        }
     }
 
     function goToCredentialsIfNotInSettings() {

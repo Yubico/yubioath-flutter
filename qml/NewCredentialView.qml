@@ -32,7 +32,7 @@ Flickable {
                    ? app.height-toolBar.height
                    : content.implicitHeight + dynamicMargin
 
-    Keys.onEscapePressed: navigator.home()
+    Keys.onEscapePressed: navigator.goToAuthenticator()
 
     MouseArea {
         anchors.fill: parent

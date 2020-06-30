@@ -80,8 +80,6 @@ StyledExpansionPanel {
                                 "warning": false,
                                 "closePolicy": Popup.NoAutoClose
                                 })
-                } else {
-                    navigator.home()
                 }
             } else {
                 navigator.snackBarError(

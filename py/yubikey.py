@@ -298,7 +298,6 @@ class Controller(object):
             'formFactor': dev.config.form_factor,
             'hasPassword': dev.has_password if hasattr(dev, 'has_password') else False,
             'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
-            'validated': False
        }
 
     def load_devices_custom_reader(self, reader_filter):

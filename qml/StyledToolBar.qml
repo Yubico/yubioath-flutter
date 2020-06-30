@@ -69,7 +69,7 @@ ToolBar {
         ToolButton {
             id: backBtn
             visible: isCurrentObjectName('newCredentialView')
-            onClicked: navigator.home()
+            onClicked: navigator.goToAuthenticator()
             Layout.leftMargin: 4
             icon.source: "../images/back.svg"
             icon.color: primaryColor
@@ -333,10 +333,8 @@ ToolBar {
             ToolButton {
                 id: addCredentialBtn
                 visible: !!yubiKey.currentDevice
-                         && yubiKey.currentDevice.validated
                          && yubiKey.currentDeviceEnabled("OATH")
-                         && navigator.currentItem
-                         && navigator.currentItem.objectName === 'credentialsView'
+                         && navigator.isInAuthenticator()
 
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 

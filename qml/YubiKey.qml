@@ -278,7 +278,6 @@ Python {
 
                 if (availableDevices.length === 0) {
                     clearCurrentDeviceAndEntries()
-                    navigator.home()
                 }
 
                 // no current device, or current device is no longer available, pick a new one
@@ -288,7 +287,7 @@ Python {
                     // Just pick the first device
                     currentDevice = availableDevices[0]
                     // If oath is enabled, do a calculate all
-                    if (yubiKey.currentDeviceEnabled("OATH")) {
+                    if (yubiKey.currentDeviceEnabled("OATH") && navigator.isInAuthenticator()) {
                         oathCalculateAllOuter()
                     }
                 } else {
@@ -316,7 +315,6 @@ Python {
 
                 if (availableDevices.length === 0) {
                     clearCurrentDeviceAndEntries()
-                    navigator.home()
                 }
 
                 // no current device, or current device is no longer available, pick a new one
@@ -325,10 +323,12 @@ Python {
                     clearCurrentDeviceAndEntries()
                     // Just pick the first device
                     currentDevice = availableDevices[0]
-                    // If oath is enabled, do a calculate all
-                    if (yubiKey.currentDeviceEnabled("OATH")) {
-                        oathCalculateAllOuter()
+                    // If oath is enabled, do a calculate all and go to authenticator
+                    if (yubiKey.currentDeviceEnabled("OATH") && navigator.isInAuthenticator()) {
+                        navigator.goToLoading()
+                        navigator.goToAuthenticator()
                     }
+
                 } else {
                     // the same one but potentially updated
                     currentDevice = resp.devices.find(dev => dev.serial === currentDevice.serial)
@@ -395,28 +395,34 @@ Python {
             if (resp.success) {
                 entries.updateEntries(resp.entries, function() {
                     updateNextCalculateAll()
-                    currentDevice.validated = true
+                    if (cb) {
+                        cb()
+                    }
                 })
             } else {
                 if (resp.error_id === 'access_denied') {
                     entries.clear()
                     currentDevice.hasPassword = true
-                    currentDevice.validated = false
-                    navigator.goToEnterPasswordIfNotInSettings()
+                    navigator.goToEnterPassword()
+                    return
                 } else if (resp.error_id === 'no_device_custom_reader') {
                     navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
                     clearCurrentDeviceAndEntries()
+                    if (cb) {
+                        cb()
+                    }
                 } else {
                     clearCurrentDeviceAndEntries()
                     console.log("calculateAll failed:", resp.error_id)
                     if (!settings.useCustomReader) {
                         loadDevicesUsbOuter()
                     }
+                    if (cb) {
+                        cb()
+                    }
                 }
             }
-            if (cb) {
-                cb()
-            }
+
         })
     }
 
