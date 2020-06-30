@@ -99,7 +99,7 @@ Drawer {
             icon: "../images/people.svg"
             text: "Authenticator"
             onActivated: navigator.goToAuthenticator()
-            isActive: isCurrentObjectName(['credentialsView', 'enterPasswordView', 'newCredentialView'])
+            isActive: isCurrentObjectName(['authenticatorView', 'enterPasswordView', 'newCredentialView'])
         }
         NavigationItem {
             icon: "../images/yubikey-vertical.svg"

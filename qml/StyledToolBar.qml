@@ -37,7 +37,7 @@ ToolBar {
                 return yubiKey.availableDevices.length > 0 ? qsTr("Search configuration") : ""
             case "settingsView":
                 return qsTr("Search settings")
-            case "credentialsView":
+            case "authenticatorView":
                 return entries.count > 0 ? qsTr("Search accounts") : ""
             default:
                 return ""
@@ -53,7 +53,7 @@ ToolBar {
 
     function shouldShowCredentialOptions() {
         return !!(app.currentCredentialCard && navigator.currentItem
-                  && navigator.currentItem.objectName === 'credentialsView')
+                  && navigator.currentItem.objectName === 'authenticatorView')
     }
 
     function shouldShowToolbar() {
