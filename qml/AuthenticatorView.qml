@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 Pane {
     id: pane
-    objectName: 'credentialsView'
+    objectName: 'authenticatorView'
 
     Accessible.ignored: true
     padding: 0
