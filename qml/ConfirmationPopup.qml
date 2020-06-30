@@ -9,6 +9,8 @@ Dialog {
     spacing: 0
     modal: true
     focus: true
+    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
     Overlay.modal: Rectangle {
         color: "#55000000"
     }
@@ -40,6 +42,14 @@ Dialog {
             cancelCb()
         }
         navigator.focus = true
+    }
+
+    property var currentDevice: yubiKey.currentDevice
+
+    onCurrentDeviceChanged: {
+        if(closePolicy === Popup.NoAutoClose) {
+            close()
+        }
     }
 
     Component.onCompleted: btnAccept.forceActiveFocus()
@@ -74,7 +84,7 @@ Dialog {
             spacing: 0
             width: parent.width
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            Layout.bottomMargin: 16
+            Layout.bottomMargin: description ? 16 : 0
             visible: message
 
             StyledImage {
