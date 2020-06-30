@@ -23,10 +23,9 @@ ToolBar {
         }
     }
 
-    property bool showBackBtn: navigator.depth > 1 && !!navigator.currentItem
-    property bool showTitleLbl: !!navigator.currentItem
-                                && !!navigator.currentItem.title
-    property alias moreBtn: moreBtn
+    property bool showBackBtn: isCurrentObjectName('newCredentialView')
+
+    property alias drawerBtn: drawerBtn
     property alias addCredentialBtn: addCredentialBtn
     property alias searchField: searchField
 
@@ -46,11 +45,6 @@ ToolBar {
         return ""
     }
 
-    function shouldShowSettings() {
-        return !!(navigator.currentItem && navigator.currentItem.objectName !== 'settingsView'
-                  && navigator.currentItem.objectName !== 'newCredentialView')
-    }
-
     function shouldShowCredentialOptions() {
         return !!(app.currentCredentialCard && navigator.currentItem
                   && navigator.currentItem.objectName === 'authenticatorView')
@@ -68,7 +62,7 @@ ToolBar {
 
         ToolButton {
             id: backBtn
-            visible: isCurrentObjectName('newCredentialView')
+            visible: showBackBtn
             onClicked: navigator.goToAuthenticator()
             Layout.leftMargin: 4
             icon.source: "../images/back.svg"
@@ -82,7 +76,7 @@ ToolBar {
         }
 
         ToolButton {
-            id: moreBtn
+            id: drawerBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             Layout.leftMargin: 4
             visible: !isCurrentObjectName('newCredentialView')
@@ -109,21 +103,6 @@ ToolBar {
                 cursorShape: Qt.PointingHandCursor
                 enabled: false
             }
-        }
-
-        Label {
-            id: titleLbl
-            visible: showTitleLbl
-            text: showTitleLbl ? navigator.currentItem.title : ""
-            font.pixelSize: 16
-            //Layout.leftMargin: moreBtn.visible ? -32 : 0
-            Layout.leftMargin: -37
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            Layout.fillWidth: true
-            color: primaryColor
-            opacity: lowEmphasis
         }
 
         ToolButton {
@@ -214,12 +193,11 @@ ToolBar {
                         text = ""
                     }
                     focus = false
-                    Keys.forwardTo = navigator
                     navigator.forceActiveFocus()
                 }
 
-                KeyNavigation.backtab: moreBtn
-                KeyNavigation.left: moreBtn
+                KeyNavigation.backtab: drawerBtn
+                KeyNavigation.left: drawerBtn
                 KeyNavigation.tab: shouldShowCredentialOptions(
                                        ) ? copyCredentialBtn : addCredentialBtn
                 KeyNavigation.right: shouldShowCredentialOptions(

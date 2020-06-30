@@ -66,10 +66,10 @@ Flickable {
                 Layout.topMargin: 24
 
                 StyledExpansionPanel {
-                    label: qsTr("Get help with Authenticator")
+                    label: qsTr("Get help with Yubico Authenticator")
                     isEnabled: false
                     toolButtonIcon: "../images/launch.svg"
-                    toolButtonToolTip: qsTr("Launch Authenticator website")
+                    toolButtonToolTip: qsTr("Launch Yubico Authenticator website")
                     toolButton.onClicked: Qt.openUrlExternally("https://support.yubico.com/support/home");
                 }
 
@@ -84,14 +84,14 @@ Flickable {
                             font.pixelSize: 12
                         }
                         Repeater {
-                            model: [shortcutInfo, shortcutSettings, shortcutFind, shortcutFullScreen, shortcutClose, shortcutQuit]
+                            model: [shortcutGoToAuthenticator, shortcutGoToYubiKey, shortcutGoToSettings, shortcutGoToAbout, shortcutFind, shortcutFullScreen, shortcutClose, shortcutQuit]
 
                             RowLayout {
                                 Label {
                                     text: modelData.nativeText
                                     opacity: lowEmphasis
                                     Layout.leftMargin: 16
-                                    Layout.minimumWidth: 40
+                                    Layout.minimumWidth: 60
                                 }
                                 Label {
                                     text: modelData.description
@@ -114,7 +114,7 @@ Flickable {
                                     text: modelData.nativeText
                                     opacity: lowEmphasis
                                     Layout.leftMargin: 16
-                                    Layout.minimumWidth: 40
+                                    Layout.minimumWidth: 60
                                 }
                                 Label {
                                     text: modelData.description

@@ -54,7 +54,7 @@ StyledExpansionPanel {
                 }
             }
             clearPasswordFields()
-            navigator.goToSettings()
+            navigator.goToYubiKey()
         })
     }
 
@@ -73,7 +73,7 @@ StyledExpansionPanel {
                 }
             }
             clearPasswordFields()
-            navigator.goToSettings()
+            navigator.goToYubiKey()
         })
     }
 
@@ -94,13 +94,13 @@ StyledExpansionPanel {
                         }
                     }
                     clearPasswordFields()
-                    navigator.goToSettings()
+                    navigator.goToYubiKey()
                 })
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
                 console.log("remove password failed:", resp.error_id)
+                navigator.goToYubiKey()
             }
-
         })
     }
 
