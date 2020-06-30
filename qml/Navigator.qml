@@ -42,7 +42,6 @@ StackView {
         }
     }
 
-
     function goToSettings() {
         if (currentItem.objectName !== 'settingsView') {
             clearAndPush(settingsView, StackView.Immediate)
@@ -57,13 +56,13 @@ StackView {
 
     function goToYubiKey() {
         if (currentItem.objectName !== 'yubiKeyView') {
-            clearAndPush(yubiKeyView, StackView.Immediate)
+            push(yubiKeyView, StackView.Immediate)
         }
     }
 
     function goToLoading() {
         if (currentItem.objectName !== 'loadingView') {
-            clearAndPush(loadingView, StackView.Immediate)
+            push(loadingView, StackView.Immediate)
         }
     }
 

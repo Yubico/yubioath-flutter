@@ -36,7 +36,7 @@ StyledExpansionPanel {
                                                   }
                                               }
 
-                                              navigator.goToSettings()
+                                              navigator.goToYubiKey()
                                           })
                                       }
    })

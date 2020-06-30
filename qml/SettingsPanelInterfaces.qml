@@ -8,6 +8,7 @@ import "utils.js" as Utils
 StyledExpansionPanel {
     label: "Configure interfaces"
     description: qsTr("Enable/disable active interfaces on the YubiKey")
+    metadata: "ccid otp webauthn fido smart card"
 
     property var newApplicationsEnabledOverUsb: []
     property var newApplicationsEnabledOverNfc: []

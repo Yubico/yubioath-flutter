@@ -49,7 +49,7 @@ import QtGraphicalEffects 1.0
         focus: visible
         Component.onCompleted: currentIndex = -1
         KeyNavigation.backtab: toolBar.addCredentialBtn
-        KeyNavigation.tab: toolBar.moreBtn
+        KeyNavigation.tab: toolBar.drawerBtn
         KeyNavigation.up: paneScrollBar.position === 0 ? toolBar.searchField : null
         interactive: true
         highlightFollowsCurrentItem: true

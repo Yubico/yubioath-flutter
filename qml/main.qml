@@ -230,6 +230,44 @@ ApplicationWindow {
     }
 
     Shortcut {
+        id: shortcutGoToAuthenticator
+        property string description: "Go to Authenticator"
+        sequence: "Ctrl+1"
+        onActivated: navigator.goToAuthenticator()
+        context: Qt.ApplicationShortcut
+    }
+
+    Shortcut {
+        id: shortcutGoToYubiKey
+        property string description: "Go to Configure YubiKey"
+        sequence: "Ctrl+2"
+        onActivated: navigator.goToYubiKey()
+        context: Qt.ApplicationShortcut
+    }
+
+    Shortcut {
+        id: shortcutGoToSettings
+        property string description: "Go to Settings"
+        sequence: "Ctrl+3"
+        onActivated: navigator.goToSettings()
+        context: Qt.ApplicationShortcut
+    }
+
+    Shortcut {
+        sequence: StandardKey.Preferences
+        onActivated: navigator.goToSettings()
+        context: Qt.ApplicationShortcut
+    }
+
+    Shortcut {
+        id: shortcutGoToAbout
+        property string description: "Go to About"
+        sequence: "Ctrl+4"
+        onActivated: navigator.goToAbout()
+        context: Qt.ApplicationShortcut
+    }
+
+    Shortcut {
         id: shortcutCopy
         property string description: "Copy account"
         sequence: StandardKey.Copy
@@ -248,7 +286,7 @@ ApplicationWindow {
     Shortcut {
         id: shortcutToggleFavorite
         property string description: "Toggle favorite"
-        sequence: "Ctrl+D"  // This becomes Cmd + D on macOS
+        sequence: "Ctrl+D"
         enabled: !!currentCredentialCard
         onActivated: app.currentCredentialCard.toggleFavorite()
     }
@@ -269,16 +307,9 @@ ApplicationWindow {
     }
 
     Shortcut {
-        id: shortcutSettings
-        property string description: "Go to Settings"
-        sequence: StandardKey.Preferences
-        onActivated: navigator.goToSettings()
-    }
-
-    Shortcut {
         id: shortcutQuit
         property string description: "Quit application"
-        sequence: StandardKey.Quit
+        sequence: "Ctrl+Q"
         context: Qt.ApplicationShortcut
         onActivated: Qt.quit()
     }
@@ -288,14 +319,6 @@ ApplicationWindow {
         property string description: "Close application window"
         sequence: StandardKey.Close
         onActivated: app.close()
-        context: Qt.ApplicationShortcut
-    }
-
-    Shortcut {
-        id: shortcutInfo
-        property string description: "Go to Configure YubiKey"
-        sequence: StandardKey.Italic
-        onActivated: navigator.goToYubiKey()
         context: Qt.ApplicationShortcut
     }
 
