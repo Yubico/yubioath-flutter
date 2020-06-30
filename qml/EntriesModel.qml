@@ -38,11 +38,13 @@ SortedListModel {
         cb()
     }
 
-    function deleteEntry(key) {
+    function deleteEntry(key, cb) {
         for (var j = 0; j < count; j++) {
             if (get(j).credential.key === key) {
                 remove(j)
-                return
+                if (cb) {
+                    cb()
+                }
             }
         }
     }
