@@ -1,9 +1,9 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import "utils.js" as Utils
 
 StackView {
-    initialItem: credentialsView
+
+    initialItem: authenticatorView
 
     onCurrentItemChanged: {
         if (currentItem) {
@@ -20,37 +20,7 @@ StackView {
     }
 
     function isInAuthenticator() {
-        return !!currentItem && currentItem.objectName === 'credentialsView'
-    }
-
-    function goToSettings() {
-        if (currentItem.objectName !== 'settingsView') {
-            push(settingsView, StackView.Immediate)
-        }
-    }
-
-    function goToAbout() {
-        if (currentItem.objectName !== 'aboutView') {
-            push(aboutView, StackView.Immediate)
-        }
-    }
-
-    function goToYubiKey() {
-        if (currentItem.objectName !== 'yubiKeyView') {
-            push(yubiKeyView, StackView.Immediate)
-        }
-    }
-
-    function goToLoading() {
-        if (currentItem.objectName !== 'loadingView') {
-            push(loadingView, StackView.Immediate)
-        }
-    }
-
-    function goToEnterPassword() {
-        if (currentItem.objectName !== 'enterPasswordView') {
-            clearAndPush(enterPasswordView, StackView.Immediate)
-        }
+        return !!currentItem && currentItem.objectName === 'authenticatorView'
     }
 
     function goToAuthenticator() {
@@ -60,8 +30,8 @@ StackView {
         // a calculate all call.
 
         function pushAuthenticatorView() {
-            if (currentItem.objectName !== 'credentialsView') {
-                clearAndPush(credentialsView)
+            if (currentItem.objectName !== 'authenticatorView') {
+                clearAndPush(authenticatorView)
             }
         }
 
@@ -72,18 +42,40 @@ StackView {
         }
     }
 
-    function goToCredentialsIfNotInSettings() {
-        if (currentItem.objectName !== 'credentialsView'
-                && currentItem.objectName !== 'settingsView') {
-            clearAndPush(credentialsView)
+
+    function goToSettings() {
+        if (currentItem.objectName !== 'settingsView') {
+            clearAndPush(settingsView, StackView.Immediate)
+        }
+    }
+
+    function goToAbout() {
+        if (currentItem.objectName !== 'aboutView') {
+            clearAndPush(aboutView, StackView.Immediate)
+        }
+    }
+
+    function goToYubiKey() {
+        if (currentItem.objectName !== 'yubiKeyView') {
+            clearAndPush(yubiKeyView, StackView.Immediate)
+        }
+    }
+
+    function goToLoading() {
+        if (currentItem.objectName !== 'loadingView') {
+            clearAndPush(loadingView, StackView.Immediate)
+        }
+    }
+
+    function goToEnterPassword() {
+        if (currentItem.objectName !== 'enterPasswordView') {
+            clearAndPush(enterPasswordView, StackView.Immediate)
         }
     }
 
     function goToNewCredential(credential) {
         if (currentItem.objectName !== 'newCredentialView') {
-            push(newCredentialView.createObject(app, {
-                                                    "credential": credential
-                                                }), StackView.Immediate)
+            clearAndPush(newCredentialView, StackView.Immediate)
         }
     }
 
@@ -140,8 +132,8 @@ StackView {
     }
 
     Component {
-        id: credentialsView
-        CredentialsView {
+        id: authenticatorView
+        AuthenticatorView {
         }
     }
 
