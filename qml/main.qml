@@ -271,7 +271,7 @@ ApplicationWindow {
         id: shortcutCopy
         property string description: "Copy account"
         sequence: StandardKey.Copy
-        enabled: !!currentCredentialCard
+        enabled: isCurrentObjectName("authenticatorView") && !!currentCredentialCard
         onActivated: app.currentCredentialCard.calculateCard(true)
     }
 
@@ -279,7 +279,7 @@ ApplicationWindow {
         id: shortcutDelete
         property string description: "Delete account"
         sequence: StandardKey.Delete
-        enabled: !!currentCredentialCard
+        enabled: isCurrentObjectName("authenticatorView") && !!currentCredentialCard
         onActivated: app.currentCredentialCard.deleteCard()
     }
 
@@ -287,7 +287,7 @@ ApplicationWindow {
         id: shortcutToggleFavorite
         property string description: "Toggle favorite"
         sequence: "Ctrl+D"
-        enabled: !!currentCredentialCard
+        enabled: isCurrentObjectName("authenticatorView") && !!currentCredentialCard
         onActivated: app.currentCredentialCard.toggleFavorite()
     }
 
@@ -295,7 +295,7 @@ ApplicationWindow {
         id: shortcutAddAccount
         property string description: "Add account"
         sequence: StandardKey.Open
-        enabled: !!yubiKey.currentDevice
+        enabled: isCurrentObjectName("authenticatorView") && !!yubiKey.currentDevice
         onActivated: navigator.goToNewCredential()
     }
 
