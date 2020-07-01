@@ -139,7 +139,7 @@ jobs:
         shell: cmd
         run: |
           msiexec /i yubioath-desktop.msi /quiet /l .\log.txt
-          cat .\log.txt
+          dir
 
       - name: Rename installer
         shell: powershell
