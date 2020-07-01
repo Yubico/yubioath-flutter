@@ -34,10 +34,6 @@ ToolBar {
         return !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential()
     }
 
-    function shouldShowToolbar() {
-        return !!(navigator.currentItem && navigator.currentItem.objectName !== 'loadingView')
-    }
-
     RowLayout {
         spacing: 0
         anchors.fill: parent
