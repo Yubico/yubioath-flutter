@@ -13,6 +13,8 @@ Pane {
     spacing: 0
 
     property string title: ""
+    property string searchFieldPlaceholder:  entries.count > 0 ? qsTr("Search accounts") : ""
+
     property string searchQuery: toolBar.searchField.text
 
     height: app.height - toolBar.height

@@ -23,31 +23,15 @@ ToolBar {
         }
     }
 
-    property bool showBackBtn: isCurrentObjectName('newCredentialView')
-
     property alias drawerBtn: drawerBtn
     property alias addCredentialBtn: addCredentialBtn
     property alias searchField: searchField
 
-    property string searchFieldPlaceholder: {
-        if(!!(navigator.currentItem)) {
-            switch (navigator.currentItem.objectName) {
-            case "yubiKeyView":
-                return yubiKey.availableDevices.length > 0 ? qsTr("Search configuration") : ""
-            case "settingsView":
-                return qsTr("Search settings")
-            case "authenticatorView":
-                return entries.count > 0 ? qsTr("Search accounts") : ""
-            default:
-                return ""
-            }
-        }
-        return ""
-    }
+
+    property string searchFieldPlaceholder: !!navigator.currentItem ? navigator.currentItem.searchFieldPlaceholder || "" : ""
 
     function shouldShowCredentialOptions() {
-        return !!(app.currentCredentialCard && navigator.currentItem
-                  && navigator.currentItem.objectName === 'authenticatorView')
+        return !!app.currentCredentialCard && navigator.isInAuthenticator()
     }
 
     function shouldShowToolbar() {
@@ -57,12 +41,12 @@ ToolBar {
     RowLayout {
         spacing: 0
         anchors.fill: parent
-        visible: shouldShowToolbar()
+        visible: !navigator.isInLoading()
         Layout.alignment: Qt.AlignTop
 
         ToolButton {
             id: backBtn
-            visible: showBackBtn
+            visible: navigator.isInNewOathCredential()
             onClicked: navigator.goToAuthenticator()
             Layout.leftMargin: 4
             icon.source: "../images/back.svg"
@@ -79,7 +63,7 @@ ToolBar {
             id: drawerBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             Layout.leftMargin: 4
-            visible: !isCurrentObjectName('newCredentialView')
+            visible: !navigator.isInNewOathCredential()
 
             onClicked: drawer.toggle()
             Keys.onReturnPressed: drawer.toggle()
@@ -104,6 +88,7 @@ ToolBar {
                 enabled: false
             }
         }
+
 
         ToolButton {
             id: searchBtn

@@ -99,25 +99,25 @@ Drawer {
             icon: "../images/people.svg"
             text: "Authenticator"
             onActivated: navigator.goToAuthenticator()
-            isActive: isCurrentObjectName(['authenticatorView', 'enterPasswordView', 'newCredentialView'])
+            isActive: navigator.isInAuthenticator() || navigator.isInNewOathCredential() || navigator.isInEnterPassword()
         }
         NavigationItem {
             icon: "../images/yubikey-vertical.svg"
             text: "YubiKey"
             onActivated: navigator.goToYubiKey()
-            isActive: isCurrentObjectName('yubiKeyView')
+            isActive: navigator.isInYubiKeyView()
         }
         NavigationItem {
             icon: "../images/cogwheel.svg"
             text: "Settings"
             onActivated: navigator.goToSettings()
-            isActive: isCurrentObjectName('settingsView')
+            isActive: navigator.isInSettings()
         }
         NavigationItem {
             icon: "../images/help.svg"
             text: "About"
             onActivated: navigator.goToAbout()
-            isActive: isCurrentObjectName('aboutView')
+            isActive: navigator.isInAbout()
         }
     }
 }
