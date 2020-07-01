@@ -19,7 +19,7 @@ Drawer {
         color: "#33000000"
     }
 
-    property string deviceName: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : "Insert YubiKey"
+    property string deviceName: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : "Insert your YubiKey"
     property string deviceSerial: !!yubiKey.currentDevice && !!yubiKey.currentDevice.serial ? yubiKey.currentDevice.serial : ""
     property string deviceVersion: !!yubiKey.currentDevice && !!yubiKey.currentDevice.version ? yubiKey.currentDevice.version : ""
     property string deviceImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : "../images/ykfamily.svg"
@@ -33,61 +33,6 @@ Drawer {
         drawer.visible =! drawer.visible
     }
 
-    Shortcut {
-        id: shortcutMoveUp
-        sequence: "Up"
-        onActivated: moveCursorUp()
-        enabled: drawer.visible
-    }
-
-    Shortcut {
-        id: shortcutMoveDown
-        sequence: "Down"
-        onActivated: moveCursorDown()
-        enabled: drawer.visible
-    }
-
-    Shortcut {
-        id: shortcutReturn
-        sequence: "Return"
-        onActivated: drawer.close()
-        enabled: drawer.visible
-    }
-
-    Shortcut {
-        id: shortcutLeft
-        sequence: "Left"
-        onActivated: drawer.close()
-        enabled: drawer.visible
-    }
-
-    Shortcut {
-        id: shortcutRight
-        sequence: "Right"
-        onActivated: drawer.close()
-        enabled: drawer.visible
-    }
-
-    function moveCursorUp() {
-        if (navigator.isInYubiKeyView()) {
-            navigator.goToAuthenticator()
-        } else if (navigator.isInSettings()) {
-            navigator.goToYubiKey()
-        } else if (navigator.isInAbout()) {
-            navigator.goToSettings()
-        }
-    }
-
-    function moveCursorDown() {
-        if (navigator.isInAuthenticator() || navigator.isInNewOathCredential() || navigator.isInEnterPassword()) {
-            navigator.goToYubiKey()
-        } else if (navigator.isInYubiKeyView()) {
-            navigator.goToSettings()
-        } else if (navigator.isInSettings()) {
-            navigator.goToAbout()
-        }
-    }
-
     ColumnLayout {
         Rectangle {
             id: ykCircle
@@ -95,9 +40,8 @@ Drawer {
             height: 60
             color: formHighlightItem
             radius: width * 0.5
-            Layout.topMargin: 16
+            Layout.topMargin: 32
             Layout.leftMargin: 16
-            Layout.bottomMargin: 8
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
             visible: !!yubiKey.currentDevice
             Image {
@@ -113,11 +57,11 @@ Drawer {
             id: yubikeys
             source: "../images/ykfamily.svg"
             color: defaultImageOverlay
-            Layout.topMargin: 16
+            Layout.topMargin: 32
             Layout.leftMargin: 16
-            iconHeight: 70
+            iconHeight: 60
             visible: !ykCircle.visible
-            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         }
 
         Label {
@@ -129,7 +73,7 @@ Drawer {
             Layout.bottomMargin: 8
             color: primaryColor
             opacity: highEmphasis
-            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         }
 
         Canvas {
