@@ -21,7 +21,11 @@ StyledExpansionPanel {
         settings.useCustomReader = customReaderCheckbox.checked
         settings.customReaderName = readerFilter.text
         yubiKey.clearCurrentDeviceAndEntries()
-        yubiKey.loadDevicesUsbOuter()
+        if (settings.useCustomReader) {
+            yubiKey.loadDevicesCustomReaderOuter()
+        } else {
+            yubiKey.loadDevicesUsbOuter()
+        }
         navigator.goToSettings()
         navigator.snackBar(qsTr("Interface changed"))
         isExpanded = false
@@ -35,6 +39,11 @@ StyledExpansionPanel {
             checked: settings.useCustomReader
             text: qsTr("Enable custom reader")
             description: qsTr("Useful when using a NFC reader.")
+            onCheckedChanged: {
+                if (checked) {
+                    yubiKey.refreshReaders()
+                }
+            }
         }
     }
 
