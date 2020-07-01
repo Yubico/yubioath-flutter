@@ -17,6 +17,9 @@ Pane {
 
     property string searchQuery: toolBar.searchField.text
 
+    property var currentCredentialCard: credentialsSection.currentCredentialCard
+
+
     height: app.height - toolBar.height
 
     function filteredCredentials() {

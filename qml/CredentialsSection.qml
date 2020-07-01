@@ -9,6 +9,9 @@ import QtGraphicalEffects 1.0
         property var columnWidth: width/model.count
         property var idealCellHeight: 76
         property var idealCellWidth: columnWidth > 268 ? columnWidth : 268
+
+        property var currentCredentialCard: currentItem
+
         anchors.fill: parent
         width: parent.width
         ScrollBar.vertical: ScrollBar {
@@ -20,7 +23,6 @@ import QtGraphicalEffects 1.0
             hoverEnabled: true
         }
         displayMarginBeginning: cellHeight
-        onCurrentItemChanged: app.currentCredentialCard = currentItem
         keyNavigationWraps: false
         model: filteredCredentials()
         cellHeight: idealCellHeight

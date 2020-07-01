@@ -26,6 +26,22 @@ StackView {
         return !!currentItem && currentItem.objectName === 'authenticatorView'
     }
 
+    function hasSelectedOathCredential() {
+        return !!currentItem && !!currentItem.currentCredentialCard
+    }
+
+    function oathCopySelectedCredential() {
+        currentItem.currentCredentialCard.calculateCard(true)
+    }
+
+    function oathDeleteSelectedCredential() {
+        currentItem.currentCredentialCard.deleteCard()
+    }
+
+    function oathToggleFavoriteSelectedCredential() {
+        currentItem.currentCredentialCard.toggleFavorite()
+    }
+
     function isInYubiKeyView() {
         return !!currentItem && currentItem.objectName === 'yubiKeyView'
     }

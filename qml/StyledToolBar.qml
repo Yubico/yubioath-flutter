@@ -31,7 +31,7 @@ ToolBar {
     property string searchFieldPlaceholder: !!navigator.currentItem ? navigator.currentItem.searchFieldPlaceholder || "" : ""
 
     function shouldShowCredentialOptions() {
-        return !!app.currentCredentialCard && navigator.isInAuthenticator()
+        return !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential()
     }
 
     function shouldShowToolbar() {
@@ -190,13 +190,13 @@ ToolBar {
                 Keys.onEscapePressed: exitSearchMode(true)
                 Keys.onDownPressed: exitSearchMode(false)
                 Keys.onReturnPressed: {
-                    if (currentCredentialCard) {
-                        currentCredentialCard.calculateCard(true)
+                    if (navigator.hasSelectedOathCredential()) {
+                        navigator.oathCopySelectedCredential()
                     }
                 }
                 Keys.onEnterPressed: {
-                    if (currentCredentialCard) {
-                        currentCredentialCard.calculateCard(true)
+                    if (navigator.hasSelectedOathCredential()) {
+                        navigator.oathCopySelectedCredential()
                     }
                 }
 
@@ -223,9 +223,9 @@ ToolBar {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: shouldShowCredentialOptions()
 
-                onClicked: app.currentCredentialCard.calculateCard(true)
-                Keys.onReturnPressed: app.currentCredentialCard.calculateCard(true)
-                Keys.onEnterPressed: app.currentCredentialCard.calculateCard(true)
+                onClicked: navigator.oathCopySelectedCredential()
+                Keys.onReturnPressed: navigator.oathCopySelectedCredential()
+                Keys.onEnterPressed: navigator.oathCopySelectedCredential()
 
                 KeyNavigation.left: searchField
                 KeyNavigation.backtab: searchField
@@ -261,9 +261,9 @@ ToolBar {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: shouldShowCredentialOptions()
 
-                onClicked: app.currentCredentialCard.deleteCard()
-                Keys.onReturnPressed: app.currentCredentialCard.deleteCard()
-                Keys.onEnterPressed: app.currentCredentialCard.deleteCard()
+                onClicked: navigator.oathDeleteSelectedCredential()
+                Keys.onReturnPressed: navigator.oathDeleteSelectedCredential()
+                Keys.onEnterPressed: navigator.oathDeleteSelectedCredential()
 
                 KeyNavigation.left: copyCredentialBtn
                 KeyNavigation.right: addCredentialBtn
@@ -305,8 +305,8 @@ ToolBar {
                 Keys.onReturnPressed: navigator.goToNewCredential()
                 Keys.onEnterPressed: navigator.goToNewCredential()
 
-                KeyNavigation.left: app.currentCredentialCard ? deleteCredentialBtn : searchField
-                KeyNavigation.backtab: app.currentCredentialCard ? deleteCredentialBtn : searchField
+                KeyNavigation.left: !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential() ? deleteCredentialBtn : searchField
+                KeyNavigation.backtab: !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential() ? deleteCredentialBtn : searchField
                 KeyNavigation.right: navigator
                 KeyNavigation.tab: navigator
 
