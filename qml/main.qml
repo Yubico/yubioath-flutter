@@ -53,7 +53,6 @@ ApplicationWindow {
     property var cardHoveredEmphasis: 0.05
     property var cardNormalEmphasis: 0.03
 
-    property var currentCredentialCard
     property string iconFavorite: "#f7bd0c"
 
     property bool showDeviceConfiguration: false
@@ -264,24 +263,24 @@ ApplicationWindow {
         id: shortcutCopy
         property string description: "Copy account"
         sequence: StandardKey.Copy
-        enabled: navigator.isInAuthenticator() && !!currentCredentialCard
-        onActivated: app.currentCredentialCard.calculateCard(true)
+        enabled: navigator.isInAuthenticator() && navigator.hasSelectedOathCredential()
+        onActivated: navigator.oathCopySelectedCredential()
     }
 
     Shortcut {
         id: shortcutDelete
         property string description: "Delete account"
         sequence: StandardKey.Delete
-        enabled: navigator.isInAuthenticator() && !!currentCredentialCard
-        onActivated: app.currentCredentialCard.deleteCard()
+        enabled: navigator.isInAuthenticator() && navigator.hasSelectedOathCredential()
+        onActivated: navigator.oathDeleteSelectedCredential()
     }
 
     Shortcut {
         id: shortcutToggleFavorite
         property string description: "Toggle favorite"
         sequence: "Ctrl+D"
-        enabled: navigator.isInAuthenticator() && !!currentCredentialCard
-        onActivated: app.currentCredentialCard.toggleFavorite()
+        enabled: navigator.isInAuthenticator() && navigator.hasSelectedOathCredential()
+        onActivated: navigator.oathToggleFavoriteSelectedCredential()
     }
 
     Shortcut {

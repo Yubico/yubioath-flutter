@@ -53,7 +53,6 @@ Flickable {
 
     function scanQr() {
         scanning = true
-        currentCredentialCard = null
         yubiKey.parseQr(ScreenShot.capture(), function (resp) {
             scanning = false
             if (resp.success) {
