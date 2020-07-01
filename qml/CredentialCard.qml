@@ -148,12 +148,12 @@ Pane {
                                                              {
                                                                  toggleFavorite()
                                                              }
-                                                             entries.deleteEntry(
-                                                                         credential.key)
 
-                                                             yubiKey.updateNextCalculateAll()
                                                              navigator.snackBar(
                                                                           qsTr("Account deleted"))
+
+                                                             entries.deleteEntry(credential.key, yubiKey.updateNextCalculateAll)
+
                                                          } else {
                                                              navigator.snackBarError(
                                                                          navigator.getErrorMessage(resp.error_id))
