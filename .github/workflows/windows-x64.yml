@@ -136,10 +136,10 @@ jobs:
           cp yubioath-desktop.msi deploy
 
       - name: Run installer
-        shell: powershell
+        shell: cmd
         run: |
           msiexec /i yubioath-desktop.msi /quiet /l .\log.txt
-          cat log.txt
+          cat .\log.txt
 
       - name: Rename installer
         shell: powershell
