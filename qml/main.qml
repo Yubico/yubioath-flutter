@@ -41,8 +41,8 @@ ApplicationWindow {
     property string formHighlightItem: isDark() ? "#4a4a4a" : "#e9e9e9"
     property string formButtonBorder: isDark() ? "#5f6368" : "#dadce0"
 
-    property string toolTipForeground: app.isDark() ? "#fafafa" : "#fbfbfb"
-    property string toolTipBackground: app.isDark() ? "#4a4a4a" : "#7f7f7f"
+    property string toolTipForeground: isDark() ? "#fafafa" : "#fbfbfb"
+    property string toolTipBackground: isDark() ? "#4a4a4a" : "#7f7f7f"
 
     property var fullEmphasis: 1.0
     property var highEmphasis: 0.87
@@ -210,13 +210,6 @@ ApplicationWindow {
       return RegExp(string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, "|"), flags)
     }
 
-    function isCurrentObjectName(objectnames) {
-        if (!!(navigator && navigator.currentItem)) {
-            return objectnames.includes(navigator.currentItem.objectName)
-        }
-        return false
-    }
-
     function getFavoriteEntries() {
         var favs = entriesComponent.createObject(app, {
         })
@@ -271,7 +264,7 @@ ApplicationWindow {
         id: shortcutCopy
         property string description: "Copy account"
         sequence: StandardKey.Copy
-        enabled: isCurrentObjectName("authenticatorView") && !!currentCredentialCard
+        enabled: navigator.isInAuthenticator() && !!currentCredentialCard
         onActivated: app.currentCredentialCard.calculateCard(true)
     }
 
@@ -279,7 +272,7 @@ ApplicationWindow {
         id: shortcutDelete
         property string description: "Delete account"
         sequence: StandardKey.Delete
-        enabled: isCurrentObjectName("authenticatorView") && !!currentCredentialCard
+        enabled: navigator.isInAuthenticator() && !!currentCredentialCard
         onActivated: app.currentCredentialCard.deleteCard()
     }
 
@@ -287,7 +280,7 @@ ApplicationWindow {
         id: shortcutToggleFavorite
         property string description: "Toggle favorite"
         sequence: "Ctrl+D"
-        enabled: isCurrentObjectName("authenticatorView") && !!currentCredentialCard
+        enabled: navigator.isInAuthenticator() && !!currentCredentialCard
         onActivated: app.currentCredentialCard.toggleFavorite()
     }
 
@@ -295,7 +288,7 @@ ApplicationWindow {
         id: shortcutAddAccount
         property string description: "Add account"
         sequence: StandardKey.Open
-        enabled: isCurrentObjectName("authenticatorView") && !!yubiKey.currentDevice
+        enabled: navigator.isInAuthenticator() && !!yubiKey.currentDevice
         onActivated: navigator.goToNewCredential()
     }
 

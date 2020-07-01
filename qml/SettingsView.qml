@@ -25,6 +25,8 @@ Flickable {
     boundsBehavior: Flickable.StopAtBounds
 
     property string title: qsTr("")
+    property string searchFieldPlaceholder: qsTr("Search settings")
+
 
     ColumnLayout {
         width: settingsPanel.contentWidth

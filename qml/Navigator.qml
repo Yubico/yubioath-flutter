@@ -3,6 +3,9 @@ import QtQuick.Controls 2.2
 
 StackView {
 
+    // Navigator is responsible for changing the views, and showing error messages.
+    // It can also report back the current view, and show confirmaton dialogs.
+
     initialItem: authenticatorView
 
     onCurrentItemChanged: {
@@ -21,6 +24,30 @@ StackView {
 
     function isInAuthenticator() {
         return !!currentItem && currentItem.objectName === 'authenticatorView'
+    }
+
+    function isInYubiKeyView() {
+        return !!currentItem && currentItem.objectName === 'yubiKeyView'
+    }
+
+    function isInSettings() {
+        return !!currentItem && currentItem.objectName === 'settingsView'
+    }
+
+    function isInLoading() {
+        return !!currentItem && currentItem.objectName === 'loadingView'
+    }
+
+    function isInNewOathCredential() {
+        return !!currentItem && currentItem.objectName === 'newCredentialView'
+    }
+
+    function isInEnterPassword() {
+        return !!currentItem && currentItem.objectName === 'enterPasswordView'
+    }
+
+    function isInAbout() {
+        return !!currentItem && currentItem.objectName === 'aboutView'
     }
 
     function goToAuthenticator() {
