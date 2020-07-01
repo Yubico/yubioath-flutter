@@ -19,7 +19,7 @@ Drawer {
         color: "#33000000"
     }
 
-    property string deviceName: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : "Insert YubiKey"
+    property string deviceName: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : "Insert your YubiKey"
     property string deviceSerial: !!yubiKey.currentDevice && !!yubiKey.currentDevice.serial ? yubiKey.currentDevice.serial : ""
     property string deviceVersion: !!yubiKey.currentDevice && !!yubiKey.currentDevice.version ? yubiKey.currentDevice.version : ""
     property string deviceImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : "../images/ykfamily.svg"
@@ -40,9 +40,8 @@ Drawer {
             height: 60
             color: formHighlightItem
             radius: width * 0.5
-            Layout.topMargin: 16
+            Layout.topMargin: 32
             Layout.leftMargin: 16
-            Layout.bottomMargin: 8
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
             visible: !!yubiKey.currentDevice
             Image {
@@ -58,11 +57,11 @@ Drawer {
             id: yubikeys
             source: "../images/ykfamily.svg"
             color: defaultImageOverlay
-            Layout.topMargin: 16
+            Layout.topMargin: 32
             Layout.leftMargin: 16
-            iconHeight: 70
+            iconHeight: 60
             visible: !ykCircle.visible
-            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         }
 
         Label {
@@ -74,7 +73,7 @@ Drawer {
             Layout.bottomMargin: 8
             color: primaryColor
             opacity: highEmphasis
-            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         }
 
         Canvas {
