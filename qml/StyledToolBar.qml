@@ -41,25 +41,10 @@ ToolBar {
         Layout.alignment: Qt.AlignTop
 
         ToolButton {
-            id: backBtn
-            visible: navigator.isInNewOathCredential()
-            onClicked: navigator.goToAuthenticator()
-            Layout.leftMargin: 4
-            icon.source: "../images/back.svg"
-            icon.color: primaryColor
-            opacity: hovered ? fullEmphasis : lowEmphasis
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                enabled: false
-            }
-        }
-
-        ToolButton {
             id: drawerBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             Layout.leftMargin: 4
-            visible: !navigator.isInNewOathCredential()
+            visible: !navigator.isInLoading()
 
             onClicked: drawer.toggle()
             Keys.onReturnPressed: drawer.toggle()
@@ -67,8 +52,8 @@ ToolBar {
 
             KeyNavigation.left: navigator
             KeyNavigation.backtab: navigator
-            KeyNavigation.right: searchField
-            KeyNavigation.tab: searchField
+            KeyNavigation.right: searchField.visible ? searchField : closeBtn
+            KeyNavigation.tab: searchField.visible ? searchField : closeBtn
 
             Accessible.role: Accessible.Button
             Accessible.name: "Menu"
@@ -84,7 +69,6 @@ ToolBar {
                 enabled: false
             }
         }
-
 
         ToolButton {
             id: searchBtn
@@ -233,7 +217,7 @@ ToolBar {
                 Accessible.description: "Copy to clipboard"
 
                 ToolTip {
-                    text: qsTr("Copy code to clipboard")
+                    text: qsTr("Copy code to clipboard (%1)").arg(shortcutCopy.nativeText)
                     delay: 1000
                     parent: copyCredentialBtn
                     visible: parent.hovered
@@ -270,7 +254,7 @@ ToolBar {
                 Accessible.description: "Delete account"
 
                 ToolTip {
-                    text: qsTr("Delete account")
+                    text: qsTr("Delete account (%1)").arg(shortcutDelete.nativeText)
                     delay: 1000
                     parent: deleteCredentialBtn
                     visible: parent.hovered
@@ -311,7 +295,7 @@ ToolBar {
                 Accessible.description: qsTr("Add account")
 
                 ToolTip {
-                    text: qsTr("Add a new account")
+                    text: qsTr("Add new account (%1)").arg(shortcutAddAccount.nativeText)
                     delay: 1000
                     parent: addCredentialBtn
                     visible: parent.hovered
@@ -330,6 +314,30 @@ ToolBar {
                 }
             }
 
+            ToolButton {
+                id: closeBtn
+                activeFocusOnTab: true
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                visible: navigator.isInNewOathCredential()
+                onClicked: navigator.goToAuthenticator()
+                icon.source: "../images/clear.svg"
+                icon.color: primaryColor
+                opacity: hovered ? fullEmphasis : lowEmphasis
+
+                Keys.onReturnPressed: navigator.goToAuthenticator()
+                Keys.onEnterPressed: navigator.goToAuthenticator()
+
+                KeyNavigation.left: drawerBtn
+                KeyNavigation.backtab: drawerBtn
+                KeyNavigation.right: navigator
+                KeyNavigation.tab: navigator
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
+            }
         }
     }
 }

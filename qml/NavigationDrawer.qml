@@ -33,6 +33,61 @@ Drawer {
         drawer.visible =! drawer.visible
     }
 
+    Shortcut {
+        id: shortcutMoveUp
+        sequence: "Up"
+        onActivated: moveCursorUp()
+        enabled: drawer.visible
+    }
+
+    Shortcut {
+        id: shortcutMoveDown
+        sequence: "Down"
+        onActivated: moveCursorDown()
+        enabled: drawer.visible
+    }
+
+    Shortcut {
+        id: shortcutReturn
+        sequence: "Return"
+        onActivated: drawer.close()
+        enabled: drawer.visible
+    }
+
+    Shortcut {
+        id: shortcutLeft
+        sequence: "Left"
+        onActivated: drawer.close()
+        enabled: drawer.visible
+    }
+
+    Shortcut {
+        id: shortcutRight
+        sequence: "Right"
+        onActivated: drawer.close()
+        enabled: drawer.visible
+    }
+
+    function moveCursorUp() {
+        if (navigator.isInYubiKeyView()) {
+            navigator.goToAuthenticator()
+        } else if (navigator.isInSettings()) {
+            navigator.goToYubiKey()
+        } else if (navigator.isInAbout()) {
+            navigator.goToSettings()
+        }
+    }
+
+    function moveCursorDown() {
+        if (navigator.isInAuthenticator() || navigator.isInNewOathCredential() || navigator.isInEnterPassword()) {
+            navigator.goToYubiKey()
+        } else if (navigator.isInYubiKeyView()) {
+            navigator.goToSettings()
+        } else if (navigator.isInSettings()) {
+            navigator.goToAbout()
+        }
+    }
+
     ColumnLayout {
         Rectangle {
             id: ykCircle

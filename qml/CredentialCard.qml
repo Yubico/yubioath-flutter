@@ -347,7 +347,8 @@ Pane {
             Accessible.description: "Favorite credential"
 
             ToolTip {
-                text: favorite ? qsTr("Remove as favorite") : qsTr("Set as favorite")
+                text: favorite ? qsTr("Remove as favorite (%1)").arg(shortcutToggleFavorite.nativeText)  :
+                                 qsTr("Set as favorite (%1)").arg(shortcutToggleFavorite.nativeText)
                 delay: 1000
                 parent: favoriteBtn
                 visible: parent.hovered
