@@ -22,12 +22,13 @@ Pane {
     property alias text: label.text
     property bool isActive: false
     property bool isEnabled: true
+    property bool isHovered: false
 
     signal activated(bool clicked)
 
     background: Rectangle {
         anchors.fill: parent
-        color: item.isActive ? yubicoGreen : (item.hovered ? defaultHovered : "transparent")
+        color: item.isActive ? yubicoGreen : (item.hovered || isHovered ? defaultHovered : "transparent")
         radius: 4
         MouseArea {
             id: itemMouseArea
@@ -55,7 +56,7 @@ Pane {
             topInset: 0
             bottomInset: 0
             color: item.isActive ? defaultBackground : primaryColor
-            opacity: isEnabled ? ((item.hovered && !item.isActive) || isActive ? highEmphasis : lowEmphasis) : disabledEmphasis
+            opacity: isEnabled ? (((item.hovered || isHovered) && !item.isActive) || isActive ? highEmphasis : lowEmphasis) : disabledEmphasis
         }
         Label {
             Layout.leftMargin: 0

@@ -19,10 +19,48 @@ Drawer {
         color: "#33000000"
     }
 
+    function getStartingIndex() {
+        if (navigator.isInAuthenticator() || navigator.isInNewOathCredential() || navigator.isInEnterPassword()) {
+            return 0
+        } else if (navigator.isInYubiKeyView()) {
+            return 1
+        } else if (navigator.isInSettings()) {
+            return 2
+        } else if (navigator.isInAbout()) {
+            return 3
+        } else {
+            return 0
+        }
+    }
+
+    function selectItemByIndex() {
+        switch(hoverIndex) {
+        case 0:
+            navigator.goToAuthenticator()
+            break
+        case 1:
+            navigator.goToYubiKey()
+            break
+        case 2:
+            navigator.goToSettings()
+            break
+        case 3:
+            navigator.goToAbout()
+            break
+        }
+        drawer.close()
+    }
+
     property string deviceName: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : "Insert your YubiKey"
     property string deviceSerial: !!yubiKey.currentDevice && !!yubiKey.currentDevice.serial ? yubiKey.currentDevice.serial : ""
     property string deviceVersion: !!yubiKey.currentDevice && !!yubiKey.currentDevice.version ? yubiKey.currentDevice.version : ""
     property string deviceImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : "../images/ykfamily.svg"
+
+    property int hoverIndex: 0
+    property var currentItem: !!navigator.currentItem ? navigator.currentItem.objectName : null
+
+    onOpened: hoverIndex = getStartingIndex()
+    onCurrentItemChanged: hoverIndex = getStartingIndex()
 
     background: Rectangle {
         anchors.fill: parent
@@ -94,29 +132,82 @@ Drawer {
             }
         }
 
+        Shortcut {
+            id: shortcutMoveUp
+            sequence: "Up"
+            onActivated: hoverIndex--
+            enabled: drawer.visible && hoverIndex > 0
+        }
+
+        Shortcut {
+            id: shortcutMoveBackTab
+            sequence: "Shift+Tab"
+            onActivated: hoverIndex--
+            enabled: drawer.visible && hoverIndex > 0
+        }
+
+        Shortcut {
+            id: shortcutMoveDown
+            sequence: "Down"
+            onActivated: hoverIndex++
+            enabled: drawer.visible  && hoverIndex < 3
+        }
+
+        Shortcut {
+            id: shortcutMoveTab
+            sequence: "Tab"
+            onActivated: hoverIndex++
+            enabled: drawer.visible  && hoverIndex < 3
+        }
+
+        Shortcut {
+            id: shortcutReturn
+            sequence: "Return"
+            onActivated: selectItemByIndex()
+            enabled: drawer.visible
+        }
+
+        Shortcut {
+            id: shortcutLeft
+            sequence: "Left"
+            onActivated: drawer.close()
+            enabled: drawer.visible
+        }
+
+        Shortcut {
+            id: shortcutRight
+            sequence: "Right"
+            onActivated: drawer.close()
+            enabled: drawer.visible
+        }
+
         NavigationItem {
             icon: "../images/people.svg"
             text: "Authenticator"
             onActivated: navigator.goToAuthenticator()
             isActive: navigator.isInAuthenticator() || navigator.isInNewOathCredential() || navigator.isInEnterPassword()
+            isHovered: hoverIndex === 0
         }
         NavigationItem {
             icon: "../images/yubikey-vertical.svg"
             text: "YubiKey"
             onActivated: navigator.goToYubiKey()
             isActive: navigator.isInYubiKeyView()
+            isHovered: hoverIndex === 1
         }
         NavigationItem {
             icon: "../images/cogwheel.svg"
             text: "Settings"
             onActivated: navigator.goToSettings()
             isActive: navigator.isInSettings()
+            isHovered: hoverIndex === 2
         }
         NavigationItem {
             icon: "../images/help.svg"
             text: "About"
             onActivated: navigator.goToAbout()
             isActive: navigator.isInAbout()
+            isHovered: hoverIndex === 3
         }
     }
 }
