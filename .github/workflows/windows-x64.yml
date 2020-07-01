@@ -136,7 +136,7 @@ jobs:
           cp yubioath-desktop.msi deploy
 
       - name: Run installer
-        shell: cmd
+        shell: powershell
         run: |
           msiexec /i yubioath-desktop.msi /quiet /l .\log.txt
           dir
