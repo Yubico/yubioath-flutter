@@ -8,14 +8,22 @@ Flickable {
     id: panel
     objectName: 'yubiKeyView'
     contentWidth: app.width
-    contentHeight: content.visible ? content.implicitHeight + 32 : app.height - toolBar.height
+    contentHeight: content.visible ? expandedHeight : app.height - toolBar.height
     leftMargin: 0
     rightMargin: 0
 
     readonly property int dynamicWidth: 648
     readonly property int dynamicMargin: 32
+    property var expandedHeight: content.implicitHeight + dynamicMargin
+
+    onExpandedHeightChanged: {
+        if (expandedHeight > app.height - toolBar.height) {
+             scrollBar.active = true
+         }
+    }
 
     ScrollBar.vertical: ScrollBar {
+        id: scrollBar
         width: 8
         anchors.top: parent.top
         anchors.right: parent.right

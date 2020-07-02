@@ -9,12 +9,20 @@ Flickable {
     id: settingsPanel
     objectName: 'settingsView'
     contentWidth: app.width
-    contentHeight: content.implicitHeight + 32
+    contentHeight: expandedHeight
 
     readonly property int dynamicWidth: 648
     readonly property int dynamicMargin: 32
+    property var expandedHeight: content.implicitHeight + dynamicMargin
+
+    onExpandedHeightChanged: {
+        if (expandedHeight > app.height - toolBar.height) {
+             scrollBar.active = true
+         }
+    }
 
     ScrollBar.vertical: ScrollBar {
+        id: scrollBar
         width: 8
         anchors.top: parent.top
         anchors.right: parent.right
