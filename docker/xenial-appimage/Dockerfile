@@ -5,7 +5,7 @@ RUN apt-get update -qq \
     && add-apt-repository -y ppa:beineri/opt-qt-5.14.2-xenial \
     && apt-get -qq update \
     && apt-get -qq upgrade
-RUN apt-get install -y git make build-essential libssl-dev zlib1g-dev libbz2-dev \
+RUN apt-get install -y git make build-essential g++ libssl-dev zlib1g-dev libbz2-dev \
     devscripts equivs python3-dev python3-pip python3-venv wget fuse \
     qt514base qt514declarative qt514xmlpatterns qt514script qt514tools qt514multimedia \
     qt514svg qt514graphicaleffects qt514imageformats qt514translations qt514quickcontrols \
