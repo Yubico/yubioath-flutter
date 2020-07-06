@@ -65,6 +65,8 @@ Pane {
             font.weight: Font.Medium
             color: image.color
             opacity: image.opacity
+            elide: Text.ElideRight
+            Layout.maximumWidth: 120
         }
     }
 }
