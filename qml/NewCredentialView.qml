@@ -8,11 +8,13 @@ Flickable {
 
     id: newCredentialViewId
     objectName: 'newCredentialView'
+    contentWidth: app.width
+    contentHeight: content.visible ? expandedHeight : app.height - toolBar.height
+    leftMargin: 0
+    rightMargin: 0
 
     property string title: ""
     property var credential
-    property bool manualEntry: false
-    property bool scanning: false
 
     readonly property int dynamicWidth: 648
     readonly property int dynamicMargin: 32
@@ -34,11 +36,7 @@ Flickable {
         z: 2
     }
 
-    width: app.width
     boundsBehavior: Flickable.StopAtBounds
-    contentHeight: app.height-toolBar.height > expandedHeight
-                   ? app.height-toolBar.height
-                   : content.implicitHeight + dynamicMargin
 
     Keys.onEscapePressed: navigator.goToAuthenticator()
 
@@ -60,10 +58,9 @@ Flickable {
     }
 
     function scanQr() {
-        scanning = true
         yubiKey.parseQr(ScreenShot.capture(), function (resp) {
-            scanning = false
             if (resp.success) {
+                navigator.snackBar("QR code found!")
                 credential = resp
             } else {
                 navigator.snackBarError(navigator.getErrorMessage(
@@ -104,7 +101,7 @@ Flickable {
                                           algoComboBox.currentText,
                                           digitsComboBox.currentText,
                                           periodLbl.text,
-                                          requireTouchCheckBox.checked,
+                                          toolBar.requireTouchBtn.isSelected,
                                           overwrite,
                                           callback)
         }
@@ -119,104 +116,45 @@ Flickable {
 
         if (acceptableInput()) {
              _ccidAddCredentialNoOverwrite()
-            settings.requireTouch = requireTouchCheckBox.checked
+            settings.requireTouch = toolBar.requireTouchBtn.isSelected
         }
     }
 
     ColumnLayout {
         id: content
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        spacing: 4
-        width: app.width - dynamicMargin < dynamicWidth
-               ? app.width - dynamicMargin
-               : dynamicWidth
-
-        Label {
-            text: qsTr("Add account (%1/2)").arg(credential || manualEntry ? "2" : "1")
-            font.pixelSize: 16
-            font.weight: Font.Normal
-            lineHeight: 1.8
-            color: yubicoGreen
-            opacity: fullEmphasis
-            Layout.topMargin: 16
-            Layout.bottomMargin: 8
-        }
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+        spacing: 0
+        width: parent.width
 
         ColumnLayout {
-            id: selectScanOrManual
-            visible: !credential && !manualEntry
+            id: addScanQRCode
             width: parent.width
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.fillWidth: true
 
-            StyledImage {
-                id: qrImage
-                source: "../images/qr-monitor.svg"
-                color: primaryColor
-                opacity: lowEmphasis
-                iconWidth: 100
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                Layout.topMargin: 8
-                visible: !scanning
-            }
+            StyledExpansionContainer {
+                title: qsTr("Add account")
 
-            Item {
-                height: qrImage.height
-                width: qrImage.width
-                visible: scanning
-                Layout.topMargin: 8
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                BusyIndicator {
-                    width: 40
-                    height: 40
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                }
-            }
-
-            Label {
-                Layout.topMargin: 16
-                text: "To add an account follow the instructions provided by the service. Make sure the QR code is fully visible."
-                color: primaryColor
-                opacity: highEmphasis
-                font.pixelSize: 13
-                lineHeight: 1.2
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-                Layout.maximumWidth: parent.width > 400 ? 400 : parent.width
-            }
-
-            ColumnLayout {
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                Layout.topMargin: 16
-
-                StyledButton {
-                    id: btnAccept
-                    text: qsTr("Scan QR code on screen")
-                    primary: true
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    KeyNavigation.tab: btnCancel
-                    Keys.onReturnPressed: scanQr()
-                    onClicked: scanQr()
-                }
-
-                StyledButton {
-                    id: btnCancel
-                    text: qsTr("Manual mode")
-                    flat: true
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    KeyNavigation.tab: btnAccept
-                    Keys.onReturnPressed: manualEntry = true
-                    onClicked: manualEntry = true
+                StyledExpansionPanel {
+                    label: qsTr("Scan QR code")
+                    description: qsTr("Make sure QR code is fully visible.")
+                    toolButtonIcon: "../images/qr-scanner.svg"
+                    toolButtonToolTip: qsTr("Scan QR code on screen")
+                    toolButton.onClicked: scanQr()
+                    isEnabled: false
+                    isTopPanel: true
+                    isBottomPanel: true
                 }
             }
         }
 
         ColumnLayout {
             id: addAccountForm
-            visible: credential || manualEntry
+            width: parent.width
+            Layout.fillWidth: true
+            Layout.leftMargin: 16
+            Layout.rightMargin: 16
+            Layout.topMargin: 8
 
             StyledTextField {
                 id: issuerLbl
@@ -225,6 +163,7 @@ Flickable {
                 text: credential
                       && credential.issuer ? credential.issuer : ""
                 onSubmit: addCredential()
+                Layout.topMargin: 16
             }
             StyledTextField {
                 id: nameLbl
@@ -241,39 +180,16 @@ Flickable {
                 required: true
                 text: credential
                       && credential.secret ? credential.secret : ""
-                visible: manualEntry
                 validateText: qsTr("Invalid Base32 format (A-Z and 2-7)")
                 validateRegExp: /^[2-7a-zA-Z ]+[= ]*$/
                 Layout.bottomMargin: 8
                 onSubmit: addCredential()
-                KeyNavigation.tab: requireTouchCheckBox
             }
-
-            StyledCheckBox {
-                id: requireTouchCheckBox
-                checked: settings.requireTouch
-                text: qsTr("Require touch")
-                description: qsTr("Touch YubiKey to display code.")
-                visible: yubiKey.supportsTouchCredentials()
-                Layout.bottomMargin: 8
-                Layout.topMargin: 0
-                KeyNavigation.tab: advancedSettingsCheckBox
-            }
-
-            StyledCheckBox {
-                id: advancedSettingsCheckBox
-                text: qsTr("Show advanced settings")
-                description: qsTr("Change according to instructions only.")
-                visible: manualEntry
-                Layout.bottomMargin: 16
-                Layout.topMargin: 0
-            }
-
 
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.topMargin: 16
-                visible: advancedSettingsCheckBox.checked
+                visible: toolBar.advancedSettingsBtn.isSelected
 
                 RowLayout {
                     StyledComboBox {

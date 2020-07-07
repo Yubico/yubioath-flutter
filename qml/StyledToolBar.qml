@@ -26,7 +26,8 @@ ToolBar {
     property alias drawerBtn: drawerBtn
     property alias addCredentialBtn: addCredentialBtn
     property alias searchField: searchField
-
+    property alias requireTouchBtn: requireTouchBtn
+    property alias advancedSettingsBtn: advancedSettingsBtn
 
     property string searchFieldPlaceholder: !!navigator.currentItem ? navigator.currentItem.searchFieldPlaceholder || "" : ""
 
@@ -52,8 +53,8 @@ ToolBar {
 
             KeyNavigation.left: navigator
             KeyNavigation.backtab: navigator
-            KeyNavigation.right: searchField.visible ? searchField : closeBtn
-            KeyNavigation.tab: searchField.visible ? searchField : closeBtn
+            KeyNavigation.right: searchField.visible ? searchField : (requireTouchBtn.visible ? requireTouchBtn : advancedSettingsBtn)
+            KeyNavigation.tab: searchField.visible ? searchField : (requireTouchBtn.visible ? requireTouchBtn : advancedSettingsBtn)
 
             Accessible.role: Accessible.Button
             Accessible.name: "Menu"
@@ -199,6 +200,82 @@ ToolBar {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
             ToolButton {
+                id: requireTouchBtn
+                property bool isSelected
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                visible: navigator.isInNewOathCredential() && yubiKey.supportsTouchCredentials()
+
+                onClicked: isSelected = !isSelected
+                Keys.onReturnPressed: navigator.oathCopySelectedCredential()
+                Keys.onEnterPressed: navigator.oathCopySelectedCredential()
+
+                KeyNavigation.left: drawerBtn
+                KeyNavigation.backtab: drawerBtn
+                KeyNavigation.right: advancedSettingsBtn
+                KeyNavigation.tab: advancedSettingsBtn
+
+                Accessible.role: Accessible.Button
+                Accessible.name: "RequireTouch"
+                Accessible.description: "Toggle require touch"
+
+                ToolTip {
+                    text: qsTr("Require touch to display code is %1").arg(parent.isSelected ? "ON" : "OFF")
+                    delay: 1000
+                    visible: parent.hovered
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
+                }
+
+                icon.source: "../images/touch.svg"
+                icon.color: isSelected ? yubicoGreen : primaryColor
+                opacity: hovered || isSelected ? fullEmphasis : lowEmphasis
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
+            }
+
+            ToolButton {
+                id: advancedSettingsBtn
+                property bool isSelected
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                visible: navigator.isInNewOathCredential()
+
+                onClicked: isSelected = !isSelected
+                Keys.onReturnPressed: navigator.oathCopySelectedCredential()
+                Keys.onEnterPressed: navigator.oathCopySelectedCredential()
+
+                KeyNavigation.left: requireTouchBtn.visible ? requireTouchBtn : drawerBtn
+                KeyNavigation.backtab: requireTouchBtn.visible ? requireTouchBtn : drawerBtn
+                KeyNavigation.right: closeBtn
+                KeyNavigation.tab: closeBtn
+
+                Accessible.role: Accessible.Button
+                Accessible.name: "Advanced"
+                Accessible.description: "Toggle advanced settings"
+
+                ToolTip {
+                    text: qsTr("%1 advanced settings").arg(parent.isSelected ? "Hide" : "Show")
+                    delay: 1000
+                    visible: parent.hovered
+                    Material.foreground: toolTipForeground
+                    Material.background: toolTipBackground
+                }
+
+                icon.source: "../images/cogwheel.svg"
+                icon.color: isSelected ? yubicoGreen : primaryColor
+                opacity: hovered || isSelected ? fullEmphasis : lowEmphasis
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
+            }
+
+            ToolButton {
                 id: copyCredentialBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: shouldShowCredentialOptions()
@@ -327,8 +404,8 @@ ToolBar {
                 Keys.onReturnPressed: navigator.goToAuthenticator()
                 Keys.onEnterPressed: navigator.goToAuthenticator()
 
-                KeyNavigation.left: drawerBtn
-                KeyNavigation.backtab: drawerBtn
+                KeyNavigation.left: advancedSettingsBtn.visible ? advancedSettingsBtn : drawerBtn
+                KeyNavigation.backtab: advancedSettingsBtn.visible ? advancedSettingsBtn : drawerBtn
                 KeyNavigation.right: navigator
                 KeyNavigation.tab: navigator
 
