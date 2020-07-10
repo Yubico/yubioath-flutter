@@ -6,9 +6,6 @@ import QtGraphicalEffects 1.0
 
 ColumnLayout {
 
-    readonly property int dynamicWidth: 380
-    readonly property int dynamicMargin: 32
-
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
 
@@ -39,7 +36,7 @@ ColumnLayout {
             horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 300
             Layout.maximumWidth: app.width - dynamicMargin
-                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+                                 < dynamicWidthSmall ? app.width - dynamicMargin : dynamicWidthSmall
             Layout.rowSpan: 1
             lineHeight: 1.1
             wrapMode: Text.WordWrap

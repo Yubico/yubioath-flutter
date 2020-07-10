@@ -6,12 +6,8 @@ import QtGraphicalEffects 1.0
 
 Flickable {
 
-    readonly property int dynamicWidth: 648
-    readonly property int dynamicMargin: 32
-
     id: enterPasswordViewId
     objectName: 'enterPasswordView'
-    property string title: ""
 
     ScrollBar.vertical: ScrollBar {
         width: 8

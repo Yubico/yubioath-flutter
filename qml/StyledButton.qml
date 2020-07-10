@@ -32,7 +32,7 @@ Button {
 
     background: Rectangle {
             color: primary ? (critical ? yubicoRed : Material.primary) : "transparent"
-            opacity: parent.hovered ? highEmphasis : fullEmphasis
+            opacity: !enabled ? disabledEmphasis : (parent.hovered ? highEmphasis : fullEmphasis)
             border.color: formButtonBorder
             border.width: primary || flat ? 0 : 1
             radius: 4

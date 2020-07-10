@@ -135,6 +135,7 @@ Dialog {
                 text: qsTr(buttonAccept)
                 enabled: true
                 critical: warning
+                primary: true
                 DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
                 KeyNavigation.tab: btnCancel
                 Keys.onReturnPressed: accept()
@@ -146,6 +147,7 @@ Dialog {
                 text: qsTr(buttonCancel)
                 critical: warning
                 enabled: true
+                flat: true
                 DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
                 KeyNavigation.tab: btnAccept
                 Keys.onReturnPressed: reject()

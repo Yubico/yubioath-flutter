@@ -11,8 +11,6 @@ ToolTip {
     property string buttonColor: Material.primary
     property string backgroundColor: "#333333"
     property bool fullWidth: false
-    readonly property int dynamicWidth: 640
-    readonly property int dynamicMargin: 16
     property int drawerWidth: drawer.visible ? drawer.width : 0
 
     id: tooltip
@@ -20,8 +18,8 @@ ToolTip {
     x: drawerWidth + (app.width - width) / 2
     y: app.height
     z: 2
-    width: fullWidth ? app.width : app.width - dynamicMargin
-                       < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+    width: fullWidth ? app.width : app.width - dynamicMarginSmall
+                       < dynamicWidth ? app.width - dynamicMarginSmall : dynamicWidth
     leftMargin: fullWidth ? 0 : 8
     rightMargin: fullWidth ? 0 : 8
     bottomMargin: fullWidth ? 0 : 8
