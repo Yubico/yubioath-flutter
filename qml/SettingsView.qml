@@ -11,8 +11,6 @@ Flickable {
     contentWidth: app.width
     contentHeight: expandedHeight
 
-    readonly property int dynamicWidth: 648
-    readonly property int dynamicMargin: 32
     property var expandedHeight: content.implicitHeight + dynamicMargin
 
     onExpandedHeightChanged: {
@@ -32,9 +30,7 @@ Flickable {
     }
     boundsBehavior: Flickable.StopAtBounds
 
-    property string title: qsTr("")
     property string searchFieldPlaceholder: qsTr("Search settings")
-
 
     ColumnLayout {
         width: settingsPanel.contentWidth

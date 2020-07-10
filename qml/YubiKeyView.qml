@@ -12,8 +12,6 @@ Flickable {
     leftMargin: 0
     rightMargin: 0
 
-    readonly property int dynamicWidth: 648
-    readonly property int dynamicMargin: 32
     property var expandedHeight: content.implicitHeight + dynamicMargin
 
     onExpandedHeightChanged: {
@@ -33,12 +31,9 @@ Flickable {
     }
     boundsBehavior: Flickable.StopAtBounds
 
-
     Accessible.ignored: true
 
-    property string title: ""
     property string searchFieldPlaceholder: !!yubiKey.currentDevice ? qsTr("Search configuration") : ""
-
 
     property string deviceName: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : ""
     property string deviceSerial: !!yubiKey.currentDevice && !!yubiKey.currentDevice.serial ? yubiKey.currentDevice.serial : ""

@@ -12,13 +12,9 @@ Pane {
     padding: 0
     spacing: 0
 
-    property string title: ""
     property string searchFieldPlaceholder:  entries.count > 0 ? qsTr("Search accounts") : ""
-
     property string searchQuery: toolBar.searchField.text
-
     property var currentCredentialCard: credentialsSection.currentCredentialCard
-
 
     height: app.height - toolBar.height
 

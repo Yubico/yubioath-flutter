@@ -9,13 +9,10 @@ Flickable {
     id: newCredentialViewId
     objectName: 'newCredentialView'
 
-    property string title: ""
     property var credential
     property bool manualEntry: false
     property bool scanning: false
 
-    readonly property int dynamicWidth: 648
-    readonly property int dynamicMargin: 32
     property var expandedHeight: content.implicitHeight + dynamicMargin
 
     onExpandedHeightChanged: {
@@ -329,6 +326,7 @@ Flickable {
                 id: addBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 Layout.topMargin: 16
+                primary: true
                 text: qsTr("Add account")
                 toolTipText: qsTr("Add account to YubiKey")
                 enabled: secretKeyLbl.validated && acceptableInput() && nameLbl.validated

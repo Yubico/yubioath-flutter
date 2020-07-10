@@ -12,8 +12,6 @@ Flickable {
     leftMargin: 0
     rightMargin: 0
 
-    readonly property int dynamicWidth: 648
-    readonly property int dynamicMargin: 32
     property var expandedHeight: content.implicitHeight + dynamicMargin
 
     onExpandedHeightChanged: {
@@ -34,8 +32,6 @@ Flickable {
     boundsBehavior: Flickable.StopAtBounds
 
     Accessible.ignored: true
-
-    property string title: ""
 
     ColumnLayout {
         id: content
