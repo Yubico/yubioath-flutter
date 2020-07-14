@@ -13,6 +13,7 @@ Item {
     property alias currentIndex: comboBox.currentIndex
     property alias currentText: comboBox.currentText
     property alias displayText: comboBox.displayText
+    property bool noDefaultSelection: false
 
     id: container
     height: 47
@@ -24,7 +25,7 @@ Item {
     Column {
 
         Label {
-            text: label
+            text: noDefaultSelection && (!comboBox.activeFocus && currentIndex == 0) ? " " : label
             font.pixelSize: 12
             color:  comboBox.activeFocus ? yubicoGreen : primaryColor
             opacity: enabled ? (!comboBox.activeFocus ? lowEmphasis : fullEmphasis) : disabledEmphasis
@@ -52,6 +53,7 @@ Item {
                     opacity: enabled ? highEmphasis : disabledEmphasis
                 }
             }
+            displayText: noDefaultSelection && (!comboBox.activeFocus && currentIndex == 0) ? label : currentText
             contentItem: Text {
                 color: primaryColor
                 opacity: enabled ? highEmphasis : disabledEmphasis

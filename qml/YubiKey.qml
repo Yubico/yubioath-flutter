@@ -242,6 +242,52 @@ Python {
         }
     }
 
+    function slotsStatus(cb) {
+        doCall('yubikey.controller.slots_status', [], cb)
+    }
+
+    function eraseSlot(slot, cb) {
+        doCall('yubikey.controller.erase_slot', [slot], cb)
+    }
+
+    function swapSlots(cb) {
+        doCall('yubikey.controller.swap_slots', [], cb)
+    }
+
+    function serialModhex(cb) {
+        doCall('yubikey.controller.serial_modhex', [], cb)
+    }
+
+    function randomUid(cb) {
+        doCall('yubikey.controller.random_uid', [], cb)
+    }
+
+    function randomKey(bytes, cb) {
+        doCall('yubikey.controller.random_key', [bytes], cb)
+    }
+
+    function programChallengeResponse(slot, key, touch, cb) {
+        doCall('yubikey.controller.program_challenge_response',
+               [slot, key, touch], cb)
+    }
+
+    function programStaticPassword(slot, password, keyboardLayout, cb) {
+        doCall('yubikey.controller.program_static_password',
+               [slot, password, keyboardLayout], cb)
+    }
+
+    function programOathHotp(slot, key, digits, cb) {
+        doCall('yubikey.controller.program_oath_hotp', [slot, key, digits], cb)
+    }
+
+    function generateStaticPw(keyboardLayout, cb) {
+        doCall('yubikey.controller.generate_static_pw', [keyboardLayout], cb)
+    }
+
+    function programOtp(slot, publicId, privateId, key, upload, cb) {
+        doCall('yubikey.controller.program_otp',
+               [slot, publicId, privateId, key, upload, appVersion], cb)
+    }
 
     function checkUsbDescriptorsChanged(cb) {
         doCall('yubikey.controller.check_descriptors', [], cb)
