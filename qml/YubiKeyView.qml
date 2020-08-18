@@ -160,6 +160,16 @@ Flickable {
                 SettingsPanelPasswordMgmt {}
                 SettingsPanelResetDevice {}
             }
+
+            StyledExpansionContainer {
+                title: qsTr("Security keys (FIDO2)")
+
+                YubiKeyFidoCreatePIN {}
+                YubiKeyFidoRegistrations {}
+                YubiKeyFidoFingerprints {}
+                YubiKeyFidoReset {}
+            }
+
         }
     }
 }
