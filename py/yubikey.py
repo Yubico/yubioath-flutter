@@ -143,6 +143,7 @@ def nfc_selectable(dev):
 def is_nfc(reader_name):
     return "yubico" not in reader_name.lower()
 
+
 class OathContextManager(object):
     def __init__(self, dev):
         self._dev = dev
@@ -547,6 +548,8 @@ class Controller(object):
         return success({'readers': [str(reader) for reader in list_readers()]})
 
     def parse_qr(self, screenshot):
+        with open('yubioath-screenshot-%d.json' % int(time.time()), 'w') as f:
+            json.dump(screenshot, f)
         data = b64decode(screenshot['data'])
         image = PixelImage(data, screenshot['width'], screenshot['height'])
         for qr in qrparse.parse_qr_codes(image, 2):
