@@ -1,6 +1,8 @@
 TEMPLATE = app
 QT += qml quick widgets quickcontrols2
 CONFIG += c++11
+CONFIG += qzxing_qml
+CONFIG += qzxing_multimedia
 SOURCES += main.cpp
 HEADERS += screenshot.h
 
@@ -54,6 +56,9 @@ macx {
 
 # Default rules for deployment.
 include(deployment.pri)
+
+# QXZing for QR scanner
+include(QZXing/QZXing.pri)
 
 # Icon file
 RC_ICONS = resources/icons/com.yubico.yubioath.ico

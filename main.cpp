@@ -9,6 +9,7 @@
 #include <QQuickWindow>
 #include <QQuickStyle>
 #include "screenshot.h"
+#include "QZXing.h"
 
 void handleExitSignal(int sig) {
   printf("Exiting due to signal %d\n", sig);
@@ -38,6 +39,9 @@ int main(int argc, char *argv[])
 
     // Use Material "Dense" variant, recommended for Desktop
     qputenv("QT_QUICK_CONTROLS_MATERIAL_VARIANT", "Dense");
+
+    // QR scanner
+    QZXing::registerQMLTypes();
 
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
