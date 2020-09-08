@@ -128,27 +128,6 @@ Flickable {
         width: parent.width
 
         ColumnLayout {
-            id: addScanQRCode
-            width: parent.width
-            Layout.fillWidth: true
-
-            StyledExpansionContainer {
-                title: qsTr("Add account")
-
-                StyledExpansionPanel {
-                    label: qsTr("Scan QR code")
-                    description: qsTr("Make sure QR code is fully visible.")
-                    toolButtonIcon: "../images/qr-scanner.svg"
-                    toolButtonToolTip: qsTr("Scan QR code on screen")
-                    toolButton.onClicked: scanQr()
-                    isEnabled: false
-                    isTopPanel: true
-                    isBottomPanel: true
-                }
-            }
-        }
-
-        ColumnLayout {
             id: addAccountForm
             width: parent.width
             Layout.fillWidth: true
@@ -156,6 +135,16 @@ Flickable {
             Layout.rightMargin: 16
             Layout.topMargin: 8
 
+            Label {
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                text: qsTr("Add account")
+                color: Material.primary
+                font.pixelSize: 16
+                font.weight: Font.Normal
+                topPadding: 24
+                bottomPadding: 8
+                Layout.fillWidth: true
+            }
             StyledTextField {
                 id: issuerLbl
                 labelText: qsTr("Issuer")
@@ -186,57 +175,92 @@ Flickable {
                 onSubmit: addCredential()
             }
 
-            ColumnLayout {
+            CheckBox {
+                id: requireTouchCheckBox
+                checked: settings.requireTouch
+                visible: yubiKey.supportsTouchCredentials()
+                text: qsTr("Require touch to display code")
+                leftPadding: 0
+                rightPadding: 6
                 Layout.fillWidth: true
-                Layout.topMargin: 16
-                visible: toolBar.advancedSettingsBtn.isSelected
-
-                RowLayout {
-                    StyledComboBox {
-                        label: "Type"
-                        id: oathTypeComboBox
-                        model: ["TOTP", "HOTP"]
-                        selectedValue: credential && credential.oath_type ? credential.oath_type : ""
-                    }
-                    Item {
-                        width: 16
-                    }
-                    StyledComboBox {
-                        id: algoComboBox
-                        label: qsTr("Algorithm")
-                        model: {
-                            var algos = ["SHA1", "SHA256"]
-                            if (yubiKey.supportsOathSha512()) {
-                                algos.push("SHA512")
-                            }
-                            return algos
-                        }
-                        selectedValue: credential && credential.algorithm ? credential.algorithm : ""
-                    }
+                indicator.anchors.right: right
+                indicator.anchors.rightMargin: rightPadding
+                indicator.opacity: checked ? fullEmphasis : lowEmphasis
+                contentItem.anchors.left: left
+                contentItem.anchors.leftMargin: leftPadding
+                contentItem.opacity: lowEmphasis
+                Component.onCompleted: {
+                    contentItem.leftPadding = 0
                 }
+              }
+/*            StyledCheckBox {
+                id: advancedSettingsCheckBox
+                text: qsTr("Show advanced settings")
+                description: qsTr("Change according to instructions only.")
+                visible: manualEntry
+                Layout.bottomMargin: 16
+                Layout.topMargin: 0
+            }
+*/
+            StyledExpansionPanel {
+                id: advancedSettingsPanel
+                label: qsTr("Advanced ")
+                description: qsTr("Type, Algorithm, Period, Digits")
+                dropShadow: false
+                backgroundColor: "transparent"
+                Layout.leftMargin: -16
 
-                RowLayout {
-                    StyledTextField {
-                        id: periodLbl
-                        visible: oathTypeComboBox.currentIndex === 0
-                        labelText: qsTr("Period")
-                        text: credential && credential.period ? credential.period : "30"
-                        horizontalAlignment: Text.Alignleft
-                        validator: IntValidator {
-                            bottom: 15
-                            top: 60
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.topMargin: 16
+
+                    RowLayout {
+                        StyledComboBox {
+                            label: "Type"
+                            id: oathTypeComboBox
+                            model: ["TOTP", "HOTP"]
+                            selectedValue: credential && credential.oath_type ? credential.oath_type : ""
                         }
-                        Layout.maximumWidth: oathTypeComboBox.width
+                        Item {
+                            width: 16
+                        }
+                        StyledComboBox {
+                            id: algoComboBox
+                            label: qsTr("Algorithm")
+                            model: {
+                                var algos = ["SHA1", "SHA256"]
+                                if (yubiKey.supportsOathSha512()) {
+                                    algos.push("SHA512")
+                                }
+                                return algos
+                            }
+                            selectedValue: credential && credential.algorithm ? credential.algorithm : ""
+                        }
                     }
-                    Item {
-                        visible: oathTypeComboBox.currentIndex === 0
-                        width: 16
-                    }
-                    StyledComboBox {
-                        id: digitsComboBox
-                        label: qsTr("Digits")
-                        model: ["6", "7", "8"]
-                        selectedValue: credential && credential.digits ? credential.digits : ""
+
+                    RowLayout {
+                        StyledTextField {
+                            id: periodLbl
+                            visible: oathTypeComboBox.currentIndex === 0
+                            labelText: qsTr("Period")
+                            text: credential && credential.period ? credential.period : "30"
+                            horizontalAlignment: Text.Alignleft
+                            validator: IntValidator {
+                                bottom: 15
+                                top: 60
+                            }
+                            Layout.maximumWidth: oathTypeComboBox.width
+                        }
+                        Item {
+                            visible: oathTypeComboBox.currentIndex === 0
+                            width: 16
+                        }
+                        StyledComboBox {
+                            id: digitsComboBox
+                            label: qsTr("Digits")
+                            model: ["6", "7", "8"]
+                            selectedValue: credential && credential.digits ? credential.digits : ""
+                        }
                     }
                 }
             }

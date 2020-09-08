@@ -203,7 +203,7 @@ ToolBar {
                 id: requireTouchBtn
                 property bool isSelected
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: navigator.isInNewOathCredential() && yubiKey.supportsTouchCredentials()
+                visible: navigator.isInNewOathCredential()
 
                 onClicked: isSelected = !isSelected
                 Keys.onReturnPressed: navigator.oathCopySelectedCredential()
@@ -226,7 +226,7 @@ ToolBar {
                     Material.background: toolTipBackground
                 }
 
-                icon.source: "../images/touch.svg"
+                icon.source: "../images/attach.svg"
                 icon.color: isSelected ? yubicoGreen : primaryColor
                 opacity: hovered || isSelected ? fullEmphasis : lowEmphasis
 
@@ -256,15 +256,36 @@ ToolBar {
                 Accessible.name: "Advanced"
                 Accessible.description: "Toggle advanced settings"
 
-                ToolTip {
+/*                ToolTip {
                     text: qsTr("%1 advanced settings").arg(parent.isSelected ? "Hide" : "Show")
                     delay: 1000
                     visible: parent.hovered
                     Material.foreground: toolTipForeground
                     Material.background: toolTipBackground
                 }
+*/
+                /*
+                ToolTip {
+                    id: control
+                    text: qsTr("Use this button to scan\nscreen for QR code")
+                    visible: true
 
-                icon.source: "../images/cogwheel.svg"
+                    contentItem: Text {
+                        text: control.text
+                        font: control.font
+                        color: defaultBackground
+                    }
+
+                    background: Rectangle {
+                        color: "yellow"
+                        border.color: "yellow"
+                    }
+                }
+*/
+
+
+
+                icon.source: "../images/qr-scanner.svg"
                 icon.color: isSelected ? yubicoGreen : primaryColor
                 opacity: hovered || isSelected ? fullEmphasis : lowEmphasis
 
