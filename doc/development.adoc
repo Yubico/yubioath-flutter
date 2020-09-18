@@ -60,3 +60,8 @@ To use these:
 
     $ pip install pre-commit flake8
     $ pre-commit install
+	
+== QR decoder
+
+The third party library QZXing, based on commit https://github.com/ftylitak/qzxing/commit/4715b242cc08582a0c31aad94d74251b77821a29[4715b24], is needed to decode QR codes found in images.
+The library is already included in the repo.

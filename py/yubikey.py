@@ -505,17 +505,14 @@ class Controller(object):
     def get_connected_readers(self):
         return success({'readers': [str(reader) for reader in list_readers()]})
 
-    def parse_qr(self, screenshot):
-        data = b64decode(screenshot['data'])
-        image = PixelImage(data, screenshot['width'], screenshot['height'])
-        for qr in qrparse.parse_qr_codes(image, 2):
-            try:
-                return success(
-                    credential_data_to_dict(
-                        CredentialData.from_uri(qrdecode.decode_qr_data(qr))))
-            except Exception as e:
-                logger.error('Failed to parse uri', exc_info=e)
-                return failure('failed_to_parse_uri')
+    def parse_qr(self, data):
+        try:
+            return success(
+                credential_data_to_dict(
+                    CredentialData.from_uri(data)))
+        except Exception as e:
+            logger.error('Failed to parse uri', exc_info=e)
+            return failure('failed_to_parse_uri')
         return failure('no_credential_found')
 
 

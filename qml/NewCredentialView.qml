@@ -3,6 +3,10 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
+import QtQuick.Dialogs 1.2
+import Qt.labs.platform 1.0
+import QtQuick.Window 2.2
+
 
 Flickable {
 
@@ -12,8 +16,87 @@ Flickable {
     property var credential
     property bool manualEntry: false
     property bool scanning: false
+    property var fileName
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
+
+    Pane {
+        id: dropAreaOverlay
+        anchors.centerIn: parent
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        width: app.width-8
+        height: app.height-toolBar.height-8
+        visible: false
+        z: 200
+        background: Rectangle {
+            anchors.fill: parent
+            color: isDark() ? "#ee111111" : "#eeeeeeee"
+        }
+
+        ColumnLayout {
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            anchors.centerIn: parent
+
+            StyledImage {
+                id: yubikeys
+                source: "../images/qr-scanner.svg"
+                color: primaryColor
+                opacity: lowEmphasis
+                iconWidth: 110
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                bottomPadding: 16
+            }
+
+            Label {
+                text: qsTr("Drop QR code")
+                font.pixelSize: 16
+                font.weight: Font.Normal
+                lineHeight: 1.5
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                color: primaryColor
+                opacity: highEmphasis
+            }
+            Label {
+                text: qsTr("Drag and drop any image containing a QR code here.")
+                horizontalAlignment: Qt.AlignHCenter
+                Layout.minimumWidth: 300
+                Layout.maximumWidth: app.width - dynamicMargin
+                                     < dynamicWidthSmall ? app.width - dynamicMargin : dynamicWidthSmall
+                Layout.rowSpan: 1
+                lineHeight: 1.1
+                wrapMode: Text.WordWrap
+                font.pixelSize: 13
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                color: primaryColor
+                opacity: lowEmphasis
+            }
+        }
+    }
+
+    DropArea {
+        id: dropArea;
+        anchors.fill: parent
+        onEntered: {
+            drag.accept (Qt.LinkAction);
+            dropAreaOverlay.visible = true
+        }
+        onExited: dropAreaOverlay.visible = false
+        onDropped: {
+            dropAreaOverlay.visible = false
+            var url = drop.urls[0]
+            var file
+            if (url.includes("file")) {
+                if (Qt.platform.os === "windows") {
+                    file = url.replace(/^(file:\/{3})/,"")
+                } else {
+                    file = url.replace(/^(file:\/{2})/,"")
+                }
+                scanQr(ScreenShot.capture(file))
+            } else {
+                scanQr(url)
+            }
+        }
+    }
 
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {
@@ -56,9 +139,9 @@ Flickable {
         return nameAndKey && okTotalLength
     }
 
-    function scanQr() {
+    function scanQr(data) {
         scanning = true
-        yubiKey.parseQr(ScreenShot.capture(), function (resp) {
+        yubiKey.parseQr(data, function (resp) {
             scanning = false
             if (resp.success) {
                 credential = resp
@@ -195,8 +278,8 @@ Flickable {
                     primary: true
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     KeyNavigation.tab: btnCancel
-                    Keys.onReturnPressed: scanQr()
-                    onClicked: scanQr()
+                    Keys.onReturnPressed: scanQr(ScreenShot.capture(""))
+                    onClicked: scanQr(ScreenShot.capture(""))
                 }
 
                 StyledButton {

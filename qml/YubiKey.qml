@@ -494,8 +494,8 @@ Python {
         doCall('yubikey.controller.ccid_delete_credential', [credential], cb)
     }
 
-    function parseQr(screenShots, cb) {
-        doCall('yubikey.controller.parse_qr', [screenShots], cb)
+    function parseQr(data, cb) {
+        doCall('yubikey.controller.parse_qr', [data], cb)
     }
 
     function reset(cb) {
