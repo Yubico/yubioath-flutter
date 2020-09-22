@@ -143,6 +143,7 @@ StyledExpansionPanel {
         rowSpacing: 0
         columnSpacing: 0
         Layout.leftMargin: 0
+        Layout.rightMargin: -12
         Layout.fillWidth: true
         visible: !!yubiKey.currentDevice && yubiKey.supportsNewInterfaces(yubiKey.currentDevice)
 

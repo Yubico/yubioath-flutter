@@ -95,7 +95,7 @@ Flickable {
                                     text: modelData.nativeText
                                     opacity: lowEmphasis
                                     Layout.leftMargin: 16
-                                    Layout.minimumWidth: 60
+                                    Layout.minimumWidth: 40
                                 }
                                 Label {
                                     text: modelData.description
@@ -118,7 +118,7 @@ Flickable {
                                     text: modelData.nativeText
                                     opacity: lowEmphasis
                                     Layout.leftMargin: 16
-                                    Layout.minimumWidth: 60
+                                    Layout.minimumWidth: 40
                                 }
                                 Label {
                                     text: modelData.description

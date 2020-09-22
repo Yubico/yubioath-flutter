@@ -49,19 +49,13 @@ Pane {
     activeFocusOnTab: true
 
     function expandAction() {
-        function collapseAll() {
-            for (var i = 0; i < parent.children.length; ++i) {
-                if (!!parent.children[i] && parent.children[i].toString().startsWith("SettingsPanel")) {
-                    parent.children[i].isExpanded = false
-                }
-            }
-        }
-
         if (isEnabled) {
             if (isExpanded) {
                 isExpanded = false
             } else {
-                collapseAll()
+                for (var i = 1; i < parent.children.length; ++i) {
+                    parent.children[i].isExpanded = false
+                }
                 isExpanded = true
             }
         }

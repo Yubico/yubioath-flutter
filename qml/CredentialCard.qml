@@ -190,7 +190,7 @@ Pane {
     background: Rectangle {
         anchors.left: parent.left
         anchors.top: parent.top
-        Layout.minimumWidth: 299
+        Layout.minimumWidth: app.minimumWidth - 1
         Layout.minimumHeight: 75
         width: parent.width - 1
         height: parent.height - 1
