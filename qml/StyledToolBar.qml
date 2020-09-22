@@ -26,8 +26,6 @@ ToolBar {
     property alias drawerBtn: drawerBtn
     property alias addCredentialBtn: addCredentialBtn
     property alias searchField: searchField
-    property alias requireTouchBtn: requireTouchBtn
-    property alias advancedSettingsBtn: advancedSettingsBtn
 
     property string searchFieldPlaceholder: !!navigator.currentItem ? navigator.currentItem.searchFieldPlaceholder || "" : ""
 
@@ -53,8 +51,8 @@ ToolBar {
 
             KeyNavigation.left: navigator
             KeyNavigation.backtab: navigator
-            KeyNavigation.right: searchField.visible ? searchField : (requireTouchBtn.visible ? requireTouchBtn : advancedSettingsBtn)
-            KeyNavigation.tab: searchField.visible ? searchField : (requireTouchBtn.visible ? requireTouchBtn : advancedSettingsBtn)
+            KeyNavigation.right: searchField.visible ? searchField : (requireTouchBtn.visible ? requireTouchBtn : scanQrCodeBtn)
+            KeyNavigation.tab: searchField.visible ? searchField : (requireTouchBtn.visible ? requireTouchBtn : scanQrCodeBtn)
 
             Accessible.role: Accessible.Button
             Accessible.name: "Menu"
@@ -211,8 +209,8 @@ ToolBar {
 
                 KeyNavigation.left: drawerBtn
                 KeyNavigation.backtab: drawerBtn
-                KeyNavigation.right: advancedSettingsBtn
-                KeyNavigation.tab: advancedSettingsBtn
+                KeyNavigation.right: scanQrCodeBtn
+                KeyNavigation.tab: scanQrCodeBtn
 
                 Accessible.role: Accessible.Button
                 Accessible.name: "RequireTouch"
@@ -238,14 +236,13 @@ ToolBar {
             }
 
             ToolButton {
-                id: advancedSettingsBtn
-                property bool isSelected
+                id: scanQrCodeBtn
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: navigator.isInNewOathCredential()
 
-                onClicked: isSelected = !isSelected
-                Keys.onReturnPressed: navigator.oathCopySelectedCredential()
-                Keys.onEnterPressed: navigator.oathCopySelectedCredential()
+                onClicked: yubiKey.scanQr(true)
+                Keys.onReturnPressed: yubiKey.scanQr(true)
+                Keys.onEnterPressed: yubiKey.scanQr(true)
 
                 KeyNavigation.left: requireTouchBtn.visible ? requireTouchBtn : drawerBtn
                 KeyNavigation.backtab: requireTouchBtn.visible ? requireTouchBtn : drawerBtn
@@ -253,41 +250,20 @@ ToolBar {
                 KeyNavigation.tab: closeBtn
 
                 Accessible.role: Accessible.Button
-                Accessible.name: "Advanced"
-                Accessible.description: "Toggle advanced settings"
+                Accessible.name: qsTr("Scan")
+                Accessible.description: qsTr("Scan QR code")
 
-/*                ToolTip {
-                    text: qsTr("%1 advanced settings").arg(parent.isSelected ? "Hide" : "Show")
+                ToolTip {
+                    text: qsTr("Scan QR code")
                     delay: 1000
                     visible: parent.hovered
                     Material.foreground: toolTipForeground
                     Material.background: toolTipBackground
                 }
-*/
-                /*
-                ToolTip {
-                    id: control
-                    text: qsTr("Use this button to scan\nscreen for QR code")
-                    visible: true
-
-                    contentItem: Text {
-                        text: control.text
-                        font: control.font
-                        color: defaultBackground
-                    }
-
-                    background: Rectangle {
-                        color: "yellow"
-                        border.color: "yellow"
-                    }
-                }
-*/
-
-
 
                 icon.source: "../images/qr-scanner.svg"
-                icon.color: isSelected ? yubicoGreen : primaryColor
-                opacity: hovered || isSelected ? fullEmphasis : lowEmphasis
+                icon.color: primaryColor
+                opacity: hovered ? fullEmphasis : lowEmphasis
 
                 MouseArea {
                     anchors.fill: parent
@@ -379,9 +355,9 @@ ToolBar {
 
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
-                onClicked: navigator.goToNewCredential()
-                Keys.onReturnPressed: navigator.goToNewCredential()
-                Keys.onEnterPressed: navigator.goToNewCredential()
+                onClicked: menu.visible ? menu.close() : menu.open()
+                Keys.onReturnPressed: menu.visible ? menu.close() : menu.open()
+                Keys.onEnterPressed: menu.visible ? menu.close() : menu.open()
 
                 KeyNavigation.left: !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential() ? deleteCredentialBtn : searchField
                 KeyNavigation.backtab: !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential() ? deleteCredentialBtn : searchField
@@ -396,7 +372,7 @@ ToolBar {
                     text: qsTr("Add new account (%1)").arg(shortcutAddAccount.nativeText)
                     delay: 1000
                     parent: addCredentialBtn
-                    visible: parent.hovered
+                    visible: parent.hovered && !menu.visible
                     Material.foreground: toolTipForeground
                     Material.background: toolTipBackground
                 }
@@ -409,6 +385,61 @@ ToolBar {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     enabled: false
+                }
+            }
+
+            Menu {
+                id: menu
+                y: addCredentialBtn.height
+                width: 250
+
+                RowLayout {
+                    spacing: 0
+                    width: parent.width
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+
+                    StyledImage {
+                        source: "../images/info.svg"
+                        color: formImageOverlay
+                        iconWidth: 20
+                        iconHeight: 20
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+                        Layout.maximumWidth: 52
+                    }
+
+                    Label {
+                        text: "To add accounts follow instructions provided by the service and make sure QR code is fully visible."
+                        color: primaryColor
+                        opacity: lowEmphasis
+                        font.pixelSize: 11
+                        font.weight: Font.Normal
+                        lineHeight: 1.1
+                        wrapMode: Text.WordWrap
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        Layout.fillWidth: true
+                        Layout.rightMargin: 8
+                    }
+                }
+
+                MenuSeparator {}
+
+                MenuItem {
+                    icon.source: "../images/qr-scanner.svg"
+                    icon.color: primaryColor
+                    icon.width: 20
+                    icon.height: 20
+                    opacity: highEmphasis
+                    text: "Add by scanning QR code"
+                    onTriggered: yubiKey.scanQr(true, true)
+                }
+                MenuItem {
+                    icon.source: "../images/edit.svg"
+                    icon.color: primaryColor
+                    icon.width: 20
+                    icon.height: 20
+                    opacity: highEmphasis
+                    text: "Add using advanced form"
+                    onTriggered: navigator.goToNewCredential()
                 }
             }
 
@@ -425,8 +456,8 @@ ToolBar {
                 Keys.onReturnPressed: navigator.goToAuthenticator()
                 Keys.onEnterPressed: navigator.goToAuthenticator()
 
-                KeyNavigation.left: advancedSettingsBtn.visible ? advancedSettingsBtn : drawerBtn
-                KeyNavigation.backtab: advancedSettingsBtn.visible ? advancedSettingsBtn : drawerBtn
+                KeyNavigation.left: scanQrCodeBtn.visible ? scanQrCodeBtn : drawerBtn
+                KeyNavigation.backtab: scanQrCodeBtn.visible ? scanQrCodeBtn : drawerBtn
                 KeyNavigation.right: navigator
                 KeyNavigation.tab: navigator
 

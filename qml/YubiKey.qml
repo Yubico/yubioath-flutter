@@ -242,6 +242,25 @@ Python {
         }
     }
 
+    function scanQr(toastIfError, goToMainIfError) {
+        navigator.goToLoading()
+        parseQr(ScreenShot.capture(), function (resp) {
+            if (resp.success) {
+                navigator.goToNewCredential(resp)
+            } else {
+                if (toastIfError) {
+                    navigator.snackBarError(navigator.getErrorMessage(
+                                                resp.error_id))
+                }
+                if (goToMainIfError) {
+                    navigator.goToAuthenticator()
+                } else {
+                    navigator.goToNewCredential()
+                }
+
+            }
+        })
+    }
 
     function checkUsbDescriptorsChanged(cb) {
         doCall('yubikey.controller.check_descriptors', [], cb)

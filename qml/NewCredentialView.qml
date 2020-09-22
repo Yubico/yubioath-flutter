@@ -209,6 +209,7 @@ Flickable {
                 dropShadow: false
                 backgroundColor: "transparent"
                 Layout.leftMargin: -16
+                visible: !credential
 
                 ColumnLayout {
                     Layout.fillWidth: true

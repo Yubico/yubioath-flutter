@@ -117,8 +117,10 @@ StackView {
 
     function goToNewCredential(credential) {
         if (currentItem.objectName !== 'newCredentialView') {
-            clearAndPush(newCredentialView, StackView.Immediate)
-        }
+            clearAndPush(newCredentialView.createObject(app, {
+                                                            "credential": credential,
+                                                            "manualEntry": false
+                                                        }), StackView.Immediate)        }
     }
 
     function confirm(options) {
