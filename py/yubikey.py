@@ -1,18 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+import struct
 import json
 import logging
 import types
 import time
 import ykman.logging_setup
 import smartcard.pcsc.PCSCExceptions
-from base64 import b32encode, b64decode
+from base64 import b32encode, b32decode, b64decode
 from binascii import a2b_hex, b2a_hex
 from ykman.descriptor import (
     get_descriptors, list_devices, open_device,
     FailedOpeningDeviceException, Descriptor)
-from ykman.util import (TRANSPORT, APPLICATION, Mode, parse_b32_key)
+from ykman.util import (
+    TRANSPORT, APPLICATION, generate_static_pw,
+    modhex_encode, modhex_decode, Mode, parse_b32_key)
 from ykman.device import YubiKey, device_config
 from ykman.driver_otp import YkpersError
 from ykman.driver_ccid import (
@@ -21,9 +25,10 @@ from ykman.driver_ccid import (
 from ykman.oath import (
     ALGO, OATH_TYPE, OathController,
     CredentialData, Credential, Code, SW)
-from ykman.otp import OtpController
+from ykman.otp import OtpController, PrepareUploadFailed
 from ykman.settings import Settings
 from qr import qrparse, qrdecode
+from ykman.scancodes import KEYBOARD_LAYOUT
 
 
 logger = logging.getLogger(__name__)
@@ -368,6 +373,87 @@ class Controller(object):
                     reboot=True)
 
         return success()
+
+    def slots_status(self):
+        with self._open_otp() as controller:
+            return success({'status': controller.slot_status})
+
+    def erase_slot(self, slot):
+        with self._open_otp() as controller:
+            controller.zap_slot(slot)
+        return success()
+
+    def swap_slots(self):
+        with self._open_otp() as controller:
+            controller.swap_slots()
+        return success()
+
+    def serial_modhex(self):
+        with open_device(TRANSPORT.OTP, serial=self._current_serial) as dev:
+            return modhex_encode(b'\xff\x00' + struct.pack(b'>I', dev.serial))
+
+    def program_challenge_response(self, slot, key, touch):
+        key = a2b_hex(key)
+        with self._open_otp() as controller:
+            controller.program_chalresp(slot, key, touch)
+        return success()
+
+
+    def program_static_password(self, slot, key, keyboard_layout):
+        with self._open_otp() as controller:
+            controller.program_static(
+                slot, key,
+                keyboard_layout=KEYBOARD_LAYOUT[keyboard_layout])
+        return success()
+
+    def program_oath_hotp(self, slot, key, digits):
+        unpadded = key.upper().rstrip('=').replace(' ', '')
+        key = b32decode(unpadded + '=' * (-len(unpadded) % 8))
+        with self._open_otp() as controller:
+            controller.program_hotp(slot, key, hotp8=(int(digits) == 8))
+        return success()
+
+    def generate_static_pw(self, keyboard_layout):
+        return success({
+            'password': generate_static_pw(
+                38, KEYBOARD_LAYOUT[keyboard_layout])
+        })
+
+    def random_uid(self):
+        return b2a_hex(os.urandom(6)).decode('ascii')
+
+    def random_key(self, bytes):
+        return b2a_hex(os.urandom(int(bytes))).decode('ascii')
+
+    def program_otp(self, slot, public_id, private_id, key, upload=False,
+                    app_version='unknown'):
+        key = a2b_hex(key)
+        public_id = modhex_decode(public_id)
+        private_id = a2b_hex(private_id)
+
+        upload_url = None
+
+        with self._open_otp() as controller:
+            if upload:
+                try:
+                    upload_url = controller.prepare_upload_key(
+                        key, public_id, private_id,
+                        serial=self._current_serial,
+                        user_agent='ykman-qt/' + app_version)
+                except PrepareUploadFailed as e:
+                    logger.debug('YubiCloud upload failed', exc_info=e)
+                    return failure('upload_failed',
+                                   {'upload_errors': [err.name
+                                                      for err in e.errors]})
+
+            controller.program_otp(slot, key, public_id, private_id)
+
+        logger.debug('YubiOTP successfully programmed.')
+
+        if upload_url:
+            logger.debug('Upload url: %s', upload_url)
+
+        return success({'upload_url': upload_url})
 
     def set_mode(self, interfaces):
         with open_device(serial=self._current_serial) as dev:
