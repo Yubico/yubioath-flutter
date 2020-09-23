@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies from homebrew
         run: |
           brew update
-          brew install swig qt zlib curl coreutils
+          brew install swig qt zlib curl coreutils libffi
           brew link qt -f
 
       - name: Setup GPG
