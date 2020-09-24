@@ -146,8 +146,12 @@ Flickable {
             if (resp.success) {
                 credential = resp
             } else {
-                navigator.snackBarError(navigator.getErrorMessage(
+                if (resp.error_id === "failed_to_parse_uri") {
+                    navigator.snackBarError(navigator.getErrorMessage('no_credential_found'))
+                } else {
+                    navigator.snackBarError(navigator.getErrorMessage(
                                                                 resp.error_id))
+                }
             }
         })
     }
