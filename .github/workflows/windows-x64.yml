@@ -3,7 +3,7 @@ name: windows 64 bit
 on: [push, pull_request]
 
 env:
-  PYTHON_VER: '3.8.2'
+  PYTHON_VER: '3.8.6'
   PYTHON_VER_DIRNAME: 'python38'
   PYOTHERSIDE_VER: '1.5.9'
 
@@ -26,7 +26,7 @@ jobs:
           host: 'windows'
           target: 'desktop'
           arch: 'win64_msvc2017_64'
-          aqtversion: '==0.8a3'
+          aqtversion: '==0.8'
 
       - name: Download dependencies
         run: |
@@ -123,17 +123,10 @@ jobs:
         run: |
           $env:PATH += ";$env:WIX\bin"
           $env:SRCDIR = ".\release\"
-          $env:MERGEDPATH = Get-ChildItem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\*\MergeModules\Microsoft_VC142_CRT_x64.msm"
           heat dir .\release -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
           candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs -ext WixUtilExtension -arch x64
           light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop.msi
           cp yubioath-desktop.msi deploy
-
-      - name: Run installer
-        shell: cmd
-        run: |
-          msiexec /i yubioath-desktop.msi /quiet /l .\log.txt
-          cat .\log.txt
 
       - name: Rename installer
         shell: powershell
@@ -141,12 +134,6 @@ jobs:
           $arr = $env:GITHUB_REF -split '/'
           $branch = $arr[2]
           mv .\deploy\yubioath-desktop.msi .\deploy\yubioath-desktop-$branch-win64.msi
-
-      - name: Run GUI
-        shell: bash
-        run: |
-          ./release/yubioath-desktop --version
-          ./release/yubioath-desktop --help
 
       - name: Upload artifact
         uses: actions/upload-artifact@v1

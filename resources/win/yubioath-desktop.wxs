@@ -66,14 +66,6 @@
         </Component>
       </DirectoryRef>
 
-      <DirectoryRef Id="TARGETDIR">
-        <Merge Id="VCRedist" SourceFile="$(env.MERGEDPATH)" DiskId="1" Language="0"/>
-      </DirectoryRef>
-
-      <Feature Id="VCRedist" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
-        <MergeRef Id="VCRedist"/>
-      </Feature>
-
       <Feature Id="DefaultFeature" Level="1">
          <ComponentGroupRef Id="ApplicationFiles"/>
       </Feature>
