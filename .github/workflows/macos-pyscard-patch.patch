@@ -10,18 +10,17 @@ macOS App Store.
  1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/setup.py b/setup.py
-index 939e60f..e8ae7fc 100755
+index 3795389..7bd4a2b 100755
 --- a/setup.py
 +++ b/setup.py
-@@ -65,9 +65,8 @@
-     platform_sources = []
-     platform_libraries = []
-     platform_include_dirs = []
--    platform_extra_compile_args = ['-v', '-arch', 'i386',
--                                   '-arch', 'x86_64', '-ggdb']
--    platform_extra_link_args = ['-arch', 'i386', '-arch', 'x86_64', '-ggdb']
-+    platform_extra_compile_args = ['-v', '-arch', 'x86_64', '-ggdb']
-+    platform_extra_link_args = ['-arch', 'x86_64', '-ggdb']
- 
- # Other (GNU/Linux, etc.)
- #
+@@ -38,8 +38,8 @@ if sys.version_info[0:2] < (2, 6):
+ platform_include_dirs = []
+ platform_sources = []
+ platform_libraries = []
+-platform_extra_compile_args = []    # ['-ggdb', '-O0']
+-platform_extra_link_args = []   # ['-ggdb']
++platform_extra_compile_args = ['-v', '-arch', 'x86_64', '-ggdb']
++platform_extra_link_args = ['-arch', 'x86_64', '-ggdb']
+
+ if get_platform() in ('win32', 'win-amd64'):
+     platform__cc_defines = [('WIN32', '100')]
