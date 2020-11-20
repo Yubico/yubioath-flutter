@@ -82,7 +82,7 @@ Flickable {
 
                     ColumnLayout {
                         Label {
-                            text: "Global"
+                            text: qsTr("Global")
                             color: primaryColor
                             opacity: lowEmphasis
                             font.pixelSize: 12
@@ -104,7 +104,7 @@ Flickable {
                             }
                         }
                         Label {
-                            text: "Authenticator"
+                            text: qsTr("Authenticator")
                             color: primaryColor
                             opacity: lowEmphasis
                             font.pixelSize: 12
@@ -147,7 +147,7 @@ Flickable {
                     opacity: lowEmphasis
                 }
                 Text {
-                    text: qsTr("<a href='https://www.yubico.com/support/terms-conditions/yubico-license-agreement/'>Terms of use</a>&nbsp;&nbsp;<a href='https://www.yubico.com/support/terms-conditions/privacy-notice/'>Privacy policy</a>")
+                    text: "<a href='https://www.yubico.com/support/terms-conditions/yubico-license-agreement/'>%1</a>&nbsp;&nbsp;<a href='https://www.yubico.com/support/terms-conditions/privacy-notice/'>%2</a>".arg(qsTr("Terms of use")).arg(qsTr("Privacy policy"))
                     font.pixelSize: 13
                     Layout.topMargin: 8
                     linkColor: yubicoGreen

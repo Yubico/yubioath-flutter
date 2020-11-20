@@ -5,7 +5,7 @@ import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 
 StyledExpansionPanel {
-    label: Qt.platform.os === "osx" ? "Menu bar" : "System tray"
+    label: Qt.platform.os === "osx" ? qsTr("Menu bar") : qsTr("System tray")
     description: qsTr("Configure where and how the application is visible.")
 
     ColumnLayout {

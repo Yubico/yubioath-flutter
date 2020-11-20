@@ -4,7 +4,7 @@ CONFIG += c++11
 CONFIG += qzxing_qml
 CONFIG += qzxing_multimedia
 SOURCES += main.cpp
-HEADERS += screenshot.h
+HEADERS += screenshot.h i18n.h
 
 # This is the internal verson number, Windows requires 4 digits.
 win32|win64 {

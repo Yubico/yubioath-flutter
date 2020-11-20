@@ -86,7 +86,7 @@ StyledExpansionPanel {
 
         StyledButton {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
-            text: "Apply"
+            text: qsTr("Apply")
             enabled: isValidMode()
             onClicked: setInterface()
         }

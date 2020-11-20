@@ -84,7 +84,7 @@ Flickable {
             }
 
             Label {
-                text: "Device information"
+                text: qsTr("Device information")
                 font.pixelSize: 16
                 font.weight: Font.Normal
                 lineHeight: 1.8
@@ -123,7 +123,7 @@ Flickable {
                 icon.color: primaryColor
                 opacity: hovered ? fullEmphasis : lowEmphasis
                 focus: true
-                text: "Device configuration"
+                text: qsTr("Device configuration")
                 font.capitalization: Font.MixedCase
                 font.weight: Font.Medium
                 font.pixelSize: 13

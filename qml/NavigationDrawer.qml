@@ -248,7 +248,7 @@ Drawer {
 
             NavigationItem {
                 icon: "../images/people.svg"
-                text: "Authenticator"
+                text: qsTr("Authenticator")
                 onActivated: navigator.goToAuthenticator()
                 isActive: navigator.isInAuthenticator() || navigator.isInNewOathCredential() || navigator.isInEnterPassword()
                 isHovered: hoverIndex === 0
@@ -256,21 +256,21 @@ Drawer {
             }
             NavigationItem {
                 icon: "../images/yubikey-vertical.svg"
-                text: "YubiKey"
+                text: qsTr("YubiKey")
                 onActivated: navigator.goToYubiKey()
                 isActive: navigator.isInYubiKeyView()
                 isHovered: hoverIndex === 1
             }
             NavigationItem {
                 icon: "../images/cogwheel.svg"
-                text: "Settings"
+                text: qsTr("Settings")
                 onActivated: navigator.goToSettings()
                 isActive: navigator.isInSettings()
                 isHovered: hoverIndex === 2
             }
             NavigationItem {
                 icon: "../images/help.svg"
-                text: "About"
+                text: qsTr("About")
                 onActivated: navigator.goToAbout()
                 isActive: navigator.isInAbout()
                 isHovered: hoverIndex === 3

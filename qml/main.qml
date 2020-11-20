@@ -83,6 +83,9 @@ ApplicationWindow {
         (poller.running = isInForeground || settings.closeToTray)
     }
     Component.onCompleted: {
+        if (settings.language == "") {
+            i18n.retranslate("")
+        }
         updateTrayVisibility()
         ensureMinimumWindowSize()
         ensureValidWindowPosition()
@@ -338,6 +341,8 @@ ApplicationWindow {
         property bool useCustomReader
         property string customReaderName
 
+        property string language
+
         property bool closeToTray
         property bool hideOnLaunch
         property bool requireTouch: true
@@ -358,6 +363,9 @@ ApplicationWindow {
         onCloseToTrayChanged: updateTrayVisibility()
         onThemeChanged: {
             app.Material.theme = theme
+        }
+        onLanguageChanged: {
+            i18n.retranslate(language)
         }
     }
 

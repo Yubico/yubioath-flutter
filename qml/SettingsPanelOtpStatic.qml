@@ -87,7 +87,7 @@ ColumnLayout {
                                       keyboardLayout, function (resp) {
                                           if (resp.success) {
                                               navigator.snackBar(
-                                                          "Configured static password")
+                                                          qsTr("Configured static password"))
                                           } else {
                                               if (resp.error_id === 'write error') {
                                                   navigator.snackBar(qsTr("Failed to modify. Make sure the YubiKey does not have restricted access."))

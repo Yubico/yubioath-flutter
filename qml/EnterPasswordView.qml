@@ -59,7 +59,7 @@ Flickable {
                < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
 
         Label {
-            text: "Unlock YubiKey"
+            text: qsTr("Unlock YubiKey")
             font.pixelSize: 16
             font.weight: Font.Normal
             lineHeight: 1.8

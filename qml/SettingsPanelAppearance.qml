@@ -7,8 +7,52 @@ import QtGraphicalEffects 1.0
 StyledExpansionPanel {
     label: qsTr("Appearance")
     description: qsTr("Change the visual appearance of the application.")
-    metadata: "dark light mode theme"
+    metadata: "dark light mode theme language"
     isTopPanel: true
+
+    ListModel {
+        id: languages
+
+        ListElement {
+            text: qsTr("System default")
+            value: ""
+        }
+        ListElement {
+            text: qsTr("English")
+            value: "en"
+        }
+        ListElement {
+            text: qsTr("French")
+            value: "fr"
+        }
+    }
+
+    ColumnLayout {
+        RowLayout {
+            Layout.fillWidth: true
+            StyledComboBox {
+                id: languageComboBox
+                label: qsTr("Language")
+                comboBox.textRole: "text"
+                model: languages
+                onCurrentIndexChanged: {
+                    settings.language = languages.get(currentIndex).value
+                }
+                currentIndex: {
+                    switch (settings.language) {
+                    case "":
+                        return 0
+                    case "en":
+                        return 1
+                    case "fr":
+                        return 2
+                    default:
+                        return 0
+                    }
+                }
+            }
+        }
+    }
 
     ListModel {
         id: themes

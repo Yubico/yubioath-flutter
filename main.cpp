@@ -9,6 +9,7 @@
 #include <QQuickWindow>
 #include <QQuickStyle>
 #include "screenshot.h"
+#include "i18n.h"
 #include "QZXing.h"
 
 void handleExitSignal(int sig) {
@@ -111,11 +112,13 @@ int main(int argc, char *argv[])
 
     ScreenShot screenshot;
     QQmlApplicationEngine engine;
+    i18n i18n(&engine);
 
     engine.rootContext()->setContextProperty("appDir", app_dir);
     engine.rootContext()->setContextProperty("urlPrefix", url_prefix);
     engine.rootContext()->setContextProperty("appVersion", APP_VERSION);
     engine.rootContext()->setContextProperty("ScreenShot", &screenshot);
+    engine.rootContext()->setContextProperty("i18n", &i18n);
     engine.rootContext()->setContextProperty("application", &application);
     engine.rootContext()->setContextProperty("monitorAreas", monitorAreas);
     engine.load(QUrl(url_prefix + main_qml));

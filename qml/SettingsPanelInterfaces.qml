@@ -149,7 +149,7 @@ StyledExpansionPanel {
         // header
 
         Text {
-            text: "Interface"
+            text: qsTr("Interface")
             color: primaryColor
             opacity: lowEmphasis
             font.pixelSize: 12
@@ -170,7 +170,7 @@ StyledExpansionPanel {
                 iconWidth: 16
             }
             Text {
-                text: "USB"
+                text: qsTr("USB")
                 Layout.leftMargin: -20
                 color: primaryColor
                 opacity: lowEmphasis
@@ -196,7 +196,7 @@ StyledExpansionPanel {
                 iconWidth: 16
             }
             Text {
-                text: "NFC"
+                text: qsTr("NFC")
                 Layout.leftMargin: -20
                 color: primaryColor
                 opacity: lowEmphasis
@@ -212,7 +212,7 @@ StyledExpansionPanel {
 
         Label {
             visible: ccidButton1.visible || ccidButton2.visible
-            text: "CCID (smart card)"
+            text: qsTr("CCID (smart card)")
         }
 
         CheckBox {
@@ -338,7 +338,7 @@ StyledExpansionPanel {
         // CCID description
 
         Label {
-            text: "The CCID interfaces includes smart card, encryption and security codes functionality."
+            text: qsTr("The CCID interfaces includes smart card, encryption and security codes functionality.")
             color: primaryColor
             opacity: disabledEmphasis
             font.pixelSize: 12
@@ -443,7 +443,7 @@ StyledExpansionPanel {
         // FIDO description
 
         Label {
-            text: "The FIDO protocols is used in the W3C WebAuthn standard adopte by all web browsers."
+            text: qsTr("The FIDO protocols is used in the W3C WebAuthn standard adopte by all web browsers.")
             color: primaryColor
             opacity: disabledEmphasis
             font.pixelSize: 12
@@ -481,7 +481,7 @@ StyledExpansionPanel {
         // OTP description
 
         Label {
-            text: "Protocols for one-time passwords, challenge response, static passwords etc."
+            text: qsTr("Protocols for one-time passwords, challenge response, static passwords etc.")
             color: primaryColor
             opacity: disabledEmphasis
             font.pixelSize: 12
@@ -494,7 +494,7 @@ StyledExpansionPanel {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
             Layout.topMargin: 16
             Layout.columnSpan: gridLayout.columns
-            text: "Set"
+            text: qsTr("Set")
             enabled: !!yubiKey.currentDevice && configurationHasChanged() && validCombination()
             onClicked: configureInterfaces()
         }
@@ -517,7 +517,7 @@ StyledExpansionPanel {
         // header
 
         Text {
-            text: "Interface"
+            text: qsTr("Interface")
             color: primaryColor
             opacity: lowEmphasis
             font.pixelSize: 12
@@ -549,7 +549,7 @@ StyledExpansionPanel {
         // Legacy CCID
 
         Label {
-            text: "CCID (smart card)"
+            text: qsTr("CCID (smart card)")
             visible: ccidModeBtn.visible
         }
 
@@ -560,7 +560,7 @@ StyledExpansionPanel {
         }
 
         Label {
-            text: "The CCID interfaces includes smart card, encryption and security codes functionality."
+            text: qsTr("The CCID interfaces includes smart card, encryption and security codes functionality.")
             visible: ccidModeBtn.visible
             color: primaryColor
             opacity: disabledEmphasis
@@ -585,7 +585,7 @@ StyledExpansionPanel {
         }
 
         Label {
-            text: "The FIDO protocols is used in the W3C WebAuthn standard adopte by all web browsers."
+            text: qsTr("The FIDO protocols is used in the W3C WebAuthn standard adopte by all web browsers.")
             visible: fidoModeBtn.visible
             color: primaryColor
             opacity: disabledEmphasis
@@ -610,7 +610,7 @@ StyledExpansionPanel {
         }
 
         Label {
-            text: "Protocols for one-time passwords, challenge response, static passwords etc."
+            text: qsTr("Protocols for one-time passwords, challenge response, static passwords etc.")
             visible: otpModeBtn.visible
             color: primaryColor
             opacity: disabledEmphasis
@@ -624,7 +624,7 @@ StyledExpansionPanel {
         StyledButton {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
             Layout.topMargin: 16
-            text: "Set"
+            text: qsTr("Set")
             Layout.columnSpan: gridLayoutLegacyKeys.columns
             onClicked: configureModes()
             enabled: !!yubiKey.currentDevice && legacyConfigurationHasChanged() && legacyValidCombination()

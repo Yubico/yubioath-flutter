@@ -244,7 +244,7 @@ Pane {
                     opacity: highEmphasis
                     icon.width: 20
                     icon.height: 20
-                    text: "Delete account"
+                    text: qsTr("Delete account")
                     onTriggered: deleteCard()
                 }
             }

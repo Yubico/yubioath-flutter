@@ -261,7 +261,7 @@ Flickable {
 
             Label {
                 Layout.topMargin: 16
-                text: "To add an account follow the instructions provided by the service. Make sure the QR code is fully visible."
+                text: qsTr("To add an account follow the instructions provided by the service. Make sure the QR code is fully visible.")
                 color: primaryColor
                 opacity: highEmphasis
                 font.pixelSize: 13
@@ -361,7 +361,7 @@ Flickable {
 
                 RowLayout {
                     StyledComboBox {
-                        label: "Type"
+                        label: qsTr("Type")
                         id: oathTypeComboBox
                         model: ["TOTP", "HOTP"]
                         selectedValue: credential && credential.oath_type ? credential.oath_type : ""

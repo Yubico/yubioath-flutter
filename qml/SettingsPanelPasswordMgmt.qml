@@ -7,7 +7,7 @@ import QtGraphicalEffects 1.0
 StyledExpansionPanel {
     id: passwordManagementPanel
     label: qsTr("Manage password")
-    description: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? "Password is set" : "Password is not set"
+    description: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Password is set") : qsTr("Password is not set")
     isVisible: yubiKey.currentDeviceEnabled("OATH")
     isTopPanel: true
 
@@ -137,7 +137,7 @@ StyledExpansionPanel {
                 id: removePasswordBtn
                 visible: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
                 enabled: currentPasswordField.text.length > 0
-                text: "Remove"
+                text: qsTr("Remove")
                 onClicked: navigator.confirm({
                                            "heading": qsTr("Remove password?"),
                                            "description": qsTr("A password will not be required to access the accounts anymore."),
@@ -150,7 +150,7 @@ StyledExpansionPanel {
             }
             StyledButton {
                 id: applyPassword
-                text: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? "Change" : "Set"
+                text: !!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword ? qsTr("Change") : qsTr("Set")
                 enabled: acceptableInput()
                 onClicked: submitPassword()
             }

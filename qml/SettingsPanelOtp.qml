@@ -84,20 +84,20 @@ StyledExpansionPanel {
             id: credentialTypeCombobox
             noDefaultSelection: true
             label: qsTr("Credential type")
-            model: ["", "Yubico OTP", "Challenge response", "Static password", "OATH-HOTP"]
+            model: ["", qsTr("Yubico OTP"), qsTr("Challenge response"), qsTr("Static password"), qsTr("OATH-HOTP")]
 
             function getCurrentLabel() {
                 switch (credentialTypeCombobox.currentIndex) {
                 case 1:
-                    return "A Yubico OTP is a 44-character, one use, secure, 128-bit encrypted Public ID and Password."
+                    return qsTr("A Yubico OTP is a 44-character, one use, secure, 128-bit encrypted Public ID and Password.")
                 case 2:
-                    return "YubiKey creates a \"response\" based on a provided \"challenge\" and a shared secret."
+                    return qsTr("YubiKey creates a \"response\" based on a provided \"challenge\" and a shared secret.")
                 case 3:
-                    return "Store a long static password on the YubiKey so you don't have to remember it."
+                    return qsTr("Store a long static password on the YubiKey so you don't have to remember it.")
                 case 4:
-                    return "OATH-HOTP is a standard algorithm for calculating one-time passwords based on a secret and a counter."
+                    return qsTr("OATH-HOTP is a standard algorithm for calculating one-time passwords based on a secret and a counter.")
                 default:
-                    return "Select credential type to program slot with."
+                    return qsTr("Select credential type to program slot with.")
                 }
             }
         }
@@ -150,14 +150,14 @@ StyledExpansionPanel {
         StyledButton {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
             enabled: slotConfigured
-            text: "Delete"
+            text: qsTr("Delete")
             onClicked: {
                 confirmDelete()
             }
         }
         StyledButton {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
-            text: "Apply"
+            text: qsTr("Apply")
             enabled: {
                 if (otpConfigurationPanel.credentialTypeStaticPassword) {
                     otpStaticPassword.changed
