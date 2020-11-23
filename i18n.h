@@ -5,6 +5,8 @@
 #include <QMap>
 #include <QCoreApplication>
 #include <QQmlApplicationEngine>
+#include <QLocale>
+#include <QDebug>
 
 class i18n: public QObject {
     Q_OBJECT
