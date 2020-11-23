@@ -8,15 +8,12 @@ Subject: [PATCH] setup.py: add typical snapcraft location of PCSC
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/setup.py b/setup.py
-index 939e60f..ba54c7c 100755
+index 3795389..27ad71a 100755
 --- a/setup.py
 +++ b/setup.py
-@@ -76,7 +76,7 @@
+@@ -67,7 +67,7 @@
+ else:
+     platform__cc_defines = [('PCSCLITE', '1')]
      platform_swig_opts = ['-DPCSCLITE']
-     platform_sources = []
-     platform_libraries = []
 -    platform_include_dirs = ['/usr/include/PCSC', '/usr/local/include/PCSC']
 +    platform_include_dirs = ['/root/stage/usr/include/PCSC']
-     platform_extra_compile_args = []    # ['-ggdb', '-O0']
-     platform_extra_link_args = []   # ['-ggdb']
- 
