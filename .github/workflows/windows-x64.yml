@@ -3,7 +3,7 @@ name: windows 64 bit
 on: [push, pull_request]
 
 env:
-  PYTHON_VER: '3.8.3'
+  PYTHON_VER: '3.8.6'
   PYTHON_VER_DIRNAME: 'python38'
   PYOTHERSIDE_VER: '1.5.9'
 
@@ -20,13 +20,13 @@ jobs:
           architecture: 'x64'
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2.5.0
+        uses: jurplel/install-qt-action@v2.10.0
         with:
           version: '5.14.1'
           host: 'windows'
           target: 'desktop'
           arch: 'win64_msvc2017_64'
-          aqtversion: '==0.8'
+          aqtversion: '==0.9.7'
 
       - name: Download dependencies
         run: |
@@ -129,7 +129,7 @@ jobs:
         run: |
           $env:PATH += ";$env:WIX\bin"
           $env:SRCDIR = ".\release\"
-          $env:MERGEDPATH = Get-ChildItem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.26.28720\MergeModules\Microsoft_VC142_CRT_x64.msm"
+          $env:MERGEDPATH = Get-ChildItem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.*\MergeModules\Microsoft_VC142_CRT_x64.msm"
           heat dir .\release -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
           candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs -ext WixUtilExtension -arch x64
           light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop.msi

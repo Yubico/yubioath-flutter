@@ -3,7 +3,7 @@ name: windows 32bit
 on: [push, pull_request]
 
 env:
-  PYTHON_VER: '3.8.3'
+  PYTHON_VER: '3.8.6'
   PYTHON_VER_DIRNAME: 'python38'
   PYOTHERSIDE_VER: '1.5.9'
 
@@ -20,13 +20,13 @@ jobs:
           architecture: 'x86'
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2.5.0
+        uses: jurplel/install-qt-action@v2.10.0
         with:
           version: '5.14.1'
           host: 'windows'
           target: 'desktop'
           arch: 'win32_msvc2017'
-          aqtversion: '==0.8a3'
+          aqtversion: '==0.9.7'
 
       - name: Download dependencies
         run: |
