@@ -31,7 +31,7 @@ ToolBar {
     property string searchFieldPlaceholder: !!navigator.currentItem ? navigator.currentItem.searchFieldPlaceholder || "" : ""
 
     function shouldShowCredentialOptions() {
-        return !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential()
+        return !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential() && !searchField.activeFocus
     }
 
     RowLayout {

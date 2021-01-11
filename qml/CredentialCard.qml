@@ -191,7 +191,7 @@ Pane {
         anchors.left: parent.left
         anchors.top: parent.top
         Layout.minimumWidth: app.minimumWidth - 1
-        Layout.minimumHeight: 75
+        Layout.minimumHeight: grid.idealCellHeight - 1
         width: parent.width - 1
         height: parent.height - 1
         color: yubicoWhite
@@ -295,7 +295,7 @@ Pane {
             spacing: 0
             Label {
                 id: codeLbl
-                font.pixelSize: 24
+                font.pixelSize: 22
                 color: primaryColor
                 opacity: hovered || credentialCard.GridView.isCurrentItem ? fullEmphasis : highEmphasis
                 text: getCodeLblValue()

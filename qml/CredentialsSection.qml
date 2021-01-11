@@ -7,7 +7,7 @@ import QtGraphicalEffects 1.0
  GridView {
         id: grid
         property var columnWidth: width/model.count
-        property var idealCellHeight: 76
+        property var idealCellHeight: 70
         property var idealCellWidth: columnWidth > 228 ? columnWidth : 228
 
         property var currentCredentialCard: currentItem
