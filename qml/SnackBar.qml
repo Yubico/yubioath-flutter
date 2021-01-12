@@ -7,10 +7,7 @@ import QtGraphicalEffects 1.0
 ToolTip {
 
     property string message: "Default message"
-    property string buttonText: "Dismiss"
-    property string buttonColor: Material.primary
-    property string backgroundColor: "#333333"
-    property bool fullWidth: false
+    property string backgroundColor: yubicoGreen
     property int drawerWidth: drawer.visible ? drawer.width : 0
 
     id: tooltip
@@ -18,17 +15,15 @@ ToolTip {
     x: drawerWidth + (app.width - width) / 2
     y: app.height
     z: 2
-    width: fullWidth ? app.width : app.width - dynamicMarginSmall
-                       < dynamicWidth ? app.width - dynamicMarginSmall : dynamicWidth
-    leftMargin: fullWidth ? 0 : 8
-    rightMargin: fullWidth ? 0 : 8
-    bottomMargin: fullWidth ? 0 : 8
-    height: 48
+    leftMargin: 8
+    rightMargin: 8
+    bottomMargin: 12
+    height: 16 + (snackLbl.lineCount * 16)
     padding: 0
     background: Rectangle {
-        color: primaryColor
-        radius: fullWidth ? 0 : 4
-        layer.enabled: !fullWidth
+        color: backgroundColor
+        radius: 30
+        layer.enabled: true
         layer.effect: DropShadow {
             radius: 2
             samples: radius * 2
@@ -46,22 +41,14 @@ ToolTip {
         Label {
             id: snackLbl
             text: message
-            color: defaultElevated
+            color: fullContrast
             opacity: highEmphasis
             font.pixelSize: 13
             leftPadding: 8
-            rightPadding: 0
+            rightPadding: 8
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
-        }
-
-        StyledButton {
-            id: snackBtn
-            flat: true
-            text: buttonText
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Material.foreground: buttonColor
-            onClicked: tooltip.close()
+            horizontalAlignment: Qt.AlignHCenter
         }
     }
 }

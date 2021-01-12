@@ -230,7 +230,7 @@ StackView {
     Component {
         id: snackBarErrorComponent
         SnackBar {
-            buttonColor: yubicoRed
+            backgroundColor: yubicoRed
         }
     }
 }

@@ -55,7 +55,7 @@ Pane {
             Layout.leftMargin: -16
             topInset: 0
             bottomInset: 0
-            color: item.isActive ? defaultBackground : primaryColor
+            color: item.isActive ? defaultElevated : primaryColor
             opacity: isEnabled ? (((item.hovered || isHovered) && !item.isActive) || isActive ? highEmphasis : lowEmphasis) : disabledEmphasis
         }
         Label {

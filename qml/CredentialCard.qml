@@ -188,19 +188,18 @@ Pane {
     property var isKeyChanged: false
 
     background: Rectangle {
-        anchors.left: parent.left
         anchors.top: parent.top
-        Layout.minimumWidth: app.minimumWidth - 1
-        Layout.minimumHeight: grid.idealCellHeight - 1
-        width: parent.width - 1
+        anchors.centerIn: parent
+        width: parent.width - 8
         height: parent.height - 1
-        color: yubicoWhite
+        radius: 8
+        color: primaryColor
         opacity: if (credentialCard.GridView.isCurrentItem) {
                    return cardSelectedEmphasis
                } else if (cardMouseArea.containsMouse) {
                    return cardHoveredEmphasis
                } else {
-                   return isDark() ? cardNormalEmphasis : 1.0
+                   return cardNormalEmphasis
                }
         MouseArea {
             id: cardMouseArea
@@ -274,151 +273,147 @@ Pane {
         onTriggered: navigator.snackBar(qsTr("Touch your YubiKey"))
     }
 
-    Item {
 
-        anchors.fill: parent
+    CredentialCardIcon {
+        id: icon
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: 4
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        size: 40
+        Accessible.ignored: true
+    }
 
-        CredentialCardIcon {
-            id: icon
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 4
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            size: 40
-            Accessible.ignored: true
+    ColumnLayout {
+        anchors.left: icon.right
+        anchors.leftMargin: 12
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: 0
+        Label {
+            id: codeLbl
+            font.pixelSize: 22
+            color: primaryColor
+            opacity: credentialCard.GridView.isCurrentItem ? fullEmphasis : highEmphasis
+            text: getCodeLblValue()
+            font.weight: credentialCard.GridView.isCurrentItem ? Font.Normal : Font.Light
         }
-
-        ColumnLayout {
-            anchors.left: icon.right
-            anchors.leftMargin: 12
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 0
-            Label {
-                id: codeLbl
-                font.pixelSize: 22
-                color: primaryColor
-                opacity: hovered || credentialCard.GridView.isCurrentItem ? fullEmphasis : highEmphasis
-                text: getCodeLblValue()
-                font.weight: credentialCard.GridView.isCurrentItem ? Font.Normal : Font.Light
-            }
-            Label {
-                id: nameLbl
-                text: searchQuery.length > 0 ? colorizeMatch(formattedName(), searchQuery) : formattedName()
-                textFormat: searchQuery.length > 0 ? TextEdit.RichText : TextEdit.PlainText
-                clip: true
-                Layout.maximumWidth: credentialCard.width - 106
-                font.pixelSize: 14
-                elide: Text.ElideRight
-                color: primaryColor
-                opacity: lowEmphasis
-            }
-            ToolTip {
-                text: qsTr(nameLbl.text)
-                delay: 1000
-                parent: nameLbl
-                visible: nameLbl.truncated && credentialCard.hovered && !favoriteBtn.hovered
-                Material.foreground: toolTipForeground
-                Material.background: toolTipBackground
-            }
-        }
-
-        Accessible.role: Accessible.ListItem
-        Accessible.focusable: true
-        Accessible.name: !!credential ? (credential.issuer ? credential.issuer : credential.name) : ""
-        Accessible.description: getCodeLblValue()
-
-        ToolButton {
-            id: favoriteBtn
-            Layout.alignment: Qt.AlignRight | Qt.AlignTop
-            visible: favorite || credentialCard.hovered || credentialCard.GridView.isCurrentItem
-
-            anchors.top: parent.top
-            anchors.right: parent.right
-            anchors.rightMargin: -6
-            anchors.topMargin: -2
-
-            onClicked: toggleFavorite()
-            Keys.onReturnPressed: toggleFavorite()
-            Keys.onEnterPressed: toggleFavorite()
-            focusPolicy: Qt.NoFocus
-
-            Accessible.role: Accessible.Button
-            Accessible.name: "Favorite"
-            Accessible.description: "Favorite credential"
-
-            ToolTip {
-                text: favorite ? qsTr("Remove as favorite (%1)").arg(shortcutToggleFavorite.nativeText)  :
-                                 qsTr("Set as favorite (%1)").arg(shortcutToggleFavorite.nativeText)
-                delay: 1000
-                parent: favoriteBtn
-                visible: parent.hovered
-                Material.foreground: toolTipForeground
-                Material.background: toolTipBackground
-            }
-
-            icon.source: favorite ? "../images/star.svg" : "../images/star_border.svg"
-            icon.color: hovered || favorite ? iconFavorite : primaryColor
-            opacity: hovered || favorite ? highEmphasis : disabledEmphasis
-            implicitHeight: 30
-            implicitWidth: 30
-
-            MouseArea {
-                id: favoriteMouseArea
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                propagateComposedEvents: true
-                enabled: false
-            }
-        }
-
-        CredentialCardTimer {
-            period: credential && credential.period ? credential.period : 0
-            validTo: code && code.valid_to ? code.valid_to : 0
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            anchors.rightMargin: 3
-            anchors.bottomMargin: 6
-            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-            visible: code && code.value && credential && credential.oath_type === "TOTP" ? true : false
-            onTimesUp: {
-                if (touchCredential) {
-                    clearExpiredCode()
-                }
-                if (customPeriodCredentialNoTouch) {
-                    calculateCard(false)
-                }
-            }
-        }
-
-        StyledImage {
-            id: touchIcon
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.bottomMargin: 6
-            iconWidth: 18
-            iconHeight: 18
-            source: "../images/touch.svg"
-            visible: touchCredentialNoCode
+        Label {
+            id: nameLbl
+            text: searchQuery.length > 0 ? colorizeMatch(formattedName(), searchQuery) : formattedName()
+            textFormat: searchQuery.length > 0 ? TextEdit.RichText : TextEdit.PlainText
+            clip: true
+            Layout.maximumWidth: credentialCard.width - 106
+            font.pixelSize: 14
+            elide: Text.ElideRight
             color: primaryColor
             opacity: lowEmphasis
-            Layout.alignment: Qt.AlignRight
+        }
+        ToolTip {
+            text: nameLbl.text
+            delay: 1000
+            parent: nameLbl
+            visible: nameLbl.truncated && credentialCard.hovered && !favoriteBtn.hovered
+            Material.foreground: toolTipForeground
+            Material.background: toolTipBackground
+        }
+    }
+
+    Accessible.role: Accessible.ListItem
+    Accessible.focusable: true
+    Accessible.name: !!credential ? (credential.issuer ? credential.issuer : credential.name) : ""
+    Accessible.description: getCodeLblValue()
+
+    ToolButton {
+        id: favoriteBtn
+        Layout.alignment: Qt.AlignRight | Qt.AlignTop
+        visible: favorite || credentialCard.hovered || credentialCard.GridView.isCurrentItem
+
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.rightMargin: -6
+        anchors.topMargin: -4
+
+        onClicked: toggleFavorite()
+        Keys.onReturnPressed: toggleFavorite()
+        Keys.onEnterPressed: toggleFavorite()
+        focusPolicy: Qt.NoFocus
+
+        Accessible.role: Accessible.Button
+        Accessible.name: "Favorite"
+        Accessible.description: "Favorite credential"
+
+        ToolTip {
+            text: favorite ? qsTr("Remove as favorite (%1)").arg(shortcutToggleFavorite.nativeText)  :
+                             qsTr("Set as favorite (%1)").arg(shortcutToggleFavorite.nativeText)
+            delay: 1000
+            parent: favoriteBtn
+            visible: parent.hovered
+            Material.foreground: toolTipForeground
+            Material.background: toolTipBackground
         }
 
-        StyledImage {
-            id: hotpIcon
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            anchors.rightMargin: -1
-            anchors.bottomMargin: 2
-            iconWidth: 20
-            iconHeight: 20
-            source: "../images/refresh.svg"
-            visible: hotpCredential
-            color: primaryColor
-            opacity: hotpCredentialInCoolDown ? disabledEmphasis : lowEmphasis
-            Layout.alignment: Qt.AlignRight
+        icon.source: favorite ? "../images/star.svg" : "../images/star_border.svg"
+        icon.color: hovered || favorite ? iconFavorite : primaryColor
+        opacity: hovered || favorite ? highEmphasis : disabledEmphasis
+        implicitHeight: 30
+        implicitWidth: 30
+
+        MouseArea {
+            id: favoriteMouseArea
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            propagateComposedEvents: true
+            enabled: false
         }
+    }
+
+    CredentialCardTimer {
+        period: credential && credential.period ? credential.period : 0
+        validTo: code && code.valid_to ? code.valid_to : 0
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.rightMargin: 3
+        anchors.bottomMargin: 4
+        Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+        visible: code && code.value && credential && credential.oath_type === "TOTP" ? true : false
+        onTimesUp: {
+            if (touchCredential) {
+                clearExpiredCode()
+            }
+            if (customPeriodCredentialNoTouch) {
+                calculateCard(false)
+            }
+        }
+    }
+
+    StyledImage {
+        id: touchIcon
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.bottomMargin: 6
+        iconWidth: 18
+        iconHeight: 18
+        source: "../images/touch.svg"
+        visible: touchCredentialNoCode
+        color: primaryColor
+        opacity: lowEmphasis
+        Layout.alignment: Qt.AlignRight
+    }
+
+    StyledImage {
+        id: hotpIcon
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.rightMargin: -1
+        anchors.bottomMargin: 2
+        iconWidth: 20
+        iconHeight: 20
+        source: "../images/refresh.svg"
+        visible: hotpCredential
+        color: primaryColor
+        opacity: hotpCredentialInCoolDown ? disabledEmphasis : lowEmphasis
+        Layout.alignment: Qt.AlignRight
     }
 }
 

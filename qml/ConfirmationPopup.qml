@@ -20,7 +20,7 @@ Dialog {
     width: app.width * 0.9 > 600 ? 600 : app.width * 0.9
 
     background: Rectangle {
-        color: defaultBackground
+        color: defaultElevated
         radius: 4
     }
 
@@ -129,6 +129,9 @@ Dialog {
             Layout.bottomMargin: -8
             padding: 0
             visible: buttons
+            background: Rectangle {
+                color: "transparent"
+            }
 
             StyledButton {
                 id: btnAccept

@@ -62,9 +62,9 @@ Flickable {
             spacing: 4
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
             width: parent.width
-            Layout.leftMargin: 16
+            Layout.leftMargin: 0
             Layout.topMargin: 32
-            Layout.rightMargin: 16
+            Layout.rightMargin: 0
             Layout.bottomMargin: 0
 
             Rectangle {
@@ -83,35 +83,37 @@ Flickable {
                 }
             }
 
-            Label {
-                text: "Device information"
-                font.pixelSize: 16
-                font.weight: Font.Normal
-                lineHeight: 1.8
-                Layout.topMargin: 24
-                color: yubicoGreen
-                opacity: fullEmphasis
-            }
-            StyledTextField {
-                labelText: qsTr("Device type")
-                text: deviceName
-                visible: text.length > 0
-                enabled: false
-                noedit: true
-            }
-            StyledTextField {
-                labelText: qsTr("Firmware version")
-                text: deviceVersion
-                visible: text.length > 0
-                enabled: false
-                noedit: true
-            }
-            StyledTextField {
-                labelText: qsTr("Serial number")
-                text: deviceSerial
-                visible: text.length > 0
-                enabled: false
-                noedit: true
+            StyledExpansionContainer {
+                title: qsTr("Device information")
+
+                StyledExpansionPanel {
+                    id: expansionPanel
+                    isEnabled: false
+                    isExpanded: true
+                    isTopPanel: true
+
+                    StyledTextField {
+                        labelText: qsTr("Device type")
+                        text: deviceName
+                        visible: text.length > 0
+                        enabled: false
+                        noedit: true
+                    }
+                    StyledTextField {
+                        labelText: qsTr("Firmware version")
+                        text: deviceVersion
+                        visible: text.length > 0
+                        enabled: false
+                        noedit: true
+                    }
+                    StyledTextField {
+                        labelText: qsTr("Serial number")
+                        text: deviceSerial
+                        visible: text.length > 0
+                        enabled: false
+                        noedit: true
+                    }
+                }
             }
 
             ToolButton {

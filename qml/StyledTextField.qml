@@ -71,6 +71,7 @@ Item {
             id: textField
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             selectByMouse: true
+            selectedTextColor: fullContrast
             implicitWidth: textFieldContainer.width
             font.pixelSize: 13
             Keys.onEscapePressed: textField.focus = false
@@ -95,7 +96,7 @@ Item {
             height: 41
             focus: true
             color: primaryColor
-            opacity: enabled || noedit ? highEmphasis : disabledEmphasis
+            opacity: enabled || noedit ? (selectedText.length > 0 ? fullEmphasis : highEmphasis) : disabledEmphasis
             placeholderText: {
                 if (textField.activeFocus) {
                     return ""

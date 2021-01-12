@@ -28,7 +28,7 @@ Button {
     activeFocusOnTab: true
     focus: true
 
-    Material.foreground: primary ? defaultBackground : (critical ? yubicoRed : Material.primary)
+    Material.foreground: primary ? defaultElevated : (critical ? yubicoRed : Material.primary)
 
     background: Rectangle {
             color: primary ? (critical ? yubicoRed : Material.primary) : "transparent"

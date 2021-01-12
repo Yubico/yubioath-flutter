@@ -88,7 +88,7 @@ ToolBar {
                 id: searchField
                 visible: parent.visible
                 selectByMouse: true
-                selectedTextColor: defaultBackground
+                selectedTextColor: fullContrast
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 placeholderText: searchFieldPlaceholder

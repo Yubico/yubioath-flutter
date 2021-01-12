@@ -32,7 +32,7 @@ ColumnLayout {
             opacity: highEmphasis
         }
         Label {
-            text: qsTr("No accounts matching your search criteria. Check your spelling and try again.")
+            text: qsTr("No accounts matching your search criteria. Check your spelling.")
             horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 300
             Layout.maximumWidth: app.width - dynamicMargin
