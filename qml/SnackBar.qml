@@ -11,7 +11,7 @@ ToolTip {
     property int drawerWidth: drawer.visible ? drawer.width : 0
 
     id: tooltip
-    timeout: 3000
+    timeout: 4000
     x: drawerWidth + (app.width - width) / 2
     y: app.height
     z: 2

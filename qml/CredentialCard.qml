@@ -83,7 +83,7 @@ Pane {
                 || customPeriodCredentialNoTouch) {
 
             if (touchCredential && !yubiKey.currentDevice.isNfc) {
-                navigator.snackBar(qsTr("Touch your YubiKey"))
+                navigator.snackBarInfo(qsTr("Touch your YubiKey"))
             }
 
             if (hotpCredential && !yubiKey.currentDevice.isNfc) {
@@ -110,7 +110,7 @@ Pane {
                             if (!yubiKey.currentDevice.isNfc) {
                                 navigator.snackBarError(qsTr("Touch timed out"))
                             } else {
-                                navigator.snackBar(qsTr("Re-tap your YubiKey"))
+                                navigator.snackBarInfo(qsTr("Re-tap your YubiKey"))
                             }
                         } else {
                             navigator.snackBarError(navigator.getErrorMessage(
@@ -270,7 +270,7 @@ Pane {
         id: hotpTouchTimer
         triggeredOnStart: false
         interval: 500
-        onTriggered: navigator.snackBar(qsTr("Touch your YubiKey"))
+        onTriggered: navigator.snackBarInfo(qsTr("Touch your YubiKey"))
     }
 
 

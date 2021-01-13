@@ -51,6 +51,7 @@ ApplicationWindow {
     property string toolTipBackground: isDark() ? "#4a4a4a" : "#7f7f7f"
 
     property string iconFavorite: "#f7bd0c"
+    property string snackBarInfoBg: isDark() ? "#bfbfbf" : "#404040"
 
     property var fullEmphasis: 1.0
     property var highEmphasis: 0.87
@@ -74,7 +75,7 @@ ApplicationWindow {
                         || navigator.currentItem.objectName === 'yubiKeyView'
                         || navigator.currentItem.objectName === 'aboutView')
                 ) {
-            return isDark() ? "#303030" : "#eeeeee"
+            return isDark() ? "#303030" : "#f7f8f9"
         }
         return isDark() ? "#303030" : "#ffffff"
     }
