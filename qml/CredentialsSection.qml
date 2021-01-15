@@ -7,9 +7,8 @@ import QtGraphicalEffects 1.0
  GridView {
         id: grid
         property var columnWidth: width/model.count
-        property var idealCellHeight: 76
-        property var idealCellWidth: columnWidth > 268 ? columnWidth : 268
-
+        property var idealCellHeight: 67
+        property var idealCellWidth: columnWidth > app.minimumWidth - 32 ? columnWidth : app.minimumWidth - 32
         property var currentCredentialCard: currentItem
 
         anchors.fill: parent

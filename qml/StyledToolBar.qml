@@ -31,7 +31,7 @@ ToolBar {
     property string searchFieldPlaceholder: !!navigator.currentItem ? navigator.currentItem.searchFieldPlaceholder || "" : ""
 
     function shouldShowCredentialOptions() {
-        return !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential()
+        return !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential() && !searchField.activeFocus
     }
 
     RowLayout {
@@ -88,7 +88,7 @@ ToolBar {
                 id: searchField
                 visible: parent.visible
                 selectByMouse: true
-                selectedTextColor: defaultBackground
+                selectedTextColor: fullContrast
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 placeholderText: searchFieldPlaceholder

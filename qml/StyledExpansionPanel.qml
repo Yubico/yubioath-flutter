@@ -30,10 +30,11 @@ Pane {
     property string toolButtonToolTip
     property alias toolButton: toolButton
     property alias expandedContent: expandedContent
+    property int expandedPadding: isEnabled ? 48 : 19
 
     Layout.alignment: Qt.AlignCenter | Qt.AlignTop
     Layout.fillWidth: true
-    Layout.minimumHeight: isExpanded ? panelHeader.height + expandedContent.height + 48 : panelHeader.height + 19
+    Layout.minimumHeight: isExpanded ? panelHeader.height + expandedContent.height + expandedPadding : panelHeader.height + 19
 
     Layout.leftMargin: -12
     Layout.rightMargin: -12
@@ -49,19 +50,13 @@ Pane {
     activeFocusOnTab: true
 
     function expandAction() {
-        function collapseAll() {
-            for (var i = 0; i < parent.children.length; ++i) {
-                if (!!parent.children[i] && parent.children[i].toString().startsWith("SettingsPanel")) {
-                    parent.children[i].isExpanded = false
-                }
-            }
-        }
-
         if (isEnabled) {
             if (isExpanded) {
                 isExpanded = false
             } else {
-                collapseAll()
+                for (var i = 1; i < parent.children.length; ++i) {
+                    parent.children[i].isExpanded = false
+                }
                 isExpanded = true
             }
         }
@@ -86,7 +81,7 @@ Pane {
         x: 16
         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         width: parent.width - dynamicMargin
-        spacing: 16
+        spacing: isEnabled ? 16 : 0
 
         RowLayout {
             Layout.leftMargin: -12

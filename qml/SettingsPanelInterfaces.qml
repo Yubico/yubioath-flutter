@@ -9,6 +9,7 @@ StyledExpansionPanel {
     label: "Configure interfaces"
     description: qsTr("Enable/disable active interfaces on the YubiKey")
     metadata: "ccid otp webauthn fido smart card"
+    isTopPanel: true
 
     property var newApplicationsEnabledOverUsb: []
     property var newApplicationsEnabledOverNfc: []
@@ -143,6 +144,7 @@ StyledExpansionPanel {
         rowSpacing: 0
         columnSpacing: 0
         Layout.leftMargin: 0
+        Layout.rightMargin: -12
         Layout.fillWidth: true
         visible: !!yubiKey.currentDevice && yubiKey.supportsNewInterfaces(yubiKey.currentDevice)
 

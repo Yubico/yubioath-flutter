@@ -11,10 +11,10 @@ ApplicationWindow {
 
     id: app
 
-    width: 300
-    height: 502
-    minimumWidth: 300
-    minimumHeight: 348
+    width: 270
+    height: 536 // (idealCellHeight * x) + 46
+    minimumWidth: 270
+    minimumHeight: 396 // (idealCellHeight * x) + 46
     visible: false
 
     flags: Qt.Window | Qt.WindowFullscreenButtonHint | Qt.WindowTitleHint
@@ -31,8 +31,9 @@ ApplicationWindow {
     readonly property string yubicoRed: isDark() ? "#cf6679" : "#b00020"
 
     property string primaryColor: isDark() ? "#ffffff" : "#303030"
+    property string fullContrast: isDark() ? "#000000" : "#ffffff"
 
-    readonly property string defaultBackground: isDark() ? "#303030" : "#f7f8f9"
+    readonly property string defaultBackground: getDefaultBackground()
     readonly property string defaultElevated: isDark() ? "#383838" : "#ffffff"
     readonly property string defaultHovered: isDark() ? "#424242" : "#eeeeee"
     readonly property string defaultImageOverlay: isDark() ? "#565656" : "#dddddd"
@@ -49,6 +50,9 @@ ApplicationWindow {
     property string toolTipForeground: isDark() ? "#fafafa" : "#fbfbfb"
     property string toolTipBackground: isDark() ? "#4a4a4a" : "#7f7f7f"
 
+    property string iconFavorite: "#f7bd0c"
+    property string snackBarInfoBg: isDark() ? "#bfbfbf" : "#404040"
+
     property var fullEmphasis: 1.0
     property var highEmphasis: 0.87
     property var lowEmphasis: 0.60
@@ -56,9 +60,7 @@ ApplicationWindow {
 
     property var cardSelectedEmphasis: 0.08
     property var cardHoveredEmphasis: 0.05
-    property var cardNormalEmphasis: 0.03
-
-    property string iconFavorite: "#f7bd0c"
+    property var cardNormalEmphasis: 0
 
     property bool showDeviceConfiguration: false
 
@@ -67,6 +69,16 @@ ApplicationWindow {
     Material.accent: yubicoGreen
     Material.foreground: defaultForeground
     Material.background: defaultBackground
+
+    function getDefaultBackground() {
+        if (!!navigator.currentItem && (navigator.currentItem.objectName === 'settingsView'
+                        || navigator.currentItem.objectName === 'yubiKeyView'
+                        || navigator.currentItem.objectName === 'aboutView')
+                ) {
+            return isDark() ? "#303030" : "#f7f8f9"
+        }
+        return isDark() ? "#303030" : "#ffffff"
+    }
 
     header: StyledToolBar {
         id: toolBar
@@ -78,7 +90,7 @@ ApplicationWindow {
 
     // Don't refresh credentials when window is minimized or hidden
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
-    property bool isInForeground: visibility != 3 && visibility != 0
+    property bool isInForeground: visibility !== 3 && visibility !== 0
     onIsInForegroundChanged: {
         (poller.running = isInForeground || settings.closeToTray)
     }

@@ -134,10 +134,19 @@ StackView {
     }
 
     function snackBarError(message) {
-        var sbe = snackBarErrorComponent.createObject(app, {
-                                                          "message": message
-                                                      })
-        sbe.open()
+        var sb = snackBarComponent.createObject(app, {
+                                                    "message": message,
+                                                    "backgroundColor": yubicoRed
+                                                })
+        sb.open()
+    }
+
+    function snackBarInfo(message) {
+        var sb = snackBarComponent.createObject(app, {
+                                                    "message": message,
+                                                    "backgroundColor": snackBarInfoBg,
+                                                })
+        sb.open()
     }
 
     function getErrorMessage(error_id) {
@@ -224,13 +233,6 @@ StackView {
     Component {
         id: snackBarComponent
         SnackBar {
-        }
-    }
-
-    Component {
-        id: snackBarErrorComponent
-        SnackBar {
-            buttonColor: yubicoRed
         }
     }
 }

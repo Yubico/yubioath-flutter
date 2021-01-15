@@ -95,7 +95,7 @@ Flickable {
                                     text: modelData.nativeText
                                     opacity: lowEmphasis
                                     Layout.leftMargin: 16
-                                    Layout.minimumWidth: 60
+                                    Layout.minimumWidth: 40
                                 }
                                 Label {
                                     text: modelData.description
@@ -118,7 +118,7 @@ Flickable {
                                     text: modelData.nativeText
                                     opacity: lowEmphasis
                                     Layout.leftMargin: 16
-                                    Layout.minimumWidth: 60
+                                    Layout.minimumWidth: 40
                                 }
                                 Label {
                                     text: modelData.description
@@ -141,7 +141,7 @@ Flickable {
                     opacity: lowEmphasis
                 }
                 Label {
-                    text: qsTr("Copyright © %1 Yubico. All rights reserved.").arg(Qt.formatDateTime(new Date(),"yyyy"))
+                    text: qsTr("Copyright © %1 Yubico.\nAll rights reserved.").arg(Qt.formatDateTime(new Date(),"yyyy"))
                     font.pixelSize: 13
                     color: primaryColor
                     opacity: lowEmphasis
