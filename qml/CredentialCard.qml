@@ -73,6 +73,10 @@ Pane {
     function copyCode(code) {
         clipBoard.push(code)
         navigator.snackBar(qsTr("Code copied to clipboard"))
+
+        if (settings.minimizeOnCopy) {
+            app.hide()
+        }
     }
 
     function calculateCard(copy) {

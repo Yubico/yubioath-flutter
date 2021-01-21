@@ -566,6 +566,17 @@ Flickable {
                         indicator.height: 16
                         onCheckStateChanged: settings.hideOnLaunch = checked
                     }
+
+                    CheckBox {
+                        id: minimizeOnCopyCheckbox
+                        enabled: true
+                        checked: settings.minimizeOnCopy
+                        text: qsTr("Minimize on copy")
+                        padding: 0
+                        indicator.width: 16
+                        indicator.height: 16
+                        onCheckStateChanged: settings.minimizeOnCopy = checked
+                    }
                 }
             }
 

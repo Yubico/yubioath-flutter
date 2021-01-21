@@ -69,6 +69,10 @@ ApplicationWindow {
     property bool isInForeground: visibility != 3 && visibility != 0
     onIsInForegroundChanged: {
         (poller.running = isInForeground || settings.closeToTray)
+
+        if (isInForeground && header.showSearch) {
+            header.searchField.forceActiveFocus()
+        }
     }
     Component.onCompleted: {
         updateTrayVisibility()
@@ -300,6 +304,7 @@ ApplicationWindow {
         property bool closeToTray
         property bool hideOnLaunch
         property bool requireTouch: true
+        property bool minimizeOnCopy
 
         property int theme: Material.System
 
