@@ -172,7 +172,7 @@ parts:
     configflags:
       - --enable-usbdropdir=/snap/yubioath-desktop/current/usr/lib/pcsc/drivers
       - --prefix=/usr
-    source: https://ccid.apdu.fr/files/ccid-1.4.31.tar.bz2
+    source: https://ccid.apdu.fr/files/ccid-1.4.34.tar.bz2
     build-packages:
       - pkg-config
       - libusb-1.0-0-dev
