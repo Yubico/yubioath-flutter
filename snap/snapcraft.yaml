@@ -148,7 +148,7 @@ parts:
   pcsc-lite:
     plugin: autotools
     source-type: tar
-    source: https://pcsclite.apdu.fr/files/pcsc-lite-1.8.25.tar.bz2
+    source: https://pcsclite.apdu.fr/files/pcsc-lite-1.9.0.tar.bz2
     configflags:
       - --enable-ipcdir=/run/snap.yubioath-desktop
       - --enable-runpid=/run/snap.yubioath-desktop/pcscd/pcscd.pid
