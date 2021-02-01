@@ -3,7 +3,7 @@ name: windows 32bit
 on: [push, pull_request]
 
 env:
-  PYTHON_VER: '3.8.6'
+  PYTHON_VER: '3.8.7'
   PYTHON_VER_DIRNAME: 'python38'
   PYOTHERSIDE_VER: '1.5.9'
 
