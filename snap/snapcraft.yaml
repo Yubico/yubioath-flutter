@@ -82,15 +82,15 @@ parts:
     override-build: |
       eval "$(pyenv init -)"
       pyenv update
-      pyenv install --force 3.8.2
-      pyenv global 3.8.2
+      pyenv install --force 3.8.7
+      pyenv global 3.8.7
       pip3 install --upgrade pip
     override-stage: |
       snapcraftctl stage
-      rsync -a /root/.pyenv/versions/3.8.2/* /root/stage/usr/
+      rsync -a /root/.pyenv/versions/3.8.7/* /root/stage/usr/
     override-prime: |
       snapcraftctl prime
-      rsync -a /root/.pyenv/versions/3.8.2/* /root/prime/usr/
+      rsync -a /root/.pyenv/versions/3.8.7/* /root/prime/usr/
 
   python-deps:
     plugin: dump
@@ -103,7 +103,7 @@ parts:
       - PATH: /root/.pyenv/bin:$PATH
     override-build: |
       eval "$(pyenv init -)"
-      pyenv global 3.8.2
+      pyenv global 3.8.7
       pip3 download --no-binary :all: pyscard
       tar -xvf pyscard*.tar*
       cd pyscard*
@@ -119,10 +119,10 @@ parts:
       pip3 install -r requirements.txt
     override-stage: |
       snapcraftctl stage
-      rsync -a /root/.pyenv/versions/3.8.2/* /root/stage/usr/
+      rsync -a /root/.pyenv/versions/3.8.7/* /root/stage/usr/
     override-prime: |
       snapcraftctl prime
-      rsync -a /root/.pyenv/versions/3.8.2/* /root/prime/usr/
+      rsync -a /root/.pyenv/versions/3.8.7/* /root/prime/usr/
 
   pyotherside:
     plugin: qmake
@@ -142,7 +142,7 @@ parts:
       - INSTALL_ROOT: $SNAPCRAFT_PART_INSTALL
     override-build: |
       eval "$(pyenv init -)"
-      pyenv global 3.8.2
+      pyenv global 3.8.7
       snapcraftctl build
 
   pcsc-lite:
