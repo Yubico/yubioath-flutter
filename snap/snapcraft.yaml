@@ -48,7 +48,7 @@ parts:
     override-pull: |
       add-apt-repository -y ppa:beineri/opt-qt-5.15.2-bionic
       apt-get -qq update
-      apt-get install -y qt515-meta-minimal qt515svg qt515quickcontrols2 qt515graphicaleffects qt515declarative qt515wayland qt515x11extras
+      apt-get install -y qt515svg qt515quickcontrols2 qt515graphicaleffects qt515declarative qt515wayland qt515x11extras
 
   ppa-ykpers:
     plugin: nil
