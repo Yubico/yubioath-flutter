@@ -21,11 +21,11 @@ apps:
     command: yubioath-desktop
     common-id: com.yubico.yubioath
     environment:
-      LD_LIBRARY_PATH: $SNAP/opt/qt514/lib/x86_64-linux-gnu/:$SNAP/opt/qt514/lib/:$LD_LIBRARY_PATH:$SNAP/usr/lib/
+      LD_LIBRARY_PATH: $SNAP/opt/qt515/lib/x86_64-linux-gnu/:$SNAP/opt/qt515/lib/:$LD_LIBRARY_PATH:$SNAP/usr/lib/
       QT_QPA_PLATFORM: xcb
-      QT_BASE_DIR: $SNAP/opt/qt514/
-      QT_PLUGIN_PATH: $SNAP/opt/qt514/plugins/
-      QML2_IMPORT_PATH: $SNAP/opt/qt514/qml/
+      QT_BASE_DIR: $SNAP/opt/qt515/
+      QT_PLUGIN_PATH: $SNAP/opt/qt515/plugins/
+      QML2_IMPORT_PATH: $SNAP/opt/qt515/qml/
       DISABLE_WAYLAND: 1
     plugs:
       - desktop
@@ -46,9 +46,9 @@ parts:
     build-packages:
       - software-properties-common
     override-pull: |
-      add-apt-repository -y ppa:beineri/opt-qt-5.14.2-bionic
+      add-apt-repository -y ppa:beineri/opt-qt-5.15.2-bionic
       apt-get -qq update
-      apt-get install -y qt514-meta-minimal qt514svg qt514quickcontrols2 qt514graphicaleffects qt514declarative qt514wayland qt514x11extras
+      apt-get install -y qt515svg qt515quickcontrols2 qt515graphicaleffects qt515declarative qt515wayland qt515x11extras
 
   ppa-ykpers:
     plugin: nil
@@ -82,15 +82,15 @@ parts:
     override-build: |
       eval "$(pyenv init -)"
       pyenv update
-      pyenv install --force 3.8.2
-      pyenv global 3.8.2
+      pyenv install --force 3.8.7
+      pyenv global 3.8.7
       pip3 install --upgrade pip
     override-stage: |
       snapcraftctl stage
-      rsync -a /root/.pyenv/versions/3.8.2/* /root/stage/usr/
+      rsync -a /root/.pyenv/versions/3.8.7/* /root/stage/usr/
     override-prime: |
       snapcraftctl prime
-      rsync -a /root/.pyenv/versions/3.8.2/* /root/prime/usr/
+      rsync -a /root/.pyenv/versions/3.8.7/* /root/prime/usr/
 
   python-deps:
     plugin: dump
@@ -103,7 +103,7 @@ parts:
       - PATH: /root/.pyenv/bin:$PATH
     override-build: |
       eval "$(pyenv init -)"
-      pyenv global 3.8.2
+      pyenv global 3.8.7
       pip3 download --no-binary :all: pyscard
       tar -xvf pyscard*.tar*
       cd pyscard*
@@ -119,10 +119,10 @@ parts:
       pip3 install -r requirements.txt
     override-stage: |
       snapcraftctl stage
-      rsync -a /root/.pyenv/versions/3.8.2/* /root/stage/usr/
+      rsync -a /root/.pyenv/versions/3.8.7/* /root/stage/usr/
     override-prime: |
       snapcraftctl prime
-      rsync -a /root/.pyenv/versions/3.8.2/* /root/prime/usr/
+      rsync -a /root/.pyenv/versions/3.8.7/* /root/prime/usr/
 
   pyotherside:
     plugin: qmake
@@ -133,22 +133,22 @@ parts:
       snapcraftctl pull
       echo "DEFINES += QT_NO_DEBUG_OUTPUT" >> src/src.pro
     build-environment:
-      - QT_BASE_DIR: /opt/qt514
-      - QT_DIR: /opt/qt514
-      - QT_BASE_DIR: /opt/qt514
+      - QT_BASE_DIR: /opt/qt515
+      - QT_DIR: /opt/qt515
+      - QT_BASE_DIR: /opt/qt515
       - LD_LIBRARY_PATH: $QT_BASE_DIR/lib/x86_64-linux-gnu:$QT_BASE_DIR/lib:$LD_LIBRARY_PATH
       - PKG_CONFIG_PATH: $QT_BASE_DIR/lib/pkgconfig:$PKG_CONFIG_PATH
       - PATH: /root/.pyenv/bin:$QT_BASE_DIR/bin:$PATH
       - INSTALL_ROOT: $SNAPCRAFT_PART_INSTALL
     override-build: |
       eval "$(pyenv init -)"
-      pyenv global 3.8.2
+      pyenv global 3.8.7
       snapcraftctl build
 
   pcsc-lite:
     plugin: autotools
     source-type: tar
-    source: https://pcsclite.apdu.fr/files/pcsc-lite-1.8.25.tar.bz2
+    source: https://pcsclite.apdu.fr/files/pcsc-lite-1.9.0.tar.bz2
     configflags:
       - --enable-ipcdir=/run/snap.yubioath-desktop
       - --enable-runpid=/run/snap.yubioath-desktop/pcscd/pcscd.pid
@@ -172,7 +172,7 @@ parts:
     configflags:
       - --enable-usbdropdir=/snap/yubioath-desktop/current/usr/lib/pcsc/drivers
       - --prefix=/usr
-    source: https://ccid.apdu.fr/files/ccid-1.4.31.tar.bz2
+    source: https://ccid.apdu.fr/files/ccid-1.4.34.tar.bz2
     build-packages:
       - pkg-config
       - libusb-1.0-0-dev
@@ -203,12 +203,12 @@ parts:
       - libxcb1
       - libglu1-mesa
       - libxdmcp6
-      - qt514base
-      - qt514declarative
-      - qt514quickcontrols
-      - qt514quickcontrols2
-      - qt514svg
-      - qt514graphicaleffects
+      - qt515base
+      - qt515declarative
+      - qt515quickcontrols
+      - qt515quickcontrols2
+      - qt515svg
+      - qt515graphicaleffects
       - qtwayland5
       - libxkbcommon0
       - ttf-ubuntu-font-family
@@ -224,8 +224,8 @@ parts:
       - libgtk2.0-0
       - libusb-1.0-0
     build-environment:
-      - QT_BASE_DIR: /opt/qt514
-      - QT_DIR: /opt/qt514
+      - QT_BASE_DIR: /opt/qt515
+      - QT_DIR: /opt/qt515
       - LD_LIBRARY_PATH: $QT_BASE_DIR/lib/x86_64-linux-gnu:$QT_BASE_DIR/lib:$LD_LIBRARY_PATH
       - PKG_CONFIG_PATH: $QT_BASE_DIR/lib/pkgconfig:$PKG_CONFIG_PATH
       - PATH: /root/.pyenv/bin:$QT_BASE_DIR/bin:$PATH
