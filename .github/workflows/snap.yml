@@ -14,7 +14,10 @@ jobs:
     - name: Install snap
       run: sudo snap install --dangerous ${{ steps.snapcraft.outputs.snap }}
 
+    - name: Run snap
+      run: yubioath-desktop --version
+
     - uses: actions/upload-artifact@v2
       with:
-        name: snap
+        name: yubioath-desktop-snap
         path: ${{ steps.snapcraft.outputs.snap }}
