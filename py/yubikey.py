@@ -15,6 +15,39 @@ from ykman import __version__ as ykman_v
 
 logger = logging.getLogger(__name__)
 
+
+def as_json(f):
+    def wrapped(*args):
+        return json.dumps(f(*(json.loads(a) for a in args)))
+
+    return wrapped
+
+
+def success(result={}):
+    result["success"] = True
+    return result
+
+
+def failure(err_id, result={}):
+    result["success"] = False
+    result["error_id"] = err_id
+    return result
+
+
+def unknown_failure(exception):
+    return failure(str(exception))
+
+
+class PixelImage(object):
+    def __init__(self, data, width, height):
+        self.data = data
+        self.width = width
+        self.height = height
+
+    def get_line(self, line_number):
+        return self.data[self.width * line_number: self.width * (line_number + 1)]
+
+
 if int(ykman_v.split(".")[0]) > 3:
     from threading import Event
     from ykman.device import (
@@ -46,12 +79,6 @@ if int(ykman_v.split(".")[0]) > 3:
     from ykman.oath import is_hidden
     from ykman.otp import time_challenge, format_oath_code
     from yubikit.yubiotp import YubiOtpSession, HmacSha1SlotConfiguration
-
-    def as_json(f):
-        def wrapped(*args):
-            return json.dumps(f(*(json.loads(a) for a in args)))
-
-        return wrapped
 
     def cred_to_dict(cred):
         return {
@@ -102,18 +129,6 @@ if int(ykman_v.split(".")[0]) > 3:
             "touch": False,
         }
 
-    def success(result={}):
-        result["success"] = True
-        return result
-
-    def failure(err_id, result={}):
-        result["success"] = False
-        result["error_id"] = err_id
-        return result
-
-    def unknown_failure(exception):
-        return failure(str(exception))
-
     def catch_error(f):
         def wrapped(*args, **kwargs):
             try:
@@ -138,20 +153,6 @@ if int(ykman_v.split(".")[0]) > 3:
                 return unknown_failure(e)
 
         return wrapped
-
-    def usb_selectable(dev, otp_mode):
-        if otp_mode:
-            return dev.mode.has_transport(TRANSPORT.OTP)
-        else:
-            return dev.mode.has_transport(TRANSPORT.CCID) and (
-                dev.config.usb_enabled & APPLICATION.OATH
-            )
-
-    def nfc_selectable(dev):
-        return dev.config.nfc_enabled & APPLICATION.OATH
-
-    def is_nfc(reader_name):
-        return "yubico" not in reader_name.lower()
 
     class OathContextManager(object):
         def __init__(self, conn):
@@ -615,15 +616,6 @@ if int(ykman_v.split(".")[0]) > 3:
                     return failure("failed_to_parse_uri")
             return failure("no_credential_found")
 
-    class PixelImage(object):
-        def __init__(self, data, width, height):
-            self.data = data
-            self.width = width
-            self.height = height
-
-        def get_line(self, line_number):
-            return self.data[self.width * line_number: self.width * (line_number + 1)]
-
 
 else:
     from ykman.descriptor import (
@@ -652,12 +644,6 @@ else:
         SW,
     )
     from ykman.otp import OtpController
-
-    def as_json(f):
-        def wrapped(*args):
-            return json.dumps(f(*(json.loads(a) for a in args)))
-
-        return wrapped
 
     def cred_to_dict(cred):
         return {
@@ -700,18 +686,6 @@ else:
             "counter": credentialData.counter,
             "touch": credentialData.touch,
         }
-
-    def success(result={}):
-        result["success"] = True
-        return result
-
-    def failure(err_id, result={}):
-        result["success"] = False
-        result["error_id"] = err_id
-        return result
-
-    def unknown_failure(exception):
-        return failure(str(exception))
 
     def catch_error(f):
         def wrapped(*args, **kwargs):
@@ -1200,15 +1174,6 @@ else:
                     logger.error("Failed to parse uri", exc_info=e)
                     return failure("failed_to_parse_uri")
             return failure("no_credential_found")
-
-    class PixelImage(object):
-        def __init__(self, data, width, height):
-            self.data = data
-            self.width = width
-            self.height = height
-
-        def get_line(self, line_number):
-            return self.data[self.width * line_number: self.width * (line_number + 1)]
 
 
 controller = None
