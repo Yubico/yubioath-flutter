@@ -9,6 +9,9 @@ import ykman.logging_setup
 import smartcard.pcsc.PCSCExceptions
 from base64 import b32encode, b64decode
 from binascii import a2b_hex, b2a_hex
+from qr import qrparse, qrdecode
+from ykman.settings import Settings
+
 from ykman.descriptor import (
     get_descriptors, list_devices, open_device,
     FailedOpeningDeviceException, Descriptor)
@@ -22,8 +25,6 @@ from ykman.oath import (
     ALGO, OATH_TYPE, OathController,
     CredentialData, Credential, Code, SW)
 from ykman.otp import OtpController
-from ykman.settings import Settings
-from qr import qrparse, qrdecode
 
 
 logger = logging.getLogger(__name__)
@@ -142,6 +143,7 @@ def nfc_selectable(dev):
 
 def is_nfc(reader_name):
     return "yubico" not in reader_name.lower()
+
 
 class OathContextManager(object):
     def __init__(self, dev):
