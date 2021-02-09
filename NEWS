@@ -1,3 +1,6 @@
+* Version 5.0.4-post1 (released 2021-02-09)
+ ** Compatibility release for ykman 4.0.
+
 * Version 5.0.4 (released 2020-05-14)
  ** New app icons on all platforms
  ** Adjust the behaviour of the search bar, do not search accounts without having focus
