@@ -2,19 +2,19 @@ FROM ubuntu:xenial
 RUN apt-get update -qq \
     && apt-get install -qq software-properties-common \
     && add-apt-repository -y ppa:yubico/stable \
-    && add-apt-repository -y ppa:beineri/opt-qt-5.14.2-xenial \
+    && add-apt-repository -y ppa:beineri/opt-qt-5.15.2-xenial \
     && apt-get -qq update \
     && apt-get -qq upgrade
 RUN apt-get install -y git make build-essential g++ libssl-dev zlib1g-dev libbz2-dev \
     devscripts equivs python3-dev python3-pip python3-venv wget fuse \
-    qt514base qt514declarative qt514xmlpatterns qt514script qt514tools qt514multimedia \
-    qt514svg qt514graphicaleffects qt514imageformats qt514translations qt514quickcontrols \
-    qt514sensors qt514serialbus qt514serialport qt514x11extras qt514quickcontrols2 \
-    qt514connectivity qt514scxml qt514wayland qt514remoteobjects qtbase5-dev \
+    qt515base qt515declarative qt515xmlpatterns qt515script qt515tools qt515multimedia \
+    qt515svg qt515graphicaleffects qt515imageformats qt515translations qt515quickcontrols \
+    qt515sensors qt515serialbus qt515serialport qt515x11extras qt515quickcontrols2 \
+    qt515connectivity qt515scxml qt515wayland qt515remoteobjects qtbase5-dev \
     desktop-file-utils libglib2.0-bin qtchooser python3-pip python mesa-common-dev curl swig \
     libpcsclite-dev libffi-dev libykpers-1-1
-ENV QT_BASE_DIR=/opt/qt514 \
-    QT_DIR=/opt/qt514 \
+ENV QT_BASE_DIR=/opt/qt515 \
+    QT_DIR=/opt/qt515 \
     PYTHON_CFLAGS=-fPIC \
     PYTHON_CONFIGURE_OPTS=--enable-shared
 ENV LD_LIBRARY_PATH=$QT_BASE_DIR/lib/x86_64-linux-gnu:$QT_BASE_DIR/lib:$LD_LIBRARY_PATH \
