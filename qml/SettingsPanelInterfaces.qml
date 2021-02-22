@@ -219,7 +219,7 @@ StyledExpansionPanel {
             id: ccidButton1
             visible: !!yubiKey.currentDevice && (yubiKey.currentDevice.usbAppSupported.includes("OATH")
                                                  || yubiKey.currentDevice.usbAppSupported.includes("PIV")
-                                                 || yubiKey.currentDevice.usbAppSupported.includes("OPGP"))
+                                                 || yubiKey.currentDevice.usbAppSupported.includes("OPENPGP"))
             checkState: ccidBtnGrpUsb.checkState
         }
 
@@ -227,7 +227,7 @@ StyledExpansionPanel {
             id: ccidButton2
             visible: !!yubiKey.currentDevice && (yubiKey.currentDevice.nfcAppSupported.includes("OATH")
                                                  || yubiKey.currentDevice.nfcAppSupported.includes("PIV")
-                                                 || yubiKey.currentDevice.nfcAppSupported.includes("OPGP"))
+                                                 || yubiKey.currentDevice.nfcAppSupported.includes("OPENPGP"))
             checkState: ccidBtnGrpNfc.checkState
         }
 
@@ -318,17 +318,17 @@ StyledExpansionPanel {
         CheckBox {
             id: ccidChild3
             ButtonGroup.group: ccidBtnGrpUsb
-            checked: !!yubiKey.currentDevice && yubiKey.currentDevice.usbAppEnabled.includes("OPGP")
-            visible: !!yubiKey.currentDevice && (yubiKey.currentDevice.usbAppSupported.includes("OPGP") && expandButton.isExpanded)
-            onCheckedChanged: toggleEnabledOverUsb("OPGP", checked)
+            checked: !!yubiKey.currentDevice && yubiKey.currentDevice.usbAppEnabled.includes("OPENPGP")
+            visible: !!yubiKey.currentDevice && (yubiKey.currentDevice.usbAppSupported.includes("OPENPGP") && expandButton.isExpanded)
+            onCheckedChanged: toggleEnabledOverUsb("OPENPGP", checked)
         }
 
         CheckBox {
             id: ccidChild31
             ButtonGroup.group: ccidBtnGrpNfc
-            checked: !!yubiKey.currentDevice && yubiKey.currentDevice.nfcAppEnabled.includes("OPGP")
-            visible: !!yubiKey.currentDevice && (yubiKey.currentDevice.nfcAppSupported.includes("OPGP") && expandButton.isExpanded)
-            onCheckedChanged: toggleEnabledOverNfc("OPGP", checked)
+            checked: !!yubiKey.currentDevice && yubiKey.currentDevice.nfcAppEnabled.includes("OPENPGP")
+            visible: !!yubiKey.currentDevice && (yubiKey.currentDevice.nfcAppSupported.includes("OPENPGP") && expandButton.isExpanded)
+            onCheckedChanged: toggleEnabledOverNfc("OPENPGP", checked)
         }
 
         Item {
