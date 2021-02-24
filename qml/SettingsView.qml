@@ -44,6 +44,8 @@ Flickable {
             SettingsPanelCustomReader {}
             SettingsPanelSystemTray {}
             SettingsPanelClearPasswords {}
+            SettingsPanelCCIDorOTP {}
+
         }
     }
 }

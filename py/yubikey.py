@@ -11,10 +11,11 @@ import ykman.logging_setup
 import smartcard.pcsc.PCSCExceptions
 from base64 import b32encode, b32decode, b64decode
 from binascii import a2b_hex, b2a_hex
+from threading import Event
 
 from ykman.device import scan_devices, list_all_devices, connect_to_device, get_name, read_info
 from ykman.pcsc import list_readers, list_devices as list_ccid
-from ykman.otp import PrepareUploadFailed, generate_static_pw, prepare_upload_key
+from ykman.otp import PrepareUploadFailed, generate_static_pw, prepare_upload_key, time_challenge, format_oath_code
 from ykman.settings import Settings
 from ykman.oath import is_hidden
 from ykman.scancodes import KEYBOARD_LAYOUT, encode
@@ -26,7 +27,7 @@ from yubikit.core.otp import modhex_decode, modhex_encode, OtpConnection
 from yubikit.core.smartcard import ApduError, SW, SmartCardConnection
 from yubikit.core.fido import FidoConnection
 from yubikit.oath import (
-    OathSession, Credential, OATH_TYPE, CredentialData, parse_b32_key, HASH_ALGORITHM)
+    OathSession, Credential, OATH_TYPE, CredentialData, parse_b32_key, HASH_ALGORITHM, Code)
 from yubikit.yubiotp import (
     YubiOtpSession, YubiOtpSlotConfiguration,
     StaticPasswordSlotConfiguration, HotpSlotConfiguration, HmacSha1SlotConfiguration)
@@ -303,9 +304,9 @@ class Controller(object):
                     'version': '.'.join(str(d) for d in info.version),
                     'serial': info.serial or '',
                     'usbInterfacesEnabled': interfaces_enabled,
-                    'usbInterfacesSupported': [
-                        t.name for t in USB_INTERFACE
-                        if t in dev.pid.get_interfaces()],
+                    #'usbInterfacesSupported': [
+                     #   t.name for t in USB_INTERFACE
+                      #  if t in dev.pid.get_interfaces()],
                     'usbAppEnabled': [
                         a.name for a in CAPABILITY
                         if a in info.config.enabled_capabilities.get(TRANSPORT.USB)],
@@ -348,6 +349,91 @@ class Controller(object):
                     self._current_serial = dev['serial']
                     break
         return success({'devices': self._devices})
+
+    def _otp_get_code_or_touch(
+                    self, slot, digits, timestamp, wait_for_touch=False):
+        with self._open_device([OtpConnection]) as oath_controller:
+            session = YubiOtpSession(oath_controller)
+            # Check that slot is not empty
+            if not session.get_config_state().is_configured(slot):
+                raise CommandError("not programmed")
+
+            challenge = time_challenge(timestamp)
+
+            try:
+                event = Event()
+
+                def on_keepalive(status):
+                    if not hasattr(on_keepalive, "prompted") and status == 2 and not wait_for_touch:
+                        on_keepalive.prompted = True
+                        event.set()
+
+                response = session.calculate_hmac_sha1(slot, challenge, event, on_keepalive)
+                code = format_oath_code(response, int(digits))
+                return code, False
+            except TimeoutError:
+                return None, hasattr(on_keepalive, "prompted")
+
+    def otp_calculate_all(
+                self, slot1_digits, slot2_digits, timestamp):
+        valid_from = timestamp - (timestamp % 30)
+        valid_to = valid_from + 30
+        entries = []
+
+        def calc(slot, digits, label):
+            try:
+                code, touch = self._otp_get_code_or_touch(slot, digits, timestamp)
+                entries.append({
+                    'credential': cred_to_dict(
+                        Credential('', label.encode(), None, label, OATH_TYPE.TOTP, 30, touch)),
+                    'code': code_to_dict(
+                        Code(code, valid_from, valid_to)) if code else None
+                })
+            except CommandError as e:
+                pass
+
+        if slot1_digits:
+            calc(1, slot1_digits, "Slot 1")
+
+        if slot2_digits:
+            calc(2, slot2_digits, "Slot 2")
+
+        logger.debug("yeaho")
+
+        return success({'entries': entries})
+
+    def otp_calculate(self, slot, digits, credential, timestamp):
+        valid_from = timestamp - (timestamp % 30)
+        valid_to = valid_from + 30
+        code, _ = self._otp_get_code_or_touch(
+            slot, digits, timestamp, wait_for_touch=True)
+        return success({
+            'credential': credential,
+            'code': code_to_dict(Code(code, valid_from, valid_to))
+        })
+
+    def otp_slot_status(self):
+        with self._open_device([OtpConnection]) as oath_controller:
+            session = YubiOtpSession(oath_controller)
+            state = session.get_config_state()
+        return success({'status': (state.is_configured(1), state.is_configured(2))})
+
+    def otp_add_credential(self, slot, key, touch):
+        key = parse_b32_key(key)
+        with self._open_device([OtpConnection]) as oath_controller:
+            session = YubiOtpSession(oath_controller)
+            session.put_configuration(
+                int(slot),
+                HmacSha1SlotConfiguration(key).require_touch(touch),
+            )
+
+        return success()
+
+    def otp_delete_credential(self, slot):
+        with self._open_device([OtpConnection]) as oath_controller:
+            session = YubiOtpSession(oath_controller)
+            session.delete_slot(slot)
+        return success()
 
     def write_config(self, usb_applications, nfc_applications):
 
@@ -594,10 +680,6 @@ class Controller(object):
             except ApduError as e:
                 if e.sw == SW.INCORRECT_PARAMETERS:
                     return failure('validate_failed')
-
-    def otp_slot_status(self):
-        with self._open_otp() as otp_controller:
-            return success({'status': otp_controller.slot_status})
 
     def _unlock(self, controller):
         if controller.locked:

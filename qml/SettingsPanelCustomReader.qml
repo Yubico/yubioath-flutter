@@ -9,6 +9,7 @@ StyledExpansionPanel {
     label: qsTr("Custom reader")
     description: qsTr("Specify a custom reader for YubiKey.")
     metadata: "ccid otp slot custom readers nfc"
+    visible: !settings.otpMode
 
     property bool aboutToChange: customReaderCheckbox.checked !== settings.useCustomReader
                                  || readerFilter.text !== settings.customReaderName && readerFilter.text.length > 0
