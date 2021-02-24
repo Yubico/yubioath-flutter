@@ -285,6 +285,7 @@ class Controller(object):
                         oath = OathSession(conn)
                         has_password = oath.locked
                         selectable = True
+                        self._current_serial = info.serial
                     except Exception:
                         selectable = False
                         has_password = False
@@ -398,8 +399,6 @@ class Controller(object):
         if slot2_digits:
             calc(2, slot2_digits, "Slot 2")
 
-        logger.debug("yeaho")
-
         return success({'entries': entries})
 
     def otp_calculate(self, slot, digits, credential, timestamp):
@@ -446,13 +445,17 @@ class Controller(object):
 
 
         if self._reader_filter:
-            dev = self._get_dev_from_reader()
-            dev.write_config(
-                device_config(
-                    usb_enabled=usb_enabled,
-                    nfc_enabled=nfc_enabled,
+            with self._open_oath() as conn:
+                session = ManagementSession(conn)
+                session.write_device_config(
+                    DeviceConfig(
+                        {TRANSPORT.USB: usb_enabled,
+                        TRANSPORT.NFC: nfc_enabled},
+                        None,
+                        None,
+                        None,
                     ),
-                reboot=True)
+                    True)
         else:
 
             with self._open_device() as conn:
@@ -472,74 +475,137 @@ class Controller(object):
         return success()
 
     def slots_status(self):
-        with self._open_device([OtpConnection]) as conn:
-            session = YubiOtpSession(conn)
-            state = session.get_config_state()
-            slot1 = state.is_configured(1)
-            slot2 = state.is_configured(2)
-            ans = [slot1, slot2]
-            return success({'status': ans})
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                state = session.get_config_state()
+                slot1 = state.is_configured(1)
+                slot2 = state.is_configured(2)
+                ans = [slot1, slot2]
+                return success({'status': ans})
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                state = session.get_config_state()
+                slot1 = state.is_configured(1)
+                slot2 = state.is_configured(2)
+                ans = [slot1, slot2]
+                return success({'status': ans})
 
     def erase_slot(self, slot):
-        with self._open_device([OtpConnection]) as conn:
-            session = YubiOtpSession(conn)
-            session.delete_slot(slot)
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                session.delete_slot(slot)
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                session.delete_slot(slot)
         return success()
 
     def swap_slots(self):
-        with self._open_device([OtpConnection]) as conn:
-            session = YubiOtpSession(conn)
-            session.swap_slots()
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                session.swap_slots()
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                session.swap_slots()
         return success()
 
     def serial_modhex(self):
-        with self._open_device([OtpConnection]) as conn:
-            session = YubiOtpSession(conn)
-            return modhex_encode(b'\xff\x00' + struct.pack(b'>I', session.get_serial()))
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                return modhex_encode(b'\xff\x00' + struct.pack(b'>I', session.get_serial()))
+
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                return modhex_encode(b'\xff\x00' + struct.pack(b'>I', session.get_serial()))
 
     def program_challenge_response(self, slot, key, touch):
         key = a2b_hex(key)
-        with self._open_device([OtpConnection]) as conn:
-            session = YubiOtpSession(conn)
-            try:
-                session.put_configuration(
-                    slot,
-                    HmacSha1SlotConfiguration(key).require_touch(touch),
-                )
-            except CommandError as e:
-                logger.debug("Failed to program Challenge-response", exc_info=e)
-                return failure("write error")
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                try:
+                    session.put_configuration(
+                        slot,
+                        HmacSha1SlotConfiguration(key).require_touch(touch),
+                    )
+                except CommandError as e:
+                    logger.debug("Failed to program Challenge-response", exc_info=e)
+                    return failure("write error")
+        else:
+             with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                try:
+                    session.put_configuration(
+                        slot,
+                        HmacSha1SlotConfiguration(key).require_touch(touch),
+                    )
+                except CommandError as e:
+                    logger.debug("Failed to program Challenge-response", exc_info=e)
+                    return failure("write error")
+
         return success()
 
 
     def program_static_password(self, slot, key, keyboard_layout):
-        with self._open_device([OtpConnection]) as conn:
-            session = YubiOtpSession(conn)
-            scan_codes = encode(key, KEYBOARD_LAYOUT[keyboard_layout])
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                scan_codes = encode(key, KEYBOARD_LAYOUT[keyboard_layout])
 
-            try:
-                session.put_configuration(slot, StaticPasswordSlotConfiguration(scan_codes))
-            except CommandError as e:
-                logger.debug("Failed to program static password", exc_info=e)
-                return failure("write error")
-            return success()
+                try:
+                    session.put_configuration(slot, StaticPasswordSlotConfiguration(scan_codes))
+                except CommandError as e:
+                    logger.debug("Failed to program static password", exc_info=e)
+                    return failure("write error")
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                scan_codes = encode(key, KEYBOARD_LAYOUT[keyboard_layout])
+
+                try:
+                    session.put_configuration(slot, StaticPasswordSlotConfiguration(scan_codes))
+                except CommandError as e:
+                    logger.debug("Failed to program static password", exc_info=e)
+                    return failure("write error")
+
+        return success()
 
     def program_oath_hotp(self, slot, key, digits):
         unpadded = key.upper().rstrip('=').replace(' ', '')
         key = b32decode(unpadded + '=' * (-len(unpadded) % 8))
 
-        with self._open_device([OtpConnection]) as conn:
-            session = YubiOtpSession(conn)
-            try:
-                session.put_configuration(
-                    slot,
-                    HotpSlotConfiguration(key)
-                    .digits8(int(digits) == 8),
-                )
-            except CommandError as e:
-                logger.debug("Failed to program OATH-HOTP", exc_info=e)
-                return failure("write error")
-            return success()
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                try:
+                    session.put_configuration(
+                        slot,
+                        HotpSlotConfiguration(key)
+                        .digits8(int(digits) == 8),
+                    )
+                except CommandError as e:
+                    logger.debug("Failed to program OATH-HOTP", exc_info=e)
+                    return failure("write error")
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                try:
+                    session.put_configuration(
+                        slot,
+                        HotpSlotConfiguration(key)
+                        .digits8(int(digits) == 8),
+                    )
+                except CommandError as e:
+                    logger.debug("Failed to program OATH-HOTP", exc_info=e)
+                    return failure("write error")
+        return success()
 
     def generate_static_pw(self, keyboard_layout):
         return success({
@@ -561,27 +627,50 @@ class Controller(object):
 
         upload_url = None
 
-        with self._open_device([OtpConnection]) as conn:
-            if upload:
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                if upload:
+                    try:
+                        upload_url = prepare_upload_key(
+                            key, public_id, private_id,
+                            serial=self._current_serial,
+                            user_agent='ykman-qt/' + app_version)
+                    except PrepareUploadFailed as e:
+                        logger.debug('YubiCloud upload failed', exc_info=e)
+                        return failure('upload_failed',
+                                       {'upload_errors': [err.name
+                                                          for err in e.errors]})
                 try:
-                    upload_url = prepare_upload_key(
-                        key, public_id, private_id,
-                        serial=self._dev_info['serial'],
-                        user_agent='ykman-qt/' + app_version)
-                except PrepareUploadFailed as e:
-                    logger.debug('YubiCloud upload failed', exc_info=e)
-                    return failure('upload_failed',
-                                   {'upload_errors': [err.name
-                                                      for err in e.errors]})
-            try:
-                session = YubiOtpSession(conn)
-                session.put_configuration(
-                    slot,
-                    YubiOtpSlotConfiguration(public_id, private_id, key)
-                )
-            except CommandError as e:
-                logger.debug("Failed to program YubiOTP", exc_info=e)
-                return failure("write error")
+                    session = YubiOtpSession(conn)
+                    session.put_configuration(
+                        slot,
+                        YubiOtpSlotConfiguration(public_id, private_id, key)
+                    )
+                except CommandError as e:
+                    logger.debug("Failed to program YubiOTP", exc_info=e)
+                    return failure("write error")
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                if upload:
+                    try:
+                        upload_url = prepare_upload_key(
+                            key, public_id, private_id,
+                            serial=self._current_serial,
+                            user_agent='ykman-qt/' + app_version)
+                    except PrepareUploadFailed as e:
+                        logger.debug('YubiCloud upload failed', exc_info=e)
+                        return failure('upload_failed',
+                                       {'upload_errors': [err.name
+                                                          for err in e.errors]})
+                try:
+                    session = YubiOtpSession(conn)
+                    session.put_configuration(
+                        slot,
+                        YubiOtpSlotConfiguration(public_id, private_id, key)
+                    )
+                except CommandError as e:
+                    logger.debug("Failed to program YubiOTP", exc_info=e)
+                    return failure("write error")
 
         logger.debug('YubiOTP successfully programmed.')
         if upload_url:

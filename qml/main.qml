@@ -407,6 +407,10 @@ ApplicationWindow {
         running: app.isInForeground || settings.closeToTray
         onTriggered: {
             settings.useCustomReader ? yubiKey.pollCustomReader() : yubiKey.pollUsb()
+            if (settings.otpMode) {
+                settings.useCustomReader = false
+            }
+
             if (navigator.isInAuthenticator()) {
                 if (yubiKey.timeToCalculateAll()) {
                     yubiKey.oathCalculateAllOuter()
