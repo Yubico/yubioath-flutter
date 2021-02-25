@@ -90,6 +90,21 @@ Pane {
                 hotpTouchTimer.start()
             }
 
+            if (settings.otpMode) {
+                yubiKey.otpCalculate(credential, function (resp) {
+                    if (resp.success) {
+                        hotpTouchTimer.stop()
+                        if (copy) {
+                            copyCode(resp.code.value)
+                        }
+                        entries.updateEntry(resp)
+                    } else {
+                        navigator.snackBarError(resp.error_id)
+                        console.log("calculate failed:", resp.error_id)
+                    }
+                })
+            } else {
+
 
                 yubiKey.calculate(credential, function (resp) {
                     if (resp.success) {
@@ -122,6 +137,7 @@ Pane {
                         console.log("calculate failed:", resp.error_id)
                     }
                 })
+            }
 
         } else {
             copyCode(code.value)

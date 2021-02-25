@@ -22,7 +22,7 @@ from ykman.scancodes import KEYBOARD_LAYOUT, encode
 
 from yubikit.management import (
     TRANSPORT, CAPABILITY, Mode, USB_INTERFACE, ManagementSession, DeviceConfig)
-from yubikit.core import CommandError
+from yubikit.core import CommandError, TimeoutError
 from yubikit.core.otp import modhex_decode, modhex_encode, OtpConnection
 from yubikit.core.smartcard import ApduError, SW, SmartCardConnection
 from yubikit.core.fido import FidoConnection
@@ -353,6 +353,7 @@ class Controller(object):
 
     def _otp_get_code_or_touch(
                     self, slot, digits, timestamp, wait_for_touch=False):
+        code = None
         with self._open_device([OtpConnection]) as oath_controller:
             session = YubiOtpSession(oath_controller)
             # Check that slot is not empty
@@ -368,12 +369,11 @@ class Controller(object):
                     if not hasattr(on_keepalive, "prompted") and status == 2 and not wait_for_touch:
                         on_keepalive.prompted = True
                         event.set()
-
                 response = session.calculate_hmac_sha1(slot, challenge, event, on_keepalive)
                 code = format_oath_code(response, int(digits))
                 return code, False
             except TimeoutError:
-                return None, hasattr(on_keepalive, "prompted")
+                return code, hasattr(on_keepalive, "prompted")
 
     def otp_calculate_all(
                 self, slot1_digits, slot2_digits, timestamp):
