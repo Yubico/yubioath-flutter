@@ -22,6 +22,7 @@ StyledExpansionPanel {
         settings.customReaderName = readerFilter.text
         yubiKey.clearCurrentDeviceAndEntries()
         if (settings.useCustomReader) {
+            //settings.otpMode = false
             yubiKey.loadDevicesCustomReaderOuter()
         } else {
             yubiKey.loadDevicesUsbOuter()

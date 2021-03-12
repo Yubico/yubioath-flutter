@@ -14,6 +14,7 @@ Python {
     property var availableReaders: []
 
     property var currentDevice
+    property bool currentDeviceValidated
 
     // Check if a application such as OATH, PIV, etc
     // is enabled on the current device.
@@ -302,9 +303,10 @@ Python {
     }
 
     function clearCurrentDeviceAndEntries() {
-        currentDevice = null
+        //currentDevice = null
         entries.clear()
         nextCalculateAll = -1
+        currentDeviceValidated = false
     }
 
     function refreshReaders() {
@@ -355,7 +357,7 @@ Python {
 
     function loadDevicesUsbOuter(cb) {
 
-        yubiKey.loadDevicesUsb(function (resp) {
+        yubiKey.loadDevicesUsb(settings.otpMode, function (resp) {
             if (resp.success) {
                 availableDevices = resp.devices
 
@@ -413,7 +415,6 @@ Python {
     }
 
     function pollUsb() {
-
         checkUsbDescriptorsChanged(function (resp) {
             if (resp.success) {
                 if (resp.usbDescriptorsChanged) {
@@ -436,11 +437,12 @@ Python {
 
     function oathCalculateAllOuter(cb) {
 
+        function callback(resp) {
 
-        oathCalculateAll(function (resp) {
             if (resp.success) {
                 entries.updateEntries(resp.entries, function() {
                     updateNextCalculateAll()
+                    currentDeviceValidated = true
                     if (cb) {
                         cb()
                     }
@@ -449,27 +451,75 @@ Python {
                 if (resp.error_id === 'access_denied') {
                     entries.clear()
                     currentDevice.hasPassword = true
-                    navigator.goToEnterPassword()
-                    return
-                } else if (resp.error_id === 'no_device_custom_reader') {
-                    navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
-                    clearCurrentDeviceAndEntries()
-                    if (cb) {
-                        cb()
-                    }
+                    currentDeviceValidated = false
+                    navigator.goToEnterPasswordIfNotInSettings()
                 } else {
                     clearCurrentDeviceAndEntries()
                     console.log("calculateAll failed:", resp.error_id)
-                    if (!settings.useCustomReader) {
-                        loadDevicesUsbOuter()
-                    }
-                    if (cb) {
-                        cb()
-                    }
                 }
             }
+        }
+        if (settings.otpMode) {
+            otpCalculateAll(callback)
+        } else {
+            oathCalculateAll(function (resp) {
+                if (resp.success) {
+                    entries.updateEntries(resp.entries, function() {
+                        updateNextCalculateAll()
+                        if (cb) {
+                            cb()
+                        }
+                    })
+                } else {
+                    if (resp.error_id === 'access_denied') {
+                        entries.clear()
+                        currentDevice.hasPassword = true
+                        navigator.goToEnterPassword()
+                        return
+                    } else if (resp.error_id === 'no_device_custom_reader') {
+                        navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+                        clearCurrentDeviceAndEntries()
+                        if (cb) {
+                            cb()
+                        }
+                    } else {
+                        clearCurrentDeviceAndEntries()
+                        console.log("calculateAll failed:", resp.error_id)
+                        if (!settings.useCustomReader) {
+                            loadDevicesUsbOuter()
+                        }
+                        if (cb) {
+                            cb()
+                        }
+                    }
+                }
 
-        })
+            })
+        }
+    }
+
+    function otpCalculate(credential, cb) {
+        var margin = credential.touch ? 10 : 0
+        var nowAndMargin = Utils.getNow() + margin
+        var slot = (credential.key === "Slot 1") ? 1 : 2
+        var digits = (slot === 1) ? settings.slot1digits : settings.slot2digits
+        doCall('yubikey.controller.otp_calculate',
+               [slot, digits, credential, nowAndMargin], cb)
+    }
+
+    function otpDeleteCredential(credential, cb) {
+        var slot = (credential.key === "Slot 1") ? 1 : 2
+        doCall('yubikey.controller.otp_delete_credential', [slot], cb)
+    }
+
+    function otpAddCredential(slot, key, touch, cb) {
+        doCall('yubikey.controller.otp_add_credential', [slot, key, touch], cb)
+    }
+
+    function otpCalculateAll(cb) {
+        var now = Utils.getNow()
+        doCall('yubikey.controller.otp_calculate_all',
+               [settings.slot1digits, settings.slot2digits, now], cb)
     }
 
     function updateNextCalculateAll() {
@@ -510,8 +560,8 @@ Python {
         doCall('yubikey.controller.load_devices_custom_reader', [customReaderName],  cb)
     }
 
-    function loadDevicesUsb(cb) {
-        doCall('yubikey.controller.load_devices_usb', [],  cb)
+    function loadDevicesUsb(otp, cb) {
+        doCall('yubikey.controller.load_devices_usb', [otp],  cb)
     }
 
     function writeConfig(usbApplications, nfcApplications, cb) {

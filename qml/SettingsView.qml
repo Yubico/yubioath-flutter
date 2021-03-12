@@ -44,6 +44,7 @@ Flickable {
             SettingsPanelCustomReader {}
             SettingsPanelSystemTray {}
             SettingsPanelClearPasswords {}
+
         }
     }
 }

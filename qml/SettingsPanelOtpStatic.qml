@@ -82,7 +82,6 @@ ColumnLayout {
     }
 
     function programStaticPassword(slot) {
-        console.log(otpStaticPassword.text)
         yubiKey.programStaticPassword(slot, otpStaticPassword.text,
                                       keyboardLayout, function (resp) {
                                           if (resp.success) {

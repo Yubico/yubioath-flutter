@@ -200,6 +200,23 @@ ApplicationWindow {
                         qsTr("Touch your YubiKey now to generate security code."),
                         SystemTrayIcon.NoIcon)
         }
+        if (settings.otpMode) {
+            yubiKey.otpCalculate(credential, function (resp) {
+                if (resp.success) {
+                    clipBoard.push(resp.code.value)
+                    sysTrayIcon.showMessage(
+                                qsTr("Copied to clipboard"),
+                                "The code for " + text + " is now in the clipboard.",
+                                SystemTrayIcon.NoIcon)
+                } else {
+                    sysTrayIcon.showMessage(
+                                "Error",
+                                "calculate failed: " + resp.error_id,
+                                SystemTrayIcon.NoIcon)
+                    console.log("calculate failed:", resp.error_id)
+                }
+            })
+        } else {
             yubiKey.calculate(credential, function (resp) {
                 if (resp.success) {
                     clipBoard.push(resp.code.value)
@@ -215,6 +232,7 @@ ApplicationWindow {
                     console.log("calculate failed:", resp.error_id)
                 }
             })
+        }
 
     }
 
@@ -347,6 +365,12 @@ ApplicationWindow {
     Settings {
         id: settings
 
+        // Can be 0 (off), 6, 7 or 8
+        property int slot1digits
+        property int slot2digits
+
+        property bool otpMode
+
         property bool useCustomReader
         property string customReaderName
 
@@ -395,8 +419,11 @@ ApplicationWindow {
         running: app.isInForeground || settings.closeToTray
         onTriggered: {
             settings.useCustomReader ? yubiKey.pollCustomReader() : yubiKey.pollUsb()
+            if (settings.otpMode) {
+                settings.useCustomReader = false
+            }
 
-            if (yubiKey.currentDeviceEnabled("OATH") && navigator.isInAuthenticator()) {
+            if (navigator.isInAuthenticator()) {
                 if (yubiKey.timeToCalculateAll()) {
                     yubiKey.oathCalculateAllOuter()
                 }

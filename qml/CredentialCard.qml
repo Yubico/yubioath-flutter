@@ -90,6 +90,21 @@ Pane {
                 hotpTouchTimer.start()
             }
 
+            if (settings.otpMode) {
+                yubiKey.otpCalculate(credential, function (resp) {
+                    if (resp.success) {
+                        hotpTouchTimer.stop()
+                        if (copy) {
+                            copyCode(resp.code.value)
+                        }
+                        entries.updateEntry(resp)
+                    } else {
+                        navigator.snackBarError(resp.error_id)
+                        console.log("calculate failed:", resp.error_id)
+                    }
+                })
+            } else {
+
 
                 yubiKey.calculate(credential, function (resp) {
                     if (resp.success) {
@@ -122,6 +137,7 @@ Pane {
                         console.log("calculate failed:", resp.error_id)
                     }
                 })
+            }
 
         } else {
             copyCode(code.value)
@@ -140,7 +156,25 @@ Pane {
                     "description": qsTr("Before proceeding:<ul style=\"-qt-list-indent: 1;\"><li>You will not be able to generate security codes for the account anymore.<li>Make sure 2FA has been disabled on the web service.</ul>"),
                     "buttonAccept": qsTr("Delete account"),
                     "acceptedCb": function () {
-
+                        if (settings.otpMode) {
+                            yubiKey.otpDeleteCredential(credential,
+                                                        function (resp) {
+                                                            if (resp.success) {
+                                                                if (favorite)
+                                                                {
+                                                                    toggleFavorite()
+                                                                }
+                                                                entries.deleteEntry(
+                                                                            credential.key)
+                                                                navigator.snackBar(
+                                                                            qsTr("Account deleted"))
+                                                            } else {
+                                                                navigator.snackBarError(
+                                                                            resp.error_id)
+                                                                console.log("delete failed:", resp.error_id)
+                                                            }
+                                                        })
+                        } else {
                             yubiKey.deleteCredential(credential,
                                                      function (resp) {
                                                          if (resp.success) {
@@ -164,6 +198,7 @@ Pane {
                                                          }
 
                                                      })
+                            }
                         }
 
                   })

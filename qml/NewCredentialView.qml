@@ -122,6 +122,17 @@ Flickable {
 
     Keys.onEscapePressed: navigator.goToAuthenticator()
 
+    function getEnabledOtpSlots() {
+        var res = []
+        if (settings.slot1digits) {
+            res.push(1)
+        }
+        if (settings.slot2digits) {
+            res.push(2)
+        }
+        return res
+    }
+
     MouseArea {
         anchors.fill: parent
         hoverEnabled: false
@@ -133,10 +144,14 @@ Flickable {
     function acceptableInput() {
         // trim spaces to accurately count length, parse_b32_key later trims them
         var secretKeyTrimmed = secretKeyLbl.text.replace(/ /g, "")
-        var nameAndKey = nameLbl.text.length > 0
-                    && secretKeyTrimmed.length > 0
-        var okTotalLength = (nameLbl.text.length + issuerLbl.text.length) < 60
-        return nameAndKey && okTotalLength
+        if (settings.otpMode) {
+            return secretKeyTrimmed.length > 0 && secretKeyTrimmed.length <= 32
+        } else {
+            var nameAndKey = nameLbl.text.length > 0
+                        && secretKeyTrimmed.length > 0
+            var okTotalLength = (nameLbl.text.length + issuerLbl.text.length) < 60
+            return nameAndKey && okTotalLength
+        }
     }
 
     function scanQr(data) {
@@ -181,6 +196,12 @@ Flickable {
             }
         }
 
+        function _otpAddCredential() {
+            yubiKey.otpAddCredential(otpSlotComboBox.currentText,
+                                     secretKeyLbl.text,
+                                     requireTouchCheckBox.checked, callback)
+        }
+
         function _ccidAddCredential(overwrite) {
             yubiKey.ccidAddCredential(nameLbl.text, secretKeyLbl.text,
                                           issuerLbl.text,
@@ -202,8 +223,28 @@ Flickable {
         }
 
         if (acceptableInput()) {
-             _ccidAddCredentialNoOverwrite()
-            settings.requireTouch = requireTouchCheckBox.checked
+            if (settings.otpMode) {
+                yubiKey.otpSlotStatus(function (resp) {
+                    if (resp.success) {
+                        if (resp.status[parseInt(
+                                            otpSlotComboBox.currentText) - 1]) {
+                            navigator.confirm({
+                                            "heading": qsTr("Overwrite?"),
+                                            "message": qsTr("This slot is already configured, do you want to overwrite it?"),
+                                            "acceptedCb": _otpAddCredential
+                                              })
+                        } else {
+                            _otpAddCredential()
+                        }
+                    } else {
+                        navigator.snackBarError(navigator.getErrorMessage(
+                                                    resp.error_id))
+                    }
+                })
+            } else {
+                 _ccidAddCredentialNoOverwrite()
+                settings.requireTouch = requireTouchCheckBox.checked
+            }
         }
     }
 
@@ -308,6 +349,7 @@ Flickable {
                 Layout.fillWidth: true
                 text: credential
                       && credential.issuer ? credential.issuer : ""
+                visible: !settings.otpMode
                 onSubmit: addCredential()
             }
             StyledTextField {
@@ -316,6 +358,7 @@ Flickable {
                 Layout.fillWidth: true
                 required: true
                 text: credential && credential.name ? credential.name : ""
+                visible: !settings.otpMode
                 onSubmit: addCredential()
             }
             StyledTextField {
@@ -333,12 +376,22 @@ Flickable {
                 KeyNavigation.tab: requireTouchCheckBox
             }
 
+            RowLayout {
+                Layout.fillWidth: true
+                StyledComboBox {
+                    label: qsTr("Slot")
+                    id: otpSlotComboBox
+                    model: getEnabledOtpSlots()
+                }
+                visible: settings.otpMode
+            }
+
             StyledCheckBox {
                 id: requireTouchCheckBox
                 checked: settings.requireTouch
                 text: qsTr("Require touch")
                 description: qsTr("Touch YubiKey to display code.")
-                visible: yubiKey.supportsTouchCredentials()
+                visible: yubiKey.supportsTouchCredentials() || settings.otpMode
                 Layout.bottomMargin: 8
                 Layout.topMargin: 0
                 KeyNavigation.tab: advancedSettingsCheckBox
@@ -415,7 +468,7 @@ Flickable {
                 primary: true
                 text: qsTr("Add account")
                 toolTipText: qsTr("Add account to YubiKey")
-                enabled: secretKeyLbl.validated && acceptableInput() && nameLbl.validated
+                enabled: settings.otpMode ? secretKeyLbl.validated && acceptableInput() :  secretKeyLbl.validated && acceptableInput() && nameLbl.validated
                 onClicked: addCredential()
             }
         }

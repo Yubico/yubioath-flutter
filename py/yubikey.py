@@ -11,22 +11,27 @@ import ykman.logging_setup
 import smartcard.pcsc.PCSCExceptions
 from base64 import b32encode, b32decode, b64decode
 from binascii import a2b_hex, b2a_hex
-from ykman.descriptor import (
-    get_descriptors, list_devices, open_device,
-    FailedOpeningDeviceException, Descriptor)
-from ykman.util import (
-    TRANSPORT, APPLICATION, generate_static_pw,
-    modhex_encode, modhex_decode, Mode, parse_b32_key)
-from ykman.device import YubiKey, device_config
-from ykman.driver_otp import YkpersError
-from ykman.driver_ccid import (
-    APDUError, CCIDError, list_readers,
-    open_devices as open_ccid)
-from ykman.oath import (
-    ALGO, OATH_TYPE, OathController,
-    CredentialData, Credential, Code, SW)
-from ykman.otp import OtpController, PrepareUploadFailed
+from threading import Event
+
+from ykman.device import scan_devices, list_all_devices, connect_to_device, get_name, read_info
+from ykman.pcsc import list_readers, list_devices as list_ccid
+from ykman.otp import PrepareUploadFailed, generate_static_pw, prepare_upload_key, time_challenge, format_oath_code
 from ykman.settings import Settings
+from ykman.oath import is_hidden
+from ykman.scancodes import KEYBOARD_LAYOUT, encode
+
+from yubikit.management import (
+    TRANSPORT, CAPABILITY, Mode, USB_INTERFACE, ManagementSession, DeviceConfig)
+from yubikit.core import CommandError, TimeoutError
+from yubikit.core.otp import modhex_decode, modhex_encode, OtpConnection
+from yubikit.core.smartcard import ApduError, SW, SmartCardConnection
+from yubikit.core.fido import FidoConnection
+from yubikit.oath import (
+    OathSession, Credential, OATH_TYPE, CredentialData, parse_b32_key, HASH_ALGORITHM, Code)
+from yubikit.yubiotp import (
+    YubiOtpSession, YubiOtpSlotConfiguration,
+    StaticPasswordSlotConfiguration, HotpSlotConfiguration, HmacSha1SlotConfiguration)
+
 from qr import qrparse, qrdecode
 from ykman.scancodes import KEYBOARD_LAYOUT
 
@@ -43,19 +48,24 @@ def as_json(f):
 
 def cred_to_dict(cred):
     return {
-        'key': cred.key.decode('utf8'),
+        'device_id': cred.device_id,
+        'key': cred.id.decode('utf8'),
         'issuer': cred.issuer,
         'name': cred.name,
         'oath_type': cred.oath_type.name,
         'period': cred.period,
-        'touch': cred.touch
+        'touch': cred.touch_required
     }
 
 
 def cred_from_dict(data):
     return Credential(
+        data['device_id'],
         data['key'].encode('utf-8'),
+        data.get('issuer'),
+        data['name'],
         OATH_TYPE[data['oath_type']],
+        data['period'],
         data['touch']
     )
 
@@ -81,11 +91,11 @@ def credential_data_to_dict(credentialData):
         'issuer': credentialData.issuer,
         'name': credentialData.name,
         'oath_type': credentialData.oath_type.name,
-        'algorithm': credentialData.algorithm.name,
+        'algorithm': credentialData.hash_algorithm.name,
         'digits': credentialData.digits,
         'period': credentialData.period,
         'counter': credentialData.counter,
-        'touch': credentialData.touch
+        'touch': False
     }
 
 
@@ -109,21 +119,10 @@ def catch_error(f):
         try:
             return f(*args, **kwargs)
 
-        except YkpersError as e:
-            if e.errno == 3:
-                return failure('write error')
-            if e.errno == 4:
-                return failure('timeout')
-            logger.error('Uncaught exception', exc_info=e)
-            return unknown_failure(e)
-        except FailedOpeningDeviceException:
-            return failure('open_device_failed')
-        except APDUError as e:
+        except ApduError as e:
             if e.sw == SW.SECURITY_CONDITION_NOT_SATISFIED:
                 return failure('access_denied')
             raise
-        except CCIDError:
-            return failure('ccid_error')
         except smartcard.pcsc.PCSCExceptions.EstablishContextException:
             return failure('no_pcscd')
         except Exception as e:
@@ -138,32 +137,9 @@ def is_nfc(reader_name):
     return "yubico" not in reader_name.lower()
 
 
-class OathContextManager(object):
-    def __init__(self, dev):
-        self._dev = dev
-
-    def __enter__(self):
-        return OathController(self._dev.driver)
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self._dev.close()
-
-
-class OtpContextManager(object):
-    def __init__(self, dev):
-        self._dev = dev
-
-    def __enter__(self):
-        return OtpController(self._dev.driver)
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self._dev.close()
-
-
 class Controller(object):
 
-    _descs = []
-    _descs_fps = []
+    _devs = {}
     _devices = []
 
     _current_serial = None
@@ -171,6 +147,8 @@ class Controller(object):
 
     _reader_filter = None
     _readers = []
+
+    _state = None
 
     def __init__(self):
         self.settings = Settings('oath')
@@ -182,38 +160,40 @@ class Controller(object):
                 if isinstance(func, types.MethodType):
                     setattr(self, f, as_json(catch_error(func)))
 
+    def _open_device(self, connection_types=[SmartCardConnection, FidoConnection, OtpConnection]):
+        return connect_to_device(self._current_serial, connection_types=connection_types)[0]
+
     def _open_oath(self):
         if self._reader_filter:
             dev = self._get_dev_from_reader()
             if dev:
-                return OathContextManager(dev)
+                return dev.open_connection(SmartCardConnection)
             else:
                 raise ValueError('no_device_custom_reader')
 
-        return OathContextManager(
-            open_device(TRANSPORT.CCID, serial=self._current_serial))
-
-    def _open_otp(self):
-        return OtpContextManager(
-            open_device(TRANSPORT.OTP, serial=self._current_serial))
+        return connect_to_device(self._current_serial, [SmartCardConnection])[0]
 
     def _descriptors_changed(self):
-        old_descs = self._descs[:]
-        old_descs_fps = self._descs_fps[:]
-        self._descs = get_descriptors()
-        self._descs_fps = [desc.fingerprint for desc in self._descs]
-        descs_changed = (old_descs_fps != self._descs_fps)
-        n_descs_changed = len(self._descs) != len(old_descs)
-        return n_descs_changed or descs_changed
+        old_state = self._state
+        _, self._state = scan_devices()
+        return self._state != old_state
 
     def check_descriptors(self):
+        old_state = self._state
+        self._devs, self._state = scan_devices()
         return success({
-            'usbDescriptorsChanged': self._descriptors_changed()
+            'usbDescriptorsChanged': self._state != old_state
         })
 
     def _readers_changed(self, filter):
         old_readers = self._readers
-        self._readers = list(open_ccid(filter))
+        self._readers = []
+        for dev in list_ccid(filter):
+            try:
+                with dev.open_connection(SmartCardConnection) as c:
+                    self._readers.append(dev)
+            except:
+                pass
         readers_changed = len(self._readers) != len(old_readers)
         return readers_changed
 
@@ -223,63 +203,38 @@ class Controller(object):
         })
 
     def _get_dev_from_reader(self):
-        readers = list(open_ccid(self._reader_filter))
+        readers = list_ccid(self._reader_filter)
         if len(readers) == 1:
-            drv = readers[0]
-            return YubiKey(Descriptor.from_driver(drv), drv)
+            dev = readers[0]
+            return dev
         return None
 
-    def _get_devices(self):
+    def _get_devices(self, otp_mode=False):
         res = []
-        descs_to_match = self._descs[:]
-        handled_serials = set()
-        time.sleep(0.5)  # Let macOS take time to see the reader
-        for transport in [TRANSPORT.CCID, TRANSPORT.OTP, TRANSPORT.FIDO]:
-            if not descs_to_match:
-                return res
-            for dev in list_devices(transport):
-                if not descs_to_match:
-                    return res
-
-                serial = dev.serial
-
-                if dev.version:
-                    version = '.'.join(str(x) for x in dev.version)
+        for dev, info in list_all_devices():
+            usb_enabled = info.config.enabled_capabilities[TRANSPORT.USB]
+            interfaces_enabled = []
+            if CAPABILITY.OTP & usb_enabled:
+                interfaces_enabled.append("OTP")
+            if (CAPABILITY.U2F | CAPABILITY.FIDO2) & usb_enabled:
+                interfaces_enabled.append("FIDO")
+            if (CAPABILITY.OATH | CAPABILITY.PIV | CAPABILITY.OPENPGP) & usb_enabled:
+                interfaces_enabled.append("CCID")
+            if otp_mode:
+                selectable = "OTP" in interfaces_enabled
+                has_password = False
+            else:
+                selectable = "CCID" in interfaces_enabled
+                if selectable:
+                    with connect_to_device(info.serial, [SmartCardConnection])[0] as conn:
+                        oath = OathSession(conn)
+                        has_password = oath.locked
                 else:
-                    version = ""
-
-                try:
-                    controller = OathController(dev.driver)
-                    dev.has_password = controller.locked
-                except Exception as e:
-                    logger.debug("Could not read out password for oath")
-
-                if serial not in handled_serials:
-                    handled_serials.add(serial)
-
-                    matches_all = [
-                        d for d in self._descs[:] if (
-                            d.key_type, d.mode) == (
-                                dev.driver.key_type, dev.driver.mode)]
-
-                    matches_left = [
-                        d for d in descs_to_match if (
-                            d.key_type, d.mode) == (
-                                dev.driver.key_type, dev.driver.mode)]
-
-                    if len(matches_left) > 0:
-
-                        if len(matches_all) == 1 and version == "":
-                            # Only one matching descriptor of all descriptors,
-                            # try reading any missing version from it
-                            descriptor = matches_all[0]
-                            if descriptor.version and not dev.version:
-                                dev._desc_version = descriptor.version
-                        res.append(self._serialise_dev(dev))
-                        descs_to_match.remove(matches_left[0])
+                    has_password = False
+            res.append(self._serialise_dev(dev, info))
         return res
 
-    def _serialise_dev(self, dev):
+    def _serialise_dev(self, dev, info):
 
         def _get_version(dev):
             if dev.version:
@@ -289,49 +244,101 @@ class Controller(object):
             return ''
 
         return {
-            'name': dev.device_name,
-            'version': _get_version(dev),
-            'serial': dev.serial or '',
-            'usbAppEnabled': [a.name for a in APPLICATION if a & dev.config.usb_enabled],
-            'usbAppSupported': [a.name for a in APPLICATION if a & dev.config.usb_supported],
-            'nfcAppEnabled': [a.name for a in APPLICATION if a & dev.config.nfc_enabled],
-            'nfcAppSupported': [a.name for a in APPLICATION if a & dev.config.nfc_supported],
-            'usbInterfacesSupported': [t.name for t in TRANSPORT if t & dev.config.usb_supported],
-            'usbInterfacesEnabled': str(dev.mode).split('+'),
-            'canWriteConfig': dev.can_write_config,
-            'configurationLocked': dev.config.configuration_locked,
-            'formFactor': dev.config.form_factor,
+            'name': get_name(info, dev.pid.get_type()),
+            'version': _get_version(info),
+            'serial': info.serial or '',
+            'usbAppEnabled': [
+                a.name for a in CAPABILITY
+                if a in info.config.enabled_capabilities.get(TRANSPORT.USB)],
+            'usbAppSupported': [
+                a.name for a in CAPABILITY
+                if a in info.supported_capabilities.get(TRANSPORT.USB)],
+            'nfcAppEnabled': [
+                a.name for a in CAPABILITY
+                if a in info.config.enabled_capabilities.get(TRANSPORT.NFC, [])],
+            'nfcAppSupported': [
+                a.name for a in CAPABILITY
+                if a in info.supported_capabilities.get(TRANSPORT.NFC, [])],
+            'usbInterfacesSupported': [
+                t.name for t in USB_INTERFACE
+                if t in dev.pid.get_interfaces()],
+            'usbInterfacesEnabled': [
+                i.name for i in USB_INTERFACE
+                if i in dev.pid.get_interfaces()],
+            'canWriteConfig': info.version and info.version >= (5,0,0),
+            'configurationLocked': info.is_locked,
+            'formFactor': info.form_factor,
             'hasPassword': dev.has_password if hasattr(dev, 'has_password') else False,
             'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
        }
 
-    def load_devices_custom_reader(self, reader_filter):
+    def load_devices_custom_reader(self, reader_filter=None, otp_mode=False):
         self._devices = []
-        self._reader_filter = reader_filter
-        dev = self._get_dev_from_reader()
 
-        try:
-            controller = OathController(dev.driver)
-            dev.has_password = controller.locked
-        except Exception as e:
-            logger.debug("Could not read out password for oath")
+        if not otp_mode and reader_filter:
+            self._reader_filter = reader_filter
+            dev = self._get_dev_from_reader()
+            if dev:
+                with dev.open_connection(SmartCardConnection) as conn:
+                    info = read_info(dev.pid, conn)
+                    try:
+                        oath = OathSession(conn)
+                        has_password = oath.locked
+                        selectable = True
+                        self._current_serial = info.serial
+                    except Exception:
+                        selectable = False
+                        has_password = False
 
-        if dev:
-            self._devices.append(self._serialise_dev(dev))
-            return success({'devices': self._devices})
-        else:
-            return success({'devices': []})
+                usb_enabled = info.config.enabled_capabilities[TRANSPORT.USB]
 
-    def load_devices_usb(self):
-        self._devices = []
+                interfaces_enabled = []
+                if CAPABILITY.OTP & usb_enabled:
+                    interfaces_enabled.append("OTP")
+                if (CAPABILITY.U2F | CAPABILITY.FIDO2) & usb_enabled:
+                    interfaces_enabled.append("FIDO")
+                if (CAPABILITY.OATH | CAPABILITY.PIV | CAPABILITY.OPENPGP) & usb_enabled:
+                    interfaces_enabled.append("CCID")
+
+                self._devices.append({
+                    'name': get_name(info, dev.pid.get_type() if dev.pid else None),
+                    'version': '.'.join(str(d) for d in info.version),
+                    'serial': info.serial or '',
+                    'usbInterfacesEnabled': interfaces_enabled,
+                    #'usbInterfacesSupported': [
+                     #   t.name for t in USB_INTERFACE
+                      #  if t in dev.pid.get_interfaces()],
+                    'usbAppEnabled': [
+                        a.name for a in CAPABILITY
+                        if a in info.config.enabled_capabilities.get(TRANSPORT.USB)],
+                    'usbAppSupported': [
+                        a.name for a in CAPABILITY
+                        if a in info.supported_capabilities.get(TRANSPORT.USB)],
+                    'nfcAppEnabled': [
+                        a.name for a in CAPABILITY
+                        if a in info.config.enabled_capabilities.get(TRANSPORT.NFC, [])],
+                    'nfcAppSupported': [
+                        a.name for a in CAPABILITY
+                        if a in info.supported_capabilities.get(TRANSPORT.NFC, [])],
+                    'hasPassword': has_password,
+                    'selectable': selectable,
+                    'validated': True  # not has_password
+                })
+
+                return success({'devices': self._devices})
+            else:
+                return success({'devices': []})
+
+    def load_devices_usb(self, otp_mode=False):
+        self._reader_filter = None
         # Forget current serial and derived key if no descriptors
         # Return empty list of devices
-        if not self._descs:
+        if not self._devs:
             self._current_serial = None
             self._current_derived_key = None
             return success({'devices': []})
 
-        self._devices = self._get_devices()
+        self._devices = self._get_devices(otp_mode)
 
         # If no current serial, or current serial seems removed,
         # select the first serial found.
@@ -344,73 +351,260 @@ class Controller(object):
                     break
         return success({'devices': self._devices})
 
+    def _otp_get_code_or_touch(
+                    self, slot, digits, timestamp, wait_for_touch=False):
+        code = None
+        with self._open_device([OtpConnection]) as oath_controller:
+            session = YubiOtpSession(oath_controller)
+            # Check that slot is not empty
+            if not session.get_config_state().is_configured(slot):
+                raise CommandError("not programmed")
+
+            challenge = time_challenge(timestamp)
+
+            try:
+                event = Event()
+
+                def on_keepalive(status):
+                    if not hasattr(on_keepalive, "prompted") and status == 2 and not wait_for_touch:
+                        on_keepalive.prompted = True
+                        event.set()
+                response = session.calculate_hmac_sha1(slot, challenge, event, on_keepalive)
+                code = format_oath_code(response, int(digits))
+                return code, False
+            except TimeoutError:
+                return code, hasattr(on_keepalive, "prompted")
+
+    def otp_calculate_all(
+                self, slot1_digits, slot2_digits, timestamp):
+        valid_from = timestamp - (timestamp % 30)
+        valid_to = valid_from + 30
+        entries = []
+
+        def calc(slot, digits, label):
+            try:
+                code, touch = self._otp_get_code_or_touch(slot, digits, timestamp)
+                entries.append({
+                    'credential': cred_to_dict(
+                        Credential('', label.encode(), None, label, OATH_TYPE.TOTP, 30, touch)),
+                    'code': code_to_dict(
+                        Code(code, valid_from, valid_to)) if code else None
+                })
+            except CommandError as e:
+                pass
+
+        if slot1_digits:
+            calc(1, slot1_digits, "Slot 1")
+
+        if slot2_digits:
+            calc(2, slot2_digits, "Slot 2")
+
+        return success({'entries': entries})
+
+    def otp_calculate(self, slot, digits, credential, timestamp):
+        valid_from = timestamp - (timestamp % 30)
+        valid_to = valid_from + 30
+        code, _ = self._otp_get_code_or_touch(
+            slot, digits, timestamp, wait_for_touch=True)
+        return success({
+            'credential': credential,
+            'code': code_to_dict(Code(code, valid_from, valid_to))
+        })
+
+    def otp_slot_status(self):
+        with self._open_device([OtpConnection]) as oath_controller:
+            session = YubiOtpSession(oath_controller)
+            state = session.get_config_state()
+        return success({'status': (state.is_configured(1), state.is_configured(2))})
+
+    def otp_add_credential(self, slot, key, touch):
+        key = parse_b32_key(key)
+        with self._open_device([OtpConnection]) as oath_controller:
+            session = YubiOtpSession(oath_controller)
+            session.put_configuration(
+                int(slot),
+                HmacSha1SlotConfiguration(key).require_touch(touch),
+            )
+
+        return success()
+
+    def otp_delete_credential(self, slot):
+        with self._open_device([OtpConnection]) as oath_controller:
+            session = YubiOtpSession(oath_controller)
+            session.delete_slot(slot)
+        return success()
+
     def write_config(self, usb_applications, nfc_applications):
 
         usb_enabled = 0x00
         nfc_enabled = 0x00
         for app in usb_applications:
-            usb_enabled |= APPLICATION[app]
+            usb_enabled |= CAPABILITY [app]
         for app in nfc_applications:
-            nfc_enabled |= APPLICATION[app]
+            nfc_enabled |= CAPABILITY [app]
 
 
         if self._reader_filter:
-            dev = self._get_dev_from_reader()
-            dev.write_config(
-                device_config(
-                    usb_enabled=usb_enabled,
-                    nfc_enabled=nfc_enabled,
+            with self._open_oath() as conn:
+                session = ManagementSession(conn)
+                session.write_device_config(
+                    DeviceConfig(
+                        {TRANSPORT.USB: usb_enabled,
+                        TRANSPORT.NFC: nfc_enabled},
+                        None,
+                        None,
+                        None,
                     ),
-                reboot=True)
+                    True)
         else:
 
-            with open_device(serial=self._current_serial) as dev:
-                dev.write_config(
-                    device_config(
-                        usb_enabled=usb_enabled,
-                        nfc_enabled=nfc_enabled,
-                        ),
-                    reboot=True)
+            with self._open_device() as conn:
+                session = ManagementSession(conn)
+                session.write_device_config(
+                    DeviceConfig(
+                        {TRANSPORT.USB: usb_enabled,
+                        TRANSPORT.NFC: nfc_enabled},
+                        None,
+                        None,
+                        None,
+                    ),
+                    True)
+
+                self._state = None
 
         return success()
 
     def slots_status(self):
-        with self._open_otp() as controller:
-            return success({'status': controller.slot_status})
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                state = session.get_config_state()
+                slot1 = state.is_configured(1)
+                slot2 = state.is_configured(2)
+                ans = [slot1, slot2]
+                return success({'status': ans})
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                state = session.get_config_state()
+                slot1 = state.is_configured(1)
+                slot2 = state.is_configured(2)
+                ans = [slot1, slot2]
+                return success({'status': ans})
 
     def erase_slot(self, slot):
-        with self._open_otp() as controller:
-            controller.zap_slot(slot)
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                session.delete_slot(slot)
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                session.delete_slot(slot)
         return success()
 
     def swap_slots(self):
-        with self._open_otp() as controller:
-            controller.swap_slots()
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                session.swap_slots()
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                session.swap_slots()
         return success()
 
     def serial_modhex(self):
-        with open_device(TRANSPORT.OTP, serial=self._current_serial) as dev:
-            return modhex_encode(b'\xff\x00' + struct.pack(b'>I', dev.serial))
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                return modhex_encode(b'\xff\x00' + struct.pack(b'>I', session.get_serial()))
+
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                return modhex_encode(b'\xff\x00' + struct.pack(b'>I', session.get_serial()))
 
     def program_challenge_response(self, slot, key, touch):
         key = a2b_hex(key)
-        with self._open_otp() as controller:
-            controller.program_chalresp(slot, key, touch)
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                try:
+                    session.put_configuration(
+                        slot,
+                        HmacSha1SlotConfiguration(key).require_touch(touch),
+                    )
+                except CommandError as e:
+                    logger.debug("Failed to program Challenge-response", exc_info=e)
+                    return failure("write error")
+        else:
+             with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                try:
+                    session.put_configuration(
+                        slot,
+                        HmacSha1SlotConfiguration(key).require_touch(touch),
+                    )
+                except CommandError as e:
+                    logger.debug("Failed to program Challenge-response", exc_info=e)
+                    return failure("write error")
+
         return success()
 
 
     def program_static_password(self, slot, key, keyboard_layout):
-        with self._open_otp() as controller:
-            controller.program_static(
-                slot, key,
-                keyboard_layout=KEYBOARD_LAYOUT[keyboard_layout])
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                scan_codes = encode(key, KEYBOARD_LAYOUT[keyboard_layout])
+
+                try:
+                    session.put_configuration(slot, StaticPasswordSlotConfiguration(scan_codes))
+                except CommandError as e:
+                    logger.debug("Failed to program static password", exc_info=e)
+                    return failure("write error")
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                scan_codes = encode(key, KEYBOARD_LAYOUT[keyboard_layout])
+
+                try:
+                    session.put_configuration(slot, StaticPasswordSlotConfiguration(scan_codes))
+                except CommandError as e:
+                    logger.debug("Failed to program static password", exc_info=e)
+                    return failure("write error")
+
         return success()
 
     def program_oath_hotp(self, slot, key, digits):
         unpadded = key.upper().rstrip('=').replace(' ', '')
         key = b32decode(unpadded + '=' * (-len(unpadded) % 8))
-        with self._open_otp() as controller:
-            controller.program_hotp(slot, key, hotp8=(int(digits) == 8))
+
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                session = YubiOtpSession(conn)
+                try:
+                    session.put_configuration(
+                        slot,
+                        HotpSlotConfiguration(key)
+                        .digits8(int(digits) == 8),
+                    )
+                except CommandError as e:
+                    logger.debug("Failed to program OATH-HOTP", exc_info=e)
+                    return failure("write error")
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                session = YubiOtpSession(conn)
+                try:
+                    session.put_configuration(
+                        slot,
+                        HotpSlotConfiguration(key)
+                        .digits8(int(digits) == 8),
+                    )
+                except CommandError as e:
+                    logger.debug("Failed to program OATH-HOTP", exc_info=e)
+                    return failure("write error")
         return success()
 
     def generate_static_pw(self, keyboard_layout):
@@ -433,33 +627,74 @@ class Controller(object):
 
         upload_url = None
 
-        with self._open_otp() as controller:
-            if upload:
+        if self._reader_filter:
+            with self._open_oath() as conn:
+                if upload:
+                    try:
+                        upload_url = prepare_upload_key(
+                            key, public_id, private_id,
+                            serial=self._current_serial,
+                            user_agent='ykman-qt/' + app_version)
+                    except PrepareUploadFailed as e:
+                        logger.debug('YubiCloud upload failed', exc_info=e)
+                        return failure('upload_failed',
+                                       {'upload_errors': [err.name
+                                                          for err in e.errors]})
                 try:
-                    upload_url = controller.prepare_upload_key(
-                        key, public_id, private_id,
-                        serial=self._current_serial,
-                        user_agent='ykman-qt/' + app_version)
-                except PrepareUploadFailed as e:
-                    logger.debug('YubiCloud upload failed', exc_info=e)
-                    return failure('upload_failed',
-                                   {'upload_errors': [err.name
-                                                      for err in e.errors]})
-
-            controller.program_otp(slot, key, public_id, private_id)
+                    session = YubiOtpSession(conn)
+                    session.put_configuration(
+                        slot,
+                        YubiOtpSlotConfiguration(public_id, private_id, key)
+                    )
+                except CommandError as e:
+                    logger.debug("Failed to program YubiOTP", exc_info=e)
+                    return failure("write error")
+        else:
+            with self._open_device([OtpConnection]) as conn:
+                if upload:
+                    try:
+                        upload_url = prepare_upload_key(
+                            key, public_id, private_id,
+                            serial=self._current_serial,
+                            user_agent='ykman-qt/' + app_version)
+                    except PrepareUploadFailed as e:
+                        logger.debug('YubiCloud upload failed', exc_info=e)
+                        return failure('upload_failed',
+                                       {'upload_errors': [err.name
+                                                          for err in e.errors]})
+                try:
+                    session = YubiOtpSession(conn)
+                    session.put_configuration(
+                        slot,
+                        YubiOtpSlotConfiguration(public_id, private_id, key)
+                    )
+                except CommandError as e:
+                    logger.debug("Failed to program YubiOTP", exc_info=e)
+                    return failure("write error")
 
         logger.debug('YubiOTP successfully programmed.')
-
         if upload_url:
             logger.debug('Upload url: %s', upload_url)
 
         return success({'upload_url': upload_url})
 
     def set_mode(self, interfaces):
-        with open_device(serial=self._current_serial) as dev:
-            transports = sum([TRANSPORT[i] for i in interfaces])
-            dev.mode = Mode(transports & TRANSPORT.usb_transports())
-        return success()
+        interfaces_enabled = 0x00
+        for usb_interface in interfaces:
+            interfaces_enabled |= USB_INTERFACE [usb_interface]
+
+        with self._open_device() as conn:
+            try:
+                session = ManagementSession(conn)
+                session.set_mode(
+                    Mode(interfaces_enabled))
+
+            except ValueError as e:
+                if str(e) == 'Configuration locked!':
+                    return failure('interface_config_locked')
+                raise
+
+            return success()
 
 
     def select_current_serial(self, serial):
@@ -469,21 +704,22 @@ class Controller(object):
 
     def ccid_calculate_all(self, timestamp):
         with self._open_oath() as oath_controller:
-            self._unlock(oath_controller)
-            entries = oath_controller.calculate_all(timestamp)
+            session = OathSession(oath_controller)
+            self._unlock(session)
+            entries = session.calculate_all(timestamp)
             return success(
                 {
                     'entries': [
                         pair_to_dict(
                             cred, code) for (
-                                cred, code) in entries if not cred.is_hidden]
+                                cred, code) in entries.items() if not is_hidden(cred)]
                 }
             )
 
     def ccid_calculate(self, credential, timestamp):
         with self._open_oath() as oath_controller:
-            self._unlock(oath_controller)
-            code = oath_controller.calculate(
+            session = OathSession(oath_controller)
+            code = session.calculate_code(
                 cred_from_dict(credential), timestamp)
             return success({
                 'credential': credential,
@@ -496,17 +732,18 @@ class Controller(object):
         secret = parse_b32_key(secret)
         with self._open_oath() as oath_controller:
             try:
-                self._unlock(oath_controller)
+                session = OathSession(oath_controller)
                 cred_data = CredentialData(
-                    secret, issuer, name, OATH_TYPE[oath_type], ALGO[algo],
-                    int(digits), int(period), 0, touch
+                    name, OATH_TYPE[oath_type], HASH_ALGORITHM[algo],
+                    secret,
+                    int(digits), int(period), 0, issuer
                 )
                 if not overwrite:
-                    key = cred_data.make_key()
-                    if key in [cred.key for cred in oath_controller.list()]:
+                    key = cred_data.get_id()
+                    if key in [cred.id for cred in session.list_credentials()]:
                         return failure('credential_already_exists')
-                oath_controller.put(cred_data)
-            except APDUError as e:
+                session.put_credential(cred_data, touch)
+            except ApduError as e:
                 # NEO doesn't return a no space error if full,
                 # but a command aborted error. Assume it's because of
                 # no space in this context.
@@ -518,43 +755,42 @@ class Controller(object):
 
     def ccid_validate(self, password, remember=False):
         with self._open_oath() as oath_controller:
-            key = oath_controller.derive_key(password)
+            session = OathSession(oath_controller)
+            key = session.derive_key(password)
             try:
-                oath_controller.validate(key)
+                session.validate(key)
                 self._current_derived_key = key
                 if remember:
                     keys = self.settings.setdefault('keys', {})
-                    keys[oath_controller.id] = b2a_hex(
+                    keys[session.id] = b2a_hex(
                         self._current_derived_key).decode()
                     self.settings.write()
                 return success()
-            except APDUError as e:
+            except ApduError as e:
                 if e.sw == SW.INCORRECT_PARAMETERS:
                     return failure('validate_failed')
-
-    def otp_slot_status(self):
-        with self._open_otp() as otp_controller:
-            return success({'status': otp_controller.slot_status})
 
     def _unlock(self, controller):
         if controller.locked:
             keys = self.settings.get('keys', {})
             if self._current_derived_key is not None:
                 controller.validate(self._current_derived_key)
-            elif controller.id in keys:
-                controller.validate(a2b_hex(keys[controller.id]))
+            elif controller.device_id in keys:
+                controller.validate(a2b_hex(keys[controller.device_id]))
             else:
                 return failure('failed_to_unlock_key')
 
     def ccid_delete_credential(self, credential):
         with self._open_oath() as oath_controller:
-            self._unlock(oath_controller)
-            oath_controller.delete(cred_from_dict(credential))
+
+            session = OathSession(oath_controller)
+            session.delete_credential(cred_from_dict(credential).id)
             return success()
 
     def ccid_reset(self):
         with self._open_oath() as oath_controller:
-            oath_controller.reset()
+            session = OathSession(oath_controller)
+            session.reset()
             return success()
 
     def ccid_clear_local_passwords(self):
@@ -565,37 +801,40 @@ class Controller(object):
 
     def ccid_remove_password(self):
         with self._open_oath() as oath_controller:
-            self._unlock(oath_controller)
-            oath_controller.clear_password()
+            session = OathSession(oath_controller)
+            self._unlock(session)
+            session.unset_key()
             self._current_derived_key = None
             keys = self.settings.setdefault('keys', {})
-            if oath_controller.id in keys:
-                del keys[oath_controller.id]
+            if session.device_id in keys:
+                del keys[session.device_id]
             self.settings.write()
             return success()
 
     def ccid_set_password(self, new_password, remember=False):
         with self._open_oath() as oath_controller:
-            self._unlock(oath_controller)
+            session = OathSession(oath_controller)
+            self._unlock(session)
             keys = self.settings.setdefault('keys', {})
-            self._current_derived_key = \
-                oath_controller.set_password(new_password)
+            key = session.derive_key(new_password)
+            session.set_key(key)
+            self._current_derived_key = key
             if remember:
-                keys[oath_controller.id] = b2a_hex(
+                keys[session.device_id] = b2a_hex(
                     self._current_derived_key).decode()
-            elif oath_controller.id in keys:
-                del keys[oath_controller.id]
+            elif session.device_id in keys:
+                del keys[session.device_id]
             self.settings.write()
             return success()
 
     def get_connected_readers(self):
-        return success({'readers': [str(reader) for reader in list_readers()]})
+        return success({'readers': [reader.name for reader in list_readers()]})
 
     def parse_qr(self, data):
         try:
             return success(
                 credential_data_to_dict(
-                    CredentialData.from_uri(data)))
+                    CredentialData.parse_uri(data)))
         except Exception as e:
             logger.error('Failed to parse uri', exc_info=e)
             return failure('failed_to_parse_uri')
