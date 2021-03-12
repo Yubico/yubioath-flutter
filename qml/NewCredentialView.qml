@@ -400,9 +400,8 @@ Flickable {
             StyledCheckBox {
                 id: advancedSettingsCheckBox
                 text: qsTr("Show advanced settings")
-                description: qsTr("Change according to instructions only.")
                 visible: manualEntry && !settings.otpMode
-                Layout.bottomMargin: 16
+                Layout.bottomMargin: 0
                 Layout.topMargin: 0
             }
 
