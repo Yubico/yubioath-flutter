@@ -358,57 +358,15 @@ Pane {
     Accessible.name: !!credential ? (credential.issuer ? credential.issuer : credential.name) : ""
     Accessible.description: getCodeLblValue()
 
-    ToolButton {
-        id: favoriteBtn
-        Layout.alignment: Qt.AlignRight | Qt.AlignTop
-        visible: favorite || credentialCard.hovered || credentialCard.GridView.isCurrentItem
-
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.rightMargin: -6
-        anchors.topMargin: -4
-
-        onClicked: toggleFavorite()
-        Keys.onReturnPressed: toggleFavorite()
-        Keys.onEnterPressed: toggleFavorite()
-        focusPolicy: Qt.NoFocus
-
-        Accessible.role: Accessible.Button
-        Accessible.name: "Favorite"
-        Accessible.description: "Favorite credential"
-
-        ToolTip {
-            text: favorite ? qsTr("Remove as favorite (%1)").arg(shortcutToggleFavorite.nativeText)  :
-                             qsTr("Set as favorite (%1)").arg(shortcutToggleFavorite.nativeText)
-            delay: 1000
-            parent: favoriteBtn
-            visible: parent.hovered
-            Material.foreground: toolTipForeground
-            Material.background: toolTipBackground
-        }
-
-        icon.source: favorite ? "../images/star.svg" : "../images/star_border.svg"
-        icon.color: hovered || favorite ? iconFavorite : primaryColor
-        opacity: hovered || favorite ? highEmphasis : disabledEmphasis
-        implicitHeight: 30
-        implicitWidth: 30
-
-        MouseArea {
-            id: favoriteMouseArea
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-            propagateComposedEvents: true
-            enabled: false
-        }
-    }
-
     CredentialCardTimer {
         period: credential && credential.period ? credential.period : 0
         validTo: code && code.valid_to ? code.valid_to : 0
-        anchors.bottom: parent.bottom
+
+        anchors.top: parent.top
         anchors.right: parent.right
-        anchors.rightMargin: 3
-        anchors.bottomMargin: 4
+        anchors.rightMargin: 4
+        anchors.topMargin: 4
+
         Layout.alignment: Qt.AlignRight | Qt.AlignBottom
         visible: code && code.value && credential && credential.oath_type === "TOTP" ? true : false
         onTimesUp: {
@@ -418,6 +376,49 @@ Pane {
             if (customPeriodCredentialNoTouch) {
                 calculateCard(false)
             }
+        }
+    }
+
+    ToolButton {
+        id: moreBtn
+        Layout.alignment: Qt.AlignRight | Qt.AlignTop
+        visible: credentialCard.hovered || credentialCard.GridView.isCurrentItem
+
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.rightMargin: -4
+        anchors.bottomMargin: -6
+
+        onClicked: contextMenu.popup()
+        Keys.onReturnPressed: contextMenu.popup()
+        Keys.onEnterPressed: contextMenu.popup()
+        focusPolicy: Qt.NoFocus
+
+        Accessible.role: Accessible.Button
+        Accessible.name: "Options"
+        Accessible.description: "Account options"
+
+        ToolTip {
+            text: "Options"
+            delay: 1000
+            parent: moreBtn
+            visible: parent.hovered
+            Material.foreground: toolTipForeground
+            Material.background: toolTipBackground
+        }
+
+        icon.source: "../images/more.svg"
+        icon.color: primaryColor
+        opacity: hovered ? highEmphasis : disabledEmphasis
+        implicitHeight: 30
+        implicitWidth: 30
+
+        MouseArea {
+            id: favoriteMouseArea
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            propagateComposedEvents: true
+            enabled: false
         }
     }
 

@@ -30,10 +30,6 @@ ToolBar {
 
     property string searchFieldPlaceholder: !!navigator.currentItem ? navigator.currentItem.searchFieldPlaceholder || "" : ""
 
-    function shouldShowCredentialOptions() {
-        return !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential() && !searchField.activeFocus
-    }
-
     RowLayout {
         spacing: 0
         anchors.fill: parent
@@ -163,10 +159,8 @@ ToolBar {
 
                 KeyNavigation.backtab: drawerBtn
                 KeyNavigation.left: drawerBtn
-                KeyNavigation.tab: shouldShowCredentialOptions(
-                                       ) ? copyCredentialBtn : addCredentialBtn
-                KeyNavigation.right: shouldShowCredentialOptions(
-                                       ) ? copyCredentialBtn : addCredentialBtn
+                KeyNavigation.tab: addCredentialBtn
+                KeyNavigation.right: addCredentialBtn
                 Keys.onEscapePressed: exitSearchMode(true)
                 Keys.onDownPressed: exitSearchMode(false)
                 Keys.onReturnPressed: {
@@ -199,81 +193,6 @@ ToolBar {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
             ToolButton {
-                id: copyCredentialBtn
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: shouldShowCredentialOptions()
-
-                onClicked: navigator.oathCopySelectedCredential()
-                Keys.onReturnPressed: navigator.oathCopySelectedCredential()
-                Keys.onEnterPressed: navigator.oathCopySelectedCredential()
-
-                KeyNavigation.left: searchField
-                KeyNavigation.backtab: searchField
-                KeyNavigation.right: deleteCredentialBtn
-                KeyNavigation.tab: deleteCredentialBtn
-
-                Accessible.role: Accessible.Button
-                Accessible.name: "Copy"
-                Accessible.description: "Copy to clipboard"
-
-                ToolTip {
-                    text: qsTr("Copy code to clipboard (%1)").arg(shortcutCopy.nativeText)
-                    delay: 1000
-                    parent: copyCredentialBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: "../images/copy.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                }
-            }
-
-            ToolButton {
-                id: deleteCredentialBtn
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: shouldShowCredentialOptions()
-
-                onClicked: navigator.oathDeleteSelectedCredential()
-                Keys.onReturnPressed: navigator.oathDeleteSelectedCredential()
-                Keys.onEnterPressed: navigator.oathDeleteSelectedCredential()
-
-                KeyNavigation.left: copyCredentialBtn
-                KeyNavigation.right: addCredentialBtn
-                KeyNavigation.tab: addCredentialBtn
-
-                Accessible.role: Accessible.Button
-                Accessible.name: "Delete"
-                Accessible.description: "Delete account"
-
-                ToolTip {
-                    text: qsTr("Delete account (%1)").arg(shortcutDelete.nativeText)
-                    delay: 1000
-                    parent: deleteCredentialBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: "../images/delete.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                }
-            }
-
-            ToolButton {
                 id: addCredentialBtn
                 visible: !!yubiKey.currentDevice
                          && yubiKey.currentDeviceEnabled("OATH")
@@ -285,8 +204,8 @@ ToolBar {
                 Keys.onReturnPressed: navigator.goToNewCredential()
                 Keys.onEnterPressed: navigator.goToNewCredential()
 
-                KeyNavigation.left: !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential() ? deleteCredentialBtn : searchField
-                KeyNavigation.backtab: !!navigator && navigator.isInAuthenticator() && navigator.hasSelectedOathCredential() ? deleteCredentialBtn : searchField
+                KeyNavigation.left: searchField
+                KeyNavigation.backtab: searchField
                 KeyNavigation.right: navigator
                 KeyNavigation.tab: navigator
 
