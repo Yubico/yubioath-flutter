@@ -347,7 +347,7 @@ Flickable {
             StyledCheckBox {
                 id: advancedSettingsCheckBox
                 text: qsTr("Show advanced settings")
-                visible: manualEntry
+                visible: manualEntry && !settings.otpMode
                 Layout.bottomMargin: 0
                 Layout.topMargin: 0
             }
