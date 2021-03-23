@@ -285,10 +285,19 @@ Pane {
         }
 
         ToolTip {
+            text: qsTr("Double-click to generate code")
+            delay: 1000
+            parent: credentialCard
+            visible: hotpCredential && !hotpCredentialInCoolDown && parent.hovered && !moreBtn.hovered
+            Material.foreground: toolTipForeground
+            Material.background: toolTipBackground
+        }
+
+        ToolTip {
             text: qsTr("Double-click to initiate touch")
             delay: 1000
             parent: credentialCard
-            visible: touchCredentialNoCode && parent.hovered && !favoriteBtn.hovered
+            visible: touchCredentialNoCode && parent.hovered && !moreBtn.hovered
             Material.foreground: toolTipForeground
             Material.background: toolTipBackground
         }
@@ -379,6 +388,36 @@ Pane {
         }
     }
 
+    StyledImage {
+        id: touchIcon
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.rightMargin: 2
+        anchors.topMargin: 0
+        iconWidth: 18
+        iconHeight: 18
+        source: "../images/touch.svg"
+        visible: touchCredentialNoCode
+        color: primaryColor
+        opacity: lowEmphasis
+        Layout.alignment: Qt.AlignRight
+    }
+
+    StyledImage {
+        id: hotpIcon
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.topMargin: 0
+        iconWidth: 20
+        iconHeight: 20
+        source: "../images/refresh.svg"
+        visible: hotpCredential
+        color: primaryColor
+        opacity: hotpCredentialInCoolDown ? disabledEmphasis : lowEmphasis
+        Layout.alignment: Qt.AlignRight
+    }
+
     ToolButton {
         id: moreBtn
         Layout.alignment: Qt.AlignRight | Qt.AlignTop
@@ -386,7 +425,7 @@ Pane {
 
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        anchors.rightMargin: -4
+        anchors.rightMargin: -5
         anchors.bottomMargin: -6
 
         onClicked: contextMenu.popup()
@@ -397,15 +436,6 @@ Pane {
         Accessible.role: Accessible.Button
         Accessible.name: "Options"
         Accessible.description: "Account options"
-
-        ToolTip {
-            text: "Options"
-            delay: 1000
-            parent: moreBtn
-            visible: parent.hovered
-            Material.foreground: toolTipForeground
-            Material.background: toolTipBackground
-        }
 
         icon.source: "../images/more.svg"
         icon.color: primaryColor
@@ -420,36 +450,6 @@ Pane {
             propagateComposedEvents: true
             enabled: false
         }
-    }
-
-    StyledImage {
-        id: touchIcon
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.bottomMargin: 6
-        iconWidth: 18
-        iconHeight: 18
-        source: "../images/touch.svg"
-        visible: touchCredentialNoCode
-        color: primaryColor
-        opacity: lowEmphasis
-        Layout.alignment: Qt.AlignRight
-    }
-
-    StyledImage {
-        id: hotpIcon
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        anchors.rightMargin: -1
-        anchors.bottomMargin: 2
-        iconWidth: 20
-        iconHeight: 20
-        source: "../images/refresh.svg"
-        visible: hotpCredential
-        color: primaryColor
-        opacity: hotpCredentialInCoolDown ? disabledEmphasis : lowEmphasis
-        Layout.alignment: Qt.AlignRight
     }
 }
 
