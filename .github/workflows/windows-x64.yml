@@ -89,7 +89,7 @@ jobs:
         run: |
           $py_ver = python -V
           $py_ver -match "python (?<content>.*)"
-          $version = $matches['content
+          $version = $matches['content']
 
           Copy-Item .\pymodules .\release -recurse
           Get-ChildItem -File -Include *.pyc -Recurse | Remove-Item -Force
