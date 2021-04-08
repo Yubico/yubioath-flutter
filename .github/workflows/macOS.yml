@@ -32,7 +32,7 @@ jobs:
 
       - name: Setup GPG
         run: |
-          gpg --no-default-keyring --keyring yubico --keyserver hkps://keys.openpgp.org --recv-keys 2D347EA6AA65421D
+          gpg --no-default-keyring --keyring yubico --keyserver hkps://keys.openpgp.org --recv-keys e3ff2839c048b25c084debe9b26995e310250568
       - name: Build OpenSSL
         run: |
           wget https://www.openssl.org/source/openssl-${OPENSSL_VER}.tar.gz
