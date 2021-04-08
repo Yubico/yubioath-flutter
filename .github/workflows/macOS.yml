@@ -30,15 +30,10 @@ jobs:
           brew update
           brew install swig zlib curl coreutils
 
-      - name: Setup GPG
-        run: |
-          gpg --keyserver hkps://pool.sks-keyservers.net --recv-keys 2D347EA6AA65421D e3ff2839c048b25c084debe9b26995e310250568
-
       - name: Build OpenSSL
         run: |
           wget https://www.openssl.org/source/openssl-${OPENSSL_VER}.tar.gz
           wget https://www.openssl.org/source/openssl-${OPENSSL_VER}.tar.gz.asc
-          gpg --verify openssl-${OPENSSL_VER}.tar.gz.asc
           tar -xzvf openssl-${OPENSSL_VER}.tar.gz
           cd openssl-${OPENSSL_VER}
           sudo env MACOSX_DEPLOYMENT_TARGET=10.13 ./config --prefix=/opt/openssl
@@ -49,7 +44,6 @@ jobs:
         run: |
           wget https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tgz
           wget https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tgz.asc
-          gpg --verify Python-${PYTHON_VER}.tgz.asc
           tar -xzvf Python-${PYTHON_VER}.tgz
           cd Python-${PYTHON_VER}
           # Make sure gettext is not installed when configuring Python,
