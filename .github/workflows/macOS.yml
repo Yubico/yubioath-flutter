@@ -62,7 +62,7 @@ jobs:
           sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/bin/pip${PYTHON_VER_SHORT} install -r requirements.txt
       
       - name: Change id for bundled Python
-        run: sudo sed -i '' 's/org.python.python/com.yubico.python/g' /Library/Frameworks/Python.framework/Versions/3.8/Resources/Python.app/Contents/Info.plist
+        run: sudo sed -i '' 's/org.python.python/com.yubico.python/g' /Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Resources/Python.app/Contents/Info.plist
 
       - name: Build PyOtherSide QML plugin
         run: |
