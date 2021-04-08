@@ -33,8 +33,7 @@ jobs:
       - name: Setup GPG
         run: |
           curl https://keys.openpgp.org/vks/v1/by-fingerprint/E3FF2839C048B25C084DEBE9B26995E310250568 | gpg --import
-          curl http://pool.sks-keyservers.net:11371/pks/lookup?op=get&search=0x8657ABB260F056B1E5190839D9C4D26D0E604491 | gpg --import
-          curl http://pool.sks-keyservers.net:11371/pks/lookup?op=get&search=0x7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C | gpg --import
+          gpg --no-default-keyring --keyring yubico --keyserver hkps://keyserver.ubuntu.com --recv-keys 7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C 8657ABB260F056B1E5190839D9C4D26D0E604491
 
       - name: Build OpenSSL
         run: |
