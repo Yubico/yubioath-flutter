@@ -33,12 +33,14 @@ jobs:
       - name: Setup GPG
         run: |
           curl https://keys.openpgp.org/vks/v1/by-fingerprint/E3FF2839C048B25C084DEBE9B26995E310250568 | gpg --import
-
+          curl http://pool.sks-keyservers.net:11371/pks/lookup?op=get&search=0x8657ABB260F056B1E5190839D9C4D26D0E604491 | gpg --import
+          curl http://pool.sks-keyservers.net:11371/pks/lookup?op=get&search=0x7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C | gpg --import
 
       - name: Build OpenSSL
         run: |
           wget https://www.openssl.org/source/openssl-${OPENSSL_VER}.tar.gz
           wget https://www.openssl.org/source/openssl-${OPENSSL_VER}.tar.gz.asc
+          gpg --verify openssl-${OPENSSL_VER}.tar.gz.asc
           tar -xzvf openssl-${OPENSSL_VER}.tar.gz
           cd openssl-${OPENSSL_VER}
           sudo env MACOSX_DEPLOYMENT_TARGET=10.13 ./config --prefix=/opt/openssl
@@ -49,6 +51,7 @@ jobs:
         run: |
           wget https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tgz
           wget https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tgz.asc
+          gpg --verify Python-${PYTHON_VER}.tgz.asc
           tar -xzvf Python-${PYTHON_VER}.tgz
           cd Python-${PYTHON_VER}
           # Make sure gettext is not installed when configuring Python,
