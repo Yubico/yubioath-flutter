@@ -37,7 +37,7 @@ jobs:
           curl "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x8657ABB260F056B1E5190839D9C4D26D0E604491" -o ./key2.asc
           gpg --import ./key1.asc
           gpg --import ./key2.asc
-          
+
       - name: Build OpenSSL
         run: |
           wget https://www.openssl.org/source/openssl-${OPENSSL_VER}.tar.gz
@@ -72,7 +72,7 @@ jobs:
           sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/bin/pip${PYTHON_VER_SHORT} install -r requirements.txt
       
       - name: Change id for bundled Python
-        run: sudo sed -i '' 's/org.python.python/com.yubico.python/g' /Library/Frameworks/Python.framework/Versions/3.8/Resources/Python.app/Contents/Info.plist
+        run: sudo sed -i '' 's/org.python.python/com.yubico.python/g' /Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Resources/Python.app/Contents/Info.plist
 
       - name: Build PyOtherSide QML plugin
         run: |
