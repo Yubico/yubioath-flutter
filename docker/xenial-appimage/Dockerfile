@@ -12,7 +12,7 @@ RUN apt-get install -y git make build-essential g++ libssl-dev zlib1g-dev libbz2
     qt515sensors qt515serialbus qt515serialport qt515x11extras qt515quickcontrols2 \
     qt515connectivity qt515scxml qt515wayland qt515remoteobjects qtbase5-dev \
     desktop-file-utils libglib2.0-bin qtchooser python3-pip python mesa-common-dev curl swig \
-    libpcsclite-dev libffi-dev libykpers-1-1
+    libpcsclite-dev libffi-dev
 ENV QT_BASE_DIR=/opt/qt515 \
     QT_DIR=/opt/qt515 \
     PYTHON_CFLAGS=-fPIC \
@@ -40,8 +40,6 @@ RUN mkdir -p yubioath-desktop/appDir/usr \
     && pip3 install --upgrade pip \
     && pip3 install -r requirements.txt \
     && cp -R /root/.pyenv/versions/3.8.7/* appDir/usr \
-    && apt-get download libykpers-1-1 \
-    && dpkg -x libykpers*.deb appDir/ \
     && qmake \
     && make \
     && cp resources/com.yubico.yubioath.desktop appDir/ \

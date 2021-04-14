@@ -3,7 +3,6 @@ name: windows 64 bit
 on: [push, pull_request]
 
 env:
-  PYTHON_VER: '3.8.7'
   PYTHON_VER_DIRNAME: 'python38'
   PYOTHERSIDE_VER: '1.5.9'
 
@@ -16,7 +15,7 @@ jobs:
       - uses: actions/checkout@v1
       - uses: actions/setup-python@v1
         with:
-          python-version: ${{ env.PYTHON_VER }}
+          python-version: '3.8.x'
           architecture: 'x64'
 
       - name: Install Qt
@@ -30,21 +29,16 @@ jobs:
 
       - name: Download dependencies
         run: |
+          $py_ver = python -V
+          $py_ver -match "python (?<content>.*)"
+          $version = $matches['content']
           wget https://download.qt.io/official_releases/jom/jom.zip -OutFile jom.zip
           wget https://github.com/thp/pyotherside/archive/$env:PYOTHERSIDE_VER.zip -OutFile pyotherside-$env:PYOTHERSIDE_VER.zip
-          wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.20.0-win64.zip -OutFile ykpers-1.20.0-win64.zip
-          wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-1.20.0-win64.zip.sig -OutFile ykpers-1.20.0-win64.zip.sig
-          wget https://github.com/libusb/libusb/releases/download/v1.0.22/libusb-1.0.22.7z -OutFile libusb-1.0.22.7z
-          wget https://www.python.org/ftp/python/$env:PYTHON_VER/python-$env:PYTHON_VER-embed-amd64.zip -OutFile python-$env:PYTHON_VER-embed-amd64.zip
+          wget https://www.python.org/ftp/python/$version/python-$version-embed-amd64.zip -OutFile python-$version-embed-amd64.zip
         shell: powershell
 
       - name: Fetch GPG keys
         run: gpg --no-default-keyring --keyring yubico --keyserver hkps://keys.openpgp.org --recv-keys 0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A
-
-      - name: Verify signature/checksums of downloaded files
-        run: |
-          sha256sum -c ./.github/workflows/windows-libs.sha256sum
-          gpg --no-default-keyring --keyring yubico --verify ykpers-1.20.0-win64.zip.sig ykpers-1.20.0-win64.zip
 
       - name: Install swig
         run: choco install swig
@@ -55,11 +49,14 @@ jobs:
 
       - name: Prepare pyotherside
         run: |
+          $py_ver = python -V
+          $py_ver -match "python (?<content>.*)"
+          $version = $matches['content']
           7z x pyotherside-$env:PYOTHERSIDE_VER.zip
           cd pyotherside-$env:PYOTHERSIDE_VER
           (Get-Content .\src\qmldir).replace('pyothersideplugin', 'pyothersideplugin1') | Set-Content .\src\qmldir
           Clear-Content python.pri
-          Add-Content python.pri "PYTHON_CONFIG = python3-config`nQMAKE_LIBS += -LC:\hostedtoolcache\windows\Python\$env:PYTHON_VER\x64\libs -l$env:PYTHON_VER_DIRNAME`nQMAKE_CXXFLAGS += -IC:\hostedtoolcache\windows\Python\$env:PYTHON_VER\x64\include`n"
+          Add-Content python.pri "PYTHON_CONFIG = python3-config`nQMAKE_LIBS += -LC:\hostedtoolcache\windows\Python\$version\x64\libs -l$env:PYTHON_VER_DIRNAME`nQMAKE_CXXFLAGS += -IC:\hostedtoolcache\windows\Python\$version\x64\include`n"
         shell: powershell
 
       - name: Build and install pyotherside
@@ -90,20 +87,18 @@ jobs:
       - name: Copy over files to release folder
         shell: powershell
         run: |
+          $py_ver = python -V
+          $py_ver -match "python (?<content>.*)"
+          $version = $matches['content']
+
           Copy-Item .\pymodules .\release -recurse
           Get-ChildItem -File -Include *.pyc -Recurse | Remove-Item -Force
           Get-ChildItem -Include __pycache__ -Recurse | Remove-Item -Force
           Get-ChildItem -Include *.cpp -Recurse | Remove-Item -Force
           Get-ChildItem -Include *.obj -Recurse | Remove-Item -Force
-
-          7z x ykpers-1.20.0-win64.zip
-          Copy-Item .\bin\*.dll .\release\pymodules\ykman\native -Force
-
-          7z x libusb-1.0.22.7z
-          Copy-Item .\MS64\dll\*.dll .\release\pymodules\ykman\native -Force
-
+          
           cd .\release
-          7z x ..\python-$env:PYTHON_VER-embed-amd64.zip
+          7z x ..\python-$version-embed-amd64.zip
 
       - name: Create .zip artifact
         shell: powershell

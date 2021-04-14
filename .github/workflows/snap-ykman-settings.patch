@@ -1,25 +1,13 @@
-From 373b80b420c04f897fccd10288f994bb66825011 Mon Sep 17 00:00:00 2001
-From: Dag Heyman <dag@yubico.com>
-Date: Tue, 3 Mar 2020 08:29:16 +0100
-Subject: [PATCH] ykman: use SNAP directory for settings
-
----
- ykman/settings.py | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
 diff --git a/ykman/settings.py b/ykman/settings.py
-index ef76670..5b7b942 100644
+index 77ca6d4..d64908e 100644
 --- a/ykman/settings.py
 +++ b/ykman/settings.py
-@@ -42,7 +42,7 @@ def _get_conf_dir():
- 
- class Settings(dict):
-     def __init__(self, name):
--        self.fname = os.path.join(_get_conf_dir(), name + '.json')
-+        self.fname = os.path.join(os.getenv('SNAP_USER_DATA'), '.config', '.ykman', name + '.json')
-         if os.path.isfile(self.fname):
-             with open(self.fname, 'r') as f:
-                 self.update(json.load(f))
--- 
-2.20.1
+@@ -41,7 +41,7 @@ class Settings(dict):
+     _config_dir = HOME_CONFIG
 
+     def __init__(self, name):
+-        self.fname = Path(self._config_dir).expanduser().resolve() / (name + ".json")
++        self.fname = os.path.join(os.getenv('SNAP_USER_DATA'), '.config', '.ykman', name + '.json')
+         if self.fname.is_file():
+             with self.fname.open("r") as fd:
+                 self.update(json.load(fd))
