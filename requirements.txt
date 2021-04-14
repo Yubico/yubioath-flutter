@@ -1,2 +1,2 @@
-yubikey-manager==4.0.1
+yubikey-manager==4.0.2
 ./py/qr
