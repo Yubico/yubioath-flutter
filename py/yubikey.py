@@ -14,6 +14,10 @@ from ykman.settings import Settings
 from ykman import __version__ as ykman_v
 
 logger = logging.getLogger(__name__)
+log = logging.getLogger("ykman.hid")
+log.setLevel(logging.WARNING)
+log = logging.getLogger("fido2.hid")
+log.setLevel(logging.WARNING)
 
 
 def as_json(f):
