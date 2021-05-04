@@ -33,7 +33,7 @@ ApplicationWindow {
     property string primaryColor: isDark() ? "#ffffff" : "#303030"
     property string fullContrast: isDark() ? "#000000" : "#ffffff"
 
-    readonly property string defaultBackground: getDefaultBackground()
+    readonly property string defaultBackground: isDark() ? "#303030" : "#ffffff"
     readonly property string defaultElevated: isDark() ? "#383838" : "#ffffff"
     readonly property string defaultHovered: isDark() ? "#424242" : "#eeeeee"
     readonly property string defaultImageOverlay: isDark() ? "#565656" : "#dddddd"
@@ -69,16 +69,6 @@ ApplicationWindow {
     Material.accent: yubicoGreen
     Material.foreground: defaultForeground
     Material.background: defaultBackground
-
-    function getDefaultBackground() {
-        if (!!navigator.currentItem && (navigator.currentItem.objectName === 'settingsView'
-                        || navigator.currentItem.objectName === 'yubiKeyView'
-                        || navigator.currentItem.objectName === 'aboutView')
-                ) {
-            return isDark() ? "#303030" : "#f7f8f9"
-        }
-        return isDark() ? "#303030" : "#ffffff"
-    }
 
     header: StyledToolBar {
         id: toolBar

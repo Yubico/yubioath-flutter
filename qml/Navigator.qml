@@ -99,7 +99,7 @@ StackView {
 
     function goToYubiKey() {
         if (currentItem.objectName !== 'yubiKeyView') {
-            push(yubiKeyView, StackView.Immediate)
+            clearAndPush(yubiKeyView, StackView.Immediate)
         }
     }
 

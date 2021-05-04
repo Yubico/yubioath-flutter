@@ -14,7 +14,7 @@ Pane {
     property string description
     property string metadata
     property string keyImage
-    property string backgroundColor: defaultElevated
+    property string backgroundColor: defaultBackground
     property string searchQuery: toolBar.searchField.text
     property string searchText: label.concat(":", description, ":", metadata)
 
@@ -24,7 +24,8 @@ Pane {
     property bool isBottomPanel: false
     property bool isSectionTitle: false
     property bool isVisible: true
-    property bool dropShadow: true
+    property bool dropShadow: false
+    property bool isNotInFocus: false
 
     property string toolButtonIcon
     property string toolButtonToolTip
@@ -34,7 +35,7 @@ Pane {
 
     Layout.alignment: Qt.AlignCenter | Qt.AlignTop
     Layout.fillWidth: true
-    Layout.minimumHeight: isExpanded ? panelHeader.height + expandedContent.height + expandedPadding : panelHeader.height + 19
+    Layout.minimumHeight: isExpanded ? panelHeader.height + expandedContent.height + expandedPadding : panelHeader.height + 16
 
     Layout.leftMargin: -12
     Layout.rightMargin: -12
@@ -125,6 +126,7 @@ Pane {
                 Layout.topMargin: 0
                 Layout.bottomMargin: 0
                 visible: label
+                spacing: 4
 
                 Label {
                     visible: isSectionTitle
@@ -164,6 +166,7 @@ Pane {
 
             ToolButton {
                 id: expandButton
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
                 onClicked: expandAction()
                 icon.width: 24
                 icon.source: isExpanded ? "../images/up.svg" : "../images/down.svg"
