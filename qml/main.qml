@@ -244,13 +244,17 @@ ApplicationWindow {
       return RegExp(string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, "|"), flags)
     }
 
-    function getFavoriteEntries() {
+    function getEntries(pattern, favorites) {
         var favs = entriesComponent.createObject(app, {
         })
         for (var i = 0; i < entries.count; i++) {
             var entry = entries.get(i)
-            if (!!entry.credential && settings.favorites.includes(entry.credential.key)) {
-                favs.append(entry)
+            if (!!entry.credential && settings.favorites.includes(entry.credential.key) === favorites) {
+                if (pattern.length > 0 && !entry.credential.key.match(escapeRegExp(pattern, "i"))) {
+                    continue
+                } else {
+                    favs.append(entry)
+                }
             }
         }
         return favs

@@ -1,5 +1,5 @@
 import QtQuick 2.9
-import QtQuick.Controls 2.2
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
@@ -10,20 +10,15 @@ import QtGraphicalEffects 1.0
         property var idealCellHeight: 67
         property var idealCellWidth: columnWidth > app.minimumWidth - 32 ? columnWidth : app.minimumWidth - 32
         property var currentCredentialCard: currentItem
-
-        anchors.fill: parent
-        width: parent.width
+        z: 1
         ScrollBar.vertical: ScrollBar {
-            id: paneScrollBar
-            width: 8
-            anchors.top: parent.top
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            hoverEnabled: true
-        }
+                visible: false    // hides scrollbar
+            }
+        //anchors.fill: parent
+        implicitHeight: contentHeight
+        width: parent.width
         displayMarginBeginning: cellHeight
         keyNavigationWraps: false
-        model: filteredCredentials()
         cellHeight: idealCellHeight
         cellWidth: width / Math.floor(width / idealCellWidth)
         Accessible.role: Accessible.MenuItem
@@ -44,9 +39,9 @@ import QtGraphicalEffects 1.0
             }
         }
         boundsBehavior: Flickable.StopAtBounds
-        move: Transition {
-            NumberAnimation { properties: "x,y"; duration: 250 }
-        }
+//        move: Transition {
+//            NumberAnimation { properties: "x,y"; duration: 250 }
+//        }
         focus: visible
         Component.onCompleted: currentIndex = -1
         KeyNavigation.backtab: toolBar.addCredentialBtn

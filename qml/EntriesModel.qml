@@ -9,8 +9,7 @@ SortedListModel {
     function compareFunction(a, b) {
 
         function getSortableName(credential) {
-            return (settings.favorites.includes(credential.key) ? "0" : "1") + (credential.issuer
-                    || '') + (credential.name
+            return (credential.issuer || '') + (credential.name
                               || '') + '/' + (credential.period || '')
         }
 

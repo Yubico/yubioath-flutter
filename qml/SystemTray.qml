@@ -1,5 +1,6 @@
 import QtQuick 2.9
 import Qt.labs.platform 1.1
+import QtQml.Models 2.15
 import QtQml 2.12
 
 SystemTrayIcon {
@@ -10,7 +11,7 @@ SystemTrayIcon {
         if (reason === SystemTrayIcon.DoubleClick) {
             showWindow()
         } else {
-            sysTrayInstantiator.model = getFavoriteEntries()
+            sysTrayInstantiator.model = getEntries("", true)
         }
     }
 
@@ -26,7 +27,7 @@ SystemTrayIcon {
 
         Instantiator {
             id: sysTrayInstantiator
-            model: getFavoriteEntries()
+            model: getEntries("", true)
             onObjectAdded: sysTrayMenu.insertItem(index, object)
             onObjectRemoved: sysTrayMenu.removeItem(object)
             delegate: MenuItem {

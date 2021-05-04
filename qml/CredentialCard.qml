@@ -40,7 +40,7 @@ Pane {
             favs.push(credential.key)
             settings.favorites = favs
         }
-        entries.sort()
+        //entries.sort()
     }
 
     function formattedCode(code) {
@@ -241,6 +241,21 @@ Pane {
             hoverEnabled: true
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton | Qt.RightButton
+            propagateComposedEvents: true
+            onWheel: {
+                    //check if mouse is scrolling up or down
+                    if (wheel.angleDelta.y<0){
+                        //make sure not to scroll too far
+                        if (!pane.atYEnd)
+                            pane.contentY += 10
+                    }
+                    else {
+                        //make sure not to scroll too far
+                        if (!pane.atYBeginning)
+                            pane.contentY -= 10
+                    }
+                }
+
             onDoubleClicked: calculateCard(true)
             onClicked: {
                 if (mouse.button === Qt.RightButton) {
@@ -251,34 +266,35 @@ Pane {
                 }
             }
             Menu {
+                width: 115
                 id: contextMenu
                 MenuItem {
-                    icon.source: "../images/copy.svg"
-                    icon.color: primaryColor
+//                    icon.source: "../images/copy.svg"
+//                    icon.color: primaryColor
                     opacity: highEmphasis
-                    icon.width: 20
-                    icon.height: 20
-                    text: qsTr("Copy to clipboard")
+//                    icon.width: 20
+//                    icon.height: 20
+                    text: qsTr("Copy")
                     onTriggered: calculateCard(true)
                 }
                 MenuItem {
-                    icon.source: favorite ? "../images/star.svg" : "../images/star_border.svg"
-                    icon.color: primaryColor
+//                    icon.source: favorite ? "../images/star.svg" : "../images/star_border.svg"
+//                    icon.color: primaryColor
                     opacity: highEmphasis
-                    icon.width: 20
-                    icon.height: 20
-                    text: favorite ? qsTr("Remove as favorite") : qsTr("Set as favorite")
+//                    icon.width: 20
+//                    icon.height: 20
+                    text: favorite ? qsTr("Unset favorite") : qsTr("Set favorite")
                     onTriggered: toggleFavorite()
                 }
-                MenuSeparator {
-                }
+//                MenuSeparator {
+//                }
                 MenuItem {
-                    icon.source: "../images/delete.svg"
-                    icon.color: primaryColor
+//                    icon.source: "../images/delete.svg"
+//                    icon.color: primaryColor
                     opacity: highEmphasis
-                    icon.width: 20
-                    icon.height: 20
-                    text: "Delete account"
+//                    icon.width: 20
+//                    icon.height: 20
+                    text: "Delete"
                     onTriggered: deleteCard()
                 }
             }
@@ -374,7 +390,7 @@ Pane {
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.rightMargin: 4
-        anchors.topMargin: 4
+        anchors.topMargin: 2
 
         Layout.alignment: Qt.AlignRight | Qt.AlignBottom
         visible: code && code.value && credential && credential.oath_type === "TOTP" ? true : false
@@ -426,7 +442,7 @@ Pane {
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.rightMargin: -5
-        anchors.bottomMargin: -6
+        anchors.bottomMargin: -7
 
         onClicked: contextMenu.popup()
         Keys.onReturnPressed: contextMenu.popup()
