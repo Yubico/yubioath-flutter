@@ -12,6 +12,7 @@ import smartcard.pcsc.PCSCExceptions
 from base64 import b32encode, b32decode, b64decode
 from binascii import a2b_hex, b2a_hex
 from threading import Event
+from typing import Optional
 
 from ykman.device import scan_devices, list_all_devices, connect_to_device, get_name, read_info
 from ykman.pcsc import list_readers, list_devices as list_ccid
@@ -35,6 +36,8 @@ from yubikit.yubiotp import (
 from qr import qrparse, qrdecode
 from ykman.scancodes import KEYBOARD_LAYOUT
 
+from fido2.ctap import CtapError
+from fido2.ctap2 import Ctap2, ClientPin, CredentialManagement, FPBioEnrollment
 
 logger = logging.getLogger(__name__)
 
@@ -840,6 +843,162 @@ class Controller(object):
             return failure('failed_to_parse_uri')
         return failure('no_credential_found')
 
+    def fido_has_pin(self):
+        with self._open_device([FidoConnection]) as conn:
+            ctap2 = Ctap2(conn)
+            return success({'hasPin': ctap2.info.options.get("clientPin")})
+
+    def fido_pin_retries(self):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                client_pin = ClientPin(ctap2)
+                return success({'retries': client_pin.get_pin_retries()[0]})
+        except CtapError as e:
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('PIN authentication is currently blocked. '
+                               'Remove and re-insert the YubiKey.')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('PIN is blocked.')
+            raise
+
+    def fido_list(self, pin):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                client_pin = ClientPin(ctap2)
+                token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
+                bio = FPBioEnrollment(ctap2, client_pin.protocol, token)
+                for t_id, name in bio.enumerate_enrollments().items():
+                    logger.debug(t_id.hex())
+                    logger.debug(name)
+        except CtapError as e:
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('PIN authentication is currently blocked. '
+                               'Remove and re-insert the YubiKey.')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('PIN is blocked.')
+            raise
+
+    def fido_set_pin(self, new_pin):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                if len(new_pin) < ctap2.info.min_pin_length:
+                    return failure('too short')
+                client_pin = ClientPin(ctap2)
+                client_pin.set_pin(new_pin)
+                return success()
+        except CtapError as e:
+            if e.code == CtapError.ERR.INVALID_LENGTH or \
+                    e.code == CtapError.ERR.PIN_POLICY_VIOLATION:
+                return failure('too long')
+            raise
+
+    def fido_change_pin(self, current_pin, new_pin):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                if len(new_pin) < ctap2.info.min_pin_length:
+                    return failure('too short')
+                client_pin = ClientPin(ctap2)
+                client_pin.change_pin(current_pin, new_pin)
+                return success()
+        except CtapError as e:
+            if e.code == CtapError.ERR.INVALID_LENGTH or \
+                    e.code == CtapError.ERR.PIN_POLICY_VIOLATION:
+                return failure('too long')
+            if e.code == CtapError.ERR.PIN_INVALID:
+                return failure('wrong pin')
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('currently blocked')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('blocked')
+            raise
+
+    def fido_reset(self):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                ctap2.reset()
+                return success()
+        except CtapError as e:
+            if e.code == CtapError.ERR.NOT_ALLOWED:
+                return failure('not allowed')
+            if e.code == CtapError.ERR.ACTION_TIMEOUT:
+                return failure('touch timeout')
+            raise
+
+    def bio_enroll(self, pin, name):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                client_pin = ClientPin(ctap2)
+                token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
+                bio = FPBioEnrollment(ctap2, client_pin.protocol, token)
+
+                enroller = bio.enroll()
+                template_id = None
+                while template_id is None:
+                    try:
+                        logger.debug("Place your finger against the sensor now...")
+                        template_id = enroller.capture()
+                        remaining = enroller.remaining
+                        if remaining:
+                            logger.debug(f"{remaining} more scans needed.")
+                    except:
+                        logger.debug("Failed to capture")
+                logger.debug("Capture complete.")
+                bio.set_name(template_id, name)
+                return success()
+        except CtapError as e:
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('PIN authentication is currently blocked. '
+                               'Remove and re-insert the YubiKey.')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('PIN is blocked.')
+            raise
+
+    def bio_delete(self, pin, template_id):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                client_pin = ClientPin(ctap2)
+                token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
+                bio = FPBioEnrollment(ctap2, client_pin.protocol, token)
+
+                enrollments = bio.enumerate_enrollments()
+                try:
+                    key: Optional[bytes] = bytes.fromhex(template_id)
+                except ValueError:
+                    key = None
+
+                if key not in enrollments:
+                    # Match using template_id as NAME
+                    matches = [k for k in enrollments if enrollments[k] == template_id]
+                    if len(matches) == 0:
+                        logger.debug(f"No fingerprint matching ID={template_id}")
+                    elif len(matches) > 1:
+                        logger.debug(
+                            f"Multiple matches for NAME={template_id}. "
+                            "Delete by template ID instead."
+                        )
+                    key = matches[0]
+
+                name = enrollments[key]
+
+                try:
+                    bio.remove_enrollment(key)
+                    return success()
+                except:
+                    logger.debug("Failed to delete")
+        except CtapError as e:
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('PIN authentication is currently blocked. '
+                               'Remove and re-insert the YubiKey.')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('PIN is blocked.')
+            raise
 
 class PixelImage(object):
 

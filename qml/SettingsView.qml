@@ -10,8 +10,13 @@ Flickable {
     objectName: 'settingsView'
     contentWidth: app.width
     contentHeight: expandedHeight
+    StackView.onActivating: load()
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
+    property bool isBusy
+    property bool hasPin
+    property bool pinBlocked
+    property int pinRetries
 
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {
@@ -32,6 +37,31 @@ Flickable {
 
     property string searchFieldPlaceholder: qsTr("Search settings")
 
+    function load() {
+        isBusy = true
+        yubiKey.fidoHasPin(function (resp) {
+            if (resp.success) {
+                hasPin = resp.hasPin
+                if (hasPin) {
+                    yubiKey.fidoPinRetries(function (resp) {
+                        if (resp.success) {
+                            pinRetries = resp.retries
+                        } else {
+                            pinBlocked = (resp.error_id === 'PIN is blocked.')
+                        }
+                        isBusy = false
+                    })
+                } else {
+                    pinBlocked = false
+                    isBusy = false
+                }
+            } else {
+                navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+                views.home()
+            }
+        })
+    }
+
     ColumnLayout {
         width: settingsPanel.contentWidth
         id: content
@@ -44,6 +74,15 @@ Flickable {
             SettingsPanelCustomReader {}
             SettingsPanelSystemTray {}
             SettingsPanelClearPasswords {}
+        }
+        StyledExpansionContainer {
+            title: qsTr("Bio")
+
+            SettingsPanelFidoPin {}
+            SettingsPanelBioList {}
+            SettingsPanelBioAdd {}
+            SettingsPanelBioDelete {}
+            SettingsPanelFidoReset {}
 
         }
     }

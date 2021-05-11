@@ -622,4 +622,36 @@ Python {
     function getConnectedReaders(cb) {
         doCall('yubikey.controller.get_connected_readers', [], cb)
     }
+
+    function fidoList(pin) {
+        doCall('yubikey.controller.fido_list', [pin])
+    }
+
+    function fidoHasPin(cb) {
+        doCall('yubikey.controller.fido_has_pin', [], cb)
+    }
+
+    function fidoPinRetries(cb) {
+        doCall('yubikey.controller.fido_pin_retries', [], cb)
+    }
+
+    function fidoSetPin(newPin, cb) {
+        doCall('yubikey.controller.fido_set_pin', [newPin], cb)
+    }
+
+    function fidoChangePin(currentPin, newPin, cb) {
+        doCall('yubikey.controller.fido_change_pin', [currentPin, newPin], cb)
+    }
+
+    function fidoReset(cb) {
+        doCall('yubikey.controller.fido_reset', [], cb)
+    }
+
+    function bioEnroll(pin, name, cb) {
+        doCall('yubikey.controller.bio_enroll', [pin, name], cb)
+    }
+
+    function bioDelete(pin, template_id, cb) {
+        doCall('yubikey.controller.bio_delete', [pin, template_id], cb)
+    }
 }
