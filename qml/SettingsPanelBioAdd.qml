@@ -32,10 +32,20 @@ StyledExpansionPanel {
     function enroll() {
         yubiKey.bioEnroll(currentPinField.text, nameField.text, function (resp) {
             if (resp.success) {
-                navigator.goToSettings()
-                navigator.snackBar(qsTr("Fingerprint added"))
+                if (resp.remaining > 0) {
+                    console.log("success")
+                    enroll()
+                } else {
+
+                    navigator.goToSettings()
+                    navigator.snackBar(qsTr("Fingerprint added"))
+                }
             } else {
-                navigator.snackBarError(qsTr("Fingerprint not added"))
+                if (resp.error_id > 0) {
+                    console.log("fail")
+                    enroll()
+                }
+                //navigator.snackBarError(qsTr("Fingerprint not added"))
             }
         })
     }

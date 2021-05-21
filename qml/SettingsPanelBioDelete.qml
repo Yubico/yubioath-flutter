@@ -34,7 +34,12 @@ StyledExpansionPanel {
                 navigator.goToSettings()
                 navigator.snackBar(qsTr("Fingerprint deleted"))
             } else {
-                navigator.snackBarError(qsTr("Fingerprint not deleted"))
+                if (resp.error_id === "multiple_matches") {
+                    navigator.snackBarError(qsTr("Multiple matches. Delete by template ID instead"))
+                } else {
+
+                    navigator.snackBarError(qsTr("Fingerprint not deleted"))
+                }
             }
         })
     }

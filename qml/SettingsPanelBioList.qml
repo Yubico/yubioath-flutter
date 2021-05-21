@@ -17,7 +17,6 @@ StyledExpansionPanel {
             StyledButton {
                 id: applyField
                 text: qsTr("List")
-                enabled: nameField.text.length > 15 ? false : true
                 onClicked: yubiKey.fidoList(currentPinField.text)
 
             }
