@@ -22,6 +22,11 @@ StackView {
         push(view, StackView.Immediate)
     }
 
+    function isInFlickable() {
+        return !!currentItem && currentItem.objectName.includes('Flickable')
+    }
+
+
     function isInAuthenticator() {
         return !!currentItem && currentItem.objectName === 'authenticatorView'
     }
@@ -99,7 +104,7 @@ StackView {
 
     function goToYubiKey() {
         if (currentItem.objectName !== 'yubiKeyView') {
-            push(yubiKeyView, StackView.Immediate)
+            clearAndPush(yubiKeyView, StackView.Immediate)
         }
     }
 
@@ -118,6 +123,12 @@ StackView {
     function goToNewCredential(credential) {
         if (currentItem.objectName !== 'newCredentialView') {
             clearAndPush(newCredentialView, StackView.Immediate)
+        }
+    }
+
+    function goToCustomReader() {
+        if (currentItem.objectName !== 'customReaderView') {
+            push(customReaderView, StackView.PushTransition)
         }
     }
 
@@ -217,6 +228,13 @@ StackView {
         EnterPasswordView {
         }
     }
+
+    Component {
+        id: customReaderView
+        FlickableCustomReader {
+        }
+    }
+
 
     Component {
         id: loadingView
