@@ -44,7 +44,7 @@ ToolBar {
             id: drawerBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             Layout.leftMargin: 4
-            visible: !navigator.isInLoading()
+            visible: !navigator.isInLoading() && !navigator.isInFlickable()
 
             onClicked: drawer.toggle()
             Keys.onReturnPressed: drawer.toggle()
@@ -60,6 +60,36 @@ ToolBar {
             Accessible.description: "Menu button"
 
             icon.source: "../images/menu.svg"
+            icon.color: primaryColor
+            opacity: hovered ? fullEmphasis : lowEmphasis
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                enabled: false
+            }
+        }
+
+        ToolButton {
+            id: backBtn
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            Layout.leftMargin: 4
+            visible: !navigator.isInLoading() && navigator.isInFlickable()
+
+            onClicked: navigator.pop()
+            Keys.onReturnPressed: navigator.pop()
+            Keys.onEnterPressed: navigator.pop()
+
+            KeyNavigation.left: navigator
+            KeyNavigation.backtab: navigator
+            KeyNavigation.right: searchField.visible ? searchField : closeBtn
+            KeyNavigation.tab: searchField.visible ? searchField : closeBtn
+
+            Accessible.role: Accessible.Button
+            Accessible.name: "Back"
+            Accessible.description: "Back button"
+
+            icon.source: "../images/back.svg"
             icon.color: primaryColor
             opacity: hovered ? fullEmphasis : lowEmphasis
 

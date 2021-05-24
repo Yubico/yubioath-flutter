@@ -18,6 +18,7 @@ Pane {
     property string searchQuery: toolBar.searchField.text
     property string searchText: label.concat(":", description, ":", metadata)
 
+    property bool isFlickable: false
     property bool isEnabled: true
     property bool isExpanded: false
     property bool isTopPanel: false
@@ -30,6 +31,8 @@ Pane {
     property string toolButtonIcon
     property string toolButtonToolTip
     property alias toolButton: toolButton
+    property alias actionButton: actionButton
+    property alias expandButton: expandButton
     property alias expandedContent: expandedContent
     property int expandedPadding: isEnabled ? 48 : 19
 
@@ -51,7 +54,7 @@ Pane {
     activeFocusOnTab: true
 
     function expandAction() {
-        if (isEnabled) {
+        if (isEnabled && !isFlickable) {
             if (isExpanded) {
                 isExpanded = false
             } else {
@@ -62,7 +65,7 @@ Pane {
             }
         }
     }
-
+ 
     MouseArea {
         id: panelMouseArea
         onClicked: expandAction()
@@ -73,12 +76,11 @@ Pane {
         anchors.rightMargin: -16
         anchors.topMargin: -12
         height: panelHeader.implicitHeight + 19
-        enabled: isEnabled
+        enabled: isEnabled && !isFlickable
         cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
     }
 
     ColumnLayout {
-
         x: 16
         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         width: parent.width - dynamicMargin
@@ -169,7 +171,7 @@ Pane {
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
                 onClicked: expandAction()
                 icon.width: 24
-                icon.source: isExpanded ? "../images/up.svg" : "../images/down.svg"
+                icon.source: isFlickable ? "../images/next.svg" : (isExpanded ? "../images/up.svg" : "../images/down.svg")
                 icon.color: primaryColor
                 opacity: hovered ? fullEmphasis : lowEmphasis
                 visible: isEnabled
@@ -178,14 +180,6 @@ Pane {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     enabled: false
-                }
-                ToolTip {
-                    text: isExpanded ? qsTr("Show less") : qsTr("Show more")
-                    delay: 1000
-                    parent: expandButton
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
                 }
             }
 
@@ -209,6 +203,13 @@ Pane {
                     Material.foreground: toolTipForeground
                     Material.background: toolTipBackground
                 }
+            }
+
+            StyledButton {
+                id: actionButton
+                visible: text.length > 0
+                Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                Layout.rightMargin: 12
             }
         }
 

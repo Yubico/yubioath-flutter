@@ -22,6 +22,11 @@ StackView {
         push(view, StackView.Immediate)
     }
 
+    function isInFlickable() {
+        return !!currentItem && currentItem.objectName.includes('Flickable')
+    }
+
+
     function isInAuthenticator() {
         return !!currentItem && currentItem.objectName === 'authenticatorView'
     }
@@ -121,6 +126,12 @@ StackView {
         }
     }
 
+    function goToCustomReader() {
+        if (currentItem.objectName !== 'customReaderView') {
+            push(customReaderView, StackView.PushTransition)
+        }
+    }
+
     function confirm(options) {
         var popup = confirmationPopup.createObject(app, options)
         popup.open()
@@ -217,6 +228,13 @@ StackView {
         EnterPasswordView {
         }
     }
+
+    Component {
+        id: customReaderView
+        FlickableCustomReader {
+        }
+    }
+
 
     Component {
         id: loadingView

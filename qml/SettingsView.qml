@@ -56,8 +56,8 @@ Flickable {
             Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 text: "Appearance"
-                opacity: highEmphasis
-                font.pixelSize: 13
+                opacity: lowEmphasis
+                font.pixelSize: 12
                 font.weight: Font.Normal
                 topPadding: 16
                 Layout.fillWidth: true
@@ -115,8 +115,8 @@ Flickable {
             Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 text: "Application"
-                opacity: highEmphasis
-                font.pixelSize: 13
+                opacity: lowEmphasis
+                font.pixelSize: 12
                 font.weight: Font.Normal
                 topPadding: 16
                 Layout.fillWidth: true
@@ -148,19 +148,47 @@ Flickable {
                 }
             }
 
-
+            Label {
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                text: "Advanced"
+                opacity: lowEmphasis
+                font.pixelSize: 12
+                font.weight: Font.Normal
+                topPadding: 16
+                Layout.fillWidth: true
+                visible: customReaderPanel.visible || savedPasswordsPanel.visible
+            }
         }
 
-
-
-
         StyledExpansionContainer {
-//            title: qsTr("General")
+            StyledExpansionPanel {
+                id: customReaderPanel
+                label: qsTr("Custom reader")
+                description: qsTr("Use an external smart card reader to interact with YubiKey, enable NFC capabilities or remote usage.")
+                metadata: "ccid otp slot custom readers nfc"
+                isFlickable: true
+                expandButton.onClicked: navigator.goToCustomReader()
+            }
 
-//            SettingsPanelAppearance {}
-            SettingsPanelCustomReader {}
-//            SettingsPanelSystemTray {}
-            SettingsPanelClearPasswords {}
+            StyledExpansionPanel {
+                id: savedPasswordsPanel
+                label: qsTr("Saved passwords")
+                isEnabled: false
+                isBottomPanel: true
+                actionButton.text: "Clear"
+                actionButton.onClicked: navigator.confirm({
+                        "heading": qsTr("Clear passwords?"),
+                        "message": qsTr("This will delete all saved passwords."),
+                        "description": qsTr("A password prompt will appear the next time a YubiKey with a password is used."),
+                        "buttonAccept": qsTr("Clear passwords"),
+                        "acceptedCb": function() {
+                            yubiKey.clearLocalPasswords(function (resp) {
+                            if (resp.success) {
+                                navigator.snackBar(qsTr("Passwords cleared"))
+                            }
+                    })}
+                })
+            }
 
         }
     }

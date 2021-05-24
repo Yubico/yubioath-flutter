@@ -18,8 +18,8 @@ Pane {
     bottomPadding: 0
     Layout.topMargin: containerLabel.visible ? 4 : 0
     Layout.bottomMargin: containerLabel.visible ? 4 : 0
-    Layout.leftMargin: app.width > dynamicWidthSmall ? 16 : 0
-    Layout.rightMargin: app.width > dynamicWidthSmall ? 16 : 0
+    Layout.leftMargin: 0
+    Layout.rightMargin: 0
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -37,7 +37,7 @@ Pane {
                 font.weight: Font.Normal
                 topPadding: 24
                 bottomPadding: 8
-                Layout.leftMargin: app.width > dynamicWidthSmall ? -12 : 4
+                Layout.leftMargin: 4
                 Layout.fillWidth: true
             }
         }
