@@ -84,7 +84,7 @@ Flickable {
             }
 
             StyledExpansionContainer {
-                title: qsTr("Device information")
+                title: qsTr("Information")
 
                 StyledExpansionPanel {
                     id: expansionPanel
@@ -118,6 +118,7 @@ Flickable {
 
             ToolButton {
                 id: control
+                visible: false
                 onClicked: showDeviceConfiguration = !showDeviceConfiguration
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 icon.width: 24
@@ -125,7 +126,7 @@ Flickable {
                 icon.color: primaryColor
                 opacity: hovered ? fullEmphasis : lowEmphasis
                 focus: true
-                text: "Device configuration"
+                text: qsTr("%1 advanced").arg(showDeviceConfiguration ? "Hide" : "Show")
                 font.capitalization: Font.MixedCase
                 font.weight: Font.Medium
                 font.pixelSize: 13
@@ -145,35 +146,32 @@ Flickable {
 
         ColumnLayout {
             id: deviceConfig
-            visible: showDeviceConfiguration || toolBar.searchField.text.length > 0
+            visible: true //showDeviceConfiguration || toolBar.searchField.text.length > 0
             spacing: 0
             width: parent.width
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
-            StyledExpansionContainer {
-                title: qsTr("Interfaces")
+        StyledExpansionContainer {
+            title: qsTr("Configuration")
 
-                SettingsPanelInterfaces {}
+            StyledExpansionPanel {
+                label: qsTr("WebAuthn (FIDO2/U2F)")
+                description: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod")
+                isFlickable: true
+                expandButton.onClicked: navigator.goToWebAuthnView()
             }
-
-            StyledExpansionContainer {
-                title: qsTr("Authenticator (OATH)")
-
-                SettingsPanelPasswordMgmt {}
-                SettingsPanelResetDevice {}
+            StyledExpansionPanel {
+                label: qsTr("One-time password (OTP)")
+                description: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod")
+                isFlickable: true
             }
-
-            StyledExpansionContainer {
-                title: qsTr("One-Time Password (OTP)")
-
-                SettingsPanelOtp {
-                    id: otp0
-                    slot: 0 }
-                SettingsPanelOtp {
-                    id: otp1
-                    slot: 1 }
-                SettingsPanelOtpSwap {}
+            StyledExpansionPanel {
+                label: qsTr("Smart card (PIV)")
+                description: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod")
+                isFlickable: true
             }
+        }
+
         }
     }
 }

@@ -22,15 +22,6 @@ StackView {
         push(view, StackView.Immediate)
     }
 
-    function isInFlickable() {
-        return !!currentItem && currentItem.objectName.includes('Flickable')
-    }
-
-
-    function isInAuthenticator() {
-        return !!currentItem && currentItem.objectName === 'authenticatorView'
-    }
-
     function hasSelectedOathCredential() {
         return !!currentItem && !!currentItem.currentCredentialCard
     }
@@ -47,12 +38,26 @@ StackView {
         currentItem.currentCredentialCard.toggleFavorite()
     }
 
+    function isInAuthenticator() {
+        return !!currentItem && currentItem.objectName === 'authenticatorView'
+    }
+
+    function isInYubiKeySection() {
+        return !!currentItem && currentItem.objectName.includes('yubiKey')
+    }
+
     function isInYubiKeyView() {
         return !!currentItem && currentItem.objectName === 'yubiKeyView'
     }
 
     function isInSettings() {
         return !!currentItem && currentItem.objectName === 'settingsView'
+    }
+
+    function isInFlickable() {
+        if (!!currentItem && currentItem.objectName.includes('yubiKeyWebAuthnView'))
+            return true
+        return !!currentItem && currentItem.objectName.includes('Flickable')
     }
 
     function isInLoading() {
@@ -105,6 +110,24 @@ StackView {
     function goToYubiKey() {
         if (currentItem.objectName !== 'yubiKeyView') {
             clearAndPush(yubiKeyView, StackView.Immediate)
+        }
+    }
+
+    function goToWebAuthnView() {
+        if (currentItem.objectName !== 'webAuthnView') {
+            push(yubiKeyWebAuthnView, StackView.PushTransition)
+        }
+    }
+
+    function goToOneTimePasswordView() {
+        if (currentItem.objectName !== 'oneTimePasswordView') {
+            clearAndPush(yubiKeyOneTimePasswordView, StackView.Immediate)
+        }
+    }
+
+    function goToInterfacesView() {
+        if (currentItem.objectName !== 'interfacesView') {
+            clearAndPush(yubiKeyInterfacesView, StackView.Immediate)
         }
     }
 
@@ -214,6 +237,24 @@ StackView {
     Component {
         id: aboutView
         AboutView {
+        }
+    }
+
+    Component {
+        id: yubiKeyWebAuthnView
+        WebAuthnView {
+        }
+    }
+
+    Component {
+        id: yubiKeyOneTimePasswordView
+        OneTimePasswordView {
+        }
+    }
+
+    Component {
+        id: yubiKeyInterfacesView
+        InterfacesView {
         }
     }
 
