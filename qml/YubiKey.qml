@@ -622,4 +622,12 @@ Python {
     function getConnectedReaders(cb) {
         doCall('yubikey.controller.get_connected_readers', [], cb)
     }
+
+    function fidoHasPin(cb) {
+        doCall('yubikey.controller.fido_has_pin', [], cb)
+    }
+
+    function fidoPinRetries(cb) {
+        doCall('yubikey.controller.fido_pin_retries', [], cb)
+    }
 }
