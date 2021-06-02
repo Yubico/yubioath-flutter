@@ -131,6 +131,26 @@ StackView {
         }
     }
 
+    function goToNewCredential() {
+        if (currentItem.objectName !== 'newCredentialView') {
+            clearAndPush(newCredentialView, StackView.Immediate)
+        }
+    }
+
+    function goToNewCredentialScan() {
+        if (currentItem.objectName !== 'newCredentialView') {
+            clearAndPush(newCredentialViewScan, StackView.Immediate)
+            currentItem.scanQr(ScreenShot.capture(""))
+        }
+    }
+
+    function goToNewCredentialDrag(url) {
+        if (currentItem.objectName !== 'newCredentialView') {
+            clearAndPush(newCredentialViewDrag, StackView.Immediate)
+            currentItem.scanQr(url)
+        }
+    }
+
     function goToLoading() {
         if (currentItem.objectName !== 'loadingView') {
             push(loadingView, StackView.Immediate)
@@ -140,12 +160,6 @@ StackView {
     function goToEnterPassword() {
         if (currentItem.objectName !== 'enterPasswordView') {
             clearAndPush(enterPasswordView, StackView.Immediate)
-        }
-    }
-
-    function goToNewCredential(credential) {
-        if (currentItem.objectName !== 'newCredentialView') {
-            clearAndPush(newCredentialView, StackView.Immediate)
         }
     }
 
@@ -261,6 +275,21 @@ StackView {
     Component {
         id: newCredentialView
         NewCredentialView {
+            manualEntry: true
+        }
+    }
+
+    Component {
+        id: newCredentialViewScan
+        NewCredentialView {
+            manualEntry: false
+        }
+    }
+
+    Component {
+        id: newCredentialViewDrag
+        NewCredentialView {
+            manualEntry: false
         }
     }
 
@@ -294,4 +323,5 @@ StackView {
         SnackBar {
         }
     }
+
 }

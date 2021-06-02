@@ -14,11 +14,18 @@ Flickable {
     objectName: 'newCredentialView'
 
     property var credential
-    property bool manualEntry: false
+    property bool manualEntry
     property bool scanning: false
     property var fileName
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
+
+
+    BusyIndicator {
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        visible: scanning
+    }
 
     Pane {
         id: dropAreaOverlay
@@ -167,6 +174,7 @@ Flickable {
                     navigator.snackBarError(navigator.getErrorMessage(
                                                                 resp.error_id))
                 }
+                navigator.goToAuthenticator()
             }
         })
     }
@@ -259,7 +267,7 @@ Flickable {
                : dynamicWidth
 
         Label {
-            text: qsTr("Add account (%1/2)").arg(credential || manualEntry ? "2" : "1")
+            text: qsTr("Add account")
             font.pixelSize: 16
             font.weight: Font.Normal
             lineHeight: 1.8
@@ -267,76 +275,6 @@ Flickable {
             opacity: fullEmphasis
             Layout.topMargin: 16
             Layout.bottomMargin: 8
-        }
-
-        ColumnLayout {
-            id: selectScanOrManual
-            visible: !credential && !manualEntry
-            width: parent.width
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-
-            StyledImage {
-                id: qrImage
-                source: "../images/qr-monitor.svg"
-                color: primaryColor
-                opacity: lowEmphasis
-                iconWidth: 100
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                Layout.topMargin: 8
-                visible: !scanning
-            }
-
-            Item {
-                height: qrImage.height
-                width: qrImage.width
-                visible: scanning
-                Layout.topMargin: 8
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                BusyIndicator {
-                    width: 40
-                    height: 40
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                }
-            }
-
-            Label {
-                Layout.topMargin: 16
-                text: "To add an account follow the instructions provided by the service. Make sure the QR code is fully visible."
-                color: primaryColor
-                opacity: highEmphasis
-                font.pixelSize: 13
-                lineHeight: 1.2
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-                Layout.maximumWidth: parent.width > 400 ? 400 : parent.width
-            }
-
-            ColumnLayout {
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                Layout.topMargin: 16
-
-                StyledButton {
-                    id: btnAccept
-                    text: qsTr("Scan QR code on screen")
-                    primary: true
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    KeyNavigation.tab: btnCancel
-                    Keys.onReturnPressed: scanQr(ScreenShot.capture(""))
-                    onClicked: scanQr(ScreenShot.capture(""))
-                }
-
-                StyledButton {
-                    id: btnCancel
-                    text: qsTr("Manual mode")
-                    flat: true
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    KeyNavigation.tab: btnAccept
-                    Keys.onReturnPressed: manualEntry = true
-                    onClicked: manualEntry = true
-                }
-            }
         }
 
         ColumnLayout {
