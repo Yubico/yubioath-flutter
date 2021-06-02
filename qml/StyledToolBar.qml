@@ -246,6 +246,7 @@ ToolBar {
                 }
             }
 
+
             ToolButton {
                 id: moreBtn
                 activeFocusOnTab: true
@@ -276,7 +277,7 @@ ToolBar {
                     y: header.height
                     MenuItem {
                         text: "Scan QR code"
-                        onTriggered: navigator.goToNewCredential()
+                        onTriggered: navigator.goToNewCredentialScan()
                     }
                     MenuItem {
                         text: "Add manually"
@@ -345,4 +346,6 @@ ToolBar {
             }
         }
     }
+
+
 }
