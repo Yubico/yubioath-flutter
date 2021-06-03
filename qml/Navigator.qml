@@ -133,21 +133,24 @@ StackView {
 
     function goToNewCredential() {
         if (currentItem.objectName !== 'newCredentialView') {
-            clearAndPush(newCredentialView, StackView.Immediate)
+            push(newCredentialView.createObject(app, {
+                                                    "manualEntry": true
+                                                }), StackView.Immediate)
         }
     }
 
-    function goToNewCredentialScan() {
+    function goToNewCredentialScan(credential) {
         if (currentItem.objectName !== 'newCredentialView') {
-            clearAndPush(newCredentialViewScan, StackView.Immediate)
-            currentItem.scanQr(ScreenShot.capture(""))
+            push(newCredentialView.createObject(app, {
+                                                    "credential": credential,
+                                                    "manualEntry": false
+                                                }), StackView.Immediate)
         }
     }
 
     function goToNewCredentialDrag(url) {
         if (currentItem.objectName !== 'newCredentialView') {
-            clearAndPush(newCredentialViewDrag, StackView.Immediate)
-            currentItem.scanQr(url)
+            yubiKey.scanQr(url)
         }
     }
 
@@ -275,21 +278,6 @@ StackView {
     Component {
         id: newCredentialView
         NewCredentialView {
-            manualEntry: true
-        }
-    }
-
-    Component {
-        id: newCredentialViewScan
-        NewCredentialView {
-            manualEntry: false
-        }
-    }
-
-    Component {
-        id: newCredentialViewDrag
-        NewCredentialView {
-            manualEntry: false
         }
     }
 

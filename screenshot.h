@@ -27,7 +27,7 @@ public:
 
         QString result;
         if (fileName == "") { // If user scans the screen
-            std::vector<double> scalefactor = {1, 1.25, 1.5, 2, 3, 0.85, 0.70, 0.50};
+            std::vector<double> scalefactor = {1, 1.5, 3, 0.85};
             QImage image;
             for (size_t i = 0; i < screenshots.size(); i++) {
                 QImage screenshot(screenshots[i]);

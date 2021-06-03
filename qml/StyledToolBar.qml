@@ -277,7 +277,7 @@ ToolBar {
                     y: header.height
                     MenuItem {
                         text: "Scan QR code"
-                        onTriggered: navigator.goToNewCredentialScan()
+                        onTriggered: yubiKey.scanQr()
                     }
                     MenuItem {
                         text: "Add manually"

@@ -15,17 +15,9 @@ Flickable {
 
     property var credential
     property bool manualEntry
-    property bool scanning: false
     property var fileName
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
-
-
-    BusyIndicator {
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        visible: scanning
-    }
 
     Pane {
         id: dropAreaOverlay
@@ -159,24 +151,6 @@ Flickable {
             var okTotalLength = (nameLbl.text.length + issuerLbl.text.length) < 60
             return nameAndKey && okTotalLength
         }
-    }
-
-    function scanQr(data) {
-        scanning = true
-        yubiKey.parseQr(data, function (resp) {
-            scanning = false
-            if (resp.success) {
-                credential = resp
-            } else {
-                if (resp.error_id === "failed_to_parse_uri") {
-                    navigator.snackBarError(navigator.getErrorMessage('no_credential_found'))
-                } else {
-                    navigator.snackBarError(navigator.getErrorMessage(
-                                                                resp.error_id))
-                }
-                navigator.goToAuthenticator()
-            }
-        })
     }
 
     function addCredentialNoCopy() {
@@ -328,9 +302,8 @@ Flickable {
                 id: requireTouchCheckBox
                 checked: settings.requireTouch
                 text: qsTr("Require touch")
-                description: qsTr("Touch YubiKey to display code.")
                 visible: yubiKey.supportsTouchCredentials() || settings.otpMode
-                Layout.bottomMargin: 8
+                Layout.bottomMargin: 0
                 Layout.topMargin: 0
                 KeyNavigation.tab: advancedSettingsCheckBox
             }

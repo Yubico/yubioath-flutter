@@ -551,6 +551,30 @@ Python {
                 && !isYubiKeyFIPS(currentDevice)
     }
 
+    function scanQr(url) {
+        url = !!url ? url : ScreenShot.capture("")
+        parseQr(url, function (resp) {
+            if (resp.success) {
+                navigator.goToNewCredentialScan(resp)
+            } else {
+                if (resp.error_id === "failed_to_parse_uri") {
+                    navigator.confirm({
+                        "heading": qsTr("No QR code found"),
+                        "description": qsTr("To add an account follow the instructions provided by the service. Make sure the QR code is fully visible before scanning."),
+                        "warning": false,
+                        "noicon": true,
+                        "buttonAccept": qsTr("Try again"),
+                        "acceptedCb": function() {
+                            yubiKey.scanQr()
+                        }
+                    })
+                } else {
+                    navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+                }
+            }
+        })
+    }
+
     function oathCalculateAll(cb) {
         var now = Math.floor(Date.now() / 1000)
         doCall('yubikey.controller.ccid_calculate_all', [now], cb)

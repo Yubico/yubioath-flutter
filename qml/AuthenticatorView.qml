@@ -103,9 +103,9 @@ Pane {
                 } else {
                     file = url.replace(/^(file:\/{2})/,"")
                 }
-                navigator.goToNewCredentialDrag(ScreenShot.capture(file))
+                yubiKey.scanQr(file)
             } else {
-                navigator.goToNewCredentialDrag(url)
+                yubiKey.scanQr(url)
             }
         }
     }

@@ -115,38 +115,10 @@ Flickable {
                     }
                 }
             }
-
-            ToolButton {
-                id: control
-                visible: false
-                onClicked: showDeviceConfiguration = !showDeviceConfiguration
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                icon.width: 24
-                icon.source: showDeviceConfiguration  || toolBar.searchField.text.length > 0 ? "../images/arrow-up.svg" : "../images/arrow-down.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
-                focus: true
-                text: qsTr("%1 advanced").arg(showDeviceConfiguration ? "Hide" : "Show")
-                font.capitalization: Font.MixedCase
-                font.weight: Font.Medium
-                font.pixelSize: 13
-                font.bold: false
-                rightPadding: 14
-                Layout.topMargin: 16
-                Layout.bottomMargin: 0
-                height: 32
-                Layout.maximumHeight: 32
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                }
-            }
         }
 
         ColumnLayout {
             id: deviceConfig
-            visible: true //showDeviceConfiguration || toolBar.searchField.text.length > 0
             spacing: 0
             width: parent.width
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
