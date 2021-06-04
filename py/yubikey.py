@@ -237,15 +237,18 @@ class Controller(object):
         return res
 
     def _calc_fido_pin(self):
-        fido_has_pin = self._fido_has_pin()
+        fido_has_pin = False
         fido_retries = 0
         pin_blocked = False
-        if fido_has_pin:
-            try:
+        try:
+            fido_has_pin = self._fido_has_pin()
+            if fido_has_pin:
                 fido_retries = self._fido_pin_retries()
-            except CtapError as e:
-                if e.code == CtapError.ERR.PIN_BLOCKED:
-                    pin_blocked = True
+        except CtapError as e:
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                pin_blocked = True
+        except ValueError:
+            fido_has_pin = False
 
         return [fido_has_pin, fido_retries, pin_blocked]
 
