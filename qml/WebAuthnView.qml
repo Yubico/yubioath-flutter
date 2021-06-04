@@ -12,9 +12,9 @@ Flickable {
     contentHeight: expandedHeight
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
-    property bool hasPin: yubiKey.currentDevice.fidoHasPin
-    property bool pinBlocked: yubiKey.currentDevice.pinBlocked
-    property int pinRetries: yubiKey.currentDevice.fidoPinRetries
+    property bool hasPin: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
+    property bool pinBlocked: !!yubiKey.currentDevice && yubiKey.currentDevice.pinBlocked
+    property int pinRetries: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinRetries
 
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {

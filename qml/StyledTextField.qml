@@ -39,6 +39,10 @@ Item {
     Layout.fillWidth: true
     activeFocusOnTab: true
 
+    onFocusChanged: {
+        textField.forceActiveFocus()
+    }
+
     function validateInput() {
         if (validateRegExp !== undefined) {
             if (textField.text.length) {

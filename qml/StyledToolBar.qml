@@ -251,14 +251,14 @@ ToolBar {
                 id: moreBtn
                 activeFocusOnTab: true
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: navigator.isInAuthenticator() || navigator.isInYubiKeyView()
-                onClicked: navigator.isInAuthenticator() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
+                visible: navigator.isInAuthenticator() || navigator.isInYubiKeyView() || navigator.isInEnterPassword()
                 icon.source: "../images/more.svg"
                 icon.color: primaryColor
                 opacity: hovered ? fullEmphasis : lowEmphasis
 
-                Keys.onReturnPressed: navigator.isInAuthenticator() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
-                Keys.onEnterPressed: navigator.isInAuthenticator() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
+                onClicked: navigator.isInAuthenticator() || navigator.isInEnterPassword() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
+                Keys.onReturnPressed: navigator.isInAuthenticator() || navigator.isInEnterPassword() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
+                Keys.onEnterPressed: navigator.isInAuthenticator() || navigator.isInEnterPassword() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
 
                 KeyNavigation.left: searchField
                 KeyNavigation.backtab: searchField
@@ -278,14 +278,17 @@ ToolBar {
                     MenuItem {
                         text: "Scan QR code"
                         onTriggered: yubiKey.scanQr()
+                        enabled: !navigator.isInEnterPassword()
                     }
                     MenuItem {
                         text: "Add manually"
                         onTriggered: navigator.goToNewCredential()
+                        enabled: !navigator.isInEnterPassword()
                     }
-                    MenuSeparator { }
+                    MenuSeparator {}
                     MenuItem {
                         text: "Manage password"
+                        enabled: !navigator.isInEnterPassword()
                         onTriggered: navigator.confirmInput({
                             "heading": text,
                             "manageMode": true
@@ -315,7 +318,7 @@ ToolBar {
                                             yubiKey.clearCurrentDeviceAndEntries()
                                         }
                                     }
-                                    navigator.goToYubiKey()
+                                    navigator.goToAuthenticator()
                                 })
                             }
                         })
@@ -326,19 +329,6 @@ ToolBar {
                     id: yubikeyContextMenu
                     width: 140
                     y: header.height
-/*                    MenuItem {
-                        text: "WebAuthn"
-                        onTriggered: navigator.goToWebAuthnView()
-                    }
-                    MenuItem {
-                        text: "OTP"
-                        onTriggered: navigator.goToOneTimePasswordView()
-                    }
-                    MenuItem {
-                        text: "PIV"
-                        enabled: false 
-                    }
-                    MenuSeparator { }*/
                     MenuItem {
                         text: "Interfaces"
                         onTriggered: navigator.goToInterfacesView()

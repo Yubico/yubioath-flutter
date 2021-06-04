@@ -18,35 +18,26 @@ Flickable {
         z: 2
     }
     boundsBehavior: Flickable.StopAtBounds
-
     contentWidth: app.width
-
-    function clear() {
-        passwordField.text = ""
-        rememberPasswordCheckBox.checked = false
-    }
 
     function validate() {
         if (passwordField.text.valueOf().length > 0) {
-            yubiKey.validate(passwordField.text,
-                             rememberPasswordCheckBox.checked, function (resp) {
-                                 if (resp.success) {
-                                     navigator.goToAuthenticator()
-                                 } else {
-                                     clear()
-                                     navigator.snackBarError(
-                                                 navigator.getErrorMessage(
-                                                     resp.error_id))
-                                     console.log("validate failed:",
-                                                 resp.error_id)
-                                     passwordField.textField.forceActiveFocus()
-                                 }
-                             })
+            yubiKey.validate(passwordField.text, rememberPasswordCheckBox.checked, function (resp) {
+                if (resp.success) {
+                    navigator.goToAuthenticator()
+                } else {
+                    passwordField.error = true  
+                    passwordField.textField.selectAll()
+                    passwordField.forceActiveFocus()
+                    rememberPasswordCheckBox.checked = false
+                    console.log("validate failed:", resp.error_id)
+                }
+            })
         }
     }
 
-    Component.onCompleted: {
-        passwordField.textField.forceActiveFocus()
+    onFocusChanged: {
+        passwordField.forceActiveFocus()
     }
 
     ColumnLayout {
@@ -65,29 +56,45 @@ Flickable {
             lineHeight: 1.8
             color: yubicoGreen
             opacity: fullEmphasis
-            Layout.topMargin: 16
+            Layout.topMargin: 24
+            Layout.bottomMargin: 12
+        }
+
+        Label {
+            text: qsTr("Enter the password for your YubiKey. If you don't know your password, you'll need to reset the YubiKey.")
+            color: primaryColor
+            opacity: highEmphasis
+            font.pixelSize: 13
+            lineHeight: 1.2
+            visible: manageMode
+            textFormat: TextEdit.RichText
+            wrapMode: Text.WordWrap
+            Layout.maximumWidth: parent.width
+            Layout.bottomMargin: 16
         }
 
         StyledTextField {
             id: passwordField
             labelText: qsTr("Password")
             echoMode: TextInput.Password
+            validateText: "Wrong password"
             Keys.onEnterPressed: validate()
             Keys.onReturnPressed: validate()
             Layout.fillWidth: true
             KeyNavigation.backtab: unlockBtn
             KeyNavigation.tab: rememberPasswordCheckBox
             onSubmit: validate()
+            Layout.bottomMargin: 16
         }
 
-        StyledCheckBox {
-            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+        CheckBox {
             id: rememberPasswordCheckBox
             text: qsTr("Remember password")
-            description: qsTr("Don't ask again on this device.")
+            opacity: highEmphasis
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             KeyNavigation.backtab: passwordField.textField
             KeyNavigation.tab: unlockBtn
-            Layout.bottomMargin: 32
+            Layout.bottomMargin: 16
         }
 
         StyledButton {
@@ -97,6 +104,8 @@ Flickable {
             enabled: passwordField.text.valueOf().length > 0
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             onClicked: validate()
+            Keys.onEnterPressed: validate()
+            Keys.onReturnPressed: validate()
             KeyNavigation.backtab: rememberPasswordCheckBox
             KeyNavigation.tab: passwordField.textField
         }
