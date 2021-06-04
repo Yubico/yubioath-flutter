@@ -147,7 +147,7 @@ Pane {
                     font.pixelSize: 13
                     font.bold: false
                     color: primaryColor
-                    opacity: highEmphasis
+                    opacity: enabled ? highEmphasis : disabledEmphasis
                     Layout.fillWidth: true
                 }
                 Label {
@@ -156,7 +156,7 @@ Pane {
                     Layout.fillWidth: true
                     font.pixelSize: 13
                     color: primaryColor
-                    opacity: lowEmphasis
+                    opacity: enabled ? lowEmphasis : disabledEmphasis
                     text: searchQuery.length > 0 ? colorizeMatch(description, searchQuery) : description
                     textFormat: searchQuery.length > 0 ? TextEdit.RichText : TextEdit.PlainText
                     wrapMode: Text.WordWrap
@@ -173,7 +173,7 @@ Pane {
                 icon.width: 24
                 icon.source: isFlickable ? "../images/next.svg" : (isExpanded ? "../images/up.svg" : "../images/down.svg")
                 icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
+                opacity: hovered ? fullEmphasis : (enabled ? lowEmphasis : disabledEmphasis)
                 visible: isEnabled
                 focus: true
                 MouseArea {
@@ -188,7 +188,7 @@ Pane {
                 icon.width: 24
                 icon.source: toolButtonIcon
                 icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
+                opacity: hovered ? fullEmphasis : (enabled ? lowEmphasis : disabledEmphasis)
                 visible: !isEnabled && !!toolButtonIcon
                 MouseArea {
                     anchors.fill: parent

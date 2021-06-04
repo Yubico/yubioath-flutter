@@ -148,12 +148,6 @@ StackView {
         }
     }
 
-    function goToNewCredentialDrag(url) {
-        if (currentItem.objectName !== 'newCredentialView') {
-            yubiKey.scanQr(url)
-        }
-    }
-
     function goToLoading() {
         if (currentItem.objectName !== 'loadingView') {
             push(loadingView, StackView.Immediate)
@@ -174,6 +168,11 @@ StackView {
 
     function confirm(options) {
         var popup = confirmationPopup.createObject(app, options)
+        popup.open()
+    }
+
+    function confirmInput(options) {
+        var popup = confirmationInputPopup.createObject(app, options)
         popup.open()
     }
 
@@ -303,6 +302,12 @@ StackView {
     Component {
         id: confirmationPopup
         ConfirmationPopup {
+        }
+    }
+
+    Component {
+        id: confirmationInputPopup
+        ConfirmationInputPopup {
         }
     }
 

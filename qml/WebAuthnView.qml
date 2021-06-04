@@ -44,19 +44,40 @@ Flickable {
             title: qsTr("WebAuthn (FIDO2/U2F)")
 
             StyledExpansionPanel {
-                label: hasPin ? qsTr("Change PIN") : qsTr("Set PIN")
-                description: qsTr("Protect your security key with a PIN")
+                label: hasPin ? qsTr("Change PIN") : qsTr("Create a PIN")
+                description: qsTr("Protect your YubiKey with a PIN")
                 isFlickable: true
+                expandButton.onClicked: navigator.confirmInput({
+                    "pinMode": true,
+                    "manageMode": true,
+                    "heading": label,
+                })
             }
             StyledExpansionPanel {
                 label: qsTr("Sign-in data")
+                enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
                 description: qsTr("View and delete sign-in data stored on your security key")
                 isFlickable: true
+                expandButton.onClicked: navigator.confirmInput({
+                    "pinMode": true,
+                    "heading": label,
+                    "acceptedCb": function() {
+                        console.log("PIN OK")
+                    }
+                })
             }
             StyledExpansionPanel {
                 label: qsTr("Fingerprints")
+                enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
                 description: qsTr("Add and delete fingerprints")
                 isFlickable: true
+                expandButton.onClicked: navigator.confirmInput({
+                    "pinMode": true,
+                    "heading": label,
+                    "acceptedCb": function() {
+                        console.log("PIN OK")
+                    }
+                })
             }
             StyledExpansionPanel {
                 label: qsTr("Reset")
