@@ -10,12 +10,11 @@ Flickable {
     objectName: 'yubiKeyWebAuthnView'
     contentWidth: app.width
     contentHeight: expandedHeight
-    StackView.onActivating: load()
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
-    property bool hasPin
-    property bool pinBlocked
-    property int pinRetries
+    property bool hasPin: yubiKey.currentDevice.fidoHasPin
+    property bool pinBlocked: yubiKey.currentDevice.pinBlocked
+    property int pinRetries: yubiKey.currentDevice.fidoPinRetries
 
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {
@@ -65,26 +64,5 @@ Flickable {
                 isFlickable: true
             }
         }
-    }
-
-    function load() {
-        yubiKey.fidoHasPin(function (resp) {
-            if (resp.success) {
-                hasPin = resp.hasPin
-                if (hasPin) {
-                    yubiKey.fidoPinRetries(function (resp) {
-                        if (resp.success) {
-                            pinRetries = resp.retries
-                        } else {
-                            pinBlocked = (resp.error_id === 'PIN is blocked.')
-                        }
-                    })
-                } else {
-                    pinBlocked = false
-                }
-            } else {
-                navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
-            }
-        })
     }
 }
