@@ -103,7 +103,7 @@ Pane {
                 } else {
                     file = url.replace(/^(file:\/{2})/,"")
                 }
-                yubiKey.scanQr(file)
+                yubiKey.scanQr(ScreenShot.capture(file))
             } else {
                 yubiKey.scanQr(url)
             }
