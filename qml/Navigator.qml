@@ -22,15 +22,6 @@ StackView {
         push(view, StackView.Immediate)
     }
 
-    function isInFlickable() {
-        return !!currentItem && currentItem.objectName.includes('Flickable')
-    }
-
-
-    function isInAuthenticator() {
-        return !!currentItem && currentItem.objectName === 'authenticatorView'
-    }
-
     function hasSelectedOathCredential() {
         return !!currentItem && !!currentItem.currentCredentialCard
     }
@@ -47,12 +38,26 @@ StackView {
         currentItem.currentCredentialCard.toggleFavorite()
     }
 
+    function isInAuthenticator() {
+        return !!currentItem && currentItem.objectName === 'authenticatorView'
+    }
+
+    function isInYubiKeySection() {
+        return !!currentItem && currentItem.objectName.includes('yubiKey')
+    }
+
     function isInYubiKeyView() {
         return !!currentItem && currentItem.objectName === 'yubiKeyView'
     }
 
     function isInSettings() {
         return !!currentItem && currentItem.objectName === 'settingsView'
+    }
+
+    function isInFlickable() {
+        if (!!currentItem && currentItem.objectName.includes('yubiKeyWebAuthnView'))
+            return true
+        return !!currentItem && currentItem.objectName.includes('Flickable')
     }
 
     function isInLoading() {
@@ -108,6 +113,41 @@ StackView {
         }
     }
 
+    function goToWebAuthnView() {
+        if (currentItem.objectName !== 'webAuthnView') {
+            push(yubiKeyWebAuthnView, StackView.PushTransition)
+        }
+    }
+
+    function goToOneTimePasswordView() {
+        if (currentItem.objectName !== 'oneTimePasswordView') {
+            clearAndPush(yubiKeyOneTimePasswordView, StackView.Immediate)
+        }
+    }
+
+    function goToInterfacesView() {
+        if (currentItem.objectName !== 'interfacesView') {
+            clearAndPush(yubiKeyInterfacesView, StackView.Immediate)
+        }
+    }
+
+    function goToNewCredential() {
+        if (currentItem.objectName !== 'newCredentialView') {
+            push(newCredentialView.createObject(app, {
+                                                    "manualEntry": true
+                                                }), StackView.Immediate)
+        }
+    }
+
+    function goToNewCredentialScan(credential) {
+        if (currentItem.objectName !== 'newCredentialView') {
+            push(newCredentialView.createObject(app, {
+                                                    "credential": credential,
+                                                    "manualEntry": false
+                                                }), StackView.Immediate)
+        }
+    }
+
     function goToLoading() {
         if (currentItem.objectName !== 'loadingView') {
             push(loadingView, StackView.Immediate)
@@ -120,12 +160,6 @@ StackView {
         }
     }
 
-    function goToNewCredential(credential) {
-        if (currentItem.objectName !== 'newCredentialView') {
-            clearAndPush(newCredentialView, StackView.Immediate)
-        }
-    }
-
     function goToCustomReader() {
         if (currentItem.objectName !== 'customReaderView') {
             push(customReaderView, StackView.PushTransition)
@@ -134,6 +168,11 @@ StackView {
 
     function confirm(options) {
         var popup = confirmationPopup.createObject(app, options)
+        popup.open()
+    }
+
+    function confirmInput(options) {
+        var popup = confirmationInputPopup.createObject(app, options)
         popup.open()
     }
 
@@ -218,6 +257,24 @@ StackView {
     }
 
     Component {
+        id: yubiKeyWebAuthnView
+        WebAuthnView {
+        }
+    }
+
+    Component {
+        id: yubiKeyOneTimePasswordView
+        OneTimePasswordView {
+        }
+    }
+
+    Component {
+        id: yubiKeyInterfacesView
+        InterfacesView {
+        }
+    }
+
+    Component {
         id: newCredentialView
         NewCredentialView {
         }
@@ -249,8 +306,15 @@ StackView {
     }
 
     Component {
+        id: confirmationInputPopup
+        ConfirmationInputPopup {
+        }
+    }
+
+    Component {
         id: snackBarComponent
         SnackBar {
         }
     }
+
 }

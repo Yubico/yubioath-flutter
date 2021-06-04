@@ -27,7 +27,7 @@ Drawer {
     function getStartingIndex() {
         if (navigator.isInAuthenticator() || navigator.isInNewOathCredential() || navigator.isInEnterPassword()) {
             return 0
-        } else if (navigator.isInYubiKeyView()) {
+        } else if (navigator.isInYubiKeySection()) {
             return 1
         } else if (navigator.isInSettings()) {
             return 2
@@ -258,7 +258,7 @@ Drawer {
                 icon: "../images/yubikey-vertical.svg"
                 text: "YubiKey"
                 onActivated: navigator.goToYubiKey()
-                isActive: navigator.isInYubiKeyView()
+                isActive: navigator.isInYubiKeySection()
                 isHovered: hoverIndex === 1
             }
             NavigationItem {

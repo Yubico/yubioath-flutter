@@ -125,8 +125,8 @@ Dialog {
 
         DialogButtonBox {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Layout.topMargin: 8
-            Layout.bottomMargin: -8
+            Layout.topMargin: 16
+            Layout.bottomMargin: 0
             padding: 0
             visible: buttons
             background: Rectangle {

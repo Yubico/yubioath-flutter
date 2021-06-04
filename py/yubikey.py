@@ -13,6 +13,8 @@ from base64 import b32encode, b32decode, b64decode
 from binascii import a2b_hex, b2a_hex
 from threading import Event
 
+from fido2.ctap import CtapError
+from fido2.ctap2 import Ctap2, ClientPin
 from ykman.device import scan_devices, list_all_devices, connect_to_device, get_name, read_info
 from ykman.pcsc import list_readers, list_devices as list_ccid
 from ykman.otp import PrepareUploadFailed, generate_static_pw, prepare_upload_key, time_challenge, format_oath_code
@@ -234,6 +236,22 @@ class Controller(object):
             res.append(self._serialise_dev(dev, info))
         return res
 
+    def _calc_fido_pin(self):
+        fido_has_pin = False
+        fido_retries = 0
+        pin_blocked = False
+        try:
+            fido_has_pin = self._fido_has_pin()
+            if fido_has_pin:
+                fido_retries = self._fido_pin_retries()
+        except CtapError as e:
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                pin_blocked = True
+        except ValueError:
+            fido_has_pin = False
+
+        return [fido_has_pin, fido_retries, pin_blocked]
+
     def _serialise_dev(self, dev, info):
 
         def _get_version(dev):
@@ -242,6 +260,8 @@ class Controller(object):
             if hasattr(dev, '_desc_version') and dev._desc_version:
                 return '.'.join(str(x) for x in dev._desc_version)
             return ''
+
+        fido_pin_list = self._calc_fido_pin()
 
         return {
             'name': get_name(info, dev.pid.get_type()),
@@ -269,6 +289,9 @@ class Controller(object):
             'configurationLocked': info.is_locked,
             'formFactor': info.form_factor,
             'hasPassword': dev.has_password if hasattr(dev, 'has_password') else False,
+            'fidoHasPin': fido_pin_list[0],
+            'fidoPinRetries': fido_pin_list[1],
+            'pinBlocked': fido_pin_list[2],
             'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
        }
 
@@ -300,6 +323,8 @@ class Controller(object):
                 if (CAPABILITY.OATH | CAPABILITY.PIV | CAPABILITY.OPENPGP) & usb_enabled:
                     interfaces_enabled.append("CCID")
 
+                fido_pin_list = self._calc_fido_pin()
+
                 self._devices.append({
                     'name': get_name(info, dev.pid.get_type() if dev.pid else None),
                     'version': '.'.join(str(d) for d in info.version),
@@ -321,6 +346,9 @@ class Controller(object):
                         a.name for a in CAPABILITY
                         if a in info.supported_capabilities.get(TRANSPORT.NFC, [])],
                     'hasPassword': has_password,
+                    'fidoHasPin': fido_pin_list[0],
+                    'fidoPinRetries': fido_pin_list[1],
+                    'pinBlocked': fido_pin_list[2],
                     'selectable': selectable,
                     'validated': True  # not has_password
                 })
@@ -328,6 +356,20 @@ class Controller(object):
                 return success({'devices': self._devices})
             else:
                 return success({'devices': []})
+
+    def _fido_has_pin(self):
+        with self._open_device([FidoConnection]) as conn:
+            ctap2 = Ctap2(conn)
+            return ctap2.info.options.get("clientPin")
+
+    def _fido_pin_retries(self):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                client_pin = ClientPin(ctap2)
+                return client_pin.get_pin_retries()[0]
+        except CtapError:
+            raise
 
     def load_devices_usb(self, otp_mode=False):
         self._reader_filter = None

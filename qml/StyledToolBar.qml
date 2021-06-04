@@ -24,9 +24,8 @@ ToolBar {
     }
 
     property alias drawerBtn: drawerBtn
-    property alias addCredentialBtn: addCredentialBtn
     property alias searchField: searchField
-
+    property alias moreBtn: moreBtn
 
     property string searchFieldPlaceholder: !!navigator.currentItem ? navigator.currentItem.searchFieldPlaceholder || "" : ""
 
@@ -189,8 +188,8 @@ ToolBar {
 
                 KeyNavigation.backtab: drawerBtn
                 KeyNavigation.left: drawerBtn
-                KeyNavigation.tab: addCredentialBtn
-                KeyNavigation.right: addCredentialBtn
+                KeyNavigation.tab: moreBtn
+                KeyNavigation.right: moreBtn
                 Keys.onEscapePressed: exitSearchMode(true)
                 Keys.onDownPressed: exitSearchMode(false)
                 Keys.onReturnPressed: {
@@ -223,47 +222,6 @@ ToolBar {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
             ToolButton {
-                id: addCredentialBtn
-                visible: !!yubiKey.currentDevice
-                         && yubiKey.currentDeviceEnabled("OATH")
-                         && navigator.isInAuthenticator()
-
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-
-                onClicked: navigator.goToNewCredential()
-                Keys.onReturnPressed: navigator.goToNewCredential()
-                Keys.onEnterPressed: navigator.goToNewCredential()
-
-                KeyNavigation.left: searchField
-                KeyNavigation.backtab: searchField
-                KeyNavigation.right: navigator
-                KeyNavigation.tab: navigator
-
-                Accessible.role: Accessible.Button
-                Accessible.name: qsTr("Add")
-                Accessible.description: qsTr("Add account")
-
-                ToolTip {
-                    text: qsTr("Add new account (%1)").arg(shortcutAddAccount.nativeText)
-                    delay: 1000
-                    parent: addCredentialBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: "../images/add.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                }
-            }
-
-            ToolButton {
                 id: closeBtn
                 activeFocusOnTab: true
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -287,6 +245,98 @@ ToolBar {
                     enabled: false
                 }
             }
+
+
+            ToolButton {
+                id: moreBtn
+                activeFocusOnTab: true
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                visible: navigator.isInAuthenticator() || navigator.isInYubiKeyView() || navigator.isInEnterPassword()
+                icon.source: "../images/more.svg"
+                icon.color: primaryColor
+                opacity: hovered ? fullEmphasis : lowEmphasis
+
+                onClicked: navigator.isInAuthenticator() || navigator.isInEnterPassword() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
+                Keys.onReturnPressed: navigator.isInAuthenticator() || navigator.isInEnterPassword() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
+                Keys.onEnterPressed: navigator.isInAuthenticator() || navigator.isInEnterPassword() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
+
+                KeyNavigation.left: searchField
+                KeyNavigation.backtab: searchField
+                KeyNavigation.right: navigator
+                KeyNavigation.tab: navigator
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: false
+                }
+
+                Menu {
+                    id: authenticatorContextMenu
+                    width: 170
+                    y: header.height
+                    MenuItem {
+                        text: "Scan QR code"
+                        onTriggered: yubiKey.scanQr()
+                        enabled: !navigator.isInEnterPassword()
+                    }
+                    MenuItem {
+                        text: "Add manually"
+                        onTriggered: navigator.goToNewCredential()
+                        enabled: !navigator.isInEnterPassword()
+                    }
+                    MenuSeparator {}
+                    MenuItem {
+                        text: "Manage password"
+                        enabled: !navigator.isInEnterPassword()
+                        onTriggered: navigator.confirmInput({
+                            "heading": text,
+                            "manageMode": true
+                        })
+                    }
+                    MenuItem {
+                        text: "Reset"
+                        onTriggered: navigator.confirm({
+                            "heading": qsTr("Reset device?"),
+                            "message": qsTr("This will delete all accounts and restore factory defaults of your YubiKey."),
+                            "description": qsTr("Before proceeding:<ul style=\"-qt-list-indent: 1;\"><li>There is NO going back after a factory reset.<li>If you do not know what you are doing, do NOT do this.</ul>"),
+                            "buttonAccept": qsTr("Reset device"),
+                            "acceptedCb": function () {
+                                navigator.goToLoading()
+                                yubiKey.reset(function (resp) {
+                                    if (resp.success) {
+                                        entries.clear()
+                                        navigator.snackBar(qsTr("Reset completed"))
+                                        yubiKey.currentDevice.hasPassword = false
+                                    } else {
+                                        navigator.snackBarError(
+                                                    navigator.getErrorMessage(
+                                                        resp.error_id))
+                                        console.log("reset failed:",
+                                                    resp.error_id)
+                                        if (resp.error_id === 'no_device_custom_reader') {
+                                            yubiKey.clearCurrentDeviceAndEntries()
+                                        }
+                                    }
+                                    navigator.goToAuthenticator()
+                                })
+                            }
+                        })
+                    }
+                }
+
+                Menu {
+                    id: yubikeyContextMenu
+                    width: 140
+                    y: header.height
+                    MenuItem {
+                        text: "Interfaces"
+                        onTriggered: navigator.goToInterfacesView()
+                    }
+                }
+            }
         }
     }
+
+
 }

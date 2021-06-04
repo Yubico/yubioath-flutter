@@ -18,6 +18,7 @@ Item {
     property string validateText
     property variant validateRegExp
     property alias textField: textField
+    property bool error: false
     property bool isValidated: validateInput()
     property bool validated: {
         if (validateInput()) {
@@ -38,20 +39,28 @@ Item {
     Layout.fillWidth: true
     activeFocusOnTab: true
 
+    onFocusChanged: {
+        textField.forceActiveFocus()
+    }
+
     function validateInput() {
         if (validateRegExp !== undefined) {
             if (textField.text.length) {
                 if (!validateRegExp.test(textField.text))
                     return false
             }
+        } else if (error) {
+            if (textField.selectedText.length > 0) {
+                return false
+            } else {
+                return true
+            }
         }
         return true
     }
 
     function labelTextValue() {
-        if (!validateInput()) {
-            return qsTr("Error")
-        } else if (textField.activeFocus || textField.text.length > 0)
+        if (textField.activeFocus || textField.text.length > 0)
             return required ? labelText + " *" : labelText
         else {
             return " "
