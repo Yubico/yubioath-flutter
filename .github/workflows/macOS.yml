@@ -3,14 +3,11 @@ name: macOS
 on: [push, pull_request]
 
 env:
-  PYTHON_VER: '3.8.2'
-  PYTHON_VER_SHORT: '3.8'
-  PYTHON_VER_SHORT_COMPACT: '38'
+  PYTHON_VER: '3.9.2'
+  PYTHON_VER_SHORT: '3.9'
+  PYTHON_VER_SHORT_COMPACT: '39'
   PYOTHERSIDE_VER: '1.5.9'
-  OPENSSL_VER: '1.1.1g'
-  LIBYUBIKEY_VER: '1.13'
-  LIBYKPERS_VER: '1.20.0'
-  LIBUSB_VER: '1.0.23'
+  OPENSSL_VER: '1.1.1i'
 
 jobs:
   build:
@@ -20,16 +17,26 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '5.15.1'
+          host: 'mac'
+          target: 'desktop'
+
       - name: Install dependencies from homebrew
         run: |
+          pip install --upgrade pip
           brew update
-          brew install swig qt zlib curl coreutils
-          brew link qt -f
+          brew install swig zlib curl coreutils
 
       - name: Setup GPG
         run: |
-          gpg --keyserver hkps://keys.openpgp.org --recv-keys 0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A 2D347EA6AA65421D e3ff2839c048b25c084debe9b26995e310250568
-          gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C 8657ABB260F056B1E5190839D9C4D26D0E604491
+          curl https://keys.openpgp.org/vks/v1/by-fingerprint/E3FF2839C048B25C084DEBE9B26995E310250568 | gpg --import
+          curl "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x7953ac1fbc3dc8b3b292393ed5e9e43f7df9ee8c" -o ./key1.asc
+          curl "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x8657ABB260F056B1E5190839D9C4D26D0E604491" -o ./key2.asc
+          gpg --import ./key1.asc
+          gpg --import ./key2.asc
 
       - name: Build OpenSSL
         run: |
@@ -53,25 +60,19 @@ jobs:
           # otherwise it seems to break the linking for PyOtherSide build later.
           # Re-intall after, because it's needed for wget.
           brew uninstall gettext --ignore-dependencies
+          brew unlink python@3.9
           ./configure MACOSX_DEPLOYMENT_TARGET=10.13 CPPFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" CC=clang --enable-framework --with-openssl=/opt/openssl --enable-optimizations
           sudo make altinstall
+          brew link --overwrite python@3.9
           brew reinstall gettext
-
-
 
       - name: Install python dependencies from source
         run: |
-          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.8/bin/pip3.8 install cryptography --no-binary :all: --ignore-installed --force-reinstall --no-cache
-          /Library/Frameworks/Python.framework/Versions/3.8/bin/pip3.8 download pyscard --no-binary :all:
-          tar -xvf pyscard*
-          cd pyscard*
-          patch setup.py ../.github/workflows/macos-pyscard-patch.patch
-          cd ..
-          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.8/bin/pip3.8 install ./pyscard* --no-binary :all: --ignore-installed --force-reinstall --no-cache
-          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/3.8/bin/pip3.8 install -r requirements.txt --no-binary :all:
-
+          sudo /Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/bin/pip${PYTHON_VER_SHORT} install --upgrade pip
+          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 CFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" /Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/bin/pip${PYTHON_VER_SHORT} install -r requirements.txt
+      
       - name: Change id for bundled Python
-        run: sudo sed -i '' 's/org.python.python/com.yubico.python/g' /Library/Frameworks/Python.framework/Versions/3.8/Resources/Python.app/Contents/Info.plist
+        run: sudo sed -i '' 's/org.python.python/com.yubico.python/g' /Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Resources/Python.app/Contents/Info.plist
 
       - name: Build PyOtherSide QML plugin
         run: |
@@ -84,35 +85,6 @@ jobs:
           make
           sudo make install
 
-      - name: Build libyubikey
-        run: |
-          wget https://developers.yubico.com/yubico-c/Releases/libyubikey-${LIBYUBIKEY_VER}.tar.gz
-          wget https://developers.yubico.com/yubico-c/Releases/libyubikey-${LIBYUBIKEY_VER}.tar.gz.sig
-          gpg --verify libyubikey-${LIBYUBIKEY_VER}.tar.gz.sig
-          tar -xzvf libyubikey-${LIBYUBIKEY_VER}.tar.gz
-          cd libyubikey-${LIBYUBIKEY_VER}
-          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 ./configure --with-backend=osx --prefix=/opt/libyubikey
-          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 make install
-
-      - name: Build libykpers
-        run: |
-          wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-${LIBYKPERS_VER}.tar.gz
-          wget https://developers.yubico.com/yubikey-personalization/Releases/ykpers-${LIBYKPERS_VER}.tar.gz.sig
-          gpg --verify ykpers-${LIBYKPERS_VER}.tar.gz.sig
-          tar -xzvf ykpers-${LIBYKPERS_VER}.tar.gz
-          cd ykpers-${LIBYKPERS_VER}
-          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 ./configure --disable-dependency-tracking --disable-silent-rules --with-backend=osx --with-libyubikey-prefix=/opt/libyubikey --prefix=/opt/ykpers
-          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 make install
-
-      - name: Build libusb
-        run: |
-          wget https://github.com/libusb/libusb/releases/download/v${LIBUSB_VER}/libusb-${LIBUSB_VER}.tar.bz2
-          echo "db11c06e958a82dac52cf3c65cb4dd2c3f339c8a988665110e0d24d19312ad8d libusb-${LIBUSB_VER}.tar.bz2" | sha256sum -c -
-          tar -xzvf libusb-${LIBUSB_VER}.tar.bz2
-          cd libusb-${LIBUSB_VER}
-          ./configure --disable-dependency-tracking --prefix=/opt/libusb
-          sudo env MACOSX_DEPLOYMENT_TARGET=10.13 make install
-
       - name: Build yubioath-desktop
         run: |
           qmake
@@ -121,10 +93,7 @@ jobs:
 
       - name: Copy over dynamic libraries
         run: |
-          sudo find /opt/libyubikey/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
-          sudo find /opt/ykpers/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
           sudo find /opt/openssl/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
-          sudo find /opt/libusb/ -name '*.dylib' -exec cp '{}' yubioath-desktop.app/Contents/Frameworks/ ';'
 
       - name: Copy over Python.framework to app bundle
         run: |
@@ -135,7 +104,7 @@ jobs:
       - name: Point pyotherside to relative Python
         run: |
           sudo install_name_tool -change /Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Python @executable_path/../Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
-
+          
       - name: Point custom Python share objects to relative openssl dylibs
         run: |
           sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}-darwin.so
@@ -145,11 +114,6 @@ jobs:
           sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/libssl.1.1.dylib
           sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/site-packages/cryptography/hazmat/bindings/_openssl.abi3.so
           sudo install_name_tool -change /opt/openssl/lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/site-packages/cryptography/hazmat/bindings/_openssl.abi3.so
-
-      - name: Point ykpers dependencies to relative dylibs
-        run: |
-          sudo install_name_tool -change /opt/libyubikey/lib/libyubikey.0.dylib @executable_path/../Frameworks/libyubikey.0.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.1.dylib
-          sudo install_name_tool -change /opt/libyubikey/lib/libyubikey.0.dylib @executable_path/../Frameworks/libyubikey.0.dylib yubioath-desktop.app/Contents/Frameworks/libykpers-1.dylib
 
       - name: Rename and archive app bundle
         run: |
