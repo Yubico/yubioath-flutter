@@ -129,17 +129,20 @@ Flickable {
             StyledExpansionPanel {
                 label: qsTr("WebAuthn (FIDO2/U2F)")
                 description: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod")
+                visible: !!yubiKey.currentDevice && (yubiKey.currentDeviceEnabled("FIDO2") || yubiKey.currentDeviceEnabled("U2F"))
                 isFlickable: true
                 expandButton.onClicked: navigator.goToWebAuthnView()
             }
             StyledExpansionPanel {
                 label: qsTr("One-time password (OTP)")
                 description: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod")
+                visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OTP")
                 isFlickable: true
             }
             StyledExpansionPanel {
                 label: qsTr("Smart card (PIV)")
                 description: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod")
+                visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("PIV")
                 isFlickable: true
             }
         }

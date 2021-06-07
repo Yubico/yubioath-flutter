@@ -34,8 +34,9 @@ Dialog {
     property string modeText: pinMode ? "PIN" : "password"
 
     property string text1: manageMode ? qsTr("Enter your current %1 to change it. If you don't know your %1, you'll need to reset the YubiKey, then create a new %1.").arg(modeText)
-                                      : qsTr("Enter the %1 for your YubiKey. If you don't know your %1, you'll need to reset the YubiKey.").arg(modeText)
-    property string text2: qsTr("Enter your new %1. A %1 must be at least 4 characters long and can contain letters, numbers and other characters.").arg(modeText)
+                                        : qsTr("Enter the %1 for your YubiKey. If you don't know your %1, you'll need to reset the YubiKey.").arg(modeText)
+    property string text2: pinMode ? qsTr("Enter your new PIN. A PIN must be at least 4 characters long and can contain letters, numbers and other characters.")
+                                        : qsTr("Enter your new password. A password may contain letters, numbers and other characters.")
 
     property bool hasPin: pinMode && (!!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin)
     property bool hasPassword: !pinMode && (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword)
@@ -91,7 +92,7 @@ Dialog {
         if (!manageMode && currentPasswordField.text.length > 0) {
             return true
         }
-        if (newPasswordField.text.length > 0
+        if (newPasswordField.text.length > (pinMode ? 3 : 0)
                 && (newPasswordField.text === confirmPasswordField.text)) {
             return true
         }

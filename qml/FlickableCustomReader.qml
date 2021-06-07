@@ -72,7 +72,7 @@ Flickable {
             font.pixelSize: 16
             font.weight: Font.Normal
             topPadding: 24
-            bottomPadding: 16
+            bottomPadding: 24
             Layout.fillWidth: true
         }
 
@@ -88,7 +88,6 @@ Flickable {
             wrapMode: Text.WordWrap
             maximumLineCount: 4
             elide: Text.ElideRight
-            topPadding: 8
             bottomPadding: 16
         }
 

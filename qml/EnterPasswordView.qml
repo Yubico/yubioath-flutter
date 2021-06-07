@@ -53,21 +53,19 @@ Flickable {
             text: "Unlock YubiKey"
             font.pixelSize: 16
             font.weight: Font.Normal
-            lineHeight: 1.8
             color: yubicoGreen
             opacity: fullEmphasis
             Layout.topMargin: 24
-            Layout.bottomMargin: 12
+            Layout.bottomMargin: 24
         }
 
         Label {
             text: qsTr("Enter the password for your YubiKey. If you don't know your password, you'll need to reset the YubiKey.")
             color: primaryColor
-            opacity: highEmphasis
+            opacity: lowEmphasis
             font.pixelSize: 13
             lineHeight: 1.2
-            visible: manageMode
-            textFormat: TextEdit.RichText
+            textFormat: TextEdit.PlainText
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
             Layout.bottomMargin: 16

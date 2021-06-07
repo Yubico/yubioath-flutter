@@ -251,7 +251,7 @@ ToolBar {
                 id: moreBtn
                 activeFocusOnTab: true
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: navigator.isInAuthenticator() || navigator.isInYubiKeyView() || navigator.isInEnterPassword()
+                visible: navigator.isInAuthenticator() || navigator.isInEnterPassword() || navigator.isInYubiKeyView()
                 icon.source: "../images/more.svg"
                 icon.color: primaryColor
                 opacity: hovered ? fullEmphasis : lowEmphasis
@@ -278,17 +278,17 @@ ToolBar {
                     MenuItem {
                         text: "Scan QR code"
                         onTriggered: yubiKey.scanQr()
-                        enabled: !navigator.isInEnterPassword()
+                        enabled: !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                     }
                     MenuItem {
                         text: "Add manually"
                         onTriggered: navigator.goToNewCredential()
-                        enabled: !navigator.isInEnterPassword()
+                        enabled: !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                     }
                     MenuSeparator {}
                     MenuItem {
                         text: "Manage password"
-                        enabled: !navigator.isInEnterPassword()
+                        enabled: !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                         onTriggered: navigator.confirmInput({
                             "heading": text,
                             "manageMode": true
@@ -296,6 +296,7 @@ ToolBar {
                     }
                     MenuItem {
                         text: "Reset"
+                        enabled: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                         onTriggered: navigator.confirm({
                             "heading": qsTr("Reset device?"),
                             "message": qsTr("This will delete all accounts and restore factory defaults of your YubiKey."),
