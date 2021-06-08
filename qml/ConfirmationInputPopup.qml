@@ -219,31 +219,11 @@ Dialog {
 
     function verifyPIN() {
         console.log("verifyPIN()")
-        return true
         var pin = currentPasswordField.text
-        yubiKey.bioVerifyPin(pin, function (resp) {
-            if (resp.success) {
-                clearPinFields()
-                navigator.snackBar(qsTr("FIDO2 PIN was verified"))
-            } else {
-                if (resp.error_id === 'too long') {
-                    navigator.snackBarError(qsTr("New PIN is too long"))
-                } else if (resp.error_id === 'too short') {
-                    navigator.snackBarError(qsTr("New PIN is too short"))
-                } else if (resp.error_id === 'wrong pin') {
-                    navigator.snackBarError(qsTr("The current PIN is wrong"))
-                } else if (resp.error_id === 'currently blocked') {
-                    navigator.snackBarError(
-                                qsTr("PIN authentication is currently blocked. Remove and re-insert your YubiKey"))
-                } else if (resp.error_id === 'blocked') {
-                    navigator.snackBarError(qsTr("PIN is blocked"))
-                } else if (resp.error_message) {
-                    navigator.snackBarError(resp.error_message)
-                } else {
-                    navigator.snackBarError(resp.error_id)
-                }
-            }
-        })
+        var e = yubiKey.bioList(pin)
+        console.log("print in confirm.qml")
+        console.log(yubiKey.fingerprints["56f6"])
+        return e
     }
 
     function clearPinFields() {

@@ -16,6 +16,8 @@ Python {
     property var currentDevice
     property bool currentDeviceValidated
 
+    property var fingerprints: ({})
+
     // Check if a application such as OATH, PIV, etc
     // is enabled on the current device.
     function currentDeviceEnabled(app) {
@@ -667,7 +669,40 @@ Python {
         doCall('yubikey.controller.fido_verify_pin', [pin], cb)
     }
 
-    function bioVerifyPin(pin, cb) {
+    function bioList(pin, cb) {
+
+        yubiKey.bioVerifyPin(pin, function(resp) {
+            console.log(resp)
+            if (resp.success) {
+                fingerprints = resp.fingerprints
+                console.log("print in yubikey.qml")
+                console.log(yubiKey.fingerprints["56f6"])
+                return true
+                //console.log(fingerprints["56f6"])
+            } else {
+                if (resp.error_id === 'too long') {
+                    navigator.snackBarError(qsTr("New PIN is too long"))
+                } else if (resp.error_id === 'too short') {
+                    navigator.snackBarError(qsTr("New PIN is too short"))
+                } else if (resp.error_id === 'wrong pin') {
+                    navigator.snackBarError(qsTr("The current PIN is wrong"))
+                } else if (resp.error_id === 'currently blocked') {
+                    navigator.snackBarError(
+                                qsTr("PIN authentication is currently blocked. Remove and re-insert your YubiKey"))
+                } else if (resp.error_id === 'blocked') {
+                    navigator.snackBarError(qsTr("PIN is blocked"))
+                } else if (resp.error_message) {
+                    navigator.snackBarError(resp.error_message)
+                } else {
+                    navigator.snackBarError(resp.error_id)
+                }
+                return false
+            }
+        })
+
+    }
+
+    function bioVerifyPin(pin, cb){
         doCall('yubikey.controller.bio_verify_pin', [pin], cb)
     }
 }
