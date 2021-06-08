@@ -7,7 +7,7 @@ import QtGraphicalEffects 1.0
 Flickable {
 
     id: settingsPanel
-    objectName: 'fingerPrintsView'
+    objectName: 'fingerPrintsViewFlickable'
     contentWidth: app.width
     contentHeight: expandedHeight
 

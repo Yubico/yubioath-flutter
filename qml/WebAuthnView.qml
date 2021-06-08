@@ -80,8 +80,8 @@ Flickable {
                     "pinMode": true,
                     "manageMode": true,
                     "heading": actionButton.text,
-                   "acceptedCb": function() {
-                        load()
+                    "acceptedCb": function(resp) {
+                         load()
                    }
                 })
             }
@@ -110,7 +110,8 @@ Flickable {
                 expandButton.onClicked: navigator.confirmInput({
                     "pinMode": true,
                     "heading": label,
-                    "acceptedCb": function() {
+                    "acceptedCb": function(resp) {
+                        console.log("hello " + resp)
                         navigator.goToFingerPrintsView()
                     }
                 })

@@ -71,8 +71,7 @@ Dialog {
         }
         close()
         if(acceptedCb) {
-            console.log("callback")
-            acceptedCb()
+            acceptedCb("world")
         }
         navigator.focus = true
     }

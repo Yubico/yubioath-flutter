@@ -121,7 +121,7 @@ StackView {
 
     function goToFingerPrintsView() {
         if (currentItem.objectName !== 'fingerPrintsView') {
-            push(fingerPrintsView, StackView.PushTransition)
+            push(fingerPrintsViewFlickable, StackView.PushTransition)
         }
     }
 
@@ -269,7 +269,7 @@ StackView {
     }
 
     Component {
-        id: fingerPrintsView
+        id: fingerPrintsViewFlickable
         FingerPrintsView {
         }
     }
