@@ -104,14 +104,14 @@ Flickable {
             StyledExpansionPanel {
                 label: qsTr("Fingerprints")
                 visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2") && yubiKey.currentDevice.name.toUpperCase() === "YUBIKEY BIO"
-                enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
+                enabled: hasPin
                 description: qsTr("Add and delete fingerprints")
                 isFlickable: true
                 expandButton.onClicked: navigator.confirmInput({
                     "pinMode": true,
                     "heading": label,
                     "acceptedCb": function() {
-                        console.log("PIN OK")
+                        navigator.goToFingerPrintsView()
                     }
                 })
             }
