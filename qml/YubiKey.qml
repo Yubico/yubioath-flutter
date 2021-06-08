@@ -16,7 +16,7 @@ Python {
     property var currentDevice
     property bool currentDeviceValidated
 
-    property var fingerprints: ({})
+    property var fingerprints: []
 
     // Check if a application such as OATH, PIV, etc
     // is enabled on the current device.

@@ -111,7 +111,6 @@ Flickable {
                     "pinMode": true,
                     "heading": label,
                     "acceptedCb": function(resp) {
-                        console.log("hello " + resp)
                         navigator.goToFingerPrintsView()
                     }
                 })
@@ -124,7 +123,6 @@ Flickable {
                 actionButton.onClicked: navigator.confirm({
                     "heading": qsTr("Reset device?"),
                     "message": qsTr("This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings."),
-//                    "description": qsTr("Before proceeding:<ul style=\"-qt-list-indent: 1;\"><li>There is NO going back after a factory reset.<li>If you do not know what you are doing, do NOT do this.</ul>"),
                     "buttonAccept": qsTr("Reset device"),
                     "acceptedCb": function () {
                         console.log("FIDO2 Reset")

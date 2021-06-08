@@ -59,7 +59,7 @@ Flickable {
             }
 
             Label {
-                text: qsTr("Fingerprints on this security key")
+                text: yubiKey.fingerprints.length > 0 ? qsTr("Fingerprints on this security key") : qsTr("There's no fingerprints on this YubiKey")
                 color: primaryColor
                 opacity: lowEmphasis
                 font.pixelSize: 13
@@ -68,6 +68,15 @@ Flickable {
                 wrapMode: Text.WordWrap
                 Layout.maximumWidth: parent.width
                 Layout.bottomMargin: 16
+            }
+
+            Repeater {
+                model: yubiKey.fingerprints
+                StyledTextField {
+                    text: modelData.name + " (" + modelData.id + ")"
+                    enabled: false
+                    noedit: true
+                }
             }
 
             StyledButton {

@@ -55,8 +55,6 @@ Dialog {
                 } else {
                     setPIN()
                 }
-            } else {
-                console.log("Confirm PIN")
             }
         } else {
             if (manageMode) {
@@ -65,8 +63,6 @@ Dialog {
                 } else {
                     setPassword()
                 }
-            } else {
-                console.log("Confirm password")
             }
         }
         close()
@@ -101,14 +97,19 @@ Dialog {
     function submitForm() {
         if (acceptableInput()) {
             if (!manageMode) {
-                if (hasPin && verifyPIN()) {
-                    accept()
-                }
-                if (hasPin && !verifyPIN()) {
-                    currentPasswordField.error = true  
-                    currentPasswordField.textField.selectAll()
-                    currentPasswordField.textField.forceActiveFocus()
-                }
+                if (hasPin) {
+                    yubiKey.bioVerifyPin(currentPasswordField.text, function(resp) {
+                        if (resp.success) {
+                            yubiKey.fingerprints = resp.fingerprints
+                            accept()
+                        } else {
+                            yubiKey.fingerprints.length = 0
+                            currentPasswordField.error = true  
+                            currentPasswordField.textField.selectAll()
+                            currentPasswordField.textField.forceActiveFocus()
+                        }
+                    })
+                } 
             } else {
                 accept()
             }
@@ -215,15 +216,6 @@ Dialog {
                 }
             }
         })
-    }
-
-    function verifyPIN() {
-        console.log("verifyPIN()")
-        var pin = currentPasswordField.text
-        var e = yubiKey.bioList(pin)
-        console.log("print in confirm.qml")
-        console.log(yubiKey.fingerprints["56f6"])
-        return e
     }
 
     function clearPinFields() {

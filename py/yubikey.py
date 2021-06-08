@@ -965,13 +965,17 @@ class Controller(object):
                 client_pin = ClientPin(ctap2)
                 bio_token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
                 bio = FPBioEnrollment(ctap2, client_pin.protocol, bio_token)
-                fingerprints = {}
+                fingerprints = []
                 for t_id, name in bio.enumerate_enrollments().items():
+                    fingerprints.append({
+                        'id': t_id.hex(),
+                        'name': name
+                    })
                     #fingerprints.append(t_id.hex())
-                    fingerprints[t_id.hex()] = name
+                    #fingerprints[t_id.hex()] = name
                     #return success({'fingerprint': t_id.hex()})
-                    logger.debug(t_id.hex())
-                    logger.debug(name)
+                    #logger.debug(t_id.hex())
+                    #logger.debug(name)
                 return success({'fingerprints': fingerprints})
         except CtapError as e:
             if e.code == CtapError.ERR.INVALID_LENGTH or \
