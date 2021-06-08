@@ -61,8 +61,8 @@ ColumnLayout {
         }
 
         Label {
-            text: qsTr("Interface: CCID - Custom reader")
-            visible: settings.useCustomReader
+            text: settings.useCustomReader ? qsTr("Interface: CCID - Custom reader") : qsTr("Interface: OTP")
+            visible: settings.useCustomReader || settings.otpMode
             Layout.minimumWidth: 300
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth

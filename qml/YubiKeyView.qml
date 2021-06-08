@@ -52,7 +52,6 @@ Flickable {
         id: content
         visible: !noYubiKeySection.visible
         Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-        height: deviceInfo.implicitHeight + deviceConfig.implicitHeight
         width: parent.width
         spacing: 0
 
@@ -123,30 +122,23 @@ Flickable {
             width: parent.width
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
-        StyledExpansionContainer {
-            title: qsTr("Configuration")
+            StyledExpansionContainer {
+                title: qsTr("Configuration")
 
-            StyledExpansionPanel {
-                label: qsTr("WebAuthn (FIDO2/U2F)")
-                description: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod")
-                visible: !!yubiKey.currentDevice && (yubiKey.currentDeviceEnabled("FIDO2") || yubiKey.currentDeviceEnabled("U2F"))
-                isFlickable: true
-                expandButton.onClicked: navigator.goToWebAuthnView()
+                StyledExpansionPanel {
+                    label: qsTr("WebAuthn (FIDO2/U2F)")
+                    description: qsTr("Manage PIN, fingerprints and credentials stored on the YubiKey.")
+                    visible: !!yubiKey.currentDevice && (yubiKey.currentDeviceEnabled("FIDO2") || yubiKey.currentDeviceEnabled("U2F"))
+                    isFlickable: true
+                    expandButton.onClicked: navigator.goToWebAuthnView()
+                }
+                StyledExpansionPanel {
+                    label: qsTr("One-time password (OTP)")
+                    description: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod")
+                    visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OTP")
+                    isFlickable: true
+                }
             }
-            StyledExpansionPanel {
-                label: qsTr("One-time password (OTP)")
-                description: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod")
-                visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OTP")
-                isFlickable: true
-            }
-            StyledExpansionPanel {
-                label: qsTr("Smart card (PIV)")
-                description: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod")
-                visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("PIV")
-                isFlickable: true
-            }
-        }
-
         }
     }
 }

@@ -40,11 +40,37 @@ Flickable {
         id: content
         spacing: 0
 
-        StyledExpansionContainer {
-            title: qsTr("WebAuthn (FIDO2/U2F)")
+        ColumnLayout {
+            width: settingsPanel.contentWidth - 32
+            Layout.leftMargin: 16
+            Layout.rightMargin: 16
 
+            Label {
+                text: "WebAuthn (FIDO2/U2F)"
+                font.pixelSize: 16
+                font.weight: Font.Normal
+                color: yubicoGreen
+                opacity: fullEmphasis
+                Layout.topMargin: 24
+                Layout.bottomMargin: 24
+            }
+
+            Label {
+                text: qsTr("WebAuthn is a credential management API that lets web applications authenticate users without storing their passwords on servers.")
+                color: primaryColor
+                opacity: lowEmphasis
+                font.pixelSize: 13
+                lineHeight: 1.2
+                textFormat: TextEdit.PlainText
+                wrapMode: Text.WordWrap
+                Layout.maximumWidth: parent.width
+                Layout.bottomMargin: 16
+            }
+        }
+
+        StyledExpansionContainer {
             StyledExpansionPanel {
-                label: qsTr("Protect your YubiKey")
+                label: qsTr("PIN protection")
                 isEnabled: false
                 actionButton.text: hasPin ? qsTr("Change PIN") : qsTr("Create a PIN")
                 actionButton.onClicked: navigator.confirmInput({
@@ -53,7 +79,8 @@ Flickable {
                     "heading": actionButton.text,
                 })
             }
-            StyledExpansionPanel {
+
+/*            StyledExpansionPanel {
                 label: qsTr("Sign-in data")
                 visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2")
                 enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
@@ -66,10 +93,11 @@ Flickable {
                         console.log("PIN OK")
                     }
                 })
-            }
+            }*/
+
             StyledExpansionPanel {
                 label: qsTr("Fingerprints")
-                visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2") && yubiKey.currentDevice.name.toUpper() === "YUBIKEY BIO"
+                visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2") && yubiKey.currentDevice.name.toUpperCase() === "YUBIKEY BIO"
                 enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
                 description: qsTr("Add and delete fingerprints")
                 isFlickable: true
@@ -88,8 +116,8 @@ Flickable {
                 actionButton.text: "Reset"
                 actionButton.onClicked: navigator.confirm({
                     "heading": qsTr("Reset device?"),
-                    "message": qsTr("This will delete all accounts and restore factory defaults of your YubiKey."),
-                    "description": qsTr("Before proceeding:<ul style=\"-qt-list-indent: 1;\"><li>There is NO going back after a factory reset.<li>If you do not know what you are doing, do NOT do this.</ul>"),
+                    "message": qsTr("This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings."),
+//                    "description": qsTr("Before proceeding:<ul style=\"-qt-list-indent: 1;\"><li>There is NO going back after a factory reset.<li>If you do not know what you are doing, do NOT do this.</ul>"),
                     "buttonAccept": qsTr("Reset device"),
                     "acceptedCb": function () {
                         console.log("FIDO2 Reset")

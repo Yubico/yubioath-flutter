@@ -10,12 +10,10 @@ Flickable {
     objectName: 'customReaderFlickable'
     width: app.width
     contentWidth: app.width
-    contentHeight: expandedHeight
+    contentHeight: content.height + dynamicMargin
 
-    property var expandedHeight: content.implicitHeight + dynamicMargin
-
-    onExpandedHeightChanged: {
-        if (expandedHeight > app.height - toolBar.height) {
+    onContentHeightChanged: {
+        if (contentHeight > app.height - toolBar.height) {
              scrollBar.active = true
          }
     }

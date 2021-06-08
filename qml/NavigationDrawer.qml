@@ -250,6 +250,7 @@ Drawer {
                 icon: "../images/people.svg"
                 text: "Authenticator"
                 onActivated: navigator.goToAuthenticator()
+                isEnabled: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                 isActive: navigator.isInAuthenticator() || navigator.isInNewOathCredential() || navigator.isInEnterPassword()
                 isHovered: hoverIndex === 0
                 Layout.topMargin: !!yubiKey.currentDevice ? 4 : 32

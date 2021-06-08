@@ -10,12 +10,10 @@ Flickable {
     id: settingsPanel
     objectName: 'yubiKeyInterfacesView'
     contentWidth: app.width
-    contentHeight: expandedHeight
+    contentHeight: content.height + dynamicMargin
 
-    property var expandedHeight: content.implicitHeight + dynamicMargin
-
-    onExpandedHeightChanged: {
-        if (expandedHeight > app.height - toolBar.height) {
+    onContentHeightChanged: {
+        if (contentHeight > app.height - toolBar.height) {
              scrollBar.active = true
          }
     }
@@ -258,7 +256,7 @@ Flickable {
 
             Label {
                 visible: ccidButton1.visible || ccidButton2.visible
-                text: "CCID (smart card)"
+                text: "Smart card (CCID)"
             }
 
             CheckBox {
@@ -399,7 +397,7 @@ Flickable {
 
             Label {
                 visible: fidoButton1.visible || fidoButton2.visible
-                text: "FIDO (WebAuthn)"
+                text: "WebAuthn (FIDO)"
             }
 
             CheckBox {
@@ -601,7 +599,7 @@ Flickable {
             // Legacy CCID
 
             Label {
-                text: "CCID (smart card)"
+                text: "Smart card (CCID)"
                 visible: ccidModeBtn.visible
             }
 
@@ -626,7 +624,7 @@ Flickable {
             // Legacy FIDO
 
             Label {
-                text: "FIDO (WebAuthn)"
+                text: "WebAuthn (FIDO)"
                 visible: fidoModeBtn.visible
             }
 
