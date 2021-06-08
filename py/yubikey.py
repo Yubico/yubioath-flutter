@@ -14,7 +14,7 @@ from binascii import a2b_hex, b2a_hex
 from threading import Event
 
 from fido2.ctap import CtapError
-from fido2.ctap2 import Ctap2, ClientPin
+from fido2.ctap2 import Ctap2, ClientPin, FPBioEnrollment
 from ykman.device import scan_devices, list_all_devices, connect_to_device, get_name, read_info
 from ykman.pcsc import list_readers, list_devices as list_ccid
 from ykman.otp import PrepareUploadFailed, generate_static_pw, prepare_upload_key, time_challenge, format_oath_code
@@ -151,6 +151,8 @@ class Controller(object):
     _readers = []
 
     _state = None
+
+    _bio_token = None
 
     def __init__(self):
         self.settings = Settings('oath')
@@ -881,6 +883,84 @@ class Controller(object):
             logger.error('Failed to parse uri', exc_info=e)
             return failure('failed_to_parse_uri')
         return failure('no_credential_found')
+
+    def fido_set_pin(self, new_pin):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                if len(new_pin) < ctap2.info.min_pin_length:
+                    return failure('too short')
+                client_pin = ClientPin(ctap2)
+                client_pin.set_pin(new_pin)
+                return success()
+        except CtapError as e:
+            if e.code == CtapError.ERR.INVALID_LENGTH or \
+                    e.code == CtapError.ERR.PIN_POLICY_VIOLATION:
+                return failure('too long')
+            raise
+
+    def fido_change_pin(self, current_pin, new_pin):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                if len(new_pin) < ctap2.info.min_pin_length:
+                    return failure('too short')
+                client_pin = ClientPin(ctap2)
+                client_pin.change_pin(current_pin, new_pin)
+                return success()
+        except CtapError as e:
+            if e.code == CtapError.ERR.INVALID_LENGTH or \
+                    e.code == CtapError.ERR.PIN_POLICY_VIOLATION:
+                return failure('too long')
+            if e.code == CtapError.ERR.PIN_INVALID:
+                return failure('wrong pin')
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('currently blocked')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('blocked')
+            raise
+
+    def fido_verify_pin(self, pin):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                client_pin = ClientPin(ctap2)
+                token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.CREDENTIAL_MGMT)
+                return success()
+        except CtapError as e:
+            if e.code == CtapError.ERR.INVALID_LENGTH or \
+                    e.code == CtapError.ERR.PIN_POLICY_VIOLATION:
+                return failure('too long')
+            if e.code == CtapError.ERR.PIN_INVALID:
+                return failure('wrong pin')
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('currently blocked')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('blocked')
+            raise
+
+    def bio_verify_pin(self, pin):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                client_pin = ClientPin(ctap2)
+                bio_token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
+                bio = FPBioEnrollment(ctap2, client_pin.protocol, bio_token)
+                for t_id, name in bio.enumerate_enrollments().items():
+                    logger.debug(t_id.hex())
+                    logger.debug(name)
+                return success()
+        except CtapError as e:
+            if e.code == CtapError.ERR.INVALID_LENGTH or \
+                    e.code == CtapError.ERR.PIN_POLICY_VIOLATION:
+                return failure('too long')
+            if e.code == CtapError.ERR.PIN_INVALID:
+                return failure('wrong pin')
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('currently blocked')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('blocked')
+            raise
 
 
 class PixelImage(object):

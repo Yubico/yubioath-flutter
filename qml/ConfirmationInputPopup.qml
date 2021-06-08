@@ -41,7 +41,7 @@ Dialog {
     property bool hasPin: pinMode && (!!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin)
     property bool hasPassword: !pinMode && (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword)
 
-    Component.onCompleted: hasPin || hasPassword ? currentPasswordField.textField.forceActiveFocus() : newPasswordField.textField.forceActiveFocus()
+    Component.onCompleted: hasPin || hasPassword ? currentPasswordField.textField.forceActiveFocus() : newPasswordField.textField.forceActiveFocus()
 
     onClosed: {
         navigator.focus = true
@@ -170,15 +170,88 @@ Dialog {
 
     function setPIN() {
         console.log("setPIN()")
+        var newPin = newPasswordField.text
+        yubiKey.fidoSetPin(newPin, function (resp) {
+            if (resp.success) {
+                //load()
+                clearPinFields()
+                navigator.snackBar(qsTr("FIDO2 PIN was set"))
+            } else {
+                if (resp.error_id === 'too long') {
+                    navigator.snackBarError(qsTr("New PIN is too long"))
+                } else if (resp.error_id === 'too short') {
+                    navigator.snackBarError(qsTr("New PIN is too short"))
+               } else {
+                    navigator.snackBarError(
+                                navigator.getErrorMessage(
+                                    resp.error_id))
+                }
+            }
+        })
     }
 
     function changePIN() {
         console.log("changePIN()")
+        var currentPin = currentPasswordField.text
+        var newPin = newPasswordField.text
+        yubiKey.fidoChangePin(currentPin, newPin, function (resp) {
+            if (resp.success) {
+                clearPinFields()
+                navigator.snackBar(qsTr("Changed FIDO2 PIN"))
+            } else {
+                if (resp.error_id === 'too long') {
+                    navigator.snackBarError(qsTr("New PIN is too long"))
+                } else if (resp.error_id === 'too short') {
+                    navigator.snackBarError(qsTr("New PIN is too short"))
+                } else if (resp.error_id === 'wrong pin') {
+                    navigator.snackBarError(qsTr("The current PIN is wrong"))
+                } else if (resp.error_id === 'currently blocked') {
+                    navigator.snackBarError(
+                                qsTr("PIN authentication is currently blocked. Remove and re-insert your YubiKey"))
+                } else if (resp.error_id === 'blocked') {
+                    navigator.snackBarError(qsTr("PIN is blocked"))
+                } else if (resp.error_message) {
+                    navigator.snackBarError(resp.error_message)
+                } else {
+                    navigator.snackBarError(resp.error_id)
+                }
+            }
+        })
     }
 
     function verifyPIN() {
         console.log("verifyPIN()")
-        return false
+        var pin = currentPasswordField.text
+        yubiKey.bioVerifyPin(pin, function (resp) {
+            if (resp.success) {
+                //load()
+                clearPinFields()
+                navigator.snackBar(qsTr("FIDO2 PIN was verified"))
+            } else {
+                if (resp.error_id === 'too long') {
+                    navigator.snackBarError(qsTr("New PIN is too long"))
+                } else if (resp.error_id === 'too short') {
+                    navigator.snackBarError(qsTr("New PIN is too short"))
+                } else if (resp.error_id === 'wrong pin') {
+                    navigator.snackBarError(qsTr("The current PIN is wrong"))
+                } else if (resp.error_id === 'currently blocked') {
+                    navigator.snackBarError(
+                                qsTr("PIN authentication is currently blocked. Remove and re-insert your YubiKey"))
+                } else if (resp.error_id === 'blocked') {
+                    navigator.snackBarError(qsTr("PIN is blocked"))
+                } else if (resp.error_message) {
+                    navigator.snackBarError(resp.error_message)
+                } else {
+                    navigator.snackBarError(resp.error_id)
+                }
+            }
+        })
+    }
+
+    function clearPinFields() {
+        currentPasswordField.text = ""
+        newPasswordField.text = ""
+        confirmPasswordField.text = ""
     }
 
     ColumnLayout {

@@ -654,4 +654,20 @@ Python {
     function fidoPinRetries(cb) {
         doCall('yubikey.controller.fido_pin_retries', [], cb)
     }
+
+    function fidoSetPin(newPin, cb) {
+        doCall('yubikey.controller.fido_set_pin', [newPin], cb)
+    }
+
+    function fidoChangePin(currentPin, newPin, cb) {
+        doCall('yubikey.controller.fido_change_pin', [currentPin, newPin], cb)
+    }
+
+    function fidoVerifyPin(pin, cb) {
+        doCall('yubikey.controller.fido_verify_pin', [pin], cb)
+    }
+
+    function bioVerifyPin(pin, cb) {
+        doCall('yubikey.controller.bio_verify_pin', [pin], cb)
+    }
 }
