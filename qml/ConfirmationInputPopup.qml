@@ -173,7 +173,6 @@ Dialog {
         var newPin = newPasswordField.text
         yubiKey.fidoSetPin(newPin, function (resp) {
             if (resp.success) {
-                //load()
                 clearPinFields()
                 navigator.snackBar(qsTr("FIDO2 PIN was set"))
             } else {
@@ -221,10 +220,10 @@ Dialog {
 
     function verifyPIN() {
         console.log("verifyPIN()")
+        return true
         var pin = currentPasswordField.text
         yubiKey.bioVerifyPin(pin, function (resp) {
             if (resp.success) {
-                //load()
                 clearPinFields()
                 navigator.snackBar(qsTr("FIDO2 PIN was verified"))
             } else {

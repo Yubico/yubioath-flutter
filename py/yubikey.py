@@ -884,6 +884,25 @@ class Controller(object):
             return failure('failed_to_parse_uri')
         return failure('no_credential_found')
 
+    def fido_has_pin(self):
+        with self._open_device([FidoConnection]) as conn:
+            ctap2 = Ctap2(conn)
+            return success({'hasPin': ctap2.info.options.get("clientPin")})
+
+    def fido_pin_retries(self):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                client_pin = ClientPin(ctap2)
+                return success({'retries': client_pin.get_pin_retries()[0]})
+        except CtapError as e:
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('PIN authentication is currently blocked. '
+                               'Remove and re-insert the YubiKey.')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('PIN is blocked.')
+            raise
+
     def fido_set_pin(self, new_pin):
         try:
             with self._open_device([FidoConnection]) as conn:

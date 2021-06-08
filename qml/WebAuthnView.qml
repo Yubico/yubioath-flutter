@@ -10,6 +10,9 @@ Flickable {
     objectName: 'yubiKeyWebAuthnView'
     contentWidth: app.width
     contentHeight: expandedHeight
+    StackView.onActivating: load()
+
+    property bool isBusy
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
     property bool hasPin: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
@@ -77,6 +80,9 @@ Flickable {
                     "pinMode": true,
                     "manageMode": true,
                     "heading": actionButton.text,
+                   "acceptedCb": function() {
+                        load()
+                   }
                 })
             }
 
@@ -125,5 +131,29 @@ Flickable {
                 })
             }
         }
+    }
+
+    function load() {
+        isBusy = true
+        yubiKey.fidoHasPin(function (resp) {
+            if (resp.success) {
+                hasPin = resp.hasPin
+                if (hasPin) {
+                    yubiKey.fidoPinRetries(function (resp) {
+                        if (resp.success) {
+                            pinRetries = resp.retries
+                        } else {
+                            pinBlocked = (resp.error_id === 'PIN is blocked.')
+                        }
+                        isBusy = false
+                    })
+                } else {
+                    pinBlocked = false
+                    isBusy = false
+                }
+            } else {
+                navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+            }
+        })
     }
 }
