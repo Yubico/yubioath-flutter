@@ -10,6 +10,7 @@ Flickable {
     objectName: 'newFingerPrintViewFlickable'
     contentWidth: app.width
     contentHeight: expandedHeight
+    StackView.onActivating: enroll()
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
 
@@ -76,7 +77,8 @@ Flickable {
             }
 
             ProgressBar {
-                value: 0.2
+                id: progressBar
+                value: 0
                 Layout.fillWidth: true
                 Layout.bottomMargin: 32
             }
@@ -91,5 +93,28 @@ Flickable {
             }
 
         }
+    }
+
+    function enroll(){
+        yubiKey.bioEnroll("test3", function (resp) {
+            if (resp.success) {
+                if (resp.remaining > 0) {
+                    console.log("success")
+                    progressBar.value = progressBar.value + 0.2
+                    enroll()
+                } else {
+
+                    navigator.goToFingerPrintsView()
+                    navigator.snackBar(qsTr("Fingerprint added"))
+                }
+            } else {
+                if (resp.error_id > 0) {
+                    console.log("fail")
+                    enroll()
+                }
+                //navigator.snackBarError(qsTr("Fingerprint not added"))
+            }
+        })
+
     }
 }

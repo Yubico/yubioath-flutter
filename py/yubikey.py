@@ -154,6 +154,13 @@ class Controller(object):
 
     _bio_token = None
 
+    _enroller = None
+    _template_id = None
+    _remaining = None
+    _bio = None
+    _conn = None
+    _pin = None
+
     def __init__(self):
         self.settings = Settings('oath')
 
@@ -964,6 +971,7 @@ class Controller(object):
                 ctap2 = Ctap2(conn)
                 client_pin = ClientPin(ctap2)
                 bio_token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
+                self._pin = pin
                 bio = FPBioEnrollment(ctap2, client_pin.protocol, bio_token)
                 fingerprints = []
                 for t_id, name in bio.enumerate_enrollments().items():
@@ -987,6 +995,43 @@ class Controller(object):
                 return failure('currently blocked')
             if e.code == CtapError.ERR.PIN_BLOCKED:
                 return failure('blocked')
+            raise
+
+    def bio_enroll(self, name):
+        try:
+            pin = self._pin
+            if self._conn is None:
+                self._conn = self._open_device([FidoConnection])
+            if self._enroller is None :
+                ctap2 = Ctap2(self._conn)
+                client_pin = ClientPin(ctap2)
+                token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
+                self._bio = FPBioEnrollment(ctap2, client_pin.protocol, token)
+                self._enroller = self._bio.enroll()
+                self._template_id = None
+            if self._template_id is None:
+                try:
+                    logger.debug("Place your finger against the sensor now...")
+                    self._template_id = self._enroller.capture()
+                    self._remaining = self._enroller.remaining
+                    if self._remaining:
+                        logger.debug(f"{self._remaining} more scans needed.")
+                        return success({'remaining': self._remaining})
+                except:
+                    logger.debug("Failed to capture")
+                    logger.debug(f"{self._remaining} more scans needed.")
+                    return failure(self._remaining)
+            logger.debug("Capture complete.")
+            self._bio.set_name(self._template_id, name)
+            self._conn.close()
+            return success()
+        except CtapError as e:
+            self._conn.close()
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('PIN authentication is currently blocked. '
+                               'Remove and re-insert the YubiKey.')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('PIN is blocked.')
             raise
 
 

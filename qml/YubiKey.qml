@@ -702,6 +702,10 @@ Python {
 
     }
 
+    function bioEnroll(name, cb) {
+        doCall('yubikey.controller.bio_enroll', [name], cb)
+    }
+
     function bioVerifyPin(pin, cb){
         doCall('yubikey.controller.bio_verify_pin', [pin], cb)
     }
