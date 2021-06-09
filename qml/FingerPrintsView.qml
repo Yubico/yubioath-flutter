@@ -100,6 +100,14 @@ Flickable {
                                     "promptCurrent": modelData.name ? modelData.name : modelData.id,
                                     "acceptedCb": function(resp) {
                                         console.log("rename fingerprint to: " + resp)
+                                        yubiKey.bioRename(modelData.id, resp, function (resp_inner) {
+                                           if (resp_inner.success) {
+                                               navigator.snackBar(qsTr("Fingerprint renamed"))
+                                           } else {
+                                               navigator.snackBarError(qsTr("Fingerprint not renamed"))
+
+                                           }
+                                       })
                                     }
                                 })
 
@@ -126,6 +134,19 @@ Flickable {
                                     "buttonAccept": qsTr("Delete"),
                                     "acceptedCb": function () {
                                         console.log("delete")
+                                        yubiKey.bioDelete(modelData.id, function (resp) {
+                                           if (resp.success) {
+                                               navigator.snackBar(qsTr("Fingerprint deleted"))
+                                           } else {
+                                               if (resp.error_id === "multiple_matches") {
+                                                   navigator.snackBarError(qsTr("Multiple matches."))
+                                               } else {
+
+                                                   navigator.snackBarError(qsTr("Fingerprint not deleted"))
+                                               }
+                                           }
+                                       })
+
                                     }
                                 })
 

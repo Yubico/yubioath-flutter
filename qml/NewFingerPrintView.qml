@@ -13,6 +13,7 @@ Flickable {
     StackView.onActivating: enroll()
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
+    property var last_template
 
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {
@@ -104,6 +105,14 @@ Flickable {
                     "text1": qsTr("Enter a name for this fingerprint"),
                     "promptText": qsTr("Name"),
                     "acceptedCb": function(resp) {
+                        yubiKey.bioRename(last_template, resp, function (resp_inner) {
+                            if (resp_inner.success) {
+                                navigator.snackBar(qsTr("Fingerprint added"))
+                            } else {
+                                navigator.snackBarError(qsTr("Fingerprint not added"))
+
+                            }
+                        })
                         console.log("set fingerprint to: " + resp)
                         navigator.pop()
                         navigator.snackBar(qsTr("Fingerprint added"))
@@ -124,7 +133,9 @@ Flickable {
                     progressBar.value = progressBar.value + 0.2
                     enroll()
                 } else {
+                    console.log("added")
                     progressBar.value = 1
+                    last_template = resp.template
                 }
             } else {
                 if (resp.error_id > 0) {

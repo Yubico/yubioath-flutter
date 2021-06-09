@@ -12,6 +12,7 @@ import smartcard.pcsc.PCSCExceptions
 from base64 import b32encode, b32decode, b64decode
 from binascii import a2b_hex, b2a_hex
 from threading import Event
+from typing import Optional
 
 from fido2.ctap import CtapError
 from fido2.ctap2 import Ctap2, ClientPin, FPBioEnrollment
@@ -1024,7 +1025,7 @@ class Controller(object):
             logger.debug("Capture complete.")
             self._bio.set_name(self._template_id, name)
             self._conn.close()
-            return success()
+            return success({'template': self._template_id.hex()})
         except CtapError as e:
             self._conn.close()
             if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
@@ -1033,6 +1034,75 @@ class Controller(object):
             if e.code == CtapError.ERR.PIN_BLOCKED:
                 return failure('PIN is blocked.')
             raise
+
+    def bio_delete(self, template_id):
+        try:
+            pin = self._pin
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                client_pin = ClientPin(ctap2)
+                token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
+                bio = FPBioEnrollment(ctap2, client_pin.protocol, token)
+
+                enrollments = bio.enumerate_enrollments()
+                try:
+                    key: Optional[bytes] = bytes.fromhex(template_id)
+                except ValueError:
+                    key = None
+
+                if key not in enrollments:
+                    # Match using template_id as NAME
+                    matches = [k for k in enrollments if enrollments[k] == template_id]
+                    if len(matches) == 0:
+                        logger.debug(f"No fingerprint matching ID={template_id}")
+                    elif len(matches) > 1:
+                        logger.debug(
+                            f"Multiple matches for NAME={template_id}. "
+                            "Delete by template ID instead."
+                        )
+                        return failure("multiple_matches")
+                    key = matches[0]
+
+                name = enrollments[key]
+
+                try:
+                    bio.remove_enrollment(key)
+                    return success()
+                except:
+                    logger.debug("Failed to delete")
+        except CtapError as e:
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('PIN authentication is currently blocked. '
+                               'Remove and re-insert the YubiKey.')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('PIN is blocked.')
+            raise
+
+    def bio_rename(self, template_id, name):
+        try:
+            pin = self._pin
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                client_pin = ClientPin(ctap2)
+                token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
+                bio = FPBioEnrollment(ctap2, client_pin.protocol, token)
+
+                enrollments = bio.enumerate_enrollments()
+
+                key = bytes.fromhex(template_id)
+                if key not in enrollments:
+                    logger.debug(f"No fingerprint matching ID={template_id}.")
+                logger.debug("Fingerprint renamed")
+                bio.set_name(key, name)
+                return success()
+        except CtapError as e:
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('PIN authentication is currently blocked. '
+                               'Remove and re-insert the YubiKey.')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('PIN is blocked.')
+            raise
+
 
 
 class PixelImage(object):

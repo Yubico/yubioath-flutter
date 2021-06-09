@@ -706,6 +706,14 @@ Python {
         doCall('yubikey.controller.bio_enroll', [name], cb)
     }
 
+    function bioDelete(template_id, cb) {
+        doCall('yubikey.controller.bio_delete', [template_id], cb)
+    }
+
+    function bioRename(template_id, name, cb) {
+        doCall('yubikey.controller.bio_rename', [template_id, name], cb)
+    }
+
     function bioVerifyPin(pin, cb){
         doCall('yubikey.controller.bio_verify_pin', [pin], cb)
     }
