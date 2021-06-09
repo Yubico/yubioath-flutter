@@ -107,13 +107,11 @@ Flickable {
                     "acceptedCb": function(resp) {
                         yubiKey.bioRename(last_template, resp, function (resp_inner) {
                             if (resp_inner.success) {
-                                navigator.snackBar(qsTr("Fingerprint added"))
+                                console.log("fingerprint renamed")
                             } else {
-                                navigator.snackBarError(qsTr("Fingerprint not added"))
-
+                                console.log("error renaming fingerprint")
                             }
                         })
-                        console.log("set fingerprint to: " + resp)
                         navigator.pop()
                         navigator.snackBar(qsTr("Fingerprint added"))
                     }
@@ -129,17 +127,14 @@ Flickable {
         yubiKey.bioEnroll("", function (resp) {
             if (resp.success) {
                 if (resp.remaining > 0) {
-                    console.log("success")
                     progressBar.value = progressBar.value + 0.2
                     enroll()
                 } else {
-                    console.log("added")
                     progressBar.value = 1
                     last_template = resp.template
                 }
             } else {
                 if (resp.error_id > 0) {
-                    console.log("fail")
                     enroll()
                 }
                 //navigator.snackBarError(qsTr("Fingerprint not added"))

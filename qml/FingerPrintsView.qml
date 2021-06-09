@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 Flickable {
 
-    id: settingsPanel
+    id: fingerPrintsView
     objectName: 'fingerPrintsViewFlickable'
     contentWidth: app.width
     contentHeight: expandedHeight
@@ -20,13 +20,15 @@ Flickable {
     }
 
     onFocusChanged: {
-        yubiKey.bioVerifyPin(fidoPinCache, function(resp) {
-            if (resp.success) {
-                yubiKey.fingerprints = resp.fingerprints
-            } else {
-                console.log("error")
-            }
-        })
+        if(fingerPrintsView.focus) {
+            yubiKey.bioVerifyPin(fidoPinCache, function(resp) {
+                if (resp.success) {
+                    yubiKey.fingerprints = resp.fingerprints
+                } else {
+                    console.log("error")
+                }
+            })
+        }
     }
 
     ScrollBar.vertical: ScrollBar {
@@ -43,12 +45,12 @@ Flickable {
     property string searchFieldPlaceholder: ""
 
     ColumnLayout {
-        width: settingsPanel.contentWidth
+        width: fingerPrintsView.contentWidth
         id: content
         spacing: 0
 
         ColumnLayout {
-            width: settingsPanel.contentWidth - 32
+            width: fingerPrintsView.contentWidth - 32
             Layout.leftMargin: 16
             Layout.rightMargin: 16
 
@@ -99,13 +101,16 @@ Flickable {
                                     "promptText": qsTr("Name"),
                                     "promptCurrent": modelData.name ? modelData.name : modelData.id,
                                     "acceptedCb": function(resp) {
-                                        console.log("rename fingerprint to: " + resp)
                                         yubiKey.bioRename(modelData.id, resp, function (resp_inner) {
                                            if (resp_inner.success) {
-                                               navigator.snackBar(qsTr("Fingerprint renamed"))
+                                                var item = yubiKey.fingerprints.find(item => item.id === modelData.id);
+                                                if (item) {
+                                                    item.name = resp;
+                                                }
+                                                yubiKey.fingerprints = yubiKey.fingerprints
+                                                //navigator.snackBar(qsTr("Fingerprint renamed"))
                                            } else {
-                                               navigator.snackBarError(qsTr("Fingerprint not renamed"))
-
+                                                //navigator.snackBarError(qsTr("Fingerprint not renamed"))
                                            }
                                        })
                                     }
@@ -133,20 +138,18 @@ Flickable {
                                     "message": qsTr("Fingerprint will be removed from YubiKey."),
                                     "buttonAccept": qsTr("Delete"),
                                     "acceptedCb": function () {
-                                        console.log("delete")
                                         yubiKey.bioDelete(modelData.id, function (resp) {
                                            if (resp.success) {
-                                               navigator.snackBar(qsTr("Fingerprint deleted"))
+                                                yubiKey.fingerprints = yubiKey.fingerprints.filter(item => item.id !== modelData.id)
+//                                                navigator.snackBar(qsTr("Fingerprint deleted"))
                                            } else {
                                                if (resp.error_id === "multiple_matches") {
                                                    navigator.snackBarError(qsTr("Multiple matches."))
                                                } else {
-
                                                    navigator.snackBarError(qsTr("Fingerprint not deleted"))
                                                }
                                            }
                                        })
-
                                     }
                                 })
 
