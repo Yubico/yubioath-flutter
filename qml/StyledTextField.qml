@@ -9,6 +9,7 @@ Item {
 
     property string label
     property alias echoMode: textField.echoMode
+    property alias isEnabled: textField.enabled
     property alias text: textField.text
     property alias validator: textField.validator
     property alias horizontalAlignment: textField.horizontalAlignment

@@ -28,6 +28,9 @@ Dialog {
     property var acceptedCb
     property bool manageMode: false
     property bool pinMode: false
+    property bool promptMode: false
+    property string promptText: ""
+    property string promptCurrent: ""
     property string heading
     property string buttonCancel: qsTr("Cancel")
     property string buttonAccept: manageMode ? "Save" : "Continue"
@@ -41,14 +44,21 @@ Dialog {
     property bool hasPin: pinMode && (!!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin)
     property bool hasPassword: !pinMode && (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword)
 
-    Component.onCompleted: hasPin || hasPassword ? currentPasswordField.textField.forceActiveFocus() : newPasswordField.textField.forceActiveFocus()
-
+    Component.onCompleted: {
+        if (promptMode) {
+            inputPromptField.textField.forceActiveFocus()
+        } else if (hasPin || hasPassword) {
+            currentPasswordField.textField.forceActiveFocus()
+        } else {
+            newPasswordField.textField.forceActiveFocus()
+        }
+    }
     onClosed: {
         navigator.focus = true
     }
 
     onAccepted: {
-        if (pinMode) {
+        if (pinMode && !promptMode) {
             if (manageMode) {
                 if (hasPin) {
                     changePIN()
@@ -56,7 +66,7 @@ Dialog {
                     setPIN()
                 }
             }
-        } else {
+        } else if (!pinMode && !promptMode) {
             if (manageMode) {
                 if (hasPassword) {
                     changePassword()
@@ -67,7 +77,7 @@ Dialog {
         }
         close()
         if(acceptedCb) {
-            acceptedCb()
+            acceptedCb(inputPromptField.text)
         }
         navigator.focus = true
     }
@@ -81,6 +91,9 @@ Dialog {
     }
 
     function acceptableInput() {
+        if (promptMode && inputPromptField.text.length > 0 && inputPromptField.text !== promptCurrent) {
+            return true
+        }
         if ((hasPin || hasPassword) && currentPasswordField.text.length == 0) {
             return false
         }
@@ -96,13 +109,18 @@ Dialog {
 
     function submitForm() {
         if (acceptableInput()) {
+            if (promptMode) {
+                accept()
+            }
             if (!manageMode) {
                 if (hasPin) {
                     yubiKey.bioVerifyPin(currentPasswordField.text, function(resp) {
                         if (resp.success) {
                             yubiKey.fingerprints = resp.fingerprints
+                            fidoPinCache = currentPasswordField.text
                             accept()
                         } else {
+                            fidoPinCache = ""
                             yubiKey.fingerprints.length = 0
                             currentPasswordField.error = true  
                             currentPasswordField.textField.selectAll()
@@ -244,11 +262,21 @@ Dialog {
             opacity: lowEmphasis
             font.pixelSize: 13
             lineHeight: 1.2
-            visible: hasPin || hasPassword
+            visible: hasPin || hasPassword || promptMode
             textFormat: TextEdit.RichText
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
             Layout.bottomMargin: 16
+        }
+
+        StyledTextField {
+            id: inputPromptField
+            visible: promptMode
+            labelText: promptText
+            text: promptCurrent
+            Keys.onEnterPressed: submitForm()
+            Keys.onReturnPressed: submitForm()
+            onSubmit: submitForm()
         }
 
         RowLayout {

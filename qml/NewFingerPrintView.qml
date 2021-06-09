@@ -55,7 +55,7 @@ Flickable {
             }
 
             Label {
-                text: qsTr("Keep touching your YubiKey until your fingerprint is captured")
+                text: progressBar.value > 0 ? qsTr("Keep touching your YubiKey until your fingerprint is captured") : qsTr("Touch your YubiKey to capture your fingerprint")
                 color: primaryColor
                 opacity: lowEmphasis
                 font.pixelSize: 13
@@ -86,26 +86,45 @@ Flickable {
             StyledButton {
                 text: qsTr("Cancel")
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                visible: progressBar.value < 1
                 primary: false
                 onClicked: navigator.pop()
                 Keys.onEnterPressed: navigator.pop()
                 Keys.onReturnPressed: navigator.pop()
             }
 
+            StyledButton {
+                text: qsTr("Continue")
+                visible: progressBar.value === 1
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                primary: true
+                onClicked: navigator.confirmInput({
+                    "promptMode": true,
+                    "heading": qsTr("Add fingerprint"),
+                    "text1": qsTr("Enter a name for this fingerprint"),
+                    "promptText": qsTr("Name"),
+                    "acceptedCb": function(resp) {
+                        console.log("set fingerprint to: " + resp)
+                        navigator.pop()
+                        navigator.snackBar(qsTr("Fingerprint added"))
+                    }
+                })
+                Keys.onEnterPressed: click()
+                Keys.onReturnPressed: click()
+            }
+
         }
     }
 
     function enroll(){
-        yubiKey.bioEnroll("test3", function (resp) {
+        yubiKey.bioEnroll("", function (resp) {
             if (resp.success) {
                 if (resp.remaining > 0) {
                     console.log("success")
                     progressBar.value = progressBar.value + 0.2
                     enroll()
                 } else {
-
-                    navigator.goToFingerPrintsView()
-                    navigator.snackBar(qsTr("Fingerprint added"))
+                    progressBar.value = 1
                 }
             } else {
                 if (resp.error_id > 0) {

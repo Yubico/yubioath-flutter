@@ -19,6 +19,16 @@ Flickable {
          }
     }
 
+    onFocusChanged: {
+        yubiKey.bioVerifyPin(fidoPinCache, function(resp) {
+            if (resp.success) {
+                yubiKey.fingerprints = resp.fingerprints
+            } else {
+                console.log("error")
+            }
+        })
+    }
+
     ScrollBar.vertical: ScrollBar {
         id: scrollBar
         width: 8
@@ -67,16 +77,82 @@ Flickable {
 
             Repeater {
                 model: yubiKey.fingerprints
-                StyledTextField {
-                    text: modelData.name ? modelData.name : modelData.id
-                    enabled: false
-                    noedit: true
+                id: fingerprintRepeater
+
+                RowLayout {
+                    spacing: 0
+                    StyledTextField {
+                        text: modelData.name ? modelData.name : modelData.id
+                        isEnabled: false
+                        noedit: true
+                        Layout.bottomMargin: -8
+
+                        RowLayout {
+                            anchors.right: parent.right
+                            ToolButton {
+                                Layout.alignment: Qt.AlignRight | Qt.AlignTop
+
+                                onClicked: navigator.confirmInput({
+                                    "promptMode": true,
+                                    "heading": qsTr("Rename fingerprint"),
+                                    "text1": qsTr("Enter a name for this fingerprint"),
+                                    "promptText": qsTr("Name"),
+                                    "promptCurrent": modelData.name ? modelData.name : modelData.id,
+                                    "acceptedCb": function(resp) {
+                                        console.log("rename fingerprint to: " + resp)
+                                    }
+                                })
+
+                                icon.source: "../images/edit.svg"
+                                icon.color: primaryColor
+                                opacity: hovered ? highEmphasis : disabledEmphasis
+                                implicitHeight: 30
+                                implicitWidth: 30
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    propagateComposedEvents: true
+                                    enabled: false
+                                }
+                            }
+
+                            ToolButton {
+                                Layout.alignment: Qt.AlignRight | Qt.AlignTop
+
+                                onClicked: navigator.confirm({
+                                    "heading": qsTr("Delete " + (modelData.name ? modelData.name : modelData.id) + " ?"),
+                                    "message": qsTr("Fingerprint will be removed from YubiKey."),
+                                    "buttonAccept": qsTr("Delete"),
+                                    "acceptedCb": function () {
+                                        console.log("delete")
+                                    }
+                                })
+
+                                icon.source: "../images/clear.svg"
+                                icon.color: primaryColor
+                                opacity: hovered ? highEmphasis : disabledEmphasis
+                                implicitHeight: 30
+                                implicitWidth: 30
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    propagateComposedEvents: true
+                                    enabled: false
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
 
             StyledButton {
                 text: qsTr("Add")
+                enabled: yubiKey.fingerprints.length < 5
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.topMargin: 16
                 onClicked: navigator.goToNewFingerPrintView()
                 Keys.onEnterPressed: navigator.goToNewFingerPrintView()
                 Keys.onReturnPressed: navigator.goToNewFingerPrintView()

@@ -107,13 +107,19 @@ Flickable {
                 enabled: hasPin
                 description: qsTr("Add and delete fingerprints")
                 isFlickable: true
-                expandButton.onClicked: navigator.confirmInput({
-                    "pinMode": true,
-                    "heading": label,
-                    "acceptedCb": function(resp) {
-                        navigator.goToFingerPrintsView()
+                expandButton.onClicked: {
+                    if (fidoPinCache.length > 0) {
+                            navigator.goToFingerPrintsView()
+                    } else {
+                        navigator.confirmInput({
+                            "pinMode": true,
+                            "heading": label,
+                            "acceptedCb": function(resp) {
+                                navigator.goToFingerPrintsView()
+                            }
+                        })
                     }
-                })
+                }
             }
             StyledExpansionPanel {
                 id: savedPasswordsPanel

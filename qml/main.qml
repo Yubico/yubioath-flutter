@@ -64,6 +64,8 @@ ApplicationWindow {
 
     property bool showDeviceConfiguration: false
 
+    property string fidoPinCache: ""
+
     Material.theme: settings.theme
     Material.primary: yubicoGreen
     Material.accent: yubicoGreen
