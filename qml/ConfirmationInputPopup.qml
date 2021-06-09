@@ -67,7 +67,7 @@ Dialog {
         }
         close()
         if(acceptedCb) {
-            acceptedCb("world")
+            acceptedCb()
         }
         navigator.focus = true
     }

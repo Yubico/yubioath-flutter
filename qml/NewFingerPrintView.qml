@@ -7,7 +7,7 @@ import QtGraphicalEffects 1.0
 Flickable {
 
     id: settingsPanel
-    objectName: 'fingerPrintsViewFlickable'
+    objectName: 'newFingerPrintViewFlickable'
     contentWidth: app.width
     contentHeight: expandedHeight
 
@@ -43,7 +43,7 @@ Flickable {
             Layout.rightMargin: 16
 
             Label {
-                text: "Fingerprints"
+                text: "Add fingerprint"
                 font.pixelSize: 16
                 font.weight: Font.Normal
                 color: yubicoGreen
@@ -54,7 +54,7 @@ Flickable {
             }
 
             Label {
-                text: yubiKey.fingerprints.length > 0 ? qsTr("Fingerprints on this YubiKey") : qsTr("There's no fingerprints on this YubiKey")
+                text: qsTr("Keep touching your YubiKey until your fingerprint is captured")
                 color: primaryColor
                 opacity: lowEmphasis
                 font.pixelSize: 13
@@ -62,25 +62,34 @@ Flickable {
                 textFormat: TextEdit.PlainText
                 wrapMode: Text.WordWrap
                 Layout.maximumWidth: parent.width
-                Layout.bottomMargin: 16
+                Layout.bottomMargin: 32
             }
 
-            Repeater {
-                model: yubiKey.fingerprints
-                StyledTextField {
-                    text: modelData.name ? modelData.name : modelData.id
-                    enabled: false
-                    noedit: true
-                }
+            StyledImage {
+                id: fingerprintIcon
+                source: "../images/fingerprint.svg"
+                color: primaryColor
+                opacity: lowEmphasis
+                iconWidth: 150
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                bottomPadding: 32
+            }
+
+            ProgressBar {
+                value: 0.2
+                Layout.fillWidth: true
+                Layout.bottomMargin: 32
             }
 
             StyledButton {
-                text: qsTr("Add")
+                text: qsTr("Cancel")
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                onClicked: navigator.goToNewFingerPrintView()
-                Keys.onEnterPressed: navigator.goToNewFingerPrintView()
-                Keys.onReturnPressed: navigator.goToNewFingerPrintView()
+                primary: false
+                onClicked: navigator.pop()
+                Keys.onEnterPressed: navigator.pop()
+                Keys.onReturnPressed: navigator.pop()
             }
+
         }
     }
 }

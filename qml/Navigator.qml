@@ -125,6 +125,12 @@ StackView {
         }
     }
 
+    function goToNewFingerPrintView() {
+        if (currentItem.objectName !== 'newFingerPrintView') {
+            push(newFingerPrintViewFlickable, StackView.PushTransition)
+        }
+    }
+
     function goToOneTimePasswordView() {
         if (currentItem.objectName !== 'oneTimePasswordView') {
             clearAndPush(yubiKeyOneTimePasswordView, StackView.Immediate)
@@ -271,6 +277,12 @@ StackView {
     Component {
         id: fingerPrintsViewFlickable
         FingerPrintsView {
+        }
+    }
+
+    Component {
+        id: newFingerPrintViewFlickable
+        NewFingerPrintView {
         }
     }
 
