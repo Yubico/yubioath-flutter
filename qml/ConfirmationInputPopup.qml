@@ -43,7 +43,7 @@ Dialog {
 
     property bool hasPin: pinMode && (!!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin)
     property bool hasPassword: !pinMode && (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword)
-    property bool isBio: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2") && yubiKey.currentDevice.name.toUpperCase() === "YUBIKEY BIO"
+    property bool isBio: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2") && (yubiKey.currentDevice.formFactor === 6 || yubiKey.currentDevice.formFactor === 7)
 
     Component.onCompleted: {
         if (promptMode) {

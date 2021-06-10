@@ -162,6 +162,8 @@ class Controller(object):
     _conn = None
     _pin = None
 
+    _ctapOptions = {}
+
     def __init__(self):
         self.settings = Settings('oath')
 
@@ -303,6 +305,7 @@ class Controller(object):
             'fidoPinRetries': fido_pin_list[1],
             'pinBlocked': fido_pin_list[2],
             'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
+            'ctapOptions': self._ctapOptions
        }
 
     def load_devices_custom_reader(self, reader_filter=None, otp_mode=False):
@@ -370,6 +373,7 @@ class Controller(object):
     def _fido_has_pin(self):
         with self._open_device([FidoConnection]) as conn:
             ctap2 = Ctap2(conn)
+            self._ctapOptions = ctap2.info.options
             return ctap2.info.options.get("clientPin")
 
     def _fido_pin_retries(self):

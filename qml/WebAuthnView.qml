@@ -81,7 +81,7 @@ Flickable {
                     "manageMode": true,
                     "heading": actionButton.text,
                     "acceptedCb": function(resp) {
-                         load()
+                        load()
                    }
                 })
             }
@@ -104,7 +104,7 @@ Flickable {
 
             StyledExpansionPanel {
                 label: qsTr("Fingerprints")
-                visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2") && yubiKey.currentDevice.name.toUpperCase() === "YUBIKEY BIO"
+                visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2") && (yubiKey.currentDevice.formFactor === 6 || yubiKey.currentDevice.formFactor === 7)
                 enabled: hasPin
                 description: qsTr("Add and delete fingerprints")
                 isFlickable: true
