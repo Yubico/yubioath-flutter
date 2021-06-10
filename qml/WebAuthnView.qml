@@ -86,7 +86,7 @@ Flickable {
                 })
             }
 
-/*            StyledExpansionPanel {
+            /*StyledExpansionPanel {
                 label: qsTr("Sign-in data")
                 visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2")
                 enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
@@ -97,6 +97,7 @@ Flickable {
                     "heading": label,
                     "acceptedCb": function() {
                         console.log("PIN OK")
+                        navigator.goToFidoCredentialsView()
                     }
                 })
             }*/

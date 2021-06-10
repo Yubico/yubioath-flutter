@@ -15,7 +15,7 @@ from threading import Event
 from typing import Optional
 
 from fido2.ctap import CtapError
-from fido2.ctap2 import Ctap2, ClientPin, FPBioEnrollment
+from fido2.ctap2 import Ctap2, ClientPin, FPBioEnrollment, CredentialManagement
 from ykman.device import scan_devices, list_all_devices, connect_to_device, get_name, read_info
 from ykman.pcsc import list_readers, list_devices as list_ccid
 from ykman.otp import PrepareUploadFailed, generate_static_pw, prepare_upload_key, time_challenge, format_oath_code
@@ -953,7 +953,48 @@ class Controller(object):
                 ctap2 = Ctap2(conn)
                 client_pin = ClientPin(ctap2)
                 token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.CREDENTIAL_MGMT)
-                return success()
+                self._pin = pin
+                credman = CredentialManagement(ctap2, client_pin.protocol, token)
+                credentials = []
+                for rp in credman.enumerate_rps():
+                    for cred in credman.enumerate_creds(rp[CredentialManagement.RESULT.RP_ID_HASH]):
+                        logger.debug(rp[CredentialManagement.RESULT.RP]["id"])
+                        logger.debug(cred[CredentialManagement.RESULT.USER]["id"].hex())
+                        logger.debug(cred[CredentialManagement.RESULT.USER]["name"])
+                        credentials.append({
+                            'rpId': rp[CredentialManagement.RESULT.RP]["id"],
+                            'userId': cred[CredentialManagement.RESULT.USER]["id"].hex(),
+                            'name': cred[CredentialManagement.RESULT.USER]["name"]
+                        })
+                return success({'credentials': credentials})
+        except CtapError as e:
+            if e.code == CtapError.ERR.INVALID_LENGTH or \
+                    e.code == CtapError.ERR.PIN_POLICY_VIOLATION:
+                return failure('too long')
+            if e.code == CtapError.ERR.PIN_INVALID:
+                return failure('wrong pin')
+            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
+                return failure('currently blocked')
+            if e.code == CtapError.ERR.PIN_BLOCKED:
+                return failure('blocked')
+            raise
+
+    def fido_cred_delete(self, userId):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                pin = self._pin
+                ctap2 = Ctap2(conn)
+                client_pin = ClientPin(ctap2)
+                token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.CREDENTIAL_MGMT)
+                self._pin = pin
+                credman = CredentialManagement(ctap2, client_pin.protocol, token)
+                for rp in credman.enumerate_rps():
+                    for cred in credman.enumerate_creds(rp[CredentialManagement.RESULT.RP_ID_HASH]):
+                        if (userId == cred[CredentialManagement.RESULT.USER]["id"].hex()):
+                            credId = cred[CredentialManagement.RESULT.CREDENTIAL_ID]
+                            credman.delete_cred(credId)
+                            return success()
+                return failure()
         except CtapError as e:
             if e.code == CtapError.ERR.INVALID_LENGTH or \
                     e.code == CtapError.ERR.PIN_POLICY_VIOLATION:
@@ -980,11 +1021,6 @@ class Controller(object):
                         'id': t_id.hex(),
                         'name': name
                     })
-                    #fingerprints.append(t_id.hex())
-                    #fingerprints[t_id.hex()] = name
-                    #return success({'fingerprint': t_id.hex()})
-                    #logger.debug(t_id.hex())
-                    #logger.debug(name)
                 return success({'fingerprints': fingerprints})
         except CtapError as e:
             if e.code == CtapError.ERR.INVALID_LENGTH or \

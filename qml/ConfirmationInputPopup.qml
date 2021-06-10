@@ -43,6 +43,7 @@ Dialog {
 
     property bool hasPin: pinMode && (!!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin)
     property bool hasPassword: !pinMode && (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword)
+    property bool isBio: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2") && yubiKey.currentDevice.name.toUpperCase() === "YUBIKEY BIO"
 
     Component.onCompleted: {
         if (promptMode) {
@@ -114,19 +115,35 @@ Dialog {
             }
             if (!manageMode) {
                 if (hasPin) {
-                    yubiKey.bioVerifyPin(currentPasswordField.text, function(resp) {
-                        if (resp.success) {
-                            yubiKey.fingerprints = resp.fingerprints
-                            fidoPinCache = currentPasswordField.text
-                            accept()
-                        } else {
-                            fidoPinCache = ""
-                            yubiKey.fingerprints.length = 0
-                            currentPasswordField.error = true  
-                            currentPasswordField.textField.selectAll()
-                            currentPasswordField.textField.forceActiveFocus()
-                        }
-                    })
+                    if (isBio) {
+                        yubiKey.bioVerifyPin(currentPasswordField.text, function(resp) {
+                            if (resp.success) {
+                                yubiKey.fingerprints = resp.fingerprints
+                                fidoPinCache = currentPasswordField.text
+                                accept()
+                            } else {
+                                fidoPinCache = ""
+                                yubiKey.fingerprints.length = 0
+                                currentPasswordField.error = true
+                                currentPasswordField.textField.selectAll()
+                                currentPasswordField.textField.forceActiveFocus()
+                            }
+                        })
+                    } else {
+                        yubiKey.fidoVerifyPin(currentPasswordField.text, function(resp) {
+                            if (resp.success) {
+                                yubiKey.credentials = resp.credentials
+                                fidoPinCache = currentPasswordField.text
+                                accept()
+                            } else {
+                                fidoPinCache = ""
+                                yubiKey.credentials.length = 0
+                                currentPasswordField.error = true
+                                currentPasswordField.textField.selectAll()
+                                currentPasswordField.textField.forceActiveFocus()
+                            }
+                        })
+                    }
                 } 
             } else {
                 accept()
@@ -262,7 +279,7 @@ Dialog {
             opacity: lowEmphasis
             font.pixelSize: 13
             lineHeight: 1.2
-            visible: hasPin || hasPassword || promptMode
+            visible: hasPin || hasPassword || promptMode
             textFormat: TextEdit.RichText
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width

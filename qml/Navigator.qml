@@ -125,6 +125,12 @@ StackView {
         }
     }
 
+    function goToFidoCredentialsView() {
+        if (currentItem.objectName !== 'fidoCredentialsView') {
+            push(fidoCredentialsViewFlickable, StackView.PushTransition)
+        }
+    }
+
     function goToNewFingerPrintView() {
         if (currentItem.objectName !== 'newFingerPrintView') {
             push(newFingerPrintViewFlickable, StackView.PushTransition)
@@ -277,6 +283,12 @@ StackView {
     Component {
         id: fingerPrintsViewFlickable
         FingerPrintsView {
+        }
+    }
+
+    Component {
+        id: fidoCredentialsViewFlickable
+        FidoCredentialsView {
         }
     }
 

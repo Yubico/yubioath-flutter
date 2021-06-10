@@ -17,6 +17,7 @@ Python {
     property bool currentDeviceValidated
 
     property var fingerprints: []
+    property var credentials: []
 
     // Check if a application such as OATH, PIV, etc
     // is enabled on the current device.
@@ -667,6 +668,10 @@ Python {
 
     function fidoVerifyPin(pin, cb) {
         doCall('yubikey.controller.fido_verify_pin', [pin], cb)
+    }
+
+    function credDelete(userId, cb) {
+        doCall('yubikey.controller.fido_cred_delete', [userId], cb)
     }
 
     function bioList(pin, cb) {
