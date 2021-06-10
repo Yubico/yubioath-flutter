@@ -13,6 +13,8 @@ Flickable {
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
 
+    property var fidoPinCache: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : ""
+
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {
              scrollBar.active = true
@@ -83,8 +85,9 @@ Flickable {
 
                 RowLayout {
                     spacing: 0
+
                     StyledTextField {
-                        text: modelData.name + " " + modelData.rpId + " " + modelData.userId
+                        text: qsTr("%1 (%2)").arg(modelData.rpId).arg(modelData.name ? modelData.name : modelData.userId)
                         isEnabled: false
                         noedit: true
                         Layout.bottomMargin: -8
@@ -103,7 +106,6 @@ Flickable {
                                         yubiKey.credDelete(modelData.userId, function (resp) {
                                            if (resp.success) {
                                                 yubiKey.credentials = yubiKey.credentials.filter(item => item.userId !== modelData.userId)
-//                                                navigator.snackBar(qsTr("Fingerprint deleted"))
                                            } else {
                                                if (resp.error_id === "multiple_matches") {
                                                    navigator.snackBarError(qsTr("Multiple matches."))
@@ -130,7 +132,6 @@ Flickable {
                             }
                         }
                     }
-
                 }
             }
         }

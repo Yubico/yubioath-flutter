@@ -24,6 +24,8 @@ Dialog {
         radius: 4
     }
 
+    property alias maximumLength: inputPromptField.maximumLength
+
     property var cancelCb
     property var acceptedCb
     property bool manageMode: false
@@ -119,10 +121,10 @@ Dialog {
                         yubiKey.bioVerifyPin(currentPasswordField.text, function(resp) {
                             if (resp.success) {
                                 yubiKey.fingerprints = resp.fingerprints
-                                fidoPinCache = currentPasswordField.text
+                                yubiKey.currentDevice.fidoPinCache = currentPasswordField.text
                                 accept()
                             } else {
-                                fidoPinCache = ""
+                                yubiKey.currentDevice.fidoPinCache = ""
                                 yubiKey.fingerprints.length = 0
                                 currentPasswordField.error = true
                                 currentPasswordField.textField.selectAll()
@@ -133,10 +135,10 @@ Dialog {
                         yubiKey.fidoVerifyPin(currentPasswordField.text, function(resp) {
                             if (resp.success) {
                                 yubiKey.credentials = resp.credentials
-                                fidoPinCache = currentPasswordField.text
+                                yubiKey.currentDevice.fidoPinCache = currentPasswordField.text
                                 accept()
                             } else {
-                                fidoPinCache = ""
+                                yubiKey.currentDevice.fidoPinCache = ""
                                 yubiKey.credentials.length = 0
                                 currentPasswordField.error = true
                                 currentPasswordField.textField.selectAll()

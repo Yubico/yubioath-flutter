@@ -13,6 +13,8 @@ Flickable {
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
 
+    property var fidoPinCache: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : ""
+
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {
              scrollBar.active = true
@@ -96,6 +98,7 @@ Flickable {
 
                                 onClicked: navigator.confirmInput({
                                     "promptMode": true,
+                                    "maximumLength": 15,
                                     "heading": qsTr("Rename fingerprint"),
                                     "text1": qsTr("Enter a name for this fingerprint"),
                                     "promptText": qsTr("Name"),

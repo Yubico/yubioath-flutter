@@ -19,6 +19,7 @@ Item {
     property string validateText
     property variant validateRegExp
     property alias textField: textField
+    property alias maximumLength: textField.maximumLength
     property bool error: false
     property bool isValidated: validateInput()
     property bool validated: {
@@ -153,7 +154,6 @@ Item {
                     }
                 }
             }
-
         }
 
         Label {

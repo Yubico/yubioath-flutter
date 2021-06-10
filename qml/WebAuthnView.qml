@@ -86,21 +86,27 @@ Flickable {
                 })
             }
 
-            /*StyledExpansionPanel {
+            StyledExpansionPanel {
                 label: qsTr("Sign-in data")
                 visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2")
                 enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
                 description: qsTr("View and delete sign-in data stored on your security key")
                 isFlickable: true
-                expandButton.onClicked: navigator.confirmInput({
-                    "pinMode": true,
-                    "heading": label,
-                    "acceptedCb": function() {
-                        console.log("PIN OK")
+                expandButton.onClicked: {
+                    if (!!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinCache && yubiKey.currentDevice.fidoPinCache !== "") {
                         navigator.goToFidoCredentialsView()
+                    } else {
+                        navigator.confirmInput({
+                            "pinMode": true,
+                            "heading": label,
+                            "acceptedCb": function() {
+                                console.log("PIN OK")
+                                navigator.goToFidoCredentialsView()
+                            }
+                        })
                     }
-                })
-            }*/
+                } 
+            }
 
             StyledExpansionPanel {
                 label: qsTr("Fingerprints")
@@ -109,7 +115,7 @@ Flickable {
                 description: qsTr("Add and delete fingerprints")
                 isFlickable: true
                 expandButton.onClicked: {
-                    if (fidoPinCache.length > 0) {
+                    if (!!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinCache && yubiKey.currentDevice.fidoPinCache !== "") {
                             navigator.goToFingerPrintsView()
                     } else {
                         navigator.confirmInput({

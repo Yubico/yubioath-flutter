@@ -101,6 +101,7 @@ Flickable {
                 primary: true
                 onClicked: navigator.confirmInput({
                     "promptMode": true,
+                    "maximumLength": 15,
                     "heading": qsTr("Add fingerprint"),
                     "text1": qsTr("Enter a name for this fingerprint"),
                     "promptText": qsTr("Name"),
