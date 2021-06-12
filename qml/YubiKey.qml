@@ -670,6 +670,10 @@ Python {
         doCall('yubikey.controller.fido_verify_pin', [pin], cb)
     }
 
+    function fidoReset(cb) {
+        doCall('yubikey.controller.fido_reset', [], cb)
+    }
+
     function credDelete(userId, cb) {
         doCall('yubikey.controller.fido_cred_delete', [userId], cb)
     }

@@ -206,7 +206,6 @@ Dialog {
     }
 
     function setPIN() {
-        console.log("setPIN()")
         var newPin = newPasswordField.text
         yubiKey.fidoSetPin(newPin, function (resp) {
             if (resp.success) {
@@ -227,7 +226,6 @@ Dialog {
     }
 
     function changePIN() {
-        console.log("changePIN()")
         var currentPin = currentPasswordField.text
         var newPin = newPasswordField.text
         yubiKey.fidoChangePin(currentPin, newPin, function (resp) {

@@ -82,7 +82,7 @@ Flickable {
                     "heading": actionButton.text,
                     "acceptedCb": function(resp) {
                         load()
-                   }
+                    }
                 })
             }
 
@@ -100,7 +100,6 @@ Flickable {
                             "pinMode": true,
                             "heading": label,
                             "acceptedCb": function() {
-                                console.log("PIN OK")
                                 navigator.goToFidoCredentialsView()
                             }
                         })
@@ -129,16 +128,12 @@ Flickable {
                 }
             }
             StyledExpansionPanel {
-                id: savedPasswordsPanel
                 label: qsTr("Factory defaults")
                 isEnabled: false
                 actionButton.text: "Reset"
-                actionButton.onClicked: navigator.confirm({
-                    "heading": qsTr("Reset device?"),
-                    "message": qsTr("This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings."),
-                    "buttonAccept": qsTr("Reset device"),
-                    "acceptedCb": function () {
-                        console.log("FIDO2 Reset")
+                actionButton.onClicked: navigator.confirmFidoReset({
+                    "acceptedCb": function(resp) {
+                        load()
                     }
                 })
             }

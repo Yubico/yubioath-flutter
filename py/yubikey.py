@@ -983,6 +983,19 @@ class Controller(object):
                 return failure('blocked')
             raise
 
+    def fido_reset(self):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                ctap2.reset()
+                return success()
+        except CtapError as e:
+            if e.code == CtapError.ERR.NOT_ALLOWED:
+                return failure('not allowed')
+            if e.code == CtapError.ERR.USER_ACTION_TIMEOUT:
+                return failure('touch timeout')
+            raise
+
     def fido_cred_delete(self, userId):
         try:
             with self._open_device([FidoConnection]) as conn:

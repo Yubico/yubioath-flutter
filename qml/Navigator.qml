@@ -194,6 +194,11 @@ StackView {
         popup.open()
     }
 
+    function confirmFidoReset(options) {
+        var popup = confirmationResetPopup.createObject(app, options)
+        popup.open()
+    }
+
     function snackBar(message) {
         var sb = snackBarComponent.createObject(app, {
                                                     "message": message
@@ -344,6 +349,12 @@ StackView {
     Component {
         id: confirmationInputPopup
         ConfirmationInputPopup {
+        }
+    }
+
+    Component {
+        id: confirmationResetPopup
+        ResetFidoPopup {
         }
     }
 
