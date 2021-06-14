@@ -153,8 +153,6 @@ class Controller(object):
 
     _state = None
 
-    _bio_token = None
-
     _enroller = None
     _template_id = None
     _remaining = None
@@ -175,6 +173,12 @@ class Controller(object):
                     setattr(self, f, as_json(catch_error(func)))
 
     def _open_device(self, connection_types=[SmartCardConnection, FidoConnection, OtpConnection]):
+        if self._reader_filter:
+            dev = self._get_dev_from_reader()
+            if dev:
+                return dev.open_connection(connection_types[0])
+            else:
+                raise ValueError('no_device_custom_reader')
         return connect_to_device(self._current_serial, connection_types=connection_types)[0]
 
     def _open_oath(self):
@@ -1029,9 +1033,9 @@ class Controller(object):
             with self._open_device([FidoConnection]) as conn:
                 ctap2 = Ctap2(conn)
                 client_pin = ClientPin(ctap2)
-                bio_token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
+                bio = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
                 self._pin = pin
-                bio = FPBioEnrollment(ctap2, client_pin.protocol, bio_token)
+                bio = FPBioEnrollment(ctap2, client_pin.protocol, bio)
                 fingerprints = []
                 for t_id, name in bio.enumerate_enrollments().items():
                     fingerprints.append({

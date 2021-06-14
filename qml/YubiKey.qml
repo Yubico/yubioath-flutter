@@ -650,14 +650,6 @@ Python {
         doCall('yubikey.controller.get_connected_readers', [], cb)
     }
 
-    function fidoHasPin(cb) {
-        doCall('yubikey.controller.fido_has_pin', [], cb)
-    }
-
-    function fidoPinRetries(cb) {
-        doCall('yubikey.controller.fido_pin_retries', [], cb)
-    }
-
     function fidoSetPin(newPin, cb) {
         doCall('yubikey.controller.fido_set_pin', [newPin], cb)
     }
@@ -676,39 +668,6 @@ Python {
 
     function credDelete(userId, cb) {
         doCall('yubikey.controller.fido_cred_delete', [userId], cb)
-    }
-
-    function bioList(pin, cb) {
-
-        yubiKey.bioVerifyPin(pin, function(resp) {
-            console.log(resp)
-            if (resp.success) {
-                fingerprints = resp.fingerprints
-                console.log("print in yubikey.qml")
-                console.log(yubiKey.fingerprints["56f6"])
-                return true
-                //console.log(fingerprints["56f6"])
-            } else {
-                if (resp.error_id === 'too long') {
-                    navigator.snackBarError(qsTr("New PIN is too long"))
-                } else if (resp.error_id === 'too short') {
-                    navigator.snackBarError(qsTr("New PIN is too short"))
-                } else if (resp.error_id === 'wrong pin') {
-                    navigator.snackBarError(qsTr("The current PIN is wrong"))
-                } else if (resp.error_id === 'currently blocked') {
-                    navigator.snackBarError(
-                                qsTr("PIN authentication is currently blocked. Remove and re-insert your YubiKey"))
-                } else if (resp.error_id === 'blocked') {
-                    navigator.snackBarError(qsTr("PIN is blocked"))
-                } else if (resp.error_message) {
-                    navigator.snackBarError(resp.error_message)
-                } else {
-                    navigator.snackBarError(resp.error_id)
-                }
-                return false
-            }
-        })
-
     }
 
     function bioEnroll(name, cb) {
