@@ -10,7 +10,7 @@ Flickable {
     objectName: 'yubiKeyWebAuthnView'
     contentWidth: app.width
     contentHeight: expandedHeight
-    StackView.onActivating: load()
+    StackView.onActivating: yubiKey.loadDevicesUsbOuter()
 
     property bool isBusy
 
@@ -81,7 +81,7 @@ Flickable {
                     "manageMode": true,
                     "heading": actionButton.text,
                     "acceptedCb": function(resp) {
-                        load()
+                        yubiKey.loadDevicesUsbOuter()
                     }
                 })
             }
@@ -133,34 +133,10 @@ Flickable {
                 actionButton.text: "Reset"
                 actionButton.onClicked: navigator.confirmFidoReset({
                     "acceptedCb": function(resp) {
-                        load()
+                        yubiKey.loadDevicesUsbOuter()
                     }
                 })
             }
         }
-    }
-
-    function load() {
-        isBusy = true
-        yubiKey.fidoHasPin(function (resp) {
-            if (resp.success) {
-                hasPin = resp.hasPin
-                if (hasPin) {
-                    yubiKey.fidoPinRetries(function (resp) {
-                        if (resp.success) {
-                            pinRetries = resp.retries
-                        } else {
-                            pinBlocked = (resp.error_id === 'PIN is blocked.')
-                        }
-                        isBusy = false
-                    })
-                } else {
-                    pinBlocked = false
-                    isBusy = false
-                }
-            } else {
-                navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
-            }
-        })
     }
 }
