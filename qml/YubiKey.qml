@@ -322,6 +322,48 @@ Python {
         })
     }
 
+    function refreshCurrentDevice(cb) {
+        if (settings.useCustomReader) {
+            yubiKey.loadDevicesCustomReader(settings.customReaderName, function(resp) {
+                if (resp.success) {
+                    availableDevices = resp.devices
+
+                    // the same one but potentially updated
+                    currentDevice = resp.devices.find(dev => dev.serial === currentDevice.serial)
+
+                } else {
+                    console.log("refreshing devices failed:", resp.error_id)
+                    availableReaders = []
+                    clearCurrentDeviceAndEntries()
+                }
+
+                if (cb) {
+                    cb()
+                }
+
+            })
+        } else {
+            yubiKey.loadDevicesUsb(settings.otpMode, function (resp) {
+                if (resp.success) {
+                    availableDevices = resp.devices
+
+                    // the same one but potentially updated
+                    currentDevice = resp.devices.find(dev => dev.serial === currentDevice.serial)
+
+                } else {
+                    console.log("refreshing devices failed:", resp.error_id)
+                    availableDevices = []
+                    clearCurrentDeviceAndEntries()
+                }
+
+                if (cb) {
+                    cb()
+                }
+            })
+        }
+    }
+
+
     function loadDevicesCustomReaderOuter(cb) {
         yubiKey.loadDevicesCustomReader(settings.customReaderName, function(resp) {
             if (resp.success) {

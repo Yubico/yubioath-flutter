@@ -10,7 +10,7 @@ Flickable {
     objectName: 'yubiKeyWebAuthnView'
     contentWidth: app.width
     contentHeight: expandedHeight
-    StackView.onActivating: yubiKey.loadDevicesUsbOuter()
+    StackView.onActivating: yubiKey.refreshCurrentDevice()
 
     property bool isBusy
 
@@ -81,7 +81,7 @@ Flickable {
                     "manageMode": true,
                     "heading": actionButton.text,
                     "acceptedCb": function(resp) {
-                        yubiKey.loadDevicesUsbOuter()
+                        yubiKey.refreshCurrentDevice()
                     }
                 })
             }
@@ -133,7 +133,7 @@ Flickable {
                 actionButton.text: "Reset"
                 actionButton.onClicked: navigator.confirmFidoReset({
                     "acceptedCb": function(resp) {
-                        yubiKey.loadDevicesUsbOuter()
+                        yubiKey.refreshCurrentDevice()
                     }
                 })
             }
