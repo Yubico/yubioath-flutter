@@ -323,6 +323,8 @@ Python {
     }
 
     function refreshCurrentDevice(cb) {
+        var currentPinCache = !!yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : null
+
         if (settings.useCustomReader) {
             yubiKey.loadDevicesCustomReader(settings.customReaderName, function(resp) {
                 if (resp.success) {
@@ -330,6 +332,9 @@ Python {
 
                     // the same one but potentially updated
                     currentDevice = resp.devices.find(dev => dev.serial === currentDevice.serial)
+                    if (currentPinCache) {
+                        currentDevice.fidoPinCache = currentPinCache
+                    }
 
                 } else {
                     console.log("refreshing devices failed:", resp.error_id)
@@ -349,6 +354,9 @@ Python {
 
                     // the same one but potentially updated
                     currentDevice = resp.devices.find(dev => dev.serial === currentDevice.serial)
+                    if (currentPinCache) {
+                        currentDevice.fidoPinCache = currentPinCache
+                    }
 
                 } else {
                     console.log("refreshing devices failed:", resp.error_id)
