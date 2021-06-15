@@ -47,9 +47,7 @@ Dialog {
     property var currentDevice: yubiKey.currentDevice
 
     onCurrentDeviceChanged: {
-        if(closePolicy === Popup.NoAutoClose) {
-            close()
-        }
+        close()
     }
 
     Component.onCompleted: btnAccept.forceActiveFocus()
@@ -59,6 +57,7 @@ Dialog {
     property bool warning: true
     property bool buttons: true
     property bool noicon: false
+    property bool buttonPrimary: true
     property string image
     property string heading
     property string message
@@ -136,9 +135,10 @@ Dialog {
             StyledButton {
                 id: btnAccept
                 text: qsTr(buttonAccept)
+                visible: buttonAccept.length > 0
                 enabled: true
                 critical: warning
-                primary: true
+                primary: buttonPrimary
                 DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
                 KeyNavigation.tab: btnCancel
                 Keys.onReturnPressed: accept()
@@ -148,6 +148,7 @@ Dialog {
             StyledButton {
                 id: btnCancel
                 text: qsTr(buttonCancel)
+                visible: buttonCancel.length > 0
                 critical: warning
                 enabled: true
                 flat: true

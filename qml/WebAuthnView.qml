@@ -74,6 +74,7 @@ Flickable {
         StyledExpansionContainer {
             StyledExpansionPanel {
                 label: qsTr("PIN protection")
+                enabled: !pinBlocked
                 isEnabled: false
                 actionButton.text: hasPin ? qsTr("Change PIN") : qsTr("Create a PIN")
                 actionButton.onClicked: navigator.confirmInput({
@@ -89,7 +90,7 @@ Flickable {
             StyledExpansionPanel {
                 label: qsTr("Sign-in data")
                 visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2")
-                enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
+                enabled: !pinBlocked && hasPin
                 description: qsTr("View and delete sign-in data stored on your security key")
                 isFlickable: true
                 expandButton.onClicked: {
@@ -110,7 +111,7 @@ Flickable {
             StyledExpansionPanel {
                 label: qsTr("Fingerprints")
                 visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2") && (yubiKey.currentDevice.formFactor === 6 || yubiKey.currentDevice.formFactor === 7)
-                enabled: hasPin
+                enabled: !pinBlocked && hasPin
                 description: qsTr("Add and delete fingerprints")
                 isFlickable: true
                 expandButton.onClicked: {
