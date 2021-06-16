@@ -1075,8 +1075,14 @@ class Controller(object):
                     return failure(self._remaining)
             logger.debug("Capture complete.")
             self._bio.set_name(self._template_id, name)
+            template = self._template_id
             self._conn.close()
-            return success({'template': self._template_id.hex()})
+            self._conn = None
+            self._enroller = None
+            self._template_id = None
+            self._remaining = None
+            self._bio = None
+            return success({'template': template.hex()})
         except CtapError as e:
             self._conn.close()
             if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
