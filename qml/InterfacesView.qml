@@ -8,7 +8,7 @@ import "utils.js" as Utils
 Flickable {
 
     id: settingsPanel
-    objectName: 'yubiKeyInterfacesView'
+    objectName: 'yubiKeyInterfacesFlickable'
     contentWidth: app.width
     contentHeight: content.height + dynamicMargin
 
@@ -29,7 +29,7 @@ Flickable {
     }
     boundsBehavior: Flickable.StopAtBounds
 
-    property string searchFieldPlaceholder: qsTr("Search configuration")
+    property string searchFieldPlaceholder: ""
 
     property var newApplicationsEnabledOverUsb: []
     property var newApplicationsEnabledOverNfc: []

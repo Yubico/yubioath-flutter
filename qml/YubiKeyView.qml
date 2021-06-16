@@ -33,7 +33,7 @@ Flickable {
 
     Accessible.ignored: true
 
-    property string searchFieldPlaceholder: !!yubiKey.currentDevice ? qsTr("Search configuration") : ""
+    property string searchFieldPlaceholder: ""
 
     property string deviceName: !!yubiKey.currentDevice ? yubiKey.currentDevice.name : ""
     property string deviceSerial: !!yubiKey.currentDevice && !!yubiKey.currentDevice.serial ? yubiKey.currentDevice.serial : ""

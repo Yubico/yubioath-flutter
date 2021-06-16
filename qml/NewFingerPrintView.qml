@@ -15,6 +15,14 @@ Flickable {
     property var expandedHeight: content.implicitHeight + dynamicMargin
     property var last_template
 
+    property var currentDevice: yubiKey.currentDevice
+
+    onCurrentDeviceChanged: {
+        if(focus) {
+            navigator.goToYubiKey()
+        }
+    }
+
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {
              scrollBar.active = true

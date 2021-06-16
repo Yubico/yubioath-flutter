@@ -15,6 +15,14 @@ Flickable {
 
     property var fidoPinCache: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : ""
 
+    property var currentDevice: yubiKey.currentDevice
+
+    onCurrentDeviceChanged: {
+        if(focus) {
+            navigator.goToYubiKey()
+        }
+    }
+
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {
              scrollBar.active = true
@@ -111,9 +119,8 @@ Flickable {
                                                     item.name = resp;
                                                 }
                                                 yubiKey.fingerprints = yubiKey.fingerprints
-                                                //navigator.snackBar(qsTr("Fingerprint renamed"))
                                            } else {
-                                                //navigator.snackBarError(qsTr("Fingerprint not renamed"))
+                                                navigator.snackBarError(qsTr("Fingerprint not renamed"))
                                            }
                                        })
                                     }
@@ -144,7 +151,6 @@ Flickable {
                                         yubiKey.bioDelete(modelData.id, function (resp) {
                                            if (resp.success) {
                                                 yubiKey.fingerprints = yubiKey.fingerprints.filter(item => item.id !== modelData.id)
-//                                                navigator.snackBar(qsTr("Fingerprint deleted"))
                                            } else {
                                                if (resp.error_id === "multiple_matches") {
                                                    navigator.snackBarError(qsTr("Multiple matches."))

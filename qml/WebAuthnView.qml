@@ -36,12 +36,24 @@ Flickable {
     }
     boundsBehavior: Flickable.StopAtBounds
 
-    property string searchFieldPlaceholder: "" // qsTr("Search configuration")
+    property string searchFieldPlaceholder: ""
+
+    Pane {
+        visible: !yubiKey.currentDevice
+        height: app.height
+        width: app.width
+        NoYubiKeySection {
+            id: noYubiKeySection
+            enabled: visible
+            Accessible.ignored: true
+        }
+    }
 
     ColumnLayout {
         width: settingsPanel.contentWidth
         id: content
         spacing: 0
+        visible: !!yubiKey.currentDevice
 
         ColumnLayout {
             width: settingsPanel.contentWidth - 32

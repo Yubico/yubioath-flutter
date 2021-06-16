@@ -144,8 +144,8 @@ StackView {
     }
 
     function goToInterfacesView() {
-        if (currentItem.objectName !== 'interfacesView') {
-            clearAndPush(yubiKeyInterfacesView, StackView.Immediate)
+        if (currentItem.objectName !== 'yubiKeyInterfacesFlickable') {
+            push(yubiKeyInterfacesFlickable, StackView.PushTransition)
         }
     }
 
@@ -310,7 +310,7 @@ StackView {
     }
 
     Component {
-        id: yubiKeyInterfacesView
+        id: yubiKeyInterfacesFlickable
         InterfacesView {
         }
     }

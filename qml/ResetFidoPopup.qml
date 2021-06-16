@@ -46,7 +46,7 @@ Dialog {
     property var acceptedCb
     property bool removed: false
     property bool ready: removed && yubiKey.availableDevices.length === 1
-    property var currentDevice: yubiKey.currentDevice
+    property var currentDevice: !!yubiKey.currentDevice && yubiKey.currentDevice
 
     onCurrentDeviceChanged: {
         if (yubiKey.availableDevices.length === 0) {
