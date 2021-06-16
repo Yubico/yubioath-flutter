@@ -16,6 +16,8 @@ Python {
     property var currentDevice
     property bool currentDeviceValidated
 
+    property bool pinIsBlocked: false
+
     property var fingerprints: []
     property var credentials: []
 
@@ -325,6 +327,7 @@ Python {
     function refreshCurrentDevice(cb) {
         var currentPinCache = !!yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : null
 
+        pinIsBlocked = false
         if (settings.useCustomReader) {
             yubiKey.loadDevicesCustomReader(settings.customReaderName, function(resp) {
                 if (resp.success) {

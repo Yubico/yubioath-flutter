@@ -17,6 +17,7 @@ Flickable {
     property var expandedHeight: content.implicitHeight + dynamicMargin
     property bool hasPin: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
     property int pinRetries: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinRetries
+    property bool pinIsBlocked: !!yubiKey.currentDevice && yubiKey.pinIsBlocked
 
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {
@@ -73,6 +74,7 @@ Flickable {
         StyledExpansionContainer {
             StyledExpansionPanel {
                 label: qsTr("PIN protection")
+                enabled: !pinIsBlocked
                 isEnabled: false
                 actionButton.text: hasPin ? qsTr("Change PIN") : qsTr("Create a PIN")
                 actionButton.onClicked: navigator.confirmInput({

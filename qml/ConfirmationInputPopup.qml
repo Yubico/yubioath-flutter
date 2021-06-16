@@ -272,6 +272,7 @@ Dialog {
                                 qsTr("PIN authentication is currently blocked. Remove and re-insert your YubiKey"))
                 } else if (resp.error_id === 'blocked') {
                     navigator.snackBarError(qsTr("PIN is blocked"))
+                    yubiKey.pinIsBlocked = true
                 } else if (resp.error_message) {
                     navigator.snackBarError(resp.error_message)
                 } else {
