@@ -255,18 +255,14 @@ class Controller(object):
     def _calc_fido_pin(self):
         fido_has_pin = False
         fido_retries = 0
-        pin_blocked = False
         try:
             fido_has_pin = self._fido_has_pin()
             if fido_has_pin:
                 fido_retries = self._fido_pin_retries()
-        except CtapError as e:
-            if e.code == CtapError.ERR.PIN_BLOCKED:
-                pin_blocked = True
         except ValueError:
             fido_has_pin = False
 
-        return [fido_has_pin, fido_retries, pin_blocked]
+        return [fido_has_pin, fido_retries]
 
     def _serialise_dev(self, dev, info):
 
@@ -307,7 +303,6 @@ class Controller(object):
             'hasPassword': dev.has_password if hasattr(dev, 'has_password') else False,
             'fidoHasPin': fido_pin_list[0],
             'fidoPinRetries': fido_pin_list[1],
-            'pinBlocked': fido_pin_list[2],
             'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
             'ctapOptions': self._ctapOptions
        }
@@ -365,7 +360,6 @@ class Controller(object):
                     'hasPassword': has_password,
                     'fidoHasPin': fido_pin_list[0],
                     'fidoPinRetries': fido_pin_list[1],
-                    'pinBlocked': fido_pin_list[2],
                     'selectable': selectable,
                     'validated': True  # not has_password
                 })
