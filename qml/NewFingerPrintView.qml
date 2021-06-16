@@ -115,9 +115,7 @@ Flickable {
                     "promptText": qsTr("Name"),
                     "acceptedCb": function(resp) {
                         yubiKey.bioRename(last_template, resp, function (resp_inner) {
-                            if (resp_inner.success) {
-                                console.log("fingerprint renamed")
-                            } else {
+                            if (!resp_inner.success) {
                                 console.log("error renaming fingerprint")
                             }
                         })
@@ -146,7 +144,6 @@ Flickable {
                 if (resp.error_id > 0) {
                     enroll()
                 }
-                //navigator.snackBarError(qsTr("Fingerprint not added"))
             }
         })
 

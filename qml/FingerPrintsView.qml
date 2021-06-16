@@ -34,8 +34,6 @@ Flickable {
             yubiKey.bioVerifyPin(fidoPinCache, function(resp) {
                 if (resp.success) {
                     yubiKey.fingerprints = resp.fingerprints
-                } else {
-                    console.log("error")
                 }
             })
         }
@@ -162,7 +160,7 @@ Flickable {
                                     }
                                 })
 
-                                icon.source: "../images/clear.svg"
+                                icon.source: "../images/delete.svg"
                                 icon.color: primaryColor
                                 opacity: hovered ? highEmphasis : disabledEmphasis
                                 implicitHeight: 30

@@ -31,6 +31,7 @@ Dialog {
     property bool manageMode: false
     property bool pinMode: false
     property bool promptMode: false
+    property string returnValue: ""
     property string promptText: ""
     property string promptCurrent: ""
     property string heading
@@ -56,31 +57,16 @@ Dialog {
             newPasswordField.textField.forceActiveFocus()
         }
     }
+
     onClosed: {
+        destroy()
         navigator.focus = true
     }
 
     onAccepted: {
-        if (pinMode && !promptMode) {
-            if (manageMode) {
-                if (hasPin) {
-                    changePIN()
-                } else {
-                    setPIN()
-                }
-            }
-        } else if (!pinMode && !promptMode) {
-            if (manageMode) {
-                if (hasPassword) {
-                    changePassword()
-                } else {
-                    setPassword()
-                }
-            }
-        }
         close()
         if(acceptedCb) {
-            acceptedCb(inputPromptField.text)
+            acceptedCb(returnValue)
         }
         navigator.focus = true
     }
@@ -113,6 +99,7 @@ Dialog {
     function submitForm() {
         if (acceptableInput()) {
             if (promptMode) {
+                returnValue = inputPromptField.text
                 accept()
             }
             if (!manageMode) {
@@ -120,7 +107,6 @@ Dialog {
                     if (isBio) {
                         yubiKey.bioVerifyPin(currentPasswordField.text, function(resp) {
                             if (resp.success) {
-                                yubiKey.fingerprints = resp.fingerprints
                                 yubiKey.currentDevice.fidoPinCache = currentPasswordField.text
                                 accept()
                             } else {
@@ -138,7 +124,6 @@ Dialog {
                     } else {
                         yubiKey.fidoVerifyPin(currentPasswordField.text, function(resp) {
                             if (resp.success) {
-                                yubiKey.credentials = resp.credentials
                                 yubiKey.currentDevice.fidoPinCache = currentPasswordField.text
                                 accept()
                             } else {
@@ -156,7 +141,24 @@ Dialog {
                     }
                 } 
             } else {
-                accept()
+                if (pinMode && !promptMode) {
+                    if (manageMode) {
+                        if (hasPin) {
+                            changePIN()
+
+                        } else {
+                            setPIN()
+                        }
+                    }
+                } else if (!pinMode && !promptMode) {
+                    if (manageMode) {
+                        if (hasPassword) {
+                            changePassword()
+                        } else {
+                            setPassword()
+                        }
+                    }
+                }
             }
         }
     }
@@ -166,17 +168,17 @@ Dialog {
             cancelCb = navigator.confirm({
                 "heading": heading,
                 "buttonCancel": "",
-                "buttonAccept": "Cancel",
+                "buttonAccept": qsTr("Cancel"),
                 "buttonPrimary": false,
-                "description": "The YubiKey is locked because wrong PIN was entered too many times. To unlock it, remove and reinsert it."
+                "description": qsTr("The YubiKey is locked because wrong PIN was entered too many times. To unlock it, remove and reinsert it.")
             })
         } else if (resp.error_id === "blocked") {
             cancelCb = navigator.confirm({
                 "heading": heading,
                 "buttonCancel": "",
-                "buttonAccept": "Cancel",
+                "buttonAccept": qsTr("Cancel"),
                 "buttonPrimary": false,
-                "description": "The YubiKey is locked because wrong PIN was entered too many times. You'll need to reset the YubiKey."
+                "description": qsTr("The YubiKey is locked because wrong PIN was entered too many times. You'll need to reset the YubiKey.")
             })
         }
     }
@@ -186,12 +188,14 @@ Dialog {
             if (resp.success) {
                 navigator.snackBar(qsTr("Password set"))
                 yubiKey.currentDevice.hasPassword = true
+                accept()
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
                 console.log("set password failed:", resp.error_id)
                 if (resp.error_id === 'no_device_custom_reader') {
                     yubiKey.clearCurrentDeviceAndEntries()
                 }
+                reject()
             }
         })
     }
@@ -206,6 +210,7 @@ Dialog {
                 if (resp.error_id === 'no_device_custom_reader') {
                     yubiKey.clearCurrentDeviceAndEntries()
                 }
+                reject()
             }
         })
     }
@@ -218,17 +223,20 @@ Dialog {
                         navigator.snackBar(qsTr("Password removed"))
                         yubiKey.currentDevice.hasPassword = false
                         passwordManagementPanel.isExpanded = false
+                        accept()
                     } else {
                         navigator.snackBarError(getErrorMessage(resp.error_id))
                         console.log("remove password failed:", resp.error_id)
                         if (resp.error_id === 'no_device_custom_reader') {
                             yubiKey.clearCurrentDeviceAndEntries()
                         }
+                        accept()
                     }
                 })
             } else {
                 navigator.snackBarError(getErrorMessage(resp.error_id))
                 console.log("remove password failed:", resp.error_id)
+                reject()
             }
         })
     }
@@ -237,18 +245,21 @@ Dialog {
         var newPin = newPasswordField.text
         yubiKey.fidoSetPin(newPin, function (resp) {
             if (resp.success) {
+                yubiKey.currentDevice.fidoPinCache = newPasswordField.text
                 clearPinFields()
                 navigator.snackBar(qsTr("FIDO2 PIN was set"))
+                accept()
             } else {
                 if (resp.error_id === 'too long') {
                     navigator.snackBarError(qsTr("New PIN is too long"))
                 } else if (resp.error_id === 'too short') {
                     navigator.snackBarError(qsTr("New PIN is too short"))
-               } else {
+                } else {
                     navigator.snackBarError(
                                 navigator.getErrorMessage(
                                     resp.error_id))
                 }
+                reject()
             }
         })
     }
@@ -258,8 +269,11 @@ Dialog {
         var newPin = newPasswordField.text
         yubiKey.fidoChangePin(currentPin, newPin, function (resp) {
             if (resp.success) {
+                yubiKey.currentDevice.fidoPinCache = newPasswordField.text
+                console.log(yubiKey.currentDevice.fidoPinCache)
                 clearPinFields()
                 navigator.snackBar(qsTr("Changed FIDO2 PIN"))
+                accept()
             } else {
                 if (resp.error_id === 'too long') {
                     navigator.snackBarError(qsTr("New PIN is too long"))
@@ -278,6 +292,7 @@ Dialog {
                 } else {
                     navigator.snackBarError(resp.error_id)
                 }
+                reject()
             }
         })
     }
@@ -415,7 +430,6 @@ Dialog {
                 id: btnCancel
                 text: qsTr(buttonCancel)
                 enabled: true
-                flat: true
                 DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
                 KeyNavigation.tab: btnAccept
                 Keys.onReturnPressed: reject()

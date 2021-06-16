@@ -25,6 +25,7 @@ Dialog {
     }
 
     onClosed: {
+        destroy()
         navigator.focus = true
     }
 
@@ -44,21 +45,24 @@ Dialog {
 
     property var cancelCb
     property var acceptedCb
+    property bool done: false
     property bool removed: false
     property bool ready: removed && yubiKey.availableDevices.length === 1
     property var currentDevice: !!yubiKey.currentDevice && yubiKey.currentDevice
 
     onCurrentDeviceChanged: {
         if (yubiKey.availableDevices.length === 0) {
+            progressBar.value = 0.33
             removed = true
         }
     }
 
     onReadyChanged: {
+        progressBar.value = 0.66
         yubiKey.fidoReset(function (resp) {
             if (resp.success) {
-                navigator.snackBar("FIDO applications have been reset")
-                accept()
+                progressBar.value = 1
+                done = true
             } else {
                 if (resp.error_id === 'touch timeout') {
                     navigator.snackBarError(qsTr("A reset requires a touch on the YubiKey to be confirmed."))
@@ -86,7 +90,7 @@ Dialog {
         }
 
         Label {
-            text: ready ? qsTr("To continue, touch your yubikey") : qsTr("To continue, remove and re-insert your YubiKey")
+            text: "Follow the instructions to perform a reset, abort at any time."
             color: primaryColor
             opacity: lowEmphasis
             font.pixelSize: 13
@@ -94,11 +98,46 @@ Dialog {
             textFormat: TextEdit.RichText
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
+            Layout.bottomMargin: 16
+         }
+
+        Label {
+            id: lblStatus
+            text: {
+                if(done) {
+                    return qsTr("Done")
+                }
+                if (ready) {
+                    return qsTr("Touch your yubikey")
+                }
+                if (removed) {
+                    return qsTr("Reinsert your YubiKey")
+                }
+                if (!ready && !removed) {
+                    return qsTr("Remove your YubiKey")
+                }
+            }
+            color: primaryColor
+            opacity: lowEmphasis
+            font.pixelSize: 13
+            lineHeight: 1.2
+            textFormat: TextEdit.RichText
+            wrapMode: Text.WordWrap
+            Layout.maximumWidth: parent.width
+            Layout.bottomMargin: 16
+         }
+
+        ProgressBar {
+            id: progressBar
+            value: 0
+            Layout.fillWidth: true
+            Layout.bottomMargin: 16
         }
 
+
         DialogButtonBox {
+            visible: !done
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Layout.topMargin: 16
             Layout.bottomMargin: 0
             padding: 0
             background: Rectangle {
@@ -108,12 +147,30 @@ Dialog {
             StyledButton {
                 id: btnCancel
                 text: qsTr("Cancel")
-                enabled: true
-                flat: true
                 DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
                 Keys.onReturnPressed: reject()
                 onClicked: reject()
             }
         }
+
+        DialogButtonBox {
+            visible: done
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.bottomMargin: 0
+            padding: 0
+            background: Rectangle {
+                color: "transparent"
+            }
+
+            StyledButton {
+                id: btnAccept
+                text: qsTr("Continue")
+                primary: true
+                DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+                Keys.onReturnPressed: accept()
+                onClicked: accept()
+            }
+        }
+
     }
 }

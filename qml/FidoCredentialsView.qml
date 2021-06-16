@@ -15,6 +15,14 @@ Flickable {
 
     property var fidoPinCache: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : ""
 
+    property var currentDevice: yubiKey.currentDevice
+
+    onCurrentDeviceChanged: {
+        if(focus) {
+            navigator.goToYubiKey()
+        }
+    }
+
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {
              scrollBar.active = true
@@ -26,8 +34,6 @@ Flickable {
             yubiKey.fidoVerifyPin(fidoPinCache, function(resp) {
                 if (resp.success) {
                     yubiKey.credentials = resp.credentials
-                } else {
-                    console.log("error")
                 }
             })
         }
@@ -117,7 +123,7 @@ Flickable {
                                     }
                                 })
 
-                                icon.source: "../images/clear.svg"
+                                icon.source: "../images/delete.svg"
                                 icon.color: primaryColor
                                 opacity: hovered ? highEmphasis : disabledEmphasis
                                 implicitHeight: 30

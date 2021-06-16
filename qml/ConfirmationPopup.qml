@@ -25,6 +25,7 @@ Dialog {
     }
 
     onClosed: {
+        destroy()
         navigator.focus = true
     }
 
@@ -151,7 +152,6 @@ Dialog {
                 visible: buttonCancel.length > 0
                 critical: warning
                 enabled: true
-                flat: true
                 DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
                 KeyNavigation.tab: btnAccept
                 Keys.onReturnPressed: reject()
