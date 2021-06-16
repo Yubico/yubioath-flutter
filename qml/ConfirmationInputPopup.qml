@@ -126,27 +126,10 @@ Dialog {
                             } else {
                                 yubiKey.currentDevice.fidoPinCache = ""
                                 yubiKey.fingerprints.length = 0
-
-                                if(resp.error_id === "currently blocked") {
-                                    cancelCb = navigator.confirm({
-                                        "heading": heading,
-                                        "buttonCancel": "",
-                                        "buttonAccept": "Cancel",
-                                        "buttonPrimary": false,
-                                        "description": "The YubiKey is locked because wrong PIN was entered too many times. To unlock it, remove and reinsert it."
-                                    })
-                                    reject()
-                                } else if (resp.error_id === "blocked") {
-                                    cancelCb = navigator.confirm({
-                                        "heading": heading,
-                                        "buttonCancel": "",
-                                        "buttonAccept": "Cancel",
-                                        "buttonPrimary": false,
-                                        "description": "The YubiKey is locked because wrong PIN was entered too many times. You'll need to reset the YubiKey."
-                                    })
+                                if(resp.error_id === "currently blocked" || resp.error_id === "blocked") {
+                                    showPinBlockMessage(resp)
                                     reject()
                                 }
-
                                 currentPasswordField.error = true
                                 currentPasswordField.textField.selectAll()
                                 currentPasswordField.textField.forceActiveFocus()
@@ -161,6 +144,10 @@ Dialog {
                             } else {
                                 yubiKey.currentDevice.fidoPinCache = ""
                                 yubiKey.credentials.length = 0
+                                if(resp.error_id === "currently blocked" || resp.error_id === "blocked") {
+                                    showPinBlockMessage(resp)
+                                    reject()
+                                }
                                 currentPasswordField.error = true
                                 currentPasswordField.textField.selectAll()
                                 currentPasswordField.textField.forceActiveFocus()
@@ -171,6 +158,26 @@ Dialog {
             } else {
                 accept()
             }
+        }
+    }
+
+    function showPinBlockMessage(resp) {
+        if(resp.error_id === "currently blocked") {
+            cancelCb = navigator.confirm({
+                "heading": heading,
+                "buttonCancel": "",
+                "buttonAccept": "Cancel",
+                "buttonPrimary": false,
+                "description": "The YubiKey is locked because wrong PIN was entered too many times. To unlock it, remove and reinsert it."
+            })
+        } else if (resp.error_id === "blocked") {
+            cancelCb = navigator.confirm({
+                "heading": heading,
+                "buttonCancel": "",
+                "buttonAccept": "Cancel",
+                "buttonPrimary": false,
+                "description": "The YubiKey is locked because wrong PIN was entered too many times. You'll need to reset the YubiKey."
+            })
         }
     }
 
