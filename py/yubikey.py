@@ -1072,8 +1072,12 @@ class Controller(object):
                 return failure('blocked')
             raise
 
-    def bio_enroll(self, name):
+    def bio_enroll(self, name, cancel):
         try:
+            if (cancel):
+                self._cancel_bio_enrollment()
+                logger.debug("333333")
+                return failure()
             pin = self._pin
             if self._conn is None:
                 self._conn = self._open_device([FidoConnection])
@@ -1114,6 +1118,12 @@ class Controller(object):
             if e.code == CtapError.ERR.PIN_BLOCKED:
                 return failure('PIN is blocked.')
             raise
+
+    def cancel_bio_enroll(self):
+        logger.debug("22222222")
+        self._enroller.cancel()
+        self._conn.close()
+
 
     def bio_delete(self, template_id):
         try:

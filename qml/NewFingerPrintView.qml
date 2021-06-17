@@ -14,8 +14,11 @@ Flickable {
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
     property var last_template
+    property bool cancel: false
 
     property var currentDevice: yubiKey.currentDevice
+
+    onCancelChanged: yubiKey.cancelBioEnroll()
 
     onCurrentDeviceChanged: {
         if(focus) {
@@ -97,7 +100,11 @@ Flickable {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: progressBar.value < 1
                 primary: false
-                onClicked: navigator.pop()
+                onClicked: {
+
+                    cancel = true
+                    navigator.pop()
+                }
                 Keys.onEnterPressed: navigator.pop()
                 Keys.onReturnPressed: navigator.pop()
             }
@@ -131,7 +138,11 @@ Flickable {
     }
 
     function enroll(){
-        yubiKey.bioEnroll("", function (resp) {
+        if (cancel) {
+            yubiKey.cancelBioEnroll()
+        }
+
+        yubiKey.bioEnroll("", cancel, function (resp) {
             if (resp.success) {
                 if (resp.remaining > 0) {
                     progressBar.value = progressBar.value + 0.2
