@@ -17,6 +17,7 @@ Python {
     property bool currentDeviceValidated
 
     property bool pinIsBlocked: false
+    property bool deviceRemoved: false
 
     property var fingerprints: []
     property var credentials: []
@@ -324,13 +325,35 @@ Python {
         })
     }
 
+    function testCustomReader(cb) {
+        var currentPinCache = !!yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : null
+        pinIsBlocked = false
+        if (settings.useCustomReader) {
+            yubiKey.connectCustomReader(settings.customReaderName, function(resp) {
+                if (resp.success) {
+                    deviceRemoved = true
+                } else {
+                    console.log("Connecting to devices failed:", resp.error_id)
+                    availableReaders = []
+                    clearCurrentDeviceAndEntries()
+
+                }
+
+                if (cb) {
+                    cb()
+                }
+
+            })
+        }
+    }
+
     function refreshCurrentDevice(cb) {
         var currentPinCache = !!yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : null
-
         pinIsBlocked = false
         if (settings.useCustomReader) {
             yubiKey.loadDevicesCustomReader(settings.customReaderName, function(resp) {
                 if (resp.success) {
+
                     availableDevices = resp.devices
 
                     // the same one but potentially updated
@@ -343,6 +366,7 @@ Python {
                     console.log("refreshing devices failed:", resp.error_id)
                     availableReaders = []
                     clearCurrentDeviceAndEntries()
+
                 }
 
                 if (cb) {
@@ -638,6 +662,10 @@ Python {
 
     function loadDevicesCustomReader(customReaderName, cb) {
         doCall('yubikey.controller.load_devices_custom_reader', [customReaderName],  cb)
+    }
+
+    function connectCustomReader(customReaderName, cb) {
+        doCall('yubikey.controller.connect_custom_reader', [customReaderName],  cb)
     }
 
     function loadDevicesUsb(otp, cb) {

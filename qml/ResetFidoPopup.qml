@@ -49,8 +49,15 @@ Dialog {
     property bool removed: false
     property bool ready: removed && yubiKey.availableDevices.length === 1
     property var currentDevice: !!yubiKey.currentDevice && yubiKey.currentDevice
+    property bool devRemoved: yubiKey.deviceRemoved
+
+    onDevRemovedChanged: removed = true
 
     onCurrentDeviceChanged: {
+        if (settings.useCustomReader && !ready) {
+            yubiKey.testCustomReader()
+        }
+
         if (yubiKey.availableDevices.length === 0) {
             progressBar.value = 0.33
             removed = true
@@ -91,6 +98,20 @@ Dialog {
 
         Label {
             text: "Follow the instructions to perform a reset, abort at any time."
+            visible: !settings.customReaderName
+            color: primaryColor
+            opacity: lowEmphasis
+            font.pixelSize: 13
+            lineHeight: 1.2
+            textFormat: TextEdit.RichText
+            wrapMode: Text.WordWrap
+            Layout.maximumWidth: parent.width
+            Layout.bottomMargin: 16
+         }
+
+        Label {
+            text: qsTr("To continue, remove and re-place your YubiKey")
+            visible: settings.customReaderName
             color: primaryColor
             opacity: lowEmphasis
             font.pixelSize: 13
@@ -104,17 +125,19 @@ Dialog {
         Label {
             id: lblStatus
             text: {
-                if(done) {
-                    return qsTr("Done")
-                }
-                if (ready) {
-                    return qsTr("Touch your yubikey")
-                }
-                if (removed) {
-                    return qsTr("Reinsert your YubiKey")
-                }
-                if (!ready && !removed) {
-                    return qsTr("Remove your YubiKey")
+                if (!settings.customReaderName) {
+                    if(done) {
+                        return qsTr("Done")
+                    }
+                    if (ready) {
+                        return qsTr("Touch your yubikey")
+                    }
+                    if (removed) {
+                        return qsTr("Reinsert your YubiKey")
+                    }
+                    if (!ready && !removed) {
+                        return qsTr("Remove your YubiKey")
+                    }
                 }
             }
             color: primaryColor

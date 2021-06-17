@@ -14,6 +14,8 @@ from binascii import a2b_hex, b2a_hex
 from threading import Event
 from typing import Optional
 
+from time import sleep
+
 from fido2.ctap import CtapError
 from fido2.ctap2 import Ctap2, ClientPin, FPBioEnrollment, CredentialManagement
 from ykman.device import scan_devices, list_all_devices, connect_to_device, get_name, read_info
@@ -34,6 +36,7 @@ from yubikit.oath import (
 from yubikit.yubiotp import (
     YubiOtpSession, YubiOtpSlotConfiguration,
     StaticPasswordSlotConfiguration, HotpSlotConfiguration, HmacSha1SlotConfiguration)
+from smartcard.Exceptions import NoCardException, CardConnectionException
 
 from qr import qrparse, qrdecode
 from ykman.scancodes import KEYBOARD_LAYOUT
@@ -306,6 +309,26 @@ class Controller(object):
             'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
             'ctapOptions': self._ctapOptions
        }
+
+    def connect_custom_reader(self, reader_filter=None, otp_mode=False):
+        self._devices = []
+
+        if not otp_mode and reader_filter:
+            self._reader_filter = reader_filter
+            dev = self._get_dev_from_reader()
+            if dev:
+                removed = False
+                while True:
+                    sleep(0.5)
+                    try:
+                        with dev.open_connection(FidoConnection):
+                            if removed:
+                                sleep(1.0)  # Wait for the device to settle
+                                return success()
+                    except CardConnectionException:
+                        pass  # Expected, ignore
+                    except NoCardException:
+                        removed = True
 
     def load_devices_custom_reader(self, reader_filter=None, otp_mode=False):
         self._devices = []
