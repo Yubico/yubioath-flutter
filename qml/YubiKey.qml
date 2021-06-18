@@ -751,8 +751,12 @@ Python {
         doCall('yubikey.controller.fido_cred_delete', [userId], cb)
     }
 
-    function bioEnroll(name, cb) {
-        doCall('yubikey.controller.bio_enroll', [name], cb)
+    function bioEnroll(cb) {
+        setHandler("bio_enroll", cb)
+        doCall('yubikey.controller.bio_enroll', [])
+    }
+    function bioEnrollCancel(cb) {
+        doCall('yubikey.controller.bio_enroll_cancel', [], cb)
     }
 
     function bioDelete(template_id, cb) {

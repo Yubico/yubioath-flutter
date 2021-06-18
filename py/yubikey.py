@@ -11,13 +11,13 @@ import ykman.logging_setup
 import smartcard.pcsc.PCSCExceptions
 from base64 import b32encode, b32decode, b64decode
 from binascii import a2b_hex, b2a_hex
-from threading import Event
+from threading import Event, Thread
 from typing import Optional
 
 from time import sleep
 
 from fido2.ctap import CtapError
-from fido2.ctap2 import Ctap2, ClientPin, FPBioEnrollment, CredentialManagement
+from fido2.ctap2 import Ctap2, ClientPin, FPBioEnrollment, CredentialManagement, CaptureError
 from ykman.device import scan_devices, list_all_devices, connect_to_device, get_name, read_info
 from ykman.pcsc import list_readers, list_devices as list_ccid
 from ykman.otp import PrepareUploadFailed, generate_static_pw, prepare_upload_key, time_challenge, format_oath_code
@@ -40,6 +40,8 @@ from smartcard.Exceptions import NoCardException, CardConnectionException
 
 from qr import qrparse, qrdecode
 from ykman.scancodes import KEYBOARD_LAYOUT
+
+import pyotherside
 
 
 logger = logging.getLogger(__name__)
@@ -156,11 +158,7 @@ class Controller(object):
 
     _state = None
 
-    _enroller = None
-    _template_id = None
-    _remaining = None
-    _bio = None
-    _conn = None
+    _event = None
     _pin = None
 
     _ctapOptions = {}
@@ -1072,48 +1070,53 @@ class Controller(object):
                 return failure('blocked')
             raise
 
-    def bio_enroll(self, name):
+    def bio_enroll(self):
+        def enroll_action(conn, bio, event):
+            try:
+                enroller = bio.enroll()
+                while not event.is_set():
+                    try:
+                        logger.debug("Place your finger against the sensor now...")
+                        template_id = enroller.capture(event)
+                        if template_id:
+                            pyotherside.send("bio_enroll", True, enroller.remaining, template_id.hex())
+                            break
+                        pyotherside.send("bio_enroll", True, enroller.remaining, 0)
+                    except CaptureError as e:
+                        logger.debug(f"Scan failed: {e}")
+                        logger.debug(f"{enroller.remaining} more scans needed.")
+                        pyotherside.send("bio_enroll", False, enroller.remaining, 0)
+            except CtapError as e:
+                logger.debug(f"Capture failed: {e}")
+                pyotherside.send("bio_enroll", False, 0, 0)
+            finally:
+                conn.close()
+                logger.debug("Capture complete.")
+
         try:
             pin = self._pin
-            if self._conn is None:
-                self._conn = self._open_device([FidoConnection])
-            if self._enroller is None :
-                ctap2 = Ctap2(self._conn)
-                client_pin = ClientPin(ctap2)
-                token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
-                self._bio = FPBioEnrollment(ctap2, client_pin.protocol, token)
-                self._enroller = self._bio.enroll()
-                self._template_id = None
-            if self._template_id is None:
-                try:
-                    logger.debug("Place your finger against the sensor now...")
-                    self._template_id = self._enroller.capture()
-                    self._remaining = self._enroller.remaining
-                    if self._remaining:
-                        logger.debug(f"{self._remaining} more scans needed.")
-                        return success({'remaining': self._remaining})
-                except:
-                    logger.debug("Failed to capture")
-                    logger.debug(f"{self._remaining} more scans needed.")
-                    return failure(self._remaining)
-            logger.debug("Capture complete.")
-            self._bio.set_name(self._template_id, name)
-            template = self._template_id
-            self._conn.close()
-            self._conn = None
-            self._enroller = None
-            self._template_id = None
-            self._remaining = None
-            self._bio = None
-            return success({'template': template.hex()})
+            conn = self._open_device([FidoConnection])
+            ctap2 = Ctap2(conn)
+            client_pin = ClientPin(ctap2)
+            token = client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
+            bio = FPBioEnrollment(ctap2, client_pin.protocol, token)
+
+            self._event = Event()
+            Thread(target=enroll_action, args=(conn, bio, self._event)).start()
+            return success()
         except CtapError as e:
-            self._conn.close()
+            conn.close()
             if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
                 return failure('PIN authentication is currently blocked. '
                                'Remove and re-insert the YubiKey.')
             if e.code == CtapError.ERR.PIN_BLOCKED:
                 return failure('PIN is blocked.')
             raise
+
+    def bio_enroll_cancel(self):
+        if self._event:
+            self._event.set()
+            self._event = None
 
     def bio_delete(self, template_id):
         try:
