@@ -98,7 +98,7 @@ Dialog {
 
         Label {
             text: "Follow the instructions to perform a reset, abort at any time."
-            visible: !settings.customReaderName
+            visible: !settings.useCustomReader
             color: primaryColor
             opacity: lowEmphasis
             font.pixelSize: 13
@@ -111,7 +111,7 @@ Dialog {
 
         Label {
             text: qsTr("To continue, remove and re-place your YubiKey")
-            visible: settings.customReaderName
+            visible: settings.useCustomReader
             color: primaryColor
             opacity: lowEmphasis
             font.pixelSize: 13
@@ -125,7 +125,7 @@ Dialog {
         Label {
             id: lblStatus
             text: {
-                if (!settings.customReaderName) {
+                if (!settings.useCustomReader) {
                     if(done) {
                         return qsTr("Done")
                     }
