@@ -97,9 +97,9 @@ Flickable {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 visible: progressBar.value < 1
                 primary: false
-                onClicked: navigator.pop()
-                Keys.onEnterPressed: navigator.pop()
-                Keys.onReturnPressed: navigator.pop()
+                onClicked: enroll_cancel()
+                Keys.onEnterPressed: click()
+                Keys.onReturnPressed: click()
             }
 
             StyledButton {
@@ -131,21 +131,24 @@ Flickable {
     }
 
     function enroll(){
-        yubiKey.bioEnroll("", function (resp) {
-            if (resp.success) {
-                if (resp.remaining > 0) {
+        yubiKey.bioEnroll(function (success, remaining, template) {
+            if (success) {
+                if (remaining > 0) {
                     progressBar.value = progressBar.value + 0.2
-                    enroll()
                 } else {
                     progressBar.value = 1
-                    last_template = resp.template
+                    last_template = template
                 }
             } else {
-                if (resp.error_id > 0) {
-                    enroll()
+                if (remaining == 0) {
+                    navigator.pop()
                 }
             }
         })
 
+    }
+
+    function enroll_cancel() {
+        yubiKey.bioEnrollCancel()
     }
 }
