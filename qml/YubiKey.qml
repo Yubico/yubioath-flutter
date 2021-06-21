@@ -325,18 +325,20 @@ Python {
         })
     }
 
-    function testCustomReader(cb) {
+    function connectToCustomReader( cb) {
         var currentPinCache = !!yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : null
         pinIsBlocked = false
         if (settings.useCustomReader) {
-            yubiKey.connectCustomReader(settings.customReaderName, function(resp) {
-                if (resp.success) {
+
+
+            yubiKey.connectCustomReader(settings.customReaderName, function(removed, resp) {
+                if (removed) {
                     deviceRemoved = true
+                } else if (resp.success) {
                 } else {
                     console.log("Connecting to devices failed:", resp.error_id)
                     availableReaders = []
                     clearCurrentDeviceAndEntries()
-
                 }
 
                 if (cb) {
@@ -344,6 +346,7 @@ Python {
                 }
 
             })
+
         }
     }
 
@@ -665,7 +668,8 @@ Python {
     }
 
     function connectCustomReader(customReaderName, cb) {
-        doCall('yubikey.controller.connect_custom_reader', [customReaderName],  cb)
+        setHandler("fido_reset", cb)
+        doCall('yubikey.controller.connect_custom_reader', [customReaderName])
     }
 
     function loadDevicesUsb(otp, cb) {
@@ -755,6 +759,7 @@ Python {
         setHandler("bio_enroll", cb)
         doCall('yubikey.controller.bio_enroll', [])
     }
+
     function bioEnrollCancel(cb) {
         doCall('yubikey.controller.bio_enroll_cancel', [], cb)
     }
@@ -769,5 +774,9 @@ Python {
 
     function bioVerifyPin(pin, cb){
         doCall('yubikey.controller.bio_verify_pin', [pin], cb)
+    }
+
+    function resetCancel(cb) {
+        doCall('yubikey.controller.reset_cancel', [], cb)
     }
 }

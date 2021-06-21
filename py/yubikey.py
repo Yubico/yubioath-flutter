@@ -309,24 +309,33 @@ class Controller(object):
        }
 
     def connect_custom_reader(self, reader_filter=None, otp_mode=False):
+        def connect_custom_action(dev, event):
+
+            removed = False
+            while True:
+                sleep(0.5)
+                try:
+                    with dev.open_connection(FidoConnection):
+                        if (event.is_set()):
+                            return success({'removed': removed})
+                        if removed:
+                            sleep(1.0)  # Wait for the device to settle
+                            pyotherside.send("fido_reset", True)
+                            return
+                except CardConnectionException:
+                    pass  # Expected, ignore
+                except NoCardException:
+                    removed = True
+
         self._devices = []
 
         if not otp_mode and reader_filter:
             self._reader_filter = reader_filter
             dev = self._get_dev_from_reader()
             if dev:
-                removed = False
-                while True:
-                    sleep(0.5)
-                    try:
-                        with dev.open_connection(FidoConnection):
-                            if removed:
-                                sleep(1.0)  # Wait for the device to settle
-                                return success()
-                    except CardConnectionException:
-                        pass  # Expected, ignore
-                    except NoCardException:
-                        removed = True
+                self._event = Event()
+                Thread(target=connect_custom_action, args=(dev, self._event)).start()
+        return success()
 
     def load_devices_custom_reader(self, reader_filter=None, otp_mode=False):
         self._devices = []
@@ -1114,6 +1123,11 @@ class Controller(object):
             raise
 
     def bio_enroll_cancel(self):
+        if self._event:
+            self._event.set()
+            self._event = None
+
+    def reset_cancel(self):
         if self._event:
             self._event.set()
             self._event = None
