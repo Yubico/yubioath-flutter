@@ -50,9 +50,16 @@ Dialog {
     property bool ready: removed && yubiKey.availableDevices.length === 1
     property var currentDevice: !!yubiKey.currentDevice && yubiKey.currentDevice
     property bool devRemoved: yubiKey.deviceRemoved
+    property bool devBack: yubiKey.deviceBack
 
     onDevRemovedChanged: {
         if (devRemoved) {
+            progressBar.value = 0.33
+        }
+    }
+
+    onDevBackChanged: {
+        if (devBack) {
             removed = true
         }
     }
@@ -71,7 +78,7 @@ Dialog {
 
     onReadyChanged: {
         if (settings.useCustomReader) {
-            progressBar.value = 0.5
+            progressBar.value = 0.66
         } else {
             progressBar.value = 0.66
         }
@@ -80,6 +87,7 @@ Dialog {
                 progressBar.value = 1
                 done = true
                 yubiKey.deviceRemoved = false
+                yubiKey.deviceBack = false
             } else {
                 if (resp.error_id === 'touch timeout') {
                     navigator.snackBarError(qsTr("A reset requires a touch on the YubiKey to be confirmed."))

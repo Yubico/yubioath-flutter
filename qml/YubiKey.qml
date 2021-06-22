@@ -18,6 +18,7 @@ Python {
 
     property bool pinIsBlocked: false
     property bool deviceRemoved: false
+    property bool deviceBack: false
 
     property var fingerprints: []
     property var credentials: []
@@ -325,28 +326,15 @@ Python {
         })
     }
 
-    function connectToCustomReader( cb) {
-        var currentPinCache = !!yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : null
-        pinIsBlocked = false
+    function connectToCustomReader() {
         if (settings.useCustomReader) {
-
-
-            yubiKey.connectCustomReader(settings.customReaderName, function(removed, resp) {
+            yubiKey.connectCustomReader(settings.customReaderName, function(removed, back, resp) {
                 if (removed) {
                     deviceRemoved = true
-                } else if (resp.success) {
-                } else {
-                    console.log("Connecting to devices failed:", resp.error_id)
-                    availableReaders = []
-                    clearCurrentDeviceAndEntries()
+                } else if (back) {
+                    deviceBack = true
                 }
-
-                if (cb) {
-                    cb()
-                }
-
             })
-
         }
     }
 

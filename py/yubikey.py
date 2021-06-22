@@ -317,15 +317,16 @@ class Controller(object):
                 try:
                     with dev.open_connection(FidoConnection):
                         if (event.is_set()):
-                            return success({'removed': removed})
+                            return
                         if removed:
                             sleep(1.0)  # Wait for the device to settle
-                            pyotherside.send("fido_reset", True)
+                            pyotherside.send("fido_reset", False, True)
                             return
                 except CardConnectionException:
                     pass  # Expected, ignore
                 except NoCardException:
                     removed = True
+                    pyotherside.send("fido_reset", True, False)
 
         self._devices = []
 
