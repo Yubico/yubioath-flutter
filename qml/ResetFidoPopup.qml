@@ -50,13 +50,25 @@ Dialog {
     property bool ready: removed && yubiKey.availableDevices.length === 1
     property var currentDevice: !!yubiKey.currentDevice && yubiKey.currentDevice
     property bool devRemoved: yubiKey.deviceRemoved
+    property bool devBack: yubiKey.deviceBack
 
-    onDevRemovedChanged: removed = true
+    onDevRemovedChanged: {
+        if (devRemoved) {
+            progressBar.value = 0.33
+        }
+    }
+
+    onDevBackChanged: {
+        if (devBack) {
+            removed = true
+        }
+    }
 
     onCurrentDeviceChanged: {
         if (settings.useCustomReader && !ready) {
-            yubiKey.testCustomReader()
+            yubiKey.connectToCustomReader()
         }
+
 
         if (yubiKey.availableDevices.length === 0) {
             progressBar.value = 0.33
@@ -65,11 +77,17 @@ Dialog {
     }
 
     onReadyChanged: {
-        progressBar.value = 0.66
+        if (settings.useCustomReader) {
+            progressBar.value = 0.66
+        } else {
+            progressBar.value = 0.66
+        }
         yubiKey.fidoReset(function (resp) {
             if (resp.success) {
                 progressBar.value = 1
                 done = true
+                yubiKey.deviceRemoved = false
+                yubiKey.deviceBack = false
             } else {
                 if (resp.error_id === 'touch timeout') {
                     navigator.snackBarError(qsTr("A reset requires a touch on the YubiKey to be confirmed."))
@@ -110,7 +128,7 @@ Dialog {
          }
 
         Label {
-            text: qsTr("To continue, remove and re-place your YubiKey")
+            text: "Follow the instructions to perform a reset, abort at any time."
             visible: settings.useCustomReader
             color: primaryColor
             opacity: lowEmphasis
@@ -138,6 +156,8 @@ Dialog {
                     if (!ready && !removed) {
                         return qsTr("Remove your YubiKey")
                     }
+                } else {
+                    return qsTr("To continue, remove and re-place your YubiKey")
                 }
             }
             color: primaryColor
@@ -171,8 +191,13 @@ Dialog {
                 id: btnCancel
                 text: qsTr("Cancel")
                 DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
+                onClicked: {
+                    if (settings.useCustomReader)
+                        reset_cancel()
+                    else
+                        reject()
+                }
                 Keys.onReturnPressed: reject()
-                onClicked: reject()
             }
         }
 
@@ -195,5 +220,10 @@ Dialog {
             }
         }
 
+    }
+
+    function reset_cancel() {
+        yubiKey.resetCancel()
+        reject()
     }
 }

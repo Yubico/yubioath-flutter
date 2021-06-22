@@ -18,6 +18,7 @@ Python {
 
     property bool pinIsBlocked: false
     property bool deviceRemoved: false
+    property bool deviceBack: false
 
     property var fingerprints: []
     property var credentials: []
@@ -325,24 +326,14 @@ Python {
         })
     }
 
-    function testCustomReader(cb) {
-        var currentPinCache = !!yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : null
-        pinIsBlocked = false
+    function connectToCustomReader() {
         if (settings.useCustomReader) {
-            yubiKey.connectCustomReader(settings.customReaderName, function(resp) {
-                if (resp.success) {
+            yubiKey.connectCustomReader(settings.customReaderName, function(removed, back, resp) {
+                if (removed) {
                     deviceRemoved = true
-                } else {
-                    console.log("Connecting to devices failed:", resp.error_id)
-                    availableReaders = []
-                    clearCurrentDeviceAndEntries()
-
+                } else if (back) {
+                    deviceBack = true
                 }
-
-                if (cb) {
-                    cb()
-                }
-
             })
         }
     }
@@ -665,7 +656,8 @@ Python {
     }
 
     function connectCustomReader(customReaderName, cb) {
-        doCall('yubikey.controller.connect_custom_reader', [customReaderName],  cb)
+        setHandler("fido_reset", cb)
+        doCall('yubikey.controller.connect_custom_reader', [customReaderName])
     }
 
     function loadDevicesUsb(otp, cb) {
@@ -755,6 +747,7 @@ Python {
         setHandler("bio_enroll", cb)
         doCall('yubikey.controller.bio_enroll', [])
     }
+
     function bioEnrollCancel(cb) {
         doCall('yubikey.controller.bio_enroll_cancel', [], cb)
     }
@@ -769,5 +762,9 @@ Python {
 
     function bioVerifyPin(pin, cb){
         doCall('yubikey.controller.bio_verify_pin', [pin], cb)
+    }
+
+    function resetCancel(cb) {
+        doCall('yubikey.controller.reset_cancel', [], cb)
     }
 }
