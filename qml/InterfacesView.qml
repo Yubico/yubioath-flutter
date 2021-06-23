@@ -318,6 +318,7 @@ Flickable {
             }
 
             Item {
+                visible: expandButton.isExpanded
                 width: 44
             }
 
@@ -347,6 +348,7 @@ Flickable {
             }
 
             Item {
+                visible: expandButton.isExpanded
                 width: 44
             }
 
@@ -376,6 +378,7 @@ Flickable {
             }
 
             Item {
+                visible: expandButton.isExpanded
                 width: 44
             }
 
@@ -458,6 +461,7 @@ Flickable {
             }
 
             Item {
+                visible: expandButton2.isExpanded
                 width: 44
             }
 
@@ -524,6 +528,7 @@ Flickable {
             }
 
             Item {
+                visible: otpButton1.visible || otpButton2.visible
                 width: 44
             }
 
