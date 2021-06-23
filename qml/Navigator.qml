@@ -143,9 +143,9 @@ StackView {
         }
     }
 
-    function goToInterfacesView() {
-        if (currentItem.objectName !== 'yubiKeyInterfacesFlickable') {
-            push(yubiKeyInterfacesFlickable, StackView.PushTransition)
+    function goToApplicationsView() {
+        if (currentItem.objectName !== 'applicationsFlickable') {
+            push(applicationsFlickable, StackView.PushTransition)
         }
     }
 
@@ -196,6 +196,11 @@ StackView {
 
     function confirmFidoReset(options) {
         var popup = confirmationResetPopup.createObject(app, options)
+        popup.open()
+    }
+
+    function waitForYubiKey(options) {
+        var popup = waitForYubiKeyPopup.createObject(app, options)
         popup.open()
     }
 
@@ -310,8 +315,8 @@ StackView {
     }
 
     Component {
-        id: yubiKeyInterfacesFlickable
-        InterfacesView {
+        id: applicationsFlickable
+        ApplicationsView {
         }
     }
 
@@ -355,6 +360,12 @@ StackView {
     Component {
         id: confirmationResetPopup
         ResetFidoPopup {
+        }
+    }
+
+    Component {
+        id: waitForYubiKeyPopup
+        WaitForKeyPopup {
         }
     }
 

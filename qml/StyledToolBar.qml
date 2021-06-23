@@ -328,12 +328,12 @@ ToolBar {
 
                 Menu {
                     id: yubikeyContextMenu
-                    width: 140
+                    width: 210
                     y: header.height
                     MenuItem {
-                        text: "Interfaces"
+                        text: "Enable/Disable applications"
                         enabled: !!yubiKey.currentDevice && (yubiKey.supportsNewInterfaces() || !yubiKey.currentDevice.isNfc)
-                        onTriggered: navigator.goToInterfacesView()
+                        onTriggered: navigator.goToApplicationsView()
                     }
                 }
             }

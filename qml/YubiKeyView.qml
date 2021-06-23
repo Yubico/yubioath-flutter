@@ -132,13 +132,13 @@ Flickable {
                     isFlickable: true
                     expandButton.onClicked: navigator.goToWebAuthnView()
                 }
-                StyledExpansionPanel {
+/*                 StyledExpansionPanel {
                     label: qsTr("One-time password (OTP)")
                     description: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod")
                     visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OTP")
                     isFlickable: true
                 }
-            }
+ */            }
         }
     }
 }
