@@ -390,6 +390,7 @@ class Controller(object):
                     'hasPassword': has_password,
                     'fidoHasPin': fido_pin_list[0],
                     'fidoPinRetries': fido_pin_list[1],
+                    'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
                     'selectable': selectable,
                     'validated': True  # not has_password
                 })
