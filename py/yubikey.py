@@ -145,6 +145,17 @@ def is_nfc(reader_name):
     return "yubico" not in reader_name.lower()
 
 
+def interfaces_from_capabilities(capabilities):
+    interfaces= []
+    if CAPABILITY.OTP & capabilities:
+        interfaces.append("OTP")
+    if (CAPABILITY.U2F | CAPABILITY.FIDO2) & capabilities:
+        interfaces.append("FIDO")
+    if (CAPABILITY.OATH | CAPABILITY.PIV | CAPABILITY.OPENPGP) & capabilities:
+        interfaces.append("CCID")
+    return interfaces
+
+
 class Controller(object):
 
     _devs = {}
@@ -231,14 +242,8 @@ class Controller(object):
     def _get_devices(self, otp_mode=False):
         res = []
         for dev, info in list_all_devices():
-            usb_enabled = info.config.enabled_capabilities[TRANSPORT.USB]
-            interfaces_enabled = []
-            if CAPABILITY.OTP & usb_enabled:
-                interfaces_enabled.append("OTP")
-            if (CAPABILITY.U2F | CAPABILITY.FIDO2) & usb_enabled:
-                interfaces_enabled.append("FIDO")
-            if (CAPABILITY.OATH | CAPABILITY.PIV | CAPABILITY.OPENPGP) & usb_enabled:
-                interfaces_enabled.append("CCID")
+            interfaces_enabled = interfaces_from_capabilities(
+                    info.config.enabled_capabilities[TRANSPORT.USB])
             if otp_mode:
                 selectable = "OTP" in interfaces_enabled
                 has_password = False
@@ -276,6 +281,9 @@ class Controller(object):
 
         fido_pin_list = self._calc_fido_pin()
 
+        supported_interfaces = interfaces_from_capabilities(
+                info.supported_capabilities.get(TRANSPORT.USB))
+
         return {
             'name': get_name(info, dev.pid.get_type()),
             'version': _get_version(info),
@@ -292,9 +300,7 @@ class Controller(object):
             'nfcAppSupported': [
                 a.name for a in CAPABILITY
                 if a in info.supported_capabilities.get(TRANSPORT.NFC, [])],
-            'usbInterfacesSupported': [
-                t.name for t in USB_INTERFACE
-                if t in dev.pid.get_interfaces()],
+            'usbInterfacesSupported': supported_interfaces,
             'usbInterfacesEnabled': [
                 i.name for i in USB_INTERFACE
                 if i in dev.pid.get_interfaces()],
@@ -356,15 +362,10 @@ class Controller(object):
                         selectable = False
                         has_password = False
 
-                usb_enabled = info.config.enabled_capabilities[TRANSPORT.USB]
-
-                interfaces_enabled = []
-                if CAPABILITY.OTP & usb_enabled:
-                    interfaces_enabled.append("OTP")
-                if (CAPABILITY.U2F | CAPABILITY.FIDO2) & usb_enabled:
-                    interfaces_enabled.append("FIDO")
-                if (CAPABILITY.OATH | CAPABILITY.PIV | CAPABILITY.OPENPGP) & usb_enabled:
-                    interfaces_enabled.append("CCID")
+                interfaces_enabled = interfaces_from_capabilities(
+                        info.config.enabled_capabilities[TRANSPORT.USB])
+                interfaces_supported = interfaces_from_capabilities(
+                        info.supported_capabilities[TRANSPORT.USB])
 
                 fido_pin_list = self._calc_fido_pin()
 
@@ -373,9 +374,7 @@ class Controller(object):
                     'version': '.'.join(str(d) for d in info.version),
                     'serial': info.serial or '',
                     'usbInterfacesEnabled': interfaces_enabled,
-                    #'usbInterfacesSupported': [
-                     #   t.name for t in USB_INTERFACE
-                      #  if t in dev.pid.get_interfaces()],
+                    'usbInterfacesSupported': interfaces_supported,
                     'usbAppEnabled': [
                         a.name for a in CAPABILITY
                         if a in info.config.enabled_capabilities.get(TRANSPORT.USB)],
@@ -391,6 +390,7 @@ class Controller(object):
                     'hasPassword': has_password,
                     'fidoHasPin': fido_pin_list[0],
                     'fidoPinRetries': fido_pin_list[1],
+                    'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
                     'selectable': selectable,
                     'validated': True  # not has_password
                 })

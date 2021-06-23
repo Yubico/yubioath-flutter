@@ -332,6 +332,7 @@ ToolBar {
                     y: header.height
                     MenuItem {
                         text: "Interfaces"
+                        enabled: !!yubiKey.currentDevice && (yubiKey.supportsNewInterfaces() || !yubiKey.currentDevice.isNfc)
                         onTriggered: navigator.goToInterfacesView()
                     }
                 }
