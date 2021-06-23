@@ -382,7 +382,8 @@ Flickable {
             // CCID description
 
             Label {
-                text: "The CCID interfaces includes smart card, encryption and security codes functionality."
+                text: "The CCID interfaces include smart card, encryption and security codes functionality."
+                visible: ccidButton1.visible || ccidButton2.visible
                 color: primaryColor
                 opacity: disabledEmphasis
                 font.pixelSize: 12
@@ -488,7 +489,8 @@ Flickable {
             // FIDO description
 
             Label {
-                text: "The FIDO protocols is used in the W3C WebAuthn standard adopte by all web browsers."
+                text: "The FIDO protocols are used in the W3C WebAuthn standard adopted by all web browsers."
+                visible: fidoButton1.visible || fidoButton2.visible
                 color: primaryColor
                 opacity: disabledEmphasis
                 font.pixelSize: 12
@@ -529,6 +531,7 @@ Flickable {
 
             Label {
                 text: "Protocols for one-time passwords, challenge response, static passwords etc."
+                visible: otpButton1.visible || otpButton2.visible
                 color: primaryColor
                 opacity: disabledEmphasis
                 font.pixelSize: 12
@@ -610,7 +613,7 @@ Flickable {
             }
 
             Label {
-                text: "The CCID interfaces includes smart card, encryption and security codes functionality."
+                text: "The CCID interface includes smart card, encryption and security codes functionality."
                 visible: ccidModeBtn.visible
                 color: primaryColor
                 opacity: disabledEmphasis
@@ -635,7 +638,7 @@ Flickable {
             }
 
             Label {
-                text: "The FIDO protocols is used in the W3C WebAuthn standard adopte by all web browsers."
+                text: "The FIDO protocols are used in the W3C WebAuthn standard adopted by all web browsers."
                 visible: fidoModeBtn.visible
                 color: primaryColor
                 opacity: disabledEmphasis
@@ -684,4 +687,3 @@ Flickable {
     }
 }
        }
- 
