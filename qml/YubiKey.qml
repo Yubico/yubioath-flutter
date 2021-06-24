@@ -122,6 +122,10 @@ Python {
         return currentDevice.version.startsWith('5');
     }
 
+    function isYubiKeyFIPS(device) {
+        return device.name === 'YubiKey FIPS'
+    }
+
     function getYubiKeyImageSource(currentDevice) {
         return "../images/" + Images.getYubiKeyImageName(currentDevice) + ".png";
     }
