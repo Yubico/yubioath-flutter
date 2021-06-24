@@ -252,6 +252,7 @@ ApplicationWindow {
         sequence: "Ctrl+1"
         onActivated: navigator.goToAuthenticator()
         context: Qt.ApplicationShortcut
+        enabled: yubiKey.currentDeviceEnabled("OATH")
     }
 
     Shortcut {
