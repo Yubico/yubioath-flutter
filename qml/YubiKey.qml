@@ -293,9 +293,15 @@ Python {
                     clearCurrentDeviceAndEntries()
                     // Just pick the first device
                     currentDevice = availableDevices[0]
-                    // If oath is enabled, do a calculate all
-                    if (yubiKey.currentDeviceEnabled("OATH") && navigator.isInAuthenticator()) {
-                        oathCalculateAllOuter()
+                    if(!!currentDevice) {
+                        if (yubiKey.currentDeviceEnabled("OATH")) {
+                            // If oath is enabled, do a calculate all
+                            if (navigator.isInAuthenticator()) {
+                                oathCalculateAllOuter()
+                            }
+                        } else if (navigator.isInAuthenticator()) {
+                            navigator.goToYubiKey()
+                        }
                     }
                 } else {
                     // the same one but potentially updated
@@ -330,12 +336,18 @@ Python {
                     clearCurrentDeviceAndEntries()
                     // Just pick the first device
                     currentDevice = availableDevices[0]
-                    // If oath is enabled, do a calculate all and go to authenticator
-                    if (yubiKey.currentDeviceEnabled("OATH") && navigator.isInAuthenticator()) {
-                        navigator.goToLoading()
-                        navigator.goToAuthenticator()
-                    }
 
+                    if(!!currentDevice) {
+                        if (yubiKey.currentDeviceEnabled("OATH")) {
+                            // If oath is enabled, do a calculate all and go to authenticator
+                            if (navigator.isInAuthenticator()) {
+                                navigator.goToLoading()
+                                navigator.goToAuthenticator()
+                            }
+                        } else if (navigator.isInAuthenticator()) {
+                            navigator.goToYubiKey()
+                        }
+                    }
                 } else {
                     // the same one but potentially updated
                     currentDevice = resp.devices.find(dev => dev.serial === currentDevice.serial)
