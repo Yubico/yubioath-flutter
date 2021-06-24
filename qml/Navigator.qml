@@ -8,6 +8,7 @@ StackView {
 
     initialItem: authenticatorView
 
+
     onCurrentItemChanged: {
         if (currentItem) {
             currentItem.forceActiveFocus()
@@ -77,6 +78,7 @@ StackView {
     }
 
     function goToAuthenticator() {
+        settings.activeView = 'authenticatorView'
 
         // Before navigating to Authenticator view,
         // Make sure credentials are up to date by doing
@@ -108,6 +110,7 @@ StackView {
     }
 
     function goToYubiKey() {
+        settings.activeView = 'yubiKeyView'
         if (currentItem.objectName !== 'yubiKeyView') {
             clearAndPush(yubiKeyView, StackView.Immediate)
         }
