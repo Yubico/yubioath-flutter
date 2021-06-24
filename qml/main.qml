@@ -88,6 +88,7 @@ ApplicationWindow {
         updateTrayVisibility()
         ensureMinimumWindowSize()
         ensureValidWindowPosition()
+        restoreLastView()
         app.visible = !(settings.closeToTray && settings.hideOnLaunch)
     }
 
@@ -132,6 +133,13 @@ ApplicationWindow {
 
     function isDark() {
         return app.Material.theme === Material.Dark
+    }
+
+    function restoreLastView() {
+        if(settings.activeView == 'yubiKeyView') {
+            navigator.goToYubiKey()
+        }
+        // Defaults to "authenticatorView"
     }
 
     function saveScreenLayout() {
@@ -381,6 +389,8 @@ ApplicationWindow {
         property int desktopAvailableHeight
 
         property var favorites: []
+
+        property string activeView
 
         onCloseToTrayChanged: updateTrayVisibility()
         onThemeChanged: {
