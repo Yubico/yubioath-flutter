@@ -158,7 +158,7 @@ Flickable {
             }
 
             Label {
-                text: qsTr("A YubiKey contains multiple applications that works independently of each other, these may be enabled/disabled depending on use case.")
+                text: qsTr("The YubiKey contains multiple applications that may be enabled and disabled independently over different transports (USB and NFC).")
                 color: primaryColor
                 opacity: lowEmphasis
                 font.pixelSize: 13

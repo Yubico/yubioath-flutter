@@ -74,7 +74,7 @@ Flickable {
             }
 
             Label {
-                text: yubiKey.fingerprints.length > 0 ? qsTr("Fingerprints on this YubiKey") : qsTr("There's no fingerprints on this YubiKey")
+                text: yubiKey.fingerprints.length > 0 ? qsTr("Fingerprints on this YubiKey") : qsTr("There are no fingerprints on this YubiKey")
                 color: primaryColor
                 opacity: lowEmphasis
                 font.pixelSize: 13
