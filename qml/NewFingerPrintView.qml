@@ -42,6 +42,15 @@ Flickable {
 
     property string searchFieldPlaceholder: ""
 
+    Timer {
+        id: touchFeedback
+        interval: 250
+        onTriggered: {
+            fingerprintIcon.color = primaryColor
+            fingerprintIcon.opacity = lowEmphasis
+        }
+    }
+
     ColumnLayout {
         width: settingsPanel.contentWidth
         id: content
@@ -133,13 +142,19 @@ Flickable {
     function enroll(){
         yubiKey.bioEnroll(function (success, remaining, template) {
             if (success) {
+                fingerprintIcon.color = yubicoGreen
+                fingerprintIcon.opacity = highEmphasis
                 if (remaining > 0) {
+                    touchFeedback.start()
                     progressBar.value = progressBar.value + 0.2
                 } else {
                     progressBar.value = 1
                     last_template = template
                 }
             } else {
+                fingerprintIcon.color = yubicoRed
+                fingerprintIcon.opacity = highEmphasis
+                touchFeedback.start()
                 if (remaining == 0) {
                     navigator.pop()
                 }
