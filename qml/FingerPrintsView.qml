@@ -92,7 +92,8 @@ Flickable {
                 RowLayout {
                     spacing: 0
                     StyledTextField {
-                        text: modelData.name ? modelData.name : qsTr("(Unspecified)")
+                        text: modelData.name ? modelData.name : qsTr("Unnamed (ID: %1)").arg(modelData.id)
+                        textField.font.italic: modelData.name ? false : true
                         isEnabled: false
                         noedit: true
                         Layout.bottomMargin: -8
@@ -108,7 +109,7 @@ Flickable {
                                     "heading": qsTr("Rename fingerprint"),
                                     "text1": qsTr("Enter a name for this fingerprint"),
                                     "promptText": qsTr("Name"),
-                                    "promptCurrent": modelData.name ? modelData.name : qsTr("(Unspecified)"),
+                                    "promptCurrent": modelData.name ? modelData.name : "",
                                     "acceptedCb": function(resp) {
                                         yubiKey.bioRename(modelData.id, resp, function (resp_inner) {
                                            if (resp_inner.success) {
