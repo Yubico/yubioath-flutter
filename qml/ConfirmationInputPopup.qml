@@ -168,7 +168,7 @@ Dialog {
             cancelCb = navigator.confirm({
                 "heading": heading,
                 "buttonCancel": "",
-                "buttonAccept": qsTr("Cancel"),
+                "buttonAccept": buttonCancel,
                 "buttonPrimary": false,
                 "description": qsTr("The YubiKey is locked because wrong PIN was entered too many times. To unlock it, remove and reinsert it.")
             })
@@ -176,7 +176,7 @@ Dialog {
             cancelCb = navigator.confirm({
                 "heading": heading,
                 "buttonCancel": "",
-                "buttonAccept": qsTr("Cancel"),
+                "buttonAccept": buttonCancel,
                 "buttonPrimary": false,
                 "description": qsTr("The YubiKey is locked because wrong PIN was entered too many times. You'll need to reset the YubiKey.")
             })
@@ -222,7 +222,6 @@ Dialog {
                     if (resp.success) {
                         navigator.snackBar(qsTr("Password removed"))
                         yubiKey.currentDevice.hasPassword = false
-                        passwordManagementPanel.isExpanded = false
                         accept()
                     } else {
                         navigator.snackBarError(getErrorMessage(resp.error_id))
@@ -364,6 +363,17 @@ Dialog {
             }
             Item {
                 Layout.fillWidth: true
+                Layout.fillHeight: true
+                StyledButton {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: qsTr("Remove")
+                    visible: !pinMode
+                    enabled: visible && currentPasswordField.text.length > 0
+                    KeyNavigation.tab: btnAccept
+                    Keys.onReturnPressed: removePassword()
+                    onClicked: removePassword()
+                }
             }
         }
 
