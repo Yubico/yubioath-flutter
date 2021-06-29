@@ -235,8 +235,8 @@ ToolBar {
                 Keys.onReturnPressed: navigator.goToAuthenticator()
                 Keys.onEnterPressed: navigator.goToAuthenticator()
 
-                KeyNavigation.left: navigator
-                KeyNavigation.backtab: navigator
+                KeyNavigation.left: drawerBtn
+                KeyNavigation.backtab: drawerBtn
                 KeyNavigation.right: navigator
                 KeyNavigation.tab: navigator
 

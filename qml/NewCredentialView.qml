@@ -19,6 +19,13 @@ Flickable {
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
 
+    onFocusChanged: {
+        if (manualEntry) {
+            issuerLbl.textField.forceActiveFocus()
+        }
+    }
+
+
     Pane {
         id: dropAreaOverlay
         anchors.centerIn: parent
@@ -262,6 +269,7 @@ Flickable {
                 text: credential
                       && credential.issuer ? credential.issuer : ""
                 visible: !settings.otpMode
+                KeyNavigation.backtab: toolBar.drawerBtn
                 onSubmit: addCredential()
             }
             StyledTextField {
@@ -298,7 +306,7 @@ Flickable {
                 visible: settings.otpMode
             }
 
-            StyledCheckBox {
+            CheckBox {
                 id: requireTouchCheckBox
                 checked: settings.requireTouch
                 text: qsTr("Require touch")
@@ -308,12 +316,13 @@ Flickable {
                 KeyNavigation.tab: advancedSettingsCheckBox
             }
 
-            StyledCheckBox {
+            CheckBox {
                 id: advancedSettingsCheckBox
                 text: qsTr("Show advanced settings")
                 visible: manualEntry && !settings.otpMode
                 Layout.bottomMargin: 0
                 Layout.topMargin: 0
+                KeyNavigation.tab: addBtn.enabled ? addBtn : toolBar.drawerBtn
             }
 
 
@@ -380,6 +389,7 @@ Flickable {
                 text: qsTr("Add account")
                 toolTipText: qsTr("Add account to YubiKey")
                 enabled: settings.otpMode ? secretKeyLbl.validated && acceptableInput() :  secretKeyLbl.validated && acceptableInput() && nameLbl.validated
+                KeyNavigation.tab: toolBar.drawerBtn
                 onClicked: addCredential()
             }
         }

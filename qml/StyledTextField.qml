@@ -90,6 +90,8 @@ Item {
                 textField.focus = false
                 textFieldContainer.submit()
             }
+            KeyNavigation.backtab: textFieldContainer.KeyNavigation.backtab
+            KeyNavigation.tab: textFieldContainer.KeyNavigation.tab
             Material.accent: isValidated ? yubicoGreen : yubicoRed
             Rectangle {
                 color: {

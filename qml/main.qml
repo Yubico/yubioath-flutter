@@ -357,14 +357,6 @@ ApplicationWindow {
         context: Qt.ApplicationShortcut
     }
 
-    Shortcut {
-        id: shortcutEscape
-        property string description: "Back to previous"
-        sequence: StandardKey.Cancel
-        enabled: true
-        onActivated: navigator.pop()
-    }
-
     // This information is stored in the system registry on Windows,
     // and in XML preferences files on macOS. On other Unix systems,
     // in the absence of a standard, INI text files are used.
