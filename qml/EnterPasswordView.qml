@@ -79,7 +79,7 @@ Flickable {
             Keys.onEnterPressed: validate()
             Keys.onReturnPressed: validate()
             Layout.fillWidth: true
-            KeyNavigation.backtab: unlockBtn
+            KeyNavigation.backtab: toolBar.drawerBtn
             KeyNavigation.tab: rememberPasswordCheckBox
             onSubmit: validate()
             Layout.bottomMargin: 16
@@ -91,7 +91,7 @@ Flickable {
             opacity: highEmphasis
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             KeyNavigation.backtab: passwordField.textField
-            KeyNavigation.tab: unlockBtn
+            KeyNavigation.tab: unlockBtn.enabled ? unlockBtn : toolBar.drawerBtn
             Layout.bottomMargin: 16
         }
 
@@ -105,7 +105,7 @@ Flickable {
             Keys.onEnterPressed: validate()
             Keys.onReturnPressed: validate()
             KeyNavigation.backtab: rememberPasswordCheckBox
-            KeyNavigation.tab: passwordField.textField
+            KeyNavigation.tab: toolBar.drawerBtn
         }
     }
 }

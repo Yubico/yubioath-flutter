@@ -26,6 +26,7 @@ ToolBar {
     property alias drawerBtn: drawerBtn
     property alias searchField: searchField
     property alias moreBtn: moreBtn
+    property alias backBtn: backBtn
 
     property string searchFieldPlaceholder: !!navigator.currentItem ? navigator.currentItem.searchFieldPlaceholder || "" : ""
 
@@ -47,8 +48,8 @@ ToolBar {
 
             KeyNavigation.left: navigator
             KeyNavigation.backtab: navigator
-            KeyNavigation.right: searchField.visible ? searchField : closeBtn
-            KeyNavigation.tab: searchField.visible ? searchField : closeBtn
+            KeyNavigation.right: searchField.visible ? searchField : (closeBtn.visible ? closeBtn : moreBtn)
+            KeyNavigation.tab: searchField.visible ? searchField : (closeBtn.visible ? closeBtn : moreBtn)
 
             Accessible.role: Accessible.Button
             Accessible.name: "Menu"
@@ -77,8 +78,8 @@ ToolBar {
 
             KeyNavigation.left: navigator
             KeyNavigation.backtab: navigator
-            KeyNavigation.right: searchField.visible ? searchField : closeBtn
-            KeyNavigation.tab: searchField.visible ? searchField : closeBtn
+            KeyNavigation.right: navigator
+            KeyNavigation.tab: navigator
 
             Accessible.role: Accessible.Button
             Accessible.name: "Back"
@@ -188,8 +189,8 @@ ToolBar {
 
                 KeyNavigation.backtab: drawerBtn
                 KeyNavigation.left: drawerBtn
-                KeyNavigation.tab: moreBtn
-                KeyNavigation.right: moreBtn
+                KeyNavigation.tab: moreBtn.visible ? moreBtn : navigator
+                KeyNavigation.right: moreBtn.visible ? moreBtn : navigator
                 Keys.onEscapePressed: exitSearchMode(true)
                 Keys.onDownPressed: exitSearchMode(false)
                 Keys.onReturnPressed: {
@@ -234,8 +235,8 @@ ToolBar {
                 Keys.onReturnPressed: navigator.goToAuthenticator()
                 Keys.onEnterPressed: navigator.goToAuthenticator()
 
-                KeyNavigation.left: drawerBtn
-                KeyNavigation.backtab: drawerBtn
+                KeyNavigation.left: navigator
+                KeyNavigation.backtab: navigator
                 KeyNavigation.right: navigator
                 KeyNavigation.tab: navigator
 
@@ -260,8 +261,8 @@ ToolBar {
                 Keys.onReturnPressed: navigator.isInAuthenticator() || navigator.isInEnterPassword() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
                 Keys.onEnterPressed: navigator.isInAuthenticator() || navigator.isInEnterPassword() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
 
-                KeyNavigation.left: searchField
-                KeyNavigation.backtab: searchField
+                KeyNavigation.left: searchField.visible ? searchField : drawerBtn
+                KeyNavigation.backtab: searchField.visible ? searchField : drawerBtn
                 KeyNavigation.right: navigator
                 KeyNavigation.tab: navigator
 

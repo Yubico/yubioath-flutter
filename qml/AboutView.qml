@@ -88,7 +88,7 @@ Flickable {
                             font.pixelSize: 12
                         }
                         Repeater {
-                            model: [shortcutGoToAuthenticator, shortcutGoToYubiKey, shortcutGoToSettings, shortcutGoToAbout, shortcutFind, shortcutFullScreen, shortcutClose, shortcutQuit]
+                            model: [shortcutGoToAuthenticator, shortcutGoToYubiKey, shortcutGoToSettings, shortcutGoToAbout, shortcutFind, shortcutEscape, shortcutFullScreen, shortcutClose, shortcutQuit]
 
                             RowLayout {
                                 Label {

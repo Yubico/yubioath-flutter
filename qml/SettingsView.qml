@@ -30,7 +30,7 @@ Flickable {
     }
     boundsBehavior: Flickable.StopAtBounds
 
-    property string searchFieldPlaceholder: qsTr("Search settings")
+    property string searchFieldPlaceholder: ""
 
     ColumnLayout {
         width: settingsPanel.contentWidth
