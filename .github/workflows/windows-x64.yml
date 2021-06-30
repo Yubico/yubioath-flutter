@@ -122,7 +122,7 @@ jobs:
         run: |
           $env:PATH += ";$env:WIX\bin"
           $env:SRCDIR = ".\release\"
-          cd "C:\Program Files (x86)\Microsoft Visual Studio\2019"
+          cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
           ls
 
       - name: Run installer
