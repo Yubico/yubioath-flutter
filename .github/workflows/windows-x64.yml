@@ -110,7 +110,7 @@ jobs:
       - name: Install Visual Studio C++ 2019 Redistributable MSMs
         shell: cmd
         run: |
-          choco install visualstudio2019community --package-parameters "--installPath `"C:\Program` Files` (x86)\Microsoft` Visual` Studio\2019\Community`" --add Microsoft.VisualStudio.Component.VC.Redist.MSM"
+          choco install visualstudio2019community --package-parameters "--add Microsoft.VisualStudio.Component.VC.Redist.MSM"
 
       - name: DPI awareness
         shell: powershell
