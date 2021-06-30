@@ -198,7 +198,7 @@ Python {
     }
 
     function clearCurrentDeviceAndEntries() {
-        //currentDevice = null
+        currentDevice = null
         entries.clear()
         nextCalculateAll = -1
         currentDeviceValidated = false
@@ -243,7 +243,7 @@ Python {
 
                 } else {
                     console.log("refreshing devices failed:", resp.error_id)
-                    availableReaders = []
+                    availableDevices = []
                     clearCurrentDeviceAndEntries()
 
                 }
@@ -309,7 +309,7 @@ Python {
                 }
             } else {
                 console.log("refreshing devices failed:", resp.error_id)
-                availableReaders = []
+                availableDevices = []
                 clearCurrentDeviceAndEntries()
             }
 
@@ -365,23 +365,21 @@ Python {
     }
 
     function pollCustomReader() {
-        if (!currentDevice) {
-            checkReaders(settings.customReaderName, function (resp) {
-                if (resp.success) {
-                    if (resp.needToRefresh) {
-                        poller.running = false
-                        loadDevicesCustomReaderOuter(function() {
-                            poller.running = true
-                        })
-                    } else {
-                        // Nothing changed
-                   }
+        checkReaders(settings.customReaderName, function (resp) {
+            if (resp.success) {
+                if (resp.needToRefresh) {
+                    poller.running = false
+                    loadDevicesCustomReaderOuter(function() {
+                        poller.running = true
+                    })
                 } else {
-                    console.log("check descriptors failed:", resp.error_id)
-                    clearCurrentDeviceAndEntries()
-                }
-            })
-        }
+                    // Nothing changed
+               }
+            } else {
+                console.log("check descriptors failed:", resp.error_id)
+                clearCurrentDeviceAndEntries()
+            }
+        })
         refreshReaders()
     }
 
