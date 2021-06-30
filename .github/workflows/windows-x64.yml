@@ -110,7 +110,7 @@ jobs:
       - name: Install Visual Studio C++ 2019 Redistributable MSMs
         shell: cmd
         run: |
-          choco install visualstudio2019community --package-parameters "--add Microsoft.VisualStudio.Component.VC.Redist.MSM"
+          choco install visualstudio2019community --package-parameters "--add Microsoft.VisualStudio.Component.VC.Redist.MSM --installPath 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Community'"
 
       - name: DPI awareness
         shell: powershell
@@ -122,8 +122,11 @@ jobs:
         run: |
           $env:PATH += ";$env:WIX\bin"
           $env:SRCDIR = ".\release\"
-          cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Redist\MSVC"
-          ls
+          $env:MERGEDPATH = Get-ChildItem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.*\MergeModules\Microsoft_VC142_CRT_x64.msm"
+          heat dir .\release -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
+          candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs -ext WixUtilExtension -arch x64
+          light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop.msi
+          cp yubioath-desktop.msi deploy
 
       - name: Run installer
         shell: powershell
