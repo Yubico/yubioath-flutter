@@ -18,6 +18,7 @@ Flickable {
     property bool hasPin: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
     property int pinRetries: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinRetries
     property bool pinIsBlocked: !!yubiKey.currentDevice && yubiKey.pinIsBlocked
+    property int uvRetries: !!yubiKey.currentDevice && yubiKey.currentDevice.uvRetries
 
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {

@@ -261,14 +261,16 @@ class Controller(object):
     def _calc_fido_pin(self):
         fido_has_pin = False
         fido_retries = 0
+        uv_retries = 0
         try:
             fido_has_pin = self._fido_has_pin()
             if fido_has_pin:
                 fido_retries = self._fido_pin_retries()
+            uv_retries = self._get_uv_retries()
         except ValueError:
             fido_has_pin = False
 
-        return [fido_has_pin, fido_retries]
+        return [fido_has_pin, fido_retries, uv_retries]
 
     def _serialise_dev(self, dev, info):
 
@@ -310,6 +312,7 @@ class Controller(object):
             'hasPassword': dev.has_password if hasattr(dev, 'has_password') else False,
             'fidoHasPin': fido_pin_list[0],
             'fidoPinRetries': fido_pin_list[1],
+            'uvRetries': fido_pin_list[2],
             'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
             'ctapOptions': self._ctapOptions
        }
@@ -411,6 +414,17 @@ class Controller(object):
                 ctap2 = Ctap2(conn)
                 client_pin = ClientPin(ctap2)
                 return client_pin.get_pin_retries()[0]
+        except CtapError:
+            raise
+
+    def _get_uv_retries(self):
+        try:
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                bio_enroll = ctap2.info.options.get("bioEnroll")
+                if bio_enroll:
+                    client_pin = ClientPin(ctap2)
+                    return client_pin.get_uv_retries()[0]
         except CtapError:
             raise
 
