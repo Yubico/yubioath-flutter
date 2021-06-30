@@ -18,7 +18,21 @@ Flickable {
     property bool hasPin: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
     property int pinRetries: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinRetries
     property bool pinIsBlocked: !!yubiKey.currentDevice && yubiKey.pinIsBlocked
-    property int uvRetries: !!yubiKey.currentDevice && yubiKey.currentDevice.uvRetries
+    property int uvRetries: !!yubiKey.currentDevice && !!yubiKey.currentDevice.uvRetries && yubiKey.currentDevice.uvRetries
+
+    onUvRetriesChanged: {
+        if (uvRetries === 0) {
+            navigator.confirmInput({
+                "pinMode": true,
+                "manageMode": false,
+                "heading": "Unlock YubiKey",
+                "text1": "Too many fingerprint scanning attempts have been used, PIN is required to unlock YubiKey.",
+                "acceptedCb": function(resp) {
+                    yubiKey.refreshCurrentDevice()
+                }
+            })
+        }
+    }
 
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {
