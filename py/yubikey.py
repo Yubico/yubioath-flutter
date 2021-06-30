@@ -837,6 +837,7 @@ class Controller(object):
                     secret,
                     int(digits), int(period), 0, issuer
                 )
+                self._unlock(session)
                 if not overwrite:
                     key = cred_data.get_id()
                     if key in [cred.id for cred in session.list_credentials()]:
@@ -861,7 +862,7 @@ class Controller(object):
                 self._current_derived_key = key
                 if remember:
                     keys = self.settings.setdefault('keys', {})
-                    keys[session.id] = b2a_hex(
+                    keys[session.device_id] = b2a_hex(
                         self._current_derived_key).decode()
                     self.settings.write()
                 return success()
@@ -881,8 +882,8 @@ class Controller(object):
 
     def ccid_delete_credential(self, credential):
         with self._open_oath() as oath_controller:
-
             session = OathSession(oath_controller)
+            self._unlock(session)
             session.delete_credential(cred_from_dict(credential).id)
             return success()
 
