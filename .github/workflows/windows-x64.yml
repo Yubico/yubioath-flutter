@@ -111,6 +111,7 @@ jobs:
         shell: cmd
         run: |
           choco install visualstudio2019community --package-parameters "--add Microsoft.VisualStudio.Component.VC.Redist.MSM"
+          cat "C:\ProgramData\chocolatey\logs\chocolatey.log"
 
       - name: DPI awareness
         shell: powershell
