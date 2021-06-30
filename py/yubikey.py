@@ -818,6 +818,7 @@ class Controller(object):
     def ccid_calculate(self, credential, timestamp):
         with self._open_oath() as oath_controller:
             session = OathSession(oath_controller)
+            self._unlock(session)
             code = session.calculate_code(
                 cred_from_dict(credential), timestamp)
             return success({
