@@ -130,7 +130,8 @@ def catch_error(f):
         except ApduError as e:
             if e.sw == SW.SECURITY_CONDITION_NOT_SATISFIED:
                 return failure('access_denied')
-            raise
+            logger.error('Uncaught exception', exc_info=e)
+            return unknown_failure(e)
         except smartcard.pcsc.PCSCExceptions.EstablishContextException:
             return failure('no_pcscd')
         except Exception as e:
