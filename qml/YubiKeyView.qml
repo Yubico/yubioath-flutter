@@ -129,6 +129,7 @@ Flickable {
                     label: qsTr("WebAuthn (FIDO2/U2F)")
                     description: qsTr("Manage PIN, fingerprints and credentials stored on the YubiKey.")
                     visible: !!yubiKey.currentDevice && (yubiKey.currentDeviceEnabled("FIDO2") || yubiKey.currentDeviceEnabled("U2F"))
+                    enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.ctapAvailable
                     isFlickable: true
                     expandButton.onClicked: navigator.goToWebAuthnView()
                 }

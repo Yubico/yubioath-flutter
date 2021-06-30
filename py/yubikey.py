@@ -173,8 +173,6 @@ class Controller(object):
     _event = None
     _pin = None
 
-    _ctapOptions = {}
-
     def __init__(self):
         self.settings = Settings('oath')
 
@@ -259,19 +257,28 @@ class Controller(object):
             res.append(self._serialise_dev(dev, info))
         return res
 
-    def _calc_fido_pin(self):
+    def _get_fido_status(self):
         fido_has_pin = False
         fido_retries = 0
         uv_retries = 0
         try:
-            fido_has_pin = self._fido_has_pin()
-            if fido_has_pin:
-                fido_retries = self._fido_pin_retries()
-            uv_retries = self._get_uv_retries()
-        except ValueError:
-            fido_has_pin = False
+            with self._open_device([FidoConnection]) as conn:
+                ctap2 = Ctap2(conn)
+                options = ctap2.info.options
+                available = True
 
-        return [fido_has_pin, fido_retries, uv_retries]
+                fido_has_pin = options.get("clientPin")
+                if fido_has_pin:
+                    client_pin = ClientPin(ctap2)
+                    fido_retries = client_pin.get_pin_retries()[0]
+
+                    if ctap2.info.options.get("bioEnroll"):
+                        uv_retries = client_pin.get_uv_retries()[0]
+        except Exception as e:
+            logger.debug("Failed to read CTAP info", exc_info=e)
+            available = False
+
+        return available, [fido_has_pin, fido_retries, uv_retries]
 
     def _serialise_dev(self, dev, info):
 
@@ -282,7 +289,7 @@ class Controller(object):
                 return '.'.join(str(x) for x in dev._desc_version)
             return ''
 
-        fido_pin_list = self._calc_fido_pin()
+        ctap_available, fido_pin_list = self._get_fido_status()
 
         supported_interfaces = interfaces_from_capabilities(
                 info.supported_capabilities.get(TRANSPORT.USB))
@@ -311,11 +318,11 @@ class Controller(object):
             'configurationLocked': info.is_locked,
             'formFactor': info.form_factor,
             'hasPassword': dev.has_password if hasattr(dev, 'has_password') else False,
+            'ctapAvailable': ctap_available,
             'fidoHasPin': fido_pin_list[0],
             'fidoPinRetries': fido_pin_list[1],
             'uvRetries': fido_pin_list[2],
             'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
-            'ctapOptions': self._ctapOptions
        }
 
     def connect_custom_reader(self, reader_filter=None, otp_mode=False):
@@ -371,7 +378,7 @@ class Controller(object):
                 interfaces_supported = interfaces_from_capabilities(
                         info.supported_capabilities[TRANSPORT.USB])
 
-                fido_pin_list = self._calc_fido_pin()
+                ctap_available, fido_pin_list = self._get_fido_status()
 
                 self._devices.append({
                     'name': get_name(info, dev.pid.get_type() if dev.pid else None),
@@ -392,6 +399,7 @@ class Controller(object):
                         a.name for a in CAPABILITY
                         if a in info.supported_capabilities.get(TRANSPORT.NFC, [])],
                     'hasPassword': has_password,
+                    'ctapAvailable': ctap_available,
                     'fidoHasPin': fido_pin_list[0],
                     'fidoPinRetries': fido_pin_list[1],
                     'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
@@ -402,32 +410,6 @@ class Controller(object):
                 return success({'devices': self._devices})
             else:
                 return success({'devices': []})
-
-    def _fido_has_pin(self):
-        with self._open_device([FidoConnection]) as conn:
-            ctap2 = Ctap2(conn)
-            self._ctapOptions = ctap2.info.options
-            return ctap2.info.options.get("clientPin")
-
-    def _fido_pin_retries(self):
-        try:
-            with self._open_device([FidoConnection]) as conn:
-                ctap2 = Ctap2(conn)
-                client_pin = ClientPin(ctap2)
-                return client_pin.get_pin_retries()[0]
-        except CtapError:
-            raise
-
-    def _get_uv_retries(self):
-        try:
-            with self._open_device([FidoConnection]) as conn:
-                ctap2 = Ctap2(conn)
-                bio_enroll = ctap2.info.options.get("bioEnroll")
-                if bio_enroll:
-                    client_pin = ClientPin(ctap2)
-                    return client_pin.get_uv_retries()[0]
-        except CtapError:
-            raise
 
     def load_devices_usb(self, otp_mode=False):
         self._reader_filter = None
@@ -941,25 +923,6 @@ class Controller(object):
             logger.error('Failed to parse uri', exc_info=e)
             return failure('failed_to_parse_uri')
         return failure('no_credential_found')
-
-    def fido_has_pin(self):
-        with self._open_device([FidoConnection]) as conn:
-            ctap2 = Ctap2(conn)
-            return success({'hasPin': ctap2.info.options.get("clientPin")})
-
-    def fido_pin_retries(self):
-        try:
-            with self._open_device([FidoConnection]) as conn:
-                ctap2 = Ctap2(conn)
-                client_pin = ClientPin(ctap2)
-                return success({'retries': client_pin.get_pin_retries()[0]})
-        except CtapError as e:
-            if e.code == CtapError.ERR.PIN_AUTH_BLOCKED:
-                return failure('PIN authentication is currently blocked. '
-                               'Remove and re-insert the YubiKey.')
-            if e.code == CtapError.ERR.PIN_BLOCKED:
-                return failure('PIN is blocked.')
-            raise
 
     def fido_set_pin(self, new_pin):
         try:
