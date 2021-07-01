@@ -164,6 +164,7 @@ Flickable {
             StyledExpansionPanel {
                 id: customReaderPanel
                 label: qsTr("Custom reader")
+                enabled: !settings.otpMode
                 description: qsTr("Use an external smart card reader to interact with YubiKey, enable NFC capabilities or remote usage.")
                 metadata: "ccid otp slot custom readers nfc"
                 isFlickable: true
