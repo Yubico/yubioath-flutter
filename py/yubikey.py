@@ -260,7 +260,7 @@ class Controller(object):
     def _get_fido_status(self):
         fido_has_pin = False
         fido_retries = 0
-        uv_retries = 0
+        uv_blocked = False
         try:
             with self._open_device([FidoConnection]) as conn:
                 ctap2 = Ctap2(conn)
@@ -274,11 +274,13 @@ class Controller(object):
 
                     if ctap2.info.options.get("bioEnroll"):
                         uv_retries = client_pin.get_uv_retries()[0]
+                        if uv_retries == 0:
+                            uv_blocked = True
         except Exception as e:
             logger.debug("Failed to read CTAP info", exc_info=e)
             available = False
 
-        return available, [fido_has_pin, fido_retries, uv_retries]
+        return available, [fido_has_pin, fido_retries, uv_blocked]
 
     def _serialise_dev(self, dev, info):
 
@@ -321,7 +323,7 @@ class Controller(object):
             'ctapAvailable': ctap_available,
             'fidoHasPin': fido_pin_list[0],
             'fidoPinRetries': fido_pin_list[1],
-            'uvRetries': fido_pin_list[2],
+            'uvBlocked': fido_pin_list[2],
             'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
        }
 

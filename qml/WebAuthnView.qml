@@ -10,7 +10,9 @@ Flickable {
     objectName: 'yubiKeyWebAuthnView'
     contentWidth: app.width
     contentHeight: expandedHeight
-    StackView.onActivating: yubiKey.refreshCurrentDevice()
+    StackView.onActivating: {
+        yubiKey.refreshCurrentDevice()
+    }
 
     property bool isBusy
 
@@ -18,10 +20,10 @@ Flickable {
     property bool hasPin: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
     property int pinRetries: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinRetries
     property bool pinIsBlocked: !!yubiKey.currentDevice && yubiKey.pinIsBlocked
-    property int uvRetries: !!yubiKey.currentDevice && !!yubiKey.currentDevice.uvRetries && yubiKey.currentDevice.uvRetries
+    property bool uvBlocked: !!yubiKey.currentDevice && yubiKey.currentDevice.uvBlocked
 
-    onUvRetriesChanged: {
-        if (uvRetries === 0) {
+    onUvBlockedChanged: {
+        if (uvBlocked) {
             navigator.confirmInput({
                 "pinMode": true,
                 "manageMode": false,
