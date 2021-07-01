@@ -24,6 +24,8 @@ Python {
     property var fingerprints: []
     property var credentials: []
 
+    property bool isPolling: false
+
     // Check if a application such as OATH, PIV, etc
     // is enabled on the current device.
     function currentDeviceEnabled(app) {
@@ -384,6 +386,8 @@ Python {
     }
 
     function pollUsb() {
+	if (isPolling) return
+        isPolling = true
         checkUsbDescriptorsChanged(function (resp) {
             if (resp.success) {
                 if (resp.usbDescriptorsChanged) {
@@ -399,13 +403,11 @@ Python {
                 console.log("check descriptors failed:", resp.error_id)
                 clearCurrentDeviceAndEntries()
             }
+            isPolling = false
         })
-
-
     }
 
     function oathCalculateAllOuter(cb) {
-
         function callback(resp) {
 
             if (resp.success) {

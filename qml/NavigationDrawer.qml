@@ -216,7 +216,9 @@ Drawer {
                                                              if (resp.success) {
                                                                  entries.clear()
                                                                  yubiKey.currentDevice = dev
-                                                                 yubiKey.oathCalculateAllOuter()
+                                                                 if (yubiKey.currentDeviceEnabled("OATH")) {
+                                                                     yubiKey.oathCalculateAllOuter()
+                                                                 }
                                                                  drawer.close()
                                                              } else {
                                                                  console.log("select device failed", resp.error_id)

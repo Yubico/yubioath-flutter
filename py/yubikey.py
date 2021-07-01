@@ -6,7 +6,6 @@ import struct
 import json
 import logging
 import types
-import time
 import ykman.logging_setup
 import smartcard.pcsc.PCSCExceptions
 from base64 import b32encode, b32decode, b64decode
@@ -202,11 +201,6 @@ class Controller(object):
 
         return connect_to_device(self._current_serial, [SmartCardConnection])[0]
 
-    def _descriptors_changed(self):
-        old_state = self._state
-        _, self._state = scan_devices()
-        return self._state != old_state
-
     def check_descriptors(self):
         old_state = self._state
         self._devs, self._state = scan_devices()
@@ -241,19 +235,6 @@ class Controller(object):
     def _get_devices(self, otp_mode=False):
         res = []
         for dev, info in list_all_devices():
-            interfaces_enabled = interfaces_from_capabilities(
-                    info.config.enabled_capabilities[TRANSPORT.USB])
-            if otp_mode:
-                selectable = "OTP" in interfaces_enabled
-                has_password = False
-            else:
-                selectable = "CCID" in interfaces_enabled
-                if selectable:
-                    with connect_to_device(info.serial, [SmartCardConnection])[0] as conn:
-                        oath = OathSession(conn)
-                        has_password = oath.locked
-                else:
-                    has_password = False
             res.append(self._serialise_dev(dev, info))
         return res
 
