@@ -216,8 +216,12 @@ Drawer {
                                                              if (resp.success) {
                                                                  entries.clear()
                                                                  yubiKey.currentDevice = dev
-                                                                 if (yubiKey.currentDeviceEnabled("OATH")) {
-                                                                     yubiKey.oathCalculateAllOuter()
+                                                                 if (navigator.isInAuthenticator()) {
+                                                                     if(yubiKey.currentDeviceEnabled("OATH")) {
+                                                                         yubiKey.oathCalculateAllOuter()
+                                                                     } else {
+                                                                         navigator.goToYubiKey()
+                                                                     }
                                                                  }
                                                                  drawer.close()
                                                              } else {

@@ -201,6 +201,10 @@ Python {
 
     function clearCurrentDeviceAndEntries() {
         currentDevice = null
+        clearOathEntries()
+    }
+
+    function clearOathEntries() {
         entries.clear()
         nextCalculateAll = -1
         currentDeviceValidated = false
@@ -425,7 +429,7 @@ Python {
                     currentDeviceValidated = false
                     navigator.goToEnterPasswordIfNotInSettings()
                 } else {
-                    clearCurrentDeviceAndEntries()
+                    clearOathEntries()
                     console.log("calculateAll failed:", resp.error_id)
                 }
             }
@@ -454,7 +458,7 @@ Python {
                             cb()
                         }
                     } else {
-                        clearCurrentDeviceAndEntries()
+                        clearOathEntries()
                         console.log("calculateAll failed:", resp.error_id)
                         if (!settings.useCustomReader) {
                             loadDevicesUsbOuter()
