@@ -10,7 +10,20 @@ Flickable {
     objectName: 'yubiKeyWebAuthnView'
     contentWidth: app.width
     contentHeight: expandedHeight
-    StackView.onActivating: yubiKey.refreshCurrentDevice()
+    StackView.onActivating: {
+        yubiKey.refreshCurrentDevice()
+        if (uvRetries === 0 && !!yubiKey.currentDevice) {
+            navigator.confirmInput({
+                "pinMode": true,
+                "manageMode": false,
+                "heading": "Unlock YubiKey",
+                "text1": "Too many fingerprint scanning attempts have been used, PIN is required to unlock YubiKey.",
+                "acceptedCb": function(resp) {
+                    yubiKey.refreshCurrentDevice()
+                }
+            })
+        }
+    }
 
     property bool isBusy
 
@@ -21,7 +34,7 @@ Flickable {
     property int uvRetries: !!yubiKey.currentDevice && !!yubiKey.currentDevice.uvRetries && yubiKey.currentDevice.uvRetries
 
     onUvRetriesChanged: {
-        if (uvRetries === 0) {
+        if (uvRetries === 0 && !!yubiKey.currentDevice) {
             navigator.confirmInput({
                 "pinMode": true,
                 "manageMode": false,
