@@ -161,11 +161,25 @@ Flickable {
                 label: qsTr("Factory defaults")
                 isEnabled: false
                 actionButton.text: "Reset"
-                actionButton.onClicked: navigator.confirmFidoReset({
-                    "acceptedCb": function(resp) {
-                        yubiKey.refreshCurrentDevice()
+                actionButton.onClicked: {
+                    if (yubiKey.availableDevices.length > 1) {
+                        navigator.waitForYubiKey({
+                            "acceptedCb": function(resp) {
+                                navigator.confirmFidoReset({
+                                    "acceptedCb": function(resp) {
+                                        yubiKey.refreshCurrentDevice()
+                                    }
+                                })
+                            }
+                        })
+                    } else {
+                        navigator.confirmFidoReset({
+                            "acceptedCb": function(resp) {
+                                yubiKey.refreshCurrentDevice()
+                            }
+                        })
                     }
-                })
+                }
             }
         }
     }
