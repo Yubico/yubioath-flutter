@@ -12,17 +12,6 @@ Flickable {
     contentHeight: expandedHeight
     StackView.onActivating: {
         yubiKey.refreshCurrentDevice()
-        if (uvBlocked) {
-            navigator.confirmInput({
-                "pinMode": true,
-                "manageMode": false,
-                "heading": "Unlock YubiKey",
-                "text1": "Too many fingerprint scanning attempts have been used, PIN is required to unlock YubiKey.",
-                "acceptedCb": function(resp) {
-                    yubiKey.refreshCurrentDevice()
-                }
-            })
-        }
     }
 
     property bool isBusy
