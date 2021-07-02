@@ -147,6 +147,33 @@ Flickable {
                     onCheckStateChanged: settings.hideOnLaunch = checked
                 }
             }
+        }
+
+        StyledExpansionContainer {
+            StyledExpansionPanel {
+                id: savedPasswordsPanel
+                label: qsTr("Saved passwords")
+                isEnabled: false
+                isBottomPanel: true
+                actionButton.text: "Clear"
+                actionButton.onClicked: navigator.confirm({
+                        "heading": qsTr("Clear passwords?"),
+                        "message": qsTr("This will delete all saved passwords."),
+                        "description": qsTr("A password prompt will appear the next time a YubiKey with a password is used."),
+                        "buttonAccept": qsTr("Clear passwords"),
+                        "acceptedCb": function() {
+                            yubiKey.clearLocalPasswords(function (resp) {
+                            if (resp.success) {
+                                navigator.snackBar(qsTr("Passwords cleared"))
+                            }
+                    })}
+                })
+            }
+        }
+
+        ColumnLayout {
+            Layout.leftMargin: 16
+            Layout.rightMargin: 16
 
             Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
@@ -170,27 +197,6 @@ Flickable {
                 isFlickable: true
                 expandButton.onClicked: navigator.goToCustomReader()
             }
-
-            StyledExpansionPanel {
-                id: savedPasswordsPanel
-                label: qsTr("Saved passwords")
-                isEnabled: false
-                isBottomPanel: true
-                actionButton.text: "Clear"
-                actionButton.onClicked: navigator.confirm({
-                        "heading": qsTr("Clear passwords?"),
-                        "message": qsTr("This will delete all saved passwords."),
-                        "description": qsTr("A password prompt will appear the next time a YubiKey with a password is used."),
-                        "buttonAccept": qsTr("Clear passwords"),
-                        "acceptedCb": function() {
-                            yubiKey.clearLocalPasswords(function (resp) {
-                            if (resp.success) {
-                                navigator.snackBar(qsTr("Passwords cleared"))
-                            }
-                    })}
-                })
-            }
-
         }
     }
 }

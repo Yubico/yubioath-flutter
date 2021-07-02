@@ -427,7 +427,7 @@ Python {
                     entries.clear()
                     currentDevice.hasPassword = true
                     currentDeviceValidated = false
-                    navigator.goToEnterPasswordIfNotInSettings()
+                    navigator.goToEnterPassword()
                 } else {
                     clearOathEntries()
                     console.log("calculateAll failed:", resp.error_id)

@@ -289,7 +289,7 @@ ToolBar {
                     MenuSeparator {}
                     MenuItem {
                         text: "Manage password"
-                        enabled: !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
+                        enabled: !settings.otpMode && !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                         onTriggered: navigator.confirmInput({
                             "heading": text,
                             "manageMode": true
@@ -297,7 +297,7 @@ ToolBar {
                     }
                     MenuItem {
                         text: "Reset"
-                        enabled: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
+                        enabled: !settings.otpMode && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                         onTriggered: navigator.confirm({
                             "heading": qsTr("Reset device?"),
                             "message": qsTr("This will delete all accounts and restore factory defaults of your YubiKey."),

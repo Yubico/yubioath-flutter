@@ -21,7 +21,11 @@ Flickable {
 
     onFocusChanged: {
         if (manualEntry) {
-            issuerLbl.textField.forceActiveFocus()
+            if(settings.otpMode) {
+                secretKeyLbl.textField.forceActiveFocus()
+            } else {
+                issuerLbl.textField.forceActiveFocus()
+            }
         }
     }
 
@@ -128,17 +132,6 @@ Flickable {
 
     Keys.onEscapePressed: navigator.goToAuthenticator()
 
-    function getEnabledOtpSlots() {
-        var res = []
-        if (settings.slot1digits) {
-            res.push(1)
-        }
-        if (settings.slot2digits) {
-            res.push(2)
-        }
-        return res
-    }
-
     MouseArea {
         anchors.fill: parent
         hoverEnabled: false
@@ -158,10 +151,6 @@ Flickable {
             var okTotalLength = (nameLbl.text.length + issuerLbl.text.length) < 60
             return nameAndKey && okTotalLength
         }
-    }
-
-    function addCredentialNoCopy() {
-        addCredential(true)
     }
 
     function addCredential(copy = false) {
@@ -189,6 +178,12 @@ Flickable {
             yubiKey.otpAddCredential(otpSlotComboBox.currentText,
                                      secretKeyLbl.text,
                                      requireTouchCheckBox.checked, callback)
+
+            if (otpSlotComboBox.currentText === "1") {
+                settings.slot1digits = digitsComboBoxSlotMode.currentText
+            } else {
+                settings.slot2digits = digitsComboBoxSlotMode.currentText
+            }
         }
 
         function _ccidAddCredential(overwrite) {
@@ -298,12 +293,24 @@ Flickable {
 
             RowLayout {
                 Layout.fillWidth: true
+                visible: settings.otpMode
                 StyledComboBox {
                     label: qsTr("Slot")
                     id: otpSlotComboBox
-                    model: getEnabledOtpSlots()
+                    model: ["1", "2"]
                 }
-                visible: settings.otpMode
+                Item {
+                    width: 16
+                }
+                StyledComboBox {
+                    id: digitsComboBoxSlotMode
+                    label: qsTr("Digits")
+                    model: ["6", "7", "8"]
+                    selectedValue: {
+                        return otpSlotComboBox.currentIndex === 0 ? (settings.slot1digits > 0 ? settings.slot1digits : "6")
+                                                                  : (settings.slot2digits > 0 ? settings.slot2digits : "6")
+                    }
+                }
             }
 
             CheckBox {

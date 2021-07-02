@@ -50,8 +50,7 @@ Rectangle {
     }
 
     function getIconLetter() {
-        return credential.issuer ? credential.issuer.charAt(
-                                       0) : credential.name.charAt(0)
+        return credential.issuer ? credential.issuer.charAt(0) : credential.name.charAt(0)
     }
 
     Label {
