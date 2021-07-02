@@ -231,7 +231,7 @@ Pane {
         color: primaryColor
         opacity: if (credentialCard.GridView.isCurrentItem) {
                    return cardSelectedEmphasis
-               } else if (cardMouseArea.containsMouse) {
+               } else if (cardMouseArea.containsMouse || moreMouseArea.containsMouse) {
                    return cardHoveredEmphasis
                } else {
                    return cardNormalEmphasis
@@ -356,7 +356,7 @@ Pane {
             text: nameLbl.text
             delay: 1000
             parent: nameLbl
-            visible: nameLbl.truncated && credentialCard.hovered && !favoriteBtn.hovered
+            visible: nameLbl.truncated && credentialCard.hovered
             Material.foreground: toolTipForeground
             Material.background: toolTipBackground
         }
@@ -386,6 +386,21 @@ Pane {
                 calculateCard(false)
             }
         }
+    }
+
+    StyledImage {
+        id: favoriteIcon
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.rightMargin: 32
+        anchors.topMargin: 1
+        iconWidth: 18
+        iconHeight: 18
+        source: "../images/star.svg" 
+        visible: favorite
+        color: primaryColor
+        opacity: lowEmphasis
+        Layout.alignment: Qt.AlignRight
     }
 
     StyledImage {
@@ -444,11 +459,14 @@ Pane {
         implicitWidth: 30
 
         MouseArea {
-            id: favoriteMouseArea
+            id: moreMouseArea
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
             propagateComposedEvents: true
-            enabled: false
+            enabled: true
+            hoverEnabled: true
+            acceptedButtons: Qt.LeftButton
+            onClicked: contextMenu.popup()
         }
     }
 }
