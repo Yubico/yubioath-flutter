@@ -77,6 +77,10 @@ StackView {
         return !!currentItem && currentItem.objectName === 'aboutView'
     }
 
+    function isInNewFingerprint() {
+        return !!currentItem && currentItem.objectName === 'newFingerPrintViewFlickable'
+    }
+
     function goToAuthenticator() {
         settings.activeView = 'authenticatorView'
 

@@ -72,9 +72,9 @@ ToolBar {
             Layout.leftMargin: 4
             visible: !navigator.isInLoading() && navigator.isInFlickable()
 
-            onClicked: navigator.pop()
-            Keys.onReturnPressed: navigator.pop()
-            Keys.onEnterPressed: navigator.pop()
+            onClicked: ifFingerprintBack()
+            Keys.onReturnPressed: ifFingerprintBack()
+            Keys.onEnterPressed: ifFingerprintBack()
 
             KeyNavigation.left: navigator
             KeyNavigation.backtab: navigator
@@ -93,6 +93,14 @@ ToolBar {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 enabled: false
+            }
+
+            function ifFingerprintBack() {
+                if (navigator.isInNewFingerprint()) {
+                    yubiKey.bioEnrollCancel()
+                } else {
+                    navigator.pop()
+                }
             }
         }
 
