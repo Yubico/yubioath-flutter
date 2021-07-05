@@ -571,6 +571,7 @@ Flickable {
                     Layout.topMargin: 16
                     Layout.rightMargin: 16
                     Layout.columnSpan: gridLayout.columns
+                    primary: true
                     text: qsTr("Set")
                     enabled: !!yubiKey.currentDevice && configurationHasChanged() && validCombination()
                     onClicked: {
@@ -714,6 +715,7 @@ Flickable {
                     Layout.alignment: Qt.AlignRight | Qt.AlignTop
                     Layout.topMargin: 16
                     Layout.rightMargin: 16
+                    primary: true
                     text: qsTr("Set")
                     Layout.columnSpan: gridLayoutLegacyKeys.columns
                     onClicked: {

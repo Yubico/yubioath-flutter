@@ -12,9 +12,9 @@ ApplicationWindow {
     id: app
 
     width: 270
-    height: 536 // (idealCellHeight * x) + 46
+    height: 582 // (idealCellHeight * x) + 46
     minimumWidth: 270
-    minimumHeight: 396 // (idealCellHeight * x) + 46
+    minimumHeight: 381 // (idealCellHeight * x) + 46
     visible: false
 
     flags: Qt.Window | Qt.WindowFullscreenButtonHint | Qt.WindowTitleHint
@@ -26,11 +26,12 @@ ApplicationWindow {
     readonly property int dynamicMargin: 32
     readonly property int dynamicMarginSmall: 16
 
-    readonly property string yubicoGreen: isDark() ? "#b1cf77" : "#9aca3c"
+    readonly property string yubicoBlue: "#325f74"
+    readonly property string yubicoGreen: isDark() ? "#b1cf77" : "#325f74"
     readonly property string yubicoWhite: "#ffffff"
-    readonly property string yubicoRed: isDark() ? "#cf6679" : "#b00020"
+    readonly property string yubicoRed: isDark() ? "#cf6679" : "#bf2029"
 
-    property string primaryColor: isDark() ? "#ffffff" : "#303030"
+    property string primaryColor: isDark() ? "#ffffff" : "#2a2a2a"
     property string fullContrast: isDark() ? "#000000" : "#ffffff"
 
     readonly property string defaultBackground: isDark() ? "#303030" : "#ffffff"
@@ -66,7 +67,7 @@ ApplicationWindow {
 
     Material.theme: settings.theme
     Material.primary: yubicoGreen
-    Material.accent: yubicoGreen
+    Material.accent: isDark() ? yubicoGreen : "#9aca3c"
     Material.foreground: defaultForeground
     Material.background: defaultBackground
 
@@ -235,7 +236,7 @@ ApplicationWindow {
     }
 
     function colorizeMatch(string, query) {
-        return string.replace(escapeRegExp(query.trim(), "gi"), "<span style=\"background-color:'#ffeb3b';color:'#333333';\">$&</span>") + " "
+        return string.replace(escapeRegExp(query.trim(), "gi"), "<span style=\"background-color:'#ffeb3b';color:'#000000';\">$&</span>") + " "
     }
 
     function escapeRegExp(string, flags) {
@@ -327,7 +328,8 @@ ApplicationWindow {
 
     Shortcut {
         id: shortcutFind
-        property string description: "Find in page with searchbar"
+        property string description: "Find account"
+        enabled: navigator.isInAuthenticator() && !!yubiKey.currentDevice
         sequence: StandardKey.Find
         onActivated: toolBar.searchField.forceActiveFocus()
     }

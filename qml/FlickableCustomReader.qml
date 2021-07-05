@@ -45,7 +45,6 @@ Flickable {
         settings.customReaderName = readerFilter.text
         yubiKey.clearCurrentDeviceAndEntries()
         if (settings.useCustomReader) {
-            //settings.otpMode = false
             yubiKey.loadDevicesCustomReaderOuter()
         } else {
             yubiKey.loadDevicesUsbOuter()
@@ -158,6 +157,7 @@ Flickable {
         StyledButton {
             Layout.topMargin: 16
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
+            primary: true
             text: "Apply"
             enabled: isValidMode()
             onClicked: setInterface()
