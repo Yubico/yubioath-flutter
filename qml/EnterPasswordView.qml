@@ -100,6 +100,7 @@ Flickable {
             text: qsTr("Unlock")
             toolTipText: qsTr("Unlock YubiKey")
             enabled: passwordField.text.valueOf().length > 0
+            primary: true
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             onClicked: validate()
             Keys.onEnterPressed: validate()

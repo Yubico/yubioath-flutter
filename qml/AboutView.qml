@@ -86,9 +86,10 @@ Flickable {
                             color: primaryColor
                             opacity: lowEmphasis
                             font.pixelSize: 12
+                            Layout.bottomMargin: 16
                         }
                         Repeater {
-                            model: [shortcutGoToAuthenticator, shortcutGoToYubiKey, shortcutGoToSettings, shortcutGoToAbout, shortcutFind, shortcutFullScreen, shortcutClose, shortcutQuit]
+                            model: [shortcutGoToAuthenticator, shortcutGoToYubiKey, shortcutGoToSettings, shortcutGoToAbout, shortcutFullScreen, shortcutClose, shortcutQuit]
 
                             RowLayout {
                                 Label {
@@ -109,9 +110,11 @@ Flickable {
                             opacity: lowEmphasis
                             font.pixelSize: 12
                             Layout.topMargin: 16
+                            Layout.bottomMargin: 16
+
                         }
                         Repeater {
-                            model: [shortcutAddAccount, shortcutCopy, shortcutDelete, shortcutToggleFavorite]
+                            model: [shortcutAddAccount, shortcutCopy, shortcutDelete, shortcutFind, shortcutToggleFavorite]
 
                             RowLayout {
                                 Label {

@@ -183,6 +183,7 @@ Flickable {
             StyledButton {
                 text: qsTr("Add")
                 enabled: yubiKey.fingerprints.length < 5
+                primary: true
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 Layout.topMargin: 16
                 onClicked: navigator.goToNewFingerPrintView()
