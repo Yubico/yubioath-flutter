@@ -255,7 +255,6 @@ ToolBar {
                 }
             }
 
-
             ToolButton {
                 id: moreBtn
                 activeFocusOnTab: true
@@ -337,10 +336,10 @@ ToolBar {
 
                 Menu {
                     id: yubikeyContextMenu
-                    width: 210
+                    width: 150
                     y: header.height
                     MenuItem {
-                        text: "Enable/Disable applications"
+                        text: "Applications"
                         enabled: !!yubiKey.currentDevice && (yubiKey.supportsNewInterfaces() || !yubiKey.currentDevice.isNfc)
                         onTriggered: navigator.goToApplicationsView()
                     }

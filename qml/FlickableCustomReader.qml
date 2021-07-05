@@ -158,7 +158,7 @@ Flickable {
             Layout.topMargin: 16
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
             primary: true
-            text: "Apply"
+            text: "Save"
             enabled: isValidMode()
             onClicked: setInterface()
         }

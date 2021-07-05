@@ -77,11 +77,7 @@ Dialog {
     }
 
     onReadyChanged: {
-        if (settings.useCustomReader) {
-            progressBar.value = 0.66
-        } else {
-            progressBar.value = 0.66
-        }
+        progressBar.value = 0.66
         yubiKey.fidoReset(function (resp) {
             if (resp.success) {
                 progressBar.value = 1
@@ -128,19 +124,6 @@ Dialog {
          }
 
         Label {
-            text: "Follow the instructions to perform a reset, abort at any time."
-            visible: settings.useCustomReader
-            color: primaryColor
-            opacity: lowEmphasis
-            font.pixelSize: 13
-            lineHeight: 1.2
-            textFormat: TextEdit.RichText
-            wrapMode: Text.WordWrap
-            Layout.maximumWidth: parent.width
-            Layout.bottomMargin: 16
-         }
-
-        Label {
             id: lblStatus
             text: {
                 if (!settings.useCustomReader) {
@@ -148,7 +131,7 @@ Dialog {
                         return qsTr("Done")
                     }
                     if (ready) {
-                        return qsTr("Touch your yubikey")
+                        return qsTr("Touch your YubiKey")
                     }
                     if (removed) {
                         return qsTr("Reinsert your YubiKey")
@@ -197,7 +180,7 @@ Dialog {
                     else
                         reject()
                 }
-                Keys.onReturnPressed: reject()
+                Keys.onReturnPressed: click()
             }
         }
 

@@ -12,6 +12,28 @@ Flickable {
     contentWidth: app.width
     contentHeight: content.height + dynamicMargin
 
+    property int currentDevices: !!yubiKey.availableDevices.length && yubiKey.availableDevices.length
+
+    onCurrentDevicesChanged: {
+        ensureYubiKey()
+    }
+
+    function ensureYubiKey() {
+        if (yubiKey.availableDevices.length > 1) {
+            navigator.waitForYubiKey({
+                "acceptCb": function(resp) {
+                    yubiKey.refreshCurrentDevice()
+                },
+                "cancelCb": function(resp) {
+                    navigator.pop()
+                }
+            })
+        }
+        if (settingsPanel.activeFocus && yubiKey.availableDevices.length === 0) {
+            navigator.pop()
+        }
+    }
+
     onContentHeightChanged: {
         if (contentHeight > app.height - toolBar.height) {
              scrollBar.active = true
@@ -39,6 +61,8 @@ Flickable {
     property string otpDescription: qsTr("Protocols for One-Time Passwords (OTP), challenge response and static passwords.")
 
     function configureInterfaces() {
+        navigator.goToLoading()
+        loadWhileWriting.start()
         writeInterfaces()
     }
 
@@ -97,12 +121,18 @@ Flickable {
         yubiKey.setMode(getEnabledInterfaces(), function (resp) {
             if (resp.success) {
                 if (!yubiKey.currentDevice.canWriteConfig) {
-                    navigator.confirm({
-                                "message": qsTr("Remove and re-insert your YubiKey!"),
-                                "buttons": false,
-                                "warning": false,
-                                "closePolicy": Popup.NoAutoClose
-                                })
+                    navigator.waitForYubiKey({
+                        "closePolicy": Popup.NoAutoClose,
+                        "heading": "Action required",
+                        "description": "Remove and re-insert your YubiKey",
+                        "reinsert": true,
+                        "nobuttons": true,
+                        "cancelCb": function(resp) {
+                            navigator.goToLoading()
+                            loadWhileWriting.start()
+                            navigator.snackBar(qsTr("Configured applications"))
+                        }
+                    })
                 }
             } else {
                 navigator.snackBarError(
@@ -133,6 +163,14 @@ Flickable {
 
     function legacyValidCombination() {
         return otpModeBtn.checked || fidoModeBtn.checked || ccidModeBtn.checked
+    }
+
+    Timer {
+        id: loadWhileWriting
+        interval: 2000
+        onTriggered: {
+            navigator.goToYubiKey()
+        }
     }
 
     ColumnLayout {
@@ -572,7 +610,7 @@ Flickable {
                     Layout.rightMargin: 16
                     Layout.columnSpan: gridLayout.columns
                     primary: true
-                    text: qsTr("Set")
+                    text: qsTr("Save")
                     enabled: !!yubiKey.currentDevice && configurationHasChanged() && validCombination()
                     onClicked: {
                         if (yubiKey.availableDevices.length > 1) {
@@ -716,7 +754,7 @@ Flickable {
                     Layout.topMargin: 16
                     Layout.rightMargin: 16
                     primary: true
-                    text: qsTr("Set")
+                    text: qsTr("Save")
                     Layout.columnSpan: gridLayoutLegacyKeys.columns
                     onClicked: {
                         if (yubiKey.availableDevices.length > 1) {

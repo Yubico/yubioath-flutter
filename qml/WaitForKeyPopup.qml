@@ -43,39 +43,21 @@ Dialog {
         }
     }
 
+    property string heading: qsTr("Remove YubiKey(s)")
+    property string description: qsTr("Make sure there is only one YubiKey inserted before proceeding.")
     property var cancelCb
     property var acceptedCb
-    property bool done: false
-    property bool removed: false
-    property bool ready: yubiKey.availableDevices.length === 1
-    property var currentDevice: !!yubiKey.currentDevice && yubiKey.currentDevice
-    property bool devRemoved: yubiKey.deviceRemoved
-    property bool devBack: yubiKey.deviceBack
+    property var reinsert: false
+    property bool nobuttons: false
+    property bool noDevice: yubiKey.availableDevices.length === 0
+    property bool ready: !reinsert && yubiKey.availableDevices.length === 1
 
-    onDevRemovedChanged: {
-        if (devRemoved) {
+    onNoDeviceChanged: {
+        if (!reinsert) {
+            reject()
+        } else {
+            reinsert = false
         }
-    }
-
-    onDevBackChanged: {
-        if (devBack) {
-            removed = true
-        }
-    }
-
-    onCurrentDeviceChanged: {
-        if (settings.useCustomReader && !ready) {
-            yubiKey.connectToCustomReader()
-        }
-
-
-        if (yubiKey.availableDevices.length === 0) {
-            removed = true
-        }
-    }
-
-    onReadyChanged: {
-        done = true
     }
 
     ColumnLayout {
@@ -83,7 +65,7 @@ Dialog {
         spacing: 0
 
         Label {
-            text: qsTr("Remove YubiKey(s)")
+            text: heading
             font.pixelSize: 14
             font.weight: Font.Medium
             wrapMode: Text.WordWrap
@@ -92,7 +74,7 @@ Dialog {
         }
 
         Label {
-            text: "Make sure there is only one YubiKey inserted before proceeding."
+            text: description
             color: primaryColor
             opacity: lowEmphasis
             font.pixelSize: 13
@@ -100,12 +82,12 @@ Dialog {
             textFormat: TextEdit.RichText
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
-            Layout.bottomMargin: 16
          }
 
         DialogButtonBox {
-            visible: !done
+            visible: !ready && !nobuttons
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.topMargin: 16
             Layout.bottomMargin: 0
             padding: 0
             background: Rectangle {
@@ -116,19 +98,15 @@ Dialog {
                 id: btnCancel
                 text: qsTr("Cancel")
                 DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
-                onClicked: {
-                    if (settings.useCustomReader)
-                        reset_cancel()
-                    else
-                        reject()
-                }
+                onClicked: reject()
                 Keys.onReturnPressed: reject()
             }
         }
 
         DialogButtonBox {
-            visible: done
+            visible: ready && !nobuttons
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.topMargin: 16
             Layout.bottomMargin: 0
             padding: 0
             background: Rectangle {
@@ -145,10 +123,5 @@ Dialog {
             }
         }
 
-    }
-
-    function reset_cancel() {
-        yubiKey.resetCancel()
-        reject()
     }
 }

@@ -34,6 +34,7 @@ Item {
         ComboBox {
             id: comboBox
             Layout.fillWidth: true
+            Material.accent: yubicoGreen
             implicitWidth: container.width
             font.pixelSize: 13
             flat: true
