@@ -252,6 +252,7 @@ Pane {
             }
             Menu {
                 id: contextMenu
+                width: 180
                 MenuItem {
                     icon.source: "../images/copy.svg"
                     icon.color: primaryColor

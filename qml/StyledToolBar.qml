@@ -281,21 +281,35 @@ ToolBar {
 
                 Menu {
                     id: authenticatorContextMenu
-                    width: 170
                     y: header.height
                     MenuItem {
                         text: "Scan QR code"
+                        icon.source: "../images/qr-scanner.svg"
+                        icon.color: primaryColor
+                        opacity: highEmphasis
+                        icon.width: 20
+                        icon.height: 20
                         onTriggered: yubiKey.scanQr()
                         enabled: !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                     }
                     MenuItem {
                         text: "Add manually"
+                        icon.source: "../images/edit.svg"
+                        icon.color: primaryColor
+                        opacity: highEmphasis
+                        icon.width: 20
+                        icon.height: 20
                         onTriggered: navigator.goToNewCredential()
                         enabled: !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                     }
                     MenuSeparator {}
                     MenuItem {
                         text: "Manage password"
+                        icon.source: "../images/password.svg"
+                        icon.color: primaryColor
+                        opacity: highEmphasis
+                        icon.width: 20
+                        icon.height: 20
                         enabled: !settings.otpMode && !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                         onTriggered: navigator.confirmInput({
                             "heading": text,
@@ -304,6 +318,11 @@ ToolBar {
                     }
                     MenuItem {
                         text: "Reset"
+                        icon.source: "../images/reset.svg"
+                        icon.color: primaryColor
+                        opacity: highEmphasis
+                        icon.width: 20
+                        icon.height: 20
                         enabled: !settings.otpMode && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                         onTriggered: navigator.confirm({
                             "heading": qsTr("Reset device?"),
@@ -336,10 +355,14 @@ ToolBar {
 
                 Menu {
                     id: yubikeyContextMenu
-                    width: 170
                     y: header.height
                     MenuItem {
                         text: "Toggle Applications"
+                        icon.source: "../images/apps.svg"
+                        icon.color: primaryColor
+                        opacity: highEmphasis
+                        icon.width: 20
+                        icon.height: 20
                         enabled: !!yubiKey.currentDevice && (yubiKey.supportsNewInterfaces() || !yubiKey.currentDevice.isNfc)
                         onTriggered: {
                             if (yubiKey.availableDevices.length > 1) {
