@@ -293,7 +293,7 @@ ToolBar {
                         enabled: !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                     }
                     MenuItem {
-                        text: "Add manually"
+                        text: "Add account"
                         icon.source: "../images/edit.svg"
                         icon.color: primaryColor
                         opacity: highEmphasis

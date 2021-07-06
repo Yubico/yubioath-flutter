@@ -114,7 +114,7 @@ Flickable {
 
                         }
                         Repeater {
-                            model: [shortcutAddAccount, shortcutCopy, shortcutDelete, shortcutFind, shortcutToggleFavorite]
+                            model: [shortcutScanQR, shortcutAddAccount, shortcutCopy, shortcutDelete, shortcutFind, shortcutToggleFavorite]
 
                             RowLayout {
                                 Label {

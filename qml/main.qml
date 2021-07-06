@@ -319,6 +319,14 @@ ApplicationWindow {
     }
 
     Shortcut {
+        id: shortcutScanQR
+        property string description: "Scan QR code"
+        sequence: "Shift+Ctrl+O"
+        enabled: navigator.isInAuthenticator() && !!yubiKey.currentDevice
+        onActivated: yubiKey.scanQr()
+    }
+
+    Shortcut {
         id: shortcutAddAccount
         property string description: "Add account"
         sequence: StandardKey.Open
