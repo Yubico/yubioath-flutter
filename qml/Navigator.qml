@@ -165,12 +165,10 @@ StackView {
     }
 
     function goToNewCredentialScan(credential) {
-        if (currentItem.objectName !== 'newCredentialView') {
-            push(newCredentialView.createObject(app, {
-                                                    "credential": credential,
-                                                    "manualEntry": false
-                                                }), StackView.Immediate)
-        }
+        push(newCredentialView.createObject(app, {
+                                                "credential": credential,
+                                                "manualEntry": false
+                                            }), StackView.Immediate)
     }
 
     function goToLoading() {

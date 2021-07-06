@@ -67,12 +67,11 @@ Flickable {
                 opacity: highEmphasis
             }
             Label {
-                text: qsTr("Drag and drop any image containing a QR code here.")
+                text: qsTr("Drag and drop URI or image containing a QR code here.")
                 horizontalAlignment: Qt.AlignHCenter
                 Layout.minimumWidth: 300
-                Layout.maximumWidth: app.width - dynamicMargin
-                                     < dynamicWidthSmall ? app.width - dynamicMargin : dynamicWidthSmall
-                Layout.rowSpan: 1
+                Layout.maximumWidth: dropAreaOverlay.width - dynamicMargin
+                Layout.rowSpan: 2
                 lineHeight: 1.1
                 wrapMode: Text.WordWrap
                 font.pixelSize: 13
@@ -93,17 +92,22 @@ Flickable {
         onExited: dropAreaOverlay.visible = false
         onDropped: {
             dropAreaOverlay.visible = false
-            var url = drop.urls[0]
+            var url
             var file
-            if (url.includes("file")) {
+            if (drop.hasUrls) {
+                url = drop.urls[0]
+            } else if (drop.hasText) {
+                url = drop.text
+            }
+            if (!url && url.includes("file")) {
                 if (Qt.platform.os === "windows") {
                     file = url.replace(/^(file:\/{3})/,"")
                 } else {
                     file = url.replace(/^(file:\/{2})/,"")
                 }
-                scanQr(ScreenShot.capture(file))
+                yubiKey.scanQr(ScreenShot.capture(file))
             } else {
-                scanQr(url)
+                yubiKey.scanQr(url)
             }
         }
     }
