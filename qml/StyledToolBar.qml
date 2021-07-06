@@ -336,12 +336,22 @@ ToolBar {
 
                 Menu {
                     id: yubikeyContextMenu
-                    width: 150
+                    width: 170
                     y: header.height
                     MenuItem {
-                        text: "Applications"
+                        text: "Toggle Applications"
                         enabled: !!yubiKey.currentDevice && (yubiKey.supportsNewInterfaces() || !yubiKey.currentDevice.isNfc)
-                        onTriggered: navigator.goToApplicationsView()
+                        onTriggered: {
+                            if (yubiKey.availableDevices.length > 1) {
+                                navigator.waitForYubiKey({
+                                    "acceptedCb": function(resp) {
+                                        navigator.goToApplicationsView()
+                                    }
+                                })
+                            } else {
+                                navigator.goToApplicationsView()
+                            }
+                        }
                     }
                 }
             }

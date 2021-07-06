@@ -21,7 +21,7 @@ Flickable {
     function ensureYubiKey() {
         if (yubiKey.availableDevices.length > 1) {
             navigator.waitForYubiKey({
-                "acceptCb": function(resp) {
+                "acceptedCb": function(resp) {
                     yubiKey.refreshCurrentDevice()
                 },
                 "cancelCb": function(resp) {
