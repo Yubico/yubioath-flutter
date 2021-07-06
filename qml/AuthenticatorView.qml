@@ -101,7 +101,7 @@ Pane {
             } else if (drop.hasText) {
                 url = drop.text
             }
-            if (!url && url.includes("file")) {
+            if (drop.hasUrls && url.includes("file")) {
                 if (Qt.platform.os === "windows") {
                     file = url.replace(/^(file:\/{3})/,"")
                 } else {

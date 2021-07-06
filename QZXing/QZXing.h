@@ -254,7 +254,7 @@ private:
     SourceFilterType imageSourceFilter;
     ImageHandler *imageHandler;
     int processingTime;
-    QString foundedFmt;
+    QString decodedFormat;
     QString charSet_;
     bool tryHarder_;
     bool lastDecodeOperationSucceded_;
