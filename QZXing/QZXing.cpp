@@ -527,7 +527,7 @@ QString QZXing::decodeImage(const QImage &image, int maxWidth, int maxHeight, bo
             int fmt = res->getBarcodeFormat().value;
             decodedFormat = decoderFormatToString(1<<fmt);
             charSet_ = QString::fromStdString(res->getCharSet());
-            qDebug() << "charSet_: " << charSet_;
+            //qDebug() << "charSet_: " << charSet_;
             if (!charSet_.isEmpty()) {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                     QTextCodec *codec = QTextCodec::codecForName(res->getCharSet().c_str());
