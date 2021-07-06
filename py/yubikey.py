@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
+import ctypes
 import struct
 import json
 import logging
@@ -404,6 +406,13 @@ class Controller(object):
             return success({'devices': []})
 
         self._devices = self._get_devices(otp_mode)
+        win_fido = False
+        no_access = sum(self._devs.values()) > len(self._devices)
+        if no_access:
+            if sys.platform == "win32" and \
+                    not bool(ctypes.windll.shell32.IsUserAnAdmin()) and \
+                    any(pid.get_interfaces() == USB_INTERFACE.FIDO for pid in self._devs.keys()):
+                win_fido = True
 
         # If no current serial, or current serial seems removed,
         # select the first serial found.
@@ -414,7 +423,7 @@ class Controller(object):
                 if dev['serial']:
                     self._current_serial = dev['serial']
                     break
-        return success({'devices': self._devices})
+        return success({'devices': self._devices, 'noAccess': no_access, 'winFido': win_fido})
 
     def _otp_get_code_or_touch(
                     self, slot, digits, timestamp, wait_for_touch=False):

@@ -335,6 +335,13 @@ Python {
                 if (availableDevices.length === 0) {
                     clearCurrentDeviceAndEntries()
                 }
+                if (resp.noAccess) {
+                    if (resp.winFido) {
+                        navigator.snackBarError(navigator.getErrorMessage('open_win_fido'))
+                    } else {
+                        navigator.snackBarError(navigator.getErrorMessage('open_device_failed'))
+                    }
+                }
 
                 // no current device, or current device is no longer available, pick a new one
                 if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
