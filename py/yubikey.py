@@ -385,6 +385,7 @@ class Controller(object):
                         if a in info.supported_capabilities.get(TRANSPORT.NFC, [])],
                     'hasPassword': has_password,
                     'ctapAvailable': ctap_available,
+                    'formFactor': info.form_factor,
                     'fidoHasPin': fido_pin_list[0],
                     'fidoPinRetries': fido_pin_list[1],
                     'isNfc': self._reader_filter and not self._reader_filter.lower().startswith("yubico yubikey"),
