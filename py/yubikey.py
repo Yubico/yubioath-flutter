@@ -550,7 +550,7 @@ class Controller(object):
                     True)
 
                 self._state = None
-
+            sleep(1.0)
         return success()
 
     def slots_status(self):

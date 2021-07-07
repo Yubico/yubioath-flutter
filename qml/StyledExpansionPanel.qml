@@ -185,11 +185,13 @@ Pane {
 
             ToolButton {
                 id: toolButton
-                icon.width: 24
+                icon.width: 20
+                icon.height: 20
                 icon.source: toolButtonIcon
                 icon.color: primaryColor
                 opacity: hovered ? fullEmphasis : (enabled ? lowEmphasis : disabledEmphasis)
                 visible: !isEnabled && !!toolButtonIcon
+                enabled: expansionPanel.enabled
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
