@@ -53,10 +53,6 @@ QZXingFilter::QZXingFilter(QObject *parent)
 
 QZXingFilter::~QZXingFilter()
 {
-    if(!processThread.isFinished()) {
-      processThread.cancel();
-      processThread.waitForFinished();
-    }
 }
 
 void QZXingFilter::handleDecodingStarted()
@@ -90,6 +86,12 @@ QZXingFilterRunnable::QZXingFilterRunnable(QZXingFilter * filter)
 }
 QZXingFilterRunnable::~QZXingFilterRunnable()
 {
+    if(filter != ZXING_NULLPTR && !filter->processThread.isFinished())
+    {
+        filter->processThread.cancel();
+        filter->processThread.waitForFinished();
+    }
+
     filter = ZXING_NULLPTR;
 }
 

@@ -14,7 +14,11 @@
 #include <QUrl>
 #include <QFileInfo>
 #include <QColor>
-#include <QtCore/QTextCodec>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    #include <QtCore/QTextCodec>
+#else
+    #include <QStringDecoder>
+#endif
 #include <QDebug>
 
 #ifdef ENABLE_ENCODER_QR_CODE
@@ -94,10 +98,10 @@ QZXing::QZXing(QZXing::DecoderFormat decodeHints, QObject *parent) : QObject(par
 #if QT_VERSION >= 0x040700
 void QZXing::registerQMLTypes()
 {
-    qmlRegisterType<QZXing>("QZXing", 2, 3, "QZXing");
+    qmlRegisterType<QZXing>("QZXing", 3, 1, "QZXing");
 
 #ifdef QZXING_MULTIMEDIA
-    qmlRegisterType<QZXingFilter>("QZXing", 2, 3, "QZXingFilter");
+    qmlRegisterType<QZXingFilter>("QZXing", 3, 1, "QZXingFilter");
 #endif //QZXING_MULTIMEDIA
 
 }
@@ -223,7 +227,7 @@ QString QZXing::decoderFormatToString(int fmt)
 
 QString QZXing::foundedFormat() const
 {
-    return foundedFmt;
+    return decodedFormat;
 }
 
 QString QZXing::charSet() const
@@ -521,23 +525,31 @@ QString QZXing::decodeImage(const QImage &image, int maxWidth, int maxHeight, bo
         QString string = QString(res->getText()->getText().c_str());
         if (!string.isEmpty() && (string.length() > 0)) {
             int fmt = res->getBarcodeFormat().value;
-            foundedFmt = decoderFormatToString(1<<fmt);
+            decodedFormat = decoderFormatToString(1<<fmt);
             charSet_ = QString::fromStdString(res->getCharSet());
+            //qDebug() << "charSet_: " << charSet_;
             if (!charSet_.isEmpty()) {
-                QTextCodec *codec = QTextCodec::codecForName(res->getCharSet().c_str());
-                if (codec)
-                    string = codec->toUnicode(res->getText()->getText().c_str());
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                    QTextCodec *codec = QTextCodec::codecForName(res->getCharSet().c_str());
+                    if (codec)
+                        string = codec->toUnicode(res->getText()->getText().c_str());
+#else
+                    QStringDecoder decoder(res->getCharSet().c_str());
+                    if(decoder.isValid()) {
+                        string = decoder.decode(QByteArray(res->getText()->getText().c_str()));
+                    }
+#endif
             }
 
             emit tagFound(string);
-            emit tagFoundAdvanced(string, foundedFmt, charSet_);
+            emit tagFoundAdvanced(string, decodedFormat, charSet_);
 
             QVariantMap metadataMap = metadataToMap(res->getMetadata());
-            emit tagFoundAdvanced(string, foundedFmt, charSet_, metadataMap);
+            emit tagFoundAdvanced(string, decodedFormat, charSet_, metadataMap);
 
             try {
                 const QRectF rect = getTagRect(res->getResultPoints(), binz->getBlackMatrix());
-                emit tagFoundAdvanced(string, foundedFmt, charSet_, rect);
+                emit tagFoundAdvanced(string, decodedFormat, charSet_, rect);
             }catch(zxing::Exception &/*e*/){}
         }
         emit decodingFinished(true);

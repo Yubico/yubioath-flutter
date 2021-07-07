@@ -70,11 +70,16 @@ QImage QZXingImageProvider::requestImage(const QString &id, QSize *size, const Q
         data = id.mid(slashIndex + 1);
     }
 
+#ifdef ENABLE_ENCODER_GENERIC
     QZXingEncoderConfig encoderConfig(format, requestedSize, correctionLevel, border, transparent);
 
     QString dataTemp(QUrl::fromPercentEncoding(data.toUtf8()));
 
     QImage result = QZXing::encodeData(dataTemp, encoderConfig);
+#else
+    QImage result;
+    qDebug() << "barcode encoder disabled. Add 'CONFIG += enable_encoder_qr_code'";
+#endif
     *size = result.size();
     return result;
 }
