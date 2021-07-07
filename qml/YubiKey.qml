@@ -26,6 +26,8 @@ Python {
 
     property bool isPolling: false
 
+    property bool isWinNonAdmin: false
+
     // Check if a application such as OATH, PIV, etc
     // is enabled on the current device.
     function currentDeviceEnabled(app) {
@@ -67,6 +69,10 @@ Python {
                 addImportPath(urlPrefix + '/py')
                 importModule('yubikey', function () {
                     yubikeyModuleLoaded = true
+
+                    doCall('yubikey.controller.is_win_non_admin', [], function(resp) {
+                        isWinNonAdmin = resp.winNonAdmin
+                    })
                 })
             })
         })

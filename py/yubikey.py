@@ -174,6 +174,8 @@ class Controller(object):
     _event = None
     _pin = None
 
+    _win_non_admin = sys.platform == "win32" and not ctypes.windll.shell32.IsUserAnAdmin()
+
     def __init__(self):
         self.settings = Settings('oath')
 
@@ -202,6 +204,9 @@ class Controller(object):
                 raise ValueError('no_device_custom_reader')
 
         return connect_to_device(self._current_serial, [SmartCardConnection])[0]
+
+    def is_win_non_admin(self):
+        return success({'winNonAdmin': self._win_non_admin})
 
     def check_descriptors(self):
         old_state = self._state
@@ -410,8 +415,7 @@ class Controller(object):
         win_fido = False
         no_access = sum(self._devs.values()) > len(self._devices)
         if no_access:
-            if sys.platform == "win32" and \
-                    not bool(ctypes.windll.shell32.IsUserAnAdmin()) and \
+            if self._win_non_admin and \
                     any(pid.get_interfaces() == USB_INTERFACE.FIDO for pid in self._devs.keys()):
                 win_fido = True
 
