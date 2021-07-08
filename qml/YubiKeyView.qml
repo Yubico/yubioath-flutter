@@ -41,13 +41,16 @@ Flickable {
     property string deviceImage: !!yubiKey.currentDevice ? yubiKey.getCurrentDeviceImage() : ""
 
     function getDisabledMessage(application) {
-        if (application === "FIDO2" && yubiKey.isWinNonAdmin) {
-            return "Windows Admin privileges required"
-        } else if (yubiKey.currentDeviceSupported(application)) {
-            return "Application disabled on YubiKey"
-        } else {
+        if(!yubiKey.currentDeviceSupported(application)) {
             return "Application unavailable on YubiKey"
         }
+        if(!yubiKey.currentDeviceEnabled(application)) {
+            return "Application disabled on YubiKey"
+        }
+        if(application == "FIDO2" && yubiKey.isWinNonAdmin) {
+            return "Launch app as administrator to access"
+        }
+        return "Application not accessible"
     }
 
     NoYubiKeySection {
