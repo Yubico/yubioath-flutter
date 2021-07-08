@@ -52,12 +52,17 @@ Flickable {
     }
 
     ColumnLayout {
-        width: settingsPanel.contentWidth
         id: content
         spacing: 0
 
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        width: app.width < dynamicWidth
+               ? app.width
+               : dynamicWidth
+
         ColumnLayout {
-            width: settingsPanel.contentWidth - 32
+            width: content.width - 32
             Layout.leftMargin: 16
             Layout.rightMargin: 16
 

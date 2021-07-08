@@ -35,9 +35,13 @@ Flickable {
 
     ColumnLayout {
         id: content
-        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-        width: parent.width
         spacing: 0
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        width: app.width < dynamicWidth
+               ? app.width
+               : dynamicWidth
 
         ColumnLayout {
             spacing: 0
@@ -70,15 +74,20 @@ Flickable {
                 Layout.topMargin: 24
 
                 StyledExpansionPanel {
-                    label: qsTr("Get help with Yubico Authenticator")
+                    label: qsTr("Help with Yubico Authenticator")
                     isEnabled: false
+                    backgroundColor: defaultElevated
+                    dropShadow: true
                     toolButtonIcon: "../images/launch.svg"
                     toolButtonToolTip: qsTr("Launch Yubico Authenticator website")
                     toolButton.onClicked: Qt.openUrlExternally("https://support.yubico.com/support/home");
                 }
 
                 StyledExpansionPanel {
-                    label: qsTr("Display keyboard shortcuts")
+                    label: qsTr("Show keyboard shortcuts")
+                    backgroundColor: defaultElevated
+                    dropShadow: true
+                    isBottomPanel: true
 
                     ColumnLayout {
                         Label {
@@ -144,7 +153,13 @@ Flickable {
                     opacity: lowEmphasis
                 }
                 Label {
-                    text: qsTr("Copyright © %1 Yubico.\nAll rights reserved.").arg(Qt.formatDateTime(new Date(),"yyyy"))
+                    text: qsTr("Copyright © %1 Yubico.").arg(Qt.formatDateTime(new Date(),"yyyy"))
+                    font.pixelSize: 13
+                    color: primaryColor
+                    opacity: lowEmphasis
+                }
+                Label {
+                    text: qsTr("All rights reserved.")
                     font.pixelSize: 13
                     color: primaryColor
                     opacity: lowEmphasis

@@ -110,8 +110,36 @@ Dialog {
             Layout.bottomMargin: 16
         }
 
+        RowLayout {
+            spacing: 0
+            width: parent.width
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            Layout.bottomMargin: 16
+
+            StyledImage {
+                source: "../images/warning.svg"
+                color: yubicoRed
+                iconWidth: 32
+                iconHeight: 32
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+                Layout.maximumWidth: 48
+            }
+
+            Label {
+                text: qsTr("This will delete all accounts and restore factory defaults of your YubiKey.")
+                color: primaryColor
+                opacity: highEmphasis
+                font.pixelSize: 13
+                font.weight: Font.Medium
+                lineHeight: 1.2
+                wrapMode: Text.WordWrap
+                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                Layout.fillWidth: true
+            }
+        }
+
         Label {
-            text: "Follow the instructions to perform a reset, abort at any time."
+            text: qsTr("Follow the instructions to perform a reset, abort at any time.")
             visible: !settings.useCustomReader
             color: primaryColor
             opacity: lowEmphasis

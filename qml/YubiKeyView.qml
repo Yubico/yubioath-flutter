@@ -64,9 +64,12 @@ Flickable {
     ColumnLayout {
         id: content
         visible: !noYubiKeySection.visible
-        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-        width: parent.width
-        spacing: 0
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        width: app.width < dynamicWidth
+               ? app.width
+               : dynamicWidth
 
         ColumnLayout {
             id: deviceInfo
@@ -140,9 +143,9 @@ Flickable {
 
                 StyledExpansionPanel {
                     label: qsTr("WebAuthn (FIDO2/U2F)")
-                    description: enabled ? qsTr("Manage PIN, fingerprints and credentials stored on the YubiKey.") : getDisabledMessage("FIDO2")
+                    description: enabled ? qsTr("Manage PIN, fingerprints and credentials stored on the YubiKey") : getDisabledMessage("FIDO2")
                     enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.ctapAvailable
-                    toolButtonIcon: !enabled && yubiKey.currentDeviceSupported("FIDO2") ? "../images/warning.svg" : ""
+                    toolButtonIcon: !enabled && yubiKey.currentDeviceSupported("FIDO2") || yubiKey.currentDeviceSupported("U2F") ? "../images/warning.svg" : ""
                     isFlickable: true
                     isEnabled: enabled
                     expandButton.onClicked: navigator.goToWebAuthnView()

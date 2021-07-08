@@ -13,7 +13,6 @@ Pane {
     property string label
     property string description
     property string metadata
-    property string keyImage
     property string backgroundColor: defaultBackground
     property string searchQuery: toolBar.searchField.text
     property string searchText: label.concat(":", description, ":", metadata)
@@ -23,10 +22,8 @@ Pane {
     property bool isExpanded: false
     property bool isTopPanel: false
     property bool isBottomPanel: false
-    property bool isSectionTitle: false
     property bool isVisible: true
     property bool dropShadow: false
-    property bool isNotInFocus: false
 
     property string toolButtonIcon
     property string toolButtonToolTip
@@ -58,26 +55,9 @@ Pane {
             if (isExpanded) {
                 isExpanded = false
             } else {
-                for (var i = 1; i < parent.children.length; ++i) {
-                    parent.children[i].isExpanded = false
-                }
                 isExpanded = true
             }
         }
-    }
- 
-    MouseArea {
-        id: panelMouseArea
-        onClicked: expandAction()
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: -16
-        anchors.rightMargin: -16
-        anchors.topMargin: -12
-        height: panelHeader.implicitHeight + 19
-        enabled: isEnabled && !isFlickable
-        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
     }
 
     ColumnLayout {
@@ -91,36 +71,6 @@ Pane {
             Layout.rightMargin: -24
             id: panelHeader
 
-            Rectangle {
-                id: rectangle
-                width: 40
-                height: 40
-                color: formHighlightItem
-                radius: width * 0.5
-                visible: keyImage
-                Layout.rightMargin: 8
-                Layout.topMargin: 0
-                Layout.bottomMargin: 6
-                Image {
-                    id: key
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    sourceSize.width: 32
-                    source: keyImage
-                    fillMode: Image.PreserveAspectFit
-                    visible: keyImage && !!yubiKey.currentDevice
-                }
-                StyledImage {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    iconWidth: 21
-                    iconHeight: 23
-                    source: keyImage
-                    visible: keyImage && !key.visible
-                    color: formImageOverlay
-                }
-            }
-
             ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
@@ -128,20 +78,9 @@ Pane {
                 Layout.topMargin: 0
                 Layout.bottomMargin: 0
                 visible: label
-                spacing: 4
+                spacing: 0
 
                 Label {
-                    visible: isSectionTitle
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                    text: label
-                    color: Material.primary
-                    font.pixelSize: 14
-                    font.weight: Font.Medium
-                    Layout.fillWidth: true
-                }
-
-                Label {
-                    visible: !isSectionTitle
                     text: searchQuery.length > 0 ? colorizeMatch(label, searchQuery) : label
                     textFormat: TextEdit.RichText
                     font.pixelSize: 13
@@ -149,6 +88,7 @@ Pane {
                     color: primaryColor
                     opacity: enabled ? highEmphasis : disabledEmphasis
                     Layout.fillWidth: true
+                    Layout.bottomMargin: 4
                 }
                 Label {
                     id: panelDescription
@@ -160,7 +100,7 @@ Pane {
                     text: searchQuery.length > 0 ? colorizeMatch(description, searchQuery) : description
                     textFormat: searchQuery.length > 0 ? TextEdit.RichText : TextEdit.PlainText
                     wrapMode: Text.WordWrap
-                    maximumLineCount: isExpanded ? 4 : 1
+                    maximumLineCount: isExpanded ? 4 : 2
                     elide: Text.ElideRight
                     visible: description
                 }

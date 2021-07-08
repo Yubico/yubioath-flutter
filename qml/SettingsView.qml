@@ -33,9 +33,14 @@ Flickable {
     property string searchFieldPlaceholder: ""
 
     ColumnLayout {
-        width: settingsPanel.contentWidth
         id: content
         spacing: 0
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        width: app.width < dynamicWidth
+               ? app.width
+               : dynamicWidth
 
         ColumnLayout {
             Layout.leftMargin: 16

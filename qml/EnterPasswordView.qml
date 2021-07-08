@@ -20,6 +20,12 @@ Flickable {
     boundsBehavior: Flickable.StopAtBounds
     contentWidth: app.width
 
+    property var currentDevices: yubiKey.currentDevice
+
+    onCurrentDevicesChanged: {
+        navigator.goToAuthenticator()
+    }
+
     function validate() {
         if (passwordField.text.valueOf().length > 0) {
             yubiKey.validate(passwordField.text, rememberPasswordCheckBox.checked, function (resp) {

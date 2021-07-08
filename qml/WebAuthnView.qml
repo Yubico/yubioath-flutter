@@ -67,13 +67,18 @@ Flickable {
     }
 
     ColumnLayout {
-        width: settingsPanel.contentWidth
         id: content
         spacing: 0
         visible: !!yubiKey.currentDevice
 
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        width: app.width < dynamicWidth
+               ? app.width
+               : dynamicWidth
+
         ColumnLayout {
-            width: settingsPanel.contentWidth - 32
+            width: content.width - 32
             Layout.leftMargin: 16
             Layout.rightMargin: 16
 
@@ -120,7 +125,7 @@ Flickable {
                 label: qsTr("Sign-in data")
                 visible: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2")
                 enabled: pinRetries > 0 && hasPin
-                description: qsTr("View and delete sign-in data stored on your security key")
+                description: qsTr("View and delete sign-in data stored on your YubiKey")
                 isFlickable: true
                 expandButton.onClicked: {
                     if (!!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinCache && yubiKey.currentDevice.fidoPinCache !== "") {

@@ -53,12 +53,17 @@ Flickable {
     property string searchFieldPlaceholder: ""
 
     ColumnLayout {
-        width: fidoCredentialsView.contentWidth
         id: content
         spacing: 0
 
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        width: app.width < dynamicWidth
+               ? app.width
+               : dynamicWidth
+
         ColumnLayout {
-            width: fidoCredentialsView.contentWidth - 32
+            width: content.width - 32
             Layout.leftMargin: 16
             Layout.rightMargin: 16
 

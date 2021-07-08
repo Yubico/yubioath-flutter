@@ -55,11 +55,15 @@ Flickable {
 
     ColumnLayout {
         id: content
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width - dynamicMargin
-        Layout.leftMargin: dynamicMarginSmall
-        Layout.rightMargin: dynamicMarginSmall
         spacing: 0
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+
+        width: app.width - dynamicMargin < dynamicWidth
+               ? app.width - dynamicMargin
+               : dynamicWidth
+
 
         Label {
             id: containerLabel
@@ -74,18 +78,15 @@ Flickable {
         }
 
         Label {
-            id: panelDescription
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            Layout.fillWidth: true
-            font.pixelSize: 13
+            text: qsTr("Use an external smart card reader to interact with YubiKey, enable NFC capabilities or remote usage.")
             color: primaryColor
             opacity: lowEmphasis
-            text: qsTr("Use an external smart card reader to interact with YubiKey, enable NFC capabilities or remote usage.")
+            font.pixelSize: 13
+            lineHeight: 1.2
             textFormat: TextEdit.PlainText
             wrapMode: Text.WordWrap
-            maximumLineCount: 4
-            elide: Text.ElideRight
-            bottomPadding: 16
+            Layout.maximumWidth: parent.width
+            Layout.bottomMargin: 16
         }
 
         Column {
@@ -133,7 +134,6 @@ Flickable {
                         checked: index == 0 ? true : false
                         text: modelData
                         opacity: highEmphasis
-                        implicitWidth: app.width - dynamicMargin
                     }
                 }
             }

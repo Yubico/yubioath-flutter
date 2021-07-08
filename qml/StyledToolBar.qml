@@ -286,7 +286,7 @@ ToolBar {
                         text: "Scan QR code"
                         icon.source: "../images/qr-scanner.svg"
                         icon.color: primaryColor
-                        opacity: highEmphasis
+                        opacity: enabled ? highEmphasis : disabledEmphasis
                         icon.width: 20
                         icon.height: 20
                         onTriggered: yubiKey.scanQr()
@@ -296,7 +296,7 @@ ToolBar {
                         text: "Add account"
                         icon.source: "../images/edit.svg"
                         icon.color: primaryColor
-                        opacity: highEmphasis
+                        opacity: enabled ? highEmphasis : disabledEmphasis
                         icon.width: 20
                         icon.height: 20
                         onTriggered: navigator.goToNewCredential()
@@ -307,7 +307,7 @@ ToolBar {
                         text: "Manage password"
                         icon.source: "../images/password.svg"
                         icon.color: primaryColor
-                        opacity: highEmphasis
+                        opacity: enabled ? highEmphasis : disabledEmphasis
                         icon.width: 20
                         icon.height: 20
                         enabled: !settings.otpMode && !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
@@ -320,7 +320,7 @@ ToolBar {
                         text: "Reset"
                         icon.source: "../images/reset.svg"
                         icon.color: primaryColor
-                        opacity: highEmphasis
+                        opacity: enabled ? highEmphasis : disabledEmphasis
                         icon.width: 20
                         icon.height: 20
                         enabled: !settings.otpMode && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
@@ -360,7 +360,7 @@ ToolBar {
                         text: "Toggle Applications"
                         icon.source: "../images/apps.svg"
                         icon.color: primaryColor
-                        opacity: highEmphasis
+                        opacity: enabled ? highEmphasis : disabledEmphasis
                         icon.width: 20
                         icon.height: 20
                         enabled: !!yubiKey.currentDevice && (yubiKey.supportsNewInterfaces() || !yubiKey.currentDevice.isNfc)

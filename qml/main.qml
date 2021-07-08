@@ -21,7 +21,7 @@ ApplicationWindow {
            | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
            | Qt.WindowCloseButtonHint | Qt.WindowFullscreenButtonHint
 
-    readonly property int dynamicWidth: 648
+    readonly property int dynamicWidth: 768
     readonly property int dynamicWidthSmall: 380
     readonly property int dynamicMargin: 32
     readonly property int dynamicMarginSmall: 16

@@ -341,7 +341,7 @@ StackView {
 
     Component {
         id: customReaderView
-        FlickableCustomReader {
+        CustomReader {
         }
     }
 
