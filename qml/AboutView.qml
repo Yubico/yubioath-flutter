@@ -74,7 +74,7 @@ Flickable {
                 Layout.topMargin: 24
 
                 StyledExpansionPanel {
-                    label: qsTr("Help with Yubico Authenticator")
+                    label: qsTr("Get help with Yubico Authenticator")
                     isEnabled: false
                     backgroundColor: defaultElevated
                     dropShadow: true

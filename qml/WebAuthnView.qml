@@ -22,6 +22,14 @@ Flickable {
     property bool pinIsBlocked: !!yubiKey.currentDevice && yubiKey.pinIsBlocked
     property bool uvBlocked: !!yubiKey.currentDevice && yubiKey.currentDevice.uvBlocked
 
+    property int currentDevices: !!yubiKey.availableDevices.length && yubiKey.availableDevices.length
+
+    onCurrentDevicesChanged: {
+        if(focus) {
+            navigator.pop()
+        }
+    }
+
     onUvBlockedChanged: {
         if (uvBlocked) {
             navigator.confirmInput({
@@ -55,21 +63,9 @@ Flickable {
 
     property string searchFieldPlaceholder: ""
 
-    Pane {
-        visible: !yubiKey.currentDevice
-        height: app.height
-        width: app.width
-        NoYubiKeySection {
-            id: noYubiKeySection
-            enabled: visible
-            Accessible.ignored: true
-        }
-    }
-
     ColumnLayout {
         id: content
         spacing: 0
-        visible: !!yubiKey.currentDevice
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
