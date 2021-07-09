@@ -8,7 +8,6 @@ Flickable {
 
     id: settingsPanel
     objectName: 'customReaderFlickable'
-    width: app.width
     contentWidth: app.width
     contentHeight: content.height + dynamicMargin
 
@@ -63,7 +62,6 @@ Flickable {
         width: app.width - dynamicMargin < dynamicWidth
                ? app.width - dynamicMargin
                : dynamicWidth
-
 
         Label {
             id: containerLabel
@@ -127,6 +125,7 @@ Flickable {
             Column {
                 id: column
                 spacing: -8
+                Layout.maximumWidth: content.width - 32
 
                 Repeater {
                     model: yubiKey.availableReaders

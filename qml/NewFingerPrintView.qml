@@ -9,24 +9,22 @@ Flickable {
     id: settingsPanel
     objectName: 'newFingerPrintViewFlickable'
     contentWidth: app.width
-    contentHeight: expandedHeight
+    contentHeight: content.height + dynamicMargin
     StackView.onActivating: enroll()
 
-    property var expandedHeight: content.implicitHeight + dynamicMargin
     property var last_template
-
     property var currentDevice: yubiKey.currentDevice
+
+    onContentHeightChanged: {
+        if (contentHeight > app.height - toolBar.height) {
+             scrollBar.active = true
+         }
+    }
 
     onCurrentDeviceChanged: {
         if(focus) {
             navigator.goToYubiKey()
         }
-    }
-
-    onExpandedHeightChanged: {
-        if (expandedHeight > app.height - toolBar.height) {
-             scrollBar.active = true
-         }
     }
 
     ScrollBar.vertical: ScrollBar {
@@ -57,14 +55,12 @@ Flickable {
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        width: app.width < dynamicWidth
-               ? app.width
+        width: app.width - dynamicMargin < dynamicWidth
+               ? app.width - dynamicMargin
                : dynamicWidth
 
         ColumnLayout {
-            width: content.width - 32
-            Layout.leftMargin: 16
-            Layout.rightMargin: 16
+            width: content.width
 
             Label {
                 text: "Add fingerprint"

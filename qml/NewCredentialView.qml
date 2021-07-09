@@ -12,12 +12,18 @@ Flickable {
 
     id: newCredentialViewId
     objectName: 'newCredentialView'
+    contentWidth: app.width
+    contentHeight: content.height + dynamicMargin
 
     property var credential
     property bool manualEntry
     property var fileName
 
-    property var expandedHeight: content.implicitHeight + dynamicMargin
+    onContentHeightChanged: {
+        if (contentHeight > app.height - toolBar.height) {
+             scrollBar.active = true
+         }
+    }
 
     onFocusChanged: {
         if (manualEntry) {
@@ -28,7 +34,6 @@ Flickable {
             }
         }
     }
-
 
     Pane {
         id: dropAreaOverlay
@@ -112,12 +117,6 @@ Flickable {
         }
     }
 
-    onExpandedHeightChanged: {
-        if (expandedHeight > app.height - toolBar.height) {
-             scrollBar.active = true
-         }
-    }
-
     ScrollBar.vertical: ScrollBar {
         id: scrollBar
         width: 8
@@ -130,9 +129,6 @@ Flickable {
 
     width: app.width
     boundsBehavior: Flickable.StopAtBounds
-    contentHeight: app.height-toolBar.height > expandedHeight
-                   ? app.height-toolBar.height
-                   : content.implicitHeight + dynamicMargin
 
     Keys.onEscapePressed: navigator.goToAuthenticator()
 

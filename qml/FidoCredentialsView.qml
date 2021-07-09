@@ -9,24 +9,22 @@ Flickable {
     id: fidoCredentialsView
     objectName: 'fidoCredentialsViewFlickable'
     contentWidth: app.width
-    contentHeight: expandedHeight
-
-    property var expandedHeight: content.implicitHeight + dynamicMargin
+    contentHeight: content.height + dynamicMargin
 
     property var fidoPinCache: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : ""
 
     property var currentDevice: yubiKey.currentDevice
 
+    onContentHeightChanged: {
+        if (contentHeight > app.height - toolBar.height) {
+             scrollBar.active = true
+         }
+    }
+
     onCurrentDeviceChanged: {
         if(focus) {
             navigator.goToYubiKey()
         }
-    }
-
-    onExpandedHeightChanged: {
-        if (expandedHeight > app.height - toolBar.height) {
-             scrollBar.active = true
-         }
     }
 
     onFocusChanged: {

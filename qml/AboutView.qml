@@ -8,14 +8,13 @@ Flickable {
     id: panel
     objectName: 'aboutView'
     contentWidth: app.width
-    contentHeight: content.visible ? expandedHeight : app.height - toolBar.height
+    contentHeight: content.height + dynamicMargin
+
     leftMargin: 0
     rightMargin: 0
 
-    property var expandedHeight: content.implicitHeight + dynamicMargin
-
-    onExpandedHeightChanged: {
-        if (expandedHeight > app.height - toolBar.height) {
+    onContentHeightChanged: {
+        if (contentHeight > app.height - toolBar.height) {
              scrollBar.active = true
          }
     }

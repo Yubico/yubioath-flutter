@@ -9,14 +9,13 @@ Flickable {
     id: settingsPanel
     objectName: 'yubiKeyWebAuthnView'
     contentWidth: app.width
-    contentHeight: expandedHeight
+    contentHeight: content.height + dynamicMargin
     StackView.onActivating: {
         yubiKey.refreshCurrentDevice()
     }
 
     property bool isBusy
 
-    property var expandedHeight: content.implicitHeight + dynamicMargin
     property bool hasPin: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
     property int pinRetries: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinRetries
     property bool pinIsBlocked: !!yubiKey.currentDevice && yubiKey.pinIsBlocked
@@ -44,8 +43,8 @@ Flickable {
         }
     }
 
-    onExpandedHeightChanged: {
-        if (expandedHeight > app.height - toolBar.height) {
+    onContentHeightChanged: {
+        if (contentHeight > app.height - toolBar.height) {
              scrollBar.active = true
          }
     }
