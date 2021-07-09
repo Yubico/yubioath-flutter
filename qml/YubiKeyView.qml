@@ -164,6 +164,7 @@ Flickable {
                     toolButtonIcon: !enabled && yubiKey.currentDeviceSupported("OTP") ? "../images/warning.svg" : ""
                     isEnabled: enabled
                     isFlickable: true
+                    expandButton.onClicked: navigator.goToOneTimePasswordView()
                 }
 */
              }

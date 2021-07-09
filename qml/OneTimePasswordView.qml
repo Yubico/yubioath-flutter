@@ -7,7 +7,7 @@ import QtGraphicalEffects 1.0
 Flickable {
 
     id: settingsPanel
-    objectName: 'yubiKeyOneTimePasswordView'
+    objectName: 'oneTimePasswordFlickable'
     contentWidth: app.width
     contentHeight: content.height + dynamicMargin
 
@@ -28,7 +28,27 @@ Flickable {
     }
     boundsBehavior: Flickable.StopAtBounds
 
-    property string searchFieldPlaceholder: qsTr("Search configuration")
+    property string searchFieldPlaceholder: ""
+
+    property bool slotConfigured
+
+    function isSlotConfigured(slot) {
+        yubiKey.slotsStatus(function (resp) {
+            if (resp.success) {
+                slotConfigured = resp.status[slot]
+            } else {
+                if (resp.error_id === 'timeout') {
+                    navigator.snackBarError(qsTr("Failed to load OTP application"))
+                } else {
+                    navigator.snackBarError(
+                                navigator.getErrorMessage(
+                                    resp.error_id))
+                }
+                navigator.home()
+            }
+        })
+        return slotConfigured
+    }
 
     ColumnLayout {
         width: settingsPanel.contentWidth
@@ -38,12 +58,24 @@ Flickable {
         StyledExpansionContainer {
             title: qsTr("One-Time Password (OTP)")
 
-            SettingsPanelOtp {
-                id: otp0
-                slot: 0 }
-            SettingsPanelOtp {
-                id: otp1
-                slot: 1 }
+            StyledExpansionPanel {
+                label: qsTr("Short touch (slot 1)")
+                description: isSlotConfigured(0) ? qsTr("Slot is programmed") : qsTr("Slot is empty")
+                enabled: !!yubiKey.currentDevice && yubiKey.currentDeviceSupported("OTP")
+                toolButtonIcon: !enabled && yubiKey.currentDeviceSupported("OTP") ? "../images/warning.svg" : ""
+                isFlickable: true
+                isEnabled: enabled
+                expandButton.onClicked: navigator.goToOneTimePasswordSlot(0)
+            }
+            StyledExpansionPanel {
+                label: qsTr("Long touch (slot 2)")
+                description: isSlotConfigured(1) ? qsTr("Slot is programmed") : qsTr("Slot is empty")
+                enabled: !!yubiKey.currentDevice && yubiKey.currentDeviceSupported("OTP")
+                toolButtonIcon: !enabled && yubiKey.currentDeviceSupported("OTP") ? "../images/warning.svg" : ""
+                isFlickable: true
+                isEnabled: enabled
+                expandButton.onClicked: navigator.goToOneTimePasswordSlot(1)
+            }
             SettingsPanelOtpSwap {}
         }
     }

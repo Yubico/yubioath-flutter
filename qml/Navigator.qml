@@ -145,8 +145,16 @@ StackView {
     }
 
     function goToOneTimePasswordView() {
-        if (currentItem.objectName !== 'oneTimePasswordView') {
-            clearAndPush(yubiKeyOneTimePasswordView, StackView.Immediate)
+        if (currentItem.objectName !== 'oneTimePasswordFlickable') {
+            push(oneTimePasswordFlickable, StackView.PushTransition)
+        }
+    }
+
+    function goToOneTimePasswordSlot(slot) {
+        if (currentItem.objectName !== 'oneTimePasswordSlotFlickable') {
+            push(oneTimePasswordSlotFlickable.createObject(app, {
+                                        "slot": slot
+                                    }), StackView.PushTransition)
         }
     }
 
@@ -316,8 +324,14 @@ StackView {
     }
 
     Component {
-        id: yubiKeyOneTimePasswordView
+        id: oneTimePasswordFlickable
         OneTimePasswordView {
+        }
+    }
+
+    Component {
+        id: oneTimePasswordSlotFlickable
+        SettingsPanelOtp {
         }
     }
 
