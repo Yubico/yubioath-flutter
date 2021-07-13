@@ -1,27 +1,182 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import "utils.js" as Utils
 
 StackView {
-    initialItem: credentialsView
+
+    // Navigator is responsible for changing the views, and showing error messages.
+    // It can also report back the current view, and show confirmaton dialogs.
+
+    initialItem: authenticatorView
+
+
     onCurrentItemChanged: {
         if (currentItem) {
             currentItem.forceActiveFocus()
         }
     }
-    property bool isShowingAbout
 
     Accessible.ignored: true
+    width: app.width
 
     function clearAndPush(view) {
         clear()
         push(view, StackView.Immediate)
     }
 
+    function hasSelectedOathCredential() {
+        return !!currentItem && !!currentItem.currentCredentialCard
+    }
+
+    function oathCopySelectedCredential() {
+        currentItem.currentCredentialCard.calculateCard(true)
+    }
+
+    function oathDeleteSelectedCredential() {
+        currentItem.currentCredentialCard.deleteCard()
+    }
+
+    function oathToggleFavoriteSelectedCredential() {
+        currentItem.currentCredentialCard.toggleFavorite()
+    }
+
+    function isInAuthenticator() {
+        return !!currentItem && currentItem.objectName === 'authenticatorView'
+    }
+
+    function isInYubiKeySection() {
+        return !!currentItem && currentItem.objectName.includes('yubiKey')
+    }
+
+    function isInYubiKeyView() {
+        return !!currentItem && currentItem.objectName === 'yubiKeyView'
+    }
+
+    function isInSettings() {
+        return !!currentItem && currentItem.objectName === 'settingsView'
+    }
+
+    function isInFlickable() {
+        if (!!currentItem && currentItem.objectName.includes('yubiKeyWebAuthnView'))
+            return true
+        return !!currentItem && currentItem.objectName.includes('Flickable')
+    }
+
+    function isInLoading() {
+        return !!currentItem && currentItem.objectName === 'loadingView'
+    }
+
+    function isInNewOathCredential() {
+        return !!currentItem && currentItem.objectName === 'newCredentialView'
+    }
+
+    function isInEnterPassword() {
+        return !!currentItem && currentItem.objectName === 'enterPasswordView'
+    }
+
+    function isInAbout() {
+        return !!currentItem && currentItem.objectName === 'aboutView'
+    }
+
+    function isInNewFingerprint() {
+        return !!currentItem && currentItem.objectName === 'newFingerPrintViewFlickable'
+    }
+
+    function goToAuthenticator() {
+        settings.activeView = 'authenticatorView'
+
+        // Before navigating to Authenticator view,
+        // Make sure credentials are up to date by doing
+        // a calculate all call.
+
+        function pushAuthenticatorView() {
+            if (currentItem.objectName !== 'authenticatorView') {
+                clearAndPush(authenticatorView)
+            }
+        }
+
+        if (yubiKey.currentDeviceEnabled("OATH")) {
+            yubiKey.oathCalculateAllOuter(pushAuthenticatorView)
+        } else {
+            pushAuthenticatorView()
+        }
+    }
+
     function goToSettings() {
         if (currentItem.objectName !== 'settingsView') {
-            push(settingsView, StackView.Immediate)
+            clearAndPush(settingsView, StackView.Immediate)
         }
+    }
+
+    function goToAbout() {
+        if (currentItem.objectName !== 'aboutView') {
+            clearAndPush(aboutView, StackView.Immediate)
+        }
+    }
+
+    function goToYubiKey() {
+        settings.activeView = 'yubiKeyView'
+        if (currentItem.objectName !== 'yubiKeyView') {
+            clearAndPush(yubiKeyView, StackView.Immediate)
+        }
+    }
+
+    function goToWebAuthnView() {
+        if (currentItem.objectName !== 'webAuthnView') {
+            push(yubiKeyWebAuthnView, StackView.PushTransition)
+        }
+    }
+
+    function goToFingerPrintsView() {
+        if (currentItem.objectName !== 'fingerPrintsView') {
+            push(fingerPrintsViewFlickable, StackView.PushTransition)
+        }
+    }
+
+    function goToFidoCredentialsView() {
+        if (currentItem.objectName !== 'fidoCredentialsView') {
+            push(fidoCredentialsViewFlickable, StackView.PushTransition)
+        }
+    }
+
+    function goToNewFingerPrintView() {
+        if (currentItem.objectName !== 'newFingerPrintView') {
+            push(newFingerPrintViewFlickable, StackView.PushTransition)
+        }
+    }
+
+    function goToOneTimePasswordView() {
+        if (currentItem.objectName !== 'oneTimePasswordFlickable') {
+            push(oneTimePasswordFlickable, StackView.PushTransition)
+        }
+    }
+
+    function goToOneTimePasswordSlot(slot) {
+        if (currentItem.objectName !== 'oneTimePasswordSlotFlickable') {
+            push(oneTimePasswordSlotFlickable.createObject(app, {
+                                        "slot": slot
+                                    }), StackView.PushTransition)
+        }
+    }
+
+    function goToApplicationsView() {
+        if (currentItem.objectName !== 'applicationsFlickable') {
+            push(applicationsFlickable, StackView.PushTransition)
+        }
+    }
+
+    function goToNewCredential() {
+        if (currentItem.objectName !== 'newCredentialView') {
+            push(newCredentialView.createObject(app, {
+                                                    "manualEntry": true
+                                                }), StackView.Immediate)
+        }
+    }
+
+    function goToNewCredentialScan(credential) {
+        push(newCredentialView.createObject(app, {
+                                                "credential": credential,
+                                                "manualEntry": false
+                                            }), StackView.Immediate)
     }
 
     function goToLoading() {
@@ -30,54 +185,16 @@ StackView {
         }
     }
 
-    function goToEnterPasswordIfNotInSettings() {
-        if (currentItem.objectName !== 'enterPasswordView'
-                && currentItem.objectName !== 'settingsView') {
+    function goToEnterPassword() {
+        if (currentItem.objectName !== 'enterPasswordView') {
             clearAndPush(enterPasswordView, StackView.Immediate)
         }
     }
 
-    function home() {
-        if (!!yubiKey.currentDevice) {
-
-            // If locked, prompt for password
-            if (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword
-                    && !yubiKey.currentDeviceValidated) {
-                clearAndPush(enterPasswordView)
-                return
-            }
-            navigator.goToCredentials()
-        } else {
-            clearAndPush(credentialsView)
+    function goToCustomReader() {
+        if (currentItem.objectName !== 'customReaderView') {
+            push(customReaderView, StackView.PushTransition)
         }
-    }
-
-    function goToCredentials(force) {
-        if (currentItem.objectName !== 'credentialsView') {
-            clearAndPush(credentialsView)
-        }
-    }
-
-    function goToCredentialsIfNotInSettings() {
-        if (currentItem.objectName !== 'credentialsView'
-                && currentItem.objectName !== 'settingsView') {
-            clearAndPush(credentialsView)
-        }
-    }
-
-    function goToNewCredentialManual() {
-        if (currentItem.objectName !== 'newCredentialView') {
-            push(newCredentialView.createObject(app, {
-                                                    "manualEntry": true
-                                                }), StackView.Immediate)
-        }
-    }
-
-    function goToNewCredentialAuto(credential) {
-        push(newCredentialView.createObject(app, {
-                                                "credential": credential,
-                                                "manualEntry": false
-                                            }), StackView.Immediate)
     }
 
     function confirm(options) {
@@ -85,11 +202,19 @@ StackView {
         popup.open()
     }
 
-    function about() {
-        if (!isShowingAbout) {
-            var popup = aboutPopup.createObject(app)
-            popup.open()
-        }
+    function confirmInput(options) {
+        var popup = confirmationInputPopup.createObject(app, options)
+        popup.open()
+    }
+
+    function confirmFidoReset(options) {
+        var popup = confirmationResetPopup.createObject(app, options)
+        popup.open()
+    }
+
+    function waitForYubiKey(options) {
+        var popup = waitForYubiKeyPopup.createObject(app, options)
+        popup.open()
     }
 
     function snackBar(message) {
@@ -100,10 +225,19 @@ StackView {
     }
 
     function snackBarError(message) {
-        var sbe = snackBarErrorComponent.createObject(app, {
-                                                          "message": message
-                                                      })
-        sbe.open()
+        var sb = snackBarComponent.createObject(app, {
+                                                    "message": message,
+                                                    "backgroundColor": yubicoRed
+                                                })
+        sb.open()
+    }
+
+    function snackBarInfo(message) {
+        var sb = snackBarComponent.createObject(app, {
+                                                    "message": message,
+                                                    "backgroundColor": snackBarInfoBg,
+                                                })
+        sb.open()
     }
 
     function getErrorMessage(error_id) {
@@ -120,28 +254,90 @@ StackView {
             return qsTr('No YubiKey found')
         case 'open_device_failed':
             return qsTr('Failed to connect to YubiKey')
+        case 'open_win_fido':
+            return qsTr('Failed to connect, FIDO access requires running as admin')
         case 'ccid_error':
             return qsTr('Failed to connect to YubiKey')
         case 'timeout':
             return qsTr('Failed to read from slots')
         case 'failed_to_parse_uri':
             return qsTr('Failed to read credential from QR code')
+        case 'wrong_lock_code':
+            return qsTr('Wrong lock code')
+        case 'interface_config_locked':
+            return qsTr('Configuration locked')
         case 'no_pcscd':
             return qsTr('Is the pcscd/smart card service running?')
+        case 'no_device_custom_reader':
+            return qsTr('No device found')
         default:
             return qsTr('Unknown error')
         }
     }
 
     Component {
-        id: credentialsView
-        CredentialsView {
+        id: authenticatorView
+        AuthenticatorView {
         }
     }
 
     Component {
         id: settingsView
         SettingsView {
+        }
+    }
+
+    Component {
+        id: yubiKeyView
+        YubiKeyView {
+        }
+    }
+
+    Component {
+        id: aboutView
+        AboutView {
+        }
+    }
+
+    Component {
+        id: yubiKeyWebAuthnView
+        WebAuthnView {
+        }
+    }
+
+    Component {
+        id: fingerPrintsViewFlickable
+        FingerPrintsView {
+        }
+    }
+
+    Component {
+        id: fidoCredentialsViewFlickable
+        FidoCredentialsView {
+        }
+    }
+
+    Component {
+        id: newFingerPrintViewFlickable
+        NewFingerPrintView {
+        }
+    }
+
+    Component {
+        id: oneTimePasswordFlickable
+        OneTimePasswordView {
+        }
+    }
+
+    Component {
+        id: oneTimePasswordSlotFlickable
+        SettingsPanelOtp {
+        }
+    }
+
+    Component {
+        id: applicationsFlickable
+        ApplicationsView {
         }
     }
 
@@ -158,6 +354,13 @@ StackView {
     }
 
     Component {
+        id: customReaderView
+        CustomReader {
+        }
+    }
+
+
+    Component {
         id: loadingView
         LoadingView {
         }
@@ -170,8 +373,20 @@ StackView {
     }
 
     Component {
-        id: aboutPopup
-        AboutPopup {
+        id: confirmationInputPopup
+        ConfirmationInputPopup {
+        }
+    }
+
+    Component {
+        id: confirmationResetPopup
+        ResetFidoPopup {
+        }
+    }
+
+    Component {
+        id: waitForYubiKeyPopup
+        WaitForKeyPopup {
         }
     }
 
@@ -181,10 +396,4 @@ StackView {
         }
     }
 
-    Component {
-        id: snackBarErrorComponent
-        SnackBar {
-            buttonColor: yubicoRed
-        }
-    }
 }

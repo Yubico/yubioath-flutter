@@ -7,7 +7,7 @@ Rectangle {
 
     property string letter: !!credential ? getIconLetter() : ""
     property int size: 40
-    property var shade: isDark() ? Material.Shade200 : Material.Shade400
+    property var shade: isDark() ? Material.Shade300 : Material.Shade400
     width: size
     height: size
     radius: width * 0.5
@@ -50,16 +50,15 @@ Rectangle {
     }
 
     function getIconLetter() {
-        return credential.issuer ? credential.issuer.charAt(
-                                       0) : credential.name.charAt(0)
+        return credential.issuer ? credential.issuer.charAt(0) : credential.name.charAt(0)
     }
 
     Label {
         text: letter.toUpperCase()
-        font.pixelSize: 24
+        font.pixelSize: 22
         font.weight: Font.Light
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        color: defaultElevated
+        color: fullContrast
     }
 }

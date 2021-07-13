@@ -11,24 +11,32 @@ ApplicationWindow {
 
     id: app
 
-    width: 300
-    height: 502
-    minimumWidth: 300
-    minimumHeight: 196
+    width: 270
+    height: 582 // (idealCellHeight * x) + 46
+    minimumWidth: 270
+    minimumHeight: 381 // (idealCellHeight * x) + 46
     visible: false
 
     flags: Qt.Window | Qt.WindowFullscreenButtonHint | Qt.WindowTitleHint
            | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint
            | Qt.WindowCloseButtonHint | Qt.WindowFullscreenButtonHint
 
-    readonly property string yubicoGreen: "#9aca3c"
+    readonly property int dynamicWidth: 768
+    readonly property int dynamicWidthSmall: 380
+    readonly property int dynamicMargin: 32
+    readonly property int dynamicMarginSmall: 16
+
+    readonly property string yubicoBlue: "#325f74"
+    readonly property string yubicoGreen: isDark() ? "#b1cf77" : "#325f74"
     readonly property string yubicoWhite: "#ffffff"
-    readonly property string yubicoRed: Material.color(Material.Red, Material.Shade600)
+    readonly property string yubicoRed: isDark() ? "#cf6679" : "#bf2029"
 
-    property string primaryColor: isDark() ? "#ffffff" : "#303030"
+    property string primaryColor: isDark() ? "#ffffff" : "#2a2a2a"
+    property string fullContrast: isDark() ? "#000000" : "#ffffff"
 
-    readonly property string defaultBackground: isDark() ? "#303030" : "#f7f8f9"
+    readonly property string defaultBackground: isDark() ? "#303030" : "#ffffff"
     readonly property string defaultElevated: isDark() ? "#383838" : "#ffffff"
+    readonly property string defaultHovered: isDark() ? "#424242" : "#eeeeee"
     readonly property string defaultImageOverlay: isDark() ? "#565656" : "#dddddd"
     readonly property string defaultForeground: isDark() ? "#fafafa" : "#565656"
 
@@ -38,9 +46,13 @@ ApplicationWindow {
     property string formImageOverlay: isDark() ? "#d8d8d8" : "#727272"
     property string formStepBackground: isDark() ? "#565656" : "#bbbbbb"
     property string formHighlightItem: isDark() ? "#4a4a4a" : "#e9e9e9"
+    property string formButtonBorder: isDark() ? "#5f6368" : "#dadce0"
 
-    property string toolTipForeground: app.isDark() ? "#fafafa" : "#fbfbfb"
-    property string toolTipBackground: app.isDark() ? "#4a4a4a" : "#7f7f7f"
+    property string toolTipForeground: isDark() ? "#fafafa" : "#fbfbfb"
+    property string toolTipBackground: isDark() ? "#4a4a4a" : "#7f7f7f"
+
+    property string iconFavorite: "#f7bd0c"
+    property string snackBarInfoBg: isDark() ? "#bfbfbf" : "#404040"
 
     property var fullEmphasis: 1.0
     property var highEmphasis: 0.87
@@ -49,14 +61,13 @@ ApplicationWindow {
 
     property var cardSelectedEmphasis: 0.08
     property var cardHoveredEmphasis: 0.05
-    property var cardNormalEmphasis: 0.03
+    property var cardNormalEmphasis: 0
 
-    property var currentCredentialCard
-    property string iconFavorite: "#f7bd0c"
+    property bool showDeviceConfiguration: false
 
     Material.theme: settings.theme
     Material.primary: yubicoGreen
-    Material.accent: yubicoGreen
+    Material.accent: isDark() ? yubicoGreen : "#9aca3c"
     Material.foreground: defaultForeground
     Material.background: defaultBackground
 
@@ -64,9 +75,13 @@ ApplicationWindow {
         id: toolBar
     }
 
+    NavigationDrawer {
+        id: drawer
+    }
+
     // Don't refresh credentials when window is minimized or hidden
     // See http://doc.qt.io/qt-5/qwindow.html#Visibility-enum
-    property bool isInForeground: visibility != 3 && visibility != 0
+    property bool isInForeground: visibility !== 3 && visibility !== 0
     onIsInForegroundChanged: {
         (poller.running = isInForeground || settings.closeToTray)
     }
@@ -74,6 +89,7 @@ ApplicationWindow {
         updateTrayVisibility()
         ensureMinimumWindowSize()
         ensureValidWindowPosition()
+        restoreLastView()
         app.visible = !(settings.closeToTray && settings.hideOnLaunch)
     }
 
@@ -118,6 +134,13 @@ ApplicationWindow {
 
     function isDark() {
         return app.Material.theme === Material.Dark
+    }
+
+    function restoreLastView() {
+        if(settings.activeView == 'yubiKeyView') {
+            navigator.goToYubiKey()
+        }
+        // Defaults to "authenticatorView"
     }
 
     function saveScreenLayout() {
@@ -209,6 +232,15 @@ ApplicationWindow {
                 }
             })
         }
+
+    }
+
+    function colorizeMatch(string, query) {
+        return string.replace(escapeRegExp(query.trim(), "gi"), "<span style=\"background-color:'#ffeb3b';color:'#000000';\">$&</span>") + " "
+    }
+
+    function escapeRegExp(string, flags) {
+      return RegExp(string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, "|"), flags)
     }
 
     function getFavoriteEntries() {
@@ -224,58 +256,111 @@ ApplicationWindow {
     }
 
     Shortcut {
-        sequence: StandardKey.Copy
-        enabled: !!currentCredentialCard
-        onActivated: app.currentCredentialCard.calculateCard(true)
+        id: shortcutGoToAuthenticator
+        property string description: "Go to Authenticator"
+        sequence: "Ctrl+1"
+        onActivated: navigator.goToAuthenticator()
+        context: Qt.ApplicationShortcut
+        enabled: yubiKey.currentDeviceEnabled("OATH")
     }
 
     Shortcut {
-        sequence: StandardKey.Delete
-        enabled: !!currentCredentialCard
-        onActivated: app.currentCredentialCard.deleteCard()
+        id: shortcutGoToYubiKey
+        property string description: "Go to Configure YubiKey"
+        sequence: "Ctrl+2"
+        onActivated: navigator.goToYubiKey()
+        context: Qt.ApplicationShortcut
     }
 
     Shortcut {
-        sequence: "Ctrl+D"  // This becomes Cmd + D on macOS
-        enabled: !!currentCredentialCard
-        onActivated: app.currentCredentialCard.toggleFavorite()
-    }
-
-    Shortcut {
-        sequence: StandardKey.Open
-        enabled: !!yubiKey.currentDevice && yubiKey.currentDeviceValidated
-        onActivated: yubiKey.scanQr()
-    }
-
-    Shortcut {
-        sequence: StandardKey.Find
-        onActivated: toolBar.searchField.forceActiveFocus()
+        id: shortcutGoToSettings
+        property string description: "Go to Settings"
+        sequence: "Ctrl+3"
+        onActivated: navigator.goToSettings()
+        context: Qt.ApplicationShortcut
     }
 
     Shortcut {
         sequence: StandardKey.Preferences
         onActivated: navigator.goToSettings()
+        context: Qt.ApplicationShortcut
     }
 
     Shortcut {
-        sequence: StandardKey.Quit
+        id: shortcutGoToAbout
+        property string description: "Go to About"
+        sequence: "Ctrl+4"
+        onActivated: navigator.goToAbout()
+        context: Qt.ApplicationShortcut
+    }
+
+    Shortcut {
+        id: shortcutCopy
+        property string description: "Copy account"
+        sequence: StandardKey.Copy
+        enabled: navigator.isInAuthenticator() && navigator.hasSelectedOathCredential()
+        onActivated: navigator.oathCopySelectedCredential()
+    }
+
+    Shortcut {
+        id: shortcutDelete
+        property string description: "Delete account"
+        sequence: StandardKey.Delete
+        enabled: navigator.isInAuthenticator() && navigator.hasSelectedOathCredential()
+        onActivated: navigator.oathDeleteSelectedCredential()
+    }
+
+    Shortcut {
+        id: shortcutToggleFavorite
+        property string description: "Toggle favorite"
+        sequence: "Ctrl+D"
+        enabled: navigator.isInAuthenticator() && navigator.hasSelectedOathCredential()
+        onActivated: navigator.oathToggleFavoriteSelectedCredential()
+    }
+
+    Shortcut {
+        id: shortcutScanQR
+        property string description: "Scan QR code"
+        sequence: "Shift+Ctrl+O"
+        enabled: navigator.isInAuthenticator() && !!yubiKey.currentDevice
+        onActivated: yubiKey.scanQr()
+    }
+
+    Shortcut {
+        id: shortcutAddAccount
+        property string description: "Add account"
+        sequence: StandardKey.Open
+        enabled: navigator.isInAuthenticator() && !!yubiKey.currentDevice
+        onActivated: navigator.goToNewCredential()
+    }
+
+    Shortcut {
+        id: shortcutFind
+        property string description: "Find account"
+        enabled: navigator.isInAuthenticator() && !!yubiKey.currentDevice
+        sequence: StandardKey.Find
+        onActivated: toolBar.searchField.forceActiveFocus()
+    }
+
+    Shortcut {
+        id: shortcutQuit
+        property string description: "Quit application"
+        sequence: "Ctrl+Q"
         context: Qt.ApplicationShortcut
         onActivated: Qt.quit()
     }
 
     Shortcut {
+        id: shortcutClose
+        property string description: "Close application window"
         sequence: StandardKey.Close
         onActivated: app.close()
         context: Qt.ApplicationShortcut
     }
 
     Shortcut {
-        sequence: StandardKey.Italic
-        onActivated: navigator.about()
-        context: Qt.ApplicationShortcut
-    }
-
-    Shortcut {
+        id: shortcutFullScreen
+        property string description: "Toggle full screen"
         sequence: StandardKey.FullScreen
         onActivated: visibility = visibility
                      === Window.FullScreen ? Window.Windowed : Window.FullScreen
@@ -294,12 +379,13 @@ ApplicationWindow {
         property int slot2digits
 
         property bool otpMode
+
         property bool useCustomReader
         property string customReaderName
 
         property bool closeToTray
         property bool hideOnLaunch
-        property bool requireTouch: true
+        property bool requireTouch
 
         property int theme: Material.System
 
@@ -313,6 +399,8 @@ ApplicationWindow {
         property int desktopAvailableHeight
 
         property var favorites: []
+
+        property string activeView
 
         onCloseToTrayChanged: updateTrayVisibility()
         onThemeChanged: {
@@ -340,7 +428,19 @@ ApplicationWindow {
         interval: 1000
         repeat: true
         running: app.isInForeground || settings.closeToTray
-        onTriggered: yubiKey.poll()
+        onTriggered: {
+            settings.useCustomReader ? yubiKey.pollCustomReader() : yubiKey.pollUsb()
+            if (settings.otpMode) {
+                settings.useCustomReader = false
+            }
+
+            if (navigator.isInAuthenticator()) {
+                if (yubiKey.timeToCalculateAll()) {
+                    yubiKey.oathCalculateAllOuter()
+                }
+            }
+
+        }
     }
 
     YubiKey {

@@ -1,6 +1,7 @@
 import QtQuick 2.5
 import io.thp.pyotherside 1.4
 import "utils.js" as Utils
+import "images.js" as Images
 
 // @disable-check M300
 Python {
@@ -16,6 +17,45 @@ Python {
     property var currentDevice
     property bool currentDeviceValidated
 
+    property bool pinIsBlocked: false
+    property bool deviceRemoved: false
+    property bool deviceBack: false
+
+    property var fingerprints: []
+    property var credentials: []
+
+    property bool isPolling: false
+
+    property bool isWinNonAdmin: false
+
+    // Check if a application such as OATH, PIV, etc
+    // is enabled on the current device.
+    function currentDeviceEnabled(app) {
+        if (!!currentDevice) {
+            if (currentDevice.isNfc) {
+                return currentDevice.nfcAppEnabled.includes(app)
+            } else {
+                return currentDevice.usbAppEnabled.includes(app)
+            }
+        } else {
+            return false
+        }
+    }
+
+    // Check if a application such as OATH, PIV, etc
+    // is supported on the current device.
+    function currentDeviceSupported(app) {
+        if (!!currentDevice) {
+            if (currentDevice.isNfc) {
+                return currentDevice.nfcAppSupported.includes(app)
+            } else {
+                return currentDevice.usbAppSupported.includes(app)
+            }
+        } else {
+            return false
+        }
+    }
+
     signal enableLogging(string logLevel, string logFile)
     signal disableLogging
 
@@ -29,6 +69,10 @@ Python {
                 addImportPath(urlPrefix + '/py')
                 importModule('yubikey', function () {
                     yubikeyModuleLoaded = true
+
+                    doCall('yubikey.controller.is_win_non_admin', [], function(resp) {
+                        isWinNonAdmin = resp.winNonAdmin
+                    })
                 })
             })
         })
@@ -82,68 +126,8 @@ Python {
         }
     }
 
-    function isNEO(device) {
-        return device.name === 'YubiKey NEO'
-    }
-
-    function isYubiKeyEdge(device) {
-        return device.name === 'YubiKey Edge'
-    }
-
-    function isYubiKey4(device) {
-        return device.name === 'YubiKey 4'
-    }
-
-    function isSecurityKeyNfc(device) {
-        return device.name === 'Security Key NFC'
-    }
-
-    function isSecurityKeyByYubico(device) {
-        return device.name === 'Security Key by Yubico'
-    }
-
-    function isFidoU2fSecurityKey(device) {
-        return device.name === 'FIDO U2F Security Key'
-    }
-
-    function isYubiKeyStandard(device) {
-        return device.name === 'YubiKey Standard'
-    }
-
-    function isYubiKeyPreview(device) {
-        return device.name === 'YubiKey Preview'
-    }
-
-    function isYubiKey5NFC(device) {
-        return device.name === 'YubiKey 5 NFC'
-    }
-
-    function isYubiKey5Nano(device) {
-        return device.name === 'YubiKey 5 Nano'
-    }
-
-    function isYubiKey5C(device) {
-        return device.name === 'YubiKey 5C'
-    }
-
-    function isYubiKey5CNano(device) {
-        return device.name === 'YubiKey 5C Nano'
-    }
-
-    function isYubiKey5CNFC(device) {
-        return device.name === 'YubiKey 5C NFC'
-    }
-
-    function isYubiKey5A(device) {
-        return device.name === 'YubiKey 5A'
-    }
-
-    function isYubiKey5Ci(device) {
-        return device.name === 'YubiKey 5Ci'
-    }
-
-    function isYubiKey5Family(device) {
-        return device.name.startsWith('YubiKey 5')
+    function supportsNewInterfaces() {
+        return currentDevice.version.startsWith('5');
     }
 
     function isYubiKeyFIPS(device) {
@@ -151,55 +135,7 @@ Python {
     }
 
     function getYubiKeyImageSource(currentDevice) {
-        if (isYubiKey4(currentDevice)) {
-            return "../images/yk4series.png"
-        }
-        if (isYubiKeyEdge(currentDevice)) {
-            return "../images/ykedge.png"
-        }
-        if (isSecurityKeyNfc(currentDevice)) {
-            return "../images/sky3.png"
-        }
-        if (isSecurityKeyByYubico(currentDevice)) {
-            return "../images/sky2.png"
-        }
-        if (isFidoU2fSecurityKey(currentDevice)) {
-            return "../images/sky1.png"
-        }
-        if (isNEO(currentDevice)) {
-            return "../images/neo.png"
-        }
-        if (isYubiKeyStandard(currentDevice)) {
-            return "../images/standard.png"
-        }
-        if (isYubiKeyPreview(currentDevice)) {
-            return "../images/yk5nfc.png"
-        }
-        if (isYubiKey5NFC(currentDevice)) {
-            return "../images/yk5nfc.png"
-        }
-        if (isYubiKey5Nano(currentDevice)) {
-            return "../images/yk5nano.png"
-        }
-        if (isYubiKey5C(currentDevice)) {
-            return "../images/yk5c.png"
-        }
-        if (isYubiKey5CNano(currentDevice)) {
-            return "../images/yk5cnano.png"
-        }
-        if (isYubiKey5CNFC(currentDevice)) {
-            return "../images/yk5cnfc.png"
-        }
-        if (isYubiKey5A(currentDevice)) {
-            return "../images/yk4.png"
-        }
-        if (isYubiKey5Ci(currentDevice)) {
-            return "../images/yk5ci.png"
-        }
-        if (isYubiKey5Family(currentDevice)) {
-            return "../images/yk5series.png"
-        }
-        return "../images/yk5series.png" //default for now
+        return "../images/" + Images.getYubiKeyImageName(currentDevice) + ".png";
     }
 
     function getCurrentDeviceImage() {
@@ -210,8 +146,54 @@ Python {
         }
     }
 
+    function slotsStatus(cb) {
+        doCall('yubikey.controller.slots_status', [], cb)
+    }
 
-    function checkDescriptors(cb) {
+    function eraseSlot(slot, cb) {
+        doCall('yubikey.controller.erase_slot', [slot], cb)
+    }
+
+    function swapSlots(cb) {
+        doCall('yubikey.controller.swap_slots', [], cb)
+    }
+
+    function serialModhex(cb) {
+        doCall('yubikey.controller.serial_modhex', [], cb)
+    }
+
+    function randomUid(cb) {
+        doCall('yubikey.controller.random_uid', [], cb)
+    }
+
+    function randomKey(bytes, cb) {
+        doCall('yubikey.controller.random_key', [bytes], cb)
+    }
+
+    function programChallengeResponse(slot, key, touch, cb) {
+        doCall('yubikey.controller.program_challenge_response',
+               [slot, key, touch], cb)
+    }
+
+    function programStaticPassword(slot, password, keyboardLayout, cb) {
+        doCall('yubikey.controller.program_static_password',
+               [slot, password, keyboardLayout], cb)
+    }
+
+    function programOathHotp(slot, key, digits, cb) {
+        doCall('yubikey.controller.program_oath_hotp', [slot, key, digits], cb)
+    }
+
+    function generateStaticPw(keyboardLayout, cb) {
+        doCall('yubikey.controller.generate_static_pw', [keyboardLayout], cb)
+    }
+
+    function programOtp(slot, publicId, privateId, key, upload, cb) {
+        doCall('yubikey.controller.program_otp',
+               [slot, publicId, privateId, key, upload, appVersion], cb)
+    }
+
+    function checkUsbDescriptorsChanged(cb) {
         doCall('yubikey.controller.check_descriptors', [], cb)
     }
 
@@ -219,8 +201,16 @@ Python {
         doCall('yubikey.controller.check_readers', [filter], cb)
     }
 
+    function setMode(connections, cb) {
+        doCall('yubikey.controller.set_mode', [connections], cb)
+    }
+
     function clearCurrentDeviceAndEntries() {
         currentDevice = null
+        clearOathEntries()
+    }
+
+    function clearOathEntries() {
         entries.clear()
         nextCalculateAll = -1
         currentDeviceValidated = false
@@ -236,23 +226,94 @@ Python {
         })
     }
 
-    function refreshDevicesDefault() {
-        poller.running = false
-        let customReaderName = settings.useCustomReader ? settings.customReaderName : null
-        refreshDevices(settings.otpMode, customReaderName, function (resp) {
+    function connectToCustomReader() {
+        if (settings.useCustomReader) {
+            yubiKey.connectCustomReader(settings.customReaderName, function(removed, back, resp) {
+                if (removed) {
+                    deviceRemoved = true
+                } else if (back) {
+                    deviceBack = true
+                }
+            })
+        }
+    }
+
+    function refreshCurrentDevice(cb) {
+        var currentPinCache = !!yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : null
+        pinIsBlocked = false
+        if (settings.useCustomReader) {
+            yubiKey.loadDevicesCustomReader(settings.customReaderName, function(resp) {
+                if (resp.success) {
+
+                    availableDevices = resp.devices
+
+                    // the same one but potentially updated
+                    currentDevice = resp.devices.find(dev => dev.serial === currentDevice.serial)
+                    if (currentPinCache) {
+                        currentDevice.fidoPinCache = currentPinCache
+                    }
+
+                } else {
+                    console.log("refreshing devices failed:", resp.error_id)
+                    availableDevices = []
+                    clearCurrentDeviceAndEntries()
+
+                }
+
+                if (cb) {
+                    cb()
+                }
+
+            })
+        } else {
+            yubiKey.loadDevicesUsb(settings.otpMode, function (resp) {
+                if (resp.success) {
+                    availableDevices = resp.devices
+
+                    // the same one but potentially updated
+                    currentDevice = resp.devices.find(dev => dev.serial === currentDevice.serial)
+                    if (currentPinCache) {
+                        currentDevice.fidoPinCache = currentPinCache
+                    }
+
+                } else {
+                    console.log("refreshing devices failed:", resp.error_id)
+                    availableDevices = []
+                    clearCurrentDeviceAndEntries()
+                }
+
+                if (cb) {
+                    cb()
+                }
+            })
+        }
+    }
+
+
+    function loadDevicesCustomReaderOuter(cb) {
+        yubiKey.loadDevicesCustomReader(settings.customReaderName, function(resp) {
             if (resp.success) {
                 availableDevices = resp.devices
+
+                if (availableDevices.length === 0) {
+                    clearCurrentDeviceAndEntries()
+                }
+
                 // no current device, or current device is no longer available, pick a new one
                 if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
                     // new device is being loaded, clear any old device
                     clearCurrentDeviceAndEntries()
-                    if (availableDevices.some(dev => dev.selectable)) {
-                        // pick the first selectable device
-                        currentDevice = resp.devices.find(dev => dev.selectable)
-                        calculateAll(navigator.goToCredentialsIfNotInSettings)
-                    } else {
-                        // no selectable device (will land in no Insert YubiKey view)
-                        navigator.goToCredentialsIfNotInSettings()
+                    // Just pick the first device
+                    currentDevice = availableDevices[0]
+                    if(!!currentDevice) {
+                        if (yubiKey.currentDeviceEnabled("OATH")) {
+                            // If oath is enabled, do a calculate all
+                            if (navigator.isInAuthenticator()) {
+                                oathCalculateAllOuter()
+                            }
+                        } else if (navigator.isInAuthenticator()) {
+                            navigator.goToYubiKey()
+                        }
                     }
                 } else {
                     // the same one but potentially updated
@@ -261,44 +322,109 @@ Python {
             } else {
                 console.log("refreshing devices failed:", resp.error_id)
                 availableDevices = []
-                availableReaders = []
                 clearCurrentDeviceAndEntries()
-                navigator.goToCredentialsIfNotInSettings()
             }
-            poller.running = true
+
+            if (cb) {
+                cb()
+            }
+
         })
     }
 
-    function poll() {
+    function loadDevicesUsbOuter(cb) {
 
-        function callback(resp) {
+        yubiKey.loadDevicesUsb(settings.otpMode, function (resp) {
+            if (resp.success) {
+                availableDevices = resp.devices
+
+                if (availableDevices.length === 0) {
+                    clearCurrentDeviceAndEntries()
+                }
+                if (resp.noAccess) {
+                    if (resp.winFido) {
+                        navigator.snackBarError(navigator.getErrorMessage('open_win_fido'))
+                    } else {
+                        navigator.snackBarError(navigator.getErrorMessage('open_device_failed'))
+                    }
+                }
+
+                // no current device, or current device is no longer available, pick a new one
+                if (!currentDevice || !availableDevices.some(dev => dev.serial === currentDevice.serial)) {
+                    // new device is being loaded, clear any old device
+                    clearCurrentDeviceAndEntries()
+                    // Just pick the first device
+                    currentDevice = availableDevices[0]
+
+                    if(!!currentDevice) {
+                        if (yubiKey.currentDeviceEnabled("OATH")) {
+                            // If oath is enabled, do a calculate all and go to authenticator
+                            if (navigator.isInAuthenticator()) {
+                                navigator.goToLoading()
+                                navigator.goToAuthenticator()
+                            }
+                        } else if (navigator.isInAuthenticator()) {
+                            navigator.goToYubiKey()
+                        }
+                    }
+                } else {
+                    // the same one but potentially updated
+                    currentDevice = resp.devices.find(dev => dev.serial === currentDevice.serial)
+                }
+            } else {
+                console.log("refreshing devices failed:", resp.error_id)
+                availableDevices = []
+                clearCurrentDeviceAndEntries()
+            }
+
+            if (cb) {
+                cb()
+            }
+        })
+    }
+
+    function pollCustomReader() {
+        checkReaders(settings.customReaderName, function (resp) {
             if (resp.success) {
                 if (resp.needToRefresh) {
-                    refreshDevicesDefault()
-                }
-                if (timeToCalculateAll() && !!currentDevice
-                        && currentDeviceValidated) {
-                    calculateAll()
-                }
+                    poller.running = false
+                    loadDevicesCustomReaderOuter(function() {
+                        poller.running = true
+                    })
+                } else {
+                    // Nothing changed
+               }
             } else {
                 console.log("check descriptors failed:", resp.error_id)
                 clearCurrentDeviceAndEntries()
             }
-        }
-
-        if (settings.useCustomReader && !settings.otpMode) {
-            checkReaders(settings.customReaderName, callback)
-        } else {
-            checkDescriptors(callback)
-        }
-
-        if (!settings.otpMode) {
-            refreshReaders()
-        }
+        })
+        refreshReaders()
     }
 
-    function calculateAll(cb) {
+    function pollUsb() {
+	if (isPolling) return
+        isPolling = true
+        checkUsbDescriptorsChanged(function (resp) {
+            if (resp.success) {
+                if (resp.usbDescriptorsChanged) {
+                    poller.running = false
+                    loadDevicesUsbOuter(function() {
+                        poller.running = true
+                    })
+                } else {
+                    // Nothing changed
+                }
 
+            } else {
+                console.log("check descriptors failed:", resp.error_id)
+                clearCurrentDeviceAndEntries()
+            }
+            isPolling = false
+        })
+    }
+
+    function oathCalculateAllOuter(cb) {
         function callback(resp) {
 
             if (resp.success) {
@@ -314,20 +440,74 @@ Python {
                     entries.clear()
                     currentDevice.hasPassword = true
                     currentDeviceValidated = false
-                    navigator.goToEnterPasswordIfNotInSettings()
+                    navigator.goToEnterPassword()
                 } else {
-                    clearCurrentDeviceAndEntries()
+                    clearOathEntries()
                     console.log("calculateAll failed:", resp.error_id)
-                    refreshDevicesDefault()
                 }
             }
         }
-
         if (settings.otpMode) {
             otpCalculateAll(callback)
         } else {
-            ccidCalculateAll(callback)
+            oathCalculateAll(function (resp) {
+                if (resp.success) {
+                    entries.updateEntries(resp.entries, function() {
+                        updateNextCalculateAll()
+                        if (cb) {
+                            cb()
+                        }
+                    })
+                } else {
+                    if (resp.error_id === 'access_denied') {
+                        entries.clear()
+                        currentDevice.hasPassword = true
+                        navigator.goToEnterPassword()
+                        return
+                    } else if (resp.error_id === 'no_device_custom_reader') {
+                        navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
+                        clearCurrentDeviceAndEntries()
+                        if (cb) {
+                            cb()
+                        }
+                    } else {
+                        clearOathEntries()
+                        console.log("calculateAll failed:", resp.error_id)
+                        if (!settings.useCustomReader) {
+                            loadDevicesUsbOuter()
+                        }
+                        if (cb) {
+                            cb()
+                        }
+                    }
+                }
+
+            })
         }
+    }
+
+    function otpCalculate(credential, cb) {
+        var margin = credential.touch ? 10 : 0
+        var nowAndMargin = Utils.getNow() + margin
+        var slot = (credential.key === "Slot 1") ? 1 : 2
+        var digits = (slot === 1) ? settings.slot1digits : settings.slot2digits
+        doCall('yubikey.controller.otp_calculate',
+               [slot, digits, credential, nowAndMargin], cb)
+    }
+
+    function otpDeleteCredential(credential, cb) {
+        var slot = (credential.key === "Slot 1") ? 1 : 2
+        doCall('yubikey.controller.otp_delete_credential', [slot], cb)
+    }
+
+    function otpAddCredential(slot, key, touch, cb) {
+        doCall('yubikey.controller.otp_add_credential', [slot, key, touch], cb)
+    }
+
+    function otpCalculateAll(cb) {
+        var now = Utils.getNow()
+        doCall('yubikey.controller.otp_calculate_all',
+               [settings.slot1digits, settings.slot2digits, now], cb)
     }
 
     function updateNextCalculateAll() {
@@ -359,35 +539,51 @@ Python {
                 && !isYubiKeyFIPS(currentDevice)
     }
 
-    function scanQr(toastIfError) {
-        currentCredentialCard = null
-        navigator.goToLoading()
-        parseQr(ScreenShot.capture(), function (resp) {
+    function scanQr(url) {
+        url = !!url ? url : ScreenShot.capture("")
+        parseQr(url, function (resp) {
             if (resp.success) {
-                navigator.goToNewCredentialAuto(resp)
+                navigator.goToNewCredentialScan(resp)
             } else {
-                if (toastIfError) {
-                    navigator.snackBarError(navigator.getErrorMessage(
-                                                resp.error_id))
+                if (resp.error_id === "failed_to_parse_uri") {
+                    navigator.confirm({
+                        "heading": qsTr("No QR code found"),
+                        "description": qsTr("To add an account follow the instructions provided by the service. Make sure the QR code is fully visible before scanning."),
+                        "warning": false,
+                        "noicon": true,
+                        "buttonAccept": qsTr("Try again"),
+                        "acceptedCb": function() {
+                            yubiKey.scanQr()
+                        }
+                    })
+                } else {
+                    navigator.snackBarError(navigator.getErrorMessage(resp.error_id))
                 }
-                navigator.goToNewCredentialManual()
             }
         })
     }
 
-    function ccidCalculateAll(cb) {
+    function oathCalculateAll(cb) {
         var now = Math.floor(Date.now() / 1000)
         doCall('yubikey.controller.ccid_calculate_all', [now], cb)
     }
 
-    function otpCalculateAll(cb) {
-        var now = Utils.getNow()
-        doCall('yubikey.controller.otp_calculate_all',
-               [settings.slot1digits, settings.slot2digits, now], cb)
+    function loadDevicesCustomReader(customReaderName, cb) {
+        doCall('yubikey.controller.load_devices_custom_reader', [customReaderName],  cb)
     }
 
-    function refreshDevices(otpMode, customReader, cb) {
-        doCall('yubikey.controller.refresh_devices', [otpMode, customReader], cb)
+    function connectCustomReader(customReaderName, cb) {
+        setHandler("fido_reset", cb)
+        doCall('yubikey.controller.connect_custom_reader', [customReaderName])
+    }
+
+    function loadDevicesUsb(otp, cb) {
+        doCall('yubikey.controller.load_devices_usb', [otp],  cb)
+    }
+
+    function writeConfig(usbApplications, nfcApplications, cb) {
+        doCall('yubikey.controller.write_config',
+               [usbApplications, nfcApplications], cb) // TODO: lockcode
     }
 
     function selectCurrentSerial(serial, cb) {
@@ -401,23 +597,6 @@ Python {
                [credential, nowAndMargin], cb)
     }
 
-    function otpCalculate(credential, cb) {
-        var margin = credential.touch ? 10 : 0
-        var nowAndMargin = Utils.getNow() + margin
-        var slot = (credential.key === "Slot 1") ? 1 : 2
-        var digits = (slot === 1) ? settings.slot1digits : settings.slot2digits
-        doCall('yubikey.controller.otp_calculate',
-               [slot, digits, credential, nowAndMargin], cb)
-    }
-
-    function otpDeleteCredential(credential, cb) {
-        var slot = (credential.key === "Slot 1") ? 1 : 2
-        doCall('yubikey.controller.otp_delete_credential', [slot], cb)
-    }
-
-    function otpAddCredential(slot, key, touch, cb) {
-        doCall('yubikey.controller.otp_add_credential', [slot, key, touch], cb)
-    }
 
     function ccidAddCredential(name, key, issuer, oathType, algo, digits, period, touch, overwrite, cb) {
         doCall('yubikey.controller.ccid_add_credential',
@@ -428,8 +607,8 @@ Python {
         doCall('yubikey.controller.ccid_delete_credential', [credential], cb)
     }
 
-    function parseQr(screenShots, cb) {
-        doCall('yubikey.controller.parse_qr', [screenShots], cb)
+    function parseQr(data, cb) {
+        doCall('yubikey.controller.parse_qr', [data], cb)
     }
 
     function reset(cb) {
@@ -459,5 +638,50 @@ Python {
 
     function getConnectedReaders(cb) {
         doCall('yubikey.controller.get_connected_readers', [], cb)
+    }
+
+    function fidoSetPin(newPin, cb) {
+        doCall('yubikey.controller.fido_set_pin', [newPin], cb)
+    }
+
+    function fidoChangePin(currentPin, newPin, cb) {
+        doCall('yubikey.controller.fido_change_pin', [currentPin, newPin], cb)
+    }
+
+    function fidoVerifyPin(pin, cb) {
+        doCall('yubikey.controller.fido_verify_pin', [pin], cb)
+    }
+
+    function fidoReset(cb) {
+        doCall('yubikey.controller.fido_reset', [], cb)
+    }
+
+    function credDelete(userId, cb) {
+        doCall('yubikey.controller.fido_cred_delete', [userId], cb)
+    }
+
+    function bioEnroll(cb) {
+        setHandler("bio_enroll", cb)
+        doCall('yubikey.controller.bio_enroll', [])
+    }
+
+    function bioEnrollCancel(cb) {
+        doCall('yubikey.controller.bio_enroll_cancel', [], cb)
+    }
+
+    function bioDelete(template_id, cb) {
+        doCall('yubikey.controller.bio_delete', [template_id], cb)
+    }
+
+    function bioRename(template_id, name, cb) {
+        doCall('yubikey.controller.bio_rename', [template_id, name], cb)
+    }
+
+    function bioVerifyPin(pin, cb){
+        doCall('yubikey.controller.bio_verify_pin', [pin], cb)
+    }
+
+    function resetCancel(cb) {
+        doCall('yubikey.controller.reset_cancel', [], cb)
     }
 }

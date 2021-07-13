@@ -27,6 +27,8 @@ Pane {
 
     property bool favorite: !!credential ? settings.favorites.includes(credential.key) : false
 
+    property string searchQuery: toolBar.searchField.text
+
     Layout.fillHeight: true
     Layout.fillWidth: true
 
@@ -79,10 +81,12 @@ Pane {
         if (touchCredentialNoCode || (hotpCredential
                                       && !hotpCredentialInCoolDown)
                 || customPeriodCredentialNoTouch) {
-            if (touchCredential) {
-                navigator.snackBar(qsTr("Touch your YubiKey"))
+
+            if (touchCredential && !yubiKey.currentDevice.isNfc) {
+                navigator.snackBarInfo(qsTr("Touch your YubiKey"))
             }
-            if (hotpCredential) {
+
+            if (hotpCredential && !yubiKey.currentDevice.isNfc) {
                 hotpTouchTimer.start()
             }
 
@@ -100,6 +104,8 @@ Pane {
                     }
                 })
             } else {
+
+
                 yubiKey.calculate(credential, function (resp) {
                     if (resp.success) {
                         hotpTouchTimer.stop()
@@ -116,15 +122,23 @@ Pane {
                         entries.updateEntry(resp)
                     } else {
                         if (resp.error_id === 'access_denied') {
-                            navigator.snackBarError(qsTr("Touch timed out"))
+                            if (!yubiKey.currentDevice.isNfc) {
+                                navigator.snackBarError(qsTr("Touch timed out"))
+                            } else {
+                                navigator.snackBarInfo(qsTr("Re-tap your YubiKey"))
+                            }
                         } else {
                             navigator.snackBarError(navigator.getErrorMessage(
                                                         resp.error_id))
+                            if (resp.error_id === 'no_device_custom_reader') {
+                                yubiKey.clearCurrentDeviceAndEntries()
+                            }
                         }
                         console.log("calculate failed:", resp.error_id)
                     }
                 })
             }
+
         } else {
             copyCode(code.value)
         }
@@ -139,7 +153,8 @@ Pane {
         navigator.confirm({
                     "heading": qsTr("Delete %1 ?").arg(formattedName()),
                     "message": qsTr("This will permanently delete the account from your YubiKey."),
-                    "description": qsTr("You will not be able to generate security codes for the account anymore. Make sure 2FA has been disabled before proceeding."),
+                    "description": qsTr("Before proceeding:<ul style=\"-qt-list-indent: 1;\"><li>You will not be able to generate security codes for the account anymore.<li>Make sure 2FA has been disabled on the web service.</ul>"),
+                    "buttonAccept": qsTr("Delete account"),
                     "acceptedCb": function () {
                         if (settings.otpMode) {
                             yubiKey.otpDeleteCredential(credential,
@@ -167,21 +182,25 @@ Pane {
                                                              {
                                                                  toggleFavorite()
                                                              }
-                                                             entries.deleteEntry(
-                                                                         credential.key)
-
-                                                             yubiKey.updateNextCalculateAll()
 
                                                              navigator.snackBar(
                                                                           qsTr("Account deleted"))
+
+                                                             entries.deleteEntry(credential.key, yubiKey.updateNextCalculateAll)
+
                                                          } else {
                                                              navigator.snackBarError(
-                                                                         resp.error_id)
+                                                                         navigator.getErrorMessage(resp.error_id))
                                                              console.log("delete failed:", resp.error_id)
+                                                             if (resp.error_id === 'no_device_custom_reader') {
+                                                                 yubiKey.clearCurrentDeviceAndEntries()
+                                                             }
                                                          }
+
                                                      })
+                            }
                         }
-                    }
+
                   })
     }
 
@@ -204,19 +223,18 @@ Pane {
     property var isKeyChanged: false
 
     background: Rectangle {
-        anchors.left: parent.left
         anchors.top: parent.top
-        Layout.minimumWidth: 299
-        Layout.minimumHeight: 75
-        width: parent.width - 1
+        anchors.centerIn: parent
+        width: parent.width - 8
         height: parent.height - 1
-        color: yubicoWhite
+        radius: 8
+        color: primaryColor
         opacity: if (credentialCard.GridView.isCurrentItem) {
                    return cardSelectedEmphasis
-               } else if (cardMouseArea.containsMouse) {
+               } else if (cardMouseArea.containsMouse || moreMouseArea.containsMouse) {
                    return cardHoveredEmphasis
                } else {
-                   return isDark() ? cardNormalEmphasis : 1.0
+                   return cardNormalEmphasis
                }
         MouseArea {
             id: cardMouseArea
@@ -234,6 +252,7 @@ Pane {
             }
             Menu {
                 id: contextMenu
+                width: 180
                 MenuItem {
                     icon.source: "../images/copy.svg"
                     icon.color: primaryColor
@@ -267,10 +286,19 @@ Pane {
         }
 
         ToolTip {
+            text: qsTr("Double-click to generate code")
+            delay: 1000
+            parent: credentialCard
+            visible: hotpCredential && !hotpCredentialInCoolDown && parent.hovered && !moreBtn.hovered
+            Material.foreground: toolTipForeground
+            Material.background: toolTipBackground
+        }
+
+        ToolTip {
             text: qsTr("Double-click to initiate touch")
             delay: 1000
             parent: credentialCard
-            visible: touchCredentialNoCode && parent.hovered && !favoriteBtn.hovered
+            visible: touchCredentialNoCode && parent.hovered && !moreBtn.hovered
             Material.foreground: toolTipForeground
             Material.background: toolTipBackground
         }
@@ -287,150 +315,159 @@ Pane {
         id: hotpTouchTimer
         triggeredOnStart: false
         interval: 500
-        onTriggered: navigator.snackBar(qsTr("Touch your YubiKey"))
+        onTriggered: navigator.snackBarInfo(qsTr("Touch your YubiKey"))
     }
 
-    Item {
 
-        anchors.fill: parent
+    CredentialCardIcon {
+        id: icon
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: 4
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        size: 40
+        Accessible.ignored: true
+    }
 
-        CredentialCardIcon {
-            id: icon
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 4
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            size: 40
-            Accessible.ignored: true
+    ColumnLayout {
+        anchors.left: icon.right
+        anchors.leftMargin: 12
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: 0
+        Label {
+            id: codeLbl
+            font.pixelSize: 22
+            color: primaryColor
+            opacity: credentialCard.GridView.isCurrentItem ? fullEmphasis : highEmphasis
+            text: getCodeLblValue()
+            font.weight: credentialCard.GridView.isCurrentItem ? Font.Normal : Font.Light
         }
-
-        ColumnLayout {
-            anchors.left: icon.right
-            anchors.leftMargin: 12
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 0
-            Label {
-                id: codeLbl
-                font.pixelSize: 24
-                color: primaryColor
-                opacity: hovered || credentialCard.GridView.isCurrentItem ? fullEmphasis : highEmphasis
-                text: getCodeLblValue()
-                font.weight: credentialCard.GridView.isCurrentItem ? Font.Normal : Font.Light
-            }
-            Label {
-                id: nameLbl
-                text: formattedName()
-                Layout.maximumWidth: credentialCard.width - 106
-                font.pixelSize: 14
-                elide: Text.ElideRight
-                color: primaryColor
-                opacity: lowEmphasis
-            }
-            ToolTip {
-                text: qsTr(nameLbl.text)
-                delay: 1000
-                parent: nameLbl
-                visible: nameLbl.truncated && credentialCard.hovered && !favoriteBtn.hovered
-                Material.foreground: toolTipForeground
-                Material.background: toolTipBackground
-            }
-        }
-
-        Accessible.role: Accessible.ListItem
-        Accessible.focusable: true
-        Accessible.name: !!credential ? (credential.issuer ? credential.issuer : credential.name) : ""
-        Accessible.description: getCodeLblValue()
-
-        ToolButton {
-            id: favoriteBtn
-            Layout.alignment: Qt.AlignRight | Qt.AlignTop
-            visible: favorite || credentialCard.hovered || credentialCard.GridView.isCurrentItem
-
-            anchors.top: parent.top
-            anchors.right: parent.right
-            anchors.rightMargin: -6
-            anchors.topMargin: -2
-
-            onClicked: toggleFavorite()
-            Keys.onReturnPressed: toggleFavorite()
-            Keys.onEnterPressed: toggleFavorite()
-            focusPolicy: Qt.NoFocus
-
-            Accessible.role: Accessible.Button
-            Accessible.name: "Favorite"
-            Accessible.description: "Favorite credential"
-
-            ToolTip {
-                text: favorite ? qsTr("Remove as favorite") : qsTr("Set as favorite")
-                delay: 1000
-                parent: favoriteBtn
-                visible: parent.hovered
-                Material.foreground: toolTipForeground
-                Material.background: toolTipBackground
-            }
-
-            icon.source: favorite ? "../images/star.svg" : "../images/star_border.svg"
-            icon.color: hovered || favorite ? iconFavorite : primaryColor
-            opacity: hovered || favorite ? highEmphasis : disabledEmphasis
-            implicitHeight: 30
-            implicitWidth: 30
-
-            MouseArea {
-                id: favoriteMouseArea
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                propagateComposedEvents: true
-                enabled: false
-            }
-        }
-
-        CredentialCardTimer {
-            period: credential && credential.period ? credential.period : 0
-            validTo: code && code.valid_to ? code.valid_to : 0
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            anchors.rightMargin: 3
-            anchors.bottomMargin: 6
-            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-            visible: code && code.value && credential && credential.oath_type === "TOTP" ? true : false
-            onTimesUp: {
-                if (touchCredential) {
-                    clearExpiredCode()
-                }
-                if (customPeriodCredentialNoTouch) {
-                    calculateCard(false)
-                }
-            }
-        }
-
-        StyledImage {
-            id: touchIcon
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.bottomMargin: 6
-            iconWidth: 18
-            iconHeight: 18
-            source: "../images/touch.svg"
-            visible: touchCredentialNoCode
+        Label {
+            id: nameLbl
+            text: searchQuery.length > 0 ? colorizeMatch(formattedName(), searchQuery) : formattedName()
+            textFormat: searchQuery.length > 0 ? TextEdit.RichText : TextEdit.PlainText
+            clip: true
+            Layout.maximumWidth: credentialCard.width - 106
+            font.pixelSize: 14
+            elide: Text.ElideRight
             color: primaryColor
             opacity: lowEmphasis
-            Layout.alignment: Qt.AlignRight
         }
+        ToolTip {
+            text: nameLbl.text
+            delay: 1000
+            parent: nameLbl
+            visible: nameLbl.truncated && credentialCard.hovered
+            Material.foreground: toolTipForeground
+            Material.background: toolTipBackground
+        }
+    }
 
-        StyledImage {
-            id: hotpIcon
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            anchors.rightMargin: -1
-            anchors.bottomMargin: 2
-            iconWidth: 20
-            iconHeight: 20
-            source: "../images/refresh.svg"
-            visible: hotpCredential
-            color: primaryColor
-            opacity: hotpCredentialInCoolDown ? disabledEmphasis : lowEmphasis
-            Layout.alignment: Qt.AlignRight
+    Accessible.role: Accessible.ListItem
+    Accessible.focusable: true
+    Accessible.name: !!credential ? (credential.issuer ? credential.issuer : credential.name) : ""
+    Accessible.description: getCodeLblValue()
+
+    CredentialCardTimer {
+        period: credential && credential.period ? credential.period : 0
+        validTo: code && code.valid_to ? code.valid_to : 0
+
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.rightMargin: 4
+        anchors.topMargin: 4
+
+        Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+        visible: code && code.value && credential && credential.oath_type === "TOTP" ? true : false
+        onTimesUp: {
+            if (touchCredential) {
+                clearExpiredCode()
+            }
+            if (customPeriodCredentialNoTouch) {
+                calculateCard(false)
+            }
+        }
+    }
+
+    StyledImage {
+        id: favoriteIcon
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.rightMargin: 32
+        anchors.topMargin: 1
+        iconWidth: 18
+        iconHeight: 18
+        source: "../images/star.svg" 
+        visible: favorite
+        color: primaryColor
+        opacity: lowEmphasis
+        Layout.alignment: Qt.AlignRight
+    }
+
+    StyledImage {
+        id: touchIcon
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.rightMargin: 2
+        anchors.topMargin: 0
+        iconWidth: 18
+        iconHeight: 18
+        source: "../images/touch.svg"
+        visible: touchCredentialNoCode
+        color: primaryColor
+        opacity: lowEmphasis
+        Layout.alignment: Qt.AlignRight
+    }
+
+    StyledImage {
+        id: hotpIcon
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.topMargin: 0
+        iconWidth: 20
+        iconHeight: 20
+        source: "../images/refresh.svg"
+        visible: hotpCredential
+        color: primaryColor
+        opacity: hotpCredentialInCoolDown ? disabledEmphasis : lowEmphasis
+        Layout.alignment: Qt.AlignRight
+    }
+
+    ToolButton {
+        id: moreBtn
+        Layout.alignment: Qt.AlignRight | Qt.AlignTop
+        visible: credentialCard.hovered || credentialCard.GridView.isCurrentItem
+
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.rightMargin: -5
+        anchors.bottomMargin: -6
+
+        onClicked: contextMenu.popup()
+        Keys.onReturnPressed: contextMenu.popup()
+        Keys.onEnterPressed: contextMenu.popup()
+        focusPolicy: Qt.NoFocus
+
+        Accessible.role: Accessible.Button
+        Accessible.name: "Options"
+        Accessible.description: "Account options"
+
+        icon.source: "../images/more.svg"
+        icon.color: primaryColor
+        opacity: hovered ? highEmphasis : disabledEmphasis
+        implicitHeight: 30
+        implicitWidth: 30
+
+        MouseArea {
+            id: moreMouseArea
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            propagateComposedEvents: true
+            enabled: true
+            hoverEnabled: true
+            acceptedButtons: Qt.LeftButton
+            onClicked: contextMenu.popup()
         }
     }
 }

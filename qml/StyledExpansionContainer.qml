@@ -9,31 +9,35 @@ Pane {
 
     default property alias children: inner_space.data
 
-    readonly property int dynamicWidth: 648
-    readonly property int dynamicMargin: 32
+    property string title
 
-    property string sectionTitle
-
-    Layout.alignment: Qt.AlignCenter | Qt.AlignTop
     Layout.fillWidth: true
-    Layout.maximumWidth: dynamicWidth + dynamicMargin
+    Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
     spacing: 0
-    Layout.margins: 0
+    topPadding: 0
+    bottomPadding: 0
+    Layout.topMargin: containerLabel.visible ? 4 : 0
+    Layout.bottomMargin: containerLabel.visible ? 4 : 0
+    Layout.leftMargin: 0
+    Layout.rightMargin: 0
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
-        width: app.width - dynamicMargin < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+        width: parent.width
         spacing: 8
 
         RowLayout {
             Label {
+                id: containerLabel
+                visible: title && inner_space.visibleChildren.length > 1
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                text: sectionTitle
+                text: title
                 color: Material.primary
-                font.pixelSize: 14
-                font.weight: Font.Medium
-                topPadding: 8
+                font.pixelSize: 16
+                font.weight: Font.Normal
+                topPadding: 24
                 bottomPadding: 8
+                Layout.leftMargin: 4
                 Layout.fillWidth: true
             }
         }

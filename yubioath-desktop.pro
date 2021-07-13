@@ -1,21 +1,23 @@
 TEMPLATE = app
 QT += qml quick widgets quickcontrols2
 CONFIG += c++11
+CONFIG += qzxing_qml
+CONFIG += qzxing_multimedia
 SOURCES += main.cpp
 HEADERS += screenshot.h
 
 # This is the internal verson number, Windows requires 4 digits.
 win32|win64 {
-    VERSION = 5.0.5.0
+    VERSION = 5.1.0.0
     QMAKE_TARGET_COMPANY = Yubico
     QMAKE_TARGET_PRODUCT = Yubico Authenticator
     QMAKE_TARGET_DESCRIPTION = Yubico Authenticator
     QMAKE_TARGET_COPYRIGHT = Copyright (c) 2020 Yubico AB
 } else {
-    VERSION = 5.0.5
+    VERSION = 5.1.0
 }
 # This is the version shown on the About page
-DEFINES += APP_VERSION=\\\"5.0.5\\\"
+DEFINES += APP_VERSION=\\\"5.1.0-beta1\\\"
 
 message(Version of this build: $$VERSION)
 
@@ -54,6 +56,9 @@ macx {
 
 # Default rules for deployment.
 include(deployment.pri)
+
+# QXZing for QR scanner
+include(QZXing/QZXing.pri)
 
 # Icon file
 RC_ICONS = resources/icons/com.yubico.yubioath.ico

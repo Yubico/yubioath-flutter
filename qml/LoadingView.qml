@@ -7,9 +7,6 @@ import QtGraphicalEffects 1.0
 Pane {
     id: pane
 
-    readonly property int dynamicWidth: 600
-    readonly property int dynamicMargin: 32
-
     spacing: 8
     padding: 32
 

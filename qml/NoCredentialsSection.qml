@@ -6,9 +6,6 @@ import QtGraphicalEffects 1.0
 
 ColumnLayout {
 
-    readonly property int dynamicWidth: 380
-    readonly property int dynamicMargin: 32
-
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
 
@@ -40,7 +37,7 @@ ColumnLayout {
             horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 300
             Layout.maximumWidth: app.width - dynamicMargin
-                                 < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
+                                 < dynamicWidthSmall ? app.width - dynamicMargin : dynamicWidthSmall
             Layout.rowSpan: 1
             lineHeight: 1.1
             wrapMode: Text.WordWrap
@@ -52,13 +49,13 @@ ColumnLayout {
 
         StyledButton {
             id: addBtn
-            text: qsTr("Add")
+            text: qsTr("Add account")
             enabled: true
             focus: true
             Layout.alignment: Qt.AlignCenter | Qt.AlignVCenter
-            onClicked: yubiKey.scanQr()
-            Keys.onReturnPressed: yubiKey.scanQr()
-            Keys.onEnterPressed: yubiKey.scanQr()
+            onClicked: navigator.goToNewCredential()
+            Keys.onReturnPressed: navigator.goToNewCredential()
+            Keys.onEnterPressed: navigator.goToNewCredential()
             Layout.topMargin: 8
         }
     }

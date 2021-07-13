@@ -46,7 +46,6 @@ jobs:
       - name: Install jom
         run: |
           7z x jom.zip
-
       - name: Prepare pyotherside
         run: |
           $py_ver = python -V
@@ -90,7 +89,6 @@ jobs:
           $py_ver = python -V
           $py_ver -match "python (?<content>.*)"
           $version = $matches['content']
-
           Copy-Item .\pymodules .\release -recurse
           Get-ChildItem -File -Include *.pyc -Recurse | Remove-Item -Force
           Get-ChildItem -Include __pycache__ -Recurse | Remove-Item -Force
@@ -111,16 +109,19 @@ jobs:
 
       - name: Install Visual Studio C++ 2019 Redistributable MSMs
         shell: cmd
+        continue-on-error: true
         run: |
           choco install visualstudio2019community --package-parameters "--add Microsoft.VisualStudio.Component.VC.Redist.MSM"
 
       - name: DPI awareness
         shell: powershell
+        continue-on-error: true
         run: |
           $env:PATH += ";C:\Program Files (x86)\Windows Kits\10\bin\10.0.18362.0\x64"
           mt.exe -manifest .\resources\win\yubioath-desktop.exe.manifest -outputresource:.\release\yubioath-desktop.exe
-
+          
       - name: Create an unsigned .msi installer package
+        continue-on-error: true
         run: |
           $env:PATH += ";$env:WIX\bin"
           $env:SRCDIR = ".\release\"
@@ -132,10 +133,12 @@ jobs:
 
       - name: Run installer
         shell: powershell
+        continue-on-error: true
         run: |
           msiexec /i yubioath-desktop.msi /quiet /l .\log.txt
 
       - name: Rename installer
+        continue-on-error: true
         shell: powershell
         run: |
           $arr = $env:GITHUB_REF -split '/'

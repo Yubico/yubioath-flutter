@@ -21,7 +21,7 @@ ENV LD_LIBRARY_PATH=$QT_BASE_DIR/lib/x86_64-linux-gnu:$QT_BASE_DIR/lib:$LD_LIBRA
     PKG_CONFIG_PATH=$QT_BASE_DIR/lib/pkgconfig:$PKG_CONFIG_PATH \
     PATH=/root/.pyenv/bin:$QT_BASE_DIR/bin:$PATH
 RUN curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash \
-    && eval "$(pyenv init -)" \
+    && eval "$(pyenv init --path)" \
     && pyenv update \
     && pyenv install --force 3.8.7 \
     && pyenv global 3.8.7 \
@@ -34,7 +34,7 @@ RUN curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-instal
     && make install
 COPY . yubioath-desktop
 RUN mkdir -p yubioath-desktop/appDir/usr \
-    && eval "$(pyenv init -)" \
+    && eval "$(pyenv init --path)" \
     && pyenv global 3.8.7 \
     && cd yubioath-desktop \
     && pip3 install --upgrade pip \

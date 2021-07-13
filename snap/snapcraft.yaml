@@ -48,8 +48,7 @@ parts:
     override-pull: |
       add-apt-repository -y ppa:beineri/opt-qt-5.15.2-bionic
       apt-get -qq update
-      apt-get install -y qt515svg qt515quickcontrols2 qt515graphicaleffects qt515declarative qt515wayland qt515x11extras
-
+      apt-get install -y qt515svg qt515quickcontrols2 qt515graphicaleffects qt515declarative qt515wayland qt515x11extras qt515multimedia 
   ppa-ykpers:
     plugin: nil
     build-packages:
@@ -58,8 +57,6 @@ parts:
       add-apt-repository -y ppa:yubico/stable
       apt-get -qq update
       apt-get install -y libykpers-1-1
-
-
   python:
     plugin: nil
     build-packages:
@@ -80,7 +77,7 @@ parts:
       rm -rf /root/.pyenv
       curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
     override-build: |
-      eval "$(pyenv init -)"
+      eval "$(pyenv init --path)"
       pyenv update
       pyenv install --force 3.8.7
       pyenv global 3.8.7
@@ -91,7 +88,6 @@ parts:
     override-prime: |
       snapcraftctl prime
       rsync -a /root/.pyenv/versions/3.8.7/* /root/prime/usr/
-
   python-deps:
     plugin: dump
     source: .
@@ -102,7 +98,7 @@ parts:
     build-environment:
       - PATH: /root/.pyenv/bin:$PATH
     override-build: |
-      eval "$(pyenv init -)"
+      eval "$(pyenv init --path)"
       pyenv global 3.8.7
       pip3 download --no-binary :all: pyscard
       tar -xvf pyscard*.tar*
@@ -123,7 +119,6 @@ parts:
     override-prime: |
       snapcraftctl prime
       rsync -a /root/.pyenv/versions/3.8.7/* /root/prime/usr/
-
   pyotherside:
     plugin: qmake
     after: [python, ppa-qt]
@@ -140,10 +135,9 @@ parts:
       - PATH: /root/.pyenv/bin:$QT_BASE_DIR/bin:$PATH
       - INSTALL_ROOT: $SNAPCRAFT_PART_INSTALL
     override-build: |
-      eval "$(pyenv init -)"
+      eval "$(pyenv init --path)"
       pyenv global 3.8.7
       snapcraftctl build
-
   pcsc-lite:
     plugin: autotools
     source-type: tar
@@ -164,7 +158,6 @@ parts:
       cp -r ${SNAPCRAFT_PART_INSTALL}/snap/yubioath-desktop/current/usr ${SNAPCRAFT_PART_INSTALL}/
       rm -r ${SNAPCRAFT_PART_INSTALL}/snap ${SNAPCRAFT_PART_INSTALL}/lib
       sed -i -e 's/\/snap\/yubioath-desktop\/current//g' ${SNAPCRAFT_PART_INSTALL}/usr/lib/pkgconfig/libpcsclite.pc
-
   ccid:
     plugin: autotools
     source-type: tar

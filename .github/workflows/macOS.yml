@@ -104,7 +104,7 @@ jobs:
       - name: Point pyotherside to relative Python
         run: |
           sudo install_name_tool -change /Library/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Python @executable_path/../Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/Python yubioath-desktop.app/Contents/PlugIns/quick/libpyothersideplugin.dylib
-
+          
       - name: Point custom Python share objects to relative openssl dylibs
         run: |
           sudo install_name_tool -change /opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/_ssl.cpython-${PYTHON_VER_SHORT_COMPACT}-darwin.so

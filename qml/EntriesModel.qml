@@ -29,6 +29,7 @@ SortedListModel {
         sort()
     }
 
+    // TODO: should this really have a callback?
     function updateEntries(entries, cb) {
         // Update new ones
         for (var i = 0; i < entries.length; i++) {
@@ -37,11 +38,13 @@ SortedListModel {
         cb()
     }
 
-    function deleteEntry(key) {
+    function deleteEntry(key, cb) {
         for (var j = 0; j < count; j++) {
             if (get(j).credential.key === key) {
                 remove(j)
-                return
+                if (cb) {
+                    cb()
+                }
             }
         }
     }

@@ -13,6 +13,8 @@ ToolBar {
         opacity: 0.7
     }
 
+    width: app.width
+
     function getToolbarColor(isActive) {
         if (!isActive) {
             return 0
@@ -21,87 +23,39 @@ ToolBar {
         }
     }
 
-    property bool showSearch: shouldShowSearch()
-    property bool showBackBtn: navigator.depth > 1
-    property bool showTitleLbl: !!navigator.currentItem
-                                && !!navigator.currentItem.title
-    property alias moreBtn: moreBtn
-    property alias addCredentialBtn: addCredentialBtn
+    property alias drawerBtn: drawerBtn
     property alias searchField: searchField
+    property alias moreBtn: moreBtn
+    property alias backBtn: backBtn
 
-    function shouldShowSearch() {        
-        return !!(navigator.currentItem
-                  && navigator.currentItem.objectName === 'credentialsView'
-                  && entries.count > 0 && !settings.otpMode)
-    }
-
-    function shouldShowSettings() {
-        return !!(navigator.currentItem && navigator.currentItem.objectName !== 'settingsView'
-                  && navigator.currentItem.objectName !== 'newCredentialView')
-    }
-
-    function shouldShowInfo() {
-        return !!(navigator.currentItem && navigator.currentItem.objectName === 'settingsView')
-    }
-
-    function shouldShowCredentialOptions() {
-        return !!(app.currentCredentialCard && navigator.currentItem
-                  && navigator.currentItem.objectName === 'credentialsView')
-    }
-
-    function shouldShowToolbar() {
-        return !!(navigator.currentItem && navigator.currentItem.objectName !== 'loadingView')
-    }
+    property string searchFieldPlaceholder: !!navigator.currentItem ? navigator.currentItem.searchFieldPlaceholder || "" : ""
 
     RowLayout {
         spacing: 0
         anchors.fill: parent
-        visible: shouldShowToolbar()
+        visible: !navigator.isInLoading()
         Layout.alignment: Qt.AlignTop
 
-
         ToolButton {
-            id: backBtn
-            visible: showBackBtn
-            onClicked: navigator.home()
-            icon.source: "../images/back.svg"
-            icon.color: primaryColor
-            opacity: hovered ? fullEmphasis : lowEmphasis
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                enabled: false
-            }
-        }
-
-        ToolButton {
-            id: moreBtn
+            id: drawerBtn
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            visible: !backBtn.visible && shouldShowSettings()
+            Layout.leftMargin: 4
+            visible: !navigator.isInLoading() && !navigator.isInFlickable()
 
-            onClicked: navigator.goToSettings()
-            Keys.onReturnPressed: navigator.goToSettings()
-            Keys.onEnterPressed: navigator.goToSettings()
+            onClicked: drawer.toggle()
+            Keys.onReturnPressed: drawer.toggle()
+            Keys.onEnterPressed: drawer.toggle()
 
             KeyNavigation.left: navigator
             KeyNavigation.backtab: navigator
-            KeyNavigation.right: searchField
-            KeyNavigation.tab: searchField
+            KeyNavigation.right: searchField.visible ? searchField : (closeBtn.visible ? closeBtn : moreBtn)
+            KeyNavigation.tab: searchField.visible ? searchField : (closeBtn.visible ? closeBtn : moreBtn)
 
             Accessible.role: Accessible.Button
-            Accessible.name: "Settings"
-            Accessible.description: "Settings button"
+            Accessible.name: "Menu"
+            Accessible.description: "Menu button"
 
-            ToolTip {
-                text: qsTr("Settings")
-                delay: 1000
-                parent: moreBtn
-                visible: parent.hovered
-                Material.foreground: toolTipForeground
-                Material.background: toolTipBackground
-            }
-
-            icon.source: "../images/more.svg"
+            icon.source: "../images/menu.svg"
             icon.color: primaryColor
             opacity: hovered ? fullEmphasis : lowEmphasis
 
@@ -112,23 +66,47 @@ ToolBar {
             }
         }
 
-        Label {
-            id: titleLbl
-            visible: showTitleLbl
-            text: showTitleLbl ? navigator.currentItem.title : ""
-            font.pixelSize: 16
-            Layout.leftMargin: moreBtn.visible ? -32 : 0
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            Layout.fillWidth: true
-            color: primaryColor
-            opacity: lowEmphasis
+        ToolButton {
+            id: backBtn
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            Layout.leftMargin: 4
+            visible: !navigator.isInLoading() && navigator.isInFlickable()
+
+            onClicked: ifFingerprintBack()
+            Keys.onReturnPressed: ifFingerprintBack()
+            Keys.onEnterPressed: ifFingerprintBack()
+
+            KeyNavigation.left: navigator
+            KeyNavigation.backtab: navigator
+            KeyNavigation.right: navigator
+            KeyNavigation.tab: navigator
+
+            Accessible.role: Accessible.Button
+            Accessible.name: "Back"
+            Accessible.description: "Back button"
+
+            icon.source: "../images/back.svg"
+            icon.color: primaryColor
+            opacity: hovered ? fullEmphasis : lowEmphasis
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                enabled: false
+            }
+
+            function ifFingerprintBack() {
+                if (navigator.isInNewFingerprint()) {
+                    yubiKey.bioEnrollCancel()
+                } else {
+                    navigator.pop()
+                }
+            }
         }
 
         ToolButton {
             id: searchBtn
-            visible: showSearch
+            visible: searchField.placeholderText != ""
             Layout.minimumHeight: 30
             Layout.maximumHeight: 30
             Layout.fillWidth: true
@@ -142,12 +120,12 @@ ToolBar {
 
             TextField {
                 id: searchField
-                visible: showSearch
+                visible: parent.visible
                 selectByMouse: true
-                selectedTextColor: defaultBackground
+                selectedTextColor: fullContrast
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                placeholderText: qsTr("Quick find")
+                placeholderText: searchFieldPlaceholder
                 placeholderTextColor: isDark() ? "#B7B7B7" : "#767676"
                 leftPadding: 28
                 rightPadding: 8
@@ -214,26 +192,23 @@ ToolBar {
                         text = ""
                     }
                     focus = false
-                    Keys.forwardTo = navigator
                     navigator.forceActiveFocus()
                 }
 
-                KeyNavigation.backtab: moreBtn
-                KeyNavigation.left: moreBtn
-                KeyNavigation.tab: shouldShowCredentialOptions(
-                                       ) ? copyCredentialBtn : addCredentialBtn
-                KeyNavigation.right: shouldShowCredentialOptions(
-                                       ) ? copyCredentialBtn : addCredentialBtn
+                KeyNavigation.backtab: drawerBtn
+                KeyNavigation.left: drawerBtn
+                KeyNavigation.tab: moreBtn.visible ? moreBtn : navigator
+                KeyNavigation.right: moreBtn.visible ? moreBtn : navigator
                 Keys.onEscapePressed: exitSearchMode(true)
                 Keys.onDownPressed: exitSearchMode(false)
                 Keys.onReturnPressed: {
-                    if (currentCredentialCard) {
-                        currentCredentialCard.calculateCard(true)
+                    if (navigator.hasSelectedOathCredential()) {
+                        navigator.oathCopySelectedCredential()
                     }
                 }
                 Keys.onEnterPressed: {
-                    if (currentCredentialCard) {
-                        currentCredentialCard.calculateCard(true)
+                    if (navigator.hasSelectedOathCredential()) {
+                        navigator.oathCopySelectedCredential()
                     }
                 }
 
@@ -256,111 +231,23 @@ ToolBar {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
             ToolButton {
-                id: copyCredentialBtn
+                id: closeBtn
+                activeFocusOnTab: true
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: shouldShowCredentialOptions()
-
-                onClicked: app.currentCredentialCard.calculateCard(true)
-                Keys.onReturnPressed: app.currentCredentialCard.calculateCard(true)
-                Keys.onEnterPressed: app.currentCredentialCard.calculateCard(true)
-
-                KeyNavigation.left: searchField
-                KeyNavigation.backtab: searchField
-                KeyNavigation.right: deleteCredentialBtn
-                KeyNavigation.tab: deleteCredentialBtn
-
-                Accessible.role: Accessible.Button
-                Accessible.name: "Copy"
-                Accessible.description: "Copy to clipboard"
-
-                ToolTip {
-                    text: qsTr("Copy code to clipboard")
-                    delay: 1000
-                    parent: copyCredentialBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: "../images/copy.svg"
+                visible: navigator.isInNewOathCredential()
+                onClicked: navigator.goToAuthenticator()
+                icon.source: "../images/clear.svg"
                 icon.color: primaryColor
                 opacity: hovered ? fullEmphasis : lowEmphasis
 
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                }
-            }
+                Keys.onReturnPressed: navigator.goToAuthenticator()
+                Keys.onEnterPressed: navigator.goToAuthenticator()
 
-            ToolButton {
-                id: deleteCredentialBtn
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: shouldShowCredentialOptions()
-
-                onClicked: app.currentCredentialCard.deleteCard()
-                Keys.onReturnPressed: app.currentCredentialCard.deleteCard()
-                Keys.onEnterPressed: app.currentCredentialCard.deleteCard()
-
-                KeyNavigation.left: copyCredentialBtn
-                KeyNavigation.right: addCredentialBtn
-                KeyNavigation.tab: addCredentialBtn
-
-                Accessible.role: Accessible.Button
-                Accessible.name: "Delete"
-                Accessible.description: "Delete account"
-
-                ToolTip {
-                    text: qsTr("Delete account")
-                    delay: 1000
-                    parent: deleteCredentialBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: "../images/delete.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: false
-                }
-            }
-
-            ToolButton {
-                id: infoBtn
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: shouldShowInfo()
-                onClicked: navigator.about()
-
-                Keys.onReturnPressed: navigator.about()
-                Keys.onEnterPressed: navigator.about()
-
-                KeyNavigation.left: backBtn
-                KeyNavigation.backtab: backBtn
+                KeyNavigation.left: drawerBtn
+                KeyNavigation.backtab: drawerBtn
                 KeyNavigation.right: navigator
                 KeyNavigation.tab: navigator
 
-                Accessible.role: Accessible.Button
-                Accessible.name: "Info"
-                Accessible.description: "Information"
-
-                ToolTip {
-                    text: qsTr("Information")
-                    delay: 1000
-                    parent: infoBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: "../images/info.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
-
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
@@ -368,49 +255,131 @@ ToolBar {
                 }
             }
 
-
             ToolButton {
-                id: addCredentialBtn
-                visible: !!yubiKey.currentDevice
-                         && yubiKey.currentDeviceValidated
-                         && navigator.currentItem
-                         && navigator.currentItem.objectName === 'credentialsView'
-
+                id: moreBtn
+                activeFocusOnTab: true
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                visible: navigator.isInAuthenticator() || navigator.isInEnterPassword() || navigator.isInYubiKeyView()
+                icon.source: "../images/more.svg"
+                icon.color: primaryColor
+                opacity: hovered ? fullEmphasis : lowEmphasis
 
-                onClicked: yubiKey.scanQr()
-                Keys.onReturnPressed: yubiKey.scanQr()
-                Keys.onEnterPressed: yubiKey.scanQr()
+                onClicked: navigator.isInAuthenticator() || navigator.isInEnterPassword() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
+                Keys.onReturnPressed: navigator.isInAuthenticator() || navigator.isInEnterPassword() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
+                Keys.onEnterPressed: navigator.isInAuthenticator() || navigator.isInEnterPassword() ? authenticatorContextMenu.open() : yubikeyContextMenu.open()
 
-                KeyNavigation.left: app.currentCredentialCard ? deleteCredentialBtn : searchField
-                KeyNavigation.backtab: app.currentCredentialCard ? deleteCredentialBtn : searchField
+                KeyNavigation.left: searchField.visible ? searchField : drawerBtn
+                KeyNavigation.backtab: searchField.visible ? searchField : drawerBtn
                 KeyNavigation.right: navigator
                 KeyNavigation.tab: navigator
 
-                Accessible.role: Accessible.Button
-                Accessible.name: qsTr("Add")
-                Accessible.description: qsTr("Add account")
-
-                ToolTip {
-                    text: qsTr("Add a new account")
-                    delay: 1000
-                    parent: addCredentialBtn
-                    visible: parent.hovered
-                    Material.foreground: toolTipForeground
-                    Material.background: toolTipBackground
-                }
-
-                icon.source: "../images/add.svg"
-                icon.color: primaryColor
-                opacity: hovered ? fullEmphasis : lowEmphasis
-
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     enabled: false
                 }
-            }
 
+                Menu {
+                    id: authenticatorContextMenu
+                    y: header.height
+                    MenuItem {
+                        text: "Scan QR code"
+                        icon.source: "../images/qr-scanner.svg"
+                        icon.color: primaryColor
+                        opacity: enabled ? highEmphasis : disabledEmphasis
+                        icon.width: 20
+                        icon.height: 20
+                        onTriggered: yubiKey.scanQr()
+                        enabled: !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
+                    }
+                    MenuItem {
+                        text: "Add account"
+                        icon.source: "../images/edit.svg"
+                        icon.color: primaryColor
+                        opacity: enabled ? highEmphasis : disabledEmphasis
+                        icon.width: 20
+                        icon.height: 20
+                        onTriggered: navigator.goToNewCredential()
+                        enabled: !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
+                    }
+                    MenuSeparator {}
+                    MenuItem {
+                        text: "Manage password"
+                        icon.source: "../images/password.svg"
+                        icon.color: primaryColor
+                        opacity: enabled ? highEmphasis : disabledEmphasis
+                        icon.width: 20
+                        icon.height: 20
+                        enabled: !settings.otpMode && !navigator.isInEnterPassword() && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
+                        onTriggered: navigator.confirmInput({
+                            "heading": text,
+                            "manageMode": true
+                        })
+                    }
+                    MenuItem {
+                        text: "Reset"
+                        icon.source: "../images/reset.svg"
+                        icon.color: primaryColor
+                        opacity: enabled ? highEmphasis : disabledEmphasis
+                        icon.width: 20
+                        icon.height: 20
+                        enabled: !settings.otpMode && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
+                        onTriggered: navigator.confirm({
+                            "heading": qsTr("Reset device?"),
+                            "message": qsTr("This will delete all accounts and restore factory defaults of your YubiKey."),
+                            "description": qsTr("Before proceeding:<ul style=\"-qt-list-indent: 1;\"><li>There is NO going back after a factory reset.<li>If you do not know what you are doing, do NOT do this.</ul>"),
+                            "buttonAccept": qsTr("Reset device"),
+                            "acceptedCb": function () {
+                                navigator.goToLoading()
+                                yubiKey.reset(function (resp) {
+                                    if (resp.success) {
+                                        entries.clear()
+                                        navigator.snackBar(qsTr("Reset completed"))
+                                        yubiKey.currentDevice.hasPassword = false
+                                    } else {
+                                        navigator.snackBarError(
+                                                    navigator.getErrorMessage(
+                                                        resp.error_id))
+                                        console.log("reset failed:",
+                                                    resp.error_id)
+                                        if (resp.error_id === 'no_device_custom_reader') {
+                                            yubiKey.clearCurrentDeviceAndEntries()
+                                        }
+                                    }
+                                    navigator.goToAuthenticator()
+                                })
+                            }
+                        })
+                    }
+                }
+
+                Menu {
+                    id: yubikeyContextMenu
+                    y: header.height
+                    MenuItem {
+                        text: "Toggle Applications"
+                        icon.source: "../images/apps.svg"
+                        icon.color: primaryColor
+                        opacity: enabled ? highEmphasis : disabledEmphasis
+                        icon.width: 20
+                        icon.height: 20
+                        enabled: !!yubiKey.currentDevice && (yubiKey.supportsNewInterfaces() || !yubiKey.currentDevice.isNfc)
+                        onTriggered: {
+                            if (yubiKey.availableDevices.length > 1) {
+                                navigator.waitForYubiKey({
+                                    "acceptedCb": function(resp) {
+                                        navigator.goToApplicationsView()
+                                    }
+                                })
+                            } else {
+                                navigator.goToApplicationsView()
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
+
+
 }

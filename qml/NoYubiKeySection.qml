@@ -6,9 +6,6 @@ import QtGraphicalEffects 1.0
 
 ColumnLayout {
 
-    readonly property int dynamicWidth: 600
-    readonly property int dynamicMargin: 32
-
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
 
@@ -27,14 +24,9 @@ ColumnLayout {
         }
 
         Label {
-            text: {
-                if (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable)) {
-                    return qsTr("Unsupported device")
-                }
-                else {
-                    return qsTr("Insert your YubiKey")
-                }
-            }
+            text: yubiKey.availableDevices.length > 0 && !yubiKey.currentDeviceEnabled("OATH")
+                  ? qsTr("Unsupported device")
+                  : qsTr("Insert your YubiKey")
             font.pixelSize: 16
             font.weight: Font.Normal
             lineHeight: 1.5
@@ -43,19 +35,12 @@ ColumnLayout {
             opacity: highEmphasis
         }
         Label {
-            text: {
-                if (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable)) {
-                    return qsTr("Yubico Authenticator requires a CCID/OTP enabled and compatible YubiKey.")
-                }
-                else {
-                    return ""
-                }
-            }
-            visible: (yubiKey.availableDevices.length > 0 && !yubiKey.availableDevices.some(dev => dev.selectable))
+            text: qsTr("Authenticator requires a YubiKey with Smart card (CCID) interface enabled.")
+            visible: yubiKey.availableDevices.length > 0 && !yubiKey.currentDeviceEnabled("OATH")
+            horizontalAlignment: Qt.AlignHCenter
             Layout.minimumWidth: 300
             Layout.maximumWidth: app.width - dynamicMargin
                                  < dynamicWidth ? app.width - dynamicMargin : dynamicWidth
-            horizontalAlignment: Qt.AlignHCenter
             Layout.rowSpan: 1
             lineHeight: 1.1
             wrapMode: Text.WordWrap
@@ -76,7 +61,9 @@ ColumnLayout {
         }
 
         Label {
-            text: settings.useCustomReader ? qsTr("Interface: CCID - Custom reader") : qsTr("Interface: OTP")
+            text: settings.useCustomReader ? qsTr("Interface: CCID - Custom reader") 
+                                           : qsTr("Interface: OTP%1").arg(settings.slot1digits < 1 && settings.slot2digits < 1 ? " (no slots configured)"
+                                           : "")
             visible: settings.useCustomReader || settings.otpMode
             Layout.minimumWidth: 300
             Layout.maximumWidth: app.width - dynamicMargin
