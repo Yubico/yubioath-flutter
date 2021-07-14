@@ -39,7 +39,6 @@ from yubikit.yubiotp import (
     StaticPasswordSlotConfiguration, HotpSlotConfiguration, HmacSha1SlotConfiguration)
 from smartcard.Exceptions import NoCardException, CardConnectionException
 
-from qr import qrparse, qrdecode
 from ykman.scancodes import KEYBOARD_LAYOUT
 
 import pyotherside

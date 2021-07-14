@@ -78,5 +78,4 @@ lupdate_only {
 
 DISTFILES += \
     py/* \
-    py/qr/* \
     qml/* \
