@@ -49,14 +49,6 @@ parts:
       add-apt-repository -y ppa:beineri/opt-qt-5.15.2-bionic
       apt-get -qq update
       apt-get install -y qt515svg qt515quickcontrols2 qt515graphicaleffects qt515declarative qt515wayland qt515x11extras qt515multimedia 
-  ppa-ykpers:
-    plugin: nil
-    build-packages:
-      - software-properties-common
-    override-pull: |
-      add-apt-repository -y ppa:yubico/stable
-      apt-get -qq update
-      apt-get install -y libykpers-1-1
   python:
     plugin: nil
     build-packages:
@@ -212,7 +204,6 @@ parts:
       - libgdk-pixbuf2.0-0
       - locales-all
       - xdg-user-dirs
-      - libykpers-1-1
       - libgtk2.0-0
       - libusb-1.0-0
     build-environment:
