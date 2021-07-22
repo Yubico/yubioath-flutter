@@ -36,6 +36,7 @@ Dialog {
     property string promptCurrent: ""
     property string heading
     property string buttonCancel: qsTr("Cancel")
+    property string buttonContinue: qsTr("Continue")
     property string buttonAccept: manageMode ? "Save" : "Continue"
     property string modeText: pinMode ? "PIN" : "password"
 
@@ -168,7 +169,7 @@ Dialog {
             cancelCb = navigator.confirm({
                 "heading": heading,
                 "buttonCancel": "",
-                "buttonAccept": buttonCancel,
+                "buttonAccept": buttonContinue,
                 "buttonPrimary": false,
                 "description": qsTr("The YubiKey is locked because wrong PIN was entered too many times. To unlock it, remove and reinsert it.")
             })
@@ -176,7 +177,7 @@ Dialog {
             cancelCb = navigator.confirm({
                 "heading": heading,
                 "buttonCancel": "",
-                "buttonAccept": buttonCancel,
+                "buttonAccept": buttonContinue,
                 "buttonPrimary": false,
                 "description": qsTr("The YubiKey is locked because wrong PIN was entered too many times. You'll need to reset the YubiKey.")
             })
@@ -269,7 +270,6 @@ Dialog {
         yubiKey.fidoChangePin(currentPin, newPin, function (resp) {
             if (resp.success) {
                 yubiKey.currentDevice.fidoPinCache = newPasswordField.text
-                console.log(yubiKey.currentDevice.fidoPinCache)
                 clearPinFields()
                 navigator.snackBar(qsTr("Changed FIDO2 PIN"))
                 accept()
