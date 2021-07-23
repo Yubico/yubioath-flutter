@@ -40,8 +40,8 @@ Dialog {
     property string buttonAccept: manageMode ? "Save" : "Continue"
     property string modeText: pinMode ? "PIN" : "password"
 
-    property string text1: manageMode ? qsTr("Enter your current %1 to change it. If you don't know your %1, you'll need to reset the YubiKey, then create a new %1.").arg(modeText)
-                                        : qsTr("Enter the %1 for your YubiKey. If you don't know your %1, you'll need to reset the YubiKey.").arg(modeText)
+    property string text1: manageMode ? qsTr("Enter your current %1 to change it. If you don't know your %1, you'll need to reset the YubiKey, then create a new %1. \n" + yubiKey.currentDevice.fidoPinRetries + " retries remaining").arg(modeText)
+                                        : qsTr("Enter the %1 for your YubiKey. If you don't know your %1, you'll need to reset the YubiKey. \n" + yubiKey.currentDevice.fidoPinRetries + " retries remaining").arg(modeText)
     property string text2: pinMode ? qsTr("Enter your new PIN. A PIN must be at least 4 characters long and can contain letters, numbers and other characters.")
                                         : qsTr("Enter your new password. A password may contain letters, numbers and other characters.")
 
@@ -116,6 +116,8 @@ Dialog {
                                 if(resp.error_id === "currently blocked" || resp.error_id === "blocked") {
                                     showPinBlockMessage(resp)
                                     reject()
+                                } else {
+                                    yubiKey.refreshCurrentDevice()
                                 }
                                 currentPasswordField.error = true
                                 currentPasswordField.textField.selectAll()
@@ -133,6 +135,8 @@ Dialog {
                                 if(resp.error_id === "currently blocked" || resp.error_id === "blocked") {
                                     showPinBlockMessage(resp)
                                     reject()
+                                } else {
+                                    yubiKey.refreshCurrentDevice()
                                 }
                                 currentPasswordField.error = true
                                 currentPasswordField.textField.selectAll()

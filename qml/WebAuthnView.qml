@@ -35,10 +35,13 @@ Flickable {
                 "pinMode": true,
                 "manageMode": false,
                 "heading": "Unlock YubiKey",
-                "text1": "Too many fingerprint scanning attempts have been used, PIN is required to unlock YubiKey.",
+                "text1": "Too many fingerprint scanning attempts have been used, PIN is required to unlock YubiKey.\n" + yubiKey.currentDevice.fidoPinRetries + " retries remaining",
                 "acceptedCb": function(resp) {
                     yubiKey.refreshCurrentDevice()
-                }
+                },
+               "cancelCb": function(resp) {
+                   yubiKey.refreshCurrentDevice()
+               }
             })
         }
     }
@@ -112,7 +115,10 @@ Flickable {
                     "heading": actionButton.text,
                     "acceptedCb": function(resp) {
                         yubiKey.refreshCurrentDevice()
-                    }
+                    },
+                   "cancelCb": function() {
+                       yubiKey.refreshCurrentDevice()
+                   }
                 })
             }
 
@@ -129,6 +135,9 @@ Flickable {
                         navigator.confirmInput({
                             "pinMode": true,
                             "heading": label,
+                           "cancelCb": function() {
+                               yubiKey.refreshCurrentDevice()
+                           },
                             "acceptedCb": function() {
                                 navigator.goToFidoCredentialsView()
                             }
@@ -152,7 +161,10 @@ Flickable {
                             "heading": label,
                             "acceptedCb": function(resp) {
                                 navigator.goToFingerPrintsView()
-                            }
+                            },
+                           "cancelCb": function(resp) {
+                               yubiKey.refreshCurrentDevice()
+                           }
                         })
                     }
                 }
