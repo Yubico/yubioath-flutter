@@ -97,9 +97,11 @@ jobs:
 
       - name: Copy over Python.framework to app bundle
         run: |
-          cp -a /Library/Frameworks/Python.framework yubioath-desktop.app/Contents/Frameworks/
+          cp -a Python-${PYTHON_VER}/Python.framework yubioath-desktop.app/Contents/Frameworks/
           sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '*.pyc' -delete
           sudo find yubioath-desktop.app/Contents/Frameworks/Python.framework -name '__pycache__' -delete
+          cd yubioath-desktop.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VER_SHORT}/lib/python${PYTHON_VER_SHORT}/lib-dynload/
+          ls
 
       - name: Point pyotherside to relative Python
         run: |
