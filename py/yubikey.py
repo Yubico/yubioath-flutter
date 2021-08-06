@@ -22,7 +22,7 @@ from fido2.ctap2 import Ctap2, ClientPin, FPBioEnrollment, CredentialManagement,
 from ykman.device import scan_devices, list_all_devices, connect_to_device, get_name, read_info
 from ykman.pcsc import list_readers, list_devices as list_ccid
 from ykman.otp import PrepareUploadFailed, generate_static_pw, prepare_upload_key, time_challenge, format_oath_code
-from ykman.settings import Settings
+from ykman.settings import AppData
 from ykman.oath import is_hidden
 from ykman.scancodes import KEYBOARD_LAYOUT, encode
 
@@ -176,7 +176,7 @@ class Controller(object):
     _win_non_admin = sys.platform == "win32" and not ctypes.windll.shell32.IsUserAnAdmin()
 
     def __init__(self):
-        self.settings = Settings('oath')
+        self.settings = AppData('oath')
 
         # Wrap all args and return values as JSON.
         for f in dir(self):
