@@ -77,7 +77,7 @@ Flickable {
             }
 
             Label {
-                text: yubiKey.fingerprints.length > 0 ? qsTr("Fingerprints on this YubiKey") : qsTr("There are no fingerprints on this YubiKey")
+                text: yubiKey.fingerprints.length > 0 ? qsTr("Fingerprint templates stored on this YubiKey (" + yubiKey.fingerprints.length + "/5)") : qsTr("There are no fingerprint templates stored on this YubiKey")
                 color: primaryColor
                 opacity: lowEmphasis
                 font.pixelSize: 13
@@ -95,7 +95,7 @@ Flickable {
                 RowLayout {
                     spacing: 0
                     StyledTextField {
-                        text: modelData.name ? modelData.name : qsTr("Unnamed (ID: %1)").arg(modelData.id)
+                        text: modelData.name ? modelData.name : qsTr("Template (ID: %1)").arg(modelData.id)
                         textField.font.italic: modelData.name ? false : true
                         isEnabled: false
                         noedit: true
