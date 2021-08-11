@@ -174,15 +174,16 @@ Flickable {
     }
 
     ColumnLayout {
-        width: settingsPanel.contentWidth
         id: content
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
         spacing: 0
+        width: app.width - dynamicMargin < dynamicWidth
+               ? app.width - dynamicMargin
+               : dynamicWidth
 
         ColumnLayout {
-            width: settingsPanel.contentWidth - 32
-            Layout.leftMargin: 16
-            Layout.rightMargin: 16
-            Layout.maximumWidth: settingsPanel.contentWidth - 32
             Layout.fillWidth: true
 
             Label {
@@ -203,7 +204,7 @@ Flickable {
                 lineHeight: 1.2
                 textFormat: TextEdit.PlainText
                 wrapMode: Text.WordWrap
-                Layout.maximumWidth: parent.width
+                Layout.maximumWidth: content.width
                 Layout.bottomMargin: 16
             }
 
