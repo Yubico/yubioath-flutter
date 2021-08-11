@@ -10,7 +10,7 @@ ToolBar {
 
     background: Rectangle {
         color: defaultBackground
-        opacity: 0.7
+        opacity: 0.9
     }
 
     width: app.width
@@ -126,7 +126,7 @@ ToolBar {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 placeholderText: searchFieldPlaceholder
-                placeholderTextColor: isDark() ? "#B7B7B7" : "#767676"
+                placeholderTextColor: formText
                 leftPadding: 28
                 rightPadding: 8
                 width: parent.width
