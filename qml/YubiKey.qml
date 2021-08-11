@@ -550,7 +550,6 @@ Python {
                         "heading": qsTr("No QR code found"),
                         "description": qsTr("To add an account follow the instructions provided by the service. Make sure the QR code is fully visible before scanning."),
                         "warning": false,
-                        "noicon": true,
                         "buttonAccept": qsTr("Try again"),
                         "acceptedCb": function() {
                             yubiKey.scanQr()

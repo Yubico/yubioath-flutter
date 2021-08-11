@@ -161,7 +161,7 @@ Flickable {
                 actionButton.text: "Clear"
                 actionButton.onClicked: navigator.confirm({
                         "heading": qsTr("Clear passwords?"),
-                        "message": qsTr("This will delete all saved passwords."),
+                        "message": qsTr("This action will delete all saved passwords from the application."),
                         "description": qsTr("A password prompt will appear the next time a YubiKey with a password is used."),
                         "buttonAccept": qsTr("Clear passwords"),
                         "acceptedCb": function() {

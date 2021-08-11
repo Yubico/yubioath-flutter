@@ -57,9 +57,7 @@ Dialog {
     property var acceptedCb
     property bool warning: true
     property bool buttons: true
-    property bool noicon: false
     property bool buttonPrimary: true
-    property string image
     property string heading
     property string message
     property string description
@@ -80,35 +78,18 @@ Dialog {
             visible: heading
         }
 
-        RowLayout {
-            spacing: 0
-            width: parent.width
+        Label {
+            text: message
+            color: primaryColor
+            opacity: highEmphasis
+            font.pixelSize: 13
+            font.weight: Font.Medium
+            lineHeight: 1.2
+            wrapMode: Text.WordWrap
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            Layout.bottomMargin: description ? 16 : 0
+            Layout.fillWidth: true
             visible: message
-
-            StyledImage {
-                source: warning ? "../images/warning.svg" : "../images/info.svg"
-                color: warning ? yubicoRed : defaultForeground
-                iconWidth: 32
-                iconHeight: 32
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-                Layout.maximumWidth: 48
-                visible: message && !noicon
-            }
-
-            Label {
-                text: message
-                color: primaryColor
-                opacity: highEmphasis
-                font.pixelSize: 13
-                font.weight: Font.Medium
-                lineHeight: 1.2
-                wrapMode: Text.WordWrap
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                Layout.fillWidth: true
-                visible: message
-            }
+            Layout.bottomMargin: 16
         }
 
         Label {
@@ -121,11 +102,11 @@ Dialog {
             textFormat: TextEdit.RichText
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
+            Layout.bottomMargin: 16
         }
 
         DialogButtonBox {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Layout.topMargin: 16
             Layout.bottomMargin: 0
             padding: 0
             visible: buttons
