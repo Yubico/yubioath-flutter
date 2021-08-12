@@ -8,7 +8,7 @@ import "utils.js" as Utils
 Flickable {
 
     id: settingsPanel
-    objectName: 'applicationsFlickable'
+    objectName: 'applicationsView'
     contentWidth: app.width
     contentHeight: content.height + dynamicMargin
 

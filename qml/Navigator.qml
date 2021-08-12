@@ -55,6 +55,10 @@ StackView {
         return !!currentItem && currentItem.objectName === 'settingsView'
     }
 
+    function isInApplications() {
+        return !!currentItem && currentItem.objectName === 'applicationsView'
+    }
+
     function isInFlickable() {
         if (!!currentItem && currentItem.objectName.includes('yubiKeyWebAuthnView'))
             return true
@@ -159,8 +163,8 @@ StackView {
     }
 
     function goToApplicationsView() {
-        if (currentItem.objectName !== 'applicationsFlickable') {
-            push(applicationsFlickable, StackView.PushTransition)
+        if (currentItem.objectName !== 'applicationsView') {
+            push(applicationsView, StackView.Immediate)
         }
     }
 
@@ -336,7 +340,7 @@ StackView {
     }
 
     Component {
-        id: applicationsFlickable
+        id: applicationsView
         ApplicationsView {
         }
     }

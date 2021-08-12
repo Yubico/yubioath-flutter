@@ -234,14 +234,14 @@ ToolBar {
                 id: closeBtn
                 activeFocusOnTab: true
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: navigator.isInNewOathCredential()
-                onClicked: navigator.goToAuthenticator()
+                visible: navigator.isInNewOathCredential() || navigator.isInApplications()
+                onClicked: navigator.pop(StackView.Immediate)
                 icon.source: "../images/clear.svg"
                 icon.color: primaryColor
                 opacity: hovered ? fullEmphasis : lowEmphasis
 
-                Keys.onReturnPressed: navigator.goToAuthenticator()
-                Keys.onEnterPressed: navigator.goToAuthenticator()
+                Keys.onReturnPressed: navigator.pop(StackView.Immediate)
+                Keys.onEnterPressed: navigator.pop(StackView.Immediate)
 
                 KeyNavigation.left: drawerBtn
                 KeyNavigation.backtab: drawerBtn
