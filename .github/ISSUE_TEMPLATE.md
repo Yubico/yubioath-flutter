@@ -23,6 +23,14 @@ Actual results
 [What actually happened?]
 
 
+Logs
+---
+
+```
+[If possible, run the application as `yubioath-desktop --log-level debug` while triggering the issue and include the output here.]
+```
+
+
 Other info
 ---
 
