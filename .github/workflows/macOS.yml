@@ -51,20 +51,8 @@ jobs:
 
       - name: Build Python as a framework
         run: |
-          wget https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tgz
-          wget https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tgz.asc
-          gpg --verify Python-${PYTHON_VER}.tgz.asc
-          tar -xzvf Python-${PYTHON_VER}.tgz
-          cd Python-${PYTHON_VER}
-          # Make sure gettext is not installed when configuring Python,
-          # otherwise it seems to break the linking for PyOtherSide build later.
-          # Re-intall after, because it's needed for wget.
-          brew uninstall gettext --ignore-dependencies
-          brew unlink python@3.9
-          ./configure MACOSX_DEPLOYMENT_TARGET=10.13 CPPFLAGS="-I/opt/openssl/include" LDFLAGS="-L/opt/openssl/lib" CC=clang --enable-framework --with-openssl=/opt/openssl --enable-optimizations
-          sudo make altinstall
-          brew link --overwrite python@3.9
-          brew reinstall gettext
+          wget https://www.python.org/ftp/python/3.9.6/python-3.9.6-macos11.pkg
+          sudo installer -pkg python-3.9.6-macos11.pkg -target /
 
       - name: Install python dependencies from source
         run: |
