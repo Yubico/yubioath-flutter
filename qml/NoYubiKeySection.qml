@@ -26,7 +26,7 @@ ColumnLayout {
         Label {
             text: yubiKey.availableDevices.length > 0 && !yubiKey.currentDeviceEnabled("OATH")
                   ? qsTr("Unsupported device")
-                  : qsTr("Insert your YubiKey")
+                  : qsTr("Insert your YubiKey (is the smart card service enabled?")
             font.pixelSize: 16
             font.weight: Font.Normal
             lineHeight: 1.5
