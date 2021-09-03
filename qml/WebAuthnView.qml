@@ -35,7 +35,7 @@ Flickable {
                 "pinMode": true,
                 "manageMode": false,
                 "heading": "Unlock YubiKey",
-                "text1": "Too many fingerprint scanning attempts have been used, PIN is required to unlock YubiKey.\n" + yubiKey.currentDevice.fidoPinRetries + " retries remaining",
+                "text1": "Too many fingerprint scanning attempts have been used, PIN is required to unlock YubiKey.",
                 "acceptedCb": function(resp) {
                     yubiKey.refreshCurrentDevice()
                 },

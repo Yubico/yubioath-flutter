@@ -333,7 +333,7 @@ Dialog {
             opacity: highEmphasis
             font.pixelSize: 13
             lineHeight: 1.2
-            visible: (hasPin || hasPassword || promptMode) && (yubiKey.currentDevice.fidoPinRetries === 1) && !yubiKey.currentDevice.pinIsBlocked && !currentPasswordField.error
+            visible: (hasPin || promptMode) && (yubiKey.currentDevice.fidoPinRetries === 1) && !yubiKey.currentDevice.pinIsBlocked && !currentPasswordField.error
             textFormat: TextEdit.RichText
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
@@ -364,7 +364,7 @@ Dialog {
                     }
                 }
                 echoMode: TextInput.Password
-                validateText: yubiKey.currentDevice.fidoPinRetries > 1 ? "Wrong PIN, " + yubiKey.currentDevice.fidoPinRetries + " attempts remaining" : "Wrong PIN, 1 attempt remaining"
+                validateText: qsTr("Wrong PIN, %1 attempt(s) remaining").arg(yubiKey.currentDevice.fidoPinRetries)
                 Keys.onEnterPressed: submitForm()
                 Keys.onReturnPressed: submitForm()
                 onSubmit: submitForm()
