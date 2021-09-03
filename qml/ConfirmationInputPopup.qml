@@ -45,6 +45,7 @@ Dialog {
     property string text2: pinMode ? qsTr("Enter your new PIN. A PIN must be at least 4 characters long and can contain letters, numbers and other characters.")
                                         : qsTr("Enter your new password. A password may contain letters, numbers and other characters.")
 
+    property string attemptsText: qsTr("Warning: Only 1 PIN attempt remaining.")
     property bool hasPin: pinMode && (!!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin)
     property bool hasPassword: !pinMode && (!!yubiKey.currentDevice && yubiKey.currentDevice.hasPassword)
     property bool isBio: !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("FIDO2") && (yubiKey.currentDevice.formFactor === 6 || yubiKey.currentDevice.formFactor === 7)
@@ -116,6 +117,8 @@ Dialog {
                                 if(resp.error_id === "currently blocked" || resp.error_id === "blocked") {
                                     showPinBlockMessage(resp)
                                     reject()
+                                } else {
+                                    yubiKey.refreshCurrentDevice()
                                 }
                                 currentPasswordField.error = true
                                 currentPasswordField.textField.selectAll()
@@ -133,6 +136,8 @@ Dialog {
                                 if(resp.error_id === "currently blocked" || resp.error_id === "blocked") {
                                     showPinBlockMessage(resp)
                                     reject()
+                                } else {
+                                    yubiKey.refreshCurrentDevice()
                                 }
                                 currentPasswordField.error = true
                                 currentPasswordField.textField.selectAll()
@@ -274,24 +279,17 @@ Dialog {
                 navigator.snackBar(qsTr("Changed FIDO2 PIN"))
                 accept()
             } else {
-                if (resp.error_id === 'too long') {
-                    navigator.snackBarError(qsTr("New PIN is too long"))
-                } else if (resp.error_id === 'too short') {
-                    navigator.snackBarError(qsTr("New PIN is too short"))
-                } else if (resp.error_id === 'wrong pin') {
-                    navigator.snackBarError(qsTr("The current PIN is wrong"))
-                } else if (resp.error_id === 'currently blocked') {
-                    navigator.snackBarError(
-                                qsTr("PIN authentication is currently blocked. Remove and re-insert your YubiKey"))
-                } else if (resp.error_id === 'blocked') {
-                    navigator.snackBarError(qsTr("PIN is blocked"))
-                    yubiKey.pinIsBlocked = true
-                } else if (resp.error_message) {
-                    navigator.snackBarError(resp.error_message)
+                yubiKey.currentDevice.fidoPinCache = ""
+                yubiKey.fingerprints.length = 0
+                if(resp.error_id === "currently blocked" || resp.error_id === "blocked") {
+                    showPinBlockMessage(resp)
+                    reject()
                 } else {
-                    navigator.snackBarError(resp.error_id)
+                    yubiKey.refreshCurrentDevice()
                 }
-                reject()
+                currentPasswordField.error = true
+                currentPasswordField.textField.selectAll()
+                currentPasswordField.textField.forceActiveFocus()
             }
         })
     }
@@ -329,6 +327,19 @@ Dialog {
             Layout.bottomMargin: 16
         }
 
+        Label {
+            text: attemptsText
+            color: yubicoRed
+            opacity: highEmphasis
+            font.pixelSize: 13
+            lineHeight: 1.2
+            visible: (hasPin || promptMode) && (yubiKey.currentDevice.fidoPinRetries === 1) && !yubiKey.currentDevice.pinIsBlocked && !currentPasswordField.error
+            textFormat: TextEdit.RichText
+            wrapMode: Text.WordWrap
+            Layout.maximumWidth: parent.width
+            Layout.bottomMargin: 16
+        }
+
         StyledTextField {
             id: inputPromptField
             visible: promptMode
@@ -353,7 +364,7 @@ Dialog {
                     }
                 }
                 echoMode: TextInput.Password
-                validateText: "Wrong PIN"
+                validateText: qsTr("Wrong PIN, %1 attempt(s) remaining").arg(yubiKey.currentDevice.fidoPinRetries)
                 Keys.onEnterPressed: submitForm()
                 Keys.onReturnPressed: submitForm()
                 onSubmit: submitForm()
