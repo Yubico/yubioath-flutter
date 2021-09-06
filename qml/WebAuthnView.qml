@@ -170,7 +170,7 @@ Flickable {
                 }
             }
             StyledExpansionPanel {
-                label: qsTr("Factory defaults")
+                label: qsTr("Reset defaults")
                 isEnabled: false
                 actionButton.text: "Reset"
                 actionButton.onClicked: {

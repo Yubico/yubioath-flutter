@@ -102,7 +102,7 @@ Dialog {
         spacing: 0
 
         Label {
-            text: qsTr("Reset your YubiKey")
+            text: qsTr("Reset to defaults?")
             font.pixelSize: 14
             font.weight: Font.Medium
             wrapMode: Text.WordWrap
@@ -110,36 +110,21 @@ Dialog {
             Layout.bottomMargin: 16
         }
 
-        RowLayout {
-            spacing: 0
-            width: parent.width
+        Label {
+            text: qsTr("Warning: This action will delete all FIDO2/U2F sign-in data, including PIN and fingerprints (if applicable) on your YubiKey.")
+            color: primaryColor
+            opacity: highEmphasis
+            font.pixelSize: 13
+            font.weight: Font.Medium
+            lineHeight: 1.2
+            wrapMode: Text.WordWrap
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            Layout.fillWidth: true
             Layout.bottomMargin: 16
-
-            StyledImage {
-                source: "../images/warning.svg"
-                color: yubicoRed
-                iconWidth: 32
-                iconHeight: 32
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-                Layout.maximumWidth: 48
-            }
-
-            Label {
-                text: qsTr("This will delete all accounts and restore factory defaults of your YubiKey.")
-                color: primaryColor
-                opacity: highEmphasis
-                font.pixelSize: 13
-                font.weight: Font.Medium
-                lineHeight: 1.2
-                wrapMode: Text.WordWrap
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                Layout.fillWidth: true
-            }
         }
 
         Label {
-            text: qsTr("Follow the instructions to perform a reset, abort at any time.")
+            text: qsTr("There is no going back from here. Follow the instructions to perform a reset, abort at any time.")
             visible: !settings.useCustomReader
             color: primaryColor
             opacity: lowEmphasis
@@ -156,16 +141,16 @@ Dialog {
             text: {
                 if (!settings.useCustomReader) {
                     if(done) {
-                        return qsTr("Done")
+                        return qsTr("Status: Done")
                     }
                     if (ready) {
-                        return qsTr("Touch your YubiKey")
+                        return qsTr("Status: Touch your YubiKey")
                     }
                     if (removed) {
-                        return qsTr("Reinsert your YubiKey")
+                        return qsTr("Status: Reinsert your YubiKey")
                     }
                     if (!ready && !removed) {
-                        return qsTr("Remove your YubiKey")
+                        return qsTr("Status: Remove your YubiKey")
                     }
                 } else {
                     return qsTr("To continue, remove and re-place your YubiKey")
@@ -184,6 +169,8 @@ Dialog {
         ProgressBar {
             id: progressBar
             value: 0
+            Material.primary: yubicoRed
+            Material.accent: yubicoRed
             Layout.fillWidth: true
             Layout.bottomMargin: 16
         }
@@ -201,6 +188,7 @@ Dialog {
             StyledButton {
                 id: btnCancel
                 text: qsTr("Cancel")
+                critical: true
                 DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
                 onClicked: {
                     if (settings.useCustomReader)
@@ -224,6 +212,7 @@ Dialog {
             StyledButton {
                 id: btnAccept
                 text: qsTr("Continue")
+                critical: true
                 primary: true
                 DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
                 Keys.onReturnPressed: accept()

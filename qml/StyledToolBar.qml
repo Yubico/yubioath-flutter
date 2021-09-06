@@ -10,7 +10,7 @@ ToolBar {
 
     background: Rectangle {
         color: defaultBackground
-        opacity: 0.7
+        opacity: 0.9
     }
 
     width: app.width
@@ -126,7 +126,7 @@ ToolBar {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 placeholderText: searchFieldPlaceholder
-                placeholderTextColor: isDark() ? "#B7B7B7" : "#767676"
+                placeholderTextColor: formText
                 leftPadding: 28
                 rightPadding: 8
                 width: parent.width
@@ -234,14 +234,14 @@ ToolBar {
                 id: closeBtn
                 activeFocusOnTab: true
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                visible: navigator.isInNewOathCredential()
-                onClicked: navigator.goToAuthenticator()
+                visible: navigator.isInNewOathCredential() || navigator.isInApplications()
+                onClicked: navigator.pop(StackView.Immediate)
                 icon.source: "../images/clear.svg"
                 icon.color: primaryColor
                 opacity: hovered ? fullEmphasis : lowEmphasis
 
-                Keys.onReturnPressed: navigator.goToAuthenticator()
-                Keys.onEnterPressed: navigator.goToAuthenticator()
+                Keys.onReturnPressed: navigator.pop(StackView.Immediate)
+                Keys.onEnterPressed: navigator.pop(StackView.Immediate)
 
                 KeyNavigation.left: drawerBtn
                 KeyNavigation.backtab: drawerBtn
@@ -317,7 +317,7 @@ ToolBar {
                         })
                     }
                     MenuItem {
-                        text: "Reset"
+                        text: "Reset defaults"
                         icon.source: "../images/reset.svg"
                         icon.color: primaryColor
                         opacity: enabled ? highEmphasis : disabledEmphasis
@@ -325,10 +325,10 @@ ToolBar {
                         icon.height: 20
                         enabled: !settings.otpMode && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                         onTriggered: navigator.confirm({
-                            "heading": qsTr("Reset device?"),
-                            "message": qsTr("This will delete all accounts and restore factory defaults of your YubiKey."),
-                            "description": qsTr("Before proceeding:<ul style=\"-qt-list-indent: 1;\"><li>There is NO going back after a factory reset.<li>If you do not know what you are doing, do NOT do this.</ul>"),
-                            "buttonAccept": qsTr("Reset device"),
+                            "heading": qsTr("Reset to defaults?"),
+                            "message": qsTr("Warning: This action will delete all OATH TOTP/HOTP accounts and password on your YubiKey."),
+                            "description": qsTr("You will not be able to generate security codes for any of your accounts. Make sure 2FA has been disabled on all web services."),
+                            "buttonAccept": qsTr("Reset YubiKey"),
                             "acceptedCb": function () {
                                 navigator.goToLoading()
                                 yubiKey.reset(function (resp) {

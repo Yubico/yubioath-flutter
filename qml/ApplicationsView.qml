@@ -8,7 +8,7 @@ import "utils.js" as Utils
 Flickable {
 
     id: settingsPanel
-    objectName: 'applicationsFlickable'
+    objectName: 'applicationsView'
     contentWidth: app.width
     contentHeight: content.height + dynamicMargin
 
@@ -25,12 +25,12 @@ Flickable {
                     yubiKey.refreshCurrentDevice()
                 },
                 "cancelCb": function(resp) {
-                    navigator.pop()
+                    navigator.pop(StackView.Immediate)
                 }
             })
         }
         if (settingsPanel.activeFocus && yubiKey.availableDevices.length === 0) {
-            navigator.pop()
+            navigator.pop(StackView.Immediate)
         }
     }
 
@@ -58,7 +58,7 @@ Flickable {
 
     property string smartCardDescription: qsTr("Applications including smart card, encryption and Open Authentication (OATH) functionality.")
     property string fidoDescription: qsTr("The FIDO protocols are used in the W3C WebAuthn standard adopted by all web browsers.")
-    property string otpDescription: qsTr("Protocols for One-Time Passwords (OTP), challenge response and static passwords.")
+    property string otpDescription: qsTr("Protocols for One-Time Password (OTP), challenge response and static passwords.")
 
     function configureInterfaces() {
         navigator.goToLoading()
@@ -174,15 +174,16 @@ Flickable {
     }
 
     ColumnLayout {
-        width: settingsPanel.contentWidth
         id: content
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
         spacing: 0
+        width: app.width - dynamicMargin < dynamicWidth
+               ? app.width - dynamicMargin
+               : dynamicWidth
 
         ColumnLayout {
-            width: settingsPanel.contentWidth - 32
-            Layout.leftMargin: 16
-            Layout.rightMargin: 16
-            Layout.maximumWidth: settingsPanel.contentWidth - 32
             Layout.fillWidth: true
 
             Label {
@@ -203,7 +204,7 @@ Flickable {
                 lineHeight: 1.2
                 textFormat: TextEdit.PlainText
                 wrapMode: Text.WordWrap
-                Layout.maximumWidth: parent.width
+                Layout.maximumWidth: content.width
                 Layout.bottomMargin: 16
             }
 
@@ -448,7 +449,6 @@ Flickable {
                     Layout.maximumWidth: app.width - 48
                     Layout.columnSpan: gridLayout.columns
                     wrapMode: Text.WordWrap
-                    Layout.bottomMargin: 16
                 }
 
                 // FIDO grouping
@@ -559,7 +559,6 @@ Flickable {
                     Layout.maximumWidth: app.width - 48
                     Layout.columnSpan: gridLayout.columns
                     wrapMode: Text.WordWrap
-                    Layout.bottomMargin: 16
                 }
 
                 // OTP
@@ -601,7 +600,6 @@ Flickable {
                     Layout.maximumWidth: app.width - 48
                     Layout.columnSpan: gridLayout.columns
                     wrapMode: Text.WordWrap
-                    Layout.bottomMargin: 16
                 }
                 
                 StyledButton {
@@ -726,7 +724,7 @@ Flickable {
                 // Legacy OTP
 
                 Label {
-                    text: qsTr("One-Time Passwords")
+                    text: qsTr("One-Time Password")
                     visible: otpModeBtn.visible
                 }
 
@@ -752,7 +750,7 @@ Flickable {
                 StyledButton {
                     Layout.alignment: Qt.AlignRight | Qt.AlignTop
                     Layout.topMargin: 16
-                    Layout.rightMargin: 16
+                    Layout.rightMargin: 0
                     primary: true
                     text: qsTr("Save")
                     Layout.columnSpan: gridLayoutLegacyKeys.columns
