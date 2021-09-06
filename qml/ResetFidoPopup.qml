@@ -102,7 +102,7 @@ Dialog {
         spacing: 0
 
         Label {
-            text: qsTr("Restore defaults?")
+            text: qsTr("Reset to defaults?")
             font.pixelSize: 14
             font.weight: Font.Medium
             wrapMode: Text.WordWrap

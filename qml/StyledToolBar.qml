@@ -317,7 +317,7 @@ ToolBar {
                         })
                     }
                     MenuItem {
-                        text: "Restore defaults"
+                        text: "Reset defaults"
                         icon.source: "../images/reset.svg"
                         icon.color: primaryColor
                         opacity: enabled ? highEmphasis : disabledEmphasis
@@ -325,8 +325,8 @@ ToolBar {
                         icon.height: 20
                         enabled: !settings.otpMode && !!yubiKey.currentDevice && yubiKey.currentDeviceEnabled("OATH")
                         onTriggered: navigator.confirm({
-                            "heading": qsTr("Restore defaults?"),
-                            "message": qsTr("Warning: This action will delete all OATH TOTP/HOTP accounts and any password on your YubiKey."),
+                            "heading": qsTr("Reset to defaults?"),
+                            "message": qsTr("Warning: This action will delete all OATH TOTP/HOTP accounts and password on your YubiKey."),
                             "description": qsTr("You will not be able to generate security codes for any of your accounts. Make sure 2FA has been disabled on all web services."),
                             "buttonAccept": qsTr("Reset YubiKey"),
                             "acceptedCb": function () {
