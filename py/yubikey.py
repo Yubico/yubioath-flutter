@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import dataclasses
 import os
 import sys
 import ctypes
@@ -23,7 +24,7 @@ from ykman.device import scan_devices, list_all_devices, connect_to_device, get_
 from ykman.pcsc import list_readers, list_devices as list_ccid
 from ykman.otp import PrepareUploadFailed, generate_static_pw, prepare_upload_key, time_challenge, format_oath_code
 from ykman.settings import AppData
-from ykman.oath import is_hidden
+from ykman.oath import is_hidden, is_steam, calculate_steam
 from ykman.scancodes import KEYBOARD_LAYOUT, encode
 
 from yubikit.management import (
@@ -784,26 +785,31 @@ class Controller(object):
         with self._open_oath() as oath_controller:
             session = OathSession(oath_controller)
             self._unlock(session)
-            entries = session.calculate_all(timestamp)
-            return success(
-                {
-                    'entries': [
-                        pair_to_dict(
-                            cred, code) for (
-                                cred, code) in entries.items() if not is_hidden(cred)]
-                }
-            )
+            entries = [
+                pair_to_dict(
+                    cred,
+                    dataclasses.replace(code, value=calculate_steam(session, cred, timestamp))
+                    if is_steam(cred) and not cred.touch_required
+                    else code,
+                )
+                for (cred, code) in session.calculate_all(timestamp).items()
+                if not is_hidden(cred)
+            ]
+            return success({"entries": entries})
 
     def ccid_calculate(self, credential, timestamp):
         with self._open_oath() as oath_controller:
             session = OathSession(oath_controller)
             self._unlock(session)
-            code = session.calculate_code(
-                cred_from_dict(credential), timestamp)
-            return success({
-                'credential': credential,
-                'code': code_to_dict(code)
-            })
+            cred = cred_from_dict(credential)
+            if is_steam(cred):
+                timestep = timestamp // cred.period
+                valid_from = timestep * cred.period
+                valid_to = valid_from + cred.period
+                code = Code(calculate_steam(session, cred, timestamp), valid_from, valid_to)
+            else:
+                code = session.calculate_code(cred, timestamp)
+            return success({"credential": credential, "code": code_to_dict(code)})
 
     def ccid_add_credential(
             self, name, secret, issuer, oath_type,
