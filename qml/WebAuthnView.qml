@@ -18,7 +18,6 @@ Flickable {
 
     property bool hasPin: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoHasPin
     property int pinRetries: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinRetries
-    property bool pinIsBlocked: !!yubiKey.currentDevice && yubiKey.pinIsBlocked
     property bool uvBlocked: !!yubiKey.currentDevice && yubiKey.currentDevice.uvBlocked
 
     property int currentDevices: !!yubiKey.availableDevices.length && yubiKey.availableDevices.length
@@ -30,7 +29,7 @@ Flickable {
     }
 
     onUvBlockedChanged: {
-        if (uvBlocked) {
+        if (uvBlocked && pinRetries > 0) {
             navigator.confirmInput({
                 "pinMode": true,
                 "manageMode": false,
@@ -106,7 +105,7 @@ Flickable {
         StyledExpansionContainer {
             StyledExpansionPanel {
                 label: qsTr("PIN protection")
-                enabled: !pinIsBlocked
+                enabled: pinRetries > 0
                 isEnabled: false
                 actionButton.text: hasPin ? qsTr("Change PIN") : qsTr("Create a PIN")
                 actionButton.onClicked: navigator.confirmInput({

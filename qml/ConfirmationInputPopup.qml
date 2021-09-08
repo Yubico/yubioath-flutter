@@ -333,7 +333,7 @@ Dialog {
             opacity: highEmphasis
             font.pixelSize: 13
             lineHeight: 1.2
-            visible: (hasPin || promptMode) && (yubiKey.currentDevice.fidoPinRetries === 1) && !yubiKey.currentDevice.pinIsBlocked && !currentPasswordField.error
+            visible: (hasPin || promptMode) && (yubiKey.currentDevice.fidoPinRetries === 1) && !currentPasswordField.error
             textFormat: TextEdit.RichText
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width

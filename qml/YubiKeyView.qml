@@ -143,30 +143,11 @@ Flickable {
                     label: qsTr("WebAuthn (FIDO2/U2F)")
                     description: enabled ? qsTr("Manage PIN, fingerprints and credentials stored on the YubiKey") : getDisabledMessage("FIDO2")
                     enabled: !!yubiKey.currentDevice && yubiKey.currentDevice.ctapAvailable
-                    toolButtonIcon: !enabled && yubiKey.currentDeviceSupported("FIDO2") || yubiKey.currentDeviceSupported("U2F") ? "../images/warning.svg" : ""
+                    toolButtonIcon: !enabled && yubiKey.currentDeviceSupported("FIDO2") ? "../images/warning.svg" : ""
                     isFlickable: true
                     isEnabled: enabled
                     expandButton.onClicked: navigator.goToWebAuthnView()
                 }
-/*
-                StyledExpansionPanel {
-                    label: qsTr("Smart card (PIV)")
-                    description: enabled ? qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod") : getDisabledMessage("PIV")
-                    enabled: yubiKey.currentDeviceEnabled("PIV")
-                    toolButtonIcon: !enabled && yubiKey.currentDeviceSupported("PIV") ? "../images/warning.svg" : ""
-                    isEnabled: enabled
-                    isFlickable: true
-                }
-                StyledExpansionPanel {
-                    label: qsTr("One-time password (OTP)")
-                    description: enabled ? qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod") : getDisabledMessage("OTP")
-                    enabled: yubiKey.currentDeviceEnabled("OTP")
-                    toolButtonIcon: !enabled && yubiKey.currentDeviceSupported("OTP") ? "../images/warning.svg" : ""
-                    isEnabled: enabled
-                    isFlickable: true
-                    expandButton.onClicked: navigator.goToOneTimePasswordView()
-                }
-*/
              }
         }
     }
