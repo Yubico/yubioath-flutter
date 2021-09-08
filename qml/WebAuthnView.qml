@@ -105,7 +105,7 @@ Flickable {
         StyledExpansionContainer {
             StyledExpansionPanel {
                 label: qsTr("PIN protection")
-                enabled: pinRetries > 0
+                enabled: !(hasPin && pinRetries === 0)
                 isEnabled: false
                 actionButton.text: hasPin ? qsTr("Change PIN") : qsTr("Create a PIN")
                 actionButton.onClicked: navigator.confirmInput({
