@@ -216,6 +216,7 @@ Drawer {
                                                              if (resp.success) {
                                                                  entries.clear()
                                                                  yubiKey.currentDevice = dev
+                                                                 yubiKey.refreshCurrentDevice()
                                                                  if (navigator.isInAuthenticator()) {
                                                                      if(yubiKey.currentDeviceEnabled("OATH")) {
                                                                          yubiKey.oathCalculateAllOuter()
