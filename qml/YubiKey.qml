@@ -238,7 +238,7 @@ Python {
     }
 
     function refreshCurrentDevice(cb) {
-        var currentPinCache = !!yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : null
+        var currentPinCache = !!yubiKey.currentDevice ? yubiKey.currentDevice.fidoPinCache : null
         if (settings.useCustomReader) {
             yubiKey.loadDevicesCustomReader(settings.customReaderName, function(resp) {
                 if (resp.success) {

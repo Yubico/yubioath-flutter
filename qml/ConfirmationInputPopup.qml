@@ -25,6 +25,7 @@ Dialog {
     }
 
     property alias maximumLength: inputPromptField.maximumLength
+    property bool yubiKeyRemoved: yubiKey.availableDevices.length === 0
 
     property var cancelCb
     property var acceptedCb
@@ -58,6 +59,10 @@ Dialog {
         } else {
             newPasswordField.textField.forceActiveFocus()
         }
+    }
+
+    onYubiKeyRemovedChanged: {
+        reject()
     }
 
     onClosed: {
@@ -333,7 +338,7 @@ Dialog {
             opacity: highEmphasis
             font.pixelSize: 13
             lineHeight: 1.2
-            visible: (hasPin || promptMode) && (yubiKey.currentDevice.fidoPinRetries === 1) && !currentPasswordField.error
+            visible: !!yubiKey.currentDevice && (hasPin || promptMode) && (yubiKey.currentDevice.fidoPinRetries === 1) && !currentPasswordField.error
             textFormat: TextEdit.RichText
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
@@ -364,7 +369,7 @@ Dialog {
                     }
                 }
                 echoMode: TextInput.Password
-                validateText: qsTr("Wrong PIN, %1 attempt(s) remaining").arg(yubiKey.currentDevice.fidoPinRetries)
+                validateText: qsTr("Wrong PIN, %1 attempt(s) remaining").arg(!!yubiKey.currentDevice ? yubiKey.currentDevice.fidoPinRetries : "0")
                 Keys.onEnterPressed: submitForm()
                 Keys.onReturnPressed: submitForm()
                 onSubmit: submitForm()

@@ -99,6 +99,7 @@ Flickable {
                         text: qsTr("%1 (%2)").arg(modelData.rpId).arg(modelData.name ? modelData.name : modelData.userId)
                         isEnabled: false
                         noedit: true
+                        textField.rightPadding: 32
                         Layout.bottomMargin: -8
 
                         RowLayout {

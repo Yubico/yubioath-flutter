@@ -9,7 +9,7 @@ Flickable {
     id: settingsPanel
     objectName: 'yubiKeyWebAuthnView'
     contentWidth: app.width
-    contentHeight: content.height + dynamicMargin
+    contentHeight: content.visible ? content.height + dynamicMargin : app.height - toolBar.height
     StackView.onActivating: {
         yubiKey.refreshCurrentDevice()
     }
@@ -24,7 +24,7 @@ Flickable {
 
     onCurrentDevicesChanged: {
         if(focus) {
-            navigator.pop()
+            navigator.goToYubiKey()
         }
     }
 
@@ -38,8 +38,8 @@ Flickable {
                 "acceptedCb": function(resp) {
                     yubiKey.refreshCurrentDevice()
                 },
-               "cancelCb": function(resp) {
-                   yubiKey.refreshCurrentDevice()
+                "cancelCb": function(resp) {
+                    yubiKey.refreshCurrentDevice()
                }
             })
         }
@@ -64,8 +64,17 @@ Flickable {
 
     property string searchFieldPlaceholder: ""
 
+    NoYubiKeySection {
+        id: noYubiKeySection
+        // Make this section the default view to show when there is errors.
+        visible: yubiKey.availableDevices.length === 0
+        enabled: visible
+        Accessible.ignored: true
+    }
+
     ColumnLayout {
         id: content
+        visible: !noYubiKeySection.visible
         spacing: 0
 
         anchors.horizontalCenter: parent.horizontalCenter
@@ -105,6 +114,7 @@ Flickable {
         StyledExpansionContainer {
             StyledExpansionPanel {
                 label: qsTr("PIN protection")
+                visible: !!yubiKey.currentDevice
                 enabled: !(hasPin && pinRetries === 0)
                 isEnabled: false
                 actionButton.text: hasPin ? qsTr("Change PIN") : qsTr("Create a PIN")
@@ -115,8 +125,8 @@ Flickable {
                     "acceptedCb": function(resp) {
                         yubiKey.refreshCurrentDevice()
                     },
-                   "cancelCb": function() {
-                       yubiKey.refreshCurrentDevice()
+                    "cancelCb": function() {
+                        yubiKey.refreshCurrentDevice()
                    }
                 })
             }
@@ -134,9 +144,9 @@ Flickable {
                         navigator.confirmInput({
                             "pinMode": true,
                             "heading": label,
-                           "cancelCb": function() {
-                               yubiKey.refreshCurrentDevice()
-                           },
+                            "cancelCb": function() {
+                                yubiKey.refreshCurrentDevice()
+                            },
                             "acceptedCb": function() {
                                 navigator.goToFidoCredentialsView()
                             }
@@ -161,8 +171,8 @@ Flickable {
                             "acceptedCb": function(resp) {
                                 navigator.goToFingerPrintsView()
                             },
-                           "cancelCb": function(resp) {
-                               yubiKey.refreshCurrentDevice()
+                            "cancelCb": function(resp) {
+                                yubiKey.refreshCurrentDevice()
                            }
                         })
                     }
@@ -170,6 +180,7 @@ Flickable {
             }
             StyledExpansionPanel {
                 label: qsTr("Reset defaults")
+                visible: !!yubiKey.currentDevice
                 isEnabled: false
                 actionButton.text: "Reset"
                 actionButton.onClicked: {

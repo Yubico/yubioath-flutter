@@ -14,6 +14,7 @@ Flickable {
     property var fidoPinCache: !!yubiKey.currentDevice && yubiKey.currentDevice.fidoPinCache ? yubiKey.currentDevice.fidoPinCache : ""
 
     property var currentDevice: yubiKey.currentDevice
+    property bool yubiKeyRemoved: yubiKey.availableDevices.length === 0
 
     onContentHeightChanged: {
         if (contentHeight > app.height - toolBar.height) {
@@ -25,6 +26,10 @@ Flickable {
         if(focus) {
             navigator.goToYubiKey()
         }
+    }
+
+    onYubiKeyRemovedChanged: {
+        navigator.goToYubiKey()
     }
 
     onFocusChanged: {
