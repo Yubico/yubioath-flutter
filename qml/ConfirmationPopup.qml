@@ -100,6 +100,7 @@ Dialog {
             lineHeight: 1.2
             visible: description
             textFormat: TextEdit.RichText
+            Layout.fillWidth: true
             wrapMode: Text.WordWrap
             Layout.maximumWidth: parent.width
             Layout.bottomMargin: 16
