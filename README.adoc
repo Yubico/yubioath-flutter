@@ -1,1 +1,3 @@
-README
+README 
+
+This Progrmam Lets You Use Yubikeys With Apps That Only Support 2FA
