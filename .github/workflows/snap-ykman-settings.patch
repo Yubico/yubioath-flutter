@@ -7,7 +7,7 @@ index 77ca6d4..d64908e 100644
 
      def __init__(self, name):
 -        self.fname = Path(self._config_dir).expanduser().resolve() / (name + ".json")
-+        self.fname = os.path.join(os.getenv('SNAP_USER_DATA'), '.config', '.ykman', name + '.json')
++        self.fname = Path(os.getenv("SNAP_USER_DATA")) / ".config" / ".ykman" / f"{name}.json"
          if self.fname.is_file():
              with self.fname.open("r") as fd:
                  self.update(json.load(fd))
