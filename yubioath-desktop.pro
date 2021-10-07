@@ -75,6 +75,8 @@ lupdate_only {
   qml/slot/*.qml
 }
 
+# Set correct install path
+target.path = $$PREFIX/bin
 
 DISTFILES += \
     py/* \
