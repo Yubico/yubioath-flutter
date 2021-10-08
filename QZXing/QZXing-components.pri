@@ -458,10 +458,10 @@ symbian {
     DEFINES += NOFMAXL
 
 	# Installation
-	headers.files = $$PWD/QZXing.h $$PWD/QZXing_global.h
-	headers.path = $$PREFIX/include
-	target.path = $$PREFIX/lib
-	INSTALLS += headers target
+	#headers.files = $$PWD/QZXing.h $$PWD/QZXing_global.h
+	#headers.path = $$PREFIX/include
+	#target.path = $$PREFIX/lib
+	#INSTALLS += headers target
 
 	# pkg-config support
 	CONFIG += create_pc create_prl no_install_prl
