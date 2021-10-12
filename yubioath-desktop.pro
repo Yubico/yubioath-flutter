@@ -75,7 +75,6 @@ lupdate_only {
   qml/slot/*.qml
 }
 
-
 DISTFILES += \
     py/* \
     qml/* \
