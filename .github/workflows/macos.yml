@@ -28,13 +28,14 @@ jobs:
     - run: flutter config --enable-macos-desktop
     - run: flutter --version
 
+    - name: Run tests
+      run: flutter test
+
     - name: Install ykman
-      run: |
-        ./build-ykman.sh
+      run: ./build-ykman.sh
 
     - name: Build the app
-      run: |
-        flutter build macos
+      run: flutter build macos
 
     - name: Rename and archive app bundle
       run: |

@@ -27,13 +27,14 @@ jobs:
       - run: flutter config --enable-windows-desktop
       - run: flutter --version
 
+      - name: Run tests
+        run: flutter test
+
       - name: Install ykman
-        run: |
-          .\build-ykman.bat
+        run: .\build-ykman.bat
 
       - name: Build the app
-        run: |
-          flutter build windows
+        run: flutter build windows
 
       - name: Rename and archive app bundle
         run: |
