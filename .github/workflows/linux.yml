@@ -1,0 +1,49 @@
+name: Linux
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -qq swig libpcsclite-dev clang cmake ninja-build pkg-config libgtk-3-dev
+        python -m pip install --upgrade pip
+        pip install poetry
+
+    - uses: subosito/flutter-action@v1
+      with:
+        channel: 'beta'
+    - run: flutter config --enable-linux-desktop
+    - run: flutter --version
+
+    - name: Install ykman
+      run: |
+        ./build-ykman.sh
+
+    - name: Build the app
+      run: |
+        flutter build linux
+
+    - name: Rename and archive app
+      run: |
+        export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
+        mkdir deploy
+        tar -czf deploy/yubioath-desktop-${REF}-linux.tar.gz -C build/linux/x64/release/bundle .
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: yubioath-desktop-linux
+        path: deploy

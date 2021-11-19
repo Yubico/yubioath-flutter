@@ -1,0 +1,49 @@
+name: macOS
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        brew update
+        brew install swig
+        python -m pip install --upgrade pip
+        pip install poetry
+
+    - uses: subosito/flutter-action@v1
+      with:
+        channel: 'beta'
+    - run: flutter config --enable-macos-desktop
+    - run: flutter --version
+
+    - name: Install ykman
+      run: |
+        ./build-ykman.sh
+
+    - name: Build the app
+      run: |
+        flutter build macos
+
+    - name: Rename and archive app bundle
+      run: |
+        export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
+        mkdir deploy
+        tar -czf deploy/yubioath-desktop-${REF}.app.tar.gz -C build/macos/Build/Products/Release yubico_authenticator.app
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: yubioath-desktop-macos
+        path: deploy
