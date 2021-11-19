@@ -6,8 +6,12 @@ import 'dart:developer' as developer;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'app.dart';
 import 'core/rpc.dart';
 import 'core/state.dart';
+
+import 'app/main_page.dart';
+import 'error_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +30,7 @@ void main() async {
         .toFilePath();
   }
 
-  Widget screen;
+  Widget page;
   List<Override> overrides = [
     prefProvider.overrideWithValue(await SharedPreferences.getInstance())
   ];
@@ -36,62 +40,19 @@ void main() async {
     var rpc = await RpcSession.launch(exe!);
     developer.log('ykman process started', name: 'main');
     overrides.add(rpcProvider.overrideWithValue(rpc));
-    screen = const MyHomePage(
-      title: 'Flutter demo home page',
-    );
+    page = const MainPage();
   } catch (e) {
     developer.log('ykman process failed: $e', name: 'main');
-    screen = NoProcessScreen(error: e.toString());
+    page = ErrorPage(error: e.toString());
   }
 
   runApp(ProviderScope(
     overrides: overrides,
-    child: YubicoAuthenticatorApp(screen: screen),
+    child: YubicoAuthenticatorApp(page: page),
   ));
 }
 
-// Used when the subprocess can't be found/launched.
-class NoProcessScreen extends StatelessWidget {
-  final String error;
-  const NoProcessScreen({required this.error, Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('No process'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              error,
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class YubicoAuthenticatorApp extends StatelessWidget {
-  final Widget screen;
-  const YubicoAuthenticatorApp({required this.screen, Key? key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Yubico Authenticator',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: screen,
-    );
-  }
-}
+//TODO: Remove below this
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
