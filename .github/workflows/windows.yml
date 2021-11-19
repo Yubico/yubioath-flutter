@@ -28,7 +28,9 @@ jobs:
       - run: flutter --version
 
       - name: Run tests
-        run: flutter test
+        run: |
+          flutter test
+          flutter analyze
 
       - name: Install ykman
         run: .\build-ykman.bat

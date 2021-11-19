@@ -30,7 +30,7 @@ class RpcNodeSession {
         signal: signal,
       );
     } on RpcError catch (e) {
-      if (e.status == "state-reset") {
+      if (e.status == 'state-reset') {
         _reset();
       }
       rethrow;

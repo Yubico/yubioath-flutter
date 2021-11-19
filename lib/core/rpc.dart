@@ -15,9 +15,9 @@ class Signaler {
   void cancel() {
     final sendSignal = _sendSignal;
     if (sendSignal == null) {
-      throw Exception("Signaler not attached to any request!");
+      throw Exception('Signaler not attached to any request!');
     }
-    sendSignal("cancel");
+    sendSignal('cancel');
   }
 }
 
@@ -31,10 +31,10 @@ class _Request {
   _Request(this.action, this.target, this.body, this.signal);
 
   Map<String, dynamic> toJson() => {
-        "kind": "command",
-        "action": action,
-        "target": target,
-        "body": body,
+        'kind': 'command',
+        'action': action,
+        'target': target,
+        'body': body,
       };
 }
 
@@ -52,12 +52,12 @@ class RpcSession {
             .cast<Map<String, dynamic>>()
             .listen(null) {
     stderr.addStream(_process.stderr);
-    developer.log("Launched ykman subprocess...", name: "rpc");
+    developer.log('Launched ykman subprocess...', name: 'rpc');
   }
 
   static Future<RpcSession> launch(String executable) async {
     var process =
-        await Process.start(executable, [], environment: {"_YKMAN_RPC": "1"});
+        await Process.start(executable, [], environment: {'_YKMAN_RPC': '1'});
     return RpcSession(process);
   }
 
@@ -77,7 +77,7 @@ class RpcSession {
       request.signal?._sendSignal = _sendSignal;
 
       responses.onData((data) {
-        developer.log("RECV", name: "rpc", error: jsonEncode(data));
+        developer.log('RECV', name: 'rpc', error: jsonEncode(data));
         try {
           final response = RpcResponse.fromJson(data);
           if (response.map(
@@ -101,8 +101,8 @@ class RpcSession {
             pump();
           }
         } catch (e) {
-          developer.log("Invalid RPC message",
-              name: "rpc", error: jsonEncode(e));
+          developer.log('Invalid RPC message',
+              name: 'rpc', error: jsonEncode(e));
         }
       });
 
@@ -111,11 +111,11 @@ class RpcSession {
   }
 
   void _sendSignal(String status) {
-    _send({"kind": "signal", "status": status});
+    _send({'kind': 'signal', 'status': status});
   }
 
   void _send(Map data) {
-    developer.log("SEND", name: "rpc", error: jsonEncode(data));
+    developer.log('SEND', name: 'rpc', error: jsonEncode(data));
     _process.stdin.writeln(jsonEncode(data));
     _process.stdin.flush();
   }

@@ -16,7 +16,7 @@ class Version with _$Version {
 
   @override
   String toString() {
-    return "$major.$minor.$patch";
+    return '$major.$minor.$patch';
   }
 }
 
