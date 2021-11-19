@@ -1,0 +1,83 @@
+== Packaging for MacOS
+Building the ykman CLI locally will result in an adhoc-signed build, which
+works for local development, but not for distribution. Before distributing it
+needs to be re-signed. Build the CLI by running `build-ykman.sh`, see the main
+README for details.
+
+To distribute the app you will need the Yubico MacOS signing key. The method of
+signing differs depending on if the app should be distributed standalone
+(outside the App Store) or via the App Store.
+
+
+=== Standalone (Notarized)
+To distribute the app outside of the App Store, we need to sign it and Notarize
+it. For Notarization to work, we must enable "hardened runtime" by setting the
+`--options runtime` when signing.
+
+==== Signing the ykman CLI
+The following commands can be done to re-sign the files using the Yubico
+signing key:
+
+  # Sign the main binary, with the entitlements:
+  codesign -f --timestamp --options runtime --entitlements macos/ykman.entitlements --sign 'Application' build/macos/ykman/ykman
+
+  # Sign the dylib and so files, without entitlements:
+  codesign -f --timestamp --options runtime --sign 'Application' $(find build/macos/ykman/ -name "*.dylib" -o -name "*.so")
+
+  # Sign the Python binary (if it exists), without entitlements:
+  codesign -f --timestamp --options runtime --sign 'Application' build/macos/ykman/Python
+
+==== Signing the GUI
+After signing the CLI, make a release build of the GUI and then re-sign it with
+the Yubico key:
+
+  codesign --timestamp --options runtime --sign 'Application' --entitlements macos/Runner/Release.entitlements --deep build/macos/Build/Products/Release/flutter_rpc_test.app
+
+The app should now be properly signed, and needs to be Notarized. Create a zip file with the .app, and:
+
+  xcrun altool -t osx -f app.zip --primary-bundle-id com.example.flutterRpcTest --notarize-app -u $APPLE_ID -p $PASSWORD
+
+This will return a $APP_GUID.
+
+To check if notarization is complete:
+
+  xcrun altool --notarization-info $APP_GUID -u $APPLE_ID -p $PASSWORD
+
+When the notarization is complete, and successful, the original .app bundle (not the .zip archive) needs to be stapled.
+
+  xcrun stapler staple -v build/macos/Build/Products/Release/flutter_rpc_test.app
+
+Create the installer with productbuild.
+
+  productbuild --sign 'Installer' --component build/macos/Build/Products/Release/flutter_rpc_test.app /Applications/ output-file-xyz.pkg
+
+Then notarize and staple (when ready) the .pkg as well:
+
+  xcrun altool -t osx -f <pkg file>.pkg --primary-bundle-id com.example.flutterRpcTest --notarize-app -u $APPLE_ID -p $PASSWORD
+  xcrun altool --notarization-info $APP_GUID -u $APPLE_ID -p $PASSWORD
+  xcrun stapler staple -v <pkg file>
+
+Finally, we're done! The .pkg is ready for distribution.
+
+
+=== Signing for the App Store
+All binaries must have sandbox enabled for the Apple App Store, but the ykman
+binary doesn't work when sandboxed AND hardened. Luckily, App Store binaries do
+not need to be hardened. Thus, we need to sign the ykman executable with
+sandbox enabled, but NOT as a hardened build. The App Store build also uses a
+different code signing key than the standalone distribution.
+
+==== Signing the ykman CLI
+Follow the same steps as for "standalone", with the exception of signing the `ykman` binary:
+
+  # Sign the main binary, with sandbox enabled, without hardened runtime:
+  codesign -f --timestamp --entitlements macos/ykman-sandbox.entitlements --sign 'Application' build/macos/ykman/ykman
+
+NOTE: This sandboxed ykman will not run on its own, it has to be run as a
+subprocess to the main application.
+
+Once you have the signed .app, (no Notarization required) build the package for AppStore submission:
+
+  productbuild --sign 'Installer' --component build/macos/Build/Products/Release/flutter_rpc_test.app /Applications/ output-appstore.pkg
+
+Use the Transporter app to upload the package to Apple.
