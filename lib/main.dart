@@ -1,7 +1,96 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-void main() {
-  runApp(const MyApp());
+import 'package:flutter/material.dart';
+import 'dart:developer' as developer;
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'core/rpc.dart';
+import 'core/state.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Either use the _YKMAN_EXE environment variable, or look relative to executable.
+  var exe = Platform.environment['_YKMAN_PATH'];
+  if (exe?.isEmpty ?? true) {
+    var relativePath = 'ykman/ykman';
+    if (Platform.isMacOS) {
+      relativePath = '../Resources/' + relativePath;
+    } else if (Platform.isWindows) {
+      relativePath += '.exe';
+    }
+    exe = Uri.file(Platform.resolvedExecutable)
+        .resolve(relativePath)
+        .toFilePath();
+  }
+
+  Widget screen;
+  List<Override> overrides = [
+    prefProvider.overrideWithValue(await SharedPreferences.getInstance())
+  ];
+
+  developer.log('Starting subprocess: $exe', name: 'main');
+  try {
+    var rpc = await RpcSession.launch(exe!);
+    developer.log('ykman process started', name: 'main');
+    overrides.add(rpcProvider.overrideWithValue(rpc));
+    screen = const MyHomePage(
+      title: 'Flutter demo home page',
+    );
+  } catch (e) {
+    developer.log('ykman process failed: $e', name: 'main');
+    screen = NoProcessScreen(error: e.toString());
+  }
+
+  runApp(ProviderScope(
+    overrides: overrides,
+    child: YubicoAuthenticatorApp(screen: screen),
+  ));
+}
+
+// Used when the subprocess can't be found/launched.
+class NoProcessScreen extends StatelessWidget {
+  final String error;
+  const NoProcessScreen({required this.error, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('No process'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              error,
+              style: Theme.of(context).textTheme.headline4,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class YubicoAuthenticatorApp extends StatelessWidget {
+  final Widget screen;
+  const YubicoAuthenticatorApp({required this.screen, Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Yubico Authenticator',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: screen,
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {

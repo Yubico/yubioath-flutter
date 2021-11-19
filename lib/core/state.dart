@@ -1,7 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models.dart';
 import 'rpc.dart';
+
+// This must be initialized before use, in main.dart.
+final prefProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError();
+});
 
 // This must be initialized before use, in main.dart.
 final rpcProvider = Provider<RpcSession>((ref) {
