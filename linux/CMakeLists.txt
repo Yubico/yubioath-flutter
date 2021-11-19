@@ -114,3 +114,6 @@ if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
   install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
     COMPONENT Runtime)
 endif()
+
+# Copy the ykman CLI
+install(DIRECTORY "../build/linux/ykman" DESTINATION "${BUILD_BUNDLE_DIR}" USE_SOURCE_PERMISSIONS)
