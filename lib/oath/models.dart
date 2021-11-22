@@ -82,24 +82,24 @@ class CredentialData with _$CredentialData {
       _$CredentialDataFromJson(json);
 
   Uri toUri() {
-    final path = issuer != null ? "$issuer:$name" : name;
-    var uri = "otpauth://${oathType.name}/$path?secret=$secret";
+    final path = issuer != null ? '$issuer:$name' : name;
+    var uri = 'otpauth://${oathType.name}/$path?secret=$secret';
     switch (oathType) {
       case OathType.hotp:
-        uri += "&counter=$counter";
+        uri += '&counter=$counter';
         break;
       case OathType.totp:
-        uri += "&period=$period";
+        uri += '&period=$period';
         break;
     }
     if (issuer != null) {
-      uri += "&issuer=$issuer";
+      uri += '&issuer=$issuer';
     }
     if (digits != 6) {
-      uri += "&digits=$digits";
+      uri += '&digits=$digits';
     }
     if (hashAlgorithm != HashAlgorithm.sha1) {
-      uri += "&algorithm=${hashAlgorithm.name}";
+      uri += '&algorithm=${hashAlgorithm.name}';
     }
     return Uri.parse(uri);
   }

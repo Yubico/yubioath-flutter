@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
-import '../models.dart';
 import '../state.dart';
 import 'account_list.dart';
-import 'account_view.dart';
 import 'add_account_page.dart';
 
 class OathScreen extends ConsumerWidget {
