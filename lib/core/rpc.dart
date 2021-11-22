@@ -26,10 +26,13 @@ class _Request {
   final String action;
   final List<String> target;
   final Map body;
-  final Completer<Map<String, dynamic>> completer = Completer();
   final Signaler? signal;
+  final List<String> signals = [];
+  final Completer<Map<String, dynamic>> completer = Completer();
 
-  _Request(this.action, this.target, this.body, this.signal);
+  _Request(this.action, this.target, this.body, this.signal) {
+    signal?._sendSignal = signals.add;
+  }
 
   Map<String, dynamic> toJson() => {
         'kind': 'command',
@@ -75,10 +78,14 @@ class RpcSession {
 
   void _pump() async {
     await for (final request in _requests.stream) {
-      request.signal?._sendSignal = (status) {
-        _send({'kind': 'signal', 'status': status});
-      };
       _send(request.toJson());
+
+      sendSignal(status) {
+        _send({'kind': 'signal', 'status': status});
+      }
+
+      request.signals.forEach(sendSignal);
+      request.signal?._sendSignal = sendSignal;
 
       bool done = false;
       while (!done) {
