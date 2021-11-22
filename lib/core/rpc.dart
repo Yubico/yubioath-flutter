@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:developer' as developer;
+
+import 'package:async/async.dart';
 
 import 'models.dart';
 
@@ -40,19 +41,17 @@ class _Request {
 
 class RpcSession {
   final Process _process;
-  final StreamSubscription<Map<String, dynamic>> responses;
-  final Queue<_Request> _requests = Queue();
-  bool _busy = false;
+  final StreamController<_Request> _requests = StreamController();
+  final StreamQueue<RpcResponse> _responses;
 
   RpcSession(this._process)
-      : responses = _process.stdout
+      : _responses = StreamQueue(_process.stdout
             .transform(const Utf8Decoder())
             .transform(const LineSplitter())
-            .map((event) => jsonDecode(event))
-            .cast<Map<String, dynamic>>()
-            .listen(null) {
+            .map((event) => RpcResponse.fromJson(jsonDecode(event)))) {
     stderr.addStream(_process.stderr);
     developer.log('Launched ykman subprocess...', name: 'rpc');
+    _pump();
   }
 
   static Future<RpcSession> launch(String executable) async {
@@ -65,58 +64,43 @@ class RpcSession {
       {Map? params, Signaler? signal}) {
     var request = _Request(action, target ?? [], params ?? {}, signal);
     _requests.add(request);
-    pump();
-
     return request.completer.future;
-  }
-
-  void pump() {
-    if (!_busy && _requests.isNotEmpty) {
-      final request = _requests.removeFirst();
-      _busy = true;
-      request.signal?._sendSignal = _sendSignal;
-
-      responses.onData((data) {
-        developer.log('RECV', name: 'rpc', error: jsonEncode(data));
-        try {
-          final response = RpcResponse.fromJson(data);
-          if (response.map(
-            signal: (signal) {
-              request.signal?._controller.sink.add(signal);
-              return false;
-            },
-            success: (success) {
-              request.completer.complete(success.body);
-              return true;
-            },
-            error: (error) {
-              request.completer.completeError(error);
-              return true;
-            },
-          )) {
-            responses.onData(null);
-            request.signal?._sendSignal = null;
-            request.signal?._controller.close();
-            _busy = false;
-            pump();
-          }
-        } catch (e) {
-          developer.log('Invalid RPC message',
-              name: 'rpc', error: jsonEncode(e));
-        }
-      });
-
-      _send(request.toJson());
-    }
-  }
-
-  void _sendSignal(String status) {
-    _send({'kind': 'signal', 'status': status});
   }
 
   void _send(Map data) {
     developer.log('SEND', name: 'rpc', error: jsonEncode(data));
     _process.stdin.writeln(jsonEncode(data));
     _process.stdin.flush();
+  }
+
+  void _pump() async {
+    await for (final request in _requests.stream) {
+      request.signal?._sendSignal = (status) {
+        _send({'kind': 'signal', 'status': status});
+      };
+      _send(request.toJson());
+
+      bool done = false;
+      while (!done) {
+        final response = await _responses.next;
+        developer.log('RECV', name: 'rpc', error: jsonEncode(response));
+        response.map(
+          signal: (signal) {
+            request.signal?._controller.sink.add(signal);
+          },
+          success: (success) {
+            request.completer.complete(success.body);
+            done = true;
+          },
+          error: (error) {
+            request.completer.completeError(error);
+            done = true;
+          },
+        );
+      }
+
+      request.signal?._sendSignal = null;
+      request.signal?._controller.close();
+    }
   }
 }
