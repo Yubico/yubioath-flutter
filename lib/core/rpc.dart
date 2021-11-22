@@ -8,17 +8,18 @@ import 'package:async/async.dart';
 import 'models.dart';
 
 class Signaler {
-  final _controller = StreamController<Signal>();
-  void Function(String)? _sendSignal;
+  final _send = StreamController<String>();
+  final _recv = StreamController<Signal>();
 
-  Stream<Signal> get signals => _controller.stream;
+  Stream<Signal> get signals => _recv.stream;
 
   void cancel() {
-    final sendSignal = _sendSignal;
-    if (sendSignal == null) {
-      throw Exception('Signaler not attached to any request!');
-    }
-    sendSignal('cancel');
+    _send.add('cancel');
+  }
+
+  void _close() {
+    _send.close();
+    _recv.close();
   }
 }
 
@@ -27,12 +28,9 @@ class _Request {
   final List<String> target;
   final Map body;
   final Signaler? signal;
-  final List<String> signals = [];
   final Completer<Map<String, dynamic>> completer = Completer();
 
-  _Request(this.action, this.target, this.body, this.signal) {
-    signal?._sendSignal = signals.add;
-  }
+  _Request(this.action, this.target, this.body, this.signal);
 
   Map<String, dynamic> toJson() => {
         'kind': 'command',
@@ -80,34 +78,30 @@ class RpcSession {
     await for (final request in _requests.stream) {
       _send(request.toJson());
 
-      sendSignal(status) {
+      request.signal?._send.stream.listen((status) {
         _send({'kind': 'signal', 'status': status});
-      }
+      });
 
-      request.signals.forEach(sendSignal);
-      request.signal?._sendSignal = sendSignal;
-
-      bool done = false;
-      while (!done) {
+      bool completed = false;
+      while (!completed) {
         final response = await _responses.next;
         developer.log('RECV', name: 'rpc', error: jsonEncode(response));
         response.map(
           signal: (signal) {
-            request.signal?._controller.sink.add(signal);
+            request.signal?._recv.sink.add(signal);
           },
           success: (success) {
             request.completer.complete(success.body);
-            done = true;
+            completed = true;
           },
           error: (error) {
             request.completer.completeError(error);
-            done = true;
+            completed = true;
           },
         );
       }
 
-      request.signal?._sendSignal = null;
-      request.signal?._controller.close();
+      request.signal?._close();
     }
   }
 }
