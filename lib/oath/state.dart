@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/state.dart';
 import 'models.dart';
@@ -191,16 +192,25 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
 final favoriteProvider =
     StateNotifierProvider.family<FavoriteNotifier, bool, String>(
   (ref, credentialId) {
-    return FavoriteNotifier(credentialId);
+    return FavoriteNotifier(ref.watch(prefProvider), credentialId);
   },
 );
 
 class FavoriteNotifier extends StateNotifier<bool> {
-  final String _id;
-  FavoriteNotifier(this._id) : super(false);
+  final SharedPreferences prefs;
+  final String _key;
+  FavoriteNotifier._(this.prefs, this._key)
+      : super(prefs.getBool(_key) ?? false);
 
-  toggleFavorite() {
-    state = !state;
+  factory FavoriteNotifier(SharedPreferences prefs, String credentialId) {
+    return FavoriteNotifier._(prefs, 'OATH_STATE_FAVORITE_$credentialId');
+  }
+
+  toggleFavorite() async {
+    await prefs.setBool(_key, !state);
+    if (mounted) {
+      state = !state;
+    }
   }
 }
 

@@ -7,7 +7,7 @@ import 'models.dart';
 import 'state.dart';
 
 import '../../about_page.dart';
-import '../../oath/oath_screen.dart';
+import '../oath/views/oath_screen.dart';
 
 class MainPage extends ConsumerWidget {
   const MainPage({Key? key}) : super(key: key);
