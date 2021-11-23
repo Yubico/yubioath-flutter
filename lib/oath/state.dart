@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:logging/logging.dart';
 
 import '../core/state.dart';
 import 'models.dart';
+
+final log = Logger('oath.state');
 
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, List<String>>(
@@ -34,8 +36,7 @@ class OathStateNotifier extends StateNotifier<OathState?> {
 
   refresh() async {
     var result = await _session.command('get');
-    developer.log('application status',
-        name: 'oath', error: jsonEncode(result));
+    log.config('application status', jsonEncode(result));
     if (mounted) {
       state = OathState.fromJson(result['data']);
     }
@@ -47,7 +48,7 @@ class OathStateNotifier extends StateNotifier<OathState?> {
     var key = result['key'];
     await _session.command('validate', params: {'key': key});
     if (mounted) {
-      developer.log('UNLOCKED');
+      log.config('applet unlocked');
       state = state?.copyWith(locked: false);
     }
     return true;
@@ -117,7 +118,7 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
           await _session.command('code', target: ['accounts', credential.id]);
       code = OathCode.fromJson(result);
     }
-    developer.log('Calculate', name: 'oath', error: jsonEncode(code));
+    log.config('Calculate', jsonEncode(code));
     if (mounted) {
       final creds = state!.toList();
       final i = creds.indexWhere((e) => e.credential.id == credential.id);
@@ -143,9 +144,9 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
 
   refresh() async {
     if (_locked) return;
-    developer.log('refreshing credentials...', name: 'oath');
+    log.config('refreshing credentials...');
     var result = await _session.command('calculate_all', target: ['accounts']);
-    developer.log('Entries', name: 'oath', error: jsonEncode(result));
+    log.config('Entries', jsonEncode(result));
 
     if (mounted) {
       var current = state?.toList() ?? [];

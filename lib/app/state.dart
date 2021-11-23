@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer' as developer;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
 import '../../core/rpc.dart';
 import '../../core/state.dart';
 
 import 'models.dart';
+
+final log = Logger('app.state');
 
 final attachedDevicesProvider =
     StateNotifierProvider<AttachedDeviceNotifier, List<DeviceNode>>(
@@ -32,8 +34,7 @@ class AttachedDeviceNotifier extends StateNotifier<List<DeviceNode>> {
 
     if (_usbState != scan['state']) {
       var usbResult = await _rpc.command('get', ['usb']);
-      developer.log('USB state change',
-          name: 'controller', error: jsonEncode(usbResult));
+      log.info('USB state change', jsonEncode(usbResult));
 
       _usbState = usbResult['data']['state'];
 

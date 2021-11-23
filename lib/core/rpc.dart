@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:developer' as developer;
 
+import 'package:logging/logging.dart';
 import 'package:async/async.dart';
 
 import 'models.dart';
+
+final log = Logger('rpc');
 
 class Signaler {
   final _send = StreamController<String>();
@@ -40,6 +42,21 @@ class _Request {
       };
 }
 
+Level _forPythonName(String name) {
+  switch (name) {
+    case 'DEBUG':
+      return Level.CONFIG;
+    case 'INFO':
+      return Level.INFO;
+    case 'WARNING':
+      return Level.WARNING;
+    case 'ERROR':
+      return Level.SEVERE;
+    default:
+      return Level.INFO;
+  }
+}
+
 class RpcSession {
   final Process _process;
   final StreamController<_Request> _requests = StreamController();
@@ -50,8 +67,18 @@ class RpcSession {
             .transform(const Utf8Decoder())
             .transform(const LineSplitter())
             .map((event) => RpcResponse.fromJson(jsonDecode(event)))) {
-    stderr.addStream(_process.stderr);
-    developer.log('Launched ykman subprocess...', name: 'rpc');
+    _process.stderr
+        .transform(const Utf8Decoder())
+        .transform(const LineSplitter())
+        .map((event) => jsonDecode(event))
+        .listen((event) {
+      Logger('rpc.${event['name']}').log(
+        _forPythonName(event['level']),
+        event['message'],
+        //time: DateTime.fromMillisecondsSinceEpoch(event['time'] * 1000),
+      );
+    });
+    log.info('Launched ykman subprocess...');
     _pump();
   }
 
@@ -68,8 +95,24 @@ class RpcSession {
     return request.completer.future;
   }
 
+  setLogLevel(Level level) {
+    String pyLevel;
+    if (level.value <= Level.CONFIG.value) {
+      pyLevel = 'debug';
+    } else if (level.value <= Level.INFO.value) {
+      pyLevel = 'info';
+    } else if (level.value <= Level.WARNING.value) {
+      pyLevel = 'warning';
+    } else if (level.value <= Level.SEVERE.value) {
+      pyLevel = 'error';
+    } else {
+      pyLevel = 'critical';
+    }
+    command('logging', [], params: {'level': pyLevel});
+  }
+
   void _send(Map data) {
-    developer.log('SEND', name: 'rpc', error: jsonEncode(data));
+    log.fine('SEND', jsonEncode(data));
     _process.stdin.writeln(jsonEncode(data));
     _process.stdin.flush();
   }
@@ -85,7 +128,7 @@ class RpcSession {
       bool completed = false;
       while (!completed) {
         final response = await _responses.next;
-        developer.log('RECV', name: 'rpc', error: jsonEncode(response));
+        log.fine('RECV', jsonEncode(response));
         response.map(
           signal: (signal) {
             request.signal?._recv.sink.add(signal);

@@ -1,10 +1,10 @@
 import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:logging/logging.dart';
 
 import 'app.dart';
 import 'core/rpc.dart';
@@ -12,6 +12,8 @@ import 'core/state.dart';
 
 import 'app/main_page.dart';
 import 'error_page.dart';
+
+final log = Logger('main');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,14 +37,16 @@ void main() async {
     prefProvider.overrideWithValue(await SharedPreferences.getInstance())
   ];
 
-  developer.log('Starting subprocess: $exe', name: 'main');
+  log.info('Starting subprocess: $exe');
   try {
     var rpc = await RpcSession.launch(exe!);
-    developer.log('ykman process started', name: 'main');
+    // Enable logging TODO: Make this configurable
+    _initLogging(Level.INFO, rpc);
+    log.info('ykman process started', exe);
     overrides.add(rpcProvider.overrideWithValue(rpc));
     page = const MainPage();
   } catch (e) {
-    developer.log('ykman process failed: $e', name: 'main');
+    log.warning('ykman process failed: $e');
     page = ErrorPage(error: e.toString());
   }
 
@@ -50,6 +54,22 @@ void main() async {
     overrides: overrides,
     child: YubicoAuthenticatorApp(page: page),
   ));
+}
+
+void _initLogging(Level level, RpcSession rpc) {
+  //TODO: Add support for logging to stderr and file
+  Logger.root.onRecord.listen((record) {
+    developer.log(
+      '${record.level} ${record.message}',
+      error: record.error,
+      name: record.loggerName,
+      time: record.time,
+      level: record.level.value,
+    );
+  });
+
+  Logger.root.level = level;
+  rpc.setLogLevel(level);
 }
 
 //TODO: Remove below this
