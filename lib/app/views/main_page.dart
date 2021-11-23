@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'device_picker_dialog.dart';
 import 'main_drawer.dart';
 import 'no_device_screen.dart';
 import 'device_info_screen.dart';
 import '../models.dart';
 import '../state.dart';
-import '../../about_page.dart';
 import '../../oath/views/oath_screen.dart';
 
 class MainPage extends ConsumerWidget {
@@ -34,8 +34,9 @@ class MainPage extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.info),
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const AboutPage()),
+              showDialog(
+                context: context,
+                builder: (context) => const DevicePickerDialog(),
               );
             },
           )

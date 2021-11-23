@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/rpc.dart';
 import '../../core/state.dart';
@@ -57,24 +58,35 @@ class AttachedDeviceNotifier extends StateNotifier<List<DeviceNode>> {
 
 final currentDeviceProvider =
     StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {
-  final provider = CurrentDeviceNotifier();
+  final provider = CurrentDeviceNotifier(ref.watch(prefProvider));
   ref.listen(attachedDevicesProvider, provider._updateAttachedDevices);
   return provider;
 });
 
 class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
-  CurrentDeviceNotifier() : super(null);
+  static const String _lastDeviceSerial = 'APP_STATE_LAST_SERIAL';
+  final SharedPreferences _prefs;
+  CurrentDeviceNotifier(this._prefs) : super(null);
 
   _updateAttachedDevices(List<DeviceNode>? previous, List<DeviceNode> devices) {
     if (devices.isEmpty) {
       state = null;
     } else if (!devices.contains(state)) {
-      state = devices.first;
+      // Prefer last selected device
+      final serial = _prefs.getInt(_lastDeviceSerial) ?? -1;
+      state = devices.firstWhere(
+        (element) => element.info.serial == serial,
+        orElse: () => devices.first,
+      );
     }
   }
 
   setCurrentDevice(DeviceNode device) {
     state = device;
+    final serial = device.info.serial;
+    if (serial != null) {
+      _prefs.setInt(_lastDeviceSerial, serial);
+    }
   }
 }
 
