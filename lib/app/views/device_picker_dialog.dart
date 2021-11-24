@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/app/views/device_images.dart';
 
 import '../../about_page.dart';
 import '../models.dart';
@@ -20,14 +21,17 @@ class DevicePickerDialog extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const CircleAvatar(child: Text('YK')),
+                CircleAvatar(
+                  child: getProductImage(device),
+                  radius: 40.0,
+                ),
                 const SizedBox(width: 16.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(device.name),
-                    Text(
-                        'Version: ${device.info.version} Serial: ${device.info.serial}'),
+                    Text('Version: ${device.info.version}'),
+                    Text('Serial: ${device.info.serial}'),
                   ],
                 ),
               ],
@@ -43,7 +47,7 @@ class DevicePickerDialog extends ConsumerWidget {
       children: [
         if (device != null) _buildDeviceInfo(device),
         ...devices.where((e) => e != device).map((e) => TextButton(
-              child: Text(e.name),
+              child: Text('${e.name} (${e.info.serial})'),
               onPressed: () {
                 ref.read(currentDeviceProvider.notifier).setCurrentDevice(e);
                 Navigator.of(context).pop();

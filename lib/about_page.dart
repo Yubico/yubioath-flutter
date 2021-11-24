@@ -18,34 +18,39 @@ class AboutPage extends ConsumerWidget {
         title: const Text('About Yubico Authenticator'),
       ),
       body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('ykman version: ${rpcState.version}'),
-            Text('Dart version: ${Platform.version}'),
-            const SizedBox(height: 8.0),
-            Text('Log level: ${ref.watch(logLevelProvider)}'),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    ref.read(logLevelProvider.notifier).setLevel(Level.INFO);
-                    log.info('Log level changed to INFO');
-                  },
-                  child: const Text('INFO'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    ref.read(logLevelProvider.notifier).setLevel(Level.CONFIG);
-                    log.config('Log level changed to CONFIG');
-                  },
-                  child: const Text('DEBUG'),
-                ),
-              ],
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('ykman version: ${rpcState.version}'),
+              Text('Dart version: ${Platform.version}'),
+              const SizedBox(height: 8.0),
+              Text('Log level: ${ref.watch(logLevelProvider)}'),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      ref.read(logLevelProvider.notifier).setLevel(Level.INFO);
+                      log.info('Log level changed to INFO');
+                    },
+                    child: const Text('INFO'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      ref
+                          .read(logLevelProvider.notifier)
+                          .setLevel(Level.CONFIG);
+                      log.config('Log level changed to CONFIG');
+                    },
+                    child: const Text('DEBUG'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

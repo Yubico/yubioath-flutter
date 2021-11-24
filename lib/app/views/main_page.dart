@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/app/views/device_images.dart';
 
 import 'device_picker_dialog.dart';
 import 'main_drawer.dart';
@@ -32,7 +33,9 @@ class MainPage extends ConsumerWidget {
         title: const Text('Yubico Authenticator'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.info),
+            icon: currentDevice == null
+                ? const Icon(Icons.info)
+                : getProductImage(currentDevice),
             onPressed: () {
               showDialog(
                 context: context,
