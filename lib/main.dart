@@ -7,10 +7,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
 
 import 'app.dart';
+import 'app/views/main_page.dart';
 import 'core/rpc.dart';
 import 'core/state.dart';
 
-import 'app/main_page.dart';
 import 'error_page.dart';
 
 final log = Logger('main');

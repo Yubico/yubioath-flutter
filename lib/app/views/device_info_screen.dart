@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'models.dart';
+import '../models.dart';
 
 class DeviceInfoScreen extends StatelessWidget {
   final DeviceNode device;
