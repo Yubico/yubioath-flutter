@@ -42,20 +42,13 @@ class _Request {
       };
 }
 
-Level _forPythonName(String name) {
-  switch (name) {
-    case 'DEBUG':
-      return Level.CONFIG;
-    case 'INFO':
-      return Level.INFO;
-    case 'WARNING':
-      return Level.WARNING;
-    case 'ERROR':
-      return Level.SEVERE;
-    default:
-      return Level.INFO;
-  }
-}
+const _py2level = {
+  'DEBUG': Level.CONFIG,
+  'INFO': Level.INFO,
+  'WARNING': Level.WARNING,
+  'ERROR': Level.SEVERE,
+  'CRITICAL': Level.SHOUT,
+};
 
 class RpcSession {
   final Process _process;
@@ -73,7 +66,7 @@ class RpcSession {
         .map((event) => jsonDecode(event))
         .listen((event) {
       Logger('rpc.${event['name']}').log(
-        _forPythonName(event['level']),
+        _py2level[event['level']] ?? Level.INFO,
         event['message'],
         //time: DateTime.fromMillisecondsSinceEpoch(event['time'] * 1000),
       );

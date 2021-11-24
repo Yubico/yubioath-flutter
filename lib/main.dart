@@ -60,7 +60,7 @@ void _initLogging(Level level, RpcSession rpc) {
   //TODO: Add support for logging to stderr and file
   Logger.root.onRecord.listen((record) {
     developer.log(
-      '${record.level} ${record.message}',
+      '${record.level}: ${record.message}',
       error: record.error,
       name: record.loggerName,
       time: record.time,

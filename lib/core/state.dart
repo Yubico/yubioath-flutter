@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models.dart';
@@ -13,6 +14,21 @@ final prefProvider = Provider<SharedPreferences>((ref) {
 final rpcProvider = Provider<RpcSession>((ref) {
   throw UnimplementedError();
 });
+
+
+final logLevelProvider = StateNotifierProvider<LogLevelNotifier, Level>(
+    (ref) => LogLevelNotifier(ref.watch(rpcProvider), Logger.root.level));
+
+class LogLevelNotifier extends StateNotifier<Level> {
+  final RpcSession rpc;
+  LogLevelNotifier(this.rpc, Level state) : super(state);
+
+  setLevel(Level level) {
+    Logger.root.level = level;
+    rpc.setLogLevel(level);
+    state = level;
+  }
+}
 
 class RpcNodeSession {
   final RpcSession _rpc;
