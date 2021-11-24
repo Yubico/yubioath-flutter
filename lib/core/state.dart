@@ -15,6 +15,22 @@ final rpcProvider = Provider<RpcSession>((ref) {
   throw UnimplementedError();
 });
 
+final rpcStateProvider = StateNotifierProvider<RpcStateNotifier, RpcState>(
+    (ref) => RpcStateNotifier(ref.watch(rpcProvider)));
+
+class RpcStateNotifier extends StateNotifier<RpcState> {
+  final RpcSession rpc;
+  RpcStateNotifier(this.rpc) : super(const RpcState('unknown')) {
+    _init();
+  }
+
+  _init() async {
+    final response = await rpc.command('get', []);
+    if (mounted) {
+      state = state.copyWith(version: response['data']['version']);
+    }
+  }
+}
 
 final logLevelProvider = StateNotifierProvider<LogLevelNotifier, Level>(
     (ref) => LogLevelNotifier(ref.watch(rpcProvider), Logger.root.level));

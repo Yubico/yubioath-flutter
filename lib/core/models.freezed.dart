@@ -796,3 +796,125 @@ abstract class RpcError implements RpcResponse {
   $RpcErrorCopyWith<RpcError> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+class _$RpcStateTearOff {
+  const _$RpcStateTearOff();
+
+  _RpcState call(String version) {
+    return _RpcState(
+      version,
+    );
+  }
+}
+
+/// @nodoc
+const $RpcState = _$RpcStateTearOff();
+
+/// @nodoc
+mixin _$RpcState {
+  String get version => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $RpcStateCopyWith<RpcState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $RpcStateCopyWith<$Res> {
+  factory $RpcStateCopyWith(RpcState value, $Res Function(RpcState) then) =
+      _$RpcStateCopyWithImpl<$Res>;
+  $Res call({String version});
+}
+
+/// @nodoc
+class _$RpcStateCopyWithImpl<$Res> implements $RpcStateCopyWith<$Res> {
+  _$RpcStateCopyWithImpl(this._value, this._then);
+
+  final RpcState _value;
+  // ignore: unused_field
+  final $Res Function(RpcState) _then;
+
+  @override
+  $Res call({
+    Object? version = freezed,
+  }) {
+    return _then(_value.copyWith(
+      version: version == freezed
+          ? _value.version
+          : version // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+abstract class _$RpcStateCopyWith<$Res> implements $RpcStateCopyWith<$Res> {
+  factory _$RpcStateCopyWith(_RpcState value, $Res Function(_RpcState) then) =
+      __$RpcStateCopyWithImpl<$Res>;
+  @override
+  $Res call({String version});
+}
+
+/// @nodoc
+class __$RpcStateCopyWithImpl<$Res> extends _$RpcStateCopyWithImpl<$Res>
+    implements _$RpcStateCopyWith<$Res> {
+  __$RpcStateCopyWithImpl(_RpcState _value, $Res Function(_RpcState) _then)
+      : super(_value, (v) => _then(v as _RpcState));
+
+  @override
+  _RpcState get _value => super._value as _RpcState;
+
+  @override
+  $Res call({
+    Object? version = freezed,
+  }) {
+    return _then(_RpcState(
+      version == freezed
+          ? _value.version
+          : version // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_RpcState implements _RpcState {
+  const _$_RpcState(this.version);
+
+  @override
+  final String version;
+
+  @override
+  String toString() {
+    return 'RpcState(version: $version)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _RpcState &&
+            (identical(other.version, version) || other.version == version));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, version);
+
+  @JsonKey(ignore: true)
+  @override
+  _$RpcStateCopyWith<_RpcState> get copyWith =>
+      __$RpcStateCopyWithImpl<_RpcState>(this, _$identity);
+}
+
+abstract class _RpcState implements RpcState {
+  const factory _RpcState(String version) = _$_RpcState;
+
+  @override
+  String get version;
+  @override
+  @JsonKey(ignore: true)
+  _$RpcStateCopyWith<_RpcState> get copyWith =>
+      throw _privateConstructorUsedError;
+}

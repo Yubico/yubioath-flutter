@@ -30,3 +30,8 @@ class RpcResponse with _$RpcResponse {
   factory RpcResponse.fromJson(Map<String, dynamic> json) =>
       _$RpcResponseFromJson(json);
 }
+
+@freezed
+class RpcState with _$RpcState {
+  const factory RpcState(String version) = _RpcState;
+}
