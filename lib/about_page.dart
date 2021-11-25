@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/core/state.dart';
+
+import 'core/state.dart';
 
 final log = Logger('about');
 
@@ -48,6 +49,21 @@ class AboutPage extends ConsumerWidget {
                     child: const Text('DEBUG'),
                   ),
                 ],
+              ),
+              TextButton(
+                onPressed: () async {
+                  log.info('Running diagnostics...');
+                  final response =
+                      await ref.read(rpcProvider).command('diagnose', []);
+                  log.info('Response', response['diagnostics']);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Diagnostics done. See log for results...'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+                child: const Text('Run diagnostics...'),
               ),
             ],
           ),
