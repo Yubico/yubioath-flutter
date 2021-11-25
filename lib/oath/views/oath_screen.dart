@@ -23,8 +23,14 @@ class OathScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('YubiKey: ${device.name}'),
-            Text('OATH ID: ${state.deviceId}'),
+            const Text('YubiKey locked'),
+            TextField(
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Password'),
+              onSubmitted: (value) {
+                ref.read(oathStateProvider(device.path).notifier).unlock(value);
+              },
+            ),
           ],
         ),
       );

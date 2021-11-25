@@ -14,31 +14,56 @@ final log = Logger('oath.state');
 
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, List<String>>(
-  (ref, devicePath) => RpcNodeSession(
-    ref.watch(rpcProvider),
-    devicePath,
-    ['ccid', 'oath'],
-    () {
-      ref.refresh(_sessionProvider(devicePath));
-    },
-  ),
+  (ref, devicePath) {
+    return RpcNodeSession(
+      ref.watch(rpcProvider),
+      devicePath,
+      ['ccid', 'oath'],
+      () {
+        ref.refresh(_sessionProvider(devicePath));
+      },
+    );
+  },
 );
+
+// This remembers the key for all devices for the duration of the process.
+final _lockKeyProvider =
+    StateNotifierProvider.family<_LockKeyNotifier, String?, List<String>>(
+        (ref, devicePath) => _LockKeyNotifier(null));
+
+class _LockKeyNotifier extends StateNotifier<String?> {
+  _LockKeyNotifier(String? state) : super(state);
+
+  setKey(String key) {
+    state = key;
+  }
+}
 
 final oathStateProvider = StateNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState?, List<String>>(
-  (ref, devicePath) =>
-      OathStateNotifier(ref.watch(_sessionProvider(devicePath)))..refresh(),
+  (ref, devicePath) => OathStateNotifier(
+    ref.watch(_sessionProvider(devicePath)),
+    ref.read,
+  )..refresh(),
 );
 
 class OathStateNotifier extends StateNotifier<OathState?> {
   final RpcNodeSession _session;
-  OathStateNotifier(this._session) : super(null);
+  final Reader _read;
+  //final StateNotifier<String?> _keyNotifier;
+  OathStateNotifier(this._session, this._read) : super(null);
 
   refresh() async {
     var result = await _session.command('get');
     log.config('application status', jsonEncode(result));
+    var oathState = OathState.fromJson(result['data']);
+    final key = _read(_lockKeyProvider(_session.devicePath));
+    if (oathState.locked && key != null) {
+      await _session.command('validate', params: {'key': key});
+      oathState = oathState.copyWith(locked: false);
+    }
     if (mounted) {
-      state = OathState.fromJson(result['data']);
+      state = oathState;
     }
   }
 
@@ -49,6 +74,7 @@ class OathStateNotifier extends StateNotifier<OathState?> {
     await _session.command('validate', params: {'key': key});
     if (mounted) {
       log.config('applet unlocked');
+      _read(_lockKeyProvider(_session.devicePath).notifier).setKey(key);
       state = state?.copyWith(locked: false);
     }
     return true;
