@@ -68,6 +68,7 @@ class RpcSession {
       Logger('rpc.${event['name']}').log(
         _py2level[event['level']] ?? Level.INFO,
         event['message'],
+        event['exc_text'],
         //time: DateTime.fromMillisecondsSinceEpoch(event['time'] * 1000),
       );
     });
