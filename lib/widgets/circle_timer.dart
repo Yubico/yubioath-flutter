@@ -25,8 +25,10 @@ class _CircleTimerState extends State<CircleTimer>
     var timeLeft = widget.validToMs - now;
     if (timeLeft > 0) {
       _animator.duration = Duration(milliseconds: timeLeft.toInt());
-      _animator.forward();
+    } else {
+      _animator.duration = Duration.zero;
     }
+    _animator.forward();
   }
 
   @override
