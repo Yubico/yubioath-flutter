@@ -84,6 +84,14 @@ class AccountView extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.refresh),
                 onPressed: () {
+                  if (credential.touchRequired) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Touch your YubiKey'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
                   ref
                       .read(credentialListProvider(device.path).notifier)
                       .calculate(credential);
