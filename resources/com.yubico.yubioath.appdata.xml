@@ -30,7 +30,7 @@
 
   <screenshots>
     ​<screenshot type="default">
-      <image type="source" width="850" height="393">https://raw.githubusercontent.com/Yubico/yubioath-desktop/master/screenshot.png</image>
+      <image type="source" width="830" height="323">https://raw.githubusercontent.com/Yubico/yubioath-desktop/master/screenshot.png</image>
       <caption>Different modes and themes</caption>
     </screenshot>
   </screenshots>
