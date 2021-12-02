@@ -80,7 +80,6 @@ class MainPageDrawer extends ConsumerWidget {
                 ..push(
                   MaterialPageRoute(builder: (context) => const AboutPage()),
                 );
-              //Navigator.of(context).pop();
             },
           ),
         ],
@@ -116,11 +115,7 @@ class DrawerItem extends StatelessWidget {
         selectedColor: Theme.of(context).backgroundColor,
         selectedTileColor: Theme.of(context).colorScheme.secondary,
         leading: icon,
-        title: Text(
-          titleText,
-          //style: Theme.of(context).textTheme.headline6,
-        ),
-        //enabled: value != currentSubPage,
+        title: Text(titleText),
         onTap: onTap,
       ),
     );

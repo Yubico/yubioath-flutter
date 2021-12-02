@@ -15,7 +15,6 @@ class MainActionsDialog extends ConsumerWidget {
     final actions = ref.watch(menuActionsProvider)(context);
 
     return SimpleDialog(
-      //title: Text(device?.name ?? 'No YubiKey'),
       children: [
         ...devices.map((e) => Padding(
               padding: const EdgeInsets.all(8.0),

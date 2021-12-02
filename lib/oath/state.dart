@@ -51,7 +51,6 @@ final oathStateProvider = StateNotifierProvider.autoDispose
 class OathStateNotifier extends StateNotifier<OathState?> {
   final RpcNodeSession _session;
   final Reader _read;
-  //final StateNotifier<String?> _keyNotifier;
   OathStateNotifier(this._session, this._read) : super(null);
 
   refresh() async {
@@ -241,19 +240,6 @@ class FavoriteNotifier extends StateNotifier<bool> {
     }
   }
 }
-
-/*
-final searchFilterProvider =
-    StateNotifierProvider<SearchFilterNotifier, String>(
-        (ref) => SearchFilterNotifier());
-
-class SearchFilterNotifier extends StateNotifier<String> {
-  SearchFilterNotifier() : super('');
-
-  setFilter(String value) {
-    state = value;
-  }
-}*/
 
 final filteredCredentialsProvider = StateNotifierProvider.autoDispose
     .family<FilteredCredentialsNotifier, List<OathPair>, List<OathPair>>(

@@ -33,8 +33,11 @@ class MainPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        //title: const Text('Yubico Authenticator'),
         /*
+        The following can be used to customize the appearence of the app bar,
+        should we wish to do so. More advanced changes may require using a
+        custom Widget instead.
+
         backgroundColor: Colors.grey.shade900,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -54,9 +57,8 @@ class MainPage extends ConsumerWidget {
         ),
         actions: [
           InkWell(
-            //iconSize: 32,
             child: currentDevice == null
-                ? const Icon(Icons.info)
+                ? const Icon(Icons.info, size: 44)
                 : DeviceAvatar(currentDevice, selected: true),
             onTap: () {
               showDialog(
