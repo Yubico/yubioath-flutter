@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/models.dart';
 import '../state.dart';
 import 'account_list.dart';
-import 'add_account_page.dart';
 
 class OathScreen extends ConsumerWidget {
   final DeviceNode device;
@@ -43,25 +42,9 @@ class OathScreen extends ConsumerWidget {
           ],
         );
       }
-      return Column(
-        children: [
-          TextField(
-            onChanged: (value) {
-              ref.read(searchFilterProvider.notifier).setFilter(value);
-            },
-            decoration: const InputDecoration(labelText: 'Search'),
-          ),
-          AccountList(device, ref.watch(filteredCredentialsProvider(accounts))),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => OathAddAccountPage(device: device)),
-              );
-            },
-            child: const Text('Add'),
-          ),
-        ],
+      return AccountList(
+        device,
+        ref.watch(filteredCredentialsProvider(accounts)),
       );
     }
   }

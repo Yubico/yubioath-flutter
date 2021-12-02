@@ -251,3 +251,166 @@ abstract class _DeviceNode implements DeviceNode {
   _$DeviceNodeCopyWith<_DeviceNode> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+class _$MenuActionTearOff {
+  const _$MenuActionTearOff();
+
+  _MenuAction call(
+      {required String text, required Icon icon, void Function()? action}) {
+    return _MenuAction(
+      text: text,
+      icon: icon,
+      action: action,
+    );
+  }
+}
+
+/// @nodoc
+const $MenuAction = _$MenuActionTearOff();
+
+/// @nodoc
+mixin _$MenuAction {
+  String get text => throw _privateConstructorUsedError;
+  Icon get icon => throw _privateConstructorUsedError;
+  void Function()? get action => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $MenuActionCopyWith<MenuAction> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $MenuActionCopyWith<$Res> {
+  factory $MenuActionCopyWith(
+          MenuAction value, $Res Function(MenuAction) then) =
+      _$MenuActionCopyWithImpl<$Res>;
+  $Res call({String text, Icon icon, void Function()? action});
+}
+
+/// @nodoc
+class _$MenuActionCopyWithImpl<$Res> implements $MenuActionCopyWith<$Res> {
+  _$MenuActionCopyWithImpl(this._value, this._then);
+
+  final MenuAction _value;
+  // ignore: unused_field
+  final $Res Function(MenuAction) _then;
+
+  @override
+  $Res call({
+    Object? text = freezed,
+    Object? icon = freezed,
+    Object? action = freezed,
+  }) {
+    return _then(_value.copyWith(
+      text: text == freezed
+          ? _value.text
+          : text // ignore: cast_nullable_to_non_nullable
+              as String,
+      icon: icon == freezed
+          ? _value.icon
+          : icon // ignore: cast_nullable_to_non_nullable
+              as Icon,
+      action: action == freezed
+          ? _value.action
+          : action // ignore: cast_nullable_to_non_nullable
+              as void Function()?,
+    ));
+  }
+}
+
+/// @nodoc
+abstract class _$MenuActionCopyWith<$Res> implements $MenuActionCopyWith<$Res> {
+  factory _$MenuActionCopyWith(
+          _MenuAction value, $Res Function(_MenuAction) then) =
+      __$MenuActionCopyWithImpl<$Res>;
+  @override
+  $Res call({String text, Icon icon, void Function()? action});
+}
+
+/// @nodoc
+class __$MenuActionCopyWithImpl<$Res> extends _$MenuActionCopyWithImpl<$Res>
+    implements _$MenuActionCopyWith<$Res> {
+  __$MenuActionCopyWithImpl(
+      _MenuAction _value, $Res Function(_MenuAction) _then)
+      : super(_value, (v) => _then(v as _MenuAction));
+
+  @override
+  _MenuAction get _value => super._value as _MenuAction;
+
+  @override
+  $Res call({
+    Object? text = freezed,
+    Object? icon = freezed,
+    Object? action = freezed,
+  }) {
+    return _then(_MenuAction(
+      text: text == freezed
+          ? _value.text
+          : text // ignore: cast_nullable_to_non_nullable
+              as String,
+      icon: icon == freezed
+          ? _value.icon
+          : icon // ignore: cast_nullable_to_non_nullable
+              as Icon,
+      action: action == freezed
+          ? _value.action
+          : action // ignore: cast_nullable_to_non_nullable
+              as void Function()?,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_MenuAction implements _MenuAction {
+  _$_MenuAction({required this.text, required this.icon, this.action});
+
+  @override
+  final String text;
+  @override
+  final Icon icon;
+  @override
+  final void Function()? action;
+
+  @override
+  String toString() {
+    return 'MenuAction(text: $text, icon: $icon, action: $action)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _MenuAction &&
+            (identical(other.text, text) || other.text == text) &&
+            (identical(other.icon, icon) || other.icon == icon) &&
+            (identical(other.action, action) || other.action == action));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, text, icon, action);
+
+  @JsonKey(ignore: true)
+  @override
+  _$MenuActionCopyWith<_MenuAction> get copyWith =>
+      __$MenuActionCopyWithImpl<_MenuAction>(this, _$identity);
+}
+
+abstract class _MenuAction implements MenuAction {
+  factory _MenuAction(
+      {required String text,
+      required Icon icon,
+      void Function()? action}) = _$_MenuAction;
+
+  @override
+  String get text;
+  @override
+  Icon get icon;
+  @override
+  void Function()? get action;
+  @override
+  @JsonKey(ignore: true)
+  _$MenuActionCopyWith<_MenuAction> get copyWith =>
+      throw _privateConstructorUsedError;
+}

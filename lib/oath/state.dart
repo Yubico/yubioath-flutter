@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
 
+import '../app/state.dart';
 import '../core/state.dart';
 import 'models.dart';
 
@@ -241,6 +242,7 @@ class FavoriteNotifier extends StateNotifier<bool> {
   }
 }
 
+/*
 final searchFilterProvider =
     StateNotifierProvider<SearchFilterNotifier, String>(
         (ref) => SearchFilterNotifier());
@@ -251,7 +253,7 @@ class SearchFilterNotifier extends StateNotifier<String> {
   setFilter(String value) {
     state = value;
   }
-}
+}*/
 
 final filteredCredentialsProvider = StateNotifierProvider.autoDispose
     .family<FilteredCredentialsNotifier, List<OathPair>, List<OathPair>>(
@@ -261,7 +263,7 @@ final filteredCredentialsProvider = StateNotifierProvider.autoDispose
       credential: ref.watch(favoriteProvider(credential.id))
   };
   return FilteredCredentialsNotifier(
-      full, favorites, ref.watch(searchFilterProvider));
+      full, favorites, ref.watch(searchProvider));
 });
 
 class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
@@ -271,15 +273,19 @@ class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
     List<OathPair> full,
     this.favorites,
     this.query,
-  ) : super(full
-            .where((pair) =>
-                "${pair.credential.issuer ?? ''}:${pair.credential.name}"
-                    .toLowerCase()
-                    .contains(query.toLowerCase()))
-            .toList()
-          ..sort((a, b) {
-            String searchKey(OathCredential c) =>
-                (favorites[c] == true ? '0' : '1') + (c.issuer ?? '') + c.name;
-            return searchKey(a.credential).compareTo(searchKey(b.credential));
-          }));
+  ) : super(
+          full
+              .where((pair) =>
+                  "${pair.credential.issuer ?? ''}:${pair.credential.name}"
+                      .toLowerCase()
+                      .contains(query.toLowerCase()))
+              .toList()
+            ..sort((a, b) {
+              String searchKey(OathCredential c) =>
+                  (favorites[c] == true ? '0' : '1') +
+                  (c.issuer ?? '') +
+                  c.name;
+              return searchKey(a.credential).compareTo(searchKey(b.credential));
+            }),
+        );
 }

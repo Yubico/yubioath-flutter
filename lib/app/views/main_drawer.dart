@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../about_page.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -25,25 +26,102 @@ class MainPageDrawer extends ConsumerWidget {
     return Drawer(
       child: ListView(
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Text(
+              'Yubico Authenticator',
+              style: Theme.of(context).textTheme.headline6,
             ),
-            child: Text('Hello'),
           ),
-          ...SubPage.values.map((value) => ListTile(
-                title: Text(
-                  value.displayName,
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-                tileColor: value == currentSubPage ? Colors.blueGrey : null,
-                enabled: value != currentSubPage,
-                onTap: () {
-                  ref.read(subPageProvider.notifier).setSubPage(value);
-                  Navigator.of(context).pop();
-                },
+          const Divider(),
+          ...SubPage.values.map((page) => DrawerItem(
+                titleText: page.displayName,
+                icon: const Icon(Icons.miscellaneous_services),
+                selected: page == currentSubPage,
+                onTap: page != currentSubPage
+                    ? () {
+                        ref.read(subPageProvider.notifier).setSubPage(page);
+                        Navigator.of(context).pop();
+                      }
+                    : null,
               )),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'CONFIGURATION',
+              style: Theme.of(context).textTheme.bodyText2,
+            ),
+          ),
+          DrawerItem(
+            titleText: 'Placeholder Light mode',
+            icon: const Icon(Icons.alarm),
+            onTap: () {
+              ref
+                  .read(themeModeProvider.notifier)
+                  .setThemeMode(ThemeMode.light);
+              Navigator.of(context).pop();
+            },
+          ),
+          DrawerItem(
+            titleText: 'Placeholder Dark mode',
+            icon: const Icon(Icons.house),
+            onTap: () {
+              ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark);
+              Navigator.of(context).pop();
+            },
+          ),
+          const Divider(),
+          DrawerItem(
+            titleText: 'About Yubico Authenticator',
+            icon: const Icon(Icons.settings_applications),
+            onTap: () {
+              Navigator.of(context)
+                ..pop()
+                ..push(
+                  MaterialPageRoute(builder: (context) => const AboutPage()),
+                );
+              //Navigator.of(context).pop();
+            },
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class DrawerItem extends StatelessWidget {
+  final bool selected;
+  final String titleText;
+  final Icon icon;
+  final void Function()? onTap;
+
+  const DrawerItem({
+    required this.titleText,
+    required this.icon,
+    this.onTap,
+    this.selected = false,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: ListTile(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.horizontal(right: Radius.circular(20)),
+        ),
+        dense: true,
+        selected: selected,
+        selectedColor: Theme.of(context).backgroundColor,
+        selectedTileColor: Theme.of(context).colorScheme.secondary,
+        leading: icon,
+        title: Text(
+          titleText,
+          //style: Theme.of(context).textTheme.headline6,
+        ),
+        //enabled: value != currentSubPage,
+        onTap: onTap,
       ),
     );
   }

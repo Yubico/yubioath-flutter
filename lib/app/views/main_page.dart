@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/app/views/device_images.dart';
 
-import 'device_picker_dialog.dart';
+import 'device_avatar.dart';
+import 'main_actions_dialog.dart';
 import 'main_drawer.dart';
 import 'no_device_screen.dart';
 import 'device_info_screen.dart';
@@ -13,7 +13,10 @@ import '../../oath/views/oath_screen.dart';
 class MainPage extends ConsumerWidget {
   const MainPage({Key? key}) : super(key: key);
 
-  Widget _buildSubPage(SubPage subPage, DeviceNode device) {
+  Widget _buildSubPage(SubPage subPage, DeviceNode? device) {
+    if (device == null) {
+      return const NoDeviceScreen();
+    }
     // TODO: If page not supported by device, do something?
     switch (subPage) {
       case SubPage.authenticator:
@@ -30,25 +33,42 @@ class MainPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Yubico Authenticator'),
+        //title: const Text('Yubico Authenticator'),
+        /*
+        backgroundColor: Colors.grey.shade900,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(40)),
+          side: BorderSide(
+              width: 8, color: Theme.of(context).scaffoldBackgroundColor),
+        ),
+        */
+        title: TextField(
+          decoration: const InputDecoration(
+            hintText: 'Search...',
+            border: InputBorder.none,
+          ),
+          onChanged: (value) {
+            ref.read(searchProvider.notifier).setFilter(value);
+          },
+        ),
         actions: [
-          IconButton(
-            icon: currentDevice == null
+          InkWell(
+            //iconSize: 32,
+            child: currentDevice == null
                 ? const Icon(Icons.info)
-                : getProductImage(currentDevice),
-            onPressed: () {
+                : DeviceAvatar(currentDevice, selected: true),
+            onTap: () {
               showDialog(
                 context: context,
-                builder: (context) => const DevicePickerDialog(),
+                builder: (context) => const MainActionsDialog(),
               );
             },
           )
         ],
       ),
       drawer: const MainPageDrawer(),
-      body: currentDevice == null
-          ? const NoDeviceScreen()
-          : _buildSubPage(subPage, currentDevice),
+      body: _buildSubPage(subPage, currentDevice),
     );
   }
 }

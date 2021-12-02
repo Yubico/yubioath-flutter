@@ -37,7 +37,7 @@ class AboutPage extends ConsumerWidget {
                       ref.read(logLevelProvider.notifier).setLevel(Level.INFO);
                       log.info('Log level changed to INFO');
                     },
-                    child: const Text('INFO'),
+                    child: const Text('Info'),
                   ),
                   TextButton(
                     onPressed: () {
@@ -46,10 +46,18 @@ class AboutPage extends ConsumerWidget {
                           .setLevel(Level.CONFIG);
                       log.config('Log level changed to CONFIG');
                     },
-                    child: const Text('DEBUG'),
+                    child: const Text('Config'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      ref.read(logLevelProvider.notifier).setLevel(Level.FINE);
+                      log.fine('Log level changed to FINE');
+                    },
+                    child: const Text('Fine'),
                   ),
                 ],
               ),
+              const Divider(),
               TextButton(
                 onPressed: () async {
                   log.info('Running diagnostics...');

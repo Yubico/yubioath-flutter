@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../management/models.dart';
 
@@ -18,4 +19,12 @@ class DeviceNode with _$DeviceNode {
 
   factory DeviceNode.fromJson(Map<String, dynamic> json) =>
       _$DeviceNodeFromJson(json);
+}
+
+@freezed
+class MenuAction with _$MenuAction {
+  factory MenuAction(
+      {required String text,
+      required Icon icon,
+      void Function()? action}) = _MenuAction;
 }
