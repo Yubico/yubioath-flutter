@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widgets/circle_timer.dart';
@@ -80,10 +81,57 @@ class _AccountViewState extends ConsumerState<AccountView> {
   Color get _color =>
       Colors.primaries.elementAt(_label.hashCode % Colors.primaries.length);
 
+  List<PopupMenuEntry> _buildPopupMenu(BuildContext context, WidgetRef ref) => [
+        PopupMenuItem(
+          child: const ListTile(
+            leading: Icon(Icons.copy),
+            title: Text('Copy to clipboard'),
+          ),
+          enabled: widget.code != null,
+          onTap: () {
+            Clipboard.setData(ClipboardData(text: widget.code!.value));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Code copied'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          },
+        ),
+        PopupMenuItem(
+          child: const ListTile(
+            leading: Icon(Icons.star),
+            title: Text('Toggle favorite'),
+          ),
+          onTap: () {
+            ref
+                .read(favoritesProvider.notifier)
+                .toggleFavorite(widget.credential.id);
+          },
+        ),
+        if (widget.device.info.version.major >= 5 &&
+            widget.device.info.version.minor >= 3)
+          PopupMenuItem(
+            child: const ListTile(
+              leading: Icon(Icons.edit),
+              title: Text('Rename account'),
+            ),
+            onTap: () {
+              log.info('TODO');
+            },
+          ),
+        const PopupMenuDivider(),
+        const PopupMenuItem(
+          child: ListTile(
+            leading: Icon(Icons.delete_forever),
+            title: Text('Delete account'),
+          ),
+        ),
+      ];
+
   @override
   Widget build(BuildContext context) {
-    final favorite = ref.watch(favoriteProvider(widget.credential.id));
-
+    final code = widget.code;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(children: [
@@ -108,25 +156,10 @@ class _AccountViewState extends ConsumerState<AccountView> {
         const Spacer(),
         Row(
           children: [
-            IconButton(
-              onPressed: () {
-                ref
-                    .read(favoriteProvider(widget.credential.id).notifier)
-                    .toggleFavorite();
-              },
-              icon: Icon(favorite ? Icons.star : Icons.star_border),
-            ),
-            SizedBox.square(
-              dimension: 16,
-              child: widget.code != null &&
-                      widget.code!.validTo - widget.code!.validFrom < 600
-                  ? CircleTimer(
-                      widget.code!.validFrom * 1000,
-                      widget.code!.validTo * 1000,
-                    )
-                  : null,
-            ),
-            if (widget.code == null)
+            if (code == null ||
+                _expired &&
+                    (widget.credential.touchRequired ||
+                        widget.credential.oathType == OathType.hotp))
               IconButton(
                 icon: const Icon(Icons.refresh),
                 onPressed: () {
@@ -143,6 +176,20 @@ class _AccountViewState extends ConsumerState<AccountView> {
                       .calculate(widget.credential);
                 },
               )
+          ],
+        ),
+        Column(
+          children: [
+            SizedBox.square(
+              dimension: 16,
+              child: code != null && code.validTo - code.validFrom < 600
+                  ? CircleTimer(code.validFrom * 1000, code.validTo * 1000)
+                  : null,
+            ),
+            PopupMenuButton(
+              iconSize: 20.0,
+              itemBuilder: (context) => _buildPopupMenu(context, ref),
+            ),
           ],
         ),
       ]),

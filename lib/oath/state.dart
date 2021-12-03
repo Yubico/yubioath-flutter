@@ -240,48 +240,35 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
   }
 }
 
-final favoriteProvider =
-    StateNotifierProvider.family<FavoriteNotifier, bool, String>(
-  (ref, credentialId) {
-    return FavoriteNotifier(ref.watch(prefProvider), credentialId);
-  },
-);
+final favoritesProvider =
+    StateNotifierProvider<FavoritesNotifier, List<String>>(
+        (ref) => FavoritesNotifier(ref.watch(prefProvider)));
 
-class FavoriteNotifier extends StateNotifier<bool> {
-  final SharedPreferences prefs;
-  final String _key;
-  FavoriteNotifier._(this.prefs, this._key)
-      : super(prefs.getBool(_key) ?? false);
+class FavoritesNotifier extends StateNotifier<List<String>> {
+  static const String _key = 'OATH_STATE_FAVORITES';
+  final SharedPreferences _prefs;
+  FavoritesNotifier(this._prefs) : super(_prefs.getStringList(_key) ?? []);
 
-  factory FavoriteNotifier(SharedPreferences prefs, String credentialId) {
-    return FavoriteNotifier._(prefs, 'OATH_STATE_FAVORITE_$credentialId');
-  }
-
-  toggleFavorite() async {
-    await prefs.setBool(_key, !state);
-    if (mounted) {
-      state = !state;
+  toggleFavorite(String credentialId) {
+    if (state.contains(credentialId)) {
+      state = state.toList()..remove(credentialId);
+    } else {
+      state = [credentialId, ...state];
     }
+    _prefs.setStringList(_key, state);
   }
 }
 
 final filteredCredentialsProvider = StateNotifierProvider.autoDispose
     .family<FilteredCredentialsNotifier, List<OathPair>, List<OathPair>>(
         (ref, full) {
-  final favorites = {
-    for (var credential in full.map((e) => e.credential))
-      credential: ref.watch(favoriteProvider(credential.id))
-  };
-  return FilteredCredentialsNotifier(
-      full, favorites, ref.watch(searchProvider));
+  return FilteredCredentialsNotifier(full, ref.watch(searchProvider));
 });
 
 class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
-  final Map<OathCredential, bool> favorites;
   final String query;
   FilteredCredentialsNotifier(
     List<OathPair> full,
-    this.favorites,
     this.query,
   ) : super(
           full
@@ -291,10 +278,7 @@ class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
                       .contains(query.toLowerCase()))
               .toList()
             ..sort((a, b) {
-              String searchKey(OathCredential c) =>
-                  (favorites[c] == true ? '0' : '1') +
-                  (c.issuer ?? '') +
-                  c.name;
+              String searchKey(OathCredential c) => (c.issuer ?? '') + c.name;
               return searchKey(a.credential).compareTo(searchKey(b.credential));
             }),
         );
