@@ -414,3 +414,168 @@ abstract class _MenuAction implements MenuAction {
   _$MenuActionCopyWith<_MenuAction> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+class _$WindowStateTearOff {
+  const _$WindowStateTearOff();
+
+  _WindowState call(
+      {required bool focused, required bool visible, required bool active}) {
+    return _WindowState(
+      focused: focused,
+      visible: visible,
+      active: active,
+    );
+  }
+}
+
+/// @nodoc
+const $WindowState = _$WindowStateTearOff();
+
+/// @nodoc
+mixin _$WindowState {
+  bool get focused => throw _privateConstructorUsedError;
+  bool get visible => throw _privateConstructorUsedError;
+  bool get active => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $WindowStateCopyWith<WindowState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $WindowStateCopyWith<$Res> {
+  factory $WindowStateCopyWith(
+          WindowState value, $Res Function(WindowState) then) =
+      _$WindowStateCopyWithImpl<$Res>;
+  $Res call({bool focused, bool visible, bool active});
+}
+
+/// @nodoc
+class _$WindowStateCopyWithImpl<$Res> implements $WindowStateCopyWith<$Res> {
+  _$WindowStateCopyWithImpl(this._value, this._then);
+
+  final WindowState _value;
+  // ignore: unused_field
+  final $Res Function(WindowState) _then;
+
+  @override
+  $Res call({
+    Object? focused = freezed,
+    Object? visible = freezed,
+    Object? active = freezed,
+  }) {
+    return _then(_value.copyWith(
+      focused: focused == freezed
+          ? _value.focused
+          : focused // ignore: cast_nullable_to_non_nullable
+              as bool,
+      visible: visible == freezed
+          ? _value.visible
+          : visible // ignore: cast_nullable_to_non_nullable
+              as bool,
+      active: active == freezed
+          ? _value.active
+          : active // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
+abstract class _$WindowStateCopyWith<$Res>
+    implements $WindowStateCopyWith<$Res> {
+  factory _$WindowStateCopyWith(
+          _WindowState value, $Res Function(_WindowState) then) =
+      __$WindowStateCopyWithImpl<$Res>;
+  @override
+  $Res call({bool focused, bool visible, bool active});
+}
+
+/// @nodoc
+class __$WindowStateCopyWithImpl<$Res> extends _$WindowStateCopyWithImpl<$Res>
+    implements _$WindowStateCopyWith<$Res> {
+  __$WindowStateCopyWithImpl(
+      _WindowState _value, $Res Function(_WindowState) _then)
+      : super(_value, (v) => _then(v as _WindowState));
+
+  @override
+  _WindowState get _value => super._value as _WindowState;
+
+  @override
+  $Res call({
+    Object? focused = freezed,
+    Object? visible = freezed,
+    Object? active = freezed,
+  }) {
+    return _then(_WindowState(
+      focused: focused == freezed
+          ? _value.focused
+          : focused // ignore: cast_nullable_to_non_nullable
+              as bool,
+      visible: visible == freezed
+          ? _value.visible
+          : visible // ignore: cast_nullable_to_non_nullable
+              as bool,
+      active: active == freezed
+          ? _value.active
+          : active // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_WindowState implements _WindowState {
+  _$_WindowState(
+      {required this.focused, required this.visible, required this.active});
+
+  @override
+  final bool focused;
+  @override
+  final bool visible;
+  @override
+  final bool active;
+
+  @override
+  String toString() {
+    return 'WindowState(focused: $focused, visible: $visible, active: $active)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _WindowState &&
+            (identical(other.focused, focused) || other.focused == focused) &&
+            (identical(other.visible, visible) || other.visible == visible) &&
+            (identical(other.active, active) || other.active == active));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, focused, visible, active);
+
+  @JsonKey(ignore: true)
+  @override
+  _$WindowStateCopyWith<_WindowState> get copyWith =>
+      __$WindowStateCopyWithImpl<_WindowState>(this, _$identity);
+}
+
+abstract class _WindowState implements WindowState {
+  factory _WindowState(
+      {required bool focused,
+      required bool visible,
+      required bool active}) = _$_WindowState;
+
+  @override
+  bool get focused;
+  @override
+  bool get visible;
+  @override
+  bool get active;
+  @override
+  @JsonKey(ignore: true)
+  _$WindowStateCopyWith<_WindowState> get copyWith =>
+      throw _privateConstructorUsedError;
+}

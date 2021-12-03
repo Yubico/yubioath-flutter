@@ -1,5 +1,5 @@
 name: yubico_authenticator
-description: A new Flutter project.
+description: Yubico Authenticator
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -41,6 +41,7 @@ dependencies:
   flutter_riverpod: ^1.0.0
   json_annotation: ^4.3.0
   freezed_annotation: ^1.0.0
+  window_manager: ^0.1.1
 
 dev_dependencies:
   flutter_test:

@@ -28,3 +28,12 @@ class MenuAction with _$MenuAction {
       required Icon icon,
       void Function()? action}) = _MenuAction;
 }
+
+@freezed
+class WindowState with _$WindowState {
+  factory WindowState({
+    required bool focused,
+    required bool visible,
+    required bool active,
+  }) = _WindowState;
+}

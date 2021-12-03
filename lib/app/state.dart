@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../core/models.dart';
 import '../core/state.dart';
@@ -13,6 +14,73 @@ import '../oath/menu_actions.dart';
 import 'models.dart';
 
 final log = Logger('app.state');
+
+final windowStateProvider =
+    StateNotifierProvider<WindowStateNotifier, WindowState>(
+        (ref) => WindowStateNotifier());
+
+class WindowStateNotifier extends StateNotifier<WindowState>
+    with WindowListener {
+  Timer? _idleTimer;
+  WindowStateNotifier()
+      : super(WindowState(focused: true, visible: true, active: true)) {
+    _init();
+  }
+
+  void _init() async {
+    windowManager.addListener(this);
+    if (!await windowManager.isVisible() && mounted) {
+      state = WindowState(focused: false, visible: false, active: true);
+      _idleTimer = Timer(const Duration(seconds: 5), () {
+        if (mounted) {
+          state = state.copyWith(active: false);
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+  }
+
+  @override
+  set state(WindowState value) {
+    log.config('Window state changed: $value');
+    super.state = value;
+  }
+
+  @override
+  void onWindowEvent(String eventName) {
+    if (mounted) {
+      switch (eventName) {
+        case 'blur':
+          state = state.copyWith(focused: false);
+          _idleTimer?.cancel();
+          _idleTimer = Timer(const Duration(seconds: 5), () {
+            if (mounted) {
+              state = state.copyWith(active: false);
+            }
+          });
+          break;
+        case 'focus':
+          state = state.copyWith(focused: true, active: true);
+          _idleTimer?.cancel();
+          break;
+        case 'minimize':
+          state = state.copyWith(visible: false, active: false);
+          _idleTimer?.cancel();
+          break;
+        case 'restore':
+          state = state.copyWith(visible: true, active: true);
+          break;
+        default:
+          log.fine('Window event ignored: $eventName');
+      }
+    }
+  }
+}
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
     (ref) => ThemeModeNotifier(ref.watch(prefProvider)));
@@ -51,24 +119,38 @@ class SearchNotifier extends StateNotifier<String> {
 }
 
 final attachedDevicesProvider =
-    StateNotifierProvider<AttachedDeviceNotifier, List<DeviceNode>>(
-        (ref) => AttachedDeviceNotifier(ref.watch(rpcProvider)));
+    StateNotifierProvider<AttachedDeviceNotifier, List<DeviceNode>>((ref) {
+  final notifier = AttachedDeviceNotifier(ref.watch(rpcProvider));
+  ref.listen<WindowState>(windowStateProvider, (_, windowState) {
+    notifier._notifyWindowState(windowState);
+  }, fireImmediately: true);
+  return notifier;
+});
 
 class AttachedDeviceNotifier extends StateNotifier<List<DeviceNode>> {
   final RpcSession _rpc;
-  late Timer _pollTimer;
+  Timer? _pollTimer;
   int _usbState = -1;
-  AttachedDeviceNotifier(this._rpc) : super([]) {
-    _pollTimer = Timer(const Duration(milliseconds: 500), _pollUsb);
+  AttachedDeviceNotifier(this._rpc) : super([]);
+
+  void _notifyWindowState(WindowState windowState) {
+    if (windowState.active) {
+      _pollUsb();
+    } else {
+      _pollTimer?.cancel();
+      // Release any held device
+      _rpc.command('get', ['usb']);
+    }
   }
 
   @override
   void dispose() {
-    _pollTimer.cancel();
+    _pollTimer?.cancel();
     super.dispose();
   }
 
   void _pollUsb() async {
+    _pollTimer?.cancel();
     try {
       var scan = await _rpc.command('scan', ['usb']);
 

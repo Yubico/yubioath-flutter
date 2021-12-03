@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/models.dart';
 
 import '../app/state.dart';
 import '../core/state.dart';
@@ -84,10 +85,14 @@ class OathStateNotifier extends StateNotifier<OathState?> {
 final credentialListProvider = StateNotifierProvider.autoDispose
     .family<CredentialListNotifier, List<OathPair>?, List<String>>(
   (ref, devicePath) {
-    return CredentialListNotifier(
+    var notifier = CredentialListNotifier(
       ref.watch(_sessionProvider(devicePath)),
       ref.watch(oathStateProvider(devicePath).select((s) => s?.locked ?? true)),
-    )..refresh();
+    );
+    ref.listen<WindowState>(windowStateProvider, (_, windowState) {
+      notifier._notifyWindowState(windowState);
+    }, fireImmediately: true);
+    return notifier;
   },
 );
 
@@ -114,6 +119,15 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
   final bool _locked;
   Timer? _timer;
   CredentialListNotifier(this._session, this._locked) : super(null);
+
+  void _notifyWindowState(WindowState windowState) {
+    if (_locked) return;
+    if (windowState.active) {
+      _scheduleRefresh();
+    } else {
+      _timer?.cancel();
+    }
+  }
 
   @override
   void dispose() {
@@ -199,19 +213,29 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
 
   _scheduleRefresh() {
     _timer?.cancel();
-    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    final expirations = (state ?? [])
-        .where((pair) =>
-            pair.credential.oathType == OathType.totp &&
-            !pair.credential.touchRequired)
-        .map((e) => e.code)
-        .whereType<OathCode>()
-        .map((e) => e.validTo)
-        .where((time) => time > now);
-    if (expirations.isEmpty) {
-      _timer = null;
-    } else {
-      _timer = Timer(Duration(seconds: expirations.reduce(min) - now), refresh);
+    if (_locked) return;
+    if (state == null) {
+      refresh();
+    } else if (mounted) {
+      final expirations = (state ?? [])
+          .where((pair) =>
+              pair.credential.oathType == OathType.totp &&
+              !pair.credential.touchRequired)
+          .map((e) => e.code)
+          .whereType<OathCode>()
+          .map((e) => e.validTo);
+      //.where((time) => time > now);
+      if (expirations.isEmpty) {
+        _timer = null;
+      } else {
+        final earliest = expirations.reduce(min) * 1000;
+        final now = DateTime.now().millisecondsSinceEpoch;
+        if (earliest < now) {
+          refresh();
+        } else {
+          _timer = Timer(Duration(milliseconds: earliest - now), refresh);
+        }
+      }
     }
   }
 }
