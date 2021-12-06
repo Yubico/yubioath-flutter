@@ -148,10 +148,13 @@ class AccountView extends ConsumerWidget {
                     });
                   close = sbc.close;
                 }
-                await ref
-                    .read(credentialListProvider(device.path).notifier)
-                    .calculate(credential);
-                close?.call();
+                try {
+                  await ref
+                      .read(credentialListProvider(device.path).notifier)
+                      .calculate(credential);
+                } finally {
+                  close?.call();
+                }
               },
             ),
           Stack(

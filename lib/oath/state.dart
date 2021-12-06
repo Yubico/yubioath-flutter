@@ -146,7 +146,7 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
 
   Future<OathCode> calculate(OathCredential credential,
       {bool update = true}) async {
-    OathCode code;
+    final OathCode code;
     if (credential.isSteam) {
       final timeStep = DateTime.now().millisecondsSinceEpoch ~/ 30000;
       var result = await _session.command('calculate', target: [
@@ -195,7 +195,7 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
     var result = await _session.command('calculate_all', target: ['accounts']);
     log.config('Entries', jsonEncode(result));
 
-    var current = state?.toList() ?? [];
+    final pairs = [];
     for (var e in result['entries']) {
       final credential = OathCredential.fromJson(e['credential']);
       final code = e['code'] == null
@@ -203,15 +203,20 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
           : credential.isSteam // Steam codes require a re-calculate
               ? await calculate(credential, update: false)
               : OathCode.fromJson(e['code']);
-      var i = current
-          .indexWhere((element) => element.credential.id == credential.id);
-      if (i < 0) {
-        current.add(OathPair(credential, code));
-      } else if (code != null) {
-        current[i] = current[i].copyWith(code: code);
-      }
+      pairs.add(OathPair(credential, code));
     }
+
     if (mounted) {
+      final current = state?.toList() ?? [];
+      for (var pair in pairs) {
+        final i =
+            current.indexWhere((e) => e.credential.id == pair.credential.id);
+        if (i < 0) {
+          current.add(pair);
+        } else if (pair.code != null) {
+          current[i] = current[i].copyWith(code: pair.code);
+        }
+      }
       state = current;
       _scheduleRefresh();
     }
