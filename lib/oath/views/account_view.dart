@@ -9,65 +9,40 @@ import '../../app/models.dart';
 import '../models.dart';
 import '../state.dart';
 
-class AccountView extends ConsumerStatefulWidget {
+final _expireProvider =
+    StateNotifierProvider.autoDispose.family<_ExpireNotifier, bool, int>(
+  (ref, expiry) =>
+      _ExpireNotifier(DateTime.now().millisecondsSinceEpoch, expiry * 1000),
+);
+
+class _ExpireNotifier extends StateNotifier<bool> {
+  Timer? _timer;
+  _ExpireNotifier(int now, int expiry) : super(expiry <= now) {
+    if (expiry > now) {
+      _timer = Timer(Duration(milliseconds: expiry - now), () {
+        if (mounted) {
+          state = true;
+        }
+      });
+    }
+  }
+
+  @override
+  dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+}
+
+class AccountView extends ConsumerWidget {
   final DeviceNode device;
   final OathCredential credential;
   final OathCode? code;
   const AccountView(this.device, this.credential, this.code, {Key? key})
       : super(key: key);
 
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _AccountViewState();
-}
-
-class _AccountViewState extends ConsumerState<AccountView> {
-  Timer? _expirationTimer;
-  late bool _expired;
-
-  void _scheduleExpiration() {
-    final expires = (widget.code?.validTo ?? 0) * 1000;
-    final now = DateTime.now().millisecondsSinceEpoch;
-    if (expires > now) {
-      _expired = false;
-      _expirationTimer?.cancel();
-      _expirationTimer = Timer(Duration(milliseconds: expires - now), () {
-        setState(() {
-          _expired = true;
-        });
-      });
-    } else {
-      _expired = true;
-    }
-  }
-
-  @override
-  void didUpdateWidget(AccountView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _scheduleExpiration();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _scheduleExpiration();
-  }
-
-  @override
-  void dispose() {
-    _expirationTimer?.cancel();
-    super.dispose();
-  }
-
-  String get _avatarLetter {
-    var name = widget.credential.issuer ?? widget.credential.name;
-    return name.substring(0, 1).toUpperCase();
-  }
-
-  String get _label =>
-      '${widget.credential.issuer} (${widget.credential.name})';
-
-  String get _code {
-    var value = widget.code?.value;
+  String formatCode() {
+    var value = code?.value;
     if (value == null) {
       return '••• •••';
     } else if (value.length < 6) {
@@ -78,18 +53,15 @@ class _AccountViewState extends ConsumerState<AccountView> {
     }
   }
 
-  Color get _color =>
-      Colors.primaries.elementAt(_label.hashCode % Colors.primaries.length);
-
   List<PopupMenuEntry> _buildPopupMenu(BuildContext context, WidgetRef ref) => [
         PopupMenuItem(
           child: const ListTile(
             leading: Icon(Icons.copy),
             title: Text('Copy to clipboard'),
           ),
-          enabled: widget.code != null,
+          enabled: code != null,
           onTap: () {
-            Clipboard.setData(ClipboardData(text: widget.code!.value));
+            Clipboard.setData(ClipboardData(text: code!.value));
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Code copied'),
@@ -104,13 +76,10 @@ class _AccountViewState extends ConsumerState<AccountView> {
             title: Text('Toggle favorite'),
           ),
           onTap: () {
-            ref
-                .read(favoritesProvider.notifier)
-                .toggleFavorite(widget.credential.id);
+            ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
           },
         ),
-        if (widget.device.info.version.major >= 5 &&
-            widget.device.info.version.minor >= 3)
+        if (device.info.version.major >= 5 && device.info.version.minor >= 3)
           PopupMenuItem(
             child: const ListTile(
               leading: Icon(Icons.edit),
@@ -130,69 +99,83 @@ class _AccountViewState extends ConsumerState<AccountView> {
       ];
 
   @override
-  Widget build(BuildContext context) {
-    final code = widget.code;
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(children: [
-        CircleAvatar(
-          backgroundColor: _color,
-          child: Text(_avatarLetter, style: const TextStyle(fontSize: 18)),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final code = this.code;
+    final expired = ref.watch(_expireProvider(code?.validTo ?? 0));
+    final label = credential.issuer != null
+        ? '${credential.issuer} (${credential.name})'
+        : credential.name;
+
+    return ListTile(
+      onTap: () {},
+      leading: CircleAvatar(
+        backgroundColor: Colors.primaries
+            .elementAt(label.hashCode % Colors.primaries.length),
+        child: Text(
+          (credential.issuer ?? credential.name).characters.first.toUpperCase(),
+          style: const TextStyle(fontSize: 18),
         ),
-        const SizedBox(width: 8.0),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(_code,
-                style: _expired
-                    ? Theme.of(context)
-                        .textTheme
-                        .headline6
-                        ?.copyWith(color: Colors.grey)
-                    : Theme.of(context).textTheme.headline6),
-            Text(_label, style: Theme.of(context).textTheme.caption),
-          ],
-        ),
-        const Spacer(),
-        Row(
-          children: [
-            if (code == null ||
-                _expired &&
-                    (widget.credential.touchRequired ||
-                        widget.credential.oathType == OathType.hotp))
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: () {
-                  if (widget.credential.touchRequired) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Touch your YubiKey'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  }
-                  ref
-                      .read(credentialListProvider(widget.device.path).notifier)
-                      .calculate(widget.credential);
-                },
+      ),
+      title: Text(
+        formatCode(),
+        style: expired
+            ? Theme.of(context)
+                .textTheme
+                .headline5
+                ?.copyWith(color: Colors.grey)
+            : Theme.of(context).textTheme.headline5,
+      ),
+      subtitle: Text(label, style: Theme.of(context).textTheme.caption),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (code == null ||
+              expired &&
+                  (credential.touchRequired ||
+                      credential.oathType == OathType.hotp))
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () async {
+                VoidCallback? close;
+                if (credential.touchRequired) {
+                  final sbc = ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Touch your YubiKey'),
+                      duration: Duration(seconds: 30),
+                    ),
+                  )..closed.then((_) {
+                      close = null;
+                    });
+                  close = sbc.close;
+                }
+                await ref
+                    .read(credentialListProvider(device.path).notifier)
+                    .calculate(credential);
+                close?.call();
+              },
+            ),
+          Stack(
+            alignment: AlignmentDirectional.bottomCenter,
+            children: [
+              if (code != null && code.validTo - code.validFrom < 600)
+                Align(
+                  alignment: AlignmentDirectional.topCenter,
+                  child: SizedBox.square(
+                    dimension: 16,
+                    child:
+                        CircleTimer(code.validFrom * 1000, code.validTo * 1000),
+                  ),
+                ),
+              Transform.scale(
+                scale: 0.8,
+                child: PopupMenuButton(
+                  itemBuilder: (context) => _buildPopupMenu(context, ref),
+                ),
               )
-          ],
-        ),
-        Column(
-          children: [
-            SizedBox.square(
-              dimension: 16,
-              child: code != null && code.validTo - code.validFrom < 600
-                  ? CircleTimer(code.validFrom * 1000, code.validTo * 1000)
-                  : null,
-            ),
-            PopupMenuButton(
-              iconSize: 20.0,
-              itemBuilder: (context) => _buildPopupMenu(context, ref),
-            ),
-          ],
-        ),
-      ]),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

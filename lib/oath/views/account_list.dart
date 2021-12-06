@@ -25,7 +25,6 @@ class AccountList extends StatelessWidget {
         credentials.where((entry) => !favorites.contains(entry.credential.id));
 
     return ListView(
-      shrinkWrap: true,
       children: [
         if (favCreds.isNotEmpty)
           ListTile(

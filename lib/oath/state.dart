@@ -14,19 +14,9 @@ import 'models.dart';
 
 final log = Logger('oath.state');
 
-final _sessionProvider =
-    Provider.autoDispose.family<RpcNodeSession, List<String>>(
-  (ref, devicePath) {
-    return RpcNodeSession(
-      ref.watch(rpcProvider),
-      devicePath,
-      ['ccid', 'oath'],
-      () {
-        ref.refresh(_sessionProvider(devicePath));
-      },
-    );
-  },
-);
+final _sessionProvider = Provider.autoDispose
+    .family<RpcNodeSession, List<String>>((ref, devicePath) =>
+        RpcNodeSession(ref.watch(rpcProvider), devicePath, ['ccid', 'oath']));
 
 // This remembers the key for all devices for the duration of the process.
 final _lockKeyProvider =
@@ -43,10 +33,23 @@ class _LockKeyNotifier extends StateNotifier<String?> {
 
 final oathStateProvider = StateNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState?, List<String>>(
-  (ref, devicePath) => OathStateNotifier(
-    ref.watch(_sessionProvider(devicePath)),
-    ref.read,
-  )..refresh(),
+  (ref, devicePath) {
+    final session = ref.watch(_sessionProvider(devicePath));
+    final notifier = OathStateNotifier(session, ref.read);
+    session
+      ..setErrorHandler('state-reset', (_) async {
+        ref.refresh(_sessionProvider(devicePath));
+      })
+      ..setErrorHandler('auth-required', (_) async {
+        await notifier.refresh();
+      });
+    ref.onDispose(() {
+      session
+        ..unserErrorHandler('state-reset')
+        ..unserErrorHandler('auth-required');
+    });
+    return notifier..refresh();
+  },
 );
 
 class OathStateNotifier extends StateNotifier<OathState?> {
@@ -141,7 +144,8 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
     super.state = value != null ? List.unmodifiable(value) : null;
   }
 
-  calculate(OathCredential credential) async {
+  Future<OathCode> calculate(OathCredential credential,
+      {bool update = true}) async {
     OathCode code;
     if (credential.isSteam) {
       final timeStep = DateTime.now().millisecondsSinceEpoch ~/ 30000;
@@ -159,14 +163,16 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
       code = OathCode.fromJson(result);
     }
     log.config('Calculate', jsonEncode(code));
-    if (mounted) {
+    if (update && mounted) {
       final creds = state!.toList();
       final i = creds.indexWhere((e) => e.credential.id == credential.id);
       state = creds..[i] = creds[i].copyWith(code: code);
     }
+    return code;
   }
 
-  addAccount(Uri otpauth, {bool requireTouch = false}) async {
+  Future<OathCredential> addAccount(Uri otpauth,
+      {bool requireTouch = false, bool update = true}) async {
     var result = await _session.command('put', target: [
       'accounts'
     ], params: {
@@ -174,12 +180,13 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
       'require_touch': requireTouch,
     });
     final credential = OathCredential.fromJson(result);
-    if (mounted) {
+    if (update && mounted) {
       state = state!.toList()..add(OathPair(credential, null));
       if (!requireTouch && credential.oathType == OathType.totp) {
         calculate(credential);
       }
     }
+    return credential;
   }
 
   refresh() async {
@@ -188,25 +195,24 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
     var result = await _session.command('calculate_all', target: ['accounts']);
     log.config('Entries', jsonEncode(result));
 
+    var current = state?.toList() ?? [];
+    for (var e in result['entries']) {
+      final credential = OathCredential.fromJson(e['credential']);
+      final code = e['code'] == null
+          ? null
+          : credential.isSteam // Steam codes require a re-calculate
+              ? await calculate(credential, update: false)
+              : OathCode.fromJson(e['code']);
+      var i = current
+          .indexWhere((element) => element.credential.id == credential.id);
+      if (i < 0) {
+        current.add(OathPair(credential, code));
+      } else if (code != null) {
+        current[i] = current[i].copyWith(code: code);
+      }
+    }
     if (mounted) {
-      var current = state?.toList() ?? [];
-      for (var e in result['entries']) {
-        final credential = OathCredential.fromJson(e['credential']);
-        final code = e['code'] == null ? null : OathCode.fromJson(e['code']);
-        var i = current
-            .indexWhere((element) => element.credential.id == credential.id);
-        if (i < 0) {
-          current.add(OathPair(credential, code));
-        } else if (code != null) {
-          current[i] = current[i].copyWith(code: code);
-        }
-      }
-
       state = current;
-      for (var pair in current.where((element) =>
-          (element.credential.isSteam && !element.credential.touchRequired))) {
-        await calculate(pair.credential);
-      }
       _scheduleRefresh();
     }
   }
@@ -224,7 +230,6 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
           .map((e) => e.code)
           .whereType<OathCode>()
           .map((e) => e.validTo);
-      //.where((time) => time > now);
       if (expirations.isEmpty) {
         _timer = null;
       } else {
