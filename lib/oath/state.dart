@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/models.dart';
 
 import '../app/state.dart';
 import '../core/state.dart';
@@ -13,19 +14,9 @@ import 'models.dart';
 
 final log = Logger('oath.state');
 
-final _sessionProvider =
-    Provider.autoDispose.family<RpcNodeSession, List<String>>(
-  (ref, devicePath) {
-    return RpcNodeSession(
-      ref.watch(rpcProvider),
-      devicePath,
-      ['ccid', 'oath'],
-      () {
-        ref.refresh(_sessionProvider(devicePath));
-      },
-    );
-  },
-);
+final _sessionProvider = Provider.autoDispose
+    .family<RpcNodeSession, List<String>>((ref, devicePath) =>
+        RpcNodeSession(ref.watch(rpcProvider), devicePath, ['ccid', 'oath']));
 
 // This remembers the key for all devices for the duration of the process.
 final _lockKeyProvider =
@@ -42,10 +33,23 @@ class _LockKeyNotifier extends StateNotifier<String?> {
 
 final oathStateProvider = StateNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState?, List<String>>(
-  (ref, devicePath) => OathStateNotifier(
-    ref.watch(_sessionProvider(devicePath)),
-    ref.read,
-  )..refresh(),
+  (ref, devicePath) {
+    final session = ref.watch(_sessionProvider(devicePath));
+    final notifier = OathStateNotifier(session, ref.read);
+    session
+      ..setErrorHandler('state-reset', (_) async {
+        ref.refresh(_sessionProvider(devicePath));
+      })
+      ..setErrorHandler('auth-required', (_) async {
+        await notifier.refresh();
+      });
+    ref.onDispose(() {
+      session
+        ..unserErrorHandler('state-reset')
+        ..unserErrorHandler('auth-required');
+    });
+    return notifier..refresh();
+  },
 );
 
 class OathStateNotifier extends StateNotifier<OathState?> {
@@ -84,10 +88,14 @@ class OathStateNotifier extends StateNotifier<OathState?> {
 final credentialListProvider = StateNotifierProvider.autoDispose
     .family<CredentialListNotifier, List<OathPair>?, List<String>>(
   (ref, devicePath) {
-    return CredentialListNotifier(
+    var notifier = CredentialListNotifier(
       ref.watch(_sessionProvider(devicePath)),
       ref.watch(oathStateProvider(devicePath).select((s) => s?.locked ?? true)),
-    )..refresh();
+    );
+    ref.listen<WindowState>(windowStateProvider, (_, windowState) {
+      notifier._notifyWindowState(windowState);
+    }, fireImmediately: true);
+    return notifier;
   },
 );
 
@@ -115,6 +123,15 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
   Timer? _timer;
   CredentialListNotifier(this._session, this._locked) : super(null);
 
+  void _notifyWindowState(WindowState windowState) {
+    if (_locked) return;
+    if (windowState.active) {
+      _scheduleRefresh();
+    } else {
+      _timer?.cancel();
+    }
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
@@ -127,8 +144,9 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
     super.state = value != null ? List.unmodifiable(value) : null;
   }
 
-  calculate(OathCredential credential) async {
-    OathCode code;
+  Future<OathCode> calculate(OathCredential credential,
+      {bool update = true}) async {
+    final OathCode code;
     if (credential.isSteam) {
       final timeStep = DateTime.now().millisecondsSinceEpoch ~/ 30000;
       var result = await _session.command('calculate', target: [
@@ -145,14 +163,16 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
       code = OathCode.fromJson(result);
     }
     log.config('Calculate', jsonEncode(code));
-    if (mounted) {
+    if (update && mounted) {
       final creds = state!.toList();
       final i = creds.indexWhere((e) => e.credential.id == credential.id);
       state = creds..[i] = creds[i].copyWith(code: code);
     }
+    return code;
   }
 
-  addAccount(Uri otpauth, {bool requireTouch = false}) async {
+  Future<OathCredential> addAccount(Uri otpauth,
+      {bool requireTouch = false, bool update = true}) async {
     var result = await _session.command('put', target: [
       'accounts'
     ], params: {
@@ -160,12 +180,13 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
       'require_touch': requireTouch,
     });
     final credential = OathCredential.fromJson(result);
-    if (mounted) {
+    if (update && mounted) {
       state = state!.toList()..add(OathPair(credential, null));
       if (!requireTouch && credential.oathType == OathType.totp) {
         calculate(credential);
       }
     }
+    return credential;
   }
 
   refresh() async {
@@ -174,90 +195,90 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
     var result = await _session.command('calculate_all', target: ['accounts']);
     log.config('Entries', jsonEncode(result));
 
+    final pairs = [];
+    for (var e in result['entries']) {
+      final credential = OathCredential.fromJson(e['credential']);
+      final code = e['code'] == null
+          ? null
+          : credential.isSteam // Steam codes require a re-calculate
+              ? await calculate(credential, update: false)
+              : OathCode.fromJson(e['code']);
+      pairs.add(OathPair(credential, code));
+    }
+
     if (mounted) {
-      var current = state?.toList() ?? [];
-      for (var e in result['entries']) {
-        final credential = OathCredential.fromJson(e['credential']);
-        final code = e['code'] == null ? null : OathCode.fromJson(e['code']);
-        var i = current
-            .indexWhere((element) => element.credential.id == credential.id);
+      final current = state?.toList() ?? [];
+      for (var pair in pairs) {
+        final i =
+            current.indexWhere((e) => e.credential.id == pair.credential.id);
         if (i < 0) {
-          current.add(OathPair(credential, code));
-        } else if (code != null) {
-          current[i] = current[i].copyWith(code: code);
+          current.add(pair);
+        } else if (pair.code != null) {
+          current[i] = current[i].copyWith(code: pair.code);
         }
       }
-
       state = current;
-      for (var pair in current.where((element) =>
-          (element.credential.isSteam && !element.credential.touchRequired))) {
-        await calculate(pair.credential);
-      }
       _scheduleRefresh();
     }
   }
 
   _scheduleRefresh() {
     _timer?.cancel();
-    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    final expirations = (state ?? [])
-        .where((pair) =>
-            pair.credential.oathType == OathType.totp &&
-            !pair.credential.touchRequired)
-        .map((e) => e.code)
-        .whereType<OathCode>()
-        .map((e) => e.validTo)
-        .where((time) => time > now);
-    if (expirations.isEmpty) {
-      _timer = null;
-    } else {
-      _timer = Timer(Duration(seconds: expirations.reduce(min) - now), refresh);
+    if (_locked) return;
+    if (state == null) {
+      refresh();
+    } else if (mounted) {
+      final expirations = (state ?? [])
+          .where((pair) =>
+              pair.credential.oathType == OathType.totp &&
+              !pair.credential.touchRequired)
+          .map((e) => e.code)
+          .whereType<OathCode>()
+          .map((e) => e.validTo);
+      if (expirations.isEmpty) {
+        _timer = null;
+      } else {
+        final earliest = expirations.reduce(min) * 1000;
+        final now = DateTime.now().millisecondsSinceEpoch;
+        if (earliest < now) {
+          refresh();
+        } else {
+          _timer = Timer(Duration(milliseconds: earliest - now), refresh);
+        }
+      }
     }
   }
 }
 
-final favoriteProvider =
-    StateNotifierProvider.family<FavoriteNotifier, bool, String>(
-  (ref, credentialId) {
-    return FavoriteNotifier(ref.watch(prefProvider), credentialId);
-  },
-);
+final favoritesProvider =
+    StateNotifierProvider<FavoritesNotifier, List<String>>(
+        (ref) => FavoritesNotifier(ref.watch(prefProvider)));
 
-class FavoriteNotifier extends StateNotifier<bool> {
-  final SharedPreferences prefs;
-  final String _key;
-  FavoriteNotifier._(this.prefs, this._key)
-      : super(prefs.getBool(_key) ?? false);
+class FavoritesNotifier extends StateNotifier<List<String>> {
+  static const String _key = 'OATH_STATE_FAVORITES';
+  final SharedPreferences _prefs;
+  FavoritesNotifier(this._prefs) : super(_prefs.getStringList(_key) ?? []);
 
-  factory FavoriteNotifier(SharedPreferences prefs, String credentialId) {
-    return FavoriteNotifier._(prefs, 'OATH_STATE_FAVORITE_$credentialId');
-  }
-
-  toggleFavorite() async {
-    await prefs.setBool(_key, !state);
-    if (mounted) {
-      state = !state;
+  toggleFavorite(String credentialId) {
+    if (state.contains(credentialId)) {
+      state = state.toList()..remove(credentialId);
+    } else {
+      state = [credentialId, ...state];
     }
+    _prefs.setStringList(_key, state);
   }
 }
 
 final filteredCredentialsProvider = StateNotifierProvider.autoDispose
     .family<FilteredCredentialsNotifier, List<OathPair>, List<OathPair>>(
         (ref, full) {
-  final favorites = {
-    for (var credential in full.map((e) => e.credential))
-      credential: ref.watch(favoriteProvider(credential.id))
-  };
-  return FilteredCredentialsNotifier(
-      full, favorites, ref.watch(searchProvider));
+  return FilteredCredentialsNotifier(full, ref.watch(searchProvider));
 });
 
 class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
-  final Map<OathCredential, bool> favorites;
   final String query;
   FilteredCredentialsNotifier(
     List<OathPair> full,
-    this.favorites,
     this.query,
   ) : super(
           full
@@ -267,10 +288,7 @@ class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
                       .contains(query.toLowerCase()))
               .toList()
             ..sort((a, b) {
-              String searchKey(OathCredential c) =>
-                  (favorites[c] == true ? '0' : '1') +
-                  (c.issuer ?? '') +
-                  c.name;
+              String searchKey(OathCredential c) => (c.issuer ?? '') + c.name;
               return searchKey(a.credential).compareTo(searchKey(b.credential));
             }),
         );

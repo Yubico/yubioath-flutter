@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'app/app.dart';
 import 'app/views/main_page.dart';
@@ -17,6 +18,7 @@ final log = Logger('main');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
 
   // Either use the _YKMAN_EXE environment variable, or look relative to executable.
   var exe = Platform.environment['_YKMAN_PATH'];
@@ -49,6 +51,14 @@ void main() async {
     log.warning('ykman process failed: $e');
     page = ErrorPage(error: e.toString());
   }
+
+  windowManager.waitUntilReadyToShow().then((_) async {
+    // Set to frameless window
+    //await windowManager.setAsFrameless();
+    await windowManager.setSize(const Size(400, 720));
+    //await windowManager.setPosition(Offset.zero);
+    windowManager.show();
+  });
 
   runApp(ProviderScope(
     overrides: overrides,
