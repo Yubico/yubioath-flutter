@@ -61,13 +61,7 @@ class AccountView extends ConsumerWidget {
           ),
           enabled: code != null,
           onTap: () {
-            Clipboard.setData(ClipboardData(text: code!.value));
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Code copied'),
-                duration: Duration(seconds: 2),
-              ),
-            );
+            _copyToClipboard(context);
           },
         ),
         PopupMenuItem(
@@ -98,6 +92,38 @@ class AccountView extends ConsumerWidget {
         ),
       ];
 
+  _copyToClipboard(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: code!.value));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Code copied'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  _calculate(BuildContext context, WidgetRef ref) async {
+    VoidCallback? close;
+    if (credential.touchRequired) {
+      final sbc = ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Touch your YubiKey'),
+          duration: Duration(seconds: 30),
+        ),
+      )..closed.then((_) {
+          close = null;
+        });
+      close = sbc.close;
+    }
+    try {
+      await ref
+          .read(credentialListProvider(device.path).notifier)
+          .calculate(credential);
+    } finally {
+      close?.call();
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final code = this.code;
@@ -105,9 +131,18 @@ class AccountView extends ConsumerWidget {
     final label = credential.issuer != null
         ? '${credential.issuer} (${credential.name})'
         : credential.name;
+    final trigger = code == null ||
+        expired &&
+            (credential.touchRequired || credential.oathType == OathType.hotp);
 
     return ListTile(
-      onTap: () {},
+      onTap: () {
+        if (trigger) {
+          _calculate(context, ref);
+        } else {
+          _copyToClipboard(context);
+        }
+      },
       leading: CircleAvatar(
         backgroundColor: Colors.primaries
             .elementAt(label.hashCode % Colors.primaries.length),
@@ -129,52 +164,28 @@ class AccountView extends ConsumerWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (code == null ||
-              expired &&
-                  (credential.touchRequired ||
-                      credential.oathType == OathType.hotp))
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () async {
-                VoidCallback? close;
-                if (credential.touchRequired) {
-                  final sbc = ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Touch your YubiKey'),
-                      duration: Duration(seconds: 30),
-                    ),
-                  )..closed.then((_) {
-                      close = null;
-                    });
-                  close = sbc.close;
-                }
-                try {
-                  await ref
-                      .read(credentialListProvider(device.path).notifier)
-                      .calculate(credential);
-                } finally {
-                  close?.call();
-                }
-              },
-            ),
-          Stack(
-            alignment: AlignmentDirectional.bottomCenter,
+          Column(
             children: [
-              if (code != null && code.validTo - code.validFrom < 600)
-                Align(
-                  alignment: AlignmentDirectional.topCenter,
-                  child: SizedBox.square(
-                    dimension: 16,
-                    child:
-                        CircleTimer(code.validFrom * 1000, code.validTo * 1000),
-                  ),
-                ),
-              Transform.scale(
-                scale: 0.8,
-                child: PopupMenuButton(
-                  itemBuilder: (context) => _buildPopupMenu(context, ref),
-                ),
-              )
+              Align(
+                alignment: AlignmentDirectional.topCenter,
+                child: trigger
+                    ? const Icon(
+                        Icons.touch_app,
+                        size: 18,
+                      )
+                    : SizedBox.square(
+                        dimension: 16,
+                        child: CircleTimer(
+                          code.validFrom * 1000,
+                          code.validTo * 1000,
+                        ),
+                      ),
+              ),
+              const Spacer(),
+              PopupMenuButton(
+                child: Icon(Icons.adaptive.more),
+                itemBuilder: (context) => _buildPopupMenu(context, ref),
+              ),
             ],
           ),
         ],

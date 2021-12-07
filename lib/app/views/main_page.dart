@@ -57,16 +57,25 @@ class MainPage extends ConsumerWidget {
         ),
         actions: [
           InkWell(
-            child: currentDevice == null
-                ? const Icon(Icons.info, size: 44)
-                : DeviceAvatar(currentDevice, selected: true),
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: currentDevice == null
+                  ? SizedBox.square(
+                      dimension: 44,
+                      child: Icon(
+                        Icons.usb_off,
+                        color: Theme.of(context).colorScheme.background,
+                      ),
+                    )
+                  : DeviceAvatar(currentDevice, selected: true),
+            ),
             onTap: () {
               showDialog(
                 context: context,
                 builder: (context) => const MainActionsDialog(),
               );
             },
-          )
+          ),
         ],
       ),
       drawer: const MainPageDrawer(),

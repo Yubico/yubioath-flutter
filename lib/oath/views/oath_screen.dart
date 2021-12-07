@@ -14,11 +14,17 @@ class OathScreen extends ConsumerWidget {
     final state = ref.watch(oathStateProvider(device.path));
 
     if (state == null) {
-      return const CircularProgressIndicator();
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Center(child: CircularProgressIndicator()),
+        ],
+      );
     }
 
     if (state.locked) {
-      return Center(
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -37,8 +43,9 @@ class OathScreen extends ConsumerWidget {
       final accounts = ref.watch(credentialListProvider(device.path));
       if (accounts == null) {
         return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            Text('Reading...'),
+            Center(child: CircularProgressIndicator()),
           ],
         );
       }
