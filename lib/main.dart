@@ -52,11 +52,10 @@ void main() async {
     page = ErrorPage(error: e.toString());
   }
 
+  // Only MacOS supports hiding the window at start currently.
+  // For now, this size should match windows/runner/main.cpp and linux/flutter/my_application.cc
   windowManager.waitUntilReadyToShow().then((_) async {
-    // Set to frameless window
-    //await windowManager.setAsFrameless();
     await windowManager.setSize(const Size(400, 720));
-    //await windowManager.setPosition(Offset.zero);
     windowManager.show();
   });
 

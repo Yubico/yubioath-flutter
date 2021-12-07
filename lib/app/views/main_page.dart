@@ -56,16 +56,21 @@ class MainPage extends ConsumerWidget {
           },
         ),
         actions: [
-          InkWell(
-            child: currentDevice == null
-                ? const Icon(Icons.info, size: 44)
-                : DeviceAvatar(currentDevice, selected: true),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => const MainActionsDialog(),
-              );
-            },
+          Padding(
+            padding: const EdgeInsets.only(
+              right: 4.0,
+            ),
+            child: InkWell(
+              child: currentDevice == null
+                  ? const Icon(Icons.info, size: 44)
+                  : DeviceAvatar(currentDevice, selected: true),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => const MainActionsDialog(),
+                );
+              },
+            ),
           )
         ],
       ),
