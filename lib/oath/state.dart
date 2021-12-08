@@ -29,6 +29,10 @@ class _LockKeyNotifier extends StateNotifier<String?> {
   setKey(String key) {
     state = key;
   }
+
+  unsetKey() {
+    state = null;
+  }
 }
 
 final oathStateProvider = StateNotifierProvider.autoDispose
@@ -63,8 +67,12 @@ class OathStateNotifier extends StateNotifier<OathState?> {
     var oathState = OathState.fromJson(result['data']);
     final key = _read(_lockKeyProvider(_session.devicePath));
     if (oathState.locked && key != null) {
-      await _session.command('validate', params: {'key': key});
-      oathState = oathState.copyWith(locked: false);
+      final result = await _session.command('validate', params: {'key': key});
+      if (result['unlocked']) {
+        oathState = oathState.copyWith(locked: false);
+      } else {
+        _read(_lockKeyProvider(_session.devicePath).notifier).unsetKey();
+      }
     }
     if (mounted) {
       state = oathState;
@@ -75,11 +83,57 @@ class OathStateNotifier extends StateNotifier<OathState?> {
     var result =
         await _session.command('derive', params: {'password': password});
     var key = result['key'];
-    await _session.command('validate', params: {'key': key});
-    if (mounted) {
+    final status = await _session.command('validate', params: {'key': key});
+    if (mounted && status['unlocked']) {
       log.config('applet unlocked');
       _read(_lockKeyProvider(_session.devicePath).notifier).setKey(key);
       state = state?.copyWith(locked: false);
+    }
+    return status['unlocked'];
+  }
+
+  Future<bool> _checkPassword(String password) async {
+    log.info('Calling check password $password');
+    var result =
+        await _session.command('derive', params: {'password': password});
+    log.info(
+        'Check ${_read(_lockKeyProvider(_session.devicePath))} == ${result['key']}');
+    return _read(_lockKeyProvider(_session.devicePath)) == result['key'];
+  }
+
+  Future<bool> setPassword(String? current, String password) async {
+    if (state?.hasKey ?? false) {
+      if (current != null) {
+        if (!await _checkPassword(current)) {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+
+    var result =
+        await _session.command('derive', params: {'password': password});
+    var key = result['key'];
+    await _session.command('set_key', params: {'key': key});
+    log.config('OATH key set');
+    _read(_lockKeyProvider(_session.devicePath).notifier).setKey(key);
+    if (mounted) {
+      state = state?.copyWith(hasKey: true);
+    }
+    return true;
+  }
+
+  Future<bool> unsetPassword(String current) async {
+    if (state?.hasKey ?? false) {
+      if (!await _checkPassword(current)) {
+        return false;
+      }
+    }
+    await _session.command('unset_key');
+    _read(_lockKeyProvider(_session.devicePath).notifier).unsetKey();
+    if (mounted) {
+      state = state?.copyWith(hasKey: false, locked: false);
     }
     return true;
   }

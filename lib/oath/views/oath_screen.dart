@@ -28,12 +28,23 @@ class OathScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('YubiKey locked'),
+            const Text('Password required'),
             TextField(
+              autofocus: true,
               obscureText: true,
               decoration: const InputDecoration(labelText: 'Password'),
-              onSubmitted: (value) {
-                ref.read(oathStateProvider(device.path).notifier).unlock(value);
+              onSubmitted: (value) async {
+                final result = await ref
+                    .read(oathStateProvider(device.path).notifier)
+                    .unlock(value);
+                if (!result) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Wrong password'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                }
               },
             ),
           ],

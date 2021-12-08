@@ -5,6 +5,7 @@ import '../app/models.dart';
 import '../app/state.dart';
 import 'state.dart';
 import 'views/add_account_page.dart';
+import 'views/password_dialog.dart';
 
 List<MenuAction> buildOathMenuActions(
     BuildContext context, AutoDisposeProviderRef ref) {
@@ -22,6 +23,17 @@ List<MenuAction> buildOathMenuActions(
                 MaterialPageRoute(
                   builder: (context) => OathAddAccountPage(device: device),
                 ),
+              );
+            },
+          ),
+        if (!state.locked)
+          MenuAction(
+            text: 'Manage password',
+            icon: const Icon(Icons.password),
+            action: () {
+              showDialog(
+                context: context,
+                builder: (context) => ManagePasswordDialog(device),
               );
             },
           ),
