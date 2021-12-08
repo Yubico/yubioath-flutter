@@ -147,7 +147,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
           child: const Text('Cancel'),
         ),
         TextButton(
-          onPressed: _newPassword.isNotEmpty && _newPassword == _confirmPassword
+          onPressed: _newPassword.isNotEmpty &&
+                  _newPassword == _confirmPassword &&
+                  (!hasKey || _currentPassword.isNotEmpty)
               ? () async {
                   final result = await ref
                       .read(oathStateProvider(widget.device.path).notifier)
