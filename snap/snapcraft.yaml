@@ -7,8 +7,10 @@ confinement: strict
 
 apps:
   pcscd:
-    command: usr/sbin/pcscd --foreground --auto-exit
+    command: usr/sbin/pcscd --foreground
     daemon: simple
+    restart-condition: always
+    restart-delay: 1s
     common-id: com.yubico.pcscd
     plugs:
       - hardware-observe
