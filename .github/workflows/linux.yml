@@ -5,7 +5,10 @@ on: [push, pull_request]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -43,7 +46,7 @@ jobs:
       run: |
         export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
         mkdir deploy
-        tar -czf deploy/yubioath-desktop-${REF}-linux.tar.gz -C build/linux/x64/release/bundle .
+        tar -czf deploy/yubioath-desktop-${REF}-linux-${{matrix.os}}.tar.gz -C build/linux/x64/release/bundle .
 
     - name: Upload artifact
       uses: actions/upload-artifact@v1
