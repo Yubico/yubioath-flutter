@@ -1,5 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'models.dart';
@@ -230,21 +231,26 @@ class _$_OathCredential implements _OathCredential {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _OathCredential &&
-            (identical(other.deviceId, deviceId) ||
-                other.deviceId == deviceId) &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.issuer, issuer) || other.issuer == issuer) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.oathType, oathType) ||
-                other.oathType == oathType) &&
-            (identical(other.period, period) || other.period == period) &&
-            (identical(other.touchRequired, touchRequired) ||
-                other.touchRequired == touchRequired));
+            const DeepCollectionEquality().equals(other.deviceId, deviceId) &&
+            const DeepCollectionEquality().equals(other.id, id) &&
+            const DeepCollectionEquality().equals(other.issuer, issuer) &&
+            const DeepCollectionEquality().equals(other.name, name) &&
+            const DeepCollectionEquality().equals(other.oathType, oathType) &&
+            const DeepCollectionEquality().equals(other.period, period) &&
+            const DeepCollectionEquality()
+                .equals(other.touchRequired, touchRequired));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, deviceId, id, issuer, name, oathType, period, touchRequired);
+      runtimeType,
+      const DeepCollectionEquality().hash(deviceId),
+      const DeepCollectionEquality().hash(id),
+      const DeepCollectionEquality().hash(issuer),
+      const DeepCollectionEquality().hash(name),
+      const DeepCollectionEquality().hash(oathType),
+      const DeepCollectionEquality().hash(period),
+      const DeepCollectionEquality().hash(touchRequired));
 
   @JsonKey(ignore: true)
   @override
@@ -429,14 +435,17 @@ class _$_OathCode implements _OathCode {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _OathCode &&
-            (identical(other.value, value) || other.value == value) &&
-            (identical(other.validFrom, validFrom) ||
-                other.validFrom == validFrom) &&
-            (identical(other.validTo, validTo) || other.validTo == validTo));
+            const DeepCollectionEquality().equals(other.value, value) &&
+            const DeepCollectionEquality().equals(other.validFrom, validFrom) &&
+            const DeepCollectionEquality().equals(other.validTo, validTo));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, value, validFrom, validTo);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(value),
+      const DeepCollectionEquality().hash(validFrom),
+      const DeepCollectionEquality().hash(validTo));
 
   @JsonKey(ignore: true)
   @override
@@ -605,13 +614,16 @@ class _$_OathPair implements _OathPair {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _OathPair &&
-            (identical(other.credential, credential) ||
-                other.credential == credential) &&
-            (identical(other.code, code) || other.code == code));
+            const DeepCollectionEquality()
+                .equals(other.credential, credential) &&
+            const DeepCollectionEquality().equals(other.code, code));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, credential, code);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(credential),
+      const DeepCollectionEquality().hash(code));
 
   @JsonKey(ignore: true)
   @override
@@ -772,14 +784,17 @@ class _$_OathState implements _OathState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _OathState &&
-            (identical(other.deviceId, deviceId) ||
-                other.deviceId == deviceId) &&
-            (identical(other.hasKey, hasKey) || other.hasKey == hasKey) &&
-            (identical(other.locked, locked) || other.locked == locked));
+            const DeepCollectionEquality().equals(other.deviceId, deviceId) &&
+            const DeepCollectionEquality().equals(other.hasKey, hasKey) &&
+            const DeepCollectionEquality().equals(other.locked, locked));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, deviceId, hasKey, locked);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(deviceId),
+      const DeepCollectionEquality().hash(hasKey),
+      const DeepCollectionEquality().hash(locked));
 
   @JsonKey(ignore: true)
   @override
@@ -1037,19 +1052,19 @@ class _$_CredentialData extends _CredentialData {
   final String name;
   @override
   final String secret;
-  @JsonKey(defaultValue: OathType.totp)
+  @JsonKey()
   @override
   final OathType oathType;
-  @JsonKey(defaultValue: HashAlgorithm.sha1)
+  @JsonKey()
   @override
   final HashAlgorithm hashAlgorithm;
-  @JsonKey(defaultValue: 6)
+  @JsonKey()
   @override
   final int digits;
-  @JsonKey(defaultValue: 30)
+  @JsonKey()
   @override
   final int period;
-  @JsonKey(defaultValue: 0)
+  @JsonKey()
   @override
   final int counter;
 
@@ -1063,21 +1078,28 @@ class _$_CredentialData extends _CredentialData {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _CredentialData &&
-            (identical(other.issuer, issuer) || other.issuer == issuer) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.secret, secret) || other.secret == secret) &&
-            (identical(other.oathType, oathType) ||
-                other.oathType == oathType) &&
-            (identical(other.hashAlgorithm, hashAlgorithm) ||
-                other.hashAlgorithm == hashAlgorithm) &&
-            (identical(other.digits, digits) || other.digits == digits) &&
-            (identical(other.period, period) || other.period == period) &&
-            (identical(other.counter, counter) || other.counter == counter));
+            const DeepCollectionEquality().equals(other.issuer, issuer) &&
+            const DeepCollectionEquality().equals(other.name, name) &&
+            const DeepCollectionEquality().equals(other.secret, secret) &&
+            const DeepCollectionEquality().equals(other.oathType, oathType) &&
+            const DeepCollectionEquality()
+                .equals(other.hashAlgorithm, hashAlgorithm) &&
+            const DeepCollectionEquality().equals(other.digits, digits) &&
+            const DeepCollectionEquality().equals(other.period, period) &&
+            const DeepCollectionEquality().equals(other.counter, counter));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, issuer, name, secret, oathType,
-      hashAlgorithm, digits, period, counter);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(issuer),
+      const DeepCollectionEquality().hash(name),
+      const DeepCollectionEquality().hash(secret),
+      const DeepCollectionEquality().hash(oathType),
+      const DeepCollectionEquality().hash(hashAlgorithm),
+      const DeepCollectionEquality().hash(digits),
+      const DeepCollectionEquality().hash(period),
+      const DeepCollectionEquality().hash(counter));
 
   @JsonKey(ignore: true)
   @override

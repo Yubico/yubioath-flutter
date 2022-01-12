@@ -1,5 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'models.dart';
@@ -183,22 +184,21 @@ class _$_DeviceConfig implements _DeviceConfig {
             other is _DeviceConfig &&
             const DeepCollectionEquality()
                 .equals(other.enabledCapabilities, enabledCapabilities) &&
-            (identical(other.autoEjectTimeout, autoEjectTimeout) ||
-                other.autoEjectTimeout == autoEjectTimeout) &&
-            (identical(
-                    other.challengeResponseTimeout, challengeResponseTimeout) ||
-                other.challengeResponseTimeout == challengeResponseTimeout) &&
-            (identical(other.deviceFlags, deviceFlags) ||
-                other.deviceFlags == deviceFlags));
+            const DeepCollectionEquality()
+                .equals(other.autoEjectTimeout, autoEjectTimeout) &&
+            const DeepCollectionEquality().equals(
+                other.challengeResponseTimeout, challengeResponseTimeout) &&
+            const DeepCollectionEquality()
+                .equals(other.deviceFlags, deviceFlags));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(enabledCapabilities),
-      autoEjectTimeout,
-      challengeResponseTimeout,
-      deviceFlags);
+      const DeepCollectionEquality().hash(autoEjectTimeout),
+      const DeepCollectionEquality().hash(challengeResponseTimeout),
+      const DeepCollectionEquality().hash(deviceFlags));
 
   @JsonKey(ignore: true)
   @override
@@ -495,30 +495,29 @@ class _$_DeviceInfo implements _DeviceInfo {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _DeviceInfo &&
-            (identical(other.config, config) || other.config == config) &&
-            (identical(other.serial, serial) || other.serial == serial) &&
-            (identical(other.version, version) || other.version == version) &&
-            (identical(other.formFactor, formFactor) ||
-                other.formFactor == formFactor) &&
+            const DeepCollectionEquality().equals(other.config, config) &&
+            const DeepCollectionEquality().equals(other.serial, serial) &&
+            const DeepCollectionEquality().equals(other.version, version) &&
+            const DeepCollectionEquality()
+                .equals(other.formFactor, formFactor) &&
             const DeepCollectionEquality()
                 .equals(other.supportedCapabilities, supportedCapabilities) &&
-            (identical(other.isLocked, isLocked) ||
-                other.isLocked == isLocked) &&
-            (identical(other.isFips, isFips) || other.isFips == isFips) &&
-            (identical(other.isSky, isSky) || other.isSky == isSky));
+            const DeepCollectionEquality().equals(other.isLocked, isLocked) &&
+            const DeepCollectionEquality().equals(other.isFips, isFips) &&
+            const DeepCollectionEquality().equals(other.isSky, isSky));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      config,
-      serial,
-      version,
-      formFactor,
+      const DeepCollectionEquality().hash(config),
+      const DeepCollectionEquality().hash(serial),
+      const DeepCollectionEquality().hash(version),
+      const DeepCollectionEquality().hash(formFactor),
       const DeepCollectionEquality().hash(supportedCapabilities),
-      isLocked,
-      isFips,
-      isSky);
+      const DeepCollectionEquality().hash(isLocked),
+      const DeepCollectionEquality().hash(isFips),
+      const DeepCollectionEquality().hash(isSky));
 
   @JsonKey(ignore: true)
   @override

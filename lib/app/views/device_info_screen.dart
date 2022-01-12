@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../models.dart';
 
 class DeviceInfoScreen extends StatelessWidget {
-  final DeviceNode device;
+  final YubiKeyData device;
   const DeviceInfoScreen(this.device, {Key? key}) : super(key: key);
 
   @override

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../management/models.dart';
 import '../../widgets/circle_timer.dart';
 import '../../app/models.dart';
 import '../models.dart';
@@ -35,7 +36,7 @@ class _ExpireNotifier extends StateNotifier<bool> {
 }
 
 class AccountView extends ConsumerWidget {
-  final DeviceNode device;
+  final YubiKeyData device;
   final OathCredential credential;
   final OathCode? code;
   const AccountView(this.device, this.credential, this.code, {Key? key})
@@ -117,7 +118,7 @@ class AccountView extends ConsumerWidget {
     }
     try {
       await ref
-          .read(credentialListProvider(device.path).notifier)
+          .read(credentialListProvider(device.node.path).notifier)
           .calculate(credential);
     } finally {
       close?.call();

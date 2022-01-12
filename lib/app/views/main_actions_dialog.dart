@@ -1,32 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/management/models.dart';
+import 'package:collection/collection.dart';
 
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
+
+Function _listEquals = const ListEquality().equals;
 
 class MainActionsDialog extends ConsumerWidget {
   const MainActionsDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final devices = ref.watch(sortedDevicesProvider);
-    final device = ref.watch(currentDeviceProvider);
+    final devices = ref.watch(attachedDevicesProvider).toList();
+    final currentNode = ref.watch(currentDeviceProvider);
+    final data = ref.watch(currentDeviceDataProvider);
     final actions = ref.watch(menuActionsProvider)(context);
+    //final nfcReaders = ref.watch(nfcDevicesProvider);
+
+    //final allDevices = devices + nfcReaders;
+    if (currentNode != null) {
+      devices.removeWhere((e) => _listEquals(e.path, currentNode.path));
+    }
 
     return SimpleDialog(
       children: [
-        ...devices.map((e) => Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DeviceRow(
-                e,
-                selected: e == device,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  ref.read(currentDeviceProvider.notifier).setCurrentDevice(e);
-                },
-              ),
-            )),
+        if (currentNode != null)
+          CurrentDeviceRow(
+            currentNode,
+            data?.name,
+            info: data?.info,
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ...devices.map(
+          (e) => DeviceRow(
+            e,
+            e.name,
+            info: e.when(
+              usbYubiKey: (path, name, pid, info) => info,
+              nfcReader: (path, name) => null,
+            ),
+            selected: false,
+            onTap: () {
+              Navigator.of(context).pop();
+              ref.read(currentDeviceProvider.notifier).setCurrentDevice(e);
+            },
+          ),
+        ),
         if (actions.isNotEmpty) const Divider(),
         ...actions.map((a) => ListTile(
               dense: true,
@@ -42,43 +66,74 @@ class MainActionsDialog extends ConsumerWidget {
   }
 }
 
-class DeviceRow extends StatelessWidget {
-  final DeviceNode device;
-  final bool selected;
-  final Function() onPressed;
-  const DeviceRow(
-    this.device, {
-    this.selected = false,
-    required this.onPressed,
+class CurrentDeviceRow extends StatelessWidget {
+  final DeviceNode node;
+  final String? name;
+  final DeviceInfo? info;
+  final Function() onTap;
+
+  const CurrentDeviceRow(
+    this.node,
+    this.name, {
+    required this.info,
+    required this.onTap,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: onPressed,
-      child: Row(
-        children: [
-          DeviceAvatar(
-            device,
-            selected: selected,
-          ),
-          const SizedBox(width: 16.0),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                device.name,
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              Text(
-                'S/N: ${device.info.serial} F/W: ${device.info.version}',
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
-            ],
-          ),
-        ],
+    final subtitle = node is NfcReaderNode
+        ? info != null
+            ? '${node.name}\nS/N: ${info!.serial} F/W: ${info!.version}'
+            : node.name
+        : 'S/N: ${info!.serial} F/W: ${info!.version}';
+    return ListTile(
+      leading: DeviceAvatar(
+        node,
+        name ?? '',
+        info,
+        selected: true,
       ),
+      title: Text(name ?? 'No YubiKey present'),
+      isThreeLine: subtitle.contains('\n'),
+      subtitle: Text(subtitle),
+      onTap: onTap,
+    );
+  }
+}
+
+class DeviceRow extends StatelessWidget {
+  final DeviceNode node;
+  final String name;
+  final DeviceInfo? info;
+  final bool selected;
+  final Function() onTap;
+
+  const DeviceRow(
+    this.node,
+    this.name, {
+    required this.info,
+    required this.onTap,
+    this.selected = false,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: DeviceAvatar(
+        node,
+        name,
+        info,
+        selected: selected,
+      ),
+      title: Text(name),
+      subtitle: Text(
+        info == null
+            ? (selected ? 'No YubiKey present' : 'Select to scan')
+            : 'S/N: ${info!.serial} F/W: ${info!.version}',
+      ),
+      onTap: onTap,
     );
   }
 }

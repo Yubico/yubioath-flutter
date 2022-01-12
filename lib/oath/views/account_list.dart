@@ -5,7 +5,7 @@ import '../models.dart';
 import 'account_view.dart';
 
 class AccountList extends StatelessWidget {
-  final DeviceNode device;
+  final YubiKeyData device;
   final List<OathPair> credentials;
   final List<String> favorites;
   const AccountList(this.device, this.credentials, this.favorites, {Key? key})
