@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../management/models.dart';
-import '../models.dart';
 
 const _imagesForName = {
   'YubiKey 4': 'yk4series',
