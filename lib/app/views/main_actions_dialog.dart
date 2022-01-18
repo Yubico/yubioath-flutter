@@ -18,9 +18,7 @@ class MainActionsDialog extends ConsumerWidget {
     final currentNode = ref.watch(currentDeviceProvider);
     final data = ref.watch(currentDeviceDataProvider);
     final actions = ref.watch(menuActionsProvider)(context);
-    //final nfcReaders = ref.watch(nfcDevicesProvider);
 
-    //final allDevices = devices + nfcReaders;
     if (currentNode != null) {
       devices.removeWhere((e) => _listEquals(e.path, currentNode.path));
     }

@@ -5,10 +5,11 @@ import '../models.dart';
 import 'account_view.dart';
 
 class AccountList extends StatelessWidget {
-  final YubiKeyData device;
+  final YubiKeyData deviceData;
   final List<OathPair> credentials;
   final List<String> favorites;
-  const AccountList(this.device, this.credentials, this.favorites, {Key? key})
+  const AccountList(this.deviceData, this.credentials, this.favorites,
+      {Key? key})
       : super(key: key);
 
   @override
@@ -34,7 +35,7 @@ class AccountList extends StatelessWidget {
             ),
           ),
         ...favCreds.map(
-          (entry) => AccountView(device, entry.credential, entry.code),
+          (entry) => AccountView(deviceData, entry.credential, entry.code),
         ),
         if (creds.isNotEmpty)
           ListTile(
@@ -44,7 +45,7 @@ class AccountList extends StatelessWidget {
             ),
           ),
         ...creds.map(
-          (entry) => AccountView(device, entry.credential, entry.code),
+          (entry) => AccountView(deviceData, entry.credential, entry.code),
         ),
       ],
     );

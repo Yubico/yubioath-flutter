@@ -14,6 +14,12 @@ import '../core/rpc.dart';
 import '../oath/menu_actions.dart';
 import 'models.dart';
 
+const _usbPollDelay = Duration(milliseconds: 500);
+
+const _nfcPollDelay = Duration(milliseconds: 2500);
+const _nfcAttachPollDelay = Duration(seconds: 1);
+const _nfcDetachPollDelay = Duration(seconds: 5);
+
 final log = Logger('app.state');
 
 final windowStateProvider =
@@ -184,7 +190,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
     }
 
     if (mounted) {
-      _pollTimer = Timer(const Duration(milliseconds: 500), _pollDevices);
+      _pollTimer = Timer(_usbPollDelay, _pollDevices);
     }
   }
 }
@@ -241,7 +247,7 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
     }
 
     if (mounted) {
-      _pollTimer = Timer(const Duration(milliseconds: 2500), _pollReaders);
+      _pollTimer = Timer(_nfcPollDelay, _pollReaders);
     }
   }
 }
@@ -361,7 +367,9 @@ class CurrentDeviceDataNotifier extends StateNotifier<YubiKeyData?> {
       log.severe('Error polling NFC', jsonEncode(e));
     }
     if (mounted) {
-      _pollTimer = Timer(Duration(seconds: state == null ? 1 : 5), _pollReader);
+      _pollTimer = Timer(
+          state == null ? _nfcAttachPollDelay : _nfcDetachPollDelay,
+          _pollReader);
     }
   }
 }

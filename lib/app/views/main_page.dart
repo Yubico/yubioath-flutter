@@ -28,7 +28,7 @@ class MainPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentDevice = ref.watch(currentDeviceDataProvider);
+    final deviceData = ref.watch(currentDeviceDataProvider);
     final subPage = ref.watch(subPageProvider);
 
     return Scaffold(
@@ -59,7 +59,7 @@ class MainPage extends ConsumerWidget {
           InkWell(
             child: Padding(
               padding: const EdgeInsets.all(4.0),
-              child: currentDevice == null
+              child: deviceData == null
                   ? SizedBox.square(
                       dimension: 44,
                       child: Icon(
@@ -68,9 +68,9 @@ class MainPage extends ConsumerWidget {
                       ),
                     )
                   : DeviceAvatar(
-                      currentDevice.node,
-                      currentDevice.name,
-                      currentDevice.info,
+                      deviceData.node,
+                      deviceData.name,
+                      deviceData.info,
                       selected: true,
                     ),
             ),
@@ -84,7 +84,7 @@ class MainPage extends ConsumerWidget {
         ],
       ),
       drawer: const MainPageDrawer(),
-      body: _buildSubPage(subPage, currentDevice),
+      body: _buildSubPage(subPage, deviceData),
     );
   }
 }
