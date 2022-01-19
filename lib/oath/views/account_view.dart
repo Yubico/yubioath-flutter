@@ -35,10 +35,10 @@ class _ExpireNotifier extends StateNotifier<bool> {
 }
 
 class AccountView extends ConsumerWidget {
-  final DeviceNode device;
+  final YubiKeyData deviceData;
   final OathCredential credential;
   final OathCode? code;
-  const AccountView(this.device, this.credential, this.code, {Key? key})
+  const AccountView(this.deviceData, this.credential, this.code, {Key? key})
       : super(key: key);
 
   String formatCode() {
@@ -73,7 +73,8 @@ class AccountView extends ConsumerWidget {
             ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
           },
         ),
-        if (device.info.version.major >= 5 && device.info.version.minor >= 3)
+        if (deviceData.info.version.major >= 5 &&
+            deviceData.info.version.minor >= 3)
           PopupMenuItem(
             child: const ListTile(
               leading: Icon(Icons.edit),
@@ -117,7 +118,7 @@ class AccountView extends ConsumerWidget {
     }
     try {
       await ref
-          .read(credentialListProvider(device.path).notifier)
+          .read(credentialListProvider(deviceData.node.path).notifier)
           .calculate(credential);
     } finally {
       close?.call();

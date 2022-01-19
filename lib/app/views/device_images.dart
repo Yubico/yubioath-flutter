@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../management/models.dart';
-import '../models.dart';
 
 const _imagesForName = {
   'YubiKey 4': 'yk4series',
@@ -30,11 +29,11 @@ const _imagesForFormFactorNfc = {
   FormFactor.usbCKeychain: 'yk5cnfc',
 };
 
-Image getProductImage(DeviceNode device) {
-  var image = _imagesForName[device.name];
-  image ??= device.info.supportedCapabilities.containsKey(Transport.nfc)
-      ? _imagesForFormFactorNfc[device.info.formFactor]
-      : _imagesForFormFactor[device.info.formFactor];
+Image getProductImage(DeviceInfo info, String name) {
+  var image = _imagesForName[name];
+  image ??= info.supportedCapabilities.containsKey(Transport.nfc)
+      ? _imagesForFormFactorNfc[info.formFactor]
+      : _imagesForFormFactor[info.formFactor];
   image ??= 'yk5series';
 
   return Image.asset('assets/product-images/$image.png');

@@ -6,12 +6,12 @@ import '../state.dart';
 import 'account_list.dart';
 
 class OathScreen extends ConsumerWidget {
-  final DeviceNode device;
-  const OathScreen(this.device, {Key? key}) : super(key: key);
+  final YubiKeyData deviceData;
+  const OathScreen(this.deviceData, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(oathStateProvider(device.path));
+    final state = ref.watch(oathStateProvider(deviceData.node.path));
 
     if (state == null) {
       return Column(
@@ -35,7 +35,7 @@ class OathScreen extends ConsumerWidget {
               decoration: const InputDecoration(labelText: 'Password'),
               onSubmitted: (value) async {
                 final result = await ref
-                    .read(oathStateProvider(device.path).notifier)
+                    .read(oathStateProvider(deviceData.node.path).notifier)
                     .unlock(value);
                 if (!result) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -51,7 +51,7 @@ class OathScreen extends ConsumerWidget {
         ),
       );
     } else {
-      final accounts = ref.watch(credentialListProvider(device.path));
+      final accounts = ref.watch(credentialListProvider(deviceData.node.path));
       if (accounts == null) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -61,7 +61,7 @@ class OathScreen extends ConsumerWidget {
         );
       }
       return AccountList(
-        device,
+        deviceData,
         ref.watch(filteredCredentialsProvider(accounts)),
         ref.watch(favoritesProvider),
       );

@@ -13,7 +13,7 @@ import '../../oath/views/oath_screen.dart';
 class MainPage extends ConsumerWidget {
   const MainPage({Key? key}) : super(key: key);
 
-  Widget _buildSubPage(SubPage subPage, DeviceNode? device) {
+  Widget _buildSubPage(SubPage subPage, YubiKeyData? device) {
     if (device == null) {
       return const NoDeviceScreen();
     }
@@ -28,7 +28,7 @@ class MainPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentDevice = ref.watch(currentDeviceProvider);
+    final deviceData = ref.watch(currentDeviceDataProvider);
     final subPage = ref.watch(subPageProvider);
 
     return Scaffold(
@@ -59,7 +59,7 @@ class MainPage extends ConsumerWidget {
           InkWell(
             child: Padding(
               padding: const EdgeInsets.all(4.0),
-              child: currentDevice == null
+              child: deviceData == null
                   ? SizedBox.square(
                       dimension: 44,
                       child: Icon(
@@ -67,7 +67,12 @@ class MainPage extends ConsumerWidget {
                         color: Theme.of(context).colorScheme.background,
                       ),
                     )
-                  : DeviceAvatar(currentDevice, selected: true),
+                  : DeviceAvatar(
+                      deviceData.node,
+                      deviceData.name,
+                      deviceData.info,
+                      selected: true,
+                    ),
             ),
             onTap: () {
               showDialog(
@@ -79,7 +84,7 @@ class MainPage extends ConsumerWidget {
         ],
       ),
       drawer: const MainPageDrawer(),
-      body: _buildSubPage(subPage, currentDevice),
+      body: _buildSubPage(subPage, deviceData),
     );
   }
 }

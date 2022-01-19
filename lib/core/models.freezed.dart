@@ -1,5 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'models.dart';
@@ -134,13 +135,17 @@ class _$_Version extends _Version {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _Version &&
-            (identical(other.major, major) || other.major == major) &&
-            (identical(other.minor, minor) || other.minor == minor) &&
-            (identical(other.patch, patch) || other.patch == patch));
+            const DeepCollectionEquality().equals(other.major, major) &&
+            const DeepCollectionEquality().equals(other.minor, minor) &&
+            const DeepCollectionEquality().equals(other.patch, patch));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, major, minor, patch);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(major),
+      const DeepCollectionEquality().hash(minor),
+      const DeepCollectionEquality().hash(patch));
 
   @JsonKey(ignore: true)
   @override
@@ -516,13 +521,15 @@ class _$Signal implements Signal {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is Signal &&
-            (identical(other.status, status) || other.status == status) &&
+            const DeepCollectionEquality().equals(other.status, status) &&
             const DeepCollectionEquality().equals(other.body, body));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, status, const DeepCollectionEquality().hash(body));
+      runtimeType,
+      const DeepCollectionEquality().hash(status),
+      const DeepCollectionEquality().hash(body));
 
   @JsonKey(ignore: true)
   @override
@@ -689,14 +696,17 @@ class _$RpcError implements RpcError {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is RpcError &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.message, message) || other.message == message) &&
+            const DeepCollectionEquality().equals(other.status, status) &&
+            const DeepCollectionEquality().equals(other.message, message) &&
             const DeepCollectionEquality().equals(other.body, body));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, status, message, const DeepCollectionEquality().hash(body));
+      runtimeType,
+      const DeepCollectionEquality().hash(status),
+      const DeepCollectionEquality().hash(message),
+      const DeepCollectionEquality().hash(body));
 
   @JsonKey(ignore: true)
   @override
@@ -896,11 +906,12 @@ class _$_RpcState implements _RpcState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _RpcState &&
-            (identical(other.version, version) || other.version == version));
+            const DeepCollectionEquality().equals(other.version, version));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, version);
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(version));
 
   @JsonKey(ignore: true)
   @override
