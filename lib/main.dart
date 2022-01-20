@@ -19,10 +19,10 @@ final log = Logger('main');
 
 void main() async {
   _initLogging(Level.INFO);
-
   WidgetsFlutterBinding.ensureInitialized();
-  log.info('Ensuring single instance...');
-  await ensureSingleInstance();
+  if (Platform.isWindows) {
+    await ensureSingleInstance();
+  }
   await windowManager.ensureInitialized();
 
   // Either use the _YKMAN_EXE environment variable, or look relative to executable.

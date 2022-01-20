@@ -12,14 +12,8 @@ const _pongMessage = 'YA-PONG';
 final log = Logger('single_instance');
 
 void _startServer(File lockfile) async {
-  ServerSocket socket;
-  if (Platform.isWindows) {
-    socket = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
-    lockfile.writeAsString('${socket.port}');
-  } else {
-    socket = await ServerSocket.bind(
-        InternetAddress(lockfile.path, type: InternetAddressType.unix), 0);
-  }
+  final socket = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+  lockfile.writeAsString('${socket.port}');
 
   log.info('Lock file and socket created.');
   socket.listen((client) {
@@ -29,6 +23,7 @@ void _startServer(File lockfile) async {
         log.info('Got incomming connection');
 
         if (!await WindowManager.instance.isMinimized()) {
+          // Causes the window to be brought to the front.
           await WindowManager.instance.setAlwaysOnTop(true);
           await WindowManager.instance.setAlwaysOnTop(false);
         } else {
@@ -51,16 +46,9 @@ Future<void> ensureSingleInstance() async {
 
   if (await lockfile.exists()) {
     try {
-      Socket client;
-      if (Platform.isWindows) {
-        final port = int.parse(await lockfile.readAsString());
-        client = await Socket.connect(InternetAddress.loopbackIPv4, port);
-      } else {
-        client = await Socket.connect(
-            InternetAddress(lockfile.path, type: InternetAddressType.unix), 0);
-      }
+      final port = int.parse(await lockfile.readAsString());
+      final client = await Socket.connect(InternetAddress.loopbackIPv4, port);
       client.write(_pingMessage);
-      await client.flush();
       client.listen((data) async {
         final message = String.fromCharCodes(data);
         await client.close();
@@ -70,6 +58,7 @@ Future<void> ensureSingleInstance() async {
         }
       }, cancelOnError: true);
     } on Exception {
+      // No server listening on the port, or bad data in the file
       await lockfile.delete();
       _startServer(lockfile);
     }
