@@ -2,7 +2,7 @@ PODS:
   - FlutterMacOS (1.0.0)
   - shared_preferences_macos (0.0.1):
     - FlutterMacOS
-  - window_manager (0.1.0):
+  - window_manager (0.1.4):
     - FlutterMacOS
 
 DEPENDENCIES:
@@ -21,8 +21,8 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
   shared_preferences_macos: 480ce071d0666e37cef23fe6c702293a3d21799e
-  window_manager: db713621c322d52e96064336a4ba2b7e4e30c94f
+  window_manager: 02776e5a599084cd4576e27a42dd5ec6f49132cf
 
 PODFILE CHECKSUM: 6eac6b3292e5142cfc23bdeb71848a40ec51c14c
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.10.1
