@@ -6,6 +6,7 @@ import '../app/state.dart';
 import 'state.dart';
 import 'views/add_account_page.dart';
 import 'views/password_dialog.dart';
+import 'views/reset_dialog.dart';
 
 List<MenuAction> buildOathMenuActions(
     BuildContext context, AutoDisposeProviderRef ref) {
@@ -41,14 +42,10 @@ List<MenuAction> buildOathMenuActions(
           text: 'Factory reset',
           icon: const Icon(Icons.delete_forever),
           action: () {
-            ScaffoldMessenger.of(context)
-              ..clearSnackBars()
-              ..showSnackBar(
-                const SnackBar(
-                  content: Text('Not implemented'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
+            showDialog(
+              context: context,
+              builder: (context) => ResetDialog(device),
+            );
           },
         ),
       ];

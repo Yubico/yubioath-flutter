@@ -140,13 +140,13 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         ],
       ),
       actions: [
-        TextButton(
+        OutlinedButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
           child: const Text('Cancel'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: _newPassword.isNotEmpty &&
                   _newPassword == _confirmPassword &&
                   (!hasKey || _currentPassword.isNotEmpty)
