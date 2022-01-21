@@ -99,11 +99,8 @@ class OathStateNotifier extends StateNotifier<OathState?> {
   }
 
   Future<bool> _checkPassword(String password) async {
-    log.info('Calling check password $password');
     var result =
         await _session.command('derive', params: {'password': password});
-    log.info(
-        'Check ${_ref.read(_lockKeyProvider(_session.devicePath))} == ${result['key']}');
     return _ref.read(_lockKeyProvider(_session.devicePath)) == result['key'];
   }
 
