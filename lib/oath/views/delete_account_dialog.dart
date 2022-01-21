@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models.dart';
 import '../state.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 
-class ResetDialog extends ConsumerWidget {
+class DeleteAccountDialog extends ConsumerWidget {
   final DeviceNode device;
-  const ResetDialog(this.device, {Key? key}) : super(key: key);
+  final OathCredential credential;
+  const DeleteAccountDialog(this.device, this.credential, {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,16 +19,20 @@ class ResetDialog extends ConsumerWidget {
       Navigator.of(context).pop();
     });
 
+    final label = credential.issuer != null
+        ? '${credential.issuer} (${credential.name})'
+        : credential.name;
+
     return AlertDialog(
-      title: const Text('Reset to defaults?'),
+      title: Text('Delete $label?'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
-              'Warning! This will irrevocably delete all OATH TOTP/HOTP accounts from your YubiKey.'),
+              'Warning! This action will delete the account from your YubiKey.'),
           const Text(''),
           Text(
-            'You OATH credentials, as well as any password set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.',
+            'You will no longer be able to generate OTPs for this account. Make sure to first disable this credential from the website to avoid being locked out of your account.',
             style: Theme.of(context).textTheme.bodyText1,
           ),
         ],
@@ -39,16 +46,18 @@ class ResetDialog extends ConsumerWidget {
         ),
         ElevatedButton(
           onPressed: () async {
-            await ref.read(oathStateProvider(device.path).notifier).reset();
+            await ref
+                .read(credentialListProvider(device.path).notifier)
+                .deleteAccount(credential);
             Navigator.of(context).pop();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('OATH application reset'),
+                content: Text('Account deleted'),
                 duration: Duration(seconds: 2),
               ),
             );
           },
-          child: const Text('Reset YubiKey'),
+          child: const Text('Delete account'),
         ),
       ],
     );

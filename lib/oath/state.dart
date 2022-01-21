@@ -246,6 +246,13 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
     return credential;
   }
 
+  Future<void> deleteAccount(OathCredential credential) async {
+    await _session.command('delete', target: ['accounts', credential.id]);
+    if (mounted) {
+      state = state!.toList()..removeWhere((e) => e.credential == credential);
+    }
+  }
+
   refresh() async {
     if (_locked) return;
     log.config('refreshing credentials...');
