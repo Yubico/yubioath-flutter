@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:developer' as developer;
 
@@ -55,10 +56,10 @@ void main() async {
 
   // Linux doesn't currently support hiding the window at start currently.
   // For now, this size should match linux/flutter/my_application.cc to avoid window flicker at startup.
-  windowManager.waitUntilReadyToShow().then((_) async {
+  unawaited(windowManager.waitUntilReadyToShow().then((_) async {
     await windowManager.setSize(const Size(400, 720));
-    windowManager.show();
-  });
+    await windowManager.show();
+  }));
 
   runApp(ProviderScope(
     overrides: overrides,
