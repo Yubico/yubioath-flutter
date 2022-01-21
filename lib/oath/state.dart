@@ -39,7 +39,7 @@ final oathStateProvider = StateNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState?, List<String>>(
   (ref, devicePath) {
     final session = ref.watch(_sessionProvider(devicePath));
-    final notifier = OathStateNotifier(session, ref.read);
+    final notifier = OathStateNotifier(session, ref);
     session
       ..setErrorHandler('state-reset', (_) async {
         ref.refresh(_sessionProvider(devicePath));
@@ -58,25 +58,31 @@ final oathStateProvider = StateNotifierProvider.autoDispose
 
 class OathStateNotifier extends StateNotifier<OathState?> {
   final RpcNodeSession _session;
-  final Reader _read;
-  OathStateNotifier(this._session, this._read) : super(null);
+  final Ref _ref;
+  OathStateNotifier(this._session, this._ref) : super(null);
 
   refresh() async {
     var result = await _session.command('get');
     log.config('application status', jsonEncode(result));
     var oathState = OathState.fromJson(result['data']);
-    final key = _read(_lockKeyProvider(_session.devicePath));
+    final key = _ref.read(_lockKeyProvider(_session.devicePath));
     if (oathState.locked && key != null) {
       final result = await _session.command('validate', params: {'key': key});
       if (result['unlocked']) {
         oathState = oathState.copyWith(locked: false);
       } else {
-        _read(_lockKeyProvider(_session.devicePath).notifier).unsetKey();
+        _ref.read(_lockKeyProvider(_session.devicePath).notifier).unsetKey();
       }
     }
     if (mounted) {
       state = oathState;
     }
+  }
+
+  Future<void> reset() async {
+    await _session.command('reset');
+    _ref.read(_lockKeyProvider(_session.devicePath).notifier).unsetKey();
+    _ref.refresh(_sessionProvider(_session.devicePath));
   }
 
   Future<bool> unlock(String password) async {
@@ -86,19 +92,16 @@ class OathStateNotifier extends StateNotifier<OathState?> {
     final status = await _session.command('validate', params: {'key': key});
     if (mounted && status['unlocked']) {
       log.config('applet unlocked');
-      _read(_lockKeyProvider(_session.devicePath).notifier).setKey(key);
+      _ref.read(_lockKeyProvider(_session.devicePath).notifier).setKey(key);
       state = state?.copyWith(locked: false);
     }
     return status['unlocked'];
   }
 
   Future<bool> _checkPassword(String password) async {
-    log.info('Calling check password $password');
     var result =
         await _session.command('derive', params: {'password': password});
-    log.info(
-        'Check ${_read(_lockKeyProvider(_session.devicePath))} == ${result['key']}');
-    return _read(_lockKeyProvider(_session.devicePath)) == result['key'];
+    return _ref.read(_lockKeyProvider(_session.devicePath)) == result['key'];
   }
 
   Future<bool> setPassword(String? current, String password) async {
@@ -117,7 +120,7 @@ class OathStateNotifier extends StateNotifier<OathState?> {
     var key = result['key'];
     await _session.command('set_key', params: {'key': key});
     log.config('OATH key set');
-    _read(_lockKeyProvider(_session.devicePath).notifier).setKey(key);
+    _ref.read(_lockKeyProvider(_session.devicePath).notifier).setKey(key);
     if (mounted) {
       state = state?.copyWith(hasKey: true);
     }
@@ -131,7 +134,7 @@ class OathStateNotifier extends StateNotifier<OathState?> {
       }
     }
     await _session.command('unset_key');
-    _read(_lockKeyProvider(_session.devicePath).notifier).unsetKey();
+    _ref.read(_lockKeyProvider(_session.devicePath).notifier).unsetKey();
     if (mounted) {
       state = state?.copyWith(hasKey: false, locked: false);
     }
