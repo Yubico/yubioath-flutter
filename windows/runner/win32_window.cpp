@@ -107,6 +107,28 @@ bool Win32Window::CreateAndShow(const std::wstring& title,
                                 const Size& size) {
   Destroy();
 
+  // Attempt to create a mutex to enforce single instance.
+  CreateMutex(NULL, TRUE, L"com.yubico.authenticator.mutex");
+  if (GetLastError() == ERROR_ALREADY_EXISTS) {
+      HWND handle=FindWindowA(NULL, "Yubico Authenticator");
+      WINDOWPLACEMENT place = { sizeof(WINDOWPLACEMENT) };
+      GetWindowPlacement(handle, &place);
+      switch(place.showCmd) {
+          case SW_SHOWMAXIMIZED:
+              ShowWindow(handle, SW_SHOWMAXIMIZED);
+              break;
+          case SW_SHOWMINIMIZED:
+              ShowWindow(handle, SW_RESTORE);
+              break;
+          default:
+              ShowWindow(handle, SW_NORMAL);
+              break;
+      }
+      SetWindowPos(0, HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE);
+      SetForegroundWindow(handle);
+      return 0;
+  }
+
   const wchar_t* window_class =
       WindowClassRegistrar::GetInstance()->GetWindowClass();
 

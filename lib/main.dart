@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:yubico_authenticator/desktop/single_instance.dart';
 
 import 'app/app.dart';
 import 'app/views/main_page.dart';
@@ -20,9 +19,6 @@ final log = Logger('main');
 void main() async {
   _initLogging(Level.INFO);
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isWindows) {
-    await ensureSingleInstance();
-  }
   await windowManager.ensureInitialized();
 
   // Either use the _YKMAN_EXE environment variable, or look relative to executable.
