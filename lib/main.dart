@@ -17,6 +17,7 @@ import 'error_page.dart';
 final log = Logger('main');
 
 void main() async {
+  _initLogging(Level.INFO);
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
 
@@ -43,8 +44,8 @@ void main() async {
   try {
     var rpc = await RpcSession.launch(exe!);
     // Enable logging TODO: Make this configurable
-    _initLogging(Level.INFO, rpc);
     log.info('ykman process started', exe);
+    rpc.setLogLevel(Logger.root.level);
     overrides.add(rpcProvider.overrideWithValue(rpc));
     page = const MainPage();
   } catch (e) {
@@ -52,8 +53,8 @@ void main() async {
     page = ErrorPage(error: e.toString());
   }
 
-  // Only MacOS supports hiding the window at start currently.
-  // For now, this size should match windows/runner/main.cpp and linux/flutter/my_application.cc
+  // Linux doesn't currently support hiding the window at start currently.
+  // For now, this size should match linux/flutter/my_application.cc to avoid window flicker at startup.
   windowManager.waitUntilReadyToShow().then((_) async {
     await windowManager.setSize(const Size(400, 720));
     windowManager.show();
@@ -65,7 +66,7 @@ void main() async {
   ));
 }
 
-void _initLogging(Level level, RpcSession rpc) {
+void _initLogging(Level level) {
   //TODO: Add support for logging to stderr and file
   Logger.root.onRecord.listen((record) {
     developer.log(
@@ -78,7 +79,6 @@ void _initLogging(Level level, RpcSession rpc) {
   });
 
   Logger.root.level = level;
-  rpc.setLogLevel(level);
 }
 
 //TODO: Remove below this
