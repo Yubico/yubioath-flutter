@@ -8,6 +8,7 @@ import '../../widgets/circle_timer.dart';
 import '../../app/models.dart';
 import '../models.dart';
 import '../state.dart';
+import 'delete_account_dialog.dart';
 
 final _expireProvider =
     StateNotifierProvider.autoDispose.family<_ExpireNotifier, bool, int>(
@@ -85,11 +86,21 @@ class AccountView extends ConsumerWidget {
             },
           ),
         const PopupMenuDivider(),
-        const PopupMenuItem(
-          child: ListTile(
+        PopupMenuItem(
+          child: const ListTile(
             leading: Icon(Icons.delete_forever),
             title: Text('Delete account'),
           ),
+          onTap: () {
+            // This ensures the onTap handler finishes before the dialog is shown, otherwise the dialog is immediately closed instead of the popup.
+            Future.delayed(Duration.zero, () {
+              showDialog(
+                context: context,
+                builder: (context) =>
+                    DeleteAccountDialog(deviceData.node, credential),
+              );
+            });
+          },
         ),
       ];
 
