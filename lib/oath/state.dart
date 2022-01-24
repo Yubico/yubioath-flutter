@@ -246,6 +246,31 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
     return credential;
   }
 
+  Future<void> renameAccount(
+    OathCredential credential,
+    String? issuer,
+    String name,
+  ) async {
+    final result = await _session.command('rename', target: [
+      'accounts',
+      credential.id,
+    ], params: {
+      'issuer': issuer,
+      'name': name,
+    });
+    String credentialId = result['credential_id'];
+    if (mounted) {
+      final newState = state!.toList();
+      final index = newState.indexWhere((e) => e.credential == credential);
+      final oldPair = newState.removeAt(index);
+      newState.add(OathPair(
+        credential.copyWith(id: credentialId, issuer: issuer, name: name),
+        oldPair.code,
+      ));
+      state = newState;
+    }
+  }
+
   Future<void> deleteAccount(OathCredential credential) async {
     await _session.command('delete', target: ['accounts', credential.id]);
     if (mounted) {

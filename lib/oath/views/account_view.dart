@@ -9,6 +9,7 @@ import '../../app/models.dart';
 import '../models.dart';
 import '../state.dart';
 import 'delete_account_dialog.dart';
+import 'rename_account_dialog.dart';
 
 final _expireProvider =
     StateNotifierProvider.autoDispose.family<_ExpireNotifier, bool, int>(
@@ -82,7 +83,14 @@ class AccountView extends ConsumerWidget {
               title: Text('Rename account'),
             ),
             onTap: () {
-              log.info('TODO');
+              // This ensures the onTap handler finishes before the dialog is shown, otherwise the dialog is immediately closed instead of the popup.
+              Future.delayed(Duration.zero, () {
+                showDialog(
+                  context: context,
+                  builder: (context) =>
+                      RenameAccountDialog(deviceData.node, credential),
+                );
+              });
             },
           ),
         const PopupMenuDivider(),
