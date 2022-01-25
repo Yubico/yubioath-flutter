@@ -122,9 +122,10 @@ class AccountView extends ConsumerWidget {
           content: Text('Touch your YubiKey'),
           duration: Duration(seconds: 30),
         ),
-      )..closed.then((_) {
-          close = null;
-        });
+      );
+      unawaited(sbc.closed.then((_) {
+        close = null;
+      }));
       close = sbc.close;
     }
     try {

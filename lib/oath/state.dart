@@ -240,7 +240,7 @@ class CredentialListNotifier extends StateNotifier<List<OathPair>?> {
     if (update && mounted) {
       state = state!.toList()..add(OathPair(credential, null));
       if (!requireTouch && credential.oathType == OathType.totp) {
-        calculate(credential);
+        await calculate(credential);
       }
     }
     return credential;
