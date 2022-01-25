@@ -18,7 +18,6 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
 }
 
 class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
-  bool _isValid = true;
   late TextEditingController _issuerController;
   late TextEditingController _nameController;
   _RenameAccountDialogState();
@@ -44,6 +43,17 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         ? '${credential.issuer} (${credential.name})'
         : credential.name;
 
+    int remaining = 64;
+    if (credential.oathType == OathType.totp && credential.period != 30) {
+      remaining -= '${credential.period}/'.length;
+    }
+    if (_issuerController.text.isNotEmpty) {
+      remaining -= 1;
+    }
+    final issuerRemaining = remaining - _nameController.text.length;
+    final nameRemaining = remaining - _issuerController.text.length;
+    final isValid = _nameController.text.trim().isNotEmpty;
+
     return AlertDialog(
       title: Text('Rename $label?'),
       content: Column(
@@ -53,17 +63,27 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               'This will change how the account is displayed in the list.'),
           TextField(
             controller: _issuerController,
-            decoration: const InputDecoration(labelText: 'Issuer'),
+            enabled: issuerRemaining > 0,
+            maxLength: issuerRemaining > 0 ? issuerRemaining : null,
+            decoration: const InputDecoration(
+              labelText: 'Issuer',
+              helperText: '',
+            ),
+            onChanged: (value) {
+              setState(() {}); // Update maxLength
+            },
           ),
           TextField(
             controller: _nameController,
-            decoration: const InputDecoration(
+            enabled: nameRemaining > 0,
+            maxLength: nameRemaining > 0 ? nameRemaining : null,
+            decoration: InputDecoration(
               labelText: 'Account name *',
+              helperText: '',
+              errorText: isValid ? null : 'Your account must have a name',
             ),
             onChanged: (value) {
-              setState(() {
-                _isValid = value.trim().isNotEmpty;
-              });
+              setState(() {}); // Update maxLength, isValid
             },
           ),
         ],
@@ -76,7 +96,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: _isValid
+          onPressed: isValid
               ? () async {
                   final issuer = _issuerController.text.trim();
                   final name = _nameController.text.trim();
