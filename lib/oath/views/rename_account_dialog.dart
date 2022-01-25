@@ -43,11 +43,13 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         ? '${credential.issuer} (${credential.name})'
         : credential.name;
 
-    int remaining = 64;
+    int remaining = 64; // 64 bytes are shared between issuer and name.
     if (credential.oathType == OathType.totp && credential.period != 30) {
+      // Non-standard periods are stored as part of this data, as a "D/"- prefix.
       remaining -= '${credential.period}/'.length;
     }
     if (_issuerController.text.isNotEmpty) {
+      // Issuer is separated from name with a ":", if present.
       remaining -= 1;
     }
     final issuerRemaining = remaining - _nameController.text.length;
@@ -67,7 +69,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             maxLength: issuerRemaining > 0 ? issuerRemaining : null,
             decoration: const InputDecoration(
               labelText: 'Issuer',
-              helperText: '',
+              helperText: '', // Prevents dialog resizing when enabled = false
             ),
             onChanged: (value) {
               setState(() {}); // Update maxLength
@@ -79,7 +81,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             maxLength: nameRemaining > 0 ? nameRemaining : null,
             decoration: InputDecoration(
               labelText: 'Account name *',
-              helperText: '',
+              helperText: '', // Prevents dialog resizing when enabled = false
               errorText: isValid ? null : 'Your account must have a name',
             ),
             onChanged: (value) {
