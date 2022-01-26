@@ -43,7 +43,7 @@ jobs:
       run: |
         export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
         mkdir deploy
-        tar -czf deploy/yubioath-desktop-${REF}.app.tar.gz -C build/macos/Build/Products/Release yubico_authenticator.app
+        tar -czf deploy/yubioath-desktop-${REF}.app.tar.gz -C build/macos/Build/Products/Release "Yubico Authenticator.app"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v1

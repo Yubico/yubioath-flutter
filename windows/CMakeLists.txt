@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(yubico_authenticator LANGUAGES CXX)
+project(authenticator LANGUAGES CXX)
 
-set(BINARY_NAME "yubico_authenticator")
+set(BINARY_NAME "authenticator")
 
 cmake_policy(SET CMP0063 NEW)
 
