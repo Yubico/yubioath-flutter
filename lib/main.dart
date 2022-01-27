@@ -1,17 +1,14 @@
-import 'dart:async';
-import 'dart:io';
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
-import 'package:window_manager/window_manager.dart';
 
 import 'app/app.dart';
 import 'app/views/main_page.dart';
-import 'core/rpc.dart';
 import 'core/state.dart';
+import 'desktop/init.dart' as desktop;
 
 import 'error_page.dart';
 
@@ -20,46 +17,22 @@ final log = Logger('main');
 void main() async {
   _initLogging(Level.INFO);
   WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
 
-  // Either use the _YKMAN_EXE environment variable, or look relative to executable.
-  var exe = Platform.environment['_YKMAN_PATH'];
-  if (exe?.isEmpty ?? true) {
-    var relativePath = 'ykman/ykman';
-    if (Platform.isMacOS) {
-      relativePath = '../Resources/' + relativePath;
-    } else if (Platform.isWindows) {
-      relativePath += '.exe';
-    }
-    exe = Uri.file(Platform.resolvedExecutable)
-        .resolve(relativePath)
-        .toFilePath();
-  }
-
-  Widget page;
   List<Override> overrides = [
-    prefProvider.overrideWithValue(await SharedPreferences.getInstance())
+    prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
   ];
-
-  log.info('Starting subprocess: $exe');
+  Widget page;
   try {
-    var rpc = await RpcSession.launch(exe!);
-    // Enable logging TODO: Make this configurable
-    log.info('ykman process started', exe);
-    rpc.setLogLevel(Logger.root.level);
-    overrides.add(rpcProvider.overrideWithValue(rpc));
+    // Platform specific initialization
+    if (isDesktop) {
+      log.config('Initializing desktop platform.');
+      overrides.addAll(await desktop.initializeAndGetOverrides());
+    }
     page = const MainPage();
   } catch (e) {
-    log.warning('ykman process failed: $e');
+    log.warning('Platform initialization failed: $e');
     page = ErrorPage(error: e.toString());
   }
-
-  // Linux doesn't currently support hiding the window at start currently.
-  // For now, this size should match linux/flutter/my_application.cc to avoid window flicker at startup.
-  unawaited(windowManager.waitUntilReadyToShow().then((_) async {
-    await windowManager.setSize(const Size(400, 720));
-    await windowManager.show();
-  }));
 
   runApp(ProviderScope(
     overrides: overrides,

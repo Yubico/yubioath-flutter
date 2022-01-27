@@ -142,3 +142,46 @@ class RpcSession {
     }
   }
 }
+
+typedef ErrorHandler = Future<void> Function(RpcError e);
+
+class RpcNodeSession {
+  final RpcSession _rpc;
+  final List<String> devicePath;
+  final List<String> subPath;
+  final Map<String, ErrorHandler> _errorHandlers = {};
+
+  RpcNodeSession(this._rpc, this.devicePath, this.subPath);
+
+  void setErrorHandler(String status, ErrorHandler handler) {
+    _errorHandlers[status] = handler;
+  }
+
+  void unserErrorHandler(String status) {
+    _errorHandlers.remove(status);
+  }
+
+  Future<Map<String, dynamic>> command(
+    String action, {
+    List<String> target = const [],
+    Map<dynamic, dynamic>? params,
+    Signaler? signal,
+  }) async {
+    try {
+      return await _rpc.command(
+        action,
+        devicePath + subPath + target,
+        params: params,
+        signal: signal,
+      );
+    } on RpcError catch (e) {
+      final handler = _errorHandlers[e.status];
+      if (handler != null) {
+        log.info('Attempting recovery on "${e.status}"');
+        await handler(e);
+        return command(action, target: target, params: params, signal: signal);
+      }
+      rethrow;
+    }
+  }
+}
