@@ -3,6 +3,12 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'models.freezed.dart';
 part 'models.g.dart';
 
+const defaultPeriod = 30;
+const defaultDigits = 6;
+const defaultCounter = 0;
+const defaultOathType = OathType.totp;
+const defaultHashAlgorithm = HashAlgorithm.sha1;
+
 enum HashAlgorithm {
   @JsonValue(0x01)
   sha1,
@@ -12,19 +18,11 @@ enum HashAlgorithm {
   sha512,
 }
 
-extension on HashAlgorithm {
-  String get name => toString().split('.').last.toUpperCase();
-}
-
 enum OathType {
   @JsonValue(0x10)
   hotp,
   @JsonValue(0x20)
   totp,
-}
-
-extension on OathType {
-  String get name => toString().split('.').last.toUpperCase();
 }
 
 @freezed
@@ -71,11 +69,11 @@ class CredentialData with _$CredentialData {
     String? issuer,
     required String name,
     required String secret,
-    @Default(OathType.totp) OathType oathType,
-    @Default(HashAlgorithm.sha1) HashAlgorithm hashAlgorithm,
-    @Default(6) int digits,
-    @Default(30) int period,
-    @Default(0) int counter,
+    @Default(defaultOathType) OathType oathType,
+    @Default(defaultHashAlgorithm) HashAlgorithm hashAlgorithm,
+    @Default(defaultDigits) int digits,
+    @Default(defaultPeriod) int period,
+    @Default(defaultCounter) int counter,
   }) = _CredentialData;
 
   factory CredentialData.fromJson(Map<String, dynamic> json) =>

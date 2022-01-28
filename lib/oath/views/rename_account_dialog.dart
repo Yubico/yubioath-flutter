@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -44,7 +46,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         : credential.name;
 
     int remaining = 64; // 64 bytes are shared between issuer and name.
-    if (credential.oathType == OathType.totp && credential.period != 30) {
+    if (credential.oathType == OathType.totp &&
+        credential.period != defaultPeriod) {
       // Non-standard periods are stored as part of this data, as a "D/"- prefix.
       remaining -= '${credential.period}/'.length;
     }
@@ -52,7 +55,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
       // Issuer is separated from name with a ":", if present.
       remaining -= 1;
     }
-    final issuerRemaining = remaining - _nameController.text.length;
+    final issuerRemaining =
+        remaining - max<int>(_nameController.text.length, 1);
     final nameRemaining = remaining - _issuerController.text.length;
     final isValid = _nameController.text.trim().isNotEmpty;
 
