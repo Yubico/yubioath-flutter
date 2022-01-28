@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import 'core/state.dart';
+import 'desktop/state.dart';
 
 final log = Logger('about');
 
@@ -13,7 +14,6 @@ class AboutPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final rpcState = ref.watch(rpcStateProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('About Yubico Authenticator'),
@@ -25,54 +25,42 @@ class AboutPage extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('ykman version: ${rpcState.version}'),
+              if (isDesktop)
+                Text('ykman version: ${ref.watch(rpcStateProvider).version}'),
               Text('Dart version: ${Platform.version}'),
               const SizedBox(height: 8.0),
               Text('Log level: ${ref.watch(logLevelProvider)}'),
               Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      ref.read(logLevelProvider.notifier).setLevel(Level.INFO);
-                      log.info('Log level changed to INFO');
-                    },
-                    child: const Text('Info'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      ref
-                          .read(logLevelProvider.notifier)
-                          .setLevel(Level.CONFIG);
-                      log.config('Log level changed to CONFIG');
-                    },
-                    child: const Text('Config'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      ref.read(logLevelProvider.notifier).setLevel(Level.FINE);
-                      log.fine('Log level changed to FINE');
-                    },
-                    child: const Text('Fine'),
-                  ),
-                ],
+                children: [Level.INFO, Level.CONFIG, Level.FINE]
+                    .map((level) => TextButton(
+                          onPressed: () {
+                            ref.read(logLevelProvider.notifier).state = level;
+                            log.info(
+                                'Log level changed to ${level.name.toUpperCase()}');
+                          },
+                          child: Text(level.name.toUpperCase()),
+                        ))
+                    .toList(),
               ),
               const Divider(),
-              TextButton(
-                onPressed: () async {
-                  log.info('Running diagnostics...');
-                  final response =
-                      await ref.read(rpcProvider).command('diagnose', []);
-                  log.info('Response', response['diagnostics']);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Diagnostics done. See log for results...'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
-                child: const Text('Run diagnostics...'),
-              ),
+              if (isDesktop)
+                TextButton(
+                  onPressed: () async {
+                    log.info('Running diagnostics...');
+                    final response =
+                        await ref.read(rpcProvider).command('diagnose', []);
+                    log.info('Response', response['diagnostics']);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content:
+                            Text('Diagnostics done. See log for results...'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  child: const Text('Run diagnostics...'),
+                ),
             ],
           ),
         ),
