@@ -8,6 +8,7 @@ import 'package:yubico_authenticator/oath/models.dart';
 import '../../app/state.dart';
 import '../../app/models.dart';
 import '../state.dart';
+import 'utils.dart';
 
 final _secretFormatterPattern =
     RegExp('[abcdefghijklmnopqrstuvwxyz234567 ]', caseSensitive: false);
@@ -33,17 +34,14 @@ class _AddAccountFormState extends State<AddAccountForm> {
 
   @override
   Widget build(BuildContext context) {
-    int remaining = 64; // 64 bytes are shared between issuer and name.
-    if (_oathType == OathType.totp && _period != defaultPeriod) {
-      // Non-standard periods are stored as part of this data, as a "D/"- prefix.
-      remaining -= '$_period/'.length;
-    }
-    if (_issuer.isNotEmpty) {
-      // Issuer is separated from name with a ":", if present.
-      remaining -= 1;
-    }
-    final issuerRemaining = remaining - max<int>(_account.length, 1);
-    final nameRemaining = remaining - _issuer.length;
+    final remaining = getRemainingKeySpace(
+      oathType: _oathType,
+      period: _period,
+      issuer: _issuer,
+      name: _account,
+    );
+    final issuerRemaining = remaining.first;
+    final nameRemaining = remaining.second;
 
     final secretValid = _secret.length * 5 % 8 < 5;
     final isValid =
@@ -57,7 +55,7 @@ class _AddAccountFormState extends State<AddAccountForm> {
             children: [
               TextField(
                 enabled: issuerRemaining > 0,
-                maxLength: issuerRemaining > 0 ? issuerRemaining : null,
+                maxLength: max(issuerRemaining, 1),
                 decoration: const InputDecoration(
                   labelText: 'Issuer (optional)',
                   helperText:
@@ -65,13 +63,12 @@ class _AddAccountFormState extends State<AddAccountForm> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    _issuer = value;
+                    _issuer = value.trim();
                   });
                 },
               ),
-              TextFormField(
-                enabled: nameRemaining > 0,
-                maxLength: nameRemaining > 0 ? nameRemaining : null,
+              TextField(
+                maxLength: nameRemaining,
                 decoration: const InputDecoration(
                   labelText: 'Account name',
                   helperText:
@@ -79,11 +76,11 @@ class _AddAccountFormState extends State<AddAccountForm> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    _account = value;
+                    _account = value.trim();
                   });
                 },
               ),
-              TextFormField(
+              TextField(
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.allow(_secretFormatterPattern)
                 ],

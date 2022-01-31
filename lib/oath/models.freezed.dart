@@ -837,11 +837,11 @@ class _$CredentialDataTearOff {
       {String? issuer,
       required String name,
       required String secret,
-      OathType oathType = OathType.totp,
-      HashAlgorithm hashAlgorithm = HashAlgorithm.sha1,
-      int digits = 6,
-      int period = 30,
-      int counter = 0}) {
+      OathType oathType = defaultOathType,
+      HashAlgorithm hashAlgorithm = defaultHashAlgorithm,
+      int digits = defaultDigits,
+      int period = defaultPeriod,
+      int counter = defaultCounter}) {
     return _CredentialData(
       issuer: issuer,
       name: name,
@@ -1036,11 +1036,11 @@ class _$_CredentialData extends _CredentialData {
       {this.issuer,
       required this.name,
       required this.secret,
-      this.oathType = OathType.totp,
-      this.hashAlgorithm = HashAlgorithm.sha1,
-      this.digits = 6,
-      this.period = 30,
-      this.counter = 0})
+      this.oathType = defaultOathType,
+      this.hashAlgorithm = defaultHashAlgorithm,
+      this.digits = defaultDigits,
+      this.period = defaultPeriod,
+      this.counter = defaultCounter})
       : super._();
 
   factory _$_CredentialData.fromJson(Map<String, dynamic> json) =>

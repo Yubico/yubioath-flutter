@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,6 +5,7 @@ import '../models.dart';
 import '../state.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import 'utils.dart';
 
 class RenameAccountDialog extends ConsumerStatefulWidget {
   final DeviceNode device;
@@ -20,16 +19,15 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
 }
 
 class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
-  late TextEditingController _issuerController;
-  late TextEditingController _nameController;
+  late String _issuer;
+  late String _account;
   _RenameAccountDialogState();
 
   @override
   void initState() {
     super.initState();
-    _issuerController =
-        TextEditingController(text: widget.credential.issuer ?? '');
-    _nameController = TextEditingController(text: widget.credential.name);
+    _issuer = widget.credential.issuer ?? '';
+    _account = widget.credential.name;
   }
 
   @override
@@ -45,20 +43,15 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         ? '${credential.issuer} (${credential.name})'
         : credential.name;
 
-    int remaining = 64; // 64 bytes are shared between issuer and name.
-    if (credential.oathType == OathType.totp &&
-        credential.period != defaultPeriod) {
-      // Non-standard periods are stored as part of this data, as a "D/"- prefix.
-      remaining -= '${credential.period}/'.length;
-    }
-    if (_issuerController.text.isNotEmpty) {
-      // Issuer is separated from name with a ":", if present.
-      remaining -= 1;
-    }
-    final issuerRemaining =
-        remaining - max<int>(_nameController.text.length, 1);
-    final nameRemaining = remaining - _issuerController.text.length;
-    final isValid = _nameController.text.trim().isNotEmpty;
+    final remaining = getRemainingKeySpace(
+      oathType: credential.oathType,
+      period: credential.period,
+      issuer: _issuer,
+      name: _account,
+    );
+    final issuerRemaining = remaining.first;
+    final nameRemaining = remaining.second;
+    final isValid = _account.isNotEmpty;
 
     return AlertDialog(
       title: Text('Rename $label?'),
@@ -67,29 +60,32 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         children: [
           const Text(
               'This will change how the account is displayed in the list.'),
-          TextField(
-            controller: _issuerController,
+          TextFormField(
+            initialValue: _issuer,
             enabled: issuerRemaining > 0,
             maxLength: issuerRemaining > 0 ? issuerRemaining : null,
             decoration: const InputDecoration(
-              labelText: 'Issuer',
+              labelText: 'Issuer (optional)',
               helperText: '', // Prevents dialog resizing when enabled = false
             ),
             onChanged: (value) {
-              setState(() {}); // Update maxLength
+              setState(() {
+                _issuer = value.trim();
+              });
             },
           ),
-          TextField(
-            controller: _nameController,
-            enabled: nameRemaining > 0,
-            maxLength: nameRemaining > 0 ? nameRemaining : null,
+          TextFormField(
+            initialValue: _account,
+            maxLength: nameRemaining,
             decoration: InputDecoration(
-              labelText: 'Account name *',
+              labelText: 'Account name',
               helperText: '', // Prevents dialog resizing when enabled = false
               errorText: isValid ? null : 'Your account must have a name',
             ),
             onChanged: (value) {
-              setState(() {}); // Update maxLength, isValid
+              setState(() {
+                _account = value.trim();
+              });
             },
           ),
         ],
@@ -104,12 +100,10 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         ElevatedButton(
           onPressed: isValid
               ? () async {
-                  final issuer = _issuerController.text.trim();
-                  final name = _nameController.text.trim();
                   await ref
                       .read(credentialListProvider(widget.device.path).notifier)
-                      .renameAccount(
-                          credential, issuer.isNotEmpty ? issuer : null, name);
+                      .renameAccount(credential,
+                          _issuer.isNotEmpty ? _issuer : null, _account);
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
