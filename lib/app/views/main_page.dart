@@ -28,8 +28,29 @@ class MainPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final deviceNode = ref.watch(currentDeviceProvider);
     final deviceData = ref.watch(currentDeviceDataProvider);
     final subPage = ref.watch(subPageProvider);
+
+    Widget deviceWidget;
+    if (deviceNode != null) {
+      if (deviceData != null) {
+        deviceWidget = DeviceAvatar.yubiKeyData(
+          deviceData,
+          selected: true,
+        );
+      } else {
+        deviceWidget = DeviceAvatar.deviceNode(
+          deviceNode,
+          selected: true,
+        );
+      }
+    } else {
+      deviceWidget = const CircleAvatar(
+        backgroundColor: Colors.transparent,
+        child: Icon(Icons.usb_off),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -59,20 +80,7 @@ class MainPage extends ConsumerWidget {
           InkWell(
             child: Padding(
               padding: const EdgeInsets.all(4.0),
-              child: deviceData == null
-                  ? SizedBox.square(
-                      dimension: 44,
-                      child: Icon(
-                        Icons.usb_off,
-                        color: Theme.of(context).colorScheme.background,
-                      ),
-                    )
-                  : DeviceAvatar(
-                      deviceData.node,
-                      deviceData.name,
-                      deviceData.info,
-                      selected: true,
-                    ),
+              child: deviceWidget,
             ),
             onTap: () {
               showDialog(

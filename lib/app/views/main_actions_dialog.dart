@@ -26,29 +26,32 @@ class MainActionsDialog extends ConsumerWidget {
     return SimpleDialog(
       children: [
         if (currentNode != null)
-          CurrentDeviceRow(
+          _CurrentDeviceRow(
             currentNode,
-            data?.name,
-            info: data?.info,
+            data: data,
             onTap: () {
               Navigator.of(context).pop();
             },
           ),
         ...devices.map(
-          (e) => DeviceRow(
+          (e) => _DeviceRow(
             e,
-            e.name,
-            info: e.when(
-              usbYubiKey: (path, name, pid, info) => info,
-              nfcReader: (path, name) => null,
+            info: e.map(
+              usbYubiKey: (node) => node.info,
+              nfcReader: (_) => null,
             ),
-            selected: false,
             onTap: () {
               Navigator.of(context).pop();
               ref.read(currentDeviceProvider.notifier).setCurrentDevice(e);
             },
           ),
         ),
+        if (currentNode == null && devices.isEmpty)
+          Center(
+              child: Text(
+            'No YubiKey found',
+            style: Theme.of(context).textTheme.titleMedium,
+          )),
         if (actions.isNotEmpty) const Divider(),
         ...actions.map((a) => ListTile(
               dense: true,
@@ -64,35 +67,41 @@ class MainActionsDialog extends ConsumerWidget {
   }
 }
 
-class CurrentDeviceRow extends StatelessWidget {
+class _CurrentDeviceRow extends StatelessWidget {
   final DeviceNode node;
-  final String? name;
-  final DeviceInfo? info;
+  final YubiKeyData? data;
   final Function() onTap;
 
-  const CurrentDeviceRow(
-    this.node,
-    this.name, {
-    required this.info,
+  const _CurrentDeviceRow(
+    this.node, {
+    this.data,
     required this.onTap,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = node is NfcReaderNode
-        ? info != null
-            ? '${node.name}\nS/N: ${info!.serial} F/W: ${info!.version}'
-            : node.name
-        : 'S/N: ${info!.serial} F/W: ${info!.version}';
+    final subtitle = node.when(
+        usbYubiKey: (_, __, ___, info) =>
+            'S/N: ${info.serial} F/W: ${info.version}',
+        nfcReader: (_, name) {
+          final info = data?.info;
+          return info == null
+              ? name
+              : '$name\nS/N: ${info.serial} F/W: ${info.version}';
+        });
+
     return ListTile(
-      leading: DeviceAvatar(
-        node,
-        name ?? '',
-        info,
-        selected: true,
-      ),
-      title: Text(name ?? 'No YubiKey present'),
+      leading: data != null
+          ? DeviceAvatar.yubiKeyData(
+              data!,
+              selected: true,
+            )
+          : DeviceAvatar.deviceNode(
+              node,
+              selected: true,
+            ),
+      title: Text(data?.name ?? 'No YubiKey present'),
       isThreeLine: subtitle.contains('\n'),
       subtitle: Text(subtitle),
       onTap: onTap,
@@ -100,36 +109,29 @@ class CurrentDeviceRow extends StatelessWidget {
   }
 }
 
-class DeviceRow extends StatelessWidget {
+class _DeviceRow extends StatelessWidget {
   final DeviceNode node;
-  final String name;
   final DeviceInfo? info;
-  final bool selected;
   final Function() onTap;
 
-  const DeviceRow(
-    this.node,
-    this.name, {
+  const _DeviceRow(
+    this.node, {
     required this.info,
     required this.onTap,
-    this.selected = false,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: DeviceAvatar(
-        node,
-        name,
-        info,
-        selected: selected,
-      ),
-      title: Text(name),
+      leading: DeviceAvatar.deviceNode(node),
+      title: Text(node.name),
       subtitle: Text(
-        info == null
-            ? (selected ? 'No YubiKey present' : 'Select to scan')
-            : 'S/N: ${info!.serial} F/W: ${info!.version}',
+        node.when(
+          usbYubiKey: (_, __, ___, info) =>
+              'S/N: ${info.serial} F/W: ${info.version}',
+          nfcReader: (_, __) => 'Select to scan',
+        ),
       ),
       onTap: onTap,
     );
