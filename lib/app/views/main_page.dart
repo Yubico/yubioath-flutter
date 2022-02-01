@@ -77,17 +77,21 @@ class MainPage extends ConsumerWidget {
           },
         ),
         actions: [
-          InkWell(
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: deviceWidget,
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(
+              icon: OverflowBox(
+                maxHeight: 44,
+                maxWidth: 44,
+                child: deviceWidget,
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => const MainActionsDialog(),
+                );
+              },
             ),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => const MainActionsDialog(),
-              );
-            },
           ),
         ],
       ),
