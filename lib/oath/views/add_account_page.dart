@@ -31,6 +31,7 @@ class _AddAccountFormState extends State<AddAccountForm> {
   HashAlgorithm _hashAlgorithm = defaultHashAlgorithm;
   int _period = defaultPeriod;
   int _digits = defaultDigits;
+  bool _validateSecretLength = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +44,8 @@ class _AddAccountFormState extends State<AddAccountForm> {
     final issuerRemaining = remaining.first;
     final nameRemaining = remaining.second;
 
-    final secretValid = _secret.length * 5 % 8 < 5;
-    final isValid =
-        _account.isNotEmpty && _secret.isNotEmpty && secretValid && _period > 0;
+    final secretLengthValid = _secret.length * 5 % 8 < 5;
+    final isValid = _account.isNotEmpty && _secret.isNotEmpty && _period > 0;
 
     return Column(
       children: [
@@ -86,10 +86,13 @@ class _AddAccountFormState extends State<AddAccountForm> {
                 ],
                 decoration: InputDecoration(
                     labelText: 'Secret key',
-                    errorText: secretValid ? null : 'Invalid value'),
+                    errorText: _validateSecretLength && !secretLengthValid
+                        ? 'Invalid length'
+                        : null),
                 onChanged: (value) {
                   setState(() {
                     _secret = value.replaceAll(' ', '');
+                    _validateSecretLength = false;
                   });
                 },
               ),
@@ -148,7 +151,7 @@ class _AddAccountFormState extends State<AddAccountForm> {
                     Expanded(
                       child: DropdownButtonFormField<HashAlgorithm>(
                         decoration:
-                            const InputDecoration(label: Text('Algorithm')),
+                            const InputDecoration(labelText: 'Algorithm'),
                         value: _hashAlgorithm,
                         items: HashAlgorithm.values
                             .map((e) => DropdownMenuItem(
@@ -178,7 +181,10 @@ class _AddAccountFormState extends State<AddAccountForm> {
                             FilteringTextInputFormatter.digitsOnly,
                           ],
                           decoration: InputDecoration(
-                            label: const Text('Period'),
+                            contentPadding:
+                                // Manual alignment to match digits-dropdown.
+                                const EdgeInsets.fromLTRB(0, 12, 0, 15),
+                            labelText: 'Period',
                             errorText: _period > 0
                                 ? null
                                 : 'Must be a positive number',
@@ -196,8 +202,7 @@ class _AddAccountFormState extends State<AddAccountForm> {
                       ),
                     Expanded(
                       child: DropdownButtonFormField<int>(
-                        decoration:
-                            const InputDecoration(label: Text('Digits')),
+                        decoration: const InputDecoration(labelText: 'Digits'),
                         value: _digits,
                         items: [6, 7, 8]
                             .map((e) => DropdownMenuItem(
@@ -223,18 +228,24 @@ class _AddAccountFormState extends State<AddAccountForm> {
           child: ElevatedButton(
             onPressed: isValid
                 ? () {
-                    widget.onSubmit(
-                      CredentialData(
-                        issuer: _issuer.isEmpty ? null : _issuer,
-                        name: _account,
-                        secret: _secret,
-                        oathType: _oathType,
-                        hashAlgorithm: _hashAlgorithm,
-                        digits: _digits,
-                        period: _period,
-                      ),
-                      _touch,
-                    );
+                    if (secretLengthValid) {
+                      widget.onSubmit(
+                        CredentialData(
+                          issuer: _issuer.isEmpty ? null : _issuer,
+                          name: _account,
+                          secret: _secret,
+                          oathType: _oathType,
+                          hashAlgorithm: _hashAlgorithm,
+                          digits: _digits,
+                          period: _period,
+                        ),
+                        _touch,
+                      );
+                    } else {
+                      setState(() {
+                        _validateSecretLength = true;
+                      });
+                    }
                   }
                 : null,
             child: const Text('Add account'),
