@@ -18,3 +18,8 @@ class Version with _$Version {
     return '$major.$minor.$patch';
   }
 }
+
+@freezed
+class Pair<T1, T2> with _$Pair<T1, T2> {
+  factory Pair(T1 first, T2 second) = _Pair<T1, T2>;
+}

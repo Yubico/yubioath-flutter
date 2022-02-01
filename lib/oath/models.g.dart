@@ -65,13 +65,13 @@ _$_CredentialData _$$_CredentialDataFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       secret: json['secret'] as String,
       oathType: $enumDecodeNullable(_$OathTypeEnumMap, json['oath_type']) ??
-          OathType.totp,
+          defaultOathType,
       hashAlgorithm:
           $enumDecodeNullable(_$HashAlgorithmEnumMap, json['hash_algorithm']) ??
-              HashAlgorithm.sha1,
-      digits: json['digits'] as int? ?? 6,
-      period: json['period'] as int? ?? 30,
-      counter: json['counter'] as int? ?? 0,
+              defaultHashAlgorithm,
+      digits: json['digits'] as int? ?? defaultDigits,
+      period: json['period'] as int? ?? defaultPeriod,
+      counter: json['counter'] as int? ?? defaultCounter,
     );
 
 Map<String, dynamic> _$$_CredentialDataToJson(_$_CredentialData instance) =>
