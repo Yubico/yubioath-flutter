@@ -1,35 +1,60 @@
 import 'package:flutter/material.dart';
-import 'package:yubico_authenticator/management/models.dart';
 
 import '../models.dart';
 import 'device_images.dart';
 
-/*
-TODO: This class should be refactored once we settle more on the final design.
-We may want to have two separate implementations depending on if it's an NFC reader or a USB YubiKey.
-*/
 class DeviceAvatar extends StatelessWidget {
-  final DeviceNode node;
-  final String name;
-  final DeviceInfo? info;
   final bool selected;
-
-  const DeviceAvatar(this.node, this.name, this.info,
-      {this.selected = false, Key? key})
+  final Widget child;
+  final IconData? badge;
+  const DeviceAvatar._(
+      {Key? key, this.selected = false, required this.child, this.badge})
       : super(key: key);
+
+  factory DeviceAvatar.yubiKeyData(YubiKeyData data, {bool selected = false}) =>
+      DeviceAvatar._(
+        child: getProductImage(data.info, data.name),
+        badge: data.node is NfcReaderNode ? Icons.nfc : null,
+        selected: selected,
+      );
+
+  factory DeviceAvatar.deviceNode(DeviceNode node, {bool selected = false}) =>
+      node.map(
+        usbYubiKey: (node) => DeviceAvatar.yubiKeyData(
+          YubiKeyData(node, node.name, node.info),
+          selected: selected,
+        ),
+        nfcReader: (_) => DeviceAvatar._(
+          child: const Icon(Icons.nfc),
+          selected: selected,
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-      child: CircleAvatar(
-        child:
-            info != null ? getProductImage(info!, name) : const Icon(Icons.nfc),
-        backgroundColor: Theme.of(context).colorScheme.background,
-      ),
-      radius: 22,
-      backgroundColor: selected
-          ? Theme.of(context).colorScheme.secondary
-          : Colors.transparent,
+    return Stack(
+      alignment: AlignmentDirectional.bottomEnd,
+      children: [
+        CircleAvatar(
+          radius: 22,
+          backgroundColor: selected
+              ? Theme.of(context).colorScheme.secondary
+              : Colors.transparent,
+          child: CircleAvatar(
+            backgroundColor: Theme.of(context).colorScheme.background,
+            child: child,
+          ),
+        ),
+        if (badge != null)
+          CircleAvatar(
+            radius: 8,
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            child: Icon(
+              badge!,
+              size: 12,
+            ),
+          ),
+      ],
     );
   }
 }
