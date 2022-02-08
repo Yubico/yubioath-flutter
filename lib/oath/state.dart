@@ -11,23 +11,6 @@ import 'models.dart';
 
 final log = Logger('oath.state');
 
-// This remembers the key for all devices for the duration of the process.
-final oathLockKeyProvider =
-    StateNotifierProvider.family<_LockKeyNotifier, String?, List<String>>(
-        (ref, devicePath) => _LockKeyNotifier(null));
-
-class _LockKeyNotifier extends StateNotifier<String?> {
-  _LockKeyNotifier(String? state) : super(state);
-
-  setKey(String key) {
-    state = key;
-  }
-
-  unsetKey() {
-    state = null;
-  }
-}
-
 final oathStateProvider = StateNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState?, List<String>>(
   (ref, devicePath) => throw UnimplementedError(),
@@ -37,9 +20,10 @@ abstract class OathStateNotifier extends StateNotifier<OathState?> {
   OathStateNotifier() : super(null);
 
   Future<void> reset();
-  Future<bool> unlock(String password);
+  Future<bool> unlock(String password, {bool remember = false});
   Future<bool> setPassword(String? current, String password);
   Future<bool> unsetPassword(String current);
+  Future<void> forgetPassword();
 }
 
 final credentialListProvider = StateNotifierProvider.autoDispose

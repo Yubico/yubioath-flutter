@@ -55,7 +55,12 @@ class OathPair with _$OathPair {
 
 @freezed
 class OathState with _$OathState {
-  factory OathState(String deviceId, bool hasKey, bool locked) = _OathState;
+  factory OathState(
+    String deviceId, {
+    required bool hasKey,
+    required bool remembered,
+    required bool locked,
+  }) = _OathState;
 
   factory OathState.fromJson(Map<String, dynamic> json) =>
       _$OathStateFromJson(json);
