@@ -39,7 +39,7 @@ class MenuAction with _$MenuAction {
   factory MenuAction(
       {required String text,
       required Icon icon,
-      void Function()? action}) = _MenuAction;
+      void Function(BuildContext context)? action}) = _MenuAction;
 }
 
 @freezed
