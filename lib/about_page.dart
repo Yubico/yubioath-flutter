@@ -35,7 +35,9 @@ class AboutPage extends ConsumerWidget {
                 children: [Level.INFO, Level.CONFIG, Level.FINE]
                     .map((level) => TextButton(
                           onPressed: () {
-                            ref.read(logLevelProvider.notifier).state = level;
+                            ref
+                                .read(logLevelProvider.notifier)
+                                .setLogLevel(level);
                             log.info(
                                 'Log level changed to ${level.name.toUpperCase()}');
                           },
