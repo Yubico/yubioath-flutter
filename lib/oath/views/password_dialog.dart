@@ -32,6 +32,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
 
     final state = ref.watch(oathStateProvider(widget.device.path));
     final hasKey = state?.hasKey ?? false;
+    final remembered = state?.remembered ?? false;
 
     return AlertDialog(
       title: const Text('Manage password'),
@@ -41,8 +42,48 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
           if (hasKey)
             Column(
               children: [
+                if (remembered)
+                  // TODO: This is temporary, to be able to forget a password.
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Column(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: const [
+                            Text(
+                              'You password is remembered by the app.',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            OutlinedButton(
+                              onPressed: () async {
+                                await ref
+                                    .read(oathStateProvider(widget.device.path)
+                                        .notifier)
+                                    .forgetPassword();
+                                Navigator.of(context).pop();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Password forgotten'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                              child: const Text('Forget'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 const Text(
-                    'Enter your current password to change it. If you don\'t know your password, you\'ll need to reset the YubiKey, thne create a new password.'),
+                    'Enter your current password to change it. If you don\'t know your password, you\'ll need to reset the YubiKey, then create a new password.'),
                 Row(
                   children: [
                     Expanded(

@@ -67,7 +67,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
           var deviceResult = await _rpc.command('get', path);
           var deviceData = deviceResult['data'];
           usbDevices.add(DeviceNode.usbYubiKey(
-            path,
+            DevicePath(path),
             deviceData['name'],
             deviceData['pid'],
             DeviceInfo.fromJson(deviceData['info']),
@@ -131,9 +131,9 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
         log.info('NFC state change', jsonEncode(children));
         _nfcState = newState;
         state = children.entries
-            .map((e) =>
-                DeviceNode.nfcReader(['nfc', e.key], e.value['name'] as String)
-                    as NfcReaderNode)
+            .map((e) => DeviceNode.nfcReader(
+                    DevicePath(['nfc', e.key]), e.value['name'] as String)
+                as NfcReaderNode)
             .toList();
       }
     } on RpcError catch (e) {
@@ -207,7 +207,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<YubiKeyData?> {
     _pollTimer?.cancel();
     final node = _deviceNode!;
     try {
-      var result = await _rpc.command('get', node.path);
+      var result = await _rpc.command('get', node.path.segments);
       if (mounted) {
         if (result['data']['present']) {
           state = YubiKeyData(node, result['data']['name'],

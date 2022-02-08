@@ -48,14 +48,16 @@ Map<String, dynamic> _$$_OathCodeToJson(_$_OathCode instance) =>
 
 _$_OathState _$$_OathStateFromJson(Map<String, dynamic> json) => _$_OathState(
       json['device_id'] as String,
-      json['has_key'] as bool,
-      json['locked'] as bool,
+      hasKey: json['has_key'] as bool,
+      remembered: json['remembered'] as bool,
+      locked: json['locked'] as bool,
     );
 
 Map<String, dynamic> _$$_OathStateToJson(_$_OathState instance) =>
     <String, dynamic>{
       'device_id': instance.deviceId,
       'has_key': instance.hasKey,
+      'remembered': instance.remembered,
       'locked': instance.locked,
     };
 
