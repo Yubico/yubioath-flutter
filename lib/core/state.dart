@@ -9,6 +9,16 @@ final prefProvider = Provider<SharedPreferences>((ref) {
   throw UnimplementedError();
 });
 
-final logLevelProvider = StateProvider<Level>((ref) => Logger.root.level);
+final logLevelProvider = StateNotifierProvider<LogLevelNotifier, Level>(
+    (ref) => LogLevelNotifier(Logger.root.level));
+
+class LogLevelNotifier extends StateNotifier<Level> {
+  LogLevelNotifier(Level level) : super(level);
+
+  void setLogLevel(Level level) {
+    Logger.root.level = level;
+    state = level;
+  }
+}
 
 final isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
