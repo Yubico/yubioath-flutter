@@ -206,7 +206,7 @@ class _$DeviceNodeTearOff {
   const _$DeviceNodeTearOff();
 
   UsbYubiKeyNode usbYubiKey(
-      List<String> path, String name, int pid, DeviceInfo info) {
+      DevicePath path, String name, int pid, DeviceInfo info) {
     return UsbYubiKeyNode(
       path,
       name,
@@ -215,7 +215,7 @@ class _$DeviceNodeTearOff {
     );
   }
 
-  NfcReaderNode nfcReader(List<String> path, String name) {
+  NfcReaderNode nfcReader(DevicePath path, String name) {
     return NfcReaderNode(
       path,
       name,
@@ -228,29 +228,29 @@ const $DeviceNode = _$DeviceNodeTearOff();
 
 /// @nodoc
 mixin _$DeviceNode {
-  List<String> get path => throw _privateConstructorUsedError;
+  DevicePath get path => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-            List<String> path, String name, int pid, DeviceInfo info)
+            DevicePath path, String name, int pid, DeviceInfo info)
         usbYubiKey,
-    required TResult Function(List<String> path, String name) nfcReader,
+    required TResult Function(DevicePath path, String name) nfcReader,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(List<String> path, String name, int pid, DeviceInfo info)?
+    TResult Function(DevicePath path, String name, int pid, DeviceInfo info)?
         usbYubiKey,
-    TResult Function(List<String> path, String name)? nfcReader,
+    TResult Function(DevicePath path, String name)? nfcReader,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<String> path, String name, int pid, DeviceInfo info)?
+    TResult Function(DevicePath path, String name, int pid, DeviceInfo info)?
         usbYubiKey,
-    TResult Function(List<String> path, String name)? nfcReader,
+    TResult Function(DevicePath path, String name)? nfcReader,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -284,7 +284,7 @@ abstract class $DeviceNodeCopyWith<$Res> {
   factory $DeviceNodeCopyWith(
           DeviceNode value, $Res Function(DeviceNode) then) =
       _$DeviceNodeCopyWithImpl<$Res>;
-  $Res call({List<String> path, String name});
+  $Res call({DevicePath path, String name});
 }
 
 /// @nodoc
@@ -304,7 +304,7 @@ class _$DeviceNodeCopyWithImpl<$Res> implements $DeviceNodeCopyWith<$Res> {
       path: path == freezed
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as DevicePath,
       name: name == freezed
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -320,7 +320,7 @@ abstract class $UsbYubiKeyNodeCopyWith<$Res>
           UsbYubiKeyNode value, $Res Function(UsbYubiKeyNode) then) =
       _$UsbYubiKeyNodeCopyWithImpl<$Res>;
   @override
-  $Res call({List<String> path, String name, int pid, DeviceInfo info});
+  $Res call({DevicePath path, String name, int pid, DeviceInfo info});
 
   $DeviceInfoCopyWith<$Res> get info;
 }
@@ -346,7 +346,7 @@ class _$UsbYubiKeyNodeCopyWithImpl<$Res> extends _$DeviceNodeCopyWithImpl<$Res>
       path == freezed
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as DevicePath,
       name == freezed
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -376,7 +376,7 @@ class _$UsbYubiKeyNode implements UsbYubiKeyNode {
   _$UsbYubiKeyNode(this.path, this.name, this.pid, this.info);
 
   @override
-  final List<String> path;
+  final DevicePath path;
   @override
   final String name;
   @override
@@ -417,9 +417,9 @@ class _$UsbYubiKeyNode implements UsbYubiKeyNode {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-            List<String> path, String name, int pid, DeviceInfo info)
+            DevicePath path, String name, int pid, DeviceInfo info)
         usbYubiKey,
-    required TResult Function(List<String> path, String name) nfcReader,
+    required TResult Function(DevicePath path, String name) nfcReader,
   }) {
     return usbYubiKey(path, name, pid, info);
   }
@@ -427,9 +427,9 @@ class _$UsbYubiKeyNode implements UsbYubiKeyNode {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(List<String> path, String name, int pid, DeviceInfo info)?
+    TResult Function(DevicePath path, String name, int pid, DeviceInfo info)?
         usbYubiKey,
-    TResult Function(List<String> path, String name)? nfcReader,
+    TResult Function(DevicePath path, String name)? nfcReader,
   }) {
     return usbYubiKey?.call(path, name, pid, info);
   }
@@ -437,9 +437,9 @@ class _$UsbYubiKeyNode implements UsbYubiKeyNode {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<String> path, String name, int pid, DeviceInfo info)?
+    TResult Function(DevicePath path, String name, int pid, DeviceInfo info)?
         usbYubiKey,
-    TResult Function(List<String> path, String name)? nfcReader,
+    TResult Function(DevicePath path, String name)? nfcReader,
     required TResult orElse(),
   }) {
     if (usbYubiKey != null) {
@@ -482,11 +482,11 @@ class _$UsbYubiKeyNode implements UsbYubiKeyNode {
 
 abstract class UsbYubiKeyNode implements DeviceNode {
   factory UsbYubiKeyNode(
-          List<String> path, String name, int pid, DeviceInfo info) =
+          DevicePath path, String name, int pid, DeviceInfo info) =
       _$UsbYubiKeyNode;
 
   @override
-  List<String> get path;
+  DevicePath get path;
   @override
   String get name;
   int get pid;
@@ -504,7 +504,7 @@ abstract class $NfcReaderNodeCopyWith<$Res>
           NfcReaderNode value, $Res Function(NfcReaderNode) then) =
       _$NfcReaderNodeCopyWithImpl<$Res>;
   @override
-  $Res call({List<String> path, String name});
+  $Res call({DevicePath path, String name});
 }
 
 /// @nodoc
@@ -526,7 +526,7 @@ class _$NfcReaderNodeCopyWithImpl<$Res> extends _$DeviceNodeCopyWithImpl<$Res>
       path == freezed
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as DevicePath,
       name == freezed
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -541,7 +541,7 @@ class _$NfcReaderNode implements NfcReaderNode {
   _$NfcReaderNode(this.path, this.name);
 
   @override
-  final List<String> path;
+  final DevicePath path;
   @override
   final String name;
 
@@ -574,9 +574,9 @@ class _$NfcReaderNode implements NfcReaderNode {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-            List<String> path, String name, int pid, DeviceInfo info)
+            DevicePath path, String name, int pid, DeviceInfo info)
         usbYubiKey,
-    required TResult Function(List<String> path, String name) nfcReader,
+    required TResult Function(DevicePath path, String name) nfcReader,
   }) {
     return nfcReader(path, name);
   }
@@ -584,9 +584,9 @@ class _$NfcReaderNode implements NfcReaderNode {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(List<String> path, String name, int pid, DeviceInfo info)?
+    TResult Function(DevicePath path, String name, int pid, DeviceInfo info)?
         usbYubiKey,
-    TResult Function(List<String> path, String name)? nfcReader,
+    TResult Function(DevicePath path, String name)? nfcReader,
   }) {
     return nfcReader?.call(path, name);
   }
@@ -594,9 +594,9 @@ class _$NfcReaderNode implements NfcReaderNode {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<String> path, String name, int pid, DeviceInfo info)?
+    TResult Function(DevicePath path, String name, int pid, DeviceInfo info)?
         usbYubiKey,
-    TResult Function(List<String> path, String name)? nfcReader,
+    TResult Function(DevicePath path, String name)? nfcReader,
     required TResult orElse(),
   }) {
     if (nfcReader != null) {
@@ -638,10 +638,10 @@ class _$NfcReaderNode implements NfcReaderNode {
 }
 
 abstract class NfcReaderNode implements DeviceNode {
-  factory NfcReaderNode(List<String> path, String name) = _$NfcReaderNode;
+  factory NfcReaderNode(DevicePath path, String name) = _$NfcReaderNode;
 
   @override
-  List<String> get path;
+  DevicePath get path;
   @override
   String get name;
   @override

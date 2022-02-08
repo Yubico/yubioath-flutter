@@ -12,12 +12,26 @@ class YubiKeyData with _$YubiKeyData {
       _YubiKeyData;
 }
 
+const _listEquality = ListEquality();
+
+class DevicePath {
+  final List<String> segments;
+
+  DevicePath(List<String> path) : segments = List.unmodifiable(path);
+
+  @override
+  bool operator ==(Object other) =>
+      other is DevicePath && _listEquality.equals(segments, other.segments);
+
+  @override
+  int get hashCode => Object.hashAll(segments);
+}
+
 @freezed
 class DeviceNode with _$DeviceNode {
   factory DeviceNode.usbYubiKey(
-          List<String> path, String name, int pid, DeviceInfo info) =
-      UsbYubiKeyNode;
-  factory DeviceNode.nfcReader(List<String> path, String name) = NfcReaderNode;
+      DevicePath path, String name, int pid, DeviceInfo info) = UsbYubiKeyNode;
+  factory DeviceNode.nfcReader(DevicePath path, String name) = NfcReaderNode;
 }
 
 @freezed

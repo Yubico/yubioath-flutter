@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/management/models.dart';
-import 'package:collection/collection.dart';
 
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
-
-Function _listEquals = const ListEquality().equals;
 
 class MainActionsDialog extends ConsumerWidget {
   const MainActionsDialog({Key? key}) : super(key: key);
@@ -20,7 +17,7 @@ class MainActionsDialog extends ConsumerWidget {
     final actions = ref.watch(menuActionsProvider)(context);
 
     if (currentNode != null) {
-      devices.removeWhere((e) => _listEquals(e.path, currentNode.path));
+      devices.removeWhere((e) => e.path == currentNode.path);
     }
 
     return SimpleDialog(

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:logging/logging.dart';
 import 'package:async/async.dart';
 
+import '../app/models.dart';
 import 'models.dart';
 
 final log = Logger('rpc');
@@ -147,7 +148,7 @@ typedef ErrorHandler = Future<void> Function(RpcError e);
 
 class RpcNodeSession {
   final RpcSession _rpc;
-  final List<String> devicePath;
+  final DevicePath devicePath;
   final List<String> subPath;
   final Map<String, ErrorHandler> _errorHandlers = {};
 
@@ -170,7 +171,7 @@ class RpcNodeSession {
     try {
       return await _rpc.command(
         action,
-        devicePath + subPath + target,
+        devicePath.segments + subPath + target,
         params: params,
         signal: signal,
       );

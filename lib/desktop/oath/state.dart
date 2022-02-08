@@ -15,14 +15,14 @@ import '../state.dart';
 final log = Logger('desktop.oath.state');
 
 final _sessionProvider =
-    Provider.autoDispose.family<RpcNodeSession, List<String>>(
+    Provider.autoDispose.family<RpcNodeSession, DevicePath>(
   (ref, devicePath) =>
       RpcNodeSession(ref.watch(rpcProvider), devicePath, ['ccid', 'oath']),
 );
 
 // This remembers the key for all devices for the duration of the process.
 final _oathLockKeyProvider =
-    StateNotifierProvider.family<_LockKeyNotifier, String?, List<String>>(
+    StateNotifierProvider.family<_LockKeyNotifier, String?, DevicePath>(
         (ref, devicePath) => _LockKeyNotifier(null));
 
 class _LockKeyNotifier extends StateNotifier<String?> {
@@ -35,10 +35,15 @@ class _LockKeyNotifier extends StateNotifier<String?> {
   unsetKey() {
     state = null;
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }
 
 final desktopOathState = StateNotifierProvider.autoDispose
-    .family<OathStateNotifier, OathState?, List<String>>(
+    .family<OathStateNotifier, OathState?, DevicePath>(
   (ref, devicePath) {
     final session = ref.watch(_sessionProvider(devicePath));
     final notifier = _DesktopOathStateNotifier(session, ref);
@@ -164,7 +169,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
 }
 
 final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
-    .family<OathCredentialListNotifier, List<OathPair>?, List<String>>(
+    .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
     var notifier = _DesktopCredentialListNotifier(
       ref.watch(_sessionProvider(devicePath)),

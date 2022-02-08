@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
 
+import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
 import 'models.dart';
@@ -12,7 +13,7 @@ import 'models.dart';
 final log = Logger('oath.state');
 
 final oathStateProvider = StateNotifierProvider.autoDispose
-    .family<OathStateNotifier, OathState?, List<String>>(
+    .family<OathStateNotifier, OathState?, DevicePath>(
   (ref, devicePath) => throw UnimplementedError(),
 );
 
@@ -27,7 +28,7 @@ abstract class OathStateNotifier extends StateNotifier<OathState?> {
 }
 
 final credentialListProvider = StateNotifierProvider.autoDispose
-    .family<OathCredentialListNotifier, List<OathPair>?, List<String>>(
+    .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, arg) => throw UnimplementedError(),
 );
 
