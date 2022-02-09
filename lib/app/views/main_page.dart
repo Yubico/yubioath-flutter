@@ -47,9 +47,8 @@ class MainPage extends ConsumerWidget {
         );
       }
     } else {
-      deviceWidget = const CircleAvatar(
-        backgroundColor: Colors.transparent,
-        child: Icon(Icons.usb_off),
+      deviceWidget = const DeviceAvatar(
+        child: Icon(Icons.more_horiz),
       );
     }
 
