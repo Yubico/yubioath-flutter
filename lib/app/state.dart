@@ -116,15 +116,13 @@ class SubPageNotifier extends StateNotifier<SubPage> {
   }
 }
 
-typedef BuildActions = List<MenuAction> Function(BuildContext);
-
-final menuActionsProvider = Provider.autoDispose<BuildActions>((ref) {
+final menuActionsProvider = Provider.autoDispose<List<MenuAction>>((ref) {
   switch (ref.watch(subPageProvider)) {
     case SubPage.authenticator:
-      return (context) => buildOathMenuActions(context, ref);
+      return buildOathMenuActions(ref);
     case SubPage.yubikey:
       // TODO: Handle this case.
       break;
   }
-  return (_) => [];
+  return [];
 });

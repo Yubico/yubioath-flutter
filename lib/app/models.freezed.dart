@@ -655,7 +655,9 @@ class _$MenuActionTearOff {
   const _$MenuActionTearOff();
 
   _MenuAction call(
-      {required String text, required Icon icon, void Function()? action}) {
+      {required String text,
+      required Icon icon,
+      void Function(BuildContext)? action}) {
     return _MenuAction(
       text: text,
       icon: icon,
@@ -671,7 +673,7 @@ const $MenuAction = _$MenuActionTearOff();
 mixin _$MenuAction {
   String get text => throw _privateConstructorUsedError;
   Icon get icon => throw _privateConstructorUsedError;
-  void Function()? get action => throw _privateConstructorUsedError;
+  void Function(BuildContext)? get action => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MenuActionCopyWith<MenuAction> get copyWith =>
@@ -683,7 +685,7 @@ abstract class $MenuActionCopyWith<$Res> {
   factory $MenuActionCopyWith(
           MenuAction value, $Res Function(MenuAction) then) =
       _$MenuActionCopyWithImpl<$Res>;
-  $Res call({String text, Icon icon, void Function()? action});
+  $Res call({String text, Icon icon, void Function(BuildContext)? action});
 }
 
 /// @nodoc
@@ -712,7 +714,7 @@ class _$MenuActionCopyWithImpl<$Res> implements $MenuActionCopyWith<$Res> {
       action: action == freezed
           ? _value.action
           : action // ignore: cast_nullable_to_non_nullable
-              as void Function()?,
+              as void Function(BuildContext)?,
     ));
   }
 }
@@ -723,7 +725,7 @@ abstract class _$MenuActionCopyWith<$Res> implements $MenuActionCopyWith<$Res> {
           _MenuAction value, $Res Function(_MenuAction) then) =
       __$MenuActionCopyWithImpl<$Res>;
   @override
-  $Res call({String text, Icon icon, void Function()? action});
+  $Res call({String text, Icon icon, void Function(BuildContext)? action});
 }
 
 /// @nodoc
@@ -754,7 +756,7 @@ class __$MenuActionCopyWithImpl<$Res> extends _$MenuActionCopyWithImpl<$Res>
       action: action == freezed
           ? _value.action
           : action // ignore: cast_nullable_to_non_nullable
-              as void Function()?,
+              as void Function(BuildContext)?,
     ));
   }
 }
@@ -769,7 +771,7 @@ class _$_MenuAction implements _MenuAction {
   @override
   final Icon icon;
   @override
-  final void Function()? action;
+  final void Function(BuildContext)? action;
 
   @override
   String toString() {
@@ -803,14 +805,14 @@ abstract class _MenuAction implements MenuAction {
   factory _MenuAction(
       {required String text,
       required Icon icon,
-      void Function()? action}) = _$_MenuAction;
+      void Function(BuildContext)? action}) = _$_MenuAction;
 
   @override
   String get text;
   @override
   Icon get icon;
   @override
-  void Function()? get action;
+  void Function(BuildContext)? get action;
   @override
   @JsonKey(ignore: true)
   _$MenuActionCopyWith<_MenuAction> get copyWith =>

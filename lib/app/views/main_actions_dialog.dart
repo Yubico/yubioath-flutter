@@ -14,7 +14,7 @@ class MainActionsDialog extends ConsumerWidget {
     final devices = ref.watch(attachedDevicesProvider).toList();
     final currentNode = ref.watch(currentDeviceProvider);
     final data = ref.watch(currentDeviceDataProvider);
-    final actions = ref.watch(menuActionsProvider)(context);
+    final actions = ref.watch(menuActionsProvider);
 
     if (currentNode != null) {
       devices.removeWhere((e) => e.path == currentNode.path);
@@ -56,7 +56,7 @@ class MainActionsDialog extends ConsumerWidget {
               title: Text(a.text),
               onTap: () {
                 Navigator.of(context).pop();
-                a.action?.call();
+                a.action?.call(context);
               },
             )),
       ],
