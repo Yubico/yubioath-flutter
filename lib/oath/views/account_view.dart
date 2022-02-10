@@ -40,7 +40,9 @@ class AccountView extends ConsumerWidget {
   final YubiKeyData deviceData;
   final OathCredential credential;
   final OathCode? code;
-  const AccountView(this.deviceData, this.credential, this.code, {Key? key})
+  final FocusNode? focusNode;
+  const AccountView(this.deviceData, this.credential, this.code,
+      {Key? key, this.focusNode})
       : super(key: key);
 
   String formatCode() {
@@ -157,6 +159,7 @@ class AccountView extends ConsumerWidget {
             (credential.touchRequired || credential.oathType == OathType.hotp);
 
     return ListTile(
+      focusNode: focusNode,
       onTap: () {
         if (trigger) {
           _calculate(context, ref);
