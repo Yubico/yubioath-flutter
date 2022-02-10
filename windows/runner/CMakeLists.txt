@@ -17,5 +17,5 @@ target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
 add_dependencies(${BINARY_NAME} flutter_assemble)
 
 # This can probably be done in a cleaner way.
-file(COPY "../../build/windows/ykman" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Release")
-file(COPY "../../build/windows/ykman" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Debug")
+file(COPY "../../build/windows/ykman-rpc" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Release")
+file(COPY "../../build/windows/ykman-rpc" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Debug")
