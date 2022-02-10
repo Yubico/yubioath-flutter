@@ -7,6 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:yubico_authenticator/desktop/devices.dart';
 import 'package:yubico_authenticator/desktop/oath/state.dart';
+import 'package:yubico_authenticator/desktop/qr_scanner.dart';
 import 'package:yubico_authenticator/desktop/state.dart';
 import 'package:yubico_authenticator/oath/state.dart';
 
@@ -52,5 +53,6 @@ Future<List<Override>> initializeAndGetOverrides() async {
     oathStateProvider.overrideWithProvider(desktopOathState),
     credentialListProvider
         .overrideWithProvider(desktopOathCredentialListProvider),
+    qrScannerProvider.overrideWithProvider(desktopQrScannerProvider),
   ];
 }

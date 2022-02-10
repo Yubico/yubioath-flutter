@@ -126,3 +126,11 @@ final menuActionsProvider = Provider.autoDispose<List<MenuAction>>((ref) {
   }
   return [];
 });
+
+abstract class QrScanner {
+  Future<String> scanQr();
+}
+
+final qrScannerProvider = Provider<QrScanner?>(
+  (ref) => null,
+);
