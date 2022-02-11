@@ -13,47 +13,103 @@ import 'utils.dart';
 final _secretFormatterPattern =
     RegExp('[abcdefghijklmnopqrstuvwxyz234567 ]', caseSensitive: false);
 
-class AddAccountForm extends StatefulWidget {
+enum _QrScanState { none, scanning, success, failed }
+
+class AddAccountForm extends ConsumerStatefulWidget {
   final Function(CredentialData, bool) onSubmit;
   const AddAccountForm({Key? key, required this.onSubmit}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _AddAccountFormState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _AddAccountFormState();
 }
 
-class _AddAccountFormState extends State<AddAccountForm> {
-  String _issuer = '';
-  String _account = '';
-  String _secret = '';
+class _AddAccountFormState extends ConsumerState<AddAccountForm> {
+  final _issuerController = TextEditingController();
+  final _accountController = TextEditingController();
+  final _secretController = TextEditingController();
+  final _periodController = TextEditingController(text: '$defaultPeriod');
   bool _touch = false;
   bool _advanced = false;
   OathType _oathType = defaultOathType;
   HashAlgorithm _hashAlgorithm = defaultHashAlgorithm;
-  int _period = defaultPeriod;
   int _digits = defaultDigits;
   bool _validateSecretLength = false;
+  _QrScanState _qrState = _QrScanState.none;
+
+  _scanQrCode(QrScanner qrScanner) async {
+    try {
+      setState(() {
+        _qrState = _QrScanState.scanning;
+      });
+      final otpauth = await qrScanner.scanQr();
+      final data = CredentialData.fromUri(Uri.parse(otpauth));
+      setState(() {
+        _issuerController.text = data.issuer ?? '';
+        _accountController.text = data.name;
+        _secretController.text = data.secret;
+        _oathType = data.oathType;
+        _hashAlgorithm = data.hashAlgorithm;
+        _periodController.text = '${data.period}';
+        _digits = data.digits;
+        _qrState = _QrScanState.success;
+      });
+    } catch (e) {
+      setState(() {
+        _qrState = _QrScanState.failed;
+      });
+    }
+  }
+
+  List<Widget> _buildQrStatus() {
+    switch (_qrState) {
+      case _QrScanState.success:
+        return const [
+          Icon(Icons.check_circle_outline_outlined),
+          Text('QR code scanned!'),
+        ];
+      case _QrScanState.scanning:
+        return const [
+          SizedBox.square(dimension: 16.0, child: CircularProgressIndicator()),
+        ];
+      case _QrScanState.failed:
+        return const [
+          Icon(Icons.warning_amber_rounded),
+          Text('No QR code found'),
+        ];
+      default:
+        return [];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final period = int.tryParse(_periodController.text) ?? -1;
     final remaining = getRemainingKeySpace(
       oathType: _oathType,
-      period: _period,
-      issuer: _issuer,
-      name: _account,
+      period: period,
+      issuer: _issuerController.text,
+      name: _accountController.text,
     );
     final issuerRemaining = remaining.first;
     final nameRemaining = remaining.second;
 
-    final secretLengthValid = _secret.length * 5 % 8 < 5;
-    final isValid = _account.isNotEmpty && _secret.isNotEmpty && _period > 0;
+    final secret = _secretController.text.replaceAll(' ', '');
+    final secretLengthValid = secret.length * 5 % 8 < 5;
+    final isValid =
+        _accountController.text.isNotEmpty && secret.isNotEmpty && period > 0;
+
+    final qrScanner = ref.watch(qrScannerProvider);
 
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
+                controller: _issuerController,
+                autofocus: true,
                 enabled: issuerRemaining > 0,
                 maxLength: max(issuerRemaining, 1),
                 decoration: const InputDecoration(
@@ -63,11 +119,12 @@ class _AddAccountFormState extends State<AddAccountForm> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    _issuer = value.trim();
+                    // Update maxlengths
                   });
                 },
               ),
               TextField(
+                controller: _accountController,
                 maxLength: nameRemaining,
                 decoration: const InputDecoration(
                   labelText: 'Account name',
@@ -76,11 +133,12 @@ class _AddAccountFormState extends State<AddAccountForm> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    _account = value.trim();
+                    // Update maxlengths
                   });
                 },
               ),
               TextField(
+                controller: _secretController,
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.allow(_secretFormatterPattern)
                 ],
@@ -89,13 +147,30 @@ class _AddAccountFormState extends State<AddAccountForm> {
                     errorText: _validateSecretLength && !secretLengthValid
                         ? 'Invalid length'
                         : null),
+                enabled: _qrState != _QrScanState.success,
                 onChanged: (value) {
                   setState(() {
-                    _secret = value.replaceAll(' ', '');
                     _validateSecretLength = false;
                   });
                 },
               ),
+              if (qrScanner != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 24.0),
+                  child: Row(
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          _scanQrCode(qrScanner);
+                        },
+                        icon: const Icon(Icons.qr_code),
+                        label: const Text('Scan QR code'),
+                      ),
+                      const SizedBox(width: 8.0),
+                      ..._buildQrStatus(),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),
@@ -138,11 +213,13 @@ class _AddAccountFormState extends State<AddAccountForm> {
                                   child: Text(e.name.toUpperCase()),
                                 ))
                             .toList(),
-                        onChanged: (type) {
-                          setState(() {
-                            _oathType = type ?? OathType.totp;
-                          });
-                        },
+                        onChanged: _qrState != _QrScanState.success
+                            ? null
+                            : (type) {
+                                setState(() {
+                                  _oathType = type ?? OathType.totp;
+                                });
+                              },
                       ),
                     ),
                     const SizedBox(
@@ -159,11 +236,13 @@ class _AddAccountFormState extends State<AddAccountForm> {
                                   child: Text(e.name.toUpperCase()),
                                 ))
                             .toList(),
-                        onChanged: (type) {
-                          setState(() {
-                            _hashAlgorithm = type ?? HashAlgorithm.sha1;
-                          });
-                        },
+                        onChanged: _qrState != _QrScanState.success
+                            ? null
+                            : (type) {
+                                setState(() {
+                                  _hashAlgorithm = type ?? HashAlgorithm.sha1;
+                                });
+                              },
                       ),
                     ),
                   ],
@@ -175,7 +254,8 @@ class _AddAccountFormState extends State<AddAccountForm> {
                     if (_oathType == OathType.totp)
                       Expanded(
                         child: TextFormField(
-                          initialValue: _period > 0 ? _period.toString() : '',
+                          controller: _periodController,
+                          enabled: _qrState != _QrScanState.success,
                           keyboardType: TextInputType.number,
                           inputFormatters: <TextInputFormatter>[
                             FilteringTextInputFormatter.digitsOnly,
@@ -185,13 +265,12 @@ class _AddAccountFormState extends State<AddAccountForm> {
                                 // Manual alignment to match digits-dropdown.
                                 const EdgeInsets.fromLTRB(0, 12, 0, 15),
                             labelText: 'Period',
-                            errorText: _period > 0
-                                ? null
-                                : 'Must be a positive number',
+                            errorText:
+                                period > 0 ? null : 'Must be a positive number',
                           ),
                           onChanged: (value) {
                             setState(() {
-                              _period = int.tryParse(value) ?? -1;
+                              // Update maxlengths
                             });
                           },
                         ),
@@ -210,11 +289,13 @@ class _AddAccountFormState extends State<AddAccountForm> {
                                   child: Text(e.toString()),
                                 ))
                             .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _digits = value ?? defaultDigits;
-                          });
-                        },
+                        onChanged: _qrState != _QrScanState.success
+                            ? null
+                            : (value) {
+                                setState(() {
+                                  _digits = value ?? defaultDigits;
+                                });
+                              },
                       ),
                     ),
                   ],
@@ -229,15 +310,16 @@ class _AddAccountFormState extends State<AddAccountForm> {
             onPressed: isValid
                 ? () {
                     if (secretLengthValid) {
+                      final issuer = _issuerController.text;
                       widget.onSubmit(
                         CredentialData(
-                          issuer: _issuer.isEmpty ? null : _issuer,
-                          name: _account,
-                          secret: _secret,
+                          issuer: issuer.isEmpty ? null : issuer,
+                          name: _accountController.text,
+                          secret: secret,
                           oathType: _oathType,
                           hashAlgorithm: _hashAlgorithm,
                           digits: _digits,
-                          period: _period,
+                          period: period,
                         ),
                         _touch,
                       );

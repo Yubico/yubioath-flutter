@@ -84,6 +84,31 @@ class CredentialData with _$CredentialData {
   factory CredentialData.fromJson(Map<String, dynamic> json) =>
       _$CredentialDataFromJson(json);
 
+  factory CredentialData.fromUri(Uri uri) {
+    if (uri.scheme.toLowerCase() != 'otpauth') {
+      throw ArgumentError('Invalid scheme, must be "otpauth://"');
+    }
+    final oathType = OathType.values.byName(uri.host.toLowerCase());
+    final params = uri.queryParameters;
+    String? issuer;
+    String name = uri.pathSegments.join('/');
+    final nameIndex = name.indexOf(':');
+    if (nameIndex >= 0) {
+      issuer = name.substring(0, nameIndex);
+      name = name.substring(nameIndex + 1);
+    }
+    return CredentialData(
+      issuer: params['issuer'] ?? issuer,
+      name: name,
+      oathType: oathType,
+      hashAlgorithm: HashAlgorithm.values.byName(params['algorithm'] ?? 'sha1'),
+      secret: params['secret']!,
+      digits: int.tryParse(params['digits'] ?? '') ?? defaultDigits,
+      period: int.tryParse(params['period'] ?? '') ?? defaultPeriod,
+      counter: int.tryParse(params['counter'] ?? '') ?? defaultCounter,
+    );
+  }
+
   Uri toUri() {
     final path = issuer != null ? '$issuer:$name' : name;
     var uri = 'otpauth://${oathType.name}/$path?secret=$secret';
