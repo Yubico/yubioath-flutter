@@ -25,6 +25,7 @@ class MainPageDrawer extends ConsumerWidget {
 
     return Drawer(
       child: ListView(
+        primary: false, //Prevents conflict with the MainPage scroll view.
         children: [
           Padding(
             padding: const EdgeInsets.all(12.0),
