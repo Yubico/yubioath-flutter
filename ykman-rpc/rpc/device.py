@@ -31,6 +31,7 @@ from .oath import OathNode
 from .fido import Ctap2Node
 from .yubiotp import YubiOtpNode
 from .management import ManagementNode
+from .qr import scan_qr
 from ykman import __version__ as ykman_version
 from ykman.base import PID
 from ykman.device import (
@@ -96,6 +97,10 @@ class RootNode(RpcNode):
         logging.getLogger().setLevel(log_level_value)
         logger.info(f"Log level set to: {level}")
         return dict()
+
+    @action(closes_child=False)
+    def qr(self, params, event, signal):
+        return dict(result=scan_qr())
 
 
 class ReadersNode(RpcNode):

@@ -7,6 +7,9 @@ authors = ["Dain Nilsson <dain@yubico.com>"]
 [tool.poetry.dependencies]
 python = "^3.6"
 yubikey-manager = {path = "yubikey-manager"}
+mss = "^6.1.0"
+zxing-cpp = "^1.2.0"
+Pillow = "<9"
 
 [tool.poetry.dev-dependencies]
 pyinstaller = {version = "^4.9", python = "<3.11"}
