@@ -6,11 +6,8 @@
 
 set -e
 
-# Make sure the submodule is cloned, but if it already is, don't reset it.
-if ! [ "$(ls yubikey-manager)" ]; then
-	git submodule init
-	git submodule update
-fi
+# Make sure the submodule is cloned and up to date.
+git submodule update --init
 
 case "$(uname)" in
 	Darwin*) 
@@ -21,22 +18,22 @@ case "$(uname)" in
 		OS="windows";;
 esac
 
-echo "Building ykman CLI for $OS..."
+echo "Building ykman-rpc for $OS..."
 OUTPUT="build/$OS"
 
-cd yubikey-manager
+cd ykman-rpc
 poetry install
-rm -rf ../$OUTPUT/ykman
-poetry run pyinstaller ykman.spec --distpath ../$OUTPUT
+rm -rf ../$OUTPUT/ykman-rpc
+poetry run pyinstaller ykman-rpc.spec --distpath ../$OUTPUT
 cd ..
 
 # Fixup permissions (should probably be more strict)
-find $OUTPUT/ykman -type f -exec chmod a-x {} +
-chmod a+x $OUTPUT/ykman/ykman
+find $OUTPUT/ykman-rpc -type f -exec chmod a-x {} +
+chmod a+x $OUTPUT/ykman-rpc/ykman-rpc
 
 # Adhoc sign executable (MacOS)
 if [ "$OS" = "macos" ]; then
-	codesign -f --timestamp --entitlements macos/ykman.entitlements --sign - $OUTPUT/ykman/ykman
+	codesign -f --timestamp --entitlements macos/ykman.entitlements --sign - $OUTPUT/ykman-rpc/ykman-rpc
 fi
 
 echo "All done, output in $OUTPUT/"

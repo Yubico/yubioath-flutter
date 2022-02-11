@@ -78,8 +78,7 @@ class RpcSession {
   }
 
   static Future<RpcSession> launch(String executable) async {
-    var process =
-        await Process.start(executable, [], environment: {'_YKMAN_RPC': '1'});
+    var process = await Process.start(executable, []);
     return RpcSession(process);
   }
 

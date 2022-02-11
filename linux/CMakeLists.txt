@@ -115,5 +115,5 @@ if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
     COMPONENT Runtime)
 endif()
 
-# Copy the ykman CLI
-install(DIRECTORY "../build/linux/ykman" DESTINATION "${BUILD_BUNDLE_DIR}" USE_SOURCE_PERMISSIONS)
+# Copy the ykman RPC
+install(DIRECTORY "../build/linux/ykman-rpc" DESTINATION "${BUILD_BUNDLE_DIR}" USE_SOURCE_PERMISSIONS)

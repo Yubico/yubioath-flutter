@@ -28,7 +28,7 @@ Future<List<Override>> initializeAndGetOverrides() async {
   // Either use the _YKMAN_EXE environment variable, or look relative to executable.
   var exe = Platform.environment['_YKMAN_PATH'];
   if (exe?.isEmpty ?? true) {
-    var relativePath = 'ykman/ykman';
+    var relativePath = 'ykman-rpc/ykman-rpc';
     if (Platform.isMacOS) {
       relativePath = '../Resources/' + relativePath;
     } else if (Platform.isWindows) {
@@ -41,7 +41,7 @@ Future<List<Override>> initializeAndGetOverrides() async {
 
   log.info('Starting subprocess: $exe');
   var rpc = await RpcSession.launch(exe!);
-  log.info('ykman process started', exe);
+  log.info('ykman-rpc process started', exe);
   rpc.setLogLevel(Logger.root.level);
 
   return [
