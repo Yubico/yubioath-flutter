@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'device_avatar.dart';
@@ -67,14 +68,30 @@ class MainPage extends ConsumerWidget {
               width: 8, color: Theme.of(context).scaffoldBackgroundColor),
         ),
         */
-        title: TextField(
-          decoration: const InputDecoration(
-            hintText: 'Search...',
-            border: InputBorder.none,
-          ),
-          onChanged: (value) {
-            ref.read(searchProvider.notifier).setFilter(value);
+        title: Focus(
+          canRequestFocus: false,
+          onKeyEvent: (node, event) {
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              node.focusInDirection(TraversalDirection.down);
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
           },
+          child: Builder(builder: (context) {
+            return TextField(
+              decoration: const InputDecoration(
+                hintText: 'Search...',
+                border: InputBorder.none,
+              ),
+              onChanged: (value) {
+                ref.read(searchProvider.notifier).setFilter(value);
+              },
+              textInputAction: TextInputAction.next,
+              onSubmitted: (value) {
+                Focus.of(context).focusInDirection(TraversalDirection.down);
+              },
+            );
+          }),
         ),
         actions: [
           Padding(

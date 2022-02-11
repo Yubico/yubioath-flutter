@@ -40,7 +40,9 @@ class AccountView extends ConsumerWidget {
   final YubiKeyData deviceData;
   final OathCredential credential;
   final OathCode? code;
-  const AccountView(this.deviceData, this.credential, this.code, {Key? key})
+  final FocusNode? focusNode;
+  const AccountView(this.deviceData, this.credential, this.code,
+      {Key? key, this.focusNode})
       : super(key: key);
 
   String formatCode() {
@@ -55,15 +57,16 @@ class AccountView extends ConsumerWidget {
     }
   }
 
-  List<PopupMenuEntry> _buildPopupMenu(BuildContext context, WidgetRef ref) => [
+  List<PopupMenuEntry> _buildPopupMenu(
+          BuildContext context, WidgetRef ref, bool trigger) =>
+      [
         PopupMenuItem(
           child: const ListTile(
             leading: Icon(Icons.copy),
             title: Text('Copy to clipboard'),
           ),
-          enabled: code != null,
           onTap: () {
-            _copyToClipboard(context);
+            _copyToClipboard(context, ref, trigger);
           },
         ),
         PopupMenuItem(
@@ -112,8 +115,15 @@ class AccountView extends ConsumerWidget {
         ),
       ];
 
-  _copyToClipboard(BuildContext context) {
-    Clipboard.setData(ClipboardData(text: code!.value));
+  _copyToClipboard(BuildContext context, WidgetRef ref, bool trigger) async {
+    String value;
+    if (trigger) {
+      final updated = await _calculate(context, ref);
+      value = updated.value;
+    } else {
+      value = code!.value;
+    }
+    await Clipboard.setData(ClipboardData(text: value));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Code copied'),
@@ -122,7 +132,7 @@ class AccountView extends ConsumerWidget {
     );
   }
 
-  _calculate(BuildContext context, WidgetRef ref) async {
+  Future<OathCode> _calculate(BuildContext context, WidgetRef ref) async {
     VoidCallback? close;
     if (credential.touchRequired) {
       final sbc = ScaffoldMessenger.of(context).showSnackBar(
@@ -137,7 +147,7 @@ class AccountView extends ConsumerWidget {
       close = sbc.close;
     }
     try {
-      await ref
+      return await ref
           .read(credentialListProvider(deviceData.node.path).notifier)
           .calculate(credential);
     } finally {
@@ -148,20 +158,22 @@ class AccountView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final code = this.code;
-    final expired = ref.watch(_expireProvider(code?.validTo ?? 0));
     final label = credential.issuer != null
         ? '${credential.issuer} (${credential.name})'
         : credential.name;
+    final expired = ref.watch(_expireProvider(code?.validTo ?? 0));
     final trigger = code == null ||
         expired &&
             (credential.touchRequired || credential.oathType == OathType.hotp);
 
     return ListTile(
+      focusNode: focusNode,
       onTap: () {
-        if (trigger) {
-          _calculate(context, ref);
+        final focus = focusNode;
+        if (focus != null && focus.hasFocus == false) {
+          focus.requestFocus();
         } else {
-          _copyToClipboard(context);
+          _copyToClipboard(context, ref, trigger);
         }
       },
       leading: CircleAvatar(
@@ -205,7 +217,8 @@ class AccountView extends ConsumerWidget {
               const Spacer(),
               PopupMenuButton(
                 child: Icon(Icons.adaptive.more),
-                itemBuilder: (context) => _buildPopupMenu(context, ref),
+                itemBuilder: (context) =>
+                    _buildPopupMenu(context, ref, trigger),
               ),
             ],
           ),
