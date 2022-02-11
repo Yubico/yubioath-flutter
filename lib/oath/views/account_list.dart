@@ -35,7 +35,6 @@ class _AccountListState extends State<AccountList> {
       for (var cred in _credentials)
         cred: _focusNodes[cred] ??
             FocusNode(
-              debugLabel: cred.id,
               onKeyEvent: (node, event) {
                 if (event is KeyDownEvent) {
                   int index = -1;
