@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
     application.setApplicationVersion(APP_VERSION);
     application.setOrganizationName("Yubico");
     application.setOrganizationDomain("com.yubico");
+    application.setDesktopFileName("com.yubico.yubioath");
 
     // Get x and y coordinates of all monitors
     QVariantList monitorAreas;
