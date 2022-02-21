@@ -60,7 +60,14 @@ class RpcSession {
       : _responses = StreamQueue(_process.stdout
             .transform(const Utf8Decoder())
             .transform(const LineSplitter())
-            .map((event) => RpcResponse.fromJson(jsonDecode(event)))) {
+            .map((event) {
+          try {
+            return RpcResponse.fromJson(jsonDecode(event));
+          } catch (e) {
+            _log.severe('Response was not valid JSON', event);
+            return RpcResponse.error('invalid-response', e.toString(), {});
+          }
+        })) {
     _process.stderr
         .transform(const Utf8Decoder())
         .transform(const LineSplitter())
