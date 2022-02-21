@@ -6,9 +6,6 @@
 
 set -e
 
-# Make sure the submodule is cloned and up to date.
-git submodule update --init
-
 case "$(uname)" in
 	Darwin*) 
 		OS="macos";;

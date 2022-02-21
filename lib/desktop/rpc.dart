@@ -8,7 +8,7 @@ import 'package:async/async.dart';
 import '../app/models.dart';
 import 'models.dart';
 
-final log = Logger('rpc');
+final _log = Logger('rpc');
 
 class Signaler {
   final _send = StreamController<String>();
@@ -72,8 +72,13 @@ class RpcSession {
         event['exc_text'],
         //time: DateTime.fromMillisecondsSinceEpoch(event['time'] * 1000),
       );
+    }, onError: (err) {
+      Logger('rpc.error').log(
+        Level.SEVERE,
+        err.toString(),
+      );
     });
-    log.info('Launched ykman subprocess...');
+    _log.info('Launched ykman subprocess...');
     _pump();
   }
 
@@ -91,7 +96,9 @@ class RpcSession {
 
   setLogLevel(Level level) {
     String pyLevel;
-    if (level.value <= Level.CONFIG.value) {
+    if (level.value <= Level.FINE.value) {
+      pyLevel = 'traffic';
+    } else if (level.value <= Level.CONFIG.value) {
       pyLevel = 'debug';
     } else if (level.value <= Level.INFO.value) {
       pyLevel = 'info';
@@ -106,7 +113,7 @@ class RpcSession {
   }
 
   void _send(Map data) {
-    log.fine('SEND', jsonEncode(data));
+    _log.fine('SEND', jsonEncode(data));
     _process.stdin.writeln(jsonEncode(data));
     _process.stdin.flush();
   }
@@ -122,7 +129,7 @@ class RpcSession {
       bool completed = false;
       while (!completed) {
         final response = await _responses.next;
-        log.fine('RECV', jsonEncode(response));
+        _log.fine('RECV', jsonEncode(response));
         response.map(
           signal: (signal) {
             request.signal?._recv.sink.add(signal);
@@ -177,7 +184,7 @@ class RpcNodeSession {
     } on RpcError catch (e) {
       final handler = _errorHandlers[e.status];
       if (handler != null) {
-        log.info('Attempting recovery on "${e.status}"');
+        _log.info('Attempting recovery on "${e.status}"');
         await handler(e);
         return command(action, target: target, params: params, signal: signal);
       }

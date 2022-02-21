@@ -3,14 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:logging/logging.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
 import 'models.dart';
-
-final log = Logger('oath.state');
 
 final oathStateProvider = StateNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState?, DevicePath>(

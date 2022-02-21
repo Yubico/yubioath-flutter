@@ -1,5 +1,7 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,10 +14,21 @@ import 'desktop/init.dart' as desktop;
 
 import 'error_page.dart';
 
-final log = Logger('main');
+final _log = Logger('main');
 
 void main() async {
-  _initLogging(Level.INFO);
+  // Set YUBIOATH_DEV_LOG=true to use the developer log.
+  if (kDebugMode && Platform.environment['YUBIOATH_DEV_LOG'] == 'true') {
+    _initializeDebugLogging();
+    Logger.root.level = Level.INFO;
+    _log.info('Logging to debug console');
+  } else {
+    if (isDesktop) {
+      desktop.initializeLogging();
+    }
+    // TODO: android.initializeLogging() to set up bridge to logcat.
+  }
+
   WidgetsFlutterBinding.ensureInitialized();
 
   List<Override> overrides = [
@@ -25,12 +38,12 @@ void main() async {
   try {
     // Platform specific initialization
     if (isDesktop) {
-      log.config('Initializing desktop platform.');
+      _log.config('Initializing desktop platform.');
       overrides.addAll(await desktop.initializeAndGetOverrides());
     }
     page = const MainPage();
   } catch (e) {
-    log.warning('Platform initialization failed: $e');
+    _log.warning('Platform initialization failed: $e');
     page = ErrorPage(error: e.toString());
   }
 
@@ -40,8 +53,7 @@ void main() async {
   ));
 }
 
-void _initLogging(Level level) {
-  //TODO: Add support for logging to stderr and file
+void _initializeDebugLogging() {
   Logger.root.onRecord.listen((record) {
     developer.log(
       '${record.level}: ${record.message}',
@@ -51,8 +63,6 @@ void _initLogging(Level level) {
       level: record.level.value,
     );
   });
-
-  Logger.root.level = level;
 }
 
 //TODO: Remove below this
