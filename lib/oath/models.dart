@@ -101,7 +101,8 @@ class CredentialData with _$CredentialData {
       issuer: params['issuer'] ?? issuer,
       name: name,
       oathType: oathType,
-      hashAlgorithm: HashAlgorithm.values.byName(params['algorithm'] ?? 'sha1'),
+      hashAlgorithm: HashAlgorithm.values
+          .byName(params['algorithm']?.toLowerCase() ?? 'sha1'),
       secret: params['secret']!,
       digits: int.tryParse(params['digits'] ?? '') ?? defaultDigits,
       period: int.tryParse(params['period'] ?? '') ?? defaultPeriod,

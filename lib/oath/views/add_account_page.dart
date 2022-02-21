@@ -214,12 +214,12 @@ class _AddAccountFormState extends ConsumerState<AddAccountForm> {
                                 ))
                             .toList(),
                         onChanged: _qrState != _QrScanState.success
-                            ? null
-                            : (type) {
+                            ? (type) {
                                 setState(() {
                                   _oathType = type ?? OathType.totp;
                                 });
-                              },
+                              }
+                            : null,
                       ),
                     ),
                     const SizedBox(
@@ -237,12 +237,12 @@ class _AddAccountFormState extends ConsumerState<AddAccountForm> {
                                 ))
                             .toList(),
                         onChanged: _qrState != _QrScanState.success
-                            ? null
-                            : (type) {
+                            ? (type) {
                                 setState(() {
                                   _hashAlgorithm = type ?? HashAlgorithm.sha1;
                                 });
-                              },
+                              }
+                            : null,
                       ),
                     ),
                   ],
@@ -290,12 +290,12 @@ class _AddAccountFormState extends ConsumerState<AddAccountForm> {
                                 ))
                             .toList(),
                         onChanged: _qrState != _QrScanState.success
-                            ? null
-                            : (value) {
+                            ? (value) {
                                 setState(() {
                                   _digits = value ?? defaultDigits;
                                 });
-                              },
+                              }
+                            : null,
                       ),
                     ),
                   ],
