@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const primaryGreen = Color(0xffa8c86c);
+
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
         brightness: Brightness.light,
@@ -9,8 +11,10 @@ class AppTheme {
         brightness: Brightness.dark,
         colorScheme:
             ColorScheme.fromSwatch(brightness: Brightness.dark).copyWith(
-          secondary: const Color(0xffa8c86c),
+          primary: primaryGreen,
+          secondary: primaryGreen,
         ),
+        toggleableActiveColor: primaryGreen,
         textTheme: TextTheme(
           bodyText1: TextStyle(
             color: Colors.grey.shade400,
