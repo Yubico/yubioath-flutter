@@ -74,7 +74,7 @@ class RpcSession {
       );
     }, onError: (err) {
       Logger('rpc.error').log(
-        Level.WARNING,
+        Level.SEVERE,
         err.toString(),
       );
     });
