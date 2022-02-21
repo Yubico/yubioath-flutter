@@ -1,3 +1,0 @@
-[submodule "yubikey-manager"]
-	path = ykman-rpc/yubikey-manager
-	url = https://github.com/Yubico/yubikey-manager

@@ -1,8 +1,5 @@
 @echo off
 
-REM Make sure the submodule is cloned and up to date.
-git submodule update --init
-
 echo Building ykman-rpc for Windows...
 cd ykman-rpc
 poetry install

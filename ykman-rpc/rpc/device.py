@@ -41,11 +41,13 @@ from ykman.device import (
     read_info,
 )
 from ykman.diagnostics import get_diagnostics
+from ykman.logging import set_log_level
 from yubikit.core import TRANSPORT
 from yubikit.core.smartcard import SmartCardConnection, ApduError, SW
 from yubikit.core.otp import OtpConnection
 from yubikit.core.fido import FidoConnection
 from yubikit.management import CAPABILITY
+from yubikit.logging import LOG_LEVEL
 
 from ykman.pcsc import list_devices, YK_READER_NAME
 from smartcard.Exceptions import SmartcardException
@@ -92,10 +94,9 @@ class RootNode(RpcNode):
 
     @action(closes_child=False)
     def logging(self, params, event, signal):
-        level = params["level"].upper()
-        log_level_value = getattr(logging, level)
-        logging.getLogger().setLevel(log_level_value)
-        logger.info(f"Log level set to: {level}")
+        level = LOG_LEVEL[params["level"].upper()]
+        set_log_level(level)
+        logger.info(f"Log level set to: {level.name}")
         return dict()
 
     @action(closes_child=False)

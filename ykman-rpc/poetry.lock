@@ -41,7 +41,7 @@ pycparser = "*"
 
 [[package]]
 name = "click"
-version = "8.0.3"
+version = "8.0.4"
 description = "Composable command line interface toolkit"
 category = "main"
 optional = false
@@ -88,18 +88,25 @@ python-versions = ">=3.6, <3.7"
 
 [[package]]
 name = "fido2"
-version = "0.9.3"
-description = "Python based FIDO 2.0 library"
+version = "1.0.0-dev0"
+description = "FIDO2/WebAuthn library for implementing clients and servers."
 category = "main"
 optional = false
-python-versions = ">=2.7.6,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+python-versions = "^3.6"
+develop = false
 
 [package.dependencies]
-cryptography = ">=1.5"
-six = "*"
+cryptography = ">=2.1, !=35, <39"
+dataclasses = {version = "^0.8", markers = "python_version < \"3.7\""}
 
 [package.extras]
-pcsc = ["pyscard"]
+pcsc = ["pyscard (>=1.9,<3.0.0)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/Yubico/python-fido2.git"
+reference = "refactor/logging-levels"
+resolved_reference = "53175db8b2b8d1702d48c6f4afda7819d76e27dd"
 
 [[package]]
 name = "future"
@@ -305,7 +312,7 @@ Pyro = ["pyro"]
 
 [[package]]
 name = "pytest"
-version = "7.0.0"
+version = "7.0.1"
 description = "pytest: simple powerful testing with Python"
 category = "dev"
 optional = false
@@ -354,14 +361,6 @@ cryptography = ">=2.0"
 jeepney = ">=0.6"
 
 [[package]]
-name = "six"
-version = "1.16.0"
-description = "Python 2 and 3 compatibility utilities"
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
-
-[[package]]
 name = "tomli"
 version = "1.2.3"
 description = "A lil' TOML parser"
@@ -371,7 +370,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "typing-extensions"
-version = "4.0.1"
+version = "4.1.1"
 description = "Backported and Experimental Type Hints for Python 3.6+"
 category = "main"
 optional = false
@@ -379,7 +378,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "yubikey-manager"
-version = "4.1.0-dev0"
+version = "5.0.0-dev0"
 description = "Tool for managing your YubiKey configuration."
 category = "main"
 optional = false
@@ -388,16 +387,18 @@ develop = false
 
 [package.dependencies]
 click = "^6.0 || ^7.0 || ^8.0"
-cryptography = ">=2.1, <39"
+cryptography = ">=2.5, <39"
 dataclasses = {version = "^0.8", markers = "python_version < \"3.7\""}
-fido2 = ">=0.9, <1.0"
+fido2 = ">=0.9, <2.0"
 keyring = "<23.5"
 pyscard = "^1.9 || ^2.0"
 pywin32 = {version = ">=223", markers = "sys_platform == \"win32\""}
 
 [package.source]
-type = "directory"
-url = "yubikey-manager"
+type = "git"
+url = "https://github.com/Yubico/yubikey-manager.git"
+reference = "next"
+resolved_reference = "e69da0bac19383a957ce5f70774dbd332f7cda48"
 
 [[package]]
 name = "zipp"
@@ -425,7 +426,7 @@ numpy = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "382839815b5019830e486c281aa1f7e6c68deeab52493700bd63f8a9f3d4ed45"
+content-hash = "df8d3913b9ffcea9429219aa313b90391f168cb03976accc741d0dfc09b1fc40"
 
 [metadata.files]
 altgraph = [
@@ -493,8 +494,8 @@ cffi = [
     {file = "cffi-1.15.0.tar.gz", hash = "sha256:920f0d66a896c2d99f0adbb391f990a84091179542c205fa53ce5787aff87954"},
 ]
 click = [
-    {file = "click-8.0.3-py3-none-any.whl", hash = "sha256:353f466495adaeb40b6b5f592f9f91cb22372351c84caeb068132442a4518ef3"},
-    {file = "click-8.0.3.tar.gz", hash = "sha256:410e932b050f5eed773c4cda94de75971c89cdb3155a72a0831139a79e5ecb5b"},
+    {file = "click-8.0.4-py3-none-any.whl", hash = "sha256:6a7a62563bbfabfda3a38f3023a1db4a35978c0abd76f6c9605ecd6554d6d9b1"},
+    {file = "click-8.0.4.tar.gz", hash = "sha256:8458d7b1287c5fb128c90e23381cf99dcde74beaf6c7ff6384ce84d6fe090adb"},
 ]
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
@@ -526,9 +527,7 @@ dataclasses = [
     {file = "dataclasses-0.8-py3-none-any.whl", hash = "sha256:0201d89fa866f68c8ebd9d08ee6ff50c0b255f8ec63a71c16fda7af82bb887bf"},
     {file = "dataclasses-0.8.tar.gz", hash = "sha256:8479067f342acf957dc82ec415d355ab5edb7e7646b90dc6e2fd1d96ad084c97"},
 ]
-fido2 = [
-    {file = "fido2-0.9.3.tar.gz", hash = "sha256:b45e89a6109cfcb7f1bb513776aa2d6408e95c4822f83a253918b944083466ec"},
-]
+fido2 = []
 future = [
     {file = "future-0.18.2.tar.gz", hash = "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"},
 ]
@@ -684,8 +683,8 @@ pyscard = [
     {file = "pyscard-2.0.2.tar.gz", hash = "sha256:05de0579c42b4eb433903aa2fb327d4821ebac262434b6584da18ed72053fd9e"},
 ]
 pytest = [
-    {file = "pytest-7.0.0-py3-none-any.whl", hash = "sha256:42901e6bd4bd4a0e533358a86e848427a49005a3256f657c5c8f8dd35ef137a9"},
-    {file = "pytest-7.0.0.tar.gz", hash = "sha256:dad48ffda394e5ad9aa3b7d7ddf339ed502e5e365b1350e0af65f4a602344b11"},
+    {file = "pytest-7.0.1-py3-none-any.whl", hash = "sha256:9ce3ff477af913ecf6321fe337b93a2c0dcf2a0a1439c43f5452112c1e4280db"},
+    {file = "pytest-7.0.1.tar.gz", hash = "sha256:e30905a0c131d3d94b89624a1cc5afec3e0ba2fbdb151867d8e0ebd49850f171"},
 ]
 pywin32 = [
     {file = "pywin32-303-cp310-cp310-win32.whl", hash = "sha256:6fed4af057039f309263fd3285d7b8042d41507343cd5fa781d98fcc5b90e8bb"},
@@ -709,17 +708,13 @@ secretstorage = [
     {file = "SecretStorage-3.3.1-py3-none-any.whl", hash = "sha256:422d82c36172d88d6a0ed5afdec956514b189ddbfb72fefab0c8a1cee4eaf71f"},
     {file = "SecretStorage-3.3.1.tar.gz", hash = "sha256:fd666c51a6bf200643495a04abb261f83229dcb6fd8472ec393df7ffc8b6f195"},
 ]
-six = [
-    {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
-    {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
-]
 tomli = [
     {file = "tomli-1.2.3-py3-none-any.whl", hash = "sha256:e3069e4be3ead9668e21cb9b074cd948f7b3113fd9c8bba083f48247aab8b11c"},
     {file = "tomli-1.2.3.tar.gz", hash = "sha256:05b6166bff487dc068d322585c7ea4ef78deed501cc124060e0f238e89a9231f"},
 ]
 typing-extensions = [
-    {file = "typing_extensions-4.0.1-py3-none-any.whl", hash = "sha256:7f001e5ac290a0c0401508864c7ec868be4e701886d5b573a9528ed3973d9d3b"},
-    {file = "typing_extensions-4.0.1.tar.gz", hash = "sha256:4ca091dea149f945ec56afb48dae714f21e8692ef22a395223bcd328961b6a0e"},
+    {file = "typing_extensions-4.1.1-py3-none-any.whl", hash = "sha256:21c85e0fe4b9a155d0799430b0ad741cdce7e359660ccbd8b530613e8df88ce2"},
+    {file = "typing_extensions-4.1.1.tar.gz", hash = "sha256:1a9462dcc3347a79b1f1c0271fbe79e844580bb598bafa1ed208b94da3cdcd42"},
 ]
 yubikey-manager = []
 zipp = [
