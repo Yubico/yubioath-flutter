@@ -9,6 +9,8 @@ import '../app/models.dart';
 import 'models.dart';
 import 'rpc.dart';
 
+final _log = Logger('state');
+
 // This must be initialized before use in initialize.dart.
 final rpcProvider = Provider<RpcSession>((ref) {
   throw UnimplementedError();
@@ -74,7 +76,7 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
 
   @override
   set state(WindowState value) {
-    log.config('Window state changed: $value');
+    _log.config('Window state changed: $value');
     super.state = value;
   }
 
@@ -103,7 +105,7 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
           state = state.copyWith(visible: true, active: true);
           break;
         default:
-          log.fine('Window event ignored: $eventName');
+          _log.fine('Window event ignored: $eventName');
       }
     }
   }

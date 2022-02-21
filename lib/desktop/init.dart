@@ -14,7 +14,17 @@ import 'package:yubico_authenticator/oath/state.dart';
 import '../app/state.dart';
 import 'rpc.dart';
 
-final log = Logger('desktop.init');
+final _log = Logger('desktop.init');
+
+initializeLogging() {
+  Logger.root.onRecord.listen((record) {
+    stderr.writeln('[${record.loggerName}] ${record.level}: ${record.message}');
+    if (record.error != null) {
+      stderr.writeln(record.error);
+    }
+  });
+  _log.info('Logging initialized, outputting to stderr');
+}
 
 Future<List<Override>> initializeAndGetOverrides() async {
   await windowManager.ensureInitialized();
@@ -40,9 +50,9 @@ Future<List<Override>> initializeAndGetOverrides() async {
         .toFilePath();
   }
 
-  log.info('Starting subprocess: $exe');
+  _log.info('Starting subprocess: $exe');
   var rpc = await RpcSession.launch(exe!);
-  log.info('ykman-rpc process started', exe);
+  _log.info('ykman-rpc process started', exe);
   rpc.setLogLevel(Logger.root.level);
 
   return [

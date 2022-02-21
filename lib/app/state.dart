@@ -7,7 +7,7 @@ import '../core/state.dart';
 import '../oath/menu_actions.dart';
 import 'models.dart';
 
-final log = Logger('app.state');
+final _log = Logger('app.state');
 
 // Default implementation is always focused, override with platform specific version.
 final windowStateProvider = Provider<WindowState>(
@@ -23,6 +23,7 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   ThemeModeNotifier(this._prefs) : super(_fromName(_prefs.getString(_key)));
 
   void setThemeMode(ThemeMode mode) {
+    _log.config('Set theme to $mode');
     state = mode;
     _prefs.setString(_key, mode.name);
   }

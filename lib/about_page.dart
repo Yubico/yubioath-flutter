@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 import 'core/state.dart';
 import 'desktop/state.dart';
 
-final log = Logger('about');
+final _log = Logger('about');
 
 class AboutPage extends ConsumerWidget {
   const AboutPage({Key? key}) : super(key: key);
@@ -38,7 +38,7 @@ class AboutPage extends ConsumerWidget {
                             ref
                                 .read(logLevelProvider.notifier)
                                 .setLogLevel(level);
-                            log.info(
+                            _log.info(
                                 'Log level changed to ${level.name.toUpperCase()}');
                           },
                           child: Text(level.name.toUpperCase()),
@@ -49,10 +49,10 @@ class AboutPage extends ConsumerWidget {
               if (isDesktop)
                 TextButton(
                   onPressed: () async {
-                    log.info('Running diagnostics...');
+                    _log.info('Running diagnostics...');
                     final response =
                         await ref.read(rpcProvider).command('diagnose', []);
-                    log.info('Response', response['diagnostics']);
+                    _log.info('Response', response['diagnostics']);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content:

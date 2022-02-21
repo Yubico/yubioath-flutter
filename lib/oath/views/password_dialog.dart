@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
 
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../state.dart';
-
-final log = Logger('oath.views.password_dialog');
 
 class ManagePasswordDialog extends ConsumerStatefulWidget {
   final DeviceNode device;

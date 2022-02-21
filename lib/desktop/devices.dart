@@ -17,7 +17,7 @@ const _nfcPollDelay = Duration(milliseconds: 2500);
 const _nfcAttachPollDelay = Duration(seconds: 1);
 const _nfcDetachPollDelay = Duration(seconds: 5);
 
-final log = Logger('desktop.devices');
+final _log = Logger('desktop.devices');
 
 final _usbDevicesProvider =
     StateNotifierProvider<UsbDeviceNotifier, List<UsbYubiKeyNode>>((ref) {
@@ -58,7 +58,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
 
       if (_usbState != scan['state'] || state.length != scan['pids'].length) {
         var usbResult = await _rpc.command('get', ['usb']);
-        log.info('USB state change', jsonEncode(usbResult));
+        _log.info('USB state change', jsonEncode(usbResult));
         _usbState = usbResult['data']['state'];
         List<UsbYubiKeyNode> usbDevices = [];
 
@@ -74,13 +74,13 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
           ) as UsbYubiKeyNode);
         }
 
-        log.info('USB state updated');
+        _log.info('USB state updated');
         if (mounted) {
           state = usbDevices;
         }
       }
     } on RpcError catch (e) {
-      log.severe('Error polling USB', jsonEncode(e));
+      _log.severe('Error polling USB', jsonEncode(e));
     }
 
     if (mounted) {
@@ -128,7 +128,7 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
       var newState = children.keys.join(':');
 
       if (mounted && newState != _nfcState) {
-        log.info('NFC state change', jsonEncode(children));
+        _log.info('NFC state change', jsonEncode(children));
         _nfcState = newState;
         state = children.entries
             .map((e) => DeviceNode.nfcReader(
@@ -137,7 +137,7 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
             .toList();
       }
     } on RpcError catch (e) {
-      log.severe('Error polling NFC', jsonEncode(e));
+      _log.severe('Error polling NFC', jsonEncode(e));
     }
 
     if (mounted) {
@@ -207,6 +207,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<YubiKeyData?> {
     _pollTimer?.cancel();
     final node = _deviceNode!;
     try {
+      _log.config('Polling for USB device changes...');
       var result = await _rpc.command('get', node.path.segments);
       if (mounted) {
         if (result['data']['present']) {
@@ -217,7 +218,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<YubiKeyData?> {
         }
       }
     } on RpcError catch (e) {
-      log.severe('Error polling NFC', jsonEncode(e));
+      _log.severe('Error polling NFC', jsonEncode(e));
     }
     if (mounted) {
       _pollTimer = Timer(
