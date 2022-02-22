@@ -48,6 +48,7 @@ class SettingsPage extends ConsumerWidget {
                     .toList(),
                 onChanged: (level) {
                   ref.read(logLevelProvider.notifier).setLogLevel(level!);
+                  _log.config('Log level set to $level');
                 },
               ),
             ],
