@@ -25,7 +25,7 @@ class ResetDialog extends ConsumerWidget {
               'Warning! This will irrevocably delete all OATH TOTP/HOTP accounts from your YubiKey.'),
           const Text(''),
           Text(
-            'You OATH credentials, as well as any password set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.',
+            'Your OATH credentials, as well as any password set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.',
             style: Theme.of(context).textTheme.bodyText1,
           ),
         ],

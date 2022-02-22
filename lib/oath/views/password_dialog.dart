@@ -49,7 +49,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: const [
                             Text(
-                              'You password is remembered by the app.',
+                              'Your password is remembered by the app.',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ],
