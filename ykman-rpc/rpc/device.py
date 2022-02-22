@@ -175,6 +175,7 @@ class DevicesNode(RpcNode):
     def list_children(self):
         state = self._get_state()
         if state[1] != self._list_state:
+            logger.debug(f"State changed (was={self._list_state}, now={state[1]})")
             self._devices = {}
             self._device_mapping = {}
             for dev, info in list_all_devices():
@@ -184,8 +185,10 @@ class DevicesNode(RpcNode):
                 self._device_mapping[dev_id] = (dev, info)
                 name = get_name(info, dev.pid.get_type() if dev.pid else None)
                 self._devices[dev_id] = dict(pid=dev.pid, name=name, serial=info.serial)
-            if len(state[0]) == len(self._devices):
+
+            if sum(state[0].values()) == len(self._devices):
                 self._list_state = state[1]
+                logger.debug("State updated: {state[1]}")
             else:
                 logger.warning("Not all devices identified")
                 self._list_state = 0
