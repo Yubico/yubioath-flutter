@@ -71,20 +71,20 @@ class RpcSession {
     _process.stderr
         .transform(const Utf8Decoder())
         .transform(const LineSplitter())
-        .map((event) => jsonDecode(event))
         .listen((event) {
-      Logger('rpc.${event['name']}').log(
-        _py2level[event['level']] ?? Level.INFO,
-        event['message'],
-        event['exc_text'],
-        //time: DateTime.fromMillisecondsSinceEpoch(event['time'] * 1000),
-      );
-    }, onError: (err) {
-      Logger('rpc.error').log(
-        Level.SEVERE,
-        err.toString(),
-      );
+      try {
+        final record = jsonDecode(event);
+        Logger('rpc.${record['name']}').log(
+          _py2level[record['level']] ?? Level.INFO,
+          record['message'],
+          record['exc_text'],
+          //time: DateTime.fromMillisecondsSinceEpoch(event['time'] * 1000),
+        );
+      } catch (e) {
+        _log.severe(e.toString(), event);
+      }
     });
+
     _log.info('Launched ykman subprocess...');
     _pump();
   }
