@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/oath/models.dart';
 
 import '../../app/models.dart';
 import '../state.dart';
@@ -26,14 +27,22 @@ class OathScreen extends ConsumerWidget {
       return ListView(
         children: [
           _UnlockForm(
+            keystore: state.keystore,
             onSubmit: (password, remember) async {
               final result = await ref
                   .read(oathStateProvider(deviceData.node.path).notifier)
                   .unlock(password, remember: remember);
-              if (!result) {
+              if (!result.first) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Wrong password'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+              } else if (remember && !result.second) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Failed to remember password'),
                     duration: Duration(seconds: 1),
                   ),
                 );
@@ -62,14 +71,17 @@ class OathScreen extends ConsumerWidget {
 }
 
 class _UnlockForm extends StatefulWidget {
+  final KeystoreState keystore;
   final Function(String, bool) onSubmit;
-  const _UnlockForm({Key? key, required this.onSubmit}) : super(key: key);
+  const _UnlockForm({Key? key, required this.keystore, required this.onSubmit})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _UnlockFormState();
 }
 
 class _UnlockFormState extends State<_UnlockForm> {
+  // TODO: Use a TextEditingController so we can clear it on wrong entry
   String _password = '';
   bool _remember = false;
 
@@ -114,11 +126,13 @@ class _UnlockFormState extends State<_UnlockForm> {
           title: const Text('Remember password'),
           controlAffinity: ListTileControlAffinity.leading,
           value: _remember,
-          onChanged: (value) {
-            setState(() {
-              _remember = value ?? false;
-            });
-          },
+          onChanged: widget.keystore == KeystoreState.failed
+              ? null
+              : (value) {
+                  setState(() {
+                    _remember = value ?? false;
+                  });
+                },
         ),
         Container(
           padding: const EdgeInsets.all(16.0),

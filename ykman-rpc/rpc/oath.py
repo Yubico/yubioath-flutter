@@ -41,6 +41,7 @@ from yubikit.core import require_version, NotSupportedError
 from yubikit.core.smartcard import ApduError, SW
 from yubikit.oath import OathSession, CredentialData, OATH_TYPE, HASH_ALGORITHM
 from dataclasses import asdict
+from enum import Enum, unique
 from time import time
 import hmac
 import os
@@ -54,29 +55,59 @@ class AuthRequiredException(RpcException):
         super().__init__("auth-required", "Authentication is required")
 
 
-def _get_keys():
-    return AppData("oath_keys")
+@unique
+class KEYSTORE(str, Enum):
+    UNKNOWN = "unknown"
+    ALLOWED = "allowed"
+    FAILED = "failed"
+    # DENIED = "denied"  # Maybe failed is enough?
 
 
 class OathNode(RpcNode):
+    _keystore_state = KEYSTORE.UNKNOWN
+
+    @classmethod
+    def _get_keys(cls):
+        if not hasattr(cls, "_oath_keys"):
+            cls._oath_keys = AppData("oath_keys")
+        return cls._oath_keys
+
+    @classmethod
+    def _unlock_keystore(cls):
+        keys = cls._get_keys()
+        state = cls._keystore_state
+        if state == KEYSTORE.UNKNOWN:
+            try:
+                keys.ensure_unlocked()
+                cls._keystore_state = KEYSTORE.ALLOWED
+            except Exception:  # TODO: Use more specific exceptions
+                logger.warning("Couldn't read key from Keychain", exc_info=True)
+                cls._keystore_state = KEYSTORE.FAILED
+        return cls._keystore_state == KEYSTORE.ALLOWED
+
+    def _get_access_key(self, device_id):
+        keys = self._get_keys()
+        if self.session.device_id in keys and self._unlock_keystore():
+            return bytes.fromhex(keys.get_secret(self.session.device_id))
+        return None
+
     def __init__(self, connection):
         super().__init__()
         self.session = OathSession(connection)
 
         if self.session.locked:
-            keys = _get_keys()
-            if keys.keyring_available and self.session.device_id in keys:
+            key = self._get_access_key(self.session.device_id)
+            if key:
                 try:
-                    key = bytes.fromhex(keys.get_secret(self.session.device_id))
                     self._do_validate(key)
                 except ApduError as e:
-                    # Delete wrong key and fall through to prompt
+                    # Wrong key, delete
                     if e.sw == SW.INCORRECT_PARAMETERS:
+                        keys = self._get_keys()
                         del keys[self.session.device_id]
                         keys.write()
-                except Exception as e:
-                    # Other error, fall though to prompt
-                    logger.warning("Error authenticating", exc_info=e)
+                except Exception:
+                    logger.warning("Error authenticating", exc_info=True)
 
     def __call__(self, *args, **kwargs):
         try:
@@ -88,13 +119,14 @@ class OathNode(RpcNode):
             raise ChildResetException(f"SW: {e.sw:x}")
 
     def get_data(self):
-        keys = _get_keys()
+        keys = self._get_keys()
         return dict(
             version=self.session.version,
             device_id=self.session.device_id,
             has_key=self.session.has_key,
             locked=self.session.locked,
             remembered=self.session.device_id in keys,
+            keystore=self._keystore_state,
         )
 
     @action
@@ -103,20 +135,24 @@ class OathNode(RpcNode):
 
     @action
     def forget(self, params, event, signal):
-        keys = _get_keys()
+        keys = self._get_keys()
         del keys[self.session.device_id]
         keys.write()
         return dict()
 
     def _remember_key(self, key):
-        keys = _get_keys()
+        keys = self._get_keys()
         if key is None:
             if self.session.device_id in keys:
                 del keys[self.session.device_id]
                 keys.write()
-        else:
+            return True
+        elif self._unlock_keystore():
             keys.put_secret(self.session.device_id, key.hex())
             keys.write()
+            return True
+        else:
+            return False
 
     def _get_key(self, params):
         has_key = "key" in params
@@ -142,28 +178,31 @@ class OathNode(RpcNode):
         if self.session.locked:
             try:
                 self._do_validate(key)
-                if remember:
-                    self._remember_key(key)
-                result = True
+                valid = True
             except ApduError as e:
                 if e.sw == SW.INCORRECT_PARAMETERS:
-                    return dict(success=False)
-                raise e
+                    valid = False
+                else:
+                    raise e
         elif hasattr(self, "_key_verifier"):
             salt, digest = self._key_verifier
             verify = hmac.new(salt, key, "sha256").digest()
-            result = hmac.compare_digest(digest, verify)
+            valid = hmac.compare_digest(digest, verify)
         else:
-            result = False
-        return dict(success=result)
+            valid = False
+        if valid and remember:
+            remembered = self._remember_key(key)
+        else:
+            remembered = False
+        return dict(valid=valid, remembered=remembered)
 
     @action
     def set_key(self, params, event, signal):
         remember = params.pop("remember", False)
         key = self._get_key(params)
         self.session.set_key(key)
-        self._remember_key(key if remember else None)
-        return dict()
+        remember &= self._remember_key(key if remember else None)
+        return dict(remembered=remember)
 
     @action(condition=lambda self: self.session.has_key)
     def unset_key(self, params, event, signal):
