@@ -33,6 +33,7 @@ Future<List<Override>> initializeAndGetOverrides() async {
   // For now, this size should match linux/flutter/my_application.cc to avoid window flicker at startup.
   unawaited(windowManager.waitUntilReadyToShow().then((_) async {
     await windowManager.setSize(const Size(400, 720));
+    await windowManager.setMinimumSize(const Size(270, 0));
     await windowManager.show();
   }));
 
