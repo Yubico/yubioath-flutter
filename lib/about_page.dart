@@ -29,22 +29,6 @@ class AboutPage extends ConsumerWidget {
                 Text('ykman version: ${ref.watch(rpcStateProvider).version}'),
               Text('Dart version: ${Platform.version}'),
               const SizedBox(height: 8.0),
-              Text('Log level: ${ref.watch(logLevelProvider)}'),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [Level.INFO, Level.CONFIG, Level.FINE]
-                    .map((level) => TextButton(
-                          onPressed: () {
-                            ref
-                                .read(logLevelProvider.notifier)
-                                .setLogLevel(level);
-                            _log.info(
-                                'Log level changed to ${level.name.toUpperCase()}');
-                          },
-                          child: Text(level.name.toUpperCase()),
-                        ))
-                    .toList(),
-              ),
               const Divider(),
               if (isDesktop)
                 TextButton(
