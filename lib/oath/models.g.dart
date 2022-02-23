@@ -51,6 +51,7 @@ _$_OathState _$$_OathStateFromJson(Map<String, dynamic> json) => _$_OathState(
       hasKey: json['has_key'] as bool,
       remembered: json['remembered'] as bool,
       locked: json['locked'] as bool,
+      keystore: $enumDecode(_$KeystoreStateEnumMap, json['keystore']),
     );
 
 Map<String, dynamic> _$$_OathStateToJson(_$_OathState instance) =>
@@ -59,7 +60,14 @@ Map<String, dynamic> _$$_OathStateToJson(_$_OathState instance) =>
       'has_key': instance.hasKey,
       'remembered': instance.remembered,
       'locked': instance.locked,
+      'keystore': _$KeystoreStateEnumMap[instance.keystore],
     };
+
+const _$KeystoreStateEnumMap = {
+  KeystoreState.unknown: 'unknown',
+  KeystoreState.allowed: 'allowed',
+  KeystoreState.failed: 'failed',
+};
 
 _$_CredentialData _$$_CredentialDataFromJson(Map<String, dynamic> json) =>
     _$_CredentialData(

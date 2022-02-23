@@ -7,6 +7,7 @@ import 'package:logging/logging.dart';
 
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../core/models.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 import '../rpc.dart';
@@ -75,7 +76,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
     final key = _ref.read(_oathLockKeyProvider(_session.devicePath));
     if (oathState.locked && key != null) {
       final result = await _session.command('validate', params: {'key': key});
-      if (result['success']) {
+      if (result['valid']) {
         oathState = oathState.copyWith(locked: false);
       } else {
         _ref
@@ -96,27 +97,30 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
   }
 
   @override
-  Future<bool> unlock(String password, {bool remember = false}) async {
-    var result =
+  Future<Pair<bool, bool>> unlock(String password,
+      {bool remember = false}) async {
+    var derive =
         await _session.command('derive', params: {'password': password});
-    var key = result['key'];
-    final status = await _session
+    var key = derive['key'];
+    final validate = await _session
         .command('validate', params: {'key': key, 'remember': remember});
-    if (mounted && status['success']) {
+    final bool valid = validate['valid'];
+    final bool remembered = validate['remembered'];
+    if (mounted && valid) {
       _log.config('applet unlocked');
       _ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
       state = state?.copyWith(
         locked: false,
-        remembered: remember || state?.remembered == true,
+        remembered: remembered,
       );
     }
-    return status['success'];
+    return Pair(valid, remembered);
   }
 
   Future<bool> _checkPassword(String password) async {
     var result =
         await _session.command('validate', params: {'password': password});
-    return result['success'];
+    return result['valid'];
   }
 
   @override
@@ -131,13 +135,21 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
       }
     }
 
-    var result =
-        await _session.command('derive', params: {'password': password});
-    var key = result['key'];
-    await _session.command('set_key', params: {'key': key});
+    if (state?.remembered ?? false) {
+      // Remembered, keep remembering
+      await _session
+          .command('set_key', params: {'password': password, 'remember': true});
+    } else {
+      // Not remembered, keep in keyProvider
+      var derive =
+          await _session.command('derive', params: {'password': password});
+      var key = derive['key'];
+      await _session.command('set_key', params: {'key': key});
+      _ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
+    }
     _log.config('OATH key set');
-    _ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
-    if (mounted) {
+
+    if (mounted && state?.hasKey == false) {
       state = state?.copyWith(hasKey: true);
     }
     return true;

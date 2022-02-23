@@ -653,12 +653,16 @@ class _$OathStateTearOff {
   const _$OathStateTearOff();
 
   _OathState call(String deviceId,
-      {required bool hasKey, required bool remembered, required bool locked}) {
+      {required bool hasKey,
+      required bool remembered,
+      required bool locked,
+      required KeystoreState keystore}) {
     return _OathState(
       deviceId,
       hasKey: hasKey,
       remembered: remembered,
       locked: locked,
+      keystore: keystore,
     );
   }
 
@@ -676,6 +680,7 @@ mixin _$OathState {
   bool get hasKey => throw _privateConstructorUsedError;
   bool get remembered => throw _privateConstructorUsedError;
   bool get locked => throw _privateConstructorUsedError;
+  KeystoreState get keystore => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -687,7 +692,12 @@ mixin _$OathState {
 abstract class $OathStateCopyWith<$Res> {
   factory $OathStateCopyWith(OathState value, $Res Function(OathState) then) =
       _$OathStateCopyWithImpl<$Res>;
-  $Res call({String deviceId, bool hasKey, bool remembered, bool locked});
+  $Res call(
+      {String deviceId,
+      bool hasKey,
+      bool remembered,
+      bool locked,
+      KeystoreState keystore});
 }
 
 /// @nodoc
@@ -704,6 +714,7 @@ class _$OathStateCopyWithImpl<$Res> implements $OathStateCopyWith<$Res> {
     Object? hasKey = freezed,
     Object? remembered = freezed,
     Object? locked = freezed,
+    Object? keystore = freezed,
   }) {
     return _then(_value.copyWith(
       deviceId: deviceId == freezed
@@ -722,6 +733,10 @@ class _$OathStateCopyWithImpl<$Res> implements $OathStateCopyWith<$Res> {
           ? _value.locked
           : locked // ignore: cast_nullable_to_non_nullable
               as bool,
+      keystore: keystore == freezed
+          ? _value.keystore
+          : keystore // ignore: cast_nullable_to_non_nullable
+              as KeystoreState,
     ));
   }
 }
@@ -732,7 +747,12 @@ abstract class _$OathStateCopyWith<$Res> implements $OathStateCopyWith<$Res> {
           _OathState value, $Res Function(_OathState) then) =
       __$OathStateCopyWithImpl<$Res>;
   @override
-  $Res call({String deviceId, bool hasKey, bool remembered, bool locked});
+  $Res call(
+      {String deviceId,
+      bool hasKey,
+      bool remembered,
+      bool locked,
+      KeystoreState keystore});
 }
 
 /// @nodoc
@@ -750,6 +770,7 @@ class __$OathStateCopyWithImpl<$Res> extends _$OathStateCopyWithImpl<$Res>
     Object? hasKey = freezed,
     Object? remembered = freezed,
     Object? locked = freezed,
+    Object? keystore = freezed,
   }) {
     return _then(_OathState(
       deviceId == freezed
@@ -768,6 +789,10 @@ class __$OathStateCopyWithImpl<$Res> extends _$OathStateCopyWithImpl<$Res>
           ? _value.locked
           : locked // ignore: cast_nullable_to_non_nullable
               as bool,
+      keystore: keystore == freezed
+          ? _value.keystore
+          : keystore // ignore: cast_nullable_to_non_nullable
+              as KeystoreState,
     ));
   }
 }
@@ -776,7 +801,10 @@ class __$OathStateCopyWithImpl<$Res> extends _$OathStateCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_OathState implements _OathState {
   _$_OathState(this.deviceId,
-      {required this.hasKey, required this.remembered, required this.locked});
+      {required this.hasKey,
+      required this.remembered,
+      required this.locked,
+      required this.keystore});
 
   factory _$_OathState.fromJson(Map<String, dynamic> json) =>
       _$$_OathStateFromJson(json);
@@ -789,10 +817,12 @@ class _$_OathState implements _OathState {
   final bool remembered;
   @override
   final bool locked;
+  @override
+  final KeystoreState keystore;
 
   @override
   String toString() {
-    return 'OathState(deviceId: $deviceId, hasKey: $hasKey, remembered: $remembered, locked: $locked)';
+    return 'OathState(deviceId: $deviceId, hasKey: $hasKey, remembered: $remembered, locked: $locked, keystore: $keystore)';
   }
 
   @override
@@ -804,7 +834,8 @@ class _$_OathState implements _OathState {
             const DeepCollectionEquality().equals(other.hasKey, hasKey) &&
             const DeepCollectionEquality()
                 .equals(other.remembered, remembered) &&
-            const DeepCollectionEquality().equals(other.locked, locked));
+            const DeepCollectionEquality().equals(other.locked, locked) &&
+            const DeepCollectionEquality().equals(other.keystore, keystore));
   }
 
   @override
@@ -813,7 +844,8 @@ class _$_OathState implements _OathState {
       const DeepCollectionEquality().hash(deviceId),
       const DeepCollectionEquality().hash(hasKey),
       const DeepCollectionEquality().hash(remembered),
-      const DeepCollectionEquality().hash(locked));
+      const DeepCollectionEquality().hash(locked),
+      const DeepCollectionEquality().hash(keystore));
 
   @JsonKey(ignore: true)
   @override
@@ -830,7 +862,8 @@ abstract class _OathState implements OathState {
   factory _OathState(String deviceId,
       {required bool hasKey,
       required bool remembered,
-      required bool locked}) = _$_OathState;
+      required bool locked,
+      required KeystoreState keystore}) = _$_OathState;
 
   factory _OathState.fromJson(Map<String, dynamic> json) =
       _$_OathState.fromJson;
@@ -843,6 +876,8 @@ abstract class _OathState implements OathState {
   bool get remembered;
   @override
   bool get locked;
+  @override
+  KeystoreState get keystore;
   @override
   @JsonKey(ignore: true)
   _$OathStateCopyWith<_OathState> get copyWith =>

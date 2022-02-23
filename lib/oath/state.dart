@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
+import '../core/models.dart';
 import '../core/state.dart';
 import 'models.dart';
 
@@ -18,7 +19,10 @@ abstract class OathStateNotifier extends StateNotifier<OathState?> {
   OathStateNotifier() : super(null);
 
   Future<void> reset();
-  Future<bool> unlock(String password, {bool remember = false});
+
+  /// Unlocks the session and returns a Pair of `success`, `remembered`.
+  Future<Pair<bool, bool>> unlock(String password, {bool remember = false});
+
   Future<bool> setPassword(String? current, String password);
   Future<bool> unsetPassword(String current);
   Future<void> forgetPassword();

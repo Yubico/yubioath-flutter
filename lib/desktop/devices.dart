@@ -55,8 +55,9 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
 
     try {
       var scan = await _rpc.command('scan', ['usb']);
-
-      if (_usbState != scan['state'] || state.length != scan['pids'].length) {
+      final numDevices =
+          ((scan['pids'] as Map).values).fold<int>(0, (a, b) => a + b as int);
+      if (_usbState != scan['state'] || state.length != numDevices) {
         var usbResult = await _rpc.command('get', ['usb']);
         _log.info('USB state change', jsonEncode(usbResult));
         _usbState = usbResult['data']['state'];

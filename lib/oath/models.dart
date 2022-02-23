@@ -25,6 +25,8 @@ enum OathType {
   totp,
 }
 
+enum KeystoreState { unknown, allowed, failed }
+
 @freezed
 class OathCredential with _$OathCredential {
   factory OathCredential(
@@ -60,6 +62,7 @@ class OathState with _$OathState {
     required bool hasKey,
     required bool remembered,
     required bool locked,
+    required KeystoreState keystore,
   }) = _OathState;
 
   factory OathState.fromJson(Map<String, dynamic> json) =>

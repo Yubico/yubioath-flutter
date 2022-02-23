@@ -105,7 +105,7 @@ pcsc = ["pyscard (>=1.9,<3.0.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/Yubico/python-fido2.git"
-reference = "refactor/logging-levels"
+reference = "53175db"
 resolved_reference = "53175db8b2b8d1702d48c6f4afda7819d76e27dd"
 
 [[package]]
@@ -397,8 +397,8 @@ pywin32 = {version = ">=223", markers = "sys_platform == \"win32\""}
 [package.source]
 type = "git"
 url = "https://github.com/Yubico/yubikey-manager.git"
-reference = "next"
-resolved_reference = "e69da0bac19383a957ce5f70774dbd332f7cda48"
+reference = "5ecf312"
+resolved_reference = "5ecf31214c812831c31369d3e0e79984a03ad1d3"
 
 [[package]]
 name = "zipp"
@@ -426,7 +426,7 @@ numpy = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "df8d3913b9ffcea9429219aa313b90391f168cb03976accc741d0dfc09b1fc40"
+content-hash = "e39e3cafbd1e26cf58d7e2da49d7048277b0611ee08a25032fa49b9bb43d0396"
 
 [metadata.files]
 altgraph = [
