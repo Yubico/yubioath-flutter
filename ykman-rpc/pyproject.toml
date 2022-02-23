@@ -5,12 +5,12 @@ description = "Yubico Authenticator helper app"
 authors = ["Dain Nilsson <dain@yubico.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
-yubikey-manager = { git = "https://github.com/Yubico/yubikey-manager.git", rev = "5ecf312" }
+python = "^3.8"
+yubikey-manager = { git = "https://github.com/Yubico/yubikey-manager.git", rev = "e3f01de" }
 fido2 = { git = "https://github.com/Yubico/python-fido2.git", rev = "53175db" }
 mss = "^6.1.0"
 zxing-cpp = "^1.2.0"
-Pillow = "<9"
+Pillow = "^8|^9"
 
 [tool.poetry.dev-dependencies]
 pyinstaller = {version = "^4.9", python = "<3.11"}
