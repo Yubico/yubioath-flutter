@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../about_page.dart';
+import '../../settings_page.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -19,6 +20,15 @@ extension on SubPage {
 class MainPageDrawer extends ConsumerWidget {
   const MainPageDrawer({Key? key}) : super(key: key);
 
+  IconData _iconFor(SubPage page) {
+    switch (page) {
+      case SubPage.authenticator:
+        return Icons.supervisor_account;
+      default:
+        return Icons.miscellaneous_services;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentSubPage = ref.watch(subPageProvider);
@@ -34,10 +44,9 @@ class MainPageDrawer extends ConsumerWidget {
               style: Theme.of(context).textTheme.headline6,
             ),
           ),
-          const Divider(),
-          ...SubPage.values.map((page) => DrawerItem(
+          ...[SubPage.authenticator].map((page) => DrawerItem(
                 titleText: page.displayName,
-                icon: const Icon(Icons.miscellaneous_services),
+                icon: Icon(_iconFor(page)),
                 selected: page == currentSubPage,
                 onTap: page != currentSubPage
                     ? () {
@@ -46,35 +55,65 @@ class MainPageDrawer extends ConsumerWidget {
                       }
                     : null,
               )),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'CONFIGURATION',
-              style: Theme.of(context).textTheme.bodyText2,
-            ),
-          ),
+          // PLACEHOLDERS
           DrawerItem(
-            titleText: 'Placeholder Light mode',
-            icon: const Icon(Icons.alarm),
+            titleText: 'WebAuthn',
+            icon: const Icon(Icons.security),
             onTap: () {
-              ref
-                  .read(themeModeProvider.notifier)
-                  .setThemeMode(ThemeMode.light);
               Navigator.of(context).pop();
             },
           ),
           DrawerItem(
-            titleText: 'Placeholder Dark mode',
-            icon: const Icon(Icons.house),
+            titleText: 'One-Time Passwords',
+            icon: const Icon(Icons.password),
             onTap: () {
-              ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark);
+              Navigator.of(context).pop();
+            },
+          ),
+          DrawerItem(
+            titleText: 'Certificates',
+            icon: const Icon(Icons.approval),
+            onTap: () {
               Navigator.of(context).pop();
             },
           ),
           const Divider(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Configuration',
+              style: Theme.of(context).textTheme.bodyText2,
+            ),
+          ),
           DrawerItem(
-            titleText: 'About Yubico Authenticator',
-            icon: const Icon(Icons.settings_applications),
+            titleText: 'Toggle applications',
+            icon: const Icon(Icons.construction),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Application',
+              style: Theme.of(context).textTheme.bodyText2,
+            ),
+          ),
+          DrawerItem(
+            titleText: 'Settings',
+            icon: const Icon(Icons.settings),
+            onTap: () {
+              Navigator.of(context)
+                ..pop()
+                ..push(
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
+                );
+            },
+          ),
+          DrawerItem(
+            titleText: 'About',
+            icon: const Icon(Icons.help_outline),
             onTap: () {
               Navigator.of(context)
                 ..pop()

@@ -155,6 +155,31 @@ class AccountView extends ConsumerWidget {
     }
   }
 
+  Color _iconColor(String label, int shade) {
+    final colors = [
+      Colors.red[shade],
+      Colors.pink[shade],
+      Colors.purple[shade],
+      Colors.deepPurple[shade],
+      Colors.indigo[shade],
+      Colors.blue[shade],
+      Colors.lightBlue[shade],
+      Colors.cyan[shade],
+      Colors.teal[shade],
+      Colors.green[shade],
+      Colors.lightGreen[shade],
+      Colors.lime[shade],
+      Colors.yellow[shade],
+      Colors.amber[shade],
+      Colors.orange[shade],
+      Colors.deepOrange[shade],
+      Colors.brown[shade],
+      Colors.grey[shade],
+      Colors.blueGrey[shade],
+    ];
+    return colors[label.hashCode % colors.length]!;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final code = this.code;
@@ -165,6 +190,8 @@ class AccountView extends ConsumerWidget {
     final trigger = code == null ||
         expired &&
             (credential.touchRequired || credential.oathType == OathType.hotp);
+
+    final darkMode = Theme.of(context).brightness == Brightness.dark;
 
     return ListTile(
       focusNode: focusNode,
@@ -177,8 +204,8 @@ class AccountView extends ConsumerWidget {
         }
       },
       leading: CircleAvatar(
-        backgroundColor: Colors.primaries
-            .elementAt(label.hashCode % Colors.primaries.length),
+        foregroundColor: darkMode ? Colors.black : Colors.white,
+        backgroundColor: _iconColor(label, darkMode ? 300 : 400),
         child: Text(
           (credential.issuer ?? credential.name).characters.first.toUpperCase(),
           style: const TextStyle(fontSize: 18),

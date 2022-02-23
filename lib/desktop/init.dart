@@ -5,14 +5,14 @@ import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:yubico_authenticator/desktop/devices.dart';
-import 'package:yubico_authenticator/desktop/oath/state.dart';
-import 'package:yubico_authenticator/desktop/qr_scanner.dart';
-import 'package:yubico_authenticator/desktop/state.dart';
-import 'package:yubico_authenticator/oath/state.dart';
 
+import '../oath/state.dart';
 import '../app/state.dart';
+import 'oath/state.dart';
 import 'rpc.dart';
+import 'devices.dart';
+import 'qr_scanner.dart';
+import 'state.dart';
 
 final _log = Logger('desktop.init');
 
@@ -33,6 +33,7 @@ Future<List<Override>> initializeAndGetOverrides() async {
   // For now, this size should match linux/flutter/my_application.cc to avoid window flicker at startup.
   unawaited(windowManager.waitUntilReadyToShow().then((_) async {
     await windowManager.setSize(const Size(400, 720));
+    await windowManager.setMinimumSize(const Size(270, 0));
     await windowManager.show();
   }));
 
