@@ -87,6 +87,7 @@ class _UnlockFormState extends State<_UnlockForm> {
 
   @override
   Widget build(BuildContext context) {
+    final keystoreFailed = widget.keystore == KeystoreState.failed;
     return Column(
       //mainAxisAlignment: MainAxisAlignment.center,
       //crossAxisAlignment: CrossAxisAlignment.end,
@@ -124,9 +125,12 @@ class _UnlockFormState extends State<_UnlockForm> {
         ),
         CheckboxListTile(
           title: const Text('Remember password'),
+          subtitle: Text(keystoreFailed
+              ? 'The OS keychain is not available.'
+              : 'Uses the OS keychain to protect access to this YubiKey.'),
           controlAffinity: ListTileControlAffinity.leading,
           value: _remember,
-          onChanged: widget.keystore == KeystoreState.failed
+          onChanged: keystoreFailed
               ? null
               : (value) {
                   setState(() {
