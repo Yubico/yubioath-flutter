@@ -31,15 +31,16 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
+  var prefs = await SharedPreferences.getInstance();
   List<Override> overrides = [
-    prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
+    prefProvider.overrideWithValue(prefs),
   ];
   Widget page;
   try {
     // Platform specific initialization
     if (isDesktop) {
       _log.config('Initializing desktop platform.');
-      overrides.addAll(await desktop.initializeAndGetOverrides());
+      overrides.addAll(await desktop.initializeAndGetOverrides(prefs));
     }
     page = const MainPage();
   } catch (e) {
