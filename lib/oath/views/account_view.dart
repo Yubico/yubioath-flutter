@@ -36,6 +36,9 @@ class _ExpireNotifier extends StateNotifier<bool> {
   }
 }
 
+// TODO: Replace this with something cleaner
+final _busyCalculatingProvider = StateProvider<bool>((ref) => false);
+
 class AccountView extends ConsumerWidget {
   final YubiKeyData deviceData;
   final OathCredential credential;
@@ -116,41 +119,50 @@ class AccountView extends ConsumerWidget {
       ];
 
   _copyToClipboard(BuildContext context, WidgetRef ref, bool trigger) async {
-    String value;
-    if (trigger) {
-      final updated = await _calculate(context, ref);
-      value = updated.value;
-    } else {
-      value = code!.value;
+    final busy = ref.read(_busyCalculatingProvider.notifier);
+    if (busy.state) return;
+
+    try {
+      busy.state = true;
+      String value;
+      if (trigger) {
+        final updated = await _calculate(context, ref);
+        value = updated.value;
+      } else {
+        value = code!.value;
+      }
+      await Clipboard.setData(ClipboardData(text: value));
+      await ScaffoldMessenger.of(context)
+          .showSnackBar(
+            const SnackBar(
+              content: Text('Code copied'),
+              duration: Duration(seconds: 2),
+            ),
+          )
+          .closed;
+    } finally {
+      busy.state = false;
     }
-    await Clipboard.setData(ClipboardData(text: value));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Code copied'),
-        duration: Duration(seconds: 2),
-      ),
-    );
   }
 
   Future<OathCode> _calculate(BuildContext context, WidgetRef ref) async {
-    VoidCallback? close;
+    Function? close;
     if (credential.touchRequired) {
-      final sbc = ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Touch your YubiKey'),
-          duration: Duration(seconds: 30),
-        ),
-      );
-      unawaited(sbc.closed.then((_) {
-        close = null;
-      }));
-      close = sbc.close;
+      close = ScaffoldMessenger.of(context)
+          .showSnackBar(
+            const SnackBar(
+              content: Text('Touch your YubiKey'),
+              duration: Duration(seconds: 30),
+            ),
+          )
+          .close;
     }
     try {
       return await ref
           .read(credentialListProvider(deviceData.node.path).notifier)
           .calculate(credential);
     } finally {
+      // Hide the touch prompt when done
       close?.call();
     }
   }
