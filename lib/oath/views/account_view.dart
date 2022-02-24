@@ -198,7 +198,11 @@ class AccountView extends ConsumerWidget {
     final label = credential.issuer != null
         ? '${credential.issuer} (${credential.name})'
         : credential.name;
-    final expired = ref.watch(_expireProvider(code?.validTo ?? 0));
+    final expireAt = credential.oathType == OathType.hotp
+        ? (code?.validFrom ?? 0) +
+            30 // HOTP codes valid for 30s from generation
+        : code?.validTo ?? 0;
+    final expired = ref.watch(_expireProvider(expireAt));
     final trigger = code == null ||
         expired &&
             (credential.touchRequired || credential.oathType == OathType.hotp);
