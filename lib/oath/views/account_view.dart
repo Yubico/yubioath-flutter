@@ -122,6 +122,7 @@ class AccountView extends ConsumerWidget {
     final busy = ref.read(_busyCalculatingProvider.notifier);
     if (busy.state) return;
 
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       busy.state = true;
       String value;
@@ -132,10 +133,11 @@ class AccountView extends ConsumerWidget {
         value = code!.value;
       }
       await Clipboard.setData(ClipboardData(text: value));
-      await ScaffoldMessenger.of(context)
+
+      await scaffoldMessenger
           .showSnackBar(
             const SnackBar(
-              content: Text('Code copied'),
+              content: Text('Code copied to clipboard'),
               duration: Duration(seconds: 2),
             ),
           )
