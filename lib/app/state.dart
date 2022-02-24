@@ -107,7 +107,7 @@ class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
 }
 
 final subPageProvider = StateNotifierProvider<SubPageNotifier, SubPage>(
-    (ref) => SubPageNotifier(SubPage.authenticator));
+    (ref) => SubPageNotifier(SubPage.oath));
 
 class SubPageNotifier extends StateNotifier<SubPage> {
   SubPageNotifier(SubPage state) : super(state);
@@ -119,13 +119,12 @@ class SubPageNotifier extends StateNotifier<SubPage> {
 
 final menuActionsProvider = Provider.autoDispose<List<MenuAction>>((ref) {
   switch (ref.watch(subPageProvider)) {
-    case SubPage.authenticator:
+    case SubPage.oath:
       return buildOathMenuActions(ref);
-    case SubPage.yubikey:
-      // TODO: Handle this case.
-      break;
+    // TODO: Handle other cases.
+    default:
+      return [];
   }
-  return [];
 });
 
 abstract class QrScanner {
