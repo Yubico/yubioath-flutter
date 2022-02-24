@@ -11,10 +11,8 @@ class DeviceInfoScreen extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('YubiKey: ${device.name}'),
-          Text('Serial: ${device.info.serial}'),
-          Text('Version: ${device.info.version}'),
+        children: const [
+          Text('This page intentionally left blank (for now)'),
         ],
       ),
     );

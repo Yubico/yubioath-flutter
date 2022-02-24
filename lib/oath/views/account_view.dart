@@ -238,7 +238,13 @@ class AccountView extends ConsumerWidget {
                 ?.copyWith(color: Colors.grey)
             : Theme.of(context).textTheme.headline5,
       ),
-      subtitle: Text(label, style: Theme.of(context).textTheme.caption),
+      subtitle: Text(
+        label,
+        style: Theme.of(context).textTheme.caption,
+        overflow: TextOverflow.fade,
+        maxLines: 1,
+        softWrap: false,
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

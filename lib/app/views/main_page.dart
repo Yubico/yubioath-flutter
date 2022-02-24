@@ -20,9 +20,9 @@ class MainPage extends ConsumerWidget {
     }
     // TODO: If page not supported by device, do something?
     switch (subPage) {
-      case SubPage.authenticator:
+      case SubPage.oath:
         return OathScreen(device);
-      case SubPage.yubikey:
+      default:
         return DeviceInfoScreen(device);
     }
   }

@@ -9,10 +9,16 @@ import '../state.dart';
 extension on SubPage {
   String get displayName {
     switch (this) {
-      case SubPage.authenticator:
+      case SubPage.oath:
         return 'Authenticator';
-      case SubPage.yubikey:
-        return 'YubiKey';
+      case SubPage.fido:
+        return 'WebAuthn';
+      case SubPage.otp:
+        return 'One-Time Passwords';
+      case SubPage.piv:
+        return 'Certificates';
+      case SubPage.management:
+        return 'Toggle applications';
     }
   }
 }
@@ -22,16 +28,24 @@ class MainPageDrawer extends ConsumerWidget {
 
   IconData _iconFor(SubPage page) {
     switch (page) {
-      case SubPage.authenticator:
+      case SubPage.oath:
         return Icons.supervisor_account;
-      default:
-        return Icons.miscellaneous_services;
+      case SubPage.fido:
+        return Icons.security;
+      case SubPage.otp:
+        return Icons.password;
+      case SubPage.piv:
+        return Icons.approval;
+      case SubPage.management:
+        return Icons.construction;
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentSubPage = ref.watch(subPageProvider);
+
+    final mainPages = [SubPage.oath, SubPage.fido, SubPage.otp, SubPage.piv];
 
     return Drawer(
       child: ListView(
@@ -44,7 +58,7 @@ class MainPageDrawer extends ConsumerWidget {
               style: Theme.of(context).textTheme.headline6,
             ),
           ),
-          ...[SubPage.authenticator].map((page) => DrawerItem(
+          ...mainPages.map((page) => DrawerItem(
                 titleText: page.displayName,
                 icon: Icon(_iconFor(page)),
                 selected: page == currentSubPage,
@@ -55,28 +69,6 @@ class MainPageDrawer extends ConsumerWidget {
                       }
                     : null,
               )),
-          // PLACEHOLDERS
-          DrawerItem(
-            titleText: 'WebAuthn',
-            icon: const Icon(Icons.security),
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          DrawerItem(
-            titleText: 'One-Time Passwords',
-            icon: const Icon(Icons.password),
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          DrawerItem(
-            titleText: 'Certificates',
-            icon: const Icon(Icons.approval),
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),
           const Divider(),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -85,10 +77,13 @@ class MainPageDrawer extends ConsumerWidget {
               style: Theme.of(context).textTheme.bodyText2,
             ),
           ),
+          // PLACEHOLDER
           DrawerItem(
             titleText: 'Toggle applications',
-            icon: const Icon(Icons.construction),
+            icon: Icon(_iconFor(SubPage.management)),
+            selected: SubPage.management == currentSubPage,
             onTap: () {
+              ref.read(subPageProvider.notifier).setSubPage(SubPage.management);
               Navigator.of(context).pop();
             },
           ),

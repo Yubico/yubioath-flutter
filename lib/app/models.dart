@@ -4,7 +4,7 @@ import '../../management/models.dart';
 
 part 'models.freezed.dart';
 
-enum SubPage { authenticator, yubikey }
+enum SubPage { oath, fido, otp, piv, management }
 
 @freezed
 class YubiKeyData with _$YubiKeyData {
