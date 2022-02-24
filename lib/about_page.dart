@@ -25,6 +25,8 @@ class AboutPage extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // TODO: Store the version number elsewhere
+              const Text('Yubico Authenticator version: 6.0.0-alpha.1'),
               if (isDesktop)
                 Text('ykman version: ${ref.watch(rpcStateProvider).version}'),
               Text('Dart version: ${Platform.version}'),
