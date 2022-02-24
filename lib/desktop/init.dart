@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../oath/state.dart';
@@ -15,6 +16,8 @@ import 'qr_scanner.dart';
 import 'state.dart';
 
 final _log = Logger('desktop.init');
+const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
+const String _keyHeight = 'DESKTOP_WINDOW_HEIGHT';
 
 initializeLogging() {
   Logger.root.onRecord.listen((record) {
@@ -26,15 +29,33 @@ initializeLogging() {
   _log.info('Logging initialized, outputting to stderr');
 }
 
-Future<List<Override>> initializeAndGetOverrides() async {
+class _WindowResizeListener extends WindowListener {
+  final SharedPreferences _prefs;
+  _WindowResizeListener(this._prefs);
+
+  @override
+  void onWindowResize() async {
+    final size = await windowManager.getSize();
+    await _prefs.setDouble(_keyWidth, size.width);
+    await _prefs.setDouble(_keyHeight, size.height);
+  }
+}
+
+Future<List<Override>> initializeAndGetOverrides(
+    SharedPreferences prefs) async {
   await windowManager.ensureInitialized();
 
-  // Linux doesn't currently support hiding the window at start currently.
-  // For now, this size should match linux/flutter/my_application.cc to avoid window flicker at startup.
   unawaited(windowManager.waitUntilReadyToShow().then((_) async {
-    await windowManager.setSize(const Size(400, 720));
     await windowManager.setMinimumSize(const Size(270, 0));
-    await windowManager.show();
+    // Linux doesn't currently support hiding the window at start currently.
+    // For now, size on Linux is in linux/flutter/my_application.cc to avoid window flicker at startup.
+    if (!Platform.isLinux) {
+      final width = prefs.getDouble(_keyWidth) ?? 400;
+      final height = prefs.getDouble(_keyHeight) ?? 720;
+      await windowManager.setSize(Size(width, height));
+      await windowManager.show();
+      windowManager.addListener(_WindowResizeListener(prefs));
+    }
   }));
 
   // Either use the _YKMAN_EXE environment variable, or look relative to executable.
