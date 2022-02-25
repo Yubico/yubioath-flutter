@@ -58,14 +58,12 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
 
   void _init() async {
     windowManager.addListener(this);
-    if (!await windowManager.isVisible() && mounted) {
-      state = WindowState(focused: false, visible: false, active: true);
-      _idleTimer = Timer(const Duration(seconds: 5), () {
-        if (mounted) {
-          state = state.copyWith(active: false);
-        }
-      });
-    }
+    _idleTimer = Timer(const Duration(seconds: 5), () async {
+      final visible = await windowManager.isVisible();
+      if (mounted && !visible) {
+        state = state.copyWith(active: false);
+      }
+    });
   }
 
   @override
@@ -87,8 +85,9 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
         case 'blur':
           state = state.copyWith(focused: false);
           _idleTimer?.cancel();
-          _idleTimer = Timer(const Duration(seconds: 5), () {
-            if (mounted) {
+          _idleTimer = Timer(const Duration(seconds: 5), () async {
+            final visible = await windowManager.isVisible();
+            if (mounted & !visible) {
               state = state.copyWith(active: false);
             }
           });
