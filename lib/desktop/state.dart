@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:logging/logging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,12 +59,15 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
 
   void _init() async {
     windowManager.addListener(this);
-    _idleTimer = Timer(const Duration(seconds: 5), () async {
-      final visible = await windowManager.isVisible();
-      if (mounted && !visible) {
-        state = state.copyWith(active: false);
-      }
-    });
+    // isFocused is not supported on Linux, assume focused
+    if (!Platform.isLinux) {
+      _idleTimer = Timer(const Duration(seconds: 5), () async {
+        final focused = await windowManager.isFocused();
+        if (mounted && !focused) {
+          state = state.copyWith(active: false);
+        }
+      });
+    }
   }
 
   @override
@@ -86,8 +90,7 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
           state = state.copyWith(focused: false);
           _idleTimer?.cancel();
           _idleTimer = Timer(const Duration(seconds: 5), () async {
-            final visible = await windowManager.isVisible();
-            if (mounted & !visible) {
+            if (mounted) {
               state = state.copyWith(active: false);
             }
           });
@@ -102,6 +105,7 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
           break;
         case 'restore':
           state = state.copyWith(visible: true, active: true);
+          _idleTimer?.cancel();
           break;
         default:
           _log.fine('Window event ignored: $eventName');
