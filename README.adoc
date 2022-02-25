@@ -7,27 +7,20 @@ https://flutter.dev/desktop
 Development has been done using the "Install from git" method of installing the
 SDK, from the "beta" channel.
 
-You will also need to provide a compiled version of the ykman CLI. This can
-either be built locally (see the next section), or manually downloaded and
-placed in `build/<os>/ykman/`. Builds are available for download from GitHub
-Actions in the `yubikey-manager` project.
+You will also need to provide a compiled version of ykman-rpc, as described in
+the next section.
 
 
-=== Building the ykman CLI locally
-Requirements: Python >= 3.6 and Poetry.
+=== Building ykman-rpc
+Requirements: Python >= 3.8 and Poetry.
 
-The GUI requires a compiled version of the ykman CLI to run, which is build
-using pyinstaller from the yubikey-manager submodule in this repository. The
-`build-ykman.sh` (`build-ykman.bat` on Windows) script in this repository will
-take care of this, producing a build in `build/<os>/ykman` which will then be
-included in the main GUI. See the `yubikey-manager` project documentation for
-any build requirements needed in this step.
+The GUI requires a compiled version of ykman-rpc to run, which is built from
+the sources in ykman-rpc/ in this repository. This needs to be build prior to
+running `flutter build` or `flutter run`, by running `build-ykman.sh` (or
+`build-ykman.bat` on Windows).
 
-For faster development when making modifications to the CLI, you can skip the
-re-compilation step and instead set the `_YKMAN_PATH` environment variable to
-the location of a `ykman` executable to run:
-
-  _YKMAN_PATH="/path/to/ykman.exe" flutter run -d windows
+NOTE: You will need to re-run `ykman-build.sh` if changes have been made to
+ykman-rpc's code, or if `flutter clean` has been run.
 
 
 === Running the app
