@@ -13,9 +13,9 @@ import 'rename_account_dialog.dart';
 import 'utils.dart';
 
 class AccountDialog extends ConsumerWidget {
-  final DeviceNode device;
+  final YubiKeyData deviceData;
   final OathCredential credential;
-  const AccountDialog(this.device, this.credential, {Key? key})
+  const AccountDialog(this.deviceData, this.credential, {Key? key})
       : super(key: key);
 
   List<Widget> _buildActions(BuildContext context, WidgetRef ref,
@@ -34,7 +34,8 @@ class AccountDialog extends ConsumerWidget {
                   calculateCode(
                     context,
                     credential,
-                    ref.read(credentialListProvider(device.path).notifier),
+                    ref.read(
+                        credentialListProvider(deviceData.node.path).notifier),
                   );
                 }
               : null,
@@ -61,23 +62,37 @@ class AccountDialog extends ConsumerWidget {
           ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
         },
       ),
-      IconButton(
-        icon: const Icon(Icons.edit),
-        tooltip: 'Rename account',
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => RenameAccountDialog(device, credential),
-          );
-        },
-      ),
+      if (deviceData.info.version.major >= 5 &&
+          deviceData.info.version.minor >= 3)
+        IconButton(
+          icon: const Icon(Icons.edit),
+          tooltip: 'Rename account',
+          onPressed: () async {
+            final renamed = await showDialog(
+              context: context,
+              builder: (context) =>
+                  RenameAccountDialog(deviceData.node, credential),
+            );
+            if (renamed != null) {
+              // Replace this dialog with a new one, for the renamed credential.
+              Navigator.of(context).pop();
+              await showDialog(
+                context: context,
+                builder: (context) {
+                  return AccountDialog(deviceData, renamed);
+                },
+              );
+            }
+          },
+        ),
       IconButton(
         icon: const Icon(Icons.delete_forever),
         tooltip: 'Delete account',
         onPressed: () async {
           final result = await showDialog(
             context: context,
-            builder: (context) => DeleteAccountDialog(device, credential),
+            builder: (context) =>
+                DeleteAccountDialog(deviceData.node, credential),
           );
           if (result) {
             Navigator.of(context).pop();

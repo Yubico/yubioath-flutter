@@ -64,8 +64,11 @@ final codeProvider =
   final node = ref.watch(currentDeviceProvider);
   if (node != null) {
     return ref
-        .watch(credentialListProvider(node.path).select((pairs) =>
-            pairs?.firstWhere((pair) => pair.credential == credential)))
+        .watch(credentialListProvider(node.path)
+            .select((pairs) => pairs?.firstWhere(
+                  (pair) => pair.credential == credential,
+                  orElse: () => OathPair(credential, null),
+                )))
         ?.code;
   }
   return null;

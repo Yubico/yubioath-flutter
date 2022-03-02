@@ -88,7 +88,7 @@ class AccountView extends ConsumerWidget {
         showDialog(
           context: context,
           builder: (context) {
-            return AccountDialog(deviceData.node, credential);
+            return AccountDialog(deviceData, credential);
           },
         );
       },
