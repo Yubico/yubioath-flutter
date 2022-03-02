@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -97,73 +99,83 @@ class AccountDialog extends ConsumerWidget {
             ref.watch(expiredProvider(code.validTo)));
     final favorite = ref.watch(favoritesProvider).contains(credential.id);
 
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0.0,
-      insetPadding: const EdgeInsets.all(0),
-      child: Scaffold(
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+      child: Dialog(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          actions: _buildActions(context, ref, code, expired, favorite),
-        ),
-        body: LayoutBuilder(builder: (context, constraints) {
-          return ListView(
-            children: [
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
-                  padding: const EdgeInsets.all(20.0),
-                  child: GestureDetector(
-                    onTap: () {}, // Blocks parent detector GestureDetector
-                    child: Material(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0)),
-                      elevation: 16.0,
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                formatOathCode(code),
-                                style: expired
-                                    ? Theme.of(context)
-                                        .textTheme
-                                        .headline2
-                                        ?.copyWith(color: Colors.grey)
-                                    : Theme.of(context).textTheme.headline2,
-                              ),
-                              Text(label),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: SizedBox.square(
-                                  dimension: 16,
-                                  child: code != null
-                                      ? CircleTimer(
-                                          code.validFrom * 1000,
-                                          code.validTo * 1000,
-                                        )
-                                      : null,
+        elevation: 0.0,
+        insetPadding: const EdgeInsets.all(0),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            actions: _buildActions(context, ref, code, expired, favorite),
+          ),
+          body: LayoutBuilder(builder: (context, constraints) {
+            return ListView(
+              children: [
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    padding: const EdgeInsets.all(20.0),
+                    child: GestureDetector(
+                      onTap: () {}, // Blocks parent detector GestureDetector
+                      child: Material(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0)),
+                        elevation: 16.0,
+                        child: SizedBox(
+                          width: 320,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  formatOathCode(code),
+                                  softWrap: false,
+                                  style: expired
+                                      ? Theme.of(context)
+                                          .textTheme
+                                          .headline2
+                                          ?.copyWith(color: Colors.grey)
+                                      : Theme.of(context).textTheme.headline2,
                                 ),
-                              )
-                            ],
+                                Text(
+                                  label,
+                                  overflow: TextOverflow.fade,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SizedBox.square(
+                                    dimension: 16,
+                                    child: code != null
+                                        ? CircleTimer(
+                                            code.validFrom * 1000,
+                                            code.validTo * 1000,
+                                          )
+                                        : null,
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          );
-        }),
+              ],
+            );
+          }),
+        ),
       ),
     );
   }
