@@ -133,25 +133,24 @@ class AccountDialog extends ConsumerWidget {
                         child: SizedBox(
                           width: 320,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12.0, horizontal: 12.0),
                             child: Column(
                               children: [
-                                Text(
-                                  formatOathCode(code),
-                                  softWrap: false,
-                                  style: expired
-                                      ? Theme.of(context)
-                                          .textTheme
-                                          .headline2
-                                          ?.copyWith(color: Colors.grey)
-                                      : Theme.of(context).textTheme.headline2,
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    formatOathCode(code),
+                                    softWrap: false,
+                                    style: expired
+                                        ? Theme.of(context)
+                                            .textTheme
+                                            .headline2
+                                            ?.copyWith(color: Colors.grey)
+                                        : Theme.of(context).textTheme.headline2,
+                                  ),
                                 ),
-                                Text(
-                                  label,
-                                  overflow: TextOverflow.fade,
-                                  maxLines: 1,
-                                  softWrap: false,
-                                ),
+                                Text(label),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: SizedBox.square(
