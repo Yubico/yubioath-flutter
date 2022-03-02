@@ -3,41 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/oath/views/account_dialog.dart';
 
 import '../../widgets/circle_timer.dart';
 import '../../app/models.dart';
 import '../models.dart';
 import '../state.dart';
-import 'delete_account_dialog.dart';
-import 'rename_account_dialog.dart';
-
-final _expireProvider =
-    StateNotifierProvider.autoDispose.family<_ExpireNotifier, bool, int>(
-  (ref, expiry) =>
-      _ExpireNotifier(DateTime.now().millisecondsSinceEpoch, expiry * 1000),
-);
-
-class _ExpireNotifier extends StateNotifier<bool> {
-  Timer? _timer;
-  _ExpireNotifier(int now, int expiry) : super(expiry <= now) {
-    if (expiry > now) {
-      _timer = Timer(Duration(milliseconds: expiry - now), () {
-        if (mounted) {
-          state = true;
-        }
-      });
-    }
-  }
-
-  @override
-  dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-}
-
-// TODO: Replace this with something cleaner
-final _busyCalculatingProvider = StateProvider<bool>((ref) => false);
+import 'utils.dart';
 
 class AccountView extends ConsumerWidget {
   final YubiKeyData deviceData;
@@ -48,125 +20,28 @@ class AccountView extends ConsumerWidget {
       {Key? key, this.focusNode})
       : super(key: key);
 
-  String formatCode() {
-    var value = code?.value;
-    if (value == null) {
-      return '••• •••';
-    } else if (value.length < 6) {
-      return value;
-    } else {
-      var i = value.length ~/ 2;
-      return value.substring(0, i) + ' ' + value.substring(i);
-    }
-  }
-
-  List<PopupMenuEntry> _buildPopupMenu(
-          BuildContext context, WidgetRef ref, bool trigger) =>
-      [
-        PopupMenuItem(
-          child: const ListTile(
-            leading: Icon(Icons.copy),
-            title: Text('Copy to clipboard'),
-          ),
-          onTap: () {
-            _copyToClipboard(context, ref, trigger);
-          },
-        ),
-        PopupMenuItem(
-          child: const ListTile(
-            leading: Icon(Icons.star),
-            title: Text('Toggle favorite'),
-          ),
-          onTap: () {
-            ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
-          },
-        ),
-        if (deviceData.info.version.major >= 5 &&
-            deviceData.info.version.minor >= 3)
-          PopupMenuItem(
-            child: const ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('Rename account'),
-            ),
-            onTap: () {
-              // This ensures the onTap handler finishes before the dialog is shown, otherwise the dialog is immediately closed instead of the popup.
-              Future.delayed(Duration.zero, () {
-                showDialog(
-                  context: context,
-                  builder: (context) =>
-                      RenameAccountDialog(deviceData.node, credential),
-                );
-              });
-            },
-          ),
-        const PopupMenuDivider(),
-        PopupMenuItem(
-          child: const ListTile(
-            leading: Icon(Icons.delete_forever),
-            title: Text('Delete account'),
-          ),
-          onTap: () {
-            // This ensures the onTap handler finishes before the dialog is shown, otherwise the dialog is immediately closed instead of the popup.
-            Future.delayed(Duration.zero, () {
-              showDialog(
-                context: context,
-                builder: (context) =>
-                    DeleteAccountDialog(deviceData.node, credential),
-              );
-            });
-          },
-        ),
-      ];
-
   _copyToClipboard(BuildContext context, WidgetRef ref, bool trigger) async {
-    final busy = ref.read(_busyCalculatingProvider.notifier);
-    if (busy.state) return;
-
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    try {
-      busy.state = true;
-      String value;
-      if (trigger) {
-        final updated = await _calculate(context, ref);
-        value = updated.value;
-      } else {
-        value = code!.value;
-      }
-      await Clipboard.setData(ClipboardData(text: value));
-
-      await scaffoldMessenger
-          .showSnackBar(
-            const SnackBar(
-              content: Text('Code copied to clipboard'),
-              duration: Duration(seconds: 2),
-            ),
-          )
-          .closed;
-    } finally {
-      busy.state = false;
+    String value;
+    if (trigger) {
+      final updated = await calculateCode(
+        context,
+        credential,
+        ref.read(credentialListProvider(deviceData.node.path).notifier),
+      );
+      value = updated.value;
+    } else {
+      value = code!.value;
     }
-  }
-
-  Future<OathCode> _calculate(BuildContext context, WidgetRef ref) async {
-    Function? close;
-    if (credential.touchRequired) {
-      close = ScaffoldMessenger.of(context)
-          .showSnackBar(
-            const SnackBar(
-              content: Text('Touch your YubiKey'),
-              duration: Duration(seconds: 30),
-            ),
-          )
-          .close;
-    }
-    try {
-      return await ref
-          .read(credentialListProvider(deviceData.node.path).notifier)
-          .calculate(credential);
-    } finally {
-      // Hide the touch prompt when done
-      close?.call();
-    }
+    await Clipboard.setData(ClipboardData(text: value));
+    await scaffoldMessenger
+        .showSnackBar(
+          const SnackBar(
+            content: Text('Code copied to clipboard'),
+            duration: Duration(seconds: 2),
+          ),
+        )
+        .closed;
   }
 
   Color _iconColor(String label, int shade) {
@@ -200,26 +75,27 @@ class AccountView extends ConsumerWidget {
     final label = credential.issuer != null
         ? '${credential.issuer} (${credential.name})'
         : credential.name;
-    final expireAt = credential.oathType == OathType.hotp
-        ? (code?.validFrom ?? 0) +
-            30 // HOTP codes valid for 30s from generation
-        : code?.validTo ?? 0;
-    final expired = ref.watch(_expireProvider(expireAt));
+    final expired = code == null ||
+        (credential.oathType == OathType.totp &&
+            ref.watch(expiredProvider(code.validTo)));
     final trigger = code == null ||
-        expired &&
-            (credential.touchRequired || credential.oathType == OathType.hotp);
+        credential.oathType == OathType.hotp ||
+        (credential.touchRequired && expired);
 
     final darkMode = Theme.of(context).brightness == Brightness.dark;
 
     return ListTile(
       focusNode: focusNode,
       onTap: () {
-        final focus = focusNode;
-        if (focus != null && focus.hasFocus == false) {
-          focus.requestFocus();
-        } else {
-          _copyToClipboard(context, ref, trigger);
-        }
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AccountDialog(deviceData.node, credential);
+          },
+        );
+      },
+      onLongPress: () {
+        _copyToClipboard(context, ref, trigger);
       },
       leading: CircleAvatar(
         foregroundColor: darkMode ? Colors.black : Colors.white,
@@ -230,7 +106,7 @@ class AccountView extends ConsumerWidget {
         ),
       ),
       title: Text(
-        formatCode(),
+        formatOathCode(code),
         style: expired
             ? Theme.of(context)
                 .textTheme
@@ -245,36 +121,18 @@ class AccountView extends ConsumerWidget {
         maxLines: 1,
         softWrap: false,
       ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Column(
-            children: [
-              Align(
-                alignment: AlignmentDirectional.topCenter,
-                child: trigger
-                    ? const Icon(
-                        Icons.touch_app,
-                        size: 18,
-                      )
-                    : SizedBox.square(
-                        dimension: 16,
-                        child: CircleTimer(
-                          code.validFrom * 1000,
-                          code.validTo * 1000,
-                        ),
-                      ),
+      trailing: trigger
+          ? Icon(
+              credential.touchRequired ? Icons.touch_app : Icons.refresh,
+              size: 18,
+            )
+          : SizedBox.square(
+              dimension: 16,
+              child: CircleTimer(
+                code.validFrom * 1000,
+                code.validTo * 1000,
               ),
-              const Spacer(),
-              PopupMenuButton(
-                child: Icon(Icons.adaptive.more),
-                itemBuilder: (context) =>
-                    _buildPopupMenu(context, ref, trigger),
-              ),
-            ],
-          ),
-        ],
-      ),
+            ),
     );
   }
 }

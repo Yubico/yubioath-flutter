@@ -50,6 +50,52 @@ abstract class OathCredentialListNotifier
   Future<void> deleteAccount(OathCredential credential);
 }
 
+final credentialsProvider = Provider.autoDispose<List<OathCredential>?>((ref) {
+  final node = ref.watch(currentDeviceProvider);
+  if (node != null) {
+    return ref.watch(credentialListProvider(node.path)
+        .select((pairs) => pairs?.map((e) => e.credential).toList()));
+  }
+  return null;
+});
+
+final codeProvider =
+    Provider.autoDispose.family<OathCode?, OathCredential>((ref, credential) {
+  final node = ref.watch(currentDeviceProvider);
+  if (node != null) {
+    return ref
+        .watch(credentialListProvider(node.path).select((pairs) =>
+            pairs?.firstWhere((pair) => pair.credential == credential)))
+        ?.code;
+  }
+  return null;
+});
+
+final expiredProvider =
+    StateNotifierProvider.autoDispose.family<_ExpireNotifier, bool, int>(
+  (ref, expiry) =>
+      _ExpireNotifier(DateTime.now().millisecondsSinceEpoch, expiry * 1000),
+);
+
+class _ExpireNotifier extends StateNotifier<bool> {
+  Timer? _timer;
+  _ExpireNotifier(int now, int expiry) : super(expiry <= now) {
+    if (expiry > now) {
+      _timer = Timer(Duration(milliseconds: expiry - now), () {
+        if (mounted) {
+          state = true;
+        }
+      });
+    }
+  }
+
+  @override
+  dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+}
+
 final favoritesProvider =
     StateNotifierProvider<FavoritesNotifier, List<String>>(
         (ref) => FavoritesNotifier(ref.watch(prefProvider)));
