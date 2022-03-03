@@ -197,7 +197,7 @@ mixin AccountMixin {
               },
       ),
       MenuAction(
-        text: pinned ? 'Remove pin' : 'Pin account',
+        text: pinned ? 'Unpin account' : 'Pin account',
         //TODO: Replace this with a custom icon.
         //Icon(pinned ? Icons.push_pin_remove : Icons.push_pin),
         icon: pinned
