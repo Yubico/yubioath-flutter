@@ -29,6 +29,27 @@ class MainPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final query = MediaQuery.of(context);
+    if (query.size.width < 540) {
+      // Single column layout
+      return _buildScaffold(context, ref, true);
+    } else {
+      // Two-column layout
+      return Row(
+        children: [
+          const SizedBox(
+            width: 240,
+            child: MainPageDrawer(shouldPop: false),
+          ),
+          Expanded(
+            child: _buildScaffold(context, ref, false),
+          ),
+        ],
+      );
+    }
+  }
+
+  Scaffold _buildScaffold(BuildContext context, WidgetRef ref, bool hasDrawer) {
     final deviceNode = ref.watch(currentDeviceProvider);
     final deviceData = ref.watch(currentDeviceDataProvider);
     final subPage = ref.watch(subPageProvider);
@@ -51,7 +72,6 @@ class MainPage extends ConsumerWidget {
         child: Icon(Icons.more_horiz),
       );
     }
-
     return Scaffold(
       appBar: AppBar(
         /*
@@ -111,7 +131,7 @@ class MainPage extends ConsumerWidget {
           ),
         ],
       ),
-      drawer: const MainPageDrawer(),
+      drawer: hasDrawer ? const MainPageDrawer() : null,
       body: _buildSubPage(subPage, deviceData),
     );
   }
