@@ -49,9 +49,14 @@ class AccountView extends ConsumerWidget with AccountMixin {
         child: ListTile(
           leading: e.icon,
           title: Text(e.text),
+          dense: true,
+          contentPadding: EdgeInsets.zero,
         ),
         enabled: action != null,
         onTap: () {
+          // As soon as onTap returns, the Navigator is popped,
+          // closing the topmost item. Since we sometimes open new dialogs in
+          // the action, make sure that happens *after* the pop.
           Timer(Duration.zero, () {
             action?.call(context);
           });
@@ -75,7 +80,11 @@ class AccountView extends ConsumerWidget with AccountMixin {
         showMenu(
           context: context,
           position: RelativeRect.fromLTRB(
-              details.globalPosition.dx, details.globalPosition.dy, 0, 0),
+            details.globalPosition.dx,
+            details.globalPosition.dy,
+            details.globalPosition.dx,
+            0,
+          ),
           items: _buildPopupMenu(context, ref),
         );
       },
