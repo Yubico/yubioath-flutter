@@ -72,24 +72,25 @@ class _AccountListState extends State<AccountList> {
       );
     }
 
-    final favCreds = widget.credentials
+    final pinnedCreds = widget.credentials
         .where((entry) => widget.favorites.contains(entry.credential.id));
     final creds = widget.credentials
         .where((entry) => !widget.favorites.contains(entry.credential.id));
 
-    _credentials = favCreds.followedBy(creds).map((e) => e.credential).toList();
+    _credentials =
+        pinnedCreds.followedBy(creds).map((e) => e.credential).toList();
     _updateFocusNodes();
 
     return ListView(
       children: [
-        if (favCreds.isNotEmpty)
+        if (pinnedCreds.isNotEmpty)
           ListTile(
             title: Text(
-              'FAVORITES',
+              'PINNED',
               style: Theme.of(context).textTheme.bodyText2,
             ),
           ),
-        ...favCreds.map(
+        ...pinnedCreds.map(
           (entry) => AccountView(
             widget.deviceData,
             entry.credential,

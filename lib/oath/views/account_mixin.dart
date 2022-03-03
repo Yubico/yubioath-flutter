@@ -11,6 +11,47 @@ import '../state.dart';
 import 'delete_account_dialog.dart';
 import 'rename_account_dialog.dart';
 
+class _StrikethroughClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = Path()
+      ..moveTo(0, 2)
+      ..lineTo(0, size.height)
+      ..lineTo(size.width - 2, size.height)
+      ..lineTo(0, 2)
+      ..moveTo(2, 0)
+      ..lineTo(size.width, size.height - 2)
+      ..lineTo(size.width, 0)
+      ..lineTo(2, 0)
+      ..close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return false;
+  }
+}
+
+class _StrikethroughPainter extends CustomPainter {
+  final Color color;
+  _StrikethroughPainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint();
+    paint.color = color;
+    paint.strokeWidth = 1.3;
+    canvas.drawLine(Offset(size.width * 0.15, size.height * 0.15),
+        Offset(size.width * 0.8, size.height * 0.8), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
 mixin AccountMixin {
   OathCredential get credential;
 
@@ -44,7 +85,7 @@ mixin AccountMixin {
   }
 
   @protected
-  bool isFavorite(WidgetRef ref) =>
+  bool isPinned(WidgetRef ref) =>
       ref.watch(favoritesProvider).contains(credential.id);
 
   @protected
@@ -117,7 +158,7 @@ mixin AccountMixin {
   }
 
   @protected
-  List<MenuAction> buildActions(WidgetRef ref) {
+  List<MenuAction> buildActions(BuildContext context, WidgetRef ref) {
     final deviceData = ref.watch(currentDeviceDataProvider);
     if (deviceData == null) {
       return [];
@@ -127,7 +168,7 @@ mixin AccountMixin {
     final manual =
         credential.touchRequired || credential.oathType == OathType.hotp;
     final ready = expired || credential.oathType == OathType.hotp;
-    final favorite = isFavorite(ref);
+    final pinned = isPinned(ref);
 
     return [
       if (manual)
@@ -156,8 +197,18 @@ mixin AccountMixin {
               },
       ),
       MenuAction(
-        text: favorite ? 'Remove from favorites' : 'Add to favorites',
-        icon: Icon(favorite ? Icons.star : Icons.star_border),
+        text: pinned ? 'Remove pin' : 'Pin account',
+        //TODO: Replace this with a custom icon.
+        //Icon(pinned ? Icons.push_pin_remove : Icons.push_pin),
+        icon: pinned
+            ? CustomPaint(
+                painter: _StrikethroughPainter(
+                    Theme.of(context).iconTheme.color ?? Colors.black),
+                child: ClipPath(
+                    clipper: _StrikethroughClipper(),
+                    child: const Icon(Icons.push_pin)),
+              )
+            : const Icon(Icons.push_pin),
         action: (context) {
           ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
         },
@@ -173,7 +224,7 @@ mixin AccountMixin {
         ),
       MenuAction(
         text: 'Delete account',
-        icon: const Icon(Icons.delete_forever),
+        icon: const Icon(Icons.delete),
         action: (context) async {
           await deleteCredential(context, ref);
         },

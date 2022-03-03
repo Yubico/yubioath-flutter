@@ -656,7 +656,7 @@ class _$MenuActionTearOff {
 
   _MenuAction call(
       {required String text,
-      required Icon icon,
+      required Widget icon,
       void Function(BuildContext)? action}) {
     return _MenuAction(
       text: text,
@@ -672,7 +672,7 @@ const $MenuAction = _$MenuActionTearOff();
 /// @nodoc
 mixin _$MenuAction {
   String get text => throw _privateConstructorUsedError;
-  Icon get icon => throw _privateConstructorUsedError;
+  Widget get icon => throw _privateConstructorUsedError;
   void Function(BuildContext)? get action => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -685,7 +685,7 @@ abstract class $MenuActionCopyWith<$Res> {
   factory $MenuActionCopyWith(
           MenuAction value, $Res Function(MenuAction) then) =
       _$MenuActionCopyWithImpl<$Res>;
-  $Res call({String text, Icon icon, void Function(BuildContext)? action});
+  $Res call({String text, Widget icon, void Function(BuildContext)? action});
 }
 
 /// @nodoc
@@ -710,7 +710,7 @@ class _$MenuActionCopyWithImpl<$Res> implements $MenuActionCopyWith<$Res> {
       icon: icon == freezed
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
-              as Icon,
+              as Widget,
       action: action == freezed
           ? _value.action
           : action // ignore: cast_nullable_to_non_nullable
@@ -725,7 +725,7 @@ abstract class _$MenuActionCopyWith<$Res> implements $MenuActionCopyWith<$Res> {
           _MenuAction value, $Res Function(_MenuAction) then) =
       __$MenuActionCopyWithImpl<$Res>;
   @override
-  $Res call({String text, Icon icon, void Function(BuildContext)? action});
+  $Res call({String text, Widget icon, void Function(BuildContext)? action});
 }
 
 /// @nodoc
@@ -752,7 +752,7 @@ class __$MenuActionCopyWithImpl<$Res> extends _$MenuActionCopyWithImpl<$Res>
       icon: icon == freezed
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
-              as Icon,
+              as Widget,
       action: action == freezed
           ? _value.action
           : action // ignore: cast_nullable_to_non_nullable
@@ -769,7 +769,7 @@ class _$_MenuAction implements _MenuAction {
   @override
   final String text;
   @override
-  final Icon icon;
+  final Widget icon;
   @override
   final void Function(BuildContext)? action;
 
@@ -804,13 +804,13 @@ class _$_MenuAction implements _MenuAction {
 abstract class _MenuAction implements MenuAction {
   factory _MenuAction(
       {required String text,
-      required Icon icon,
+      required Widget icon,
       void Function(BuildContext)? action}) = _$_MenuAction;
 
   @override
   String get text;
   @override
-  Icon get icon;
+  Widget get icon;
   @override
   void Function(BuildContext)? get action;
   @override

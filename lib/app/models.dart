@@ -38,7 +38,7 @@ class DeviceNode with _$DeviceNode {
 class MenuAction with _$MenuAction {
   factory MenuAction(
       {required String text,
-      required Icon icon,
+      required Widget icon,
       void Function(BuildContext context)? action}) = _MenuAction;
 }
 

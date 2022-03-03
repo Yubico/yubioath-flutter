@@ -43,7 +43,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
   }
 
   List<PopupMenuItem> _buildPopupMenu(BuildContext context, WidgetRef ref) {
-    return buildActions(ref).map((e) {
+    return buildActions(context, ref).map((e) {
       final action = e.action;
       return PopupMenuItem(
         child: ListTile(

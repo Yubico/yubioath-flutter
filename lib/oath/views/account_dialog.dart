@@ -39,7 +39,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
   }
 
   List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
-    return buildActions(ref).map((e) {
+    return buildActions(context, ref).map((e) {
       final action = e.action;
       return IconButton(
         icon: e.icon,
