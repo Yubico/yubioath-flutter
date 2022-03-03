@@ -14,6 +14,6 @@ class FManagementApiImpl extends FManagementApi {
   @override
   Future<void> updateDeviceInfo(String deviceInfoJson) async {
     _log.info('Received: $deviceInfoJson');
-    _ref.read(yubikeyDataCommandProvider.notifier).set(deviceInfoJson);
+    _ref.read(androidYubikeyProvider.notifier).set(deviceInfoJson);
   }
 }

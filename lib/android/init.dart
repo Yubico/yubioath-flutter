@@ -1,18 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/android/oath/state.dart';
-import 'package:yubico_authenticator/android/state.dart';
-import 'package:yubico_authenticator/android/views/tap_request_dialog.dart';
-import 'package:yubico_authenticator/app/state.dart';
-import 'package:yubico_authenticator/oath/state.dart';
+
+import 'oath/state.dart';
+import 'state.dart';
+import 'views/tap_request_dialog.dart';
+import '../app/state.dart';
+import '../oath/state.dart';
 
 final _log = Logger('android.init');
-
-const methodChannel = MethodChannel('com.yubico.yubikit_android/channel');
 
 initializeLogging() {
   Logger.root.onRecord.listen((record) {

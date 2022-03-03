@@ -7,24 +7,27 @@ import '../app/models.dart';
 import '../core/models.dart';
 import '../management/models.dart';
 
-final log = Logger('yubikeyDataCommandProvider');
+final _log = Logger('yubikeyDataCommandProvider');
 
-final yubikeyDataCommandProvider =
-    StateNotifierProvider<YubikeyDataCommandProvider, YubiKeyData?>((ref) {
-  return YubikeyDataCommandProvider(null);
+final androidYubikeyProvider =
+    StateNotifierProvider<_YubikeyProvider, YubiKeyData?>((ref) {
+  return _YubikeyProvider(null);
 });
 
-class YubikeyDataCommandProvider extends StateNotifier<YubiKeyData?> {
-  YubikeyDataCommandProvider(YubiKeyData? yubiKeyData) : super(yubiKeyData);
+class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
+  _YubikeyProvider(YubiKeyData? yubiKeyData) : super(yubiKeyData);
 
   void set(String input) {
     try {
       if (input.isEmpty) {
-        log.info('Yubikey was detached.');
+        _log.info('Yubikey was detached.');
         state = null;
         return;
       }
 
+      /// a workaround for yubikeys without DEVICE_INFO
+      /// once we have support functionality implemented,
+      /// the following block will not be needed
       if (input == 'NO_FEATURE_DEVICE_INFO') {
         // empty data to show some general information in the app
         DeviceConfig config = DeviceConfig({}, 0, 0, 0);
@@ -47,7 +50,7 @@ class YubikeyDataCommandProvider extends StateNotifier<YubiKeyData?> {
           : DeviceNode.usbYubiKey(DevicePath([]), name, -1, deviceInfo);
       state = YubiKeyData(deviceNode, name, deviceInfo);
     } on Exception catch (e) {
-      log.info('Invalid data for yubikey: $input. $e');
+      _log.info('Invalid data for yubikey: $input. $e');
       state = null;
     }
   }

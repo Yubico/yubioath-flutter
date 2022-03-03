@@ -4,13 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../oath/models.dart';
 
-final oathStateCommandProvider =
-    StateNotifierProvider<OathStateCommandProvider, OathState?>((ref) {
-  return OathStateCommandProvider(null);
+final androidStateProvider =
+    StateNotifierProvider<_StateProvider, OathState?>((ref) {
+  return _StateProvider(null);
 });
 
-class OathStateCommandProvider extends StateNotifier<OathState?> {
-  OathStateCommandProvider(OathState? oathState) : super(oathState);
+class _StateProvider extends StateNotifier<OathState?> {
+  _StateProvider(OathState? oathState) : super(oathState);
 
   void set(String input) {
     var resultJson = jsonDecode(input);
@@ -22,15 +22,13 @@ class OathStateCommandProvider extends StateNotifier<OathState?> {
   }
 }
 
-final oathPairsCommandProvider =
-    StateNotifierProvider<OathCredentialsCommandProvider, List<OathPair>>(
-        (ref) {
-  return OathCredentialsCommandProvider([]);
+final androidCredentialsProvider =
+    StateNotifierProvider<_CredentialsProvider, List<OathPair>>((ref) {
+  return _CredentialsProvider([]);
 });
 
-class OathCredentialsCommandProvider extends StateNotifier<List<OathPair>> {
-  OathCredentialsCommandProvider(List<OathPair> credentials)
-      : super(credentials);
+class _CredentialsProvider extends StateNotifier<List<OathPair>> {
+  _CredentialsProvider(List<OathPair> credentials) : super(credentials);
 
   void set(String input) {
     var result = jsonDecode(input);

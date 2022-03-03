@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/android/api/impl.dart';
 
+import '../api/impl.dart';
 import '../../app/navigation_service.dart';
 
 class FDialogApiImpl extends FDialogApi {

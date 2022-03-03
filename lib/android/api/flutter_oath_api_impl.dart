@@ -14,12 +14,12 @@ class FOathApiImpl extends FOathApi {
   @override
   Future<void> updateOathCredentials(String credentialListJson) async {
     _log.info('Received: $credentialListJson');
-    _ref.read(oathPairsCommandProvider.notifier).set(credentialListJson);
+    _ref.read(androidCredentialsProvider.notifier).set(credentialListJson);
   }
 
   @override
   Future<void> updateSession(String sessionJson) async {
     _log.info('Received: $sessionJson');
-    _ref.read(oathStateCommandProvider.notifier).set(sessionJson);
+    _ref.read(androidStateProvider.notifier).set(sessionJson);
   }
 }

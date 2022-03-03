@@ -42,4 +42,4 @@ final androidAttachedDevicesProvider = Provider<List<DeviceNode>>((ref) {
 });
 
 final androidDeviceDataProvider =
-    Provider<YubiKeyData?>((ref) => ref.watch(yubikeyDataCommandProvider));
+    Provider<YubiKeyData?>((ref) => ref.watch(androidYubikeyProvider));

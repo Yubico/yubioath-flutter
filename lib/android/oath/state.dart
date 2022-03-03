@@ -24,7 +24,7 @@ final oathApiProvider = StateProvider((_) => OathApi());
 final androidOathStateProvider = StateNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState?, DevicePath>((ref, devicePath) =>
         _AndroidOathStateNotifier(
-            ref.watch(oathStateCommandProvider), ref.watch(oathApiProvider)));
+            ref.watch(androidStateProvider), ref.watch(oathApiProvider)));
 
 class _AndroidOathStateNotifier extends OathStateNotifier {
   final OathApi _api;
@@ -100,7 +100,7 @@ final androidCredentialListProvider = StateNotifierProvider.autoDispose
   (ref, devicePath) {
     var notifier = _AndroidCredentialListNotifier(
       ref.watch(oathApiProvider),
-      ref.watch(oathPairsCommandProvider),
+      ref.watch(androidCredentialsProvider),
       ref.watch(oathStateProvider(devicePath).select((s) => s?.locked ?? true)),
     );
     ref.listen<WindowState>(windowStateProvider, (_, windowState) {
