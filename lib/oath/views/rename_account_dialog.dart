@@ -100,11 +100,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         ElevatedButton(
           onPressed: isValid
               ? () async {
-                  await ref
+                  final renamed = await ref
                       .read(credentialListProvider(widget.device.path).notifier)
                       .renameAccount(credential,
                           _issuer.isNotEmpty ? _issuer : null, _account);
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(renamed);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Account renamed'),

@@ -27,6 +27,9 @@ class AppTheme {
           bodyText2: TextStyle(
             color: Colors.grey.shade800,
           ),
+          headline2: TextStyle(
+            color: Colors.grey.shade800,
+          ),
         ),
       );
 
@@ -44,6 +47,9 @@ class AppTheme {
           ),
           bodyText2: TextStyle(
             color: Colors.grey.shade500,
+          ),
+          headline2: TextStyle(
+            color: Colors.grey.shade100,
           ),
         ),
       );

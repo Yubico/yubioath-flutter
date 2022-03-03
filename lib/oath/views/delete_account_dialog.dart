@@ -16,7 +16,7 @@ class DeleteAccountDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // If current device changes, we need to pop back to the main Page.
     ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(false);
     });
 
     final label = credential.issuer != null
@@ -40,7 +40,7 @@ class DeleteAccountDialog extends ConsumerWidget {
       actions: [
         OutlinedButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(false);
           },
           child: const Text('Cancel'),
         ),
@@ -49,7 +49,7 @@ class DeleteAccountDialog extends ConsumerWidget {
             await ref
                 .read(credentialListProvider(device.path).notifier)
                 .deleteAccount(credential);
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(true);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Account deleted'),
