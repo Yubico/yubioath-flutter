@@ -93,7 +93,6 @@ class _AccountListState extends State<AccountList> {
           (entry) => AccountView(
             widget.deviceData,
             entry.credential,
-            entry.code,
             focusNode: _focusNodes[entry.credential],
           ),
         ),
@@ -108,7 +107,6 @@ class _AccountListState extends State<AccountList> {
           (entry) => AccountView(
             widget.deviceData,
             entry.credential,
-            entry.code,
             focusNode: _focusNodes[entry.credential],
           ),
         ),

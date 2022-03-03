@@ -1,118 +1,61 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/models.dart';
 import '../../widgets/circle_timer.dart';
 import '../models.dart';
-import '../state.dart';
-import 'delete_account_dialog.dart';
-import 'rename_account_dialog.dart';
-import 'utils.dart';
+import 'account_mixin.dart';
 
-class AccountDialog extends ConsumerWidget {
-  final YubiKeyData deviceData;
+class AccountDialog extends ConsumerWidget with AccountMixin {
+  @override
   final OathCredential credential;
-  const AccountDialog(this.deviceData, this.credential, {Key? key})
-      : super(key: key);
+  const AccountDialog(this.credential, {Key? key}) : super(key: key);
 
-  List<Widget> _buildActions(BuildContext context, WidgetRef ref,
-      OathCode? code, bool expired, bool favorite) {
-    final manual =
-        credential.touchRequired || credential.oathType == OathType.hotp;
-    final ready = expired || credential.oathType == OathType.hotp;
+  @override
+  Future<OathCredential?> renameCredential(
+      BuildContext context, WidgetRef ref) async {
+    final renamed = await super.renameCredential(context, ref);
+    if (renamed != null) {
+      // Replace this dialog with a new one, for the renamed credential.
+      Navigator.of(context).pop();
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return AccountDialog(renamed);
+        },
+      );
+    }
+    return renamed;
+  }
 
-    return [
-      if (manual)
-        IconButton(
-          icon: const Icon(Icons.refresh),
-          tooltip: 'Calculate',
-          onPressed: ready
-              ? () {
-                  calculateCode(
-                    context,
-                    credential,
-                    ref.read(
-                        credentialListProvider(deviceData.node.path).notifier),
-                  );
-                }
-              : null,
-        ),
-      IconButton(
-        icon: const Icon(Icons.copy),
-        tooltip: 'Copy to clipboard',
-        onPressed: code == null || expired
-            ? null
-            : () {
-                Clipboard.setData(ClipboardData(text: code.value));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Code copied to clipboard'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              },
-      ),
-      IconButton(
-        icon: Icon(favorite ? Icons.star : Icons.star_border),
-        tooltip: favorite ? 'Remove from favorites' : 'Add to favorites',
-        onPressed: () {
-          ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
-        },
-      ),
-      if (deviceData.info.version.major >= 5 &&
-          deviceData.info.version.minor >= 3)
-        IconButton(
-          icon: const Icon(Icons.edit),
-          tooltip: 'Rename account',
-          onPressed: () async {
-            final renamed = await showDialog(
-              context: context,
-              builder: (context) =>
-                  RenameAccountDialog(deviceData.node, credential),
-            );
-            if (renamed != null) {
-              // Replace this dialog with a new one, for the renamed credential.
-              Navigator.of(context).pop();
-              await showDialog(
-                context: context,
-                builder: (context) {
-                  return AccountDialog(deviceData, renamed);
-                },
-              );
-            }
-          },
-        ),
-      IconButton(
-        icon: const Icon(Icons.delete_forever),
-        tooltip: 'Delete account',
-        onPressed: () async {
-          final result = await showDialog(
-            context: context,
-            builder: (context) =>
-                DeleteAccountDialog(deviceData.node, credential),
-          );
-          if (result) {
-            Navigator.of(context).pop();
-          }
-        },
-      ),
-    ];
+  @override
+  Future<bool> deleteCredential(BuildContext context, WidgetRef ref) async {
+    final deleted = await super.deleteCredential(context, ref);
+    if (deleted) {
+      Navigator.of(context).pop();
+    }
+    return deleted;
+  }
+
+  List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
+    return buildActions(ref).map((e) {
+      final action = e.action;
+      return IconButton(
+        icon: e.icon,
+        tooltip: e.text,
+        onPressed: action != null
+            ? () {
+                action(context);
+              }
+            : null,
+      );
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final label = credential.issuer != null
-        ? '${credential.issuer} (${credential.name})'
-        : credential.name;
-
-    final code = ref.watch(codeProvider(credential));
-    final expired = code == null ||
-        (credential.oathType == OathType.totp &&
-            ref.watch(expiredProvider(code.validTo)));
-    final favorite = ref.watch(favoritesProvider).contains(credential.id);
+    final code = getCode(ref);
 
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
@@ -123,7 +66,7 @@ class AccountDialog extends ConsumerWidget {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            actions: _buildActions(context, ref, code, expired, favorite),
+            actions: _buildActions(context, ref),
           ),
           body: LayoutBuilder(builder: (context, constraints) {
             return ListView(
@@ -155,9 +98,9 @@ class AccountDialog extends ConsumerWidget {
                                 FittedBox(
                                   fit: BoxFit.scaleDown,
                                   child: Text(
-                                    formatOathCode(code),
+                                    formatCode(ref),
                                     softWrap: false,
-                                    style: expired
+                                    style: isExpired(ref)
                                         ? Theme.of(context)
                                             .textTheme
                                             .headline2
