@@ -4,14 +4,14 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'android/init.dart' as android;
 import 'app/app.dart';
 import 'app/views/main_page.dart';
 import 'core/state.dart';
 import 'desktop/init.dart' as desktop;
-
 import 'error_page.dart';
 
 final _log = Logger('main');
@@ -26,7 +26,9 @@ void main() async {
     if (isDesktop) {
       desktop.initializeLogging();
     }
-    // TODO: android.initializeLogging() to set up bridge to logcat.
+    if (isAndroid) {
+      android.initializeLogging();
+    }
   }
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,6 +43,9 @@ void main() async {
     if (isDesktop) {
       _log.config('Initializing desktop platform.');
       overrides.addAll(await desktop.initializeAndGetOverrides(prefs));
+    } else if (isAndroid) {
+      _log.config('Initializing Android platform.');
+      overrides.addAll(await android.initializeAndGetOverrides());
     }
     page = const MainPage();
   } catch (e) {

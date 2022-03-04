@@ -24,7 +24,8 @@ extension on SubPage {
 }
 
 class MainPageDrawer extends ConsumerWidget {
-  const MainPageDrawer({Key? key}) : super(key: key);
+  final bool shouldPop;
+  const MainPageDrawer({this.shouldPop = true, Key? key}) : super(key: key);
 
   IconData _iconFor(SubPage page) {
     switch (page) {
@@ -65,7 +66,7 @@ class MainPageDrawer extends ConsumerWidget {
                 onTap: page != currentSubPage
                     ? () {
                         ref.read(subPageProvider.notifier).setSubPage(page);
-                        Navigator.of(context).pop();
+                        if (shouldPop) Navigator.of(context).pop();
                       }
                     : null,
               )),
@@ -84,7 +85,7 @@ class MainPageDrawer extends ConsumerWidget {
             selected: SubPage.management == currentSubPage,
             onTap: () {
               ref.read(subPageProvider.notifier).setSubPage(SubPage.management);
-              Navigator.of(context).pop();
+              if (shouldPop) Navigator.of(context).pop();
             },
           ),
           const Divider(),
@@ -99,22 +100,22 @@ class MainPageDrawer extends ConsumerWidget {
             titleText: 'Settings',
             icon: const Icon(Icons.settings),
             onTap: () {
-              Navigator.of(context)
-                ..pop()
-                ..push(
-                  MaterialPageRoute(builder: (context) => const SettingsPage()),
-                );
+              final nav = Navigator.of(context);
+              if (shouldPop) nav.pop();
+              nav.push(
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
             },
           ),
           DrawerItem(
             titleText: 'About',
             icon: const Icon(Icons.help_outline),
             onTap: () {
-              Navigator.of(context)
-                ..pop()
-                ..push(
-                  MaterialPageRoute(builder: (context) => const AboutPage()),
-                );
+              final nav = Navigator.of(context);
+              if (shouldPop) nav.pop();
+              nav.push(
+                MaterialPageRoute(builder: (context) => const AboutPage()),
+              );
             },
           ),
         ],

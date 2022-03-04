@@ -22,3 +22,4 @@ class LogLevelNotifier extends StateNotifier<Level> {
 }
 
 final isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+final isAndroid = Platform.isAndroid;
