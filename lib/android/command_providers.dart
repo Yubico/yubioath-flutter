@@ -20,7 +20,7 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
   void set(String input) {
     try {
       if (input.isEmpty) {
-        _log.info('Yubikey was detached.');
+        _log.config('Yubikey was detached.');
         state = null;
         return;
       }
@@ -50,7 +50,7 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
           : DeviceNode.usbYubiKey(DevicePath([]), name, -1, deviceInfo);
       state = YubiKeyData(deviceNode, name, deviceInfo);
     } on Exception catch (e) {
-      _log.info('Invalid data for yubikey: $input. $e');
+      _log.config('Invalid data for yubikey: $input. $e');
       state = null;
     }
   }

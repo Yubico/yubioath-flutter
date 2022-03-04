@@ -38,7 +38,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
     try {
       await _api.reset();
     } catch (e) {
-      _log.info('Calling reset failed with exception: $e');
+      _log.config('Calling reset failed with exception: $e');
     }
   }
 
@@ -54,7 +54,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       }
       return Pair(unlockSuccess, false); // TODO: provide correct second param
     } on PlatformException catch (e) {
-      _log.info('Calling unlock failed with exception: $e');
+      _log.config('Calling unlock failed with exception: $e');
       return Pair(false, false);
     }
   }
@@ -69,7 +69,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       }
       return true;
     } on PlatformException catch (e) {
-      _log.info('Calling set password failed with exception: $e');
+      _log.config('Calling set password failed with exception: $e');
       return false;
     }
   }
@@ -80,7 +80,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       await _api.unsetPassword(current);
       return true;
     } on PlatformException catch (e) {
-      _log.info('Calling unset password failed with exception: $e');
+      _log.config('Calling unset password failed with exception: $e');
       return false;
     }
   }
@@ -90,7 +90,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
     try {
       await _api.forgetPassword();
     } on PlatformException catch (e) {
-      _log.info('Calling forgetPassword failed with exception: $e');
+      _log.config('Calling forgetPassword failed with exception: $e');
     }
   }
 }
@@ -165,14 +165,10 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   @override
   Future<OathCredential> addAccount(Uri credentialUri,
       {bool requireTouch = false, bool update = true}) async {
-    _log.info('About to add new cred: $credentialUri, $requireTouch, $update');
-
     String resultString =
         await _api.addAccount(credentialUri.toString(), requireTouch);
 
     var result = jsonDecode(resultString);
-    _log.info('Received credential: $resultString');
-
     final credential = OathCredential.fromJson(result);
 
     if (update && mounted) {
@@ -216,7 +212,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
 
       return renamedCredential;
     } on PlatformException catch (e) {
-      _log.info('Failed to execute renameOathCredential: ${e.message}');
+      _log.config('Failed to execute renameOathCredential: ${e.message}');
     }
 
     return credential;
@@ -224,8 +220,6 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
 
   @override
   Future<void> deleteAccount(OathCredential credential) async {
-    _log.info('About to delete cred: $credential');
-
     try {
       await _api.deleteAccount(credential.id);
 
@@ -233,19 +227,18 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         state = state!.toList()..removeWhere((e) => e.credential == credential);
       }
     } catch (e) {
-      _log.info('Call to delete credential failed: $e');
+      _log.config('Call to delete credential failed: $e');
     }
   }
 
   refresh() async {
     if (_locked) return;
-    _log.info('refreshing credentials...');
+    _log.config('refreshing credentials...');
 
     final pairs = [];
 
     try {
       var resultString = await _api.refreshCodes();
-      _log.info('Entries', resultString);
       var result = jsonDecode(resultString);
 
       for (var e in result['entries']) {
@@ -273,7 +266,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         _scheduleRefresh();
       }
     } catch (e) {
-      _log.info('Failure refreshing codes: $e');
+      _log.config('Failure refreshing codes: $e');
     }
   }
 
