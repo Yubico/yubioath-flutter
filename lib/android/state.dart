@@ -7,18 +7,17 @@ import 'api/flutter_oath_api_impl.dart';
 import 'api/impl.dart';
 import 'command_providers.dart';
 
-final androidSubPageProvider = StateNotifierProvider<SubPageNotifier, SubPage>(
-    (ref) => AndroidSubPageNotifier(ref));
+final androidSubPageProvider =
+    StateNotifierProvider<SubPageNotifier, SubPage>((ref) {
+  FOathApi.setup(FOathApiImpl(ref));
+  FManagementApi.setup(FManagementApiImpl(ref));
+  return AndroidSubPageNotifier();
+});
 
 class AndroidSubPageNotifier extends SubPageNotifier {
-  StateNotifierProviderRef ref;
   final AppApi _api = AppApi();
 
-  AndroidSubPageNotifier(this.ref) : super(SubPage.oath) {
-    // TODO find more appropriate place where to setup these api's
-    FOathApi.setup(FOathApiImpl(ref));
-    FManagementApi.setup(FManagementApiImpl(ref));
-
+  AndroidSubPageNotifier() : super(SubPage.oath) {
     _handleSubPage(SubPage.oath);
   }
 
