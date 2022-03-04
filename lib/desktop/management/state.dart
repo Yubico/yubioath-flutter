@@ -16,7 +16,8 @@ final _log = Logger('desktop.management.state');
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, DevicePath>(
   (ref, devicePath) {
-    final protocol = ref.watch(currentDeviceProvider)!.when(
+    final currentDevice = ref.watch(currentDeviceProvider);
+    final protocol = currentDevice?.when(
           usbYubiKey: (path, name, pid, info) {
             final interfaces = UsbInterfaces.forCapabilites(
                 info.config.enabledCapabilities[Transport.usb] ?? 0);
@@ -24,7 +25,8 @@ final _sessionProvider =
                 .firstWhere((iface) => iface.value & interfaces != 0);
           },
           nfcReader: (_, __) => UsbInterface.ccid,
-        );
+        ) ??
+        UsbInterface.ccid;
     return RpcNodeSession(
         ref.watch(rpcProvider), devicePath, [protocol.name, 'management']);
   },
@@ -81,5 +83,17 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
       'new_lock_code': newLockCode,
       'reboot': reboot,
     });
+    if (mounted && !reboot) {
+      // Make sure we get a deep copy
+      state = state?.copyWith(
+        config: DeviceConfig(
+          {...config.enabledCapabilities},
+          config.autoEjectTimeout ?? state?.config.autoEjectTimeout,
+          config.challengeResponseTimeout ??
+              state?.config.challengeResponseTimeout,
+          config.deviceFlags ?? state?.config.deviceFlags,
+        ),
+      );
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
+import 'package:yubico_authenticator/app/state.dart';
 
 import '../../app/models.dart';
 import '../models.dart';
@@ -155,17 +156,23 @@ class ManagementScreen extends ConsumerWidget {
             if (reboot) {
               close = ScaffoldMessenger.of(context)
                   .showSnackBar(const SnackBar(
-                    content: Text('Updating configuration...'),
+                    content: Text('Reconfiguring YubiKey...'),
                     duration: Duration(seconds: 8),
                   ))
                   .close;
             }
+            final config = state.config.copyWith(enabledCapabilities: enabled);
             await ref
                 .read(managementStateProvider(deviceData.node.path).notifier)
                 .writeConfig(
-                  state.config.copyWith(enabledCapabilities: enabled),
+                  config,
                   reboot: reboot,
                 );
+            if (!reboot) {
+              ref
+                  .read(currentDeviceDataProvider.notifier)
+                  .updateDeviceConfig(config);
+            }
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text('Configuration updated'),
               duration: Duration(seconds: 2),

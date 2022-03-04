@@ -155,8 +155,8 @@ final desktopDevicesProvider = Provider<List<DeviceNode>>((ref) {
   return [...usbDevices, ...nfcDevices];
 });
 
-final _desktopDeviceDataProvider =
-    StateNotifierProvider<CurrentDeviceDataNotifier, YubiKeyData?>((ref) {
+final desktopDeviceDataProvider =
+    StateNotifierProvider<DeviceDataNotifier, YubiKeyData?>((ref) {
   final notifier = CurrentDeviceDataNotifier(
     ref.watch(rpcProvider),
     ref.watch(currentDeviceProvider),
@@ -170,11 +170,13 @@ final _desktopDeviceDataProvider =
   return notifier;
 });
 
-final desktopDeviceDataProvider = Provider<YubiKeyData?>(
-  (ref) => ref.watch(_desktopDeviceDataProvider),
-);
+/*final desktopDeviceDataProvider = StateNotifierProvider<DeviceDataNotifier, YubiKeyData?>(
+  (ref) {
+    return ref.watch(_desktopDeviceDataProvider);
+  },
+);*/
 
-class CurrentDeviceDataNotifier extends StateNotifier<YubiKeyData?> {
+class CurrentDeviceDataNotifier extends DeviceDataNotifier {
   final RpcSession _rpc;
   final DeviceNode? _deviceNode;
   Timer? _pollTimer;
@@ -225,6 +227,17 @@ class CurrentDeviceDataNotifier extends StateNotifier<YubiKeyData?> {
       _pollTimer = Timer(
           state == null ? _nfcAttachPollDelay : _nfcDetachPollDelay,
           _pollReader);
+    }
+  }
+
+  @override
+  void updateDeviceConfig(DeviceConfig config) {
+    final oldState = state;
+    if (oldState != null) {
+      state = oldState.copyWith(
+          info: oldState.info.copyWith(
+        config: config,
+      ));
     }
   }
 }

@@ -23,29 +23,29 @@ extension on SubPage {
   }
 }
 
+IconData _iconFor(SubPage page) {
+  switch (page) {
+    case SubPage.oath:
+      return Icons.supervisor_account;
+    case SubPage.fido:
+      return Icons.security;
+    case SubPage.otp:
+      return Icons.password;
+    case SubPage.piv:
+      return Icons.approval;
+    case SubPage.management:
+      return Icons.construction;
+  }
+}
+
 class MainPageDrawer extends ConsumerWidget {
   final bool shouldPop;
   const MainPageDrawer({this.shouldPop = true, Key? key}) : super(key: key);
 
-  IconData _iconFor(SubPage page) {
-    switch (page) {
-      case SubPage.oath:
-        return Icons.supervisor_account;
-      case SubPage.fido:
-        return Icons.security;
-      case SubPage.otp:
-        return Icons.password;
-      case SubPage.piv:
-        return Icons.approval;
-      case SubPage.management:
-        return Icons.construction;
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final capabilities = ref.watch(currentCapabilitiesProvider);
     final currentSubPage = ref.watch(subPageProvider);
-
     final mainPages = [SubPage.oath, SubPage.fido, SubPage.otp, SubPage.piv];
 
     return Drawer(
@@ -59,7 +59,17 @@ class MainPageDrawer extends ConsumerWidget {
               style: Theme.of(context).textTheme.headline6,
             ),
           ),
-          ...mainPages.map((page) => DrawerItem(
+          ...mainPages
+              .where((page) => page.isAvailable(capabilities.first))
+              .map((page) => SubPageItem(
+                    page: page,
+                    available: page.isAvailable(capabilities.second),
+                    selected: page == currentSubPage,
+                    onSelect: () {
+                      if (shouldPop) Navigator.of(context).pop();
+                    },
+                  )),
+          /*...mainPages.map((page) => DrawerItem(
                 titleText: page.displayName,
                 icon: Icon(_iconFor(page)),
                 selected: page == currentSubPage,
@@ -69,7 +79,7 @@ class MainPageDrawer extends ConsumerWidget {
                         if (shouldPop) Navigator.of(context).pop();
                       }
                     : null,
-              )),
+              )),*/
           const Divider(),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -124,7 +134,38 @@ class MainPageDrawer extends ConsumerWidget {
   }
 }
 
+class SubPageItem extends ConsumerWidget {
+  final SubPage page;
+  final bool available;
+  final bool selected;
+  final Function onSelect;
+  const SubPageItem({
+    required this.page,
+    required this.available,
+    required this.selected,
+    required this.onSelect,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return DrawerItem(
+      titleText: page.displayName,
+      icon: Icon(_iconFor(page)),
+      selected: selected,
+      enabled: available,
+      onTap: available & !selected
+          ? () {
+              ref.read(subPageProvider.notifier).setSubPage(page);
+              onSelect();
+            }
+          : null,
+    );
+  }
+}
+
 class DrawerItem extends StatelessWidget {
+  final bool enabled;
   final bool selected;
   final String titleText;
   final Icon icon;
@@ -135,6 +176,7 @@ class DrawerItem extends StatelessWidget {
     required this.icon,
     this.onTap,
     this.selected = false,
+    this.enabled = true,
     Key? key,
   }) : super(key: key);
 
@@ -143,6 +185,7 @@ class DrawerItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ListTile(
+        enabled: enabled,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.horizontal(right: Radius.circular(20)),
         ),

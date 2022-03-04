@@ -60,7 +60,8 @@ extension UsbInterfaces on UsbInterface {
   }
 }
 
-enum Capability { otp, u2f, openpgp, piv, oath, hsmauth, fido2 }
+//enum Capability { otp, u2f, openpgp, piv, oath, hsmauth, fido2 }
+enum Capability { otp, piv, oath, openpgp, hsmauth, u2f, fido2 }
 
 extension CapabilityExtension on Capability {
   int get value {

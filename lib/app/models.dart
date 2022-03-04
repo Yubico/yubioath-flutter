@@ -6,6 +6,24 @@ part 'models.freezed.dart';
 
 enum SubPage { oath, fido, otp, piv, management }
 
+extension SubPages on SubPage {
+  bool isAvailable(int capabilities) {
+    switch (this) {
+      case SubPage.oath:
+        return Capability.oath.value & capabilities != 0;
+      case SubPage.fido:
+        return (Capability.u2f.value | Capability.fido2.value) & capabilities !=
+            0;
+      case SubPage.otp:
+        return Capability.otp.value & capabilities != 0;
+      case SubPage.piv:
+        return Capability.piv.value & capabilities != 0;
+      case SubPage.management:
+        return true;
+    }
+  }
+}
+
 @freezed
 class YubiKeyData with _$YubiKeyData {
   factory YubiKeyData(DeviceNode node, String name, DeviceInfo info) =

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yubico_authenticator/management/models.dart';
 
+import '../core/models.dart';
 import '../core/state.dart';
 import '../oath/menu_actions.dart';
 import 'models.dart';
@@ -57,9 +59,16 @@ final attachedDevicesProvider = Provider<List<DeviceNode>>(
 );
 
 // Override with platform implementation
-final currentDeviceDataProvider = Provider<YubiKeyData?>(
-  (ref) => null,
+final currentDeviceDataProvider =
+    StateNotifierProvider<DeviceDataNotifier, YubiKeyData?>(
+  (ref) => throw UnimplementedError(),
 );
+
+abstract class DeviceDataNotifier extends StateNotifier<YubiKeyData?> {
+  DeviceDataNotifier(YubiKeyData? state) : super(state);
+
+  void updateDeviceConfig(DeviceConfig config);
+}
 
 final currentDeviceProvider =
     StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {
@@ -116,6 +125,23 @@ class SubPageNotifier extends StateNotifier<SubPage> {
     state = page;
   }
 }
+
+final currentCapabilitiesProvider = Provider<Pair<int, int>>(
+  (ref) {
+    final data = ref.watch(currentDeviceDataProvider);
+    if (data != null) {
+      final transport = data.node.map(
+        usbYubiKey: (_) => Transport.usb,
+        nfcReader: (_) => Transport.nfc,
+      );
+      return Pair(
+        data.info.supportedCapabilities[transport] ?? 0,
+        data.info.config.enabledCapabilities[transport] ?? 0,
+      );
+    }
+    return Pair(0, 0);
+  },
+);
 
 final menuActionsProvider = Provider.autoDispose<List<MenuAction>>((ref) {
   switch (ref.watch(subPageProvider)) {
