@@ -6,9 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:yubico_authenticator/management/state.dart';
 
 import '../oath/state.dart';
 import '../app/state.dart';
+import 'management/state.dart';
 import 'oath/state.dart';
 import 'rpc.dart';
 import 'devices.dart';
@@ -86,5 +88,6 @@ Future<List<Override>> initializeAndGetOverrides(
     credentialListProvider
         .overrideWithProvider(desktopOathCredentialListProvider),
     qrScannerProvider.overrideWithProvider(desktopQrScannerProvider),
+    managementStateProvider.overrideWithProvider(desktopManagementState),
   ];
 }

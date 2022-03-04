@@ -10,6 +10,7 @@ import 'device_info_screen.dart';
 import '../models.dart';
 import '../state.dart';
 import '../../oath/views/oath_screen.dart';
+import '../../management/views/management_screen.dart';
 
 class MainPage extends ConsumerWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -22,6 +23,8 @@ class MainPage extends ConsumerWidget {
     switch (subPage) {
       case SubPage.oath:
         return OathScreen(device);
+      case SubPage.management:
+        return ManagementScreen(device);
       default:
         return DeviceInfoScreen(device);
     }
