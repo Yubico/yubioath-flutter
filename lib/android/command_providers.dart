@@ -17,7 +17,7 @@ final androidYubikeyProvider =
 class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
   _YubikeyProvider(YubiKeyData? yubiKeyData) : super(yubiKeyData);
 
-  void set(String input) {
+  void setFromString(String input) {
     try {
       if (input.isEmpty) {
         _log.config('Yubikey was detached.');

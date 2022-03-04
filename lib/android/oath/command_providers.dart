@@ -12,7 +12,7 @@ final androidStateProvider =
 class _StateProvider extends StateNotifier<OathState?> {
   _StateProvider(OathState? oathState) : super(oathState);
 
-  void set(String input) {
+  void setFromString(String input) {
     var resultJson = jsonDecode(input);
     state = OathState(resultJson['deviceId'],
         hasKey: resultJson['hasKey'],
@@ -30,7 +30,7 @@ final androidCredentialsProvider =
 class _CredentialsProvider extends StateNotifier<List<OathPair>> {
   _CredentialsProvider(List<OathPair> credentials) : super(credentials);
 
-  void set(String input) {
+  void setFromString(String input) {
     var result = jsonDecode(input);
 
     final List<OathPair> pairs = [];
