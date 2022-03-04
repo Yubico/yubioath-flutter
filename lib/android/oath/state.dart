@@ -189,10 +189,10 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     try {
       String response;
       if (issuer != null) {
-        response = await _api.renameAccountWithIssuer(
-            credential.id.toString(), name, issuer);
+        response =
+            await _api.renameAccountWithIssuer(credential.id, name, issuer);
       } else {
-        response = await _api.renameAccount(credential.toString(), name);
+        response = await _api.renameAccount(credential.id, name);
       }
 
       var responseJson = jsonDecode(response);
