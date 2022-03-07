@@ -49,7 +49,7 @@ class DevicePath {
 class DeviceNode with _$DeviceNode {
   const DeviceNode._();
   factory DeviceNode.usbYubiKey(
-      DevicePath path, String name, int pid, DeviceInfo info) = UsbYubiKeyNode;
+      DevicePath path, String name, int pid, DeviceInfo? info) = UsbYubiKeyNode;
   factory DeviceNode.nfcReader(DevicePath path, String name) = NfcReaderNode;
 
   Transport get transport =>

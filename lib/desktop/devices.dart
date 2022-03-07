@@ -61,8 +61,11 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
 
     try {
       var scan = await _rpc.command('scan', ['usb']);
-      final numDevices =
-          ((scan['pids'] as Map).values).fold<int>(0, (a, b) => a + b as int);
+      final pids = {
+        for (var e in (scan['pids'] as Map).entries)
+          int.parse(e.key): e.value as int
+      };
+      final numDevices = pids.values.fold<int>(0, (a, b) => a + b);
       if (_usbState != scan['state'] || state.length != numDevices) {
         var usbResult = await _rpc.command('get', ['usb']);
         _log.info('USB state change', jsonEncode(usbResult));
@@ -70,18 +73,31 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
         List<UsbYubiKeyNode> usbDevices = [];
 
         for (String id in (usbResult['children'] as Map).keys) {
-          var path = ['usb', id];
-          var deviceResult = await _rpc.command('get', path);
-          var deviceData = deviceResult['data'];
+          final path = ['usb', id];
+          final deviceResult = await _rpc.command('get', path);
+          final deviceData = deviceResult['data'];
+          final pid = deviceData['pid'] as int;
           usbDevices.add(DeviceNode.usbYubiKey(
             DevicePath(path),
             deviceData['name'],
-            deviceData['pid'],
+            pid,
             DeviceInfo.fromJson(deviceData['info']),
           ) as UsbYubiKeyNode);
+          pids.update(pid, (value) => value - 1);
+        }
+        pids.removeWhere((_, value) => value == 0);
+
+        if (pids.isNotEmpty) {
+          pids.forEach((pid, count) {
+            for (var i = 0; i < count; i++) {
+              usbDevices.add(
+                  DeviceNode.usbYubiKey(DevicePath([]), 'YubiKey', pid, null)
+                      as UsbYubiKeyNode);
+            }
+          });
         }
 
-        _log.info('USB state updated');
+        _log.info('USB state updated, unaccounted for: $pids');
         if (mounted) {
           state = usbDevices;
         }
@@ -210,7 +226,10 @@ class CurrentDeviceDataNotifier extends StateNotifier<YubiKeyData?> {
   CurrentDeviceDataNotifier(this._rpc, this._deviceNode) : super(null) {
     final dev = _deviceNode;
     if (dev is UsbYubiKeyNode) {
-      state = YubiKeyData(dev, dev.name, dev.info);
+      final info = dev.info;
+      if (info != null) {
+        state = YubiKeyData(dev, dev.name, info);
+      }
     }
   }
 

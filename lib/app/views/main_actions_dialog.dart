@@ -78,31 +78,55 @@ class _CurrentDeviceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = node.when(
-        usbYubiKey: (_, __, ___, info) =>
-            'S/N: ${info.serial} F/W: ${info.version}',
-        nfcReader: (_, name) {
-          final info = data?.info;
-          return info == null
-              ? name
-              : '$name\nS/N: ${info.serial} F/W: ${info.version}';
-        });
-
-    return ListTile(
-      leading: data != null
-          ? DeviceAvatar.yubiKeyData(
-              data!,
-              selected: true,
-            )
-          : DeviceAvatar.deviceNode(
+    return node.when(usbYubiKey: (path, name, pid, info) {
+      if (info != null) {
+        return ListTile(
+          leading: DeviceAvatar.yubiKeyData(
+            data!,
+            selected: true,
+          ),
+          title: Text(name),
+          subtitle: Text('S/N: ${info.serial} F/W: ${info.version}'),
+          onTap: onTap,
+        );
+      } else {
+        {
+          return ListTile(
+            leading: DeviceAvatar.deviceNode(
               node,
               selected: true,
             ),
-      title: Text(data?.name ?? 'No YubiKey present'),
-      isThreeLine: subtitle.contains('\n'),
-      subtitle: Text(subtitle),
-      onTap: onTap,
-    );
+            title: Text(name),
+            subtitle: const Text('Device inaccessible'),
+            onTap: onTap,
+          );
+        }
+      }
+    }, nfcReader: (path, name) {
+      final info = data?.info;
+      if (info != null) {
+        return ListTile(
+          leading: DeviceAvatar.yubiKeyData(
+            data!,
+            selected: true,
+          ),
+          title: Text(data!.name),
+          isThreeLine: true,
+          subtitle: Text('$name\nS/N: ${info.serial} F/W: ${info.version}'),
+          onTap: onTap,
+        );
+      } else {
+        return ListTile(
+          leading: DeviceAvatar.deviceNode(
+            node,
+            selected: true,
+          ),
+          title: const Text('No YubiKey present'),
+          subtitle: Text(name),
+          onTap: onTap,
+        );
+      }
+    });
   }
 }
 
@@ -125,8 +149,9 @@ class _DeviceRow extends StatelessWidget {
       title: Text(node.name),
       subtitle: Text(
         node.when(
-          usbYubiKey: (_, __, ___, info) =>
-              'S/N: ${info.serial} F/W: ${info.version}',
+          usbYubiKey: (_, __, ___, info) => info == null
+              ? 'Device inaccessible'
+              : 'S/N: ${info.serial} F/W: ${info.version}',
           nfcReader: (_, __) => 'Select to scan',
         ),
       ),

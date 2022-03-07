@@ -69,36 +69,28 @@ class MainPageDrawer extends ConsumerWidget {
                       if (shouldPop) Navigator.of(context).pop();
                     },
                   )),
-          /*...mainPages.map((page) => DrawerItem(
-                titleText: page.displayName,
-                icon: Icon(_iconFor(page)),
-                selected: page == currentSubPage,
-                onTap: page != currentSubPage
-                    ? () {
-                        ref.read(subPageProvider.notifier).setSubPage(page);
-                        if (shouldPop) Navigator.of(context).pop();
-                      }
-                    : null,
-              )),*/
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Configuration',
-              style: Theme.of(context).textTheme.bodyText2,
+          if (capabilities.first != 0) ...[
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Configuration',
+                style: Theme.of(context).textTheme.bodyText2,
+              ),
             ),
-          ),
-          // PLACEHOLDER
-          DrawerItem(
-            titleText: 'Toggle applications',
-            icon: Icon(_iconFor(SubPage.management)),
-            selected: SubPage.management == currentSubPage,
-            onTap: () {
-              ref.read(subPageProvider.notifier).setSubPage(SubPage.management);
-              if (shouldPop) Navigator.of(context).pop();
-            },
-          ),
-          const Divider(),
+            DrawerItem(
+              titleText: 'Toggle applications',
+              icon: Icon(_iconFor(SubPage.management)),
+              selected: SubPage.management == currentSubPage,
+              onTap: () {
+                ref
+                    .read(subPageProvider.notifier)
+                    .setSubPage(SubPage.management);
+                if (shouldPop) Navigator.of(context).pop();
+              },
+            ),
+            const Divider(),
+          ],
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(

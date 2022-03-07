@@ -90,7 +90,7 @@ class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
         state = devices.firstWhere(
             (dev) => dev.when(
                   usbYubiKey: (path, name, pid, info) =>
-                      lastDevice == 'serial:${info.serial}',
+                      lastDevice == 'serial:${info?.serial}',
                   nfcReader: (path, name) => lastDevice == 'name:$name',
                 ),
             orElse: () => devices.whereType<UsbYubiKeyNode>().first);
@@ -104,7 +104,7 @@ class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
     state = device;
     device.when(
       usbYubiKey: (path, name, pid, info) {
-        final serial = info.serial;
+        final serial = info?.serial;
         if (serial != null) {
           _prefs.setString(_lastDevice, 'serial:$serial');
         }

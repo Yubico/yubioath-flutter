@@ -17,16 +17,15 @@ final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, DevicePath>(
   (ref, devicePath) {
     final currentDevice = ref.watch(currentDeviceProvider);
-    final protocol = currentDevice?.when(
-          usbYubiKey: (path, name, pid, info) {
-            final interfaces = UsbInterfaces.forCapabilites(
-                info.config.enabledCapabilities[Transport.usb] ?? 0);
-            return [UsbInterface.ccid, UsbInterface.otp, UsbInterface.fido]
-                .firstWhere((iface) => iface.value & interfaces != 0);
-          },
-          nfcReader: (_, __) => UsbInterface.ccid,
-        ) ??
-        UsbInterface.ccid;
+    final UsbInterface protocol;
+    if (currentDevice is UsbYubiKeyNode && currentDevice.info != null) {
+      final interfaces = UsbInterfaces.forCapabilites(
+          currentDevice.info!.config.enabledCapabilities[Transport.usb] ?? 0);
+      protocol = [UsbInterface.ccid, UsbInterface.otp, UsbInterface.fido]
+          .firstWhere((iface) => iface.value & interfaces != 0);
+    } else {
+      protocol = UsbInterface.ccid;
+    }
     return RpcNodeSession(
         ref.watch(rpcProvider), devicePath, [protocol.name, 'management']);
   },

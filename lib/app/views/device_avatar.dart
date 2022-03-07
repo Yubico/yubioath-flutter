@@ -20,10 +20,19 @@ class DeviceAvatar extends StatelessWidget {
 
   factory DeviceAvatar.deviceNode(DeviceNode node, {bool selected = false}) =>
       node.map(
-        usbYubiKey: (node) => DeviceAvatar.yubiKeyData(
-          YubiKeyData(node, node.name, node.info),
-          selected: selected,
-        ),
+        usbYubiKey: (node) {
+          final info = node.info;
+          if (info != null) {
+            return DeviceAvatar.yubiKeyData(
+              YubiKeyData(node, node.name, info),
+              selected: selected,
+            );
+          }
+          return DeviceAvatar(
+            child: const Icon(Icons.device_unknown),
+            selected: selected,
+          );
+        },
         nfcReader: (_) => DeviceAvatar(
           child: const Icon(Icons.wifi),
           selected: selected,

@@ -15,17 +15,13 @@ import '../../management/views/management_screen.dart';
 class MainPage extends ConsumerWidget {
   const MainPage({Key? key}) : super(key: key);
 
-  Widget _buildSubPage(SubPage subPage, YubiKeyData? device) {
-    if (device == null) {
-      return const NoDeviceScreen();
-    }
+  Widget _buildSubPage(SubPage subPage, YubiKeyData device) {
     if (!subPage.isAvailable(
         device.info.config.enabledCapabilities[device.node.transport] ?? 0)) {
       return const Center(
-        child: Text('This application is disabled.'),
+        child: Text('This application is disabled'),
       );
     }
-    // TODO: If page not supported by device, do something?
     switch (subPage) {
       case SubPage.oath:
         return OathScreen(device);
@@ -141,7 +137,9 @@ class MainPage extends ConsumerWidget {
         ],
       ),
       drawer: hasDrawer ? const MainPageDrawer() : null,
-      body: _buildSubPage(subPage, deviceData),
+      body: deviceData == null
+          ? NoDeviceScreen(deviceNode)
+          : _buildSubPage(subPage, deviceData),
     );
   }
 }
