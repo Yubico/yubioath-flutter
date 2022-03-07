@@ -36,7 +36,7 @@ final desktopManagementState = StateNotifierProvider.autoDispose
     .family<ManagementStateNotifier, DeviceInfo?, DevicePath>(
   (ref, devicePath) {
     final session = ref.watch(_sessionProvider(devicePath));
-    final notifier = _DesktopManagementStateNotifier(session);
+    final notifier = _DesktopManagementStateNotifier(ref, session);
     session.setErrorHandler('state-reset', (_) async {
       ref.refresh(_sessionProvider(devicePath));
     });
@@ -48,8 +48,9 @@ final desktopManagementState = StateNotifierProvider.autoDispose
 );
 
 class _DesktopManagementStateNotifier extends ManagementStateNotifier {
+  final Ref _ref;
   final RpcNodeSession _session;
-  _DesktopManagementStateNotifier(this._session) : super();
+  _DesktopManagementStateNotifier(this._ref, this._session) : super();
 
   void refresh() async {
     var result = await _session.command('get');
@@ -83,17 +84,6 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
       'new_lock_code': newLockCode,
       'reboot': reboot,
     });
-    if (mounted && !reboot) {
-      // Make sure we get a deep copy
-      state = state?.copyWith(
-        config: DeviceConfig(
-          {...config.enabledCapabilities},
-          config.autoEjectTimeout ?? state?.config.autoEjectTimeout,
-          config.challengeResponseTimeout ??
-              state?.config.challengeResponseTimeout,
-          config.deviceFlags ?? state?.config.deviceFlags,
-        ),
-      );
-    }
+    _ref.read(attachedDevicesProvider.notifier).refresh();
   }
 }

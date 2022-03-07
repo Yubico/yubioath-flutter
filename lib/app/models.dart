@@ -47,9 +47,13 @@ class DevicePath {
 
 @freezed
 class DeviceNode with _$DeviceNode {
+  const DeviceNode._();
   factory DeviceNode.usbYubiKey(
       DevicePath path, String name, int pid, DeviceInfo info) = UsbYubiKeyNode;
   factory DeviceNode.nfcReader(DevicePath path, String name) = NfcReaderNode;
+
+  Transport get transport =>
+      map(usbYubiKey: (_) => Transport.usb, nfcReader: (_) => Transport.nfc);
 }
 
 @freezed

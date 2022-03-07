@@ -54,21 +54,22 @@ class SearchNotifier extends StateNotifier<String> {
 }
 
 // Override with platform implementation
-final attachedDevicesProvider = Provider<List<DeviceNode>>(
-  (ref) => [],
+final attachedDevicesProvider =
+    StateNotifierProvider<AttachedDevicesNotifier, List<DeviceNode>>(
+  (ref) => AttachedDevicesNotifier([]),
 );
+
+class AttachedDevicesNotifier extends StateNotifier<List<DeviceNode>> {
+  AttachedDevicesNotifier(List<DeviceNode> state) : super(state);
+
+  /// Force a refresh of all device data.
+  void refresh() {}
+}
 
 // Override with platform implementation
-final currentDeviceDataProvider =
-    StateNotifierProvider<DeviceDataNotifier, YubiKeyData?>(
+final currentDeviceDataProvider = Provider<YubiKeyData?>(
   (ref) => throw UnimplementedError(),
 );
-
-abstract class DeviceDataNotifier extends StateNotifier<YubiKeyData?> {
-  DeviceDataNotifier(YubiKeyData? state) : super(state);
-
-  void updateDeviceConfig(DeviceConfig config);
-}
 
 final currentDeviceProvider =
     StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {

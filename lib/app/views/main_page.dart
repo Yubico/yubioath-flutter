@@ -19,6 +19,12 @@ class MainPage extends ConsumerWidget {
     if (device == null) {
       return const NoDeviceScreen();
     }
+    if (!subPage.isAvailable(
+        device.info.config.enabledCapabilities[device.node.transport] ?? 0)) {
+      return const Center(
+        child: Text('This application is disabled.'),
+      );
+    }
     // TODO: If page not supported by device, do something?
     switch (subPage) {
       case SubPage.oath:

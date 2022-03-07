@@ -372,8 +372,8 @@ class _$UsbYubiKeyNodeCopyWithImpl<$Res> extends _$DeviceNodeCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$UsbYubiKeyNode implements UsbYubiKeyNode {
-  _$UsbYubiKeyNode(this.path, this.name, this.pid, this.info);
+class _$UsbYubiKeyNode extends UsbYubiKeyNode {
+  _$UsbYubiKeyNode(this.path, this.name, this.pid, this.info) : super._();
 
   @override
   final DevicePath path;
@@ -480,10 +480,11 @@ class _$UsbYubiKeyNode implements UsbYubiKeyNode {
   }
 }
 
-abstract class UsbYubiKeyNode implements DeviceNode {
+abstract class UsbYubiKeyNode extends DeviceNode {
   factory UsbYubiKeyNode(
           DevicePath path, String name, int pid, DeviceInfo info) =
       _$UsbYubiKeyNode;
+  UsbYubiKeyNode._() : super._();
 
   @override
   DevicePath get path;
@@ -537,8 +538,8 @@ class _$NfcReaderNodeCopyWithImpl<$Res> extends _$DeviceNodeCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$NfcReaderNode implements NfcReaderNode {
-  _$NfcReaderNode(this.path, this.name);
+class _$NfcReaderNode extends NfcReaderNode {
+  _$NfcReaderNode(this.path, this.name) : super._();
 
   @override
   final DevicePath path;
@@ -637,8 +638,9 @@ class _$NfcReaderNode implements NfcReaderNode {
   }
 }
 
-abstract class NfcReaderNode implements DeviceNode {
+abstract class NfcReaderNode extends DeviceNode {
   factory NfcReaderNode(DevicePath path, String name) = _$NfcReaderNode;
+  NfcReaderNode._() : super._();
 
   @override
   DevicePath get path;

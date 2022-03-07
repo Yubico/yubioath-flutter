@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
-import 'package:yubico_authenticator/app/state.dart';
 
 import '../../app/models.dart';
 import '../models.dart';
@@ -142,6 +141,7 @@ class ManagementScreen extends ConsumerWidget {
         _CapabilitiesForm(state, onSubmit: (enabled) async {
           final bool reboot;
           if (deviceData.node is UsbYubiKeyNode) {
+            // Reboot if USB device descriptor is changed.
             final oldInterfaces = UsbInterfaces.forCapabilites(
                 state.config.enabledCapabilities[Transport.usb] ?? 0);
             final newInterfaces =
@@ -154,6 +154,7 @@ class ManagementScreen extends ConsumerWidget {
           Function()? close;
           try {
             if (reboot) {
+              // This will take longer, show a message
               close = ScaffoldMessenger.of(context)
                   .showSnackBar(const SnackBar(
                     content: Text('Reconfiguring YubiKey...'),
@@ -161,18 +162,12 @@ class ManagementScreen extends ConsumerWidget {
                   ))
                   .close;
             }
-            final config = state.config.copyWith(enabledCapabilities: enabled);
             await ref
                 .read(managementStateProvider(deviceData.node.path).notifier)
                 .writeConfig(
-                  config,
+                  state.config.copyWith(enabledCapabilities: enabled),
                   reboot: reboot,
                 );
-            if (!reboot) {
-              ref
-                  .read(currentDeviceDataProvider.notifier)
-                  .updateDeviceConfig(config);
-            }
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text('Configuration updated'),
               duration: Duration(seconds: 2),
