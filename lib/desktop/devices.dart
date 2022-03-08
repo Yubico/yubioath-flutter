@@ -90,9 +90,11 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
         if (pids.isNotEmpty) {
           pids.forEach((pid, count) {
             for (var i = 0; i < count; i++) {
-              usbDevices.add(
-                  DeviceNode.usbYubiKey(DevicePath([]), 'YubiKey', pid, null)
-                      as UsbYubiKeyNode);
+              usbDevices.add(DeviceNode.usbYubiKey(
+                  DevicePath(['invalid', '$pid-$i']),
+                  'YubiKey ($pid)',
+                  pid,
+                  null) as UsbYubiKeyNode);
             }
           });
         }

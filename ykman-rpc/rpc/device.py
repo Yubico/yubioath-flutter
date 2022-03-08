@@ -218,23 +218,26 @@ class AbstractDeviceNode(RpcNode):
     def create_child(self, name):
         try:
             return super().create_child(name)
-        except (SmartcardException, OSError) as e:
-            logger.error(f"Unable to create child {name}", exc_info=e)
+        except (SmartcardException, OSError):
+            logger.error(f"Unable to create child {name}", exc_info=True)
             raise NoSuchNodeException(name)
 
     def get_data(self):
         for conn_type in (SmartCardConnection, OtpConnection, FidoConnection):
             if self._device.supports_connection(conn_type):
-                with self._device.open_connection(conn_type) as conn:
-                    pid = self._device.pid
-                    self._info = read_info(pid, conn)
-                    name = get_name(self._info, pid.get_type() if pid else None)
-                    return dict(
-                        pid=pid,
-                        name=name,
-                        transport=self._device.transport,
-                        info=asdict(self._info),
-                    )
+                try:
+                    with self._device.open_connection(conn_type) as conn:
+                        pid = self._device.pid
+                        self._info = read_info(pid, conn)
+                        name = get_name(self._info, pid.get_type() if pid else None)
+                        return dict(
+                            pid=pid,
+                            name=name,
+                            transport=self._device.transport,
+                            info=asdict(self._info),
+                        )
+                except Exception:
+                    logger.error(f"Unable to connect via {conn_type}", exc_info=True)
         raise ValueError("No supported connections")
 
 
