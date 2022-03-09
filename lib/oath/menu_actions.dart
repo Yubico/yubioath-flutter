@@ -12,43 +12,44 @@ List<MenuAction> buildOathMenuActions(AutoDisposeProviderRef ref) {
   final device = ref.watch(currentDeviceProvider);
   if (device != null) {
     final state = ref.watch(oathStateProvider(device.path));
-    if (state != null) {
-      return [
-        if (!state.locked)
-          MenuAction(
-            text: 'Add credential',
-            icon: const Icon(Icons.add),
-            action: (context) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => OathAddAccountPage(device: device),
-                ),
-              );
-            },
-          ),
-        if (!state.locked)
-          MenuAction(
-            text: 'Manage password',
-            icon: const Icon(Icons.password),
-            action: (context) {
-              showDialog(
-                context: context,
-                builder: (context) => ManagePasswordDialog(device),
-              );
-            },
-          ),
-        MenuAction(
-          text: 'Factory reset',
-          icon: const Icon(Icons.delete_forever),
-          action: (context) {
-            showDialog(
-              context: context,
-              builder: (context) => ResetDialog(device),
-            );
-          },
-        ),
-      ];
-    }
+    return state.whenOrNull(
+            success: (oathState) => [
+                  if (!oathState.locked) ...[
+                    MenuAction(
+                      text: 'Add credential',
+                      icon: const Icon(Icons.add),
+                      action: (context) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                OathAddAccountPage(device: device),
+                          ),
+                        );
+                      },
+                    ),
+                    MenuAction(
+                      text: 'Manage password',
+                      icon: const Icon(Icons.password),
+                      action: (context) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => ManagePasswordDialog(device),
+                        );
+                      },
+                    ),
+                  ],
+                  MenuAction(
+                    text: 'Factory reset',
+                    icon: const Icon(Icons.delete_forever),
+                    action: (context) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => ResetDialog(device),
+                      );
+                    },
+                  ),
+                ]) ??
+        [];
   }
   return [];
 }

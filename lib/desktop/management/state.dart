@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -7,6 +6,7 @@ import 'package:yubico_authenticator/management/models.dart';
 
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../core/models.dart';
 import '../../management/state.dart';
 import '../rpc.dart';
 import '../state.dart';
@@ -15,25 +15,14 @@ final _log = Logger('desktop.management.state');
 
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, DevicePath>(
-  (ref, devicePath) {
-    final currentDevice = ref.watch(currentDeviceProvider);
-    final UsbInterface protocol;
-    if (currentDevice is UsbYubiKeyNode && currentDevice.info != null) {
-      final interfaces = UsbInterfaces.forCapabilites(
-          currentDevice.info!.config.enabledCapabilities[Transport.usb] ?? 0);
-      protocol = [UsbInterface.ccid, UsbInterface.otp, UsbInterface.fido]
-          .firstWhere((iface) => iface.value & interfaces != 0);
-    } else {
-      protocol = UsbInterface.ccid;
-    }
-    return RpcNodeSession(
-        ref.watch(rpcProvider), devicePath, [protocol.name, 'management']);
-  },
+  (ref, devicePath) => RpcNodeSession(ref.watch(rpcProvider), devicePath, []),
 );
 
-final desktopManagementState = StateNotifierProvider.autoDispose
-    .family<ManagementStateNotifier, DeviceInfo?, DevicePath>(
+final desktopManagementState = StateNotifierProvider.autoDispose.family<
+    ManagementStateNotifier, ApplicationStateResult<DeviceInfo>, DevicePath>(
   (ref, devicePath) {
+    // Make sure to rebuild if currentDevice changes (as on reboot)
+    ref.watch(currentDeviceProvider);
     final session = ref.watch(_sessionProvider(devicePath));
     final notifier = _DesktopManagementStateNotifier(ref, session);
     session.setErrorHandler('state-reset', (_) async {
@@ -49,20 +38,44 @@ final desktopManagementState = StateNotifierProvider.autoDispose
 class _DesktopManagementStateNotifier extends ManagementStateNotifier {
   final Ref _ref;
   final RpcNodeSession _session;
+  List<String> _subpath = [];
   _DesktopManagementStateNotifier(this._ref, this._session) : super();
 
   void refresh() async {
-    var result = await _session.command('get');
-    _log.config('application status', jsonEncode(result));
-    if (mounted) {
-      state = DeviceInfo.fromJson(result['data']);
+    try {
+      final result = await _session.command('get');
+      final info = DeviceInfo.fromJson(result['data']['info']);
+      final interfaces = (result['children'] as Map).keys.toSet();
+      for (final iface in [
+        // This is the preferred order
+        UsbInterface.ccid,
+        UsbInterface.otp,
+        UsbInterface.fido,
+      ]) {
+        if (interfaces.contains(iface.name)) {
+          final path = [iface.name, 'management'];
+          try {
+            await _session.command('get', target: path);
+            _subpath = path;
+            _log.config('Using transport $iface for management');
+            setState(info);
+            return;
+          } catch (e) {
+            _log.warning('Failed connecting to management via $iface');
+          }
+        }
+      }
+      setFailure('Failed connecting over all interfaces');
+    } catch (error) {
+      _log.severe('Failed getting device info');
+      setFailure('Failed to connect');
     }
   }
 
   @override
   Future<void> setMode(int mode,
       {int challengeResponseTimeout = 0, int autoEjectTimeout = 0}) async {
-    await _session.command('set_mode', params: {
+    await _session.command('set_mode', target: _subpath, params: {
       'mode': mode,
       'challenge_response_timeout': challengeResponseTimeout,
       'auto_eject_timeout': autoEjectTimeout,
@@ -75,9 +88,9 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
       String newLockCode = '',
       bool reboot = false}) async {
     if (reboot) {
-      state = null;
+      unsetState();
     }
-    await _session.command('configure', params: {
+    await _session.command('configure', target: _subpath, params: {
       ...config.toJson(),
       'cur_lock_code': currentLockCode,
       'new_lock_code': newLockCode,

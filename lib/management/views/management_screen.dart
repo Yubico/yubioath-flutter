@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
+import 'package:yubico_authenticator/app/views/app_loading_screen.dart';
 
 import '../../app/models.dart';
+import '../../app/views/app_failure_screen.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -124,59 +126,51 @@ class ManagementScreen extends ConsumerWidget {
   const ManagementScreen(this.deviceData, {Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(managementStateProvider(deviceData.node.path));
+  Widget build(BuildContext context, WidgetRef ref) =>
+      ref.watch(managementStateProvider(deviceData.node.path)).when(
+          none: () => const AppLoadingScreen(),
+          failure: (reason) => AppFailureScreen(reason),
+          success: (info) => ListView(
+                children: [
+                  _CapabilitiesForm(info, onSubmit: (enabled) async {
+                    final bool reboot;
+                    if (deviceData.node is UsbYubiKeyNode) {
+                      // Reboot if USB device descriptor is changed.
+                      final oldInterfaces = UsbInterfaces.forCapabilites(
+                          info.config.enabledCapabilities[Transport.usb] ?? 0);
+                      final newInterfaces = UsbInterfaces.forCapabilites(
+                          enabled[Transport.usb] ?? 0);
+                      reboot = oldInterfaces != newInterfaces;
+                    } else {
+                      reboot = false;
+                    }
 
-    if (state == null) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Center(child: CircularProgressIndicator()),
-        ],
-      );
-    }
-
-    return ListView(
-      children: [
-        _CapabilitiesForm(state, onSubmit: (enabled) async {
-          final bool reboot;
-          if (deviceData.node is UsbYubiKeyNode) {
-            // Reboot if USB device descriptor is changed.
-            final oldInterfaces = UsbInterfaces.forCapabilites(
-                state.config.enabledCapabilities[Transport.usb] ?? 0);
-            final newInterfaces =
-                UsbInterfaces.forCapabilites(enabled[Transport.usb] ?? 0);
-            reboot = oldInterfaces != newInterfaces;
-          } else {
-            reboot = false;
-          }
-
-          Function()? close;
-          try {
-            if (reboot) {
-              // This will take longer, show a message
-              close = ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(
-                    content: Text('Reconfiguring YubiKey...'),
-                    duration: Duration(seconds: 8),
-                  ))
-                  .close;
-            }
-            await ref
-                .read(managementStateProvider(deviceData.node.path).notifier)
-                .writeConfig(
-                  state.config.copyWith(enabledCapabilities: enabled),
-                  reboot: reboot,
-                );
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Configuration updated'),
-              duration: Duration(seconds: 2),
-            ));
-          } finally {
-            close?.call();
-          }
-        })
-      ],
-    );
-  }
+                    Function()? close;
+                    try {
+                      if (reboot) {
+                        // This will take longer, show a message
+                        close = ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                              content: Text('Reconfiguring YubiKey...'),
+                              duration: Duration(seconds: 8),
+                            ))
+                            .close;
+                      }
+                      await ref
+                          .read(managementStateProvider(deviceData.node.path)
+                              .notifier)
+                          .writeConfig(
+                            info.config.copyWith(enabledCapabilities: enabled),
+                            reboot: reboot,
+                          );
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Configuration updated'),
+                        duration: Duration(seconds: 2),
+                      ));
+                    } finally {
+                      close?.call();
+                    }
+                  })
+                ],
+              ));
 }

@@ -2,15 +2,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/management/models.dart';
 
 import '../app/models.dart';
+import '../core/models.dart';
+import '../core/state.dart';
 
-final managementStateProvider = StateNotifierProvider.autoDispose
-    .family<ManagementStateNotifier, DeviceInfo?, DevicePath>(
+final managementStateProvider = StateNotifierProvider.autoDispose.family<
+    ManagementStateNotifier, ApplicationStateResult<DeviceInfo>, DevicePath>(
   (ref, devicePath) => throw UnimplementedError(),
 );
 
-abstract class ManagementStateNotifier extends StateNotifier<DeviceInfo?> {
-  ManagementStateNotifier() : super(null);
-
+abstract class ManagementStateNotifier
+    extends ApplicationStateNotifier<DeviceInfo> {
   Future<void> writeConfig(DeviceConfig config,
       {String currentLockCode = '',
       String newLockCode = '',

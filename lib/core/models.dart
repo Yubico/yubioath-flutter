@@ -23,3 +23,10 @@ class Version with _$Version {
 class Pair<T1, T2> with _$Pair<T1, T2> {
   factory Pair(T1 first, T2 second) = _Pair<T1, T2>;
 }
+
+@freezed
+class ApplicationStateResult<T> with _$ApplicationStateResult {
+  factory ApplicationStateResult.none() = _None;
+  factory ApplicationStateResult.failure(String reason) = _Failure;
+  factory ApplicationStateResult.success(T state) = _Success;
+}
