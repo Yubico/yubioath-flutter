@@ -250,7 +250,7 @@ class UsbDeviceNode(AbstractDeviceNode):
 
     def _create_connection(self, conn_type):
         connection = self._device.open_connection(conn_type)
-        return ConnectionNode(self._device.transport, connection, self._info)
+        return ConnectionNode(self._device, connection, self._info)
 
     @child(condition=lambda self: self._supports_connection(SmartCardConnection))
     def ccid(self):
@@ -276,22 +276,23 @@ class ReaderDeviceNode(AbstractDeviceNode):
     def ccid(self):
         connection = self._device.open_connection(SmartCardConnection)
         info = read_info(None, connection)
-        return ConnectionNode(self._device.transport, connection, info)
+        return ConnectionNode(self._device, connection, info)
 
     @child
     def fido(self):
         with self._device.open_connection(SmartCardConnection) as conn:
             info = read_info(None, conn)
         connection = self._device.open_connection(FidoConnection)
-        return ConnectionNode(self._device.transport, connection, info)
+        return ConnectionNode(self._device, connection, info)
 
 
 class ConnectionNode(RpcNode):
-    def __init__(self, transport, connection, info):
+    def __init__(self, device, connection, info):
         super().__init__()
-        self._transport = transport
+        self._device = device
+        self._transport = device.transport
         self._connection = connection
-        self._info = info or read_info(None, self._connection)
+        self._info = info or read_info(device.pid, self._connection)
 
     def __call__(self, *args, **kwargs):
         try:
@@ -320,7 +321,7 @@ class ConnectionNode(RpcNode):
             isinstance(self._connection, SmartCardConnection)
             or self._transport == TRANSPORT.USB
         ):
-            self._info = read_info(None, self._connection)
+            self._info = read_info(self._device.pid, self._connection)
         return dict(version=self._info.version, serial=self._info.serial)
 
     @child(

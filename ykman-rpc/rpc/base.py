@@ -149,8 +149,11 @@ class RpcNode:
             options = getattr(getattr(self, name), marker, None)
             if options is not None:
                 condition = options["condition"]
-                if condition is None or condition(self):
-                    children[name] = options
+                try:
+                    if condition is None or condition(self):
+                        children[name] = options
+                except Exception:
+                    logger.exception(f"Failed checking condition for child: {name}")
         return children
 
     def list_actions(self):
