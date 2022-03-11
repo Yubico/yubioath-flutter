@@ -186,7 +186,6 @@ final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
   (ref, devicePath) {
     var notifier = _DesktopCredentialListNotifier(
       ref.watch(_sessionProvider(devicePath)),
-      //ref.watch(oathStateProvider(devicePath).select((s) => s?.locked ?? true)),
       ref.watch(oathStateProvider(devicePath).select(
           (r) => r.whenOrNull(success: (state) => state.locked) ?? true)),
     );

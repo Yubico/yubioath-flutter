@@ -190,15 +190,6 @@ class _DesktopDevicesNotifier extends AttachedDevicesNotifier {
   }
 }
 
-/*
-final desktopDevicesProvider2 = Provider<List<DeviceNode>>((ref) {
-  final usbDevices = ref.watch(_usbDevicesProvider).toList();
-  final nfcDevices = ref.watch(_nfcDevicesProvider).toList();
-  usbDevices.sort((a, b) => a.name.compareTo(b.name));
-  nfcDevices.sort((a, b) => a.name.compareTo(b.name));
-  return [...usbDevices, ...nfcDevices];
-});
-*/
 final _desktopDeviceDataProvider =
     StateNotifierProvider<CurrentDeviceDataNotifier, YubiKeyData?>((ref) {
   final notifier = CurrentDeviceDataNotifier(
