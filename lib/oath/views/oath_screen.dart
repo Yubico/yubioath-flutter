@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/oath/models.dart';
 
 import '../../app/models.dart';
+import '../../app/views/app_failure_screen.dart';
+import '../../app/views/app_loading_screen.dart';
 import '../state.dart';
 import 'account_list.dart';
 
@@ -12,61 +14,58 @@ class OathScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(oathStateProvider(deviceData.node.path));
-
-    if (state == null) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Center(child: CircularProgressIndicator()),
-        ],
-      );
-    }
-
-    if (state.locked) {
-      return ListView(
-        children: [
-          _UnlockForm(
-            keystore: state.keystore,
-            onSubmit: (password, remember) async {
-              final result = await ref
-                  .read(oathStateProvider(deviceData.node.path).notifier)
-                  .unlock(password, remember: remember);
-              if (!result.first) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Wrong password'),
-                    duration: Duration(seconds: 1),
+    return ref.watch(oathStateProvider(deviceData.node.path)).when(
+          none: () => const AppLoadingScreen(),
+          failure: (reason) => AppFailureScreen(reason),
+          success: (oathState) {
+            if (oathState.locked) {
+              return ListView(
+                children: [
+                  _UnlockForm(
+                    keystore: oathState.keystore,
+                    onSubmit: (password, remember) async {
+                      final result = await ref
+                          .read(
+                              oathStateProvider(deviceData.node.path).notifier)
+                          .unlock(password, remember: remember);
+                      if (!result.first) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Wrong password'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      } else if (remember && !result.second) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to remember password'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      }
+                    },
                   ),
-                );
-              } else if (remember && !result.second) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Failed to remember password'),
-                    duration: Duration(seconds: 1),
-                  ),
+                ],
+              );
+            } else {
+              final accounts =
+                  ref.watch(credentialListProvider(deviceData.node.path));
+              if (accounts == null) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Center(child: CircularProgressIndicator()),
+                  ],
                 );
               }
-            },
-          ),
-        ],
-      );
-    } else {
-      final accounts = ref.watch(credentialListProvider(deviceData.node.path));
-      if (accounts == null) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Center(child: CircularProgressIndicator()),
-          ],
+              return AccountList(
+                deviceData,
+                ref.watch(filteredCredentialsProvider(accounts)),
+                ref.watch(favoritesProvider),
+              );
+            }
+          },
         );
-      }
-      return AccountList(
-        deviceData,
-        ref.watch(filteredCredentialsProvider(accounts)),
-        ref.watch(favoritesProvider),
-      );
-    }
   }
 }
 

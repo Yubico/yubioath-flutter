@@ -6,19 +6,23 @@ import '../../settings_page.dart';
 import '../models.dart';
 import '../state.dart';
 
-extension on SubPage {
-  String get displayName {
+extension on Application {
+  IconData get _icon {
     switch (this) {
-      case SubPage.oath:
-        return 'Authenticator';
-      case SubPage.fido:
-        return 'WebAuthn';
-      case SubPage.otp:
-        return 'One-Time Passwords';
-      case SubPage.piv:
-        return 'Certificates';
-      case SubPage.management:
-        return 'Toggle applications';
+      case Application.oath:
+        return Icons.supervisor_account;
+      case Application.fido:
+        return Icons.security;
+      case Application.otp:
+        return Icons.password;
+      case Application.piv:
+        return Icons.approval;
+      case Application.management:
+        return Icons.construction;
+      case Application.openpgp:
+        return Icons.key;
+      case Application.hsmauth:
+        return Icons.key;
     }
   }
 }
@@ -27,26 +31,11 @@ class MainPageDrawer extends ConsumerWidget {
   final bool shouldPop;
   const MainPageDrawer({this.shouldPop = true, Key? key}) : super(key: key);
 
-  IconData _iconFor(SubPage page) {
-    switch (page) {
-      case SubPage.oath:
-        return Icons.supervisor_account;
-      case SubPage.fido:
-        return Icons.security;
-      case SubPage.otp:
-        return Icons.password;
-      case SubPage.piv:
-        return Icons.approval;
-      case SubPage.management:
-        return Icons.construction;
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentSubPage = ref.watch(subPageProvider);
-
-    final mainPages = [SubPage.oath, SubPage.fido, SubPage.otp, SubPage.piv];
+    final supportedApps = ref.watch(supportedAppsProvider);
+    final data = ref.watch(currentDeviceDataProvider);
+    final currentApp = ref.watch(currentAppProvider);
 
     return Drawer(
       child: ListView(
@@ -59,36 +48,48 @@ class MainPageDrawer extends ConsumerWidget {
               style: Theme.of(context).textTheme.headline6,
             ),
           ),
-          ...mainPages.map((page) => DrawerItem(
-                titleText: page.displayName,
-                icon: Icon(_iconFor(page)),
-                selected: page == currentSubPage,
-                onTap: page != currentSubPage
-                    ? () {
-                        ref.read(subPageProvider.notifier).setSubPage(page);
+          if (data != null) ...[
+            // Normal YubiKey Applications
+            ...supportedApps
+                .where((app) =>
+                    app != Application.management &&
+                    app.getAvailability(data) != Availability.unsupported)
+                .map((app) => ApplicationItem(
+                      app: app,
+                      available:
+                          app.getAvailability(data) == Availability.enabled,
+                      selected: app == currentApp,
+                      onSelect: () {
                         if (shouldPop) Navigator.of(context).pop();
-                      }
-                    : null,
-              )),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Configuration',
-              style: Theme.of(context).textTheme.bodyText2,
-            ),
-          ),
-          // PLACEHOLDER
-          DrawerItem(
-            titleText: 'Toggle applications',
-            icon: Icon(_iconFor(SubPage.management)),
-            selected: SubPage.management == currentSubPage,
-            onTap: () {
-              ref.read(subPageProvider.notifier).setSubPage(SubPage.management);
-              if (shouldPop) Navigator.of(context).pop();
-            },
-          ),
-          const Divider(),
+                      },
+                    )),
+            // Management app
+            if (supportedApps.contains(Application.management) &&
+                Application.management.getAvailability(data) ==
+                    Availability.enabled) ...[
+              const Divider(),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Configuration',
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+              ),
+              DrawerItem(
+                titleText: 'Toggle applications',
+                icon: Icon(Application.management._icon),
+                selected: Application.management == currentApp,
+                onTap: () {
+                  ref
+                      .read(currentAppProvider.notifier)
+                      .setCurrentApp(Application.management);
+                  if (shouldPop) Navigator.of(context).pop();
+                },
+              ),
+              const Divider(),
+            ],
+          ],
+          // Non-YubiKey pages
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
@@ -124,7 +125,38 @@ class MainPageDrawer extends ConsumerWidget {
   }
 }
 
+class ApplicationItem extends ConsumerWidget {
+  final Application app;
+  final bool available;
+  final bool selected;
+  final Function onSelect;
+  const ApplicationItem({
+    required this.app,
+    required this.available,
+    required this.selected,
+    required this.onSelect,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return DrawerItem(
+      titleText: app.displayName,
+      icon: Icon(app._icon),
+      selected: selected,
+      enabled: available,
+      onTap: available & !selected
+          ? () {
+              ref.read(currentAppProvider.notifier).setCurrentApp(app);
+              onSelect();
+            }
+          : null,
+    );
+  }
+}
+
 class DrawerItem extends StatelessWidget {
+  final bool enabled;
   final bool selected;
   final String titleText;
   final Icon icon;
@@ -135,6 +167,7 @@ class DrawerItem extends StatelessWidget {
     required this.icon,
     this.onTap,
     this.selected = false,
+    this.enabled = true,
     Key? key,
   }) : super(key: key);
 
@@ -143,6 +176,7 @@ class DrawerItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ListTile(
+        enabled: enabled,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.horizontal(right: Radius.circular(20)),
         ),

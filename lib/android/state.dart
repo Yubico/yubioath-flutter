@@ -8,37 +8,43 @@ import 'api/impl.dart';
 import 'command_providers.dart';
 
 final androidSubPageProvider =
-    StateNotifierProvider<SubPageNotifier, SubPage>((ref) {
+    StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
   FOathApi.setup(FOathApiImpl(ref));
   FManagementApi.setup(FManagementApiImpl(ref));
-  return AndroidSubPageNotifier();
+  return _AndroidSubPageNotifier(ref.watch(supportedAppsProvider));
 });
 
-class AndroidSubPageNotifier extends SubPageNotifier {
+class _AndroidSubPageNotifier extends CurrentAppNotifier {
   final AppApi _api = AppApi();
 
-  AndroidSubPageNotifier() : super(SubPage.oath) {
-    _handleSubPage(SubPage.oath);
+  _AndroidSubPageNotifier(List<Application> supportedApps)
+      : super(supportedApps) {
+    _handleSubPage(state);
   }
 
   @override
-  void setSubPage(SubPage page) {
-    super.setSubPage(page);
-    _handleSubPage(page);
+  void setCurrentApp(Application app) {
+    super.setCurrentApp(app);
+    _handleSubPage(app);
   }
 
-  void _handleSubPage(SubPage subPage) async {
+  void _handleSubPage(Application subPage) async {
     await _api.setContext(subPage.index);
   }
 }
 
-final androidAttachedDevicesProvider = Provider<List<DeviceNode>>((ref) {
+final androidAttachedDevicesProvider =
+    StateNotifierProvider<AttachedDevicesNotifier, List<DeviceNode>>((ref) {
   var currentDeviceData = ref.watch(androidDeviceDataProvider);
   if (currentDeviceData != null) {
-    return [currentDeviceData.node];
+    return _AndroidAttachedDevicesNotifier([currentDeviceData.node]);
   }
-  return [];
+  return _AndroidAttachedDevicesNotifier([]);
 });
+
+class _AndroidAttachedDevicesNotifier extends AttachedDevicesNotifier {
+  _AndroidAttachedDevicesNotifier(List<DeviceNode> state) : super(state);
+}
 
 final androidDeviceDataProvider =
     Provider<YubiKeyData?>((ref) => ref.watch(androidYubikeyProvider));

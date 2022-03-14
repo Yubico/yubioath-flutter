@@ -44,7 +44,7 @@ class _LockKeyNotifier extends StateNotifier<String?> {
 }
 
 final desktopOathState = StateNotifierProvider.autoDispose
-    .family<OathStateNotifier, OathState?, DevicePath>(
+    .family<OathStateNotifier, ApplicationStateResult<OathState>, DevicePath>(
   (ref, devicePath) {
     final session = ref.watch(_sessionProvider(devicePath));
     final notifier = _DesktopOathStateNotifier(session, ref);
@@ -70,22 +70,25 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
   _DesktopOathStateNotifier(this._session, this._ref) : super();
 
   refresh() async {
-    var result = await _session.command('get');
-    _log.config('application status', jsonEncode(result));
-    var oathState = OathState.fromJson(result['data']);
-    final key = _ref.read(_oathLockKeyProvider(_session.devicePath));
-    if (oathState.locked && key != null) {
-      final result = await _session.command('validate', params: {'key': key});
-      if (result['valid']) {
-        oathState = oathState.copyWith(locked: false);
-      } else {
-        _ref
-            .read(_oathLockKeyProvider(_session.devicePath).notifier)
-            .unsetKey();
+    try {
+      var result = await _session.command('get');
+      _log.config('application status', jsonEncode(result));
+      var oathState = OathState.fromJson(result['data']);
+      final key = _ref.read(_oathLockKeyProvider(_session.devicePath));
+      if (oathState.locked && key != null) {
+        final result = await _session.command('validate', params: {'key': key});
+        if (result['valid']) {
+          oathState = oathState.copyWith(locked: false);
+        } else {
+          _ref
+              .read(_oathLockKeyProvider(_session.devicePath).notifier)
+              .unsetKey();
+        }
       }
-    }
-    if (mounted) {
-      state = oathState;
+      setState(oathState);
+    } catch (error) {
+      _log.severe('Unable to update OATH state', jsonEncode(error));
+      setFailure('Failed to update OATH');
     }
   }
 
@@ -106,13 +109,13 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
         .command('validate', params: {'key': key, 'remember': remember});
     final bool valid = validate['valid'];
     final bool remembered = validate['remembered'];
-    if (mounted && valid) {
+    if (valid) {
       _log.config('applet unlocked');
       _ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
-      state = state?.copyWith(
+      setState(requireState().copyWith(
         locked: false,
         remembered: remembered,
-      );
+      ));
     }
     return Pair(valid, remembered);
   }
@@ -125,7 +128,8 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
 
   @override
   Future<bool> setPassword(String? current, String password) async {
-    if (state?.hasKey ?? false) {
+    final oathState = requireState();
+    if (oathState.hasKey) {
       if (current != null) {
         if (!await _checkPassword(current)) {
           return false;
@@ -135,7 +139,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
       }
     }
 
-    if (state?.remembered ?? false) {
+    if (oathState.remembered) {
       // Remembered, keep remembering
       await _session
           .command('set_key', params: {'password': password, 'remember': true});
@@ -149,24 +153,23 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
     }
     _log.config('OATH key set');
 
-    if (mounted && state?.hasKey == false) {
-      state = state?.copyWith(hasKey: true);
+    if (!oathState.hasKey) {
+      setState(oathState.copyWith(hasKey: true));
     }
     return true;
   }
 
   @override
   Future<bool> unsetPassword(String current) async {
-    if (state?.hasKey ?? false) {
+    final oathState = requireState();
+    if (oathState.hasKey) {
       if (!await _checkPassword(current)) {
         return false;
       }
     }
     await _session.command('unset_key');
     _ref.read(_oathLockKeyProvider(_session.devicePath).notifier).unsetKey();
-    if (mounted) {
-      state = state?.copyWith(hasKey: false, locked: false);
-    }
+    setState(oathState.copyWith(hasKey: false, locked: false));
     return true;
   }
 
@@ -174,9 +177,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
   Future<void> forgetPassword() async {
     await _session.command('forget');
     _ref.read(_oathLockKeyProvider(_session.devicePath).notifier).unsetKey();
-    if (mounted) {
-      state = state?.copyWith(remembered: false);
-    }
+    setState(requireState().copyWith(remembered: false));
   }
 }
 
@@ -185,7 +186,8 @@ final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
   (ref, devicePath) {
     var notifier = _DesktopCredentialListNotifier(
       ref.watch(_sessionProvider(devicePath)),
-      ref.watch(oathStateProvider(devicePath).select((s) => s?.locked ?? true)),
+      ref.watch(oathStateProvider(devicePath).select(
+          (r) => r.whenOrNull(success: (state) => state.locked) ?? true)),
     );
     ref.listen<WindowState>(windowStateProvider, (_, windowState) {
       notifier._notifyWindowState(windowState);

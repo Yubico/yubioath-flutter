@@ -7,6 +7,7 @@ import subprocess  # nosec
 import sys
 
 import logging
+from threading import Thread
 from typing import IO, cast
 
 logger = logging.getLogger(__name__)
@@ -108,7 +109,7 @@ class RpcShell(cmd.Cmd):
             return result
         elif kind == "error":
             status = result["status"]
-            print(red(f"{status.upper()}: {result['body']}"))
+            print(red(f"{status.upper()}: {result['message']}"))
         else:
             print(red(f"Invalid response: {result}"))
 
@@ -209,6 +210,21 @@ class RpcShell(cmd.Cmd):
         return True
 
 
+def log_stderr(stderr):
+    while True:
+        line = stderr.readline()
+        if not line:
+            break
+        try:
+            record = json.loads(line)
+            print(red(f"{record['level']} {record['name']}: {record['message']}"))
+            exc_text = record.get("exc_text")
+            if exc_text:
+                print(red(exc_text))
+        except Exception:
+            logger.exception(f"Failed to parse error: {line}")
+
+
 @click.command()
 @click.argument("executable", nargs=-1)
 def shell(executable):
@@ -217,8 +233,11 @@ def shell(executable):
         executable or [sys.executable, "ykman-rpc.py"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         encoding="utf8",
     )
+
+    Thread(daemon=True, target=log_stderr, args=(rpc.stderr,)).start()
 
     click.echo("Shell starting...")
     shell = RpcShell(rpc.stdin, cast(IO[str], rpc.stdout))

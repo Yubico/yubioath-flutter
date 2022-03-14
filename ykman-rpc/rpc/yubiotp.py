@@ -28,6 +28,7 @@
 
 from .base import RpcNode, action, child
 
+from yubikit.core import NotSupportedError
 from yubikit.yubiotp import (
     YubiOtpSession,
     SLOT,
@@ -47,16 +48,21 @@ class YubiOtpNode(RpcNode):
 
     def get_data(self):
         state = self.session.get_config_state()
-        data = dict(
-            is_led_inverted=state.is_led_inverted(),
-            slot1_configured=state.is_configured(SLOT.ONE),
-            slot2_configured=state.is_configured(SLOT.TWO),
-        )
-        if self.session.version >= (3, 0, 0):
+        data = {}
+        try:
+            data.update(
+                slot1_configured=state.is_configured(SLOT.ONE),
+                slot2_configured=state.is_configured(SLOT.TWO),
+            )
             data.update(
                 slot1_touch_triggered=state.is_touch_triggered(SLOT.ONE),
                 slot2_touch_triggered=state.is_touch_triggered(SLOT.TWO),
             )
+            data.update(
+                is_led_inverted=state.is_led_inverted(),
+            )
+        except NotSupportedError:
+            pass
         return data
 
     @action
@@ -91,19 +97,38 @@ class SlotNode(RpcNode):
 
     def get_data(self):
         self._state = self.session.get_config_state()
-        data = dict(is_configured=self._state.is_configured(self.slot))
-        if self.session.version >= (3, 0, 0):
+        data = {}
+        try:
+            data.update(is_configured=self._state.is_configured(self.slot))
             data.update(is_touch_triggered=self._state.is_touch_triggered(self.slot))
+        except NotSupportedError:
+            pass
         return data
 
-    @action(condition=lambda self: self._state.is_configured(self.slot))
+    def _maybe_configured(self, slot):
+        try:
+            return self._state.is_configured(slot)
+        except NotSupportedError:
+            return True
+
+    def _can_calculate(self, slot):
+        try:
+            if not self._state.is_configured(slot):
+                return False
+            try:
+                if self._state.is_touch_triggered(slot):
+                    return False
+            except NotSupportedError:
+                pass
+            return True
+        except NotSupportedError:
+            return False
+
+    @action(condition=lambda self: self._maybe_configured(self.slot))
     def delete(self, params, event, signal):
         self.session.delete_slot(self.slot, params.pop("cur_acc_code", None))
 
-    @action(
-        condition=lambda self: self._state.is_configured(self.slot)
-        and not self._state.is_touch_triggered(self.slot)
-    )
+    @action(condition=lambda self: self._can_calculate(self.slot))
     def calculate(self, params, event, signal):
         challenge = bytes.fromhex(params.pop("challenge"))
         response = self.session.calculate_hmac_sha1(self.slot, challenge, event)
@@ -162,7 +187,10 @@ class SlotNode(RpcNode):
         )
         return dict()
 
-    @action(condition=lambda self: self._state.is_configured(self.slot))
+    @action(
+        condition=lambda self: self._state.version >= (2, 2, 0)
+        and self._maybe_configured(self.slot)
+    )
     def update(self, params, event, signal):
         config = UpdateConfiguration()
         self._apply_config(config, params)
