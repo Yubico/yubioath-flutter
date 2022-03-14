@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
+import '../app/models.dart';
 import 'oath/state.dart';
 import 'state.dart';
 import 'views/tap_request_dialog.dart';
@@ -29,11 +30,15 @@ Future<List<Override>> initializeAndGetOverrides() async {
   TapRequestDialog.initialize();
 
   return [
+    supportedAppsProvider.overrideWithValue([
+      Application.management,
+      Application.oath,
+    ]),
     attachedDevicesProvider
         .overrideWithProvider(androidAttachedDevicesProvider),
     currentDeviceDataProvider.overrideWithProvider(androidDeviceDataProvider),
     oathStateProvider.overrideWithProvider(androidOathStateProvider),
     credentialListProvider.overrideWithProvider(androidCredentialListProvider),
-    subPageProvider.overrideWithProvider(androidSubPageProvider),
+    currentAppProvider.overrideWithProvider(androidSubPageProvider),
   ];
 }

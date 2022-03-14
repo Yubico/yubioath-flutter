@@ -6,10 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:yubico_authenticator/management/state.dart';
 
 import '../oath/state.dart';
+import '../app/models.dart';
 import '../app/state.dart';
+import '../management/state.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
 import 'rpc.dart';
@@ -80,6 +81,13 @@ Future<List<Override>> initializeAndGetOverrides(
   rpc.setLogLevel(Logger.root.level);
 
   return [
+    supportedAppsProvider.overrideWithValue([
+      Application.management,
+      Application.oath,
+      Application.otp,
+      Application.piv,
+      Application.fido,
+    ]),
     rpcProvider.overrideWithValue(rpc),
     windowStateProvider.overrideWithProvider(desktopWindowStateProvider),
     attachedDevicesProvider.overrideWithProvider(desktopDevicesProvider),

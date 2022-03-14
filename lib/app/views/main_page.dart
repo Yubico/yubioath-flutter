@@ -15,7 +15,7 @@ import '../../management/views/management_screen.dart';
 class MainPage extends ConsumerWidget {
   const MainPage({Key? key}) : super(key: key);
 
-  Widget _buildSubPage(SubPage subPage, YubiKeyData device) {
+  Widget _buildSubPage(Application subPage, YubiKeyData device) {
     if (subPage.getAvailability(device) != Availability.enabled) {
       return const Center(
         child: Text('This application is disabled'),
@@ -23,9 +23,9 @@ class MainPage extends ConsumerWidget {
     }
 
     switch (subPage) {
-      case SubPage.oath:
+      case Application.oath:
         return OathScreen(device);
-      case SubPage.management:
+      case Application.management:
         return ManagementScreen(device);
       default:
         return DeviceInfoScreen(device);
@@ -57,7 +57,7 @@ class MainPage extends ConsumerWidget {
   Scaffold _buildScaffold(BuildContext context, WidgetRef ref, bool hasDrawer) {
     final deviceNode = ref.watch(currentDeviceProvider);
     final deviceData = ref.watch(currentDeviceDataProvider);
-    final subPage = ref.watch(subPageProvider);
+    final subPage = ref.watch(currentAppProvider);
 
     Widget deviceWidget;
     if (deviceNode != null) {

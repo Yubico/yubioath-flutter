@@ -8,26 +8,27 @@ import 'api/impl.dart';
 import 'command_providers.dart';
 
 final androidSubPageProvider =
-    StateNotifierProvider<SubPageNotifier, SubPage>((ref) {
+    StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
   FOathApi.setup(FOathApiImpl(ref));
   FManagementApi.setup(FManagementApiImpl(ref));
-  return _AndroidSubPageNotifier();
+  return _AndroidSubPageNotifier(ref.watch(supportedAppsProvider));
 });
 
-class _AndroidSubPageNotifier extends SubPageNotifier {
+class _AndroidSubPageNotifier extends CurrentAppNotifier {
   final AppApi _api = AppApi();
 
-  _AndroidSubPageNotifier() : super(SubPage.oath) {
-    _handleSubPage(SubPage.oath);
+  _AndroidSubPageNotifier(List<Application> supportedApps)
+      : super(supportedApps) {
+    _handleSubPage(state);
   }
 
   @override
-  void setSubPage(SubPage page) {
-    super.setSubPage(page);
-    _handleSubPage(page);
+  void setCurrentApp(Application app) {
+    super.setCurrentApp(app);
+    _handleSubPage(app);
   }
 
-  void _handleSubPage(SubPage subPage) async {
+  void _handleSubPage(Application subPage) async {
     await _api.setContext(subPage.index);
   }
 }

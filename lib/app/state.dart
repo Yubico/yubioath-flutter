@@ -9,6 +9,10 @@ import 'models.dart';
 
 final _log = Logger('app.state');
 
+// Override this to alter the set of supported apps.
+final supportedAppsProvider =
+    Provider<List<Application>>((ref) => Application.values);
+
 // Default implementation is always focused, override with platform specific version.
 final windowStateProvider = Provider<WindowState>(
   (ref) => WindowState(focused: true, visible: true, active: true),
@@ -114,41 +118,40 @@ class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
   }
 }
 
-final subPageProvider = StateNotifierProvider<SubPageNotifier, SubPage>((ref) {
-  final notifier = SubPageNotifier(SubPage.oath);
+final currentAppProvider =
+    StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
+  final notifier = CurrentAppNotifier(ref.watch(supportedAppsProvider));
   ref.listen<YubiKeyData?>(currentDeviceDataProvider, (_, data) {
     notifier._notifyDeviceChanged(data);
   }, fireImmediately: true);
   return notifier;
 });
 
-SubPage _resolveSubPage(YubiKeyData? data, SubPage selectedPage) {
-  if (data == null ||
-      selectedPage.getAvailability(data) != Availability.unsupported) {
-    return selectedPage;
-  }
+class CurrentAppNotifier extends StateNotifier<Application> {
+  final List<Application> _supportedApps;
+  CurrentAppNotifier(this._supportedApps) : super(_supportedApps.first);
 
-  return SubPage.values.firstWhere(
-    (page) => page.getAvailability(data) == Availability.enabled,
-    orElse: () => SubPage.oath,
-  );
-}
-
-class SubPageNotifier extends StateNotifier<SubPage> {
-  SubPageNotifier(SubPage state) : super(state);
-
-  void setSubPage(SubPage page) {
-    state = page;
+  void setCurrentApp(Application app) {
+    state = app;
   }
 
   void _notifyDeviceChanged(YubiKeyData? data) {
-    state = _resolveSubPage(data, state);
+    if (data == null ||
+        state.getAvailability(data) != Availability.unsupported) {
+      // Keep current app
+      return;
+    }
+
+    state = _supportedApps.firstWhere(
+      (app) => app.getAvailability(data) == Availability.enabled,
+      orElse: () => _supportedApps.first,
+    );
   }
 }
 
 final menuActionsProvider = Provider.autoDispose<List<MenuAction>>((ref) {
-  switch (ref.watch(subPageProvider)) {
-    case SubPage.oath:
+  switch (ref.watch(currentAppProvider)) {
+    case Application.oath:
       return buildOathMenuActions(ref);
     // TODO: Handle other cases.
     default:

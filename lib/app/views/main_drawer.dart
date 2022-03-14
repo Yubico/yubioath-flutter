@@ -6,18 +6,24 @@ import '../../settings_page.dart';
 import '../models.dart';
 import '../state.dart';
 
-IconData _iconFor(SubPage page) {
-  switch (page) {
-    case SubPage.oath:
-      return Icons.supervisor_account;
-    case SubPage.fido:
-      return Icons.security;
-    case SubPage.otp:
-      return Icons.password;
-    case SubPage.piv:
-      return Icons.approval;
-    case SubPage.management:
-      return Icons.construction;
+extension on Application {
+  IconData get _icon {
+    switch (this) {
+      case Application.oath:
+        return Icons.supervisor_account;
+      case Application.fido:
+        return Icons.security;
+      case Application.otp:
+        return Icons.password;
+      case Application.piv:
+        return Icons.approval;
+      case Application.management:
+        return Icons.construction;
+      case Application.openpgp:
+        return Icons.key;
+      case Application.hsmauth:
+        return Icons.key;
+    }
   }
 }
 
@@ -27,8 +33,9 @@ class MainPageDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final supportedApps = ref.watch(supportedAppsProvider);
     final data = ref.watch(currentDeviceDataProvider);
-    final currentSubPage = ref.watch(subPageProvider);
+    final currentApp = ref.watch(currentAppProvider);
 
     return Drawer(
       child: ListView(
@@ -42,22 +49,24 @@ class MainPageDrawer extends ConsumerWidget {
             ),
           ),
           if (data != null) ...[
-            // Normal YubiKey Application pages
-            ...[SubPage.oath, SubPage.fido, SubPage.otp, SubPage.piv]
-                .where((page) =>
-                    page.getAvailability(data) != Availability.unsupported)
-                .map((page) => SubPageItem(
-                      page: page,
+            // Normal YubiKey Applications
+            ...supportedApps
+                .where((app) =>
+                    app != Application.management &&
+                    app.getAvailability(data) != Availability.unsupported)
+                .map((app) => ApplicationItem(
+                      app: app,
                       available:
-                          page.getAvailability(data) == Availability.enabled,
-                      selected: page == currentSubPage,
+                          app.getAvailability(data) == Availability.enabled,
+                      selected: app == currentApp,
                       onSelect: () {
                         if (shouldPop) Navigator.of(context).pop();
                       },
                     )),
-            // Management page
-            if (SubPage.management.getAvailability(data) ==
-                Availability.enabled) ...[
+            // Management app
+            if (supportedApps.contains(Application.management) &&
+                Application.management.getAvailability(data) ==
+                    Availability.enabled) ...[
               const Divider(),
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -68,12 +77,12 @@ class MainPageDrawer extends ConsumerWidget {
               ),
               DrawerItem(
                 titleText: 'Toggle applications',
-                icon: Icon(_iconFor(SubPage.management)),
-                selected: SubPage.management == currentSubPage,
+                icon: Icon(Application.management._icon),
+                selected: Application.management == currentApp,
                 onTap: () {
                   ref
-                      .read(subPageProvider.notifier)
-                      .setSubPage(SubPage.management);
+                      .read(currentAppProvider.notifier)
+                      .setCurrentApp(Application.management);
                   if (shouldPop) Navigator.of(context).pop();
                 },
               ),
@@ -116,13 +125,13 @@ class MainPageDrawer extends ConsumerWidget {
   }
 }
 
-class SubPageItem extends ConsumerWidget {
-  final SubPage page;
+class ApplicationItem extends ConsumerWidget {
+  final Application app;
   final bool available;
   final bool selected;
   final Function onSelect;
-  const SubPageItem({
-    required this.page,
+  const ApplicationItem({
+    required this.app,
     required this.available,
     required this.selected,
     required this.onSelect,
@@ -132,13 +141,13 @@ class SubPageItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return DrawerItem(
-      titleText: page.displayName,
-      icon: Icon(_iconFor(page)),
+      titleText: app.displayName,
+      icon: Icon(app._icon),
       selected: selected,
       enabled: available,
       onTap: available & !selected
           ? () {
-              ref.read(subPageProvider.notifier).setSubPage(page);
+              ref.read(currentAppProvider.notifier).setCurrentApp(app);
               onSelect();
             }
           : null,

@@ -6,42 +6,50 @@ part 'models.freezed.dart';
 
 enum Availability { enabled, disabled, unsupported }
 
-enum SubPage { oath, fido, otp, piv, management }
+enum Application { oath, fido, otp, piv, openpgp, hsmauth, management }
 
-extension SubPages on SubPage {
+extension Applications on Application {
   String get displayName {
     switch (this) {
-      case SubPage.oath:
+      case Application.oath:
         return 'Authenticator';
-      case SubPage.fido:
+      case Application.fido:
         return 'WebAuthn';
-      case SubPage.otp:
+      case Application.otp:
         return 'One-Time Passwords';
-      case SubPage.piv:
+      case Application.piv:
         return 'Certificates';
-      case SubPage.management:
+      case Application.openpgp:
+        return 'OpenPGP';
+      case Application.hsmauth:
+        return 'YubiHSM Auth';
+      case Application.management:
         return 'Toggle applications';
     }
   }
 
   bool _inCapabilities(int capabilities) {
     switch (this) {
-      case SubPage.oath:
+      case Application.oath:
         return Capability.oath.value & capabilities != 0;
-      case SubPage.fido:
+      case Application.fido:
         return (Capability.u2f.value | Capability.fido2.value) & capabilities !=
             0;
-      case SubPage.otp:
+      case Application.otp:
         return Capability.otp.value & capabilities != 0;
-      case SubPage.piv:
+      case Application.piv:
         return Capability.piv.value & capabilities != 0;
-      case SubPage.management:
+      case Application.openpgp:
+        return Capability.openpgp.value & capabilities != 0;
+      case Application.hsmauth:
+        return Capability.hsmauth.value & capabilities != 0;
+      case Application.management:
         return true;
     }
   }
 
   Availability getAvailability(YubiKeyData data) {
-    if (this == SubPage.management) {
+    if (this == Application.management) {
       final version = data.info.version;
       final available = (version.major > 4 || // YK5 and up
           (version.major == 4 && version.minor >= 1) || // YK4.1 and up
