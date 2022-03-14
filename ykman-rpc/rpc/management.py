@@ -31,7 +31,7 @@ from yubikit.core import require_version, NotSupportedError, TRANSPORT
 from yubikit.core.smartcard import SmartCardConnection
 from yubikit.core.otp import OtpConnection
 from yubikit.core.fido import FidoConnection
-from yubikit.management import ManagementSession, DeviceConfig, USB_INTERFACE
+from yubikit.management import ManagementSession, DeviceConfig, Mode, USB_INTERFACE
 from ykman.device import connect_to_device
 from dataclasses import asdict
 from time import sleep
@@ -47,7 +47,10 @@ class ManagementNode(RpcNode):
         self.session = ManagementSession(connection)
 
     def get_data(self):
-        return asdict(self.session.read_device_info())
+        try:
+            return asdict(self.session.read_device_info())
+        except NotSupportedError:
+            return {}
 
     def list_actions(self):
         actions = super().list_actions()
@@ -114,7 +117,7 @@ class ManagementNode(RpcNode):
     @action
     def set_mode(self, params, event, signal):
         self.session.set_mode(
-            params.pop("mode"),
+            Mode.from_code(params["mode"]),
             params.pop("challenge_response_timeout", 0),
             params.pop("auto_eject_timeout", 0),
         )
