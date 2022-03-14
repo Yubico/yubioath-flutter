@@ -4,10 +4,27 @@ import '../../management/models.dart';
 
 part 'models.freezed.dart';
 
+enum Availability { enabled, disabled, unsupported }
+
 enum SubPage { oath, fido, otp, piv, management }
 
 extension SubPages on SubPage {
-  bool isAvailable(int capabilities) {
+  String get displayName {
+    switch (this) {
+      case SubPage.oath:
+        return 'Authenticator';
+      case SubPage.fido:
+        return 'WebAuthn';
+      case SubPage.otp:
+        return 'One-Time Passwords';
+      case SubPage.piv:
+        return 'Certificates';
+      case SubPage.management:
+        return 'Toggle applications';
+    }
+  }
+
+  bool _inCapabilities(int capabilities) {
     switch (this) {
       case SubPage.oath:
         return Capability.oath.value & capabilities != 0;
@@ -21,6 +38,28 @@ extension SubPages on SubPage {
       case SubPage.management:
         return true;
     }
+  }
+
+  Availability getAvailability(YubiKeyData data) {
+    if (this == SubPage.management) {
+      final version = data.info.version;
+      final available = (version.major > 4 || // YK5 and up
+          (version.major == 4 && version.minor >= 1) || // YK4.1 and up
+          version.major == 3); // NEO
+      // Management can't be disabled
+      return available ? Availability.enabled : Availability.unsupported;
+    }
+
+    final int supported =
+        data.info.supportedCapabilities[data.node.transport] ?? 0;
+    final int enabled =
+        data.info.config.enabledCapabilities[data.node.transport] ?? 0;
+
+    return _inCapabilities(supported)
+        ? (_inCapabilities(enabled)
+            ? Availability.enabled
+            : Availability.disabled)
+        : Availability.unsupported;
   }
 }
 

@@ -6,23 +6,6 @@ import '../../settings_page.dart';
 import '../models.dart';
 import '../state.dart';
 
-extension on SubPage {
-  String get displayName {
-    switch (this) {
-      case SubPage.oath:
-        return 'Authenticator';
-      case SubPage.fido:
-        return 'WebAuthn';
-      case SubPage.otp:
-        return 'One-Time Passwords';
-      case SubPage.piv:
-        return 'Certificates';
-      case SubPage.management:
-        return 'Toggle applications';
-    }
-  }
-}
-
 IconData _iconFor(SubPage page) {
   switch (page) {
     case SubPage.oath:
@@ -44,9 +27,8 @@ class MainPageDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final capabilities = ref.watch(currentCapabilitiesProvider);
+    final data = ref.watch(currentDeviceDataProvider);
     final currentSubPage = ref.watch(subPageProvider);
-    final mainPages = [SubPage.oath, SubPage.fido, SubPage.otp, SubPage.piv];
 
     return Drawer(
       child: ListView(
@@ -59,38 +41,46 @@ class MainPageDrawer extends ConsumerWidget {
               style: Theme.of(context).textTheme.headline6,
             ),
           ),
-          ...mainPages
-              .where((page) => page.isAvailable(capabilities.first))
-              .map((page) => SubPageItem(
-                    page: page,
-                    available: page.isAvailable(capabilities.second),
-                    selected: page == currentSubPage,
-                    onSelect: () {
-                      if (shouldPop) Navigator.of(context).pop();
-                    },
-                  )),
-          if (capabilities.first != 0) ...[
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Configuration',
-                style: Theme.of(context).textTheme.bodyText2,
+          if (data != null) ...[
+            // Normal YubiKey Application pages
+            ...[SubPage.oath, SubPage.fido, SubPage.otp, SubPage.piv]
+                .where((page) =>
+                    page.getAvailability(data) != Availability.unsupported)
+                .map((page) => SubPageItem(
+                      page: page,
+                      available:
+                          page.getAvailability(data) == Availability.enabled,
+                      selected: page == currentSubPage,
+                      onSelect: () {
+                        if (shouldPop) Navigator.of(context).pop();
+                      },
+                    )),
+            // Management page
+            if (SubPage.management.getAvailability(data) ==
+                Availability.enabled) ...[
+              const Divider(),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Configuration',
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
               ),
-            ),
-            DrawerItem(
-              titleText: 'Toggle applications',
-              icon: Icon(_iconFor(SubPage.management)),
-              selected: SubPage.management == currentSubPage,
-              onTap: () {
-                ref
-                    .read(subPageProvider.notifier)
-                    .setSubPage(SubPage.management);
-                if (shouldPop) Navigator.of(context).pop();
-              },
-            ),
-            const Divider(),
+              DrawerItem(
+                titleText: 'Toggle applications',
+                icon: Icon(_iconFor(SubPage.management)),
+                selected: SubPage.management == currentSubPage,
+                onTap: () {
+                  ref
+                      .read(subPageProvider.notifier)
+                      .setSubPage(SubPage.management);
+                  if (shouldPop) Navigator.of(context).pop();
+                },
+              ),
+              const Divider(),
+            ],
           ],
+          // Non-YubiKey pages
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(

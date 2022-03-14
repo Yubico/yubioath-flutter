@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yubico_authenticator/management/models.dart';
 
-import '../core/models.dart';
 import '../core/state.dart';
 import '../oath/menu_actions.dart';
 import 'models.dart';
@@ -116,8 +114,25 @@ class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
   }
 }
 
-final subPageProvider = StateNotifierProvider<SubPageNotifier, SubPage>(
-    (ref) => SubPageNotifier(SubPage.oath));
+final subPageProvider = StateNotifierProvider<SubPageNotifier, SubPage>((ref) {
+  final notifier = SubPageNotifier(SubPage.oath);
+  ref.listen<YubiKeyData?>(currentDeviceDataProvider, (_, data) {
+    notifier._notifyDeviceChanged(data);
+  }, fireImmediately: true);
+  return notifier;
+});
+
+SubPage _resolveSubPage(YubiKeyData? data, SubPage selectedPage) {
+  if (data == null ||
+      selectedPage.getAvailability(data) != Availability.unsupported) {
+    return selectedPage;
+  }
+
+  return SubPage.values.firstWhere(
+    (page) => page.getAvailability(data) == Availability.enabled,
+    orElse: () => SubPage.oath,
+  );
+}
 
 class SubPageNotifier extends StateNotifier<SubPage> {
   SubPageNotifier(SubPage state) : super(state);
@@ -125,24 +140,11 @@ class SubPageNotifier extends StateNotifier<SubPage> {
   void setSubPage(SubPage page) {
     state = page;
   }
-}
 
-final currentCapabilitiesProvider = Provider<Pair<int, int>>(
-  (ref) {
-    final data = ref.watch(currentDeviceDataProvider);
-    if (data != null) {
-      final transport = data.node.map(
-        usbYubiKey: (_) => Transport.usb,
-        nfcReader: (_) => Transport.nfc,
-      );
-      return Pair(
-        data.info.supportedCapabilities[transport] ?? 0,
-        data.info.config.enabledCapabilities[transport] ?? 0,
-      );
-    }
-    return Pair(0, 0);
-  },
-);
+  void _notifyDeviceChanged(YubiKeyData? data) {
+    state = _resolveSubPage(data, state);
+  }
+}
 
 final menuActionsProvider = Provider.autoDispose<List<MenuAction>>((ref) {
   switch (ref.watch(subPageProvider)) {

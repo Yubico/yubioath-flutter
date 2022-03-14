@@ -16,12 +16,12 @@ class MainPage extends ConsumerWidget {
   const MainPage({Key? key}) : super(key: key);
 
   Widget _buildSubPage(SubPage subPage, YubiKeyData device) {
-    if (!subPage.isAvailable(
-        device.info.config.enabledCapabilities[device.node.transport] ?? 0)) {
+    if (subPage.getAvailability(device) != Availability.enabled) {
       return const Center(
         child: Text('This application is disabled'),
       );
     }
+
     switch (subPage) {
       case SubPage.oath:
         return OathScreen(device);
