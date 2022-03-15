@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/views/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../../app/models.dart';
@@ -53,11 +54,12 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     final nameRemaining = remaining.second;
     final isValid = _account.isNotEmpty;
 
-    return AlertDialog(
-      title: Text('Rename $label?'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
+    return ResponsiveDialog(
+      title: const Text('Rename account'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text('Rename $label?'),
           const Text(
               'This will change how the account is displayed in the list.'),
           TextFormField(
@@ -65,6 +67,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             enabled: issuerRemaining > 0,
             maxLength: issuerRemaining > 0 ? issuerRemaining : null,
             decoration: const InputDecoration(
+              border: OutlineInputBorder(),
               labelText: 'Issuer (optional)',
               helperText: '', // Prevents dialog resizing when enabled = false
             ),
@@ -78,6 +81,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             initialValue: _account,
             maxLength: nameRemaining,
             decoration: InputDecoration(
+              border: const OutlineInputBorder(),
               labelText: 'Account name',
               helperText: '', // Prevents dialog resizing when enabled = false
               errorText: isValid ? null : 'Your account must have a name',
@@ -88,16 +92,15 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               });
             },
           ),
-        ],
+        ]
+            .map((e) => Padding(
+                  child: e,
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                ))
+            .toList(),
       ),
       actions: [
-        OutlinedButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
+        TextButton(
           onPressed: isValid
               ? () async {
                   final renamed = await ref
@@ -113,7 +116,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                   );
                 }
               : null,
-          child: const Text('Rename account'),
+          child: const Text('Save'),
         ),
       ],
     );
