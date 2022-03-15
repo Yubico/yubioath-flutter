@@ -16,8 +16,6 @@ final oathStateProvider = StateNotifierProvider.autoDispose
 );
 
 abstract class OathStateNotifier extends ApplicationStateNotifier<OathState> {
-  OathStateNotifier() : super();
-
   Future<void> reset();
 
   /// Unlocks the session and returns a Pair of `success`, `remembered`.

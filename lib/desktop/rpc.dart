@@ -171,7 +171,7 @@ class RpcNodeSession {
     _errorHandlers[status] = handler;
   }
 
-  void unserErrorHandler(String status) {
+  void unsetErrorHandler(String status) {
     _errorHandlers.remove(status);
   }
 

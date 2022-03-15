@@ -57,8 +57,8 @@ final desktopOathState = StateNotifierProvider.autoDispose
       });
     ref.onDispose(() {
       session
-        ..unserErrorHandler('state-reset')
-        ..unserErrorHandler('auth-required');
+        ..unsetErrorHandler('state-reset')
+        ..unsetErrorHandler('auth-required');
     });
     return notifier..refresh();
   },

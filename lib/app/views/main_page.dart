@@ -9,6 +9,7 @@ import 'no_device_screen.dart';
 import 'device_info_screen.dart';
 import '../models.dart';
 import '../state.dart';
+import '../../fido/views/fido_screen.dart';
 import '../../oath/views/oath_screen.dart';
 import '../../management/views/management_screen.dart';
 
@@ -27,6 +28,8 @@ class MainPage extends ConsumerWidget {
         return OathScreen(device);
       case Application.management:
         return ManagementScreen(device);
+      case Application.fido:
+        return FidoScreen(device);
       default:
         return DeviceInfoScreen(device);
     }

@@ -7,10 +7,12 @@ import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../fido/state.dart';
 import '../oath/state.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../management/state.dart';
+import 'fido/state.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
 import 'rpc.dart';
@@ -82,11 +84,11 @@ Future<List<Override>> initializeAndGetOverrides(
 
   return [
     supportedAppsProvider.overrideWithValue([
-      Application.management,
       Application.oath,
+      Application.fido,
       Application.otp,
       Application.piv,
-      Application.fido,
+      Application.management,
     ]),
     rpcProvider.overrideWithValue(rpc),
     windowStateProvider.overrideWithProvider(desktopWindowStateProvider),
@@ -97,5 +99,6 @@ Future<List<Override>> initializeAndGetOverrides(
         .overrideWithProvider(desktopOathCredentialListProvider),
     qrScannerProvider.overrideWithProvider(desktopQrScannerProvider),
     managementStateProvider.overrideWithProvider(desktopManagementState),
+    fidoStateProvider.overrideWithProvider(desktopFidoState),
   ];
 }

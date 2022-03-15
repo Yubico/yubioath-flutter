@@ -34,6 +34,10 @@ from fido2.ctap2 import (
     FPBioEnrollment,
     CaptureError,
 )
+from dataclasses import asdict
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Ctap2Node(RpcNode):
@@ -46,7 +50,8 @@ class Ctap2Node(RpcNode):
 
     def get_data(self):
         self._info = self.ctap.get_info()
-        data = dict(info=self._info.data, locked=False)
+        logger.debug(f"Info: {self._info}")
+        data = dict(info=asdict(self._info), locked=False)
         if self._info.options.get("clientPin"):
             data["locked"] = self._pin is None
             pin_retries, power_cycle = self.client_pin.get_pin_retries()
@@ -74,6 +79,7 @@ class Ctap2Node(RpcNode):
             pin, ClientPin.PERMISSION.GET_ASSERTION, "ykman.example.com"
         )
         self._pin = pin
+        return dict()
 
     @action
     def set_pin(self, params, event, signal):
@@ -88,6 +94,7 @@ class Ctap2Node(RpcNode):
                 params.pop("new_pin"),
             )
         self._pin = None
+        return dict()
 
     @child(condition=lambda self: "bioEnroll" in self._info.options and self._pin)
     def fingerprints(self):
