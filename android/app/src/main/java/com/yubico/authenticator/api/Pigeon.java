@@ -26,7 +26,7 @@ public class Pigeon {
     void success(T result);
     void error(Throwable error);
   }
-  private static class OathApiCodec extends StandardMessageCodec {
+  static class OathApiCodec extends StandardMessageCodec {
     public static final OathApiCodec INSTANCE = new OathApiCodec();
     private OathApiCodec() {}
   }

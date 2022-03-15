@@ -16,7 +16,6 @@ import com.yubico.yubikit.management.ManagementSession.FEATURE_DEVICE_INFO
 import com.yubico.yubikit.oath.CredentialData
 import com.yubico.yubikit.oath.OathSession
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URI
@@ -36,8 +35,6 @@ enum class OperationContext(val value: Long) {
         fun getByValue(value: Long) = values().firstOrNull { it.value == value } ?: Invalid
     }
 }
-
-class ParameterException : Exception("Invalid parameters")
 
 class MainViewModel : ViewModel() {
 
@@ -225,13 +222,7 @@ class MainViewModel : ViewModel() {
         } ?: throw Exception("Failed to find account to delete")
 
 
-    fun deleteAccount(credentialId: String?, result: Pigeon.Result<Void>) {
-
-        if (credentialId == null) {
-            result.error(ParameterException())
-            return
-        }
-
+    fun deleteAccount(credentialId: String, result: Pigeon.Result<Void>) {
         viewModelScope.launch(Dispatchers.IO) {
             useOathSession("Delete account", true) { session ->
                 withUnlockedSession(session) {
@@ -243,11 +234,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun addAccount(otpUri: String?, requireTouch: Boolean?, result: Pigeon.Result<String>) {
-        if (otpUri == null || requireTouch == null) {
-            result.error(ParameterException())
-            return
-        }
+    fun addAccount(otpUri: String, requireTouch: Boolean, result: Pigeon.Result<String>) {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -271,15 +258,11 @@ class MainViewModel : ViewModel() {
     }
 
     fun renameCredential(
-        credentialId: String?,
-        name: String?,
+        credentialId: String,
+        name: String,
         issuer: String?,
         result: Pigeon.Result<String>
     ) {
-        if (credentialId == null || name == null) {
-            result.error(ParameterException())
-            return
-        }
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -305,11 +288,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun setOathPassword(current: String?, password: String?, result: Pigeon.Result<Void>) {
-        if (password == null) {
-            result.error(ParameterException())
-            return
-        }
+    fun setOathPassword(current: String?, password: String, result: Pigeon.Result<Void>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 useOathSession("Set password", true) { session ->
@@ -334,12 +313,7 @@ class MainViewModel : ViewModel() {
     }
 
 
-    fun unsetOathPassword(currentPassword: String?, result: Pigeon.Result<Void>) {
-
-        if (currentPassword == null) {
-            result.error(ParameterException())
-            return
-        }
+    fun unsetOathPassword(currentPassword: String, result: Pigeon.Result<Void>) {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -385,13 +359,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun calculate(credentialId: String?, result: Pigeon.Result<String>) {
-
-        if (credentialId == null) {
-            result.error(ParameterException())
-            return
-        }
-
+    fun calculate(credentialId: String, result: Pigeon.Result<String>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 useOathSession("Calculate", true) {
@@ -413,15 +381,11 @@ class MainViewModel : ViewModel() {
     }
 
     fun unlockOathSession(
-        password: String?,
-        remember: Boolean?,
+        password: String,
+        remember: Boolean,
         result: Pigeon.Result<Boolean>
     ) {
 
-        if (password == null || remember == null) {
-            result.error(ParameterException())
-            return
-        }
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 var codes: String? = null
