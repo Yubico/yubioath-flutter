@@ -10,8 +10,7 @@ import '../state.dart';
 class _ManagePasswordForm extends ConsumerStatefulWidget {
   final DevicePath path;
   final OathState state;
-  final Function(bool)? onValid;
-  const _ManagePasswordForm(this.path, this.state, {this.onValid, Key? key})
+  const _ManagePasswordForm(this.path, this.state, {Key? key})
       : super(key: key);
 
   @override
