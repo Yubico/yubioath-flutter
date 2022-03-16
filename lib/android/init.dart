@@ -33,8 +33,8 @@ Future<List<Override>> initializeAndGetOverrides() async {
 
   return [
     supportedAppsProvider.overrideWithValue([
-      Application.management,
       Application.oath,
+      Application.management,
     ]),
     attachedDevicesProvider
         .overrideWithProvider(androidAttachedDevicesProvider),
