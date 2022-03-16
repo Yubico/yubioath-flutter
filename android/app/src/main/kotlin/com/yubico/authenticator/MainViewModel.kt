@@ -113,16 +113,14 @@ class MainViewModel : ViewModel() {
     private suspend fun sendOathCodes(device: YubiKeyDevice) {
         val sendOathCodes = suspendCoroutine<String> {
             device.requestConnection(SmartCardConnection::class.java) { result ->
-                val oathSession = OathSession(result.value)
+                val session = OathSession(result.value)
 
-                val isLocked = isOathSessionLocked(oathSession)
+                val isLocked = isOathSessionLocked(session)
                 if (!isLocked) {
-
-                    val codes = SerializeHelpers.serialize(
-                        oathSession.deviceId,
-                        oathSession.calculateCodes()
-                    )
-                    it.resume(codes.toString())
+                    val resultJson = session.calculateCodes()
+                        .toJson(session.deviceId)
+                        .toString()
+                    it.resume(resultJson)
                 }
             }
         }
@@ -340,11 +338,9 @@ class MainViewModel : ViewModel() {
 
                 useOathSession("Refresh codes", false) {
                     withUnlockedSession(it) { session ->
-                        val resultJson = SerializeHelpers.serialize(
-                            session.deviceId,
-                            session.calculateCodes()
-                        ).toString()
-
+                        val resultJson = session.calculateCodes()
+                            .toJson(session.deviceId)
+                            .toString()
                         result.success(resultJson)
                     }
                 }
@@ -389,10 +385,9 @@ class MainViewModel : ViewModel() {
                     val isLocked = isOathSessionLocked(it)
 
                     if (!isLocked) {
-                        codes = SerializeHelpers.serialize(
-                            it.deviceId,
-                            it.calculateCodes()
-                        ).toString()
+                        codes = it.calculateCodes()
+                            .toJson(it.deviceId)
+                            .toString()
                     }
 
                     result.success(!isLocked)

@@ -105,11 +105,11 @@ class SerializeHelpers {
                 )
             )
 
-        fun serialize(deviceId: String, codes: Map<Credential, Code>) =
+        fun Map<Credential, Code>.toJson(deviceId: String) =
             JsonObject(
                 mapOf(
                     "entries" to JsonArray(
-                        codes.map { (credential, code) ->
+                        map { (credential, code) ->
                             JsonObject(
                                 mapOf(
                                     "credential" to credential.toJson(deviceId),
