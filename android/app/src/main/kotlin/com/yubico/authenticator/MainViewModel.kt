@@ -199,8 +199,7 @@ class MainViewModel : ViewModel() {
 
     // requests flutter to show a dialog
     private fun requestShowDialog(message: String) =
-        _fDialogApi.showDialogApi(SerializeHelpers.messageParameters(message).toString())
-        {}
+        _fDialogApi.showDialogApi(message) { }
 
     private fun requestHideDialog() {
         _fDialogApi.closeDialogApi { }

@@ -26,7 +26,7 @@ public class Pigeon {
     void success(T result);
     void error(Throwable error);
   }
-  static class OathApiCodec extends StandardMessageCodec {
+  private static class OathApiCodec extends StandardMessageCodec {
     public static final OathApiCodec INSTANCE = new OathApiCodec();
     private OathApiCodec() {}
   }
@@ -601,10 +601,10 @@ public class Pigeon {
       return FDialogApiCodec.INSTANCE;
     }
 
-    public void showDialogApi(String dialogParametersJsonArg, Reply<Void> callback) {
+    public void showDialogApi(String dialogMessageArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.FDialogApi.showDialogApi", getCodec());
-      channel.send(new ArrayList<Object>(Arrays.asList(dialogParametersJsonArg)), channelReply -> {
+      channel.send(new ArrayList<Object>(Arrays.asList(dialogMessageArg)), channelReply -> {
         callback.reply(null);
       });
     }

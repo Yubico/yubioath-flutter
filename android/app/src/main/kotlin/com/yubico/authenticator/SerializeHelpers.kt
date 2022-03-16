@@ -120,12 +120,5 @@ class SerializeHelpers {
                     )
                 )
             )
-
-        fun messageParameters(message: String) = JsonObject(
-            mapOf(
-                "message" to JsonPrimitive(message)
-            )
-        )
-
     }
 }
