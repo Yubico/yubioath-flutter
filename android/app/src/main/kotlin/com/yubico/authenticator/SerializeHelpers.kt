@@ -63,16 +63,14 @@ class SerializeHelpers {
                 )
             }
 
-        fun serialize(oathSession: OathSession, remembered: Boolean) =
-            JsonObject(
-                mapOf(
-                    "deviceId" to JsonPrimitive(oathSession.deviceId),
-                    "hasKey" to JsonPrimitive(oathSession.isAccessKeySet),
-                    "remembered" to JsonPrimitive(remembered),
-                    "locked" to JsonPrimitive(oathSession.isLocked)
-                )
+        fun OathSession.toJson(remembered: Boolean) = JsonObject(
+            mapOf(
+                "deviceId" to JsonPrimitive(deviceId),
+                "hasKey" to JsonPrimitive(isAccessKeySet),
+                "remembered" to JsonPrimitive(remembered),
+                "locked" to JsonPrimitive(isLocked)
             )
-
+        )
 
         fun Code.toJson() = JsonObject(
             mapOf(

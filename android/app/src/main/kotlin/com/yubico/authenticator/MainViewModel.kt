@@ -102,8 +102,10 @@ class MainViewModel : ViewModel() {
             device.requestConnection(SmartCardConnection::class.java) { result ->
                 val oathSession = OathSession(result.value)
                 val isRemembered = false
-                val oathSessionData = SerializeHelpers.serialize(oathSession, isRemembered)
-                it.resume(oathSessionData.toString())
+                val oathSessionData = oathSession
+                    .toJson(isRemembered)
+                    .toString()
+                it.resume(oathSessionData)
             }
         }
 
