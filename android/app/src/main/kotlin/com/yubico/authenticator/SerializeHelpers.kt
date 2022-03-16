@@ -90,18 +90,18 @@ class SerializeHelpers {
             separator = ""
         ) { b -> "%02x".format(b) }
 
-        fun serialize(deviceId: String, credential: Credential) =
+        fun Credential.toJson(deviceId: String) =
             JsonObject(
                 mapOf(
                     "id" to JsonPrimitive(
-                        credentialIdAsString(credential.id)
+                        credentialIdAsString(id)
                     ),
                     "device_id" to JsonPrimitive(deviceId),
-                    "issuer" to JsonPrimitive(credential.issuer),
-                    "name" to JsonPrimitive(credential.accountName),
-                    "oath_type" to JsonPrimitive(credential.oathType.value),
-                    "period" to JsonPrimitive(credential.period),
-                    "touch_required" to JsonPrimitive(credential.isTouchRequired),
+                    "issuer" to JsonPrimitive(issuer),
+                    "name" to JsonPrimitive(accountName),
+                    "oath_type" to JsonPrimitive(oathType.value),
+                    "period" to JsonPrimitive(period),
+                    "touch_required" to JsonPrimitive(isTouchRequired),
                 )
             )
 
@@ -112,7 +112,7 @@ class SerializeHelpers {
                         codes.map { (credential, code) ->
                             JsonObject(
                                 mapOf(
-                                    "credential" to serialize(deviceId, credential),
+                                    "credential" to credential.toJson(deviceId),
                                     "code" to serialize(code)
                                 )
                             )

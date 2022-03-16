@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yubico.authenticator.SerializeHelpers.Companion.toJson
 import com.yubico.authenticator.api.Pigeon
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -242,12 +243,11 @@ class MainViewModel : ViewModel() {
                         val credentialData: CredentialData =
                             CredentialData.parseUri(URI.create(otpUri))
 
-                        val jsonResult = SerializeHelpers.serialize(
-                            session.deviceId,
-                            session.putCredential(credentialData, requireTouch)
-                        ).toString()
+                        val jsonResult = session
+                            .putCredential(credentialData, requireTouch)
+                            .toJson(session.deviceId)
+                            .toString()
                         result.success(jsonResult)
-
                     }
                 }
             } catch (cause: Throwable) {
@@ -269,16 +269,12 @@ class MainViewModel : ViewModel() {
                     withUnlockedSession(session) {
                         val credential = getOathCredential(session, credentialId)
 
-                        // rename credential
-                        val newCredential =
+                        val jsonResult =
                             session.renameCredential(credential, name, issuer)
+                            .toJson(session.deviceId)
+                            .toString()
 
-                        val resultJson = SerializeHelpers.serialize(
-                            session.deviceId,
-                            newCredential
-                        ).toString()
-
-                        result.success(resultJson)
+                        result.success(jsonResult)
                     }
                 }
             } catch (cause: Throwable) {
