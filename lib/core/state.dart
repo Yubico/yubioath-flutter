@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'models.dart';
+import '../app/models.dart';
 
 final isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 final isAndroid = Platform.isAndroid;

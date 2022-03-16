@@ -5,8 +5,6 @@ import '../core/models.dart';
 part 'models.freezed.dart';
 part 'models.g.dart';
 
-enum Transport { usb, nfc }
-
 enum FormFactor {
   @JsonValue(0)
   unknown,
@@ -24,40 +22,6 @@ enum FormFactor {
   usbABio,
   @JsonValue(7)
   usbCBio,
-}
-
-enum UsbInterface { otp, fido, ccid }
-
-extension UsbInterfaces on UsbInterface {
-  int get value {
-    switch (this) {
-      case UsbInterface.otp:
-        return 0x01;
-      case UsbInterface.fido:
-        return 0x02;
-      case UsbInterface.ccid:
-        return 0x04;
-    }
-  }
-
-  static int forCapabilites(int capabilities) {
-    var interfaces = 0;
-    if (capabilities & Capability.otp.value != 0) {
-      interfaces |= UsbInterface.otp.value;
-    }
-    if (capabilities & (Capability.u2f.value | Capability.fido2.value) != 0) {
-      interfaces |= UsbInterface.fido.value;
-    }
-    if (capabilities &
-            (Capability.openpgp.value |
-                Capability.piv.value |
-                Capability.oath.value |
-                Capability.hsmauth.value) !=
-        0) {
-      interfaces |= UsbInterface.ccid.value;
-    }
-    return interfaces;
-  }
 }
 
 enum Capability { otp, piv, oath, openpgp, hsmauth, u2f, fido2 }
