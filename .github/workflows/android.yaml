@@ -52,12 +52,12 @@ jobs:
 
       - name: Upload artifacts
         run: |
-          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
+          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3,4,5,6,7 | sed -r 's/\//_/g')
           mkdir artifacts
           mv build/app/outputs/flutter-apk/app-debug.apk artifacts/yubico-authenticator-debug-${REF}.apk
         working-directory: ./app
 
       - uses: actions/upload-artifact@v2
         with:
-          name: yubico-authenticator-android.zip
+          name: yubico-authenticator-android
           path: app/artifacts/*
