@@ -14,21 +14,20 @@ import kotlinx.serialization.json.JsonPrimitive
 
 class SerializeHelpers {
     companion object {
-        private fun serialize(config: DeviceConfig) = with(config) {
-            JsonObject(
-                mapOf(
-                    "device_flags" to JsonPrimitive(deviceFlags),
-                    "challenge_response_timeout" to JsonPrimitive(challengeResponseTimeout),
-                    "auto_eject_timeout" to JsonPrimitive(autoEjectTimeout),
-                    "enabled_capabilities" to JsonObject(
-                        mapOf(
-                            "usb" to JsonPrimitive(getEnabledCapabilities(Transport.USB) ?: 0),
-                            "nfc" to JsonPrimitive(getEnabledCapabilities(Transport.NFC) ?: 0),
-                        )
+
+        fun DeviceConfig.toJson() = JsonObject(
+            mapOf(
+                "device_flags" to JsonPrimitive(deviceFlags),
+                "challenge_response_timeout" to JsonPrimitive(challengeResponseTimeout),
+                "auto_eject_timeout" to JsonPrimitive(autoEjectTimeout),
+                "enabled_capabilities" to JsonObject(
+                    mapOf(
+                        "usb" to JsonPrimitive(getEnabledCapabilities(Transport.USB) ?: 0),
+                        "nfc" to JsonPrimitive(getEnabledCapabilities(Transport.NFC) ?: 0),
                     )
                 )
             )
-        }
+        )
 
         fun Version.toJson() = JsonArray(
             listOf(
@@ -40,7 +39,7 @@ class SerializeHelpers {
 
         fun DeviceInfo.toJson(isNfcDevice: Boolean) = JsonObject(
             mapOf(
-                "config" to serialize(config),
+                "config" to config.toJson(),
                 "serial" to JsonPrimitive(serialNumber),
                 "version" to version.toJson(),
                 "form_factor" to JsonPrimitive(formFactor.value),
