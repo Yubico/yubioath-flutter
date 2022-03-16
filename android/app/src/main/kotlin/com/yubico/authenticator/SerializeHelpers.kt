@@ -74,16 +74,14 @@ class SerializeHelpers {
             )
         )
 
-        fun credentialIdAsString(id: ByteArray): String = id.joinToString(
+        fun Credential.idAsString() = id.joinToString(
             separator = ""
         ) { b -> "%02x".format(b) }
 
         fun Credential.toJson(deviceId: String) =
             JsonObject(
                 mapOf(
-                    "id" to JsonPrimitive(
-                        credentialIdAsString(id)
-                    ),
+                    "id" to JsonPrimitive(idAsString()),
                     "device_id" to JsonPrimitive(deviceId),
                     "issuer" to JsonPrimitive(issuer),
                     "name" to JsonPrimitive(accountName),

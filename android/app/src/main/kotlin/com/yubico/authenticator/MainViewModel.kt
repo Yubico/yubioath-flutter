@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yubico.authenticator.SerializeHelpers.Companion.idAsString
 import com.yubico.authenticator.SerializeHelpers.Companion.toJson
 import com.yubico.authenticator.api.Pigeon
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
@@ -217,9 +218,7 @@ class MainViewModel : ViewModel() {
 
     private fun getOathCredential(oathSession: OathSession, credentialId: String) =
         oathSession.credentials.firstOrNull { credential ->
-            (credential != null) && SerializeHelpers.credentialIdAsString(
-                credential.id
-            ) == credentialId
+            (credential != null) && credential.idAsString() == credentialId
         } ?: throw Exception("Failed to find account to delete")
 
 
@@ -272,8 +271,8 @@ class MainViewModel : ViewModel() {
 
                         val jsonResult =
                             session.renameCredential(credential, name, issuer)
-                            .toJson(session.deviceId)
-                            .toString()
+                                .toJson(session.deviceId)
+                                .toString()
 
                         result.success(jsonResult)
                     }
