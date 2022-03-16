@@ -29,7 +29,7 @@ final desktopManagementState = StateNotifierProvider.autoDispose.family<
       ref.refresh(_sessionProvider(devicePath));
     });
     ref.onDispose(() {
-      session.unserErrorHandler('state-reset');
+      session.unsetErrorHandler('state-reset');
     });
     return notifier..refresh();
   },
