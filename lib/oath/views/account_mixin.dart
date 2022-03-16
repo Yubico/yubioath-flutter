@@ -152,9 +152,10 @@ mixin AccountMixin {
   Future<bool> deleteCredential(BuildContext context, WidgetRef ref) async {
     final node = ref.read(currentDeviceProvider)!;
     return await showDialog(
-      context: context,
-      builder: (context) => DeleteAccountDialog(node, credential),
-    );
+          context: context,
+          builder: (context) => DeleteAccountDialog(node, credential),
+        ) ??
+        false;
   }
 
   @protected
