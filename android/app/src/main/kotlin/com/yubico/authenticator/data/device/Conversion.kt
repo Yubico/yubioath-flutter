@@ -40,7 +40,7 @@ fun DeviceInfo.toJson(isNfcDevice: Boolean) = JsonObject(
         "is_sky" to JsonPrimitive(false),  // FIXME return correct value
         "is_fips" to JsonPrimitive(false), // FIXME return correct value
         "name" to JsonPrimitive("FIXME"),  // FIXME return correct value
-        "isNFC" to JsonPrimitive(isNfcDevice),
+        "is_nfc" to JsonPrimitive(isNfcDevice),
         "supported_capabilities" to JsonObject(
             mapOf(
                 "usb" to JsonPrimitive(getSupportedCapabilities(Transport.USB)),

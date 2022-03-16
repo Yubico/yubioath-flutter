@@ -43,9 +43,9 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
 
       DeviceInfo deviceInfo = DeviceInfo.fromJson(args);
       String name = args['name'];
-      bool isNFC = args['isNFC'];
+      bool isNfc = args['is_nfc'];
 
-      DeviceNode deviceNode = isNFC
+      DeviceNode deviceNode = isNfc
           ? DeviceNode.nfcReader(DevicePath([]), name)
           : DeviceNode.usbYubiKey(DevicePath([]), name, -1, deviceInfo);
       state = YubiKeyData(deviceNode, name, deviceInfo);
