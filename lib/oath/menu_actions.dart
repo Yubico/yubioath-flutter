@@ -19,11 +19,10 @@ List<MenuAction> buildOathMenuActions(AutoDisposeProviderRef ref) {
                       text: 'Add credential',
                       icon: const Icon(Icons.add),
                       action: (context) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                OathAddAccountPage(device: device),
-                          ),
+                        showDialog(
+                          context: context,
+                          builder: (context) =>
+                              OathAddAccountPage(device: device),
                         );
                       },
                     ),

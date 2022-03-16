@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/views/responsive_dialog.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../models.dart';
 import '../state.dart';
 
-class ManagePasswordDialog extends ConsumerStatefulWidget {
-  final DeviceNode device;
-  const ManagePasswordDialog(this.device, {Key? key}) : super(key: key);
+class _ManagePasswordForm extends ConsumerStatefulWidget {
+  final DevicePath path;
+  final OathState state;
+  const _ManagePasswordForm(this.path, this.state, {Key? key})
+      : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _ManagePasswordDialogState();
+      _ManagePasswordFormState();
 }
 
-class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
+class _ManagePasswordFormState extends ConsumerState<_ManagePasswordForm> {
   String _currentPassword = '';
   String _newPassword = '';
   String _confirmPassword = '';
@@ -22,185 +26,42 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop();
-    });
-
-    return ref.watch(oathStateProvider(widget.device.path)).maybeWhen(
-          success: (state) => AlertDialog(
-            title: const Text('Manage password'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (state.hasKey)
-                  Column(
-                    children: [
-                      if (state.remembered)
-                        // TODO: This is temporary, to be able to forget a password.
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: Column(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: const [
-                                  Text(
-                                    'Your password is remembered by the app.',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  OutlinedButton(
-                                    onPressed: () async {
-                                      await ref
-                                          .read(oathStateProvider(
-                                                  widget.device.path)
-                                              .notifier)
-                                          .forgetPassword();
-                                      Navigator.of(context).pop();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Password forgotten'),
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      );
-                                    },
-                                    child: const Text('Forget'),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      const Text(
-                          'Enter your current password to change it. If you don\'t know your password, you\'ll need to reset the YubiKey, then create a new password.'),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              autofocus: true,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                  labelText: 'Current',
-                                  errorText: _currentIsWrong
-                                      ? 'Wrong password'
-                                      : null),
-                              onChanged: (value) {
-                                setState(() {
-                                  _currentPassword = value;
-                                });
-                              },
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 8.0,
-                          ),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                OutlinedButton(
-                                  child: const Text('Remove'),
-                                  onPressed: _currentPassword.isNotEmpty
-                                      ? () async {
-                                          final result = await ref
-                                              .read(oathStateProvider(
-                                                      widget.device.path)
-                                                  .notifier)
-                                              .unsetPassword(_currentPassword);
-                                          if (result) {
-                                            Navigator.of(context).pop();
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content:
-                                                    Text('Password removed'),
-                                                duration: Duration(seconds: 2),
-                                              ),
-                                            );
-                                          } else {
-                                            setState(() {
-                                              _currentIsWrong = true;
-                                            });
-                                          }
-                                        }
-                                      : null,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 16.0,
-                      ),
-                    ],
-                  ),
-                const Text(
-                    'Enter your new password. A password may contain letters, numbers and other characters.'),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        autofocus: !state.hasKey,
-                        obscureText: true,
-                        decoration:
-                            const InputDecoration(labelText: 'Password'),
-                        onChanged: (value) {
-                          setState(() {
-                            _newPassword = value;
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
-                      child: TextField(
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                          labelText: 'Confirm',
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _confirmPassword = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            actions: [
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (widget.state.hasKey) ...[
+          Text(
+            'Current password',
+            style: Theme.of(context).textTheme.headline6,
+          ),
+          TextField(
+            autofocus: true,
+            obscureText: true,
+            decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: 'Current password',
+                errorText: _currentIsWrong ? 'Wrong password' : null),
+            onChanged: (value) {
+              setState(() {
+                _currentPassword = value;
+              });
+            },
+          ),
+          Wrap(
+            spacing: 8.0,
+            children: [
               OutlinedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: _newPassword.isNotEmpty &&
-                        _newPassword == _confirmPassword &&
-                        (!state.hasKey || _currentPassword.isNotEmpty)
+                child: const Text('Remove password'),
+                onPressed: _currentPassword.isNotEmpty
                     ? () async {
                         final result = await ref
-                            .read(
-                                oathStateProvider(widget.device.path).notifier)
-                            .setPassword(_currentPassword, _newPassword);
+                            .read(oathStateProvider(widget.path).notifier)
+                            .unsetPassword(_currentPassword);
                         if (result) {
                           Navigator.of(context).pop();
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Password set'),
+                              content: Text('Password removed'),
                               duration: Duration(seconds: 2),
                             ),
                           );
@@ -211,9 +72,116 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                         }
                       }
                     : null,
-                child: const Text('Save'),
-              )
+              ),
+              if (widget.state.remembered)
+                OutlinedButton(
+                  child: const Text('Clear saved password'),
+                  onPressed: () async {
+                    await ref
+                        .read(oathStateProvider(widget.path).notifier)
+                        .forgetPassword();
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Password forgotten'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                ),
             ],
+          ),
+          const Divider(),
+        ],
+        Text(
+          'New password',
+          style: Theme.of(context).textTheme.headline6,
+        ),
+        TextField(
+          autofocus: !widget.state.hasKey,
+          obscureText: true,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            labelText: 'New password',
+            enabled: !widget.state.hasKey || _currentPassword.isNotEmpty,
+          ),
+          onChanged: (value) {
+            setState(() {
+              _newPassword = value;
+            });
+          },
+        ),
+        TextField(
+          obscureText: true,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            labelText: 'Confirm password',
+            enabled: _newPassword.isNotEmpty,
+          ),
+          onChanged: (value) {
+            setState(() {
+              _confirmPassword = value;
+            });
+          },
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: ElevatedButton(
+            onPressed: _newPassword.isNotEmpty &&
+                    _newPassword == _confirmPassword &&
+                    (!widget.state.hasKey || _currentPassword.isNotEmpty)
+                ? () async {
+                    final result = await ref
+                        .read(oathStateProvider(widget.path).notifier)
+                        .setPassword(_currentPassword, _newPassword);
+                    if (result) {
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Password set'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    } else {
+                      setState(() {
+                        _currentIsWrong = true;
+                      });
+                    }
+                  }
+                : null,
+            child: const Text('Save'),
+          ),
+        )
+      ]
+          .map((e) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: e,
+              ))
+          .toList(),
+    );
+  }
+}
+
+class ManagePasswordDialog extends ConsumerWidget {
+  final DeviceNode device;
+  const ManagePasswordDialog(this.device, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // If current device changes, we need to pop back to the main Page.
+    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
+      Navigator.of(context).pop();
+    });
+
+    return ref.watch(oathStateProvider(device.path)).maybeWhen(
+          success: (state) => ResponsiveDialog(
+            title: const Text('Manage password'),
+            child: _ManagePasswordForm(
+              device.path,
+              state,
+              // Prevents from losing state on responsive change.
+              key: GlobalKey(),
+            ),
           ),
           orElse: () {
             throw Exception(

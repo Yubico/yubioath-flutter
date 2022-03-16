@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/views/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../../app/models.dart';
@@ -23,28 +24,27 @@ class DeleteAccountDialog extends ConsumerWidget {
         ? '${credential.issuer} (${credential.name})'
         : credential.name;
 
-    return AlertDialog(
-      title: Text('Delete $label?'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
+    return ResponsiveDialog(
+      title: const Text('Delete account'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
               'Warning! This action will delete the account from your YubiKey.'),
-          const Text(''),
           Text(
             'You will no longer be able to generate OTPs for this account. Make sure to first disable this credential from the website to avoid being locked out of your account.',
             style: Theme.of(context).textTheme.bodyText1,
           ),
-        ],
+          Text('Account: $label'),
+        ]
+            .map((e) => Padding(
+                  child: e,
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                ))
+            .toList(),
       ),
       actions: [
-        OutlinedButton(
-          onPressed: () {
-            Navigator.of(context).pop(false);
-          },
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
+        TextButton(
           onPressed: () async {
             await ref
                 .read(credentialListProvider(device.path).notifier)
@@ -57,7 +57,7 @@ class DeleteAccountDialog extends ConsumerWidget {
               ),
             );
           },
-          child: const Text('Delete account'),
+          child: const Text('Delete'),
         ),
       ],
     );

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
-import 'package:yubico_authenticator/app/views/app_loading_screen.dart';
 
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../app/views/app_failure_screen.dart';
+import '../../app/views/app_loading_screen.dart';
+import '../../app/views/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -92,37 +94,22 @@ class _ModeFormState extends State<_ModeForm> {
   }
 }
 
-class _CapabilitiesForm extends StatefulWidget {
-  final DeviceInfo info;
-  final Function(Map<Transport, int>) onSubmit;
+class _CapabilitiesForm extends StatelessWidget {
+  final Map<Transport, int> supported;
+  final Map<Transport, int> enabled;
+  final Function(Map<Transport, int> enabled) onChanged;
 
-  const _CapabilitiesForm(this.info, {required this.onSubmit, Key? key})
-      : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => _CapabilitiesFormState();
-}
-
-class _CapabilitiesFormState extends State<_CapabilitiesForm> {
-  late Map<Transport, int> _enabled;
-
-  @override
-  void initState() {
-    super.initState();
-    // Make sure to copy enabledCapabilites, not mutate the original.
-    _enabled = {...widget.info.config.enabledCapabilities};
-  }
+  const _CapabilitiesForm({
+    required this.onChanged,
+    required this.supported,
+    required this.enabled,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final usbCapabilities =
-        widget.info.supportedCapabilities[Transport.usb] ?? 0;
-    final nfcCapabilities =
-        widget.info.supportedCapabilities[Transport.nfc] ?? 0;
-
-    final changed =
-        !_mapEquals(widget.info.config.enabledCapabilities, _enabled);
-    final valid = changed && (_enabled[Transport.usb] ?? 0) > 0;
+    final usbCapabilities = supported[Transport.usb] ?? 0;
+    final nfcCapabilities = supported[Transport.nfc] ?? 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,11 +121,9 @@ class _CapabilitiesFormState extends State<_CapabilitiesForm> {
           ),
         _CapabilityForm(
           capabilities: usbCapabilities,
-          enabled: _enabled[Transport.usb] ?? 0,
-          onChanged: (enabled) {
-            setState(() {
-              _enabled[Transport.usb] = enabled;
-            });
+          enabled: enabled[Transport.usb] ?? 0,
+          onChanged: (value) {
+            onChanged({...enabled, Transport.usb: value});
           },
         ),
         if (nfcCapabilities != 0)
@@ -148,74 +133,87 @@ class _CapabilitiesFormState extends State<_CapabilitiesForm> {
           ),
         _CapabilityForm(
           capabilities: nfcCapabilities,
-          enabled: _enabled[Transport.nfc] ?? 0,
-          onChanged: (enabled) {
-            setState(() {
-              _enabled[Transport.nfc] = enabled;
-            });
+          enabled: enabled[Transport.nfc] ?? 0,
+          onChanged: (value) {
+            onChanged({...enabled, Transport.nfc: value});
           },
         ),
-        Container(
-          padding: const EdgeInsets.all(16.0),
-          alignment: Alignment.centerRight,
-          child: ElevatedButton(
-            onPressed: valid
-                ? () {
-                    widget.onSubmit(_enabled);
-                  }
-                : null,
-            child: const Text('Apply changes'),
-          ),
-        )
       ],
     );
   }
 }
 
-class ManagementScreen extends ConsumerWidget {
+class ManagementScreen extends ConsumerStatefulWidget {
   final YubiKeyData deviceData;
   const ManagementScreen(this.deviceData, {Key? key}) : super(key: key);
 
-  Widget _buildCapabilitiesForm(
-          BuildContext context, WidgetRef ref, DeviceInfo info) =>
-      _CapabilitiesForm(info, onSubmit: (enabled) async {
-        final bool reboot;
-        if (deviceData.node is UsbYubiKeyNode) {
-          // Reboot if USB device descriptor is changed.
-          final oldInterfaces = UsbInterfaces.forCapabilites(
-              info.config.enabledCapabilities[Transport.usb] ?? 0);
-          final newInterfaces =
-              UsbInterfaces.forCapabilites(enabled[Transport.usb] ?? 0);
-          reboot = oldInterfaces != newInterfaces;
-        } else {
-          reboot = false;
-        }
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _ManagementScreenState();
+}
 
-        Function()? close;
-        try {
-          if (reboot) {
-            // This will take longer, show a message
-            close = ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(
-                  content: Text('Reconfiguring YubiKey...'),
-                  duration: Duration(seconds: 8),
-                ))
-                .close;
-          }
-          await ref
-              .read(managementStateProvider(deviceData.node.path).notifier)
-              .writeConfig(
-                info.config.copyWith(enabledCapabilities: enabled),
-                reboot: reboot,
-              );
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Configuration updated'),
-            duration: Duration(seconds: 2),
-          ));
-        } finally {
-          close?.call();
-        }
-      });
+class _ManagementScreenState extends ConsumerState<ManagementScreen> {
+  late Map<Transport, int> _enabled;
+
+  @override
+  void initState() {
+    super.initState();
+    _enabled = widget.deviceData.info.config.enabledCapabilities;
+  }
+
+  Widget _buildCapabilitiesForm(
+      BuildContext context, WidgetRef ref, DeviceInfo info) {
+    return _CapabilitiesForm(
+      supported: widget.deviceData.info.supportedCapabilities,
+      enabled: _enabled,
+      onChanged: (enabled) {
+        setState(() {
+          _enabled = enabled;
+        });
+      },
+    );
+  }
+
+  void _submitCapabilitiesForm() async {
+    final bool reboot;
+    if (widget.deviceData.node is UsbYubiKeyNode) {
+      // Reboot if USB device descriptor is changed.
+      final oldInterfaces = UsbInterfaces.forCapabilites(
+          widget.deviceData.info.config.enabledCapabilities[Transport.usb] ??
+              0);
+      final newInterfaces =
+          UsbInterfaces.forCapabilites(_enabled[Transport.usb] ?? 0);
+      reboot = oldInterfaces != newInterfaces;
+    } else {
+      reboot = false;
+    }
+
+    Function()? close;
+    try {
+      if (reboot) {
+        // This will take longer, show a message
+        close = ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(
+              content: Text('Reconfiguring YubiKey...'),
+              duration: Duration(seconds: 8),
+            ))
+            .close;
+      }
+      await ref
+          .read(managementStateProvider(widget.deviceData.node.path).notifier)
+          .writeConfig(
+            widget.deviceData.info.config
+                .copyWith(enabledCapabilities: _enabled),
+            reboot: reboot,
+          );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Configuration updated'),
+        duration: Duration(seconds: 2),
+      ));
+    } finally {
+      close?.call();
+    }
+  }
 
   Widget _buildModeForm(BuildContext context, WidgetRef ref, DeviceInfo info) =>
       _ModeForm(
@@ -229,15 +227,41 @@ class ManagementScreen extends ConsumerWidget {
       });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      ref.watch(managementStateProvider(deviceData.node.path)).when(
-          none: () => const AppLoadingScreen(),
-          failure: (reason) => AppFailureScreen(reason),
-          success: (info) => ListView(
-                children: [
-                  info.version.major > 4
-                      ? _buildCapabilitiesForm(context, ref, info)
-                      : _buildModeForm(context, ref, info),
-                ],
-              ));
+  Widget build(BuildContext context) {
+    ref.listen<DeviceNode?>(currentDeviceProvider, (_, __) {
+      //TODO: This can probably be checked better to make sure it's the main page.
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    });
+
+    bool changed = false;
+
+    return ResponsiveDialog(
+      title: const Text('Toggle applications'),
+      child:
+          ref.watch(managementStateProvider(widget.deviceData.node.path)).when(
+                none: () => const AppLoadingScreen(),
+                failure: (reason) => AppFailureScreen(reason),
+                success: (info) {
+                  // TODO: Check mode for < YK5 intead
+                  changed = !_mapEquals(
+                    _enabled,
+                    info.config.enabledCapabilities,
+                  );
+                  return Column(
+                    children: [
+                      info.version.major > 4
+                          ? _buildCapabilitiesForm(context, ref, info)
+                          : _buildModeForm(context, ref, info),
+                    ],
+                  );
+                },
+              ),
+      actions: [
+        TextButton(
+          onPressed: changed ? _submitCapabilitiesForm : null,
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
 }
