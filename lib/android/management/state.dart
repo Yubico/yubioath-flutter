@@ -9,8 +9,6 @@ import '../../app/state.dart';
 import '../../core/models.dart';
 import '../../management/state.dart';
 
-final _log = Logger('android.management.state');
-
 final androidManagementState = StateNotifierProvider.autoDispose.family<
     ManagementStateNotifier, ApplicationStateResult<DeviceInfo>, DevicePath>(
   (ref, devicePath) {
