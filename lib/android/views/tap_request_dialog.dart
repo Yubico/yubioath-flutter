@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,16 +16,13 @@ class FDialogApiImpl extends FDialogApi {
   }
 
   @override
-  Future<void> showDialogApi(String dialogParametersJson) async {
-    var dialogParameters = jsonDecode(dialogParametersJson);
-    var message = dialogParameters['message'] ?? 'Missing message parameter';
-
+  Future<void> showDialogApi(String dialogMessage) async {
     /// note about use of unawaited
     /// we don't need the result of the dialog and we don't want show to block
     unawaited(showDialog(
         context: NavigationService.navigatorKey.currentContext!,
         builder: (context) => TapRequestDialog(
-              message,
+              dialogMessage,
             )));
   }
 }

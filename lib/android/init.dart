@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import '../app/models.dart';
+import '../management/state.dart';
+import 'management/state.dart';
 import 'oath/state.dart';
 import 'state.dart';
 import 'views/tap_request_dialog.dart';
@@ -31,8 +33,8 @@ Future<List<Override>> initializeAndGetOverrides() async {
 
   return [
     supportedAppsProvider.overrideWithValue([
-      Application.management,
       Application.oath,
+      Application.management,
     ]),
     attachedDevicesProvider
         .overrideWithProvider(androidAttachedDevicesProvider),
@@ -40,5 +42,6 @@ Future<List<Override>> initializeAndGetOverrides() async {
     oathStateProvider.overrideWithProvider(androidOathStateProvider),
     credentialListProvider.overrideWithProvider(androidCredentialListProvider),
     currentAppProvider.overrideWithProvider(androidSubPageProvider),
+    managementStateProvider.overrideWithProvider(androidManagementState),
   ];
 }

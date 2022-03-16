@@ -431,7 +431,7 @@ class _FDialogApiCodec extends StandardMessageCodec {
 abstract class FDialogApi {
   static const MessageCodec<Object?> codec = _FDialogApiCodec();
 
-  Future<void> showDialogApi(String dialogParametersJson);
+  Future<void> showDialogApi(String dialogMessage);
   Future<void> closeDialogApi();
   static void setup(FDialogApi? api, {BinaryMessenger? binaryMessenger}) {
     {
@@ -443,9 +443,9 @@ abstract class FDialogApi {
         channel.setMessageHandler((Object? message) async {
           assert(message != null, 'Argument for dev.flutter.pigeon.FDialogApi.showDialogApi was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final String? arg_dialogParametersJson = (args[0] as String?);
-          assert(arg_dialogParametersJson != null, 'Argument for dev.flutter.pigeon.FDialogApi.showDialogApi was null, expected non-null String.');
-          await api.showDialogApi(arg_dialogParametersJson!);
+          final String? arg_dialogMessage = (args[0] as String?);
+          assert(arg_dialogMessage != null, 'Argument for dev.flutter.pigeon.FDialogApi.showDialogApi was null, expected non-null String.');
+          await api.showDialogApi(arg_dialogMessage!);
           return;
         });
       }
