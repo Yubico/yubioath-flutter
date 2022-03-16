@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/views/responsive_dialog.dart';
 import '../state.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
@@ -16,28 +17,25 @@ class ResetDialog extends ConsumerWidget {
       Navigator.of(context).pop();
     });
 
-    return AlertDialog(
-      title: const Text('Reset to defaults?'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
+    return ResponsiveDialog(
+      title: const Text('Factory reset'),
+      child: Column(
         children: [
           const Text(
               'Warning! This will irrevocably delete all OATH TOTP/HOTP accounts from your YubiKey.'),
-          const Text(''),
           Text(
             'Your OATH credentials, as well as any password set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.',
             style: Theme.of(context).textTheme.bodyText1,
           ),
-        ],
+        ]
+            .map((e) => Padding(
+                  child: e,
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                ))
+            .toList(),
       ),
       actions: [
-        OutlinedButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
+        TextButton(
           onPressed: () async {
             await ref.read(oathStateProvider(device.path).notifier).reset();
             Navigator.of(context).pop();
@@ -48,7 +46,7 @@ class ResetDialog extends ConsumerWidget {
               ),
             );
           },
-          child: const Text('Reset YubiKey'),
+          child: const Text('Reset'),
         ),
       ],
     );

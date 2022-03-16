@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../management/views/management_screen.dart';
 import '../../about_page.dart';
 import '../../settings_page.dart';
 import '../models.dart';
@@ -78,12 +79,12 @@ class MainPageDrawer extends ConsumerWidget {
               DrawerItem(
                 titleText: 'Toggle applications',
                 icon: Icon(Application.management._icon),
-                selected: Application.management == currentApp,
                 onTap: () {
-                  ref
-                      .read(currentAppProvider.notifier)
-                      .setCurrentApp(Application.management);
                   if (shouldPop) Navigator.of(context).pop();
+                  showDialog(
+                    context: context,
+                    builder: (context) => ManagementScreen(data),
+                  );
                 },
               ),
               const Divider(),
@@ -103,9 +104,8 @@ class MainPageDrawer extends ConsumerWidget {
             onTap: () {
               final nav = Navigator.of(context);
               if (shouldPop) nav.pop();
-              nav.push(
-                MaterialPageRoute(builder: (context) => const SettingsPage()),
-              );
+              showDialog(
+                  context: context, builder: (context) => const SettingsPage());
             },
           ),
           DrawerItem(
@@ -114,9 +114,8 @@ class MainPageDrawer extends ConsumerWidget {
             onTap: () {
               final nav = Navigator.of(context);
               if (shouldPop) nav.pop();
-              nav.push(
-                MaterialPageRoute(builder: (context) => const AboutPage()),
-              );
+              showDialog(
+                  context: context, builder: (context) => const AboutPage());
             },
           ),
         ],
