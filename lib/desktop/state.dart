@@ -31,14 +31,14 @@ final rpcStateProvider = StateNotifierProvider<_RpcStateNotifier, RpcState>(
 
 class _RpcStateNotifier extends StateNotifier<RpcState> {
   final RpcSession rpc;
-  _RpcStateNotifier(this.rpc) : super(const RpcState('unknown')) {
+  _RpcStateNotifier(this.rpc) : super(const RpcState('unknown', false)) {
     _init();
   }
 
   _init() async {
     final response = await rpc.command('get', []);
     if (mounted) {
-      state = state.copyWith(version: response['data']['version']);
+      state = RpcState.fromJson(response['data']);
     }
   }
 }

@@ -55,9 +55,17 @@ from dataclasses import asdict
 from typing import Mapping, Tuple
 
 import os
+import sys
+import ctypes
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+def _is_admin():
+    if sys.platform == "win32":
+        return bool(ctypes.windll.shell32.IsUserAnAdmin())
+    return os.getuid() == 0
 
 
 class RootNode(RpcNode):
@@ -78,7 +86,7 @@ class RootNode(RpcNode):
         return self._child
 
     def get_data(self):
-        return dict(version=ykman_version)
+        return dict(version=ykman_version, is_admin=_is_admin())
 
     @child
     def usb(self):

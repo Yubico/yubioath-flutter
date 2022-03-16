@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/desktop/state.dart';
 
 import '../../app/models.dart';
 import '../../app/views/app_failure_screen.dart';
@@ -14,7 +17,16 @@ class FidoScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) =>
       ref.watch(fidoStateProvider(deviceData.node.path)).when(
           none: () => const AppLoadingScreen(),
-          failure: (reason) => AppFailureScreen(reason),
+          failure: (reason) {
+            if (Platform.isWindows) {
+              if (!ref
+                  .watch(rpcStateProvider.select((state) => state.isAdmin))) {
+                return const AppFailureScreen(
+                    'WebAuthn management requires elevated privileges.\nRestart this app as administrator.');
+              }
+            }
+            return AppFailureScreen(reason);
+          },
           success: (state) => ListView(
                 children: [
                   Text('${state.info}'),

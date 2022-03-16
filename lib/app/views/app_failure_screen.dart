@@ -10,8 +10,11 @@ class AppFailureScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          Text('Failed to connect'),
+        children: [
+          Text(
+            reason,
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );

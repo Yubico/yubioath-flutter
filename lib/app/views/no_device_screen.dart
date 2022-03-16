@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/models.dart';
+import '../../desktop/state.dart';
 import '../models.dart';
 import 'device_avatar.dart';
 
@@ -11,12 +12,13 @@ class NoDeviceScreen extends ConsumerWidget {
   final DeviceNode? node;
   const NoDeviceScreen(this.node, {Key? key}) : super(key: key);
 
-  String _getErrorMessage(UsbPid pid) {
+  String _getErrorMessage(WidgetRef ref, UsbPid pid) {
     // TODO: Handle more cases
     if (pid.usbInterfaces == UsbInterface.fido.value) {
       if (Platform.isWindows) {
-        // TODO: Only when not admin!
-        return 'WebAuthn management requires elevated privileges.\nRestart this app as administrator.';
+        if (!ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
+          return 'WebAuthn management requires elevated privileges.\nRestart this app as administrator.';
+        }
       }
     }
     return 'This YubiKey cannot be accessed';
@@ -31,7 +33,7 @@ class NoDeviceScreen extends ConsumerWidget {
               return [
                 const DeviceAvatar(child: Icon(Icons.usb_off)),
                 Text(
-                  _getErrorMessage(node.pid),
+                  _getErrorMessage(ref, node.pid),
                   textAlign: TextAlign.center,
                 ),
               ];
