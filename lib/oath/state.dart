@@ -11,13 +11,11 @@ import '../core/state.dart';
 import 'models.dart';
 
 final oathStateProvider = StateNotifierProvider.autoDispose
-    .family<OathStateNotifier, OathState?, DevicePath>(
+    .family<OathStateNotifier, ApplicationStateResult<OathState>, DevicePath>(
   (ref, devicePath) => throw UnimplementedError(),
 );
 
-abstract class OathStateNotifier extends StateNotifier<OathState?> {
-  OathStateNotifier() : super(null);
-
+abstract class OathStateNotifier extends ApplicationStateNotifier<OathState> {
   Future<void> reset();
 
   /// Unlocks the session and returns a Pair of `success`, `remembered`.

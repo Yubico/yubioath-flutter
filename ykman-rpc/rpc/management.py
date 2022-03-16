@@ -27,18 +27,30 @@
 
 
 from .base import RpcNode, action
-from yubikit.core import require_version, NotSupportedError
-from yubikit.management import ManagementSession, DeviceConfig
+from yubikit.core import require_version, NotSupportedError, TRANSPORT
+from yubikit.core.smartcard import SmartCardConnection
+from yubikit.core.otp import OtpConnection
+from yubikit.core.fido import FidoConnection
+from yubikit.management import ManagementSession, DeviceConfig, Mode, USB_INTERFACE
+from ykman.device import connect_to_device
 from dataclasses import asdict
+from time import sleep
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ManagementNode(RpcNode):
     def __init__(self, connection):
         super().__init__()
+        self._connection_type = type(connection)
         self.session = ManagementSession(connection)
 
     def get_data(self):
-        return asdict(self.session.read_device_info())
+        try:
+            return asdict(self.session.read_device_info())
+        except NotSupportedError:
+            return {}
 
     def list_actions(self):
         actions = super().list_actions()
@@ -48,6 +60,41 @@ class ManagementNode(RpcNode):
         except NotSupportedError:
             actions.remove("configure")
         return actions
+
+    def _await_reboot(self, serial, usb_enabled):
+        # TODO: Clean up once "support" is merged into ykman.
+        iface = USB_INTERFACE.for_capabilities(usb_enabled)
+        connection_types = []
+
+        # Prefer to use the "same" connection type as before
+        if iface.supports_connection(self._connection_type):
+            if issubclass(self._connection_type, SmartCardConnection):
+                connection_types = [SmartCardConnection]
+            elif issubclass(self._connection_type, OtpConnection):
+                connection_types = [OtpConnection]
+            elif issubclass(self._connection_type, FidoConnection):
+                connection_types = [FidoConnection]
+
+        # Allow any expected connection type
+        if not connection_types:
+            connection_types = [
+                t
+                for t in [SmartCardConnection, OtpConnection, FidoConnection]
+                if iface.supports_connection(t)
+            ]
+
+        self.session.close()
+        logger.debug("Waiting for device to re-appear...")
+        for _ in range(10):
+            sleep(0.2)  # Always sleep initially
+            try:
+                conn = connect_to_device(serial, connection_types)[0]
+                conn.close()
+                break
+            except ValueError:
+                logger.debug("Not found, sleep...")
+        else:
+            logger.warning("Timed out waiting for device")
 
     @action
     def configure(self, params, event, signal):
@@ -60,13 +107,17 @@ class ManagementNode(RpcNode):
             params.pop("challenge_response_timeout", None),
             params.pop("device_flags", None),
         )
+        serial = self.session.read_device_info().serial
         self.session.write_device_config(config, reboot, cur_lock_code, new_lock_code)
+        if reboot:
+            enabled = config.enabled_capabilities.get(TRANSPORT.USB)
+            self._await_reboot(serial, enabled)
         return dict()
 
     @action
     def set_mode(self, params, event, signal):
         self.session.set_mode(
-            params.pop("mode"),
+            Mode.from_code(params["mode"]),
             params.pop("challenge_response_timeout", 0),
             params.pop("auto_eject_timeout", 0),
         )

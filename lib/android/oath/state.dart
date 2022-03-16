@@ -22,15 +22,17 @@ class CancelException implements Exception {}
 final oathApiProvider = StateProvider((_) => OathApi());
 
 final androidOathStateProvider = StateNotifierProvider.autoDispose
-    .family<OathStateNotifier, OathState?, DevicePath>((ref, devicePath) =>
-        _AndroidOathStateNotifier(
+    .family<OathStateNotifier, ApplicationStateResult<OathState>, DevicePath>(
+        (ref, devicePath) => _AndroidOathStateNotifier(
             ref.watch(androidStateProvider), ref.watch(oathApiProvider)));
 
 class _AndroidOathStateNotifier extends OathStateNotifier {
   final OathApi _api;
 
   _AndroidOathStateNotifier(OathState? newState, this._api) : super() {
-    state = newState;
+    if (newState != null) {
+      setState(newState);
+    }
   }
 
   @override
@@ -48,9 +50,9 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
     try {
       final unlockSuccess = await _api.unlock(password, remember);
 
-      if (mounted && unlockSuccess) {
+      if (unlockSuccess) {
         _log.config('applet unlocked');
-        state = state?.copyWith(locked: false);
+        setState(requireState().copyWith(locked: false));
       }
       return Pair(unlockSuccess, false); // TODO: provide correct second param
     } on PlatformException catch (e) {
@@ -101,7 +103,8 @@ final androidCredentialListProvider = StateNotifierProvider.autoDispose
     var notifier = _AndroidCredentialListNotifier(
       ref.watch(oathApiProvider),
       ref.watch(androidCredentialsProvider),
-      ref.watch(oathStateProvider(devicePath).select((s) => s?.locked ?? true)),
+      ref.watch(oathStateProvider(devicePath).select(
+          (r) => r.whenOrNull(success: (state) => state.locked) ?? true)),
     );
     ref.listen<WindowState>(windowStateProvider, (_, windowState) {
       notifier._notifyWindowState(windowState);

@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+  xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <?define ProductVersion="6.0.0" ?>
+  <?define ProductName="Yubico Authenticator" ?>
+
+   <Product Id="*" UpgradeCode="fcbafc57-6409-47b8-b861-20bda48cd4f6" Name="$(var.ProductName)" Version="$(var.ProductVersion)" Manufacturer="Yubico AB" Language="1033">
+      <Package InstallerVersion="301" Compressed="yes" InstallScope="perMachine" Platform="x86" Description="$(var.ProductName) $(var.ProductVersion)" />
+      <Media Id="1" Cabinet="yubioathdesktop.cab" EmbedCab="yes"/>
+
+      <WixVariable Id="WixUIDialogBmp" Value="resources\icons\yubico-msi-background.png" />
+      <WixVariable Id="WixUIBannerBmp" Value="resources\icons\yubico-msi-y-banner.png" />
+
+      <Icon Id="icon.ico" SourceFile="resources\icons\com.yubico.yubioath.ico"/>
+      <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+
+      <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+      <Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" />
+      <Upgrade Id="fcbafc57-6409-47b8-b861-20bda48cd4f6">  
+        <UpgradeVersion
+            Minimum="1.0.0.0"
+            Property="PREVIOUSVERSIONSINSTALLED"
+            IncludeMinimum="yes" IncludeMaximum="no" />
+      </Upgrade> 
+
+      <InstallExecuteSequence>
+        <RemoveExistingProducts Before="InstallInitialize" />
+      </InstallExecuteSequence>
+
+      <UI>
+          <UIRef Id="WixUI_InstallDir" />
+          <Publish Dialog="WelcomeDlg"
+            Control="Next"
+            Event="NewDialog"
+            Value="InstallDirDlg"
+            Order="2">1</Publish>
+          <Publish Dialog="InstallDirDlg"
+            Control="Back"
+            Event="NewDialog"
+            Value="WelcomeDlg"
+            Order="2">1</Publish>
+      </UI>
+
+      <Directory Id="TARGETDIR" Name="SourceDir">
+         <Directory Id="ProgramFilesFolder" Name="PFiles">
+            <Directory Id="YubicoDir" Name="Yubico">
+                <Directory Id="INSTALLDIR" Name="Yubico Authenticator">
+                </Directory>
+            </Directory>
+         </Directory>
+         <Directory Id="ProgramMenuFolder">
+            <Directory Id="ApplicationProgramsFolder" Name="Yubico Authenticator"/>
+        </Directory>
+      </Directory>
+
+      <DirectoryRef Id="ApplicationProgramsFolder">
+        <Component Id="ApplicationShortcut" Guid="fcbafc57-6409-47b8-b861-20bda48cd4f6">
+          <Shortcut Id="ApplicationStartMenuShortcut" 
+                  Name="Yubico Authenticator"
+                  Target="[!fil793E9EB8753E3C01B3E26C3ADCE0FBB4]"
+                  WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+          <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
+          <RegistryValue Root="HKCU" Key="SOFTWARE\Yubico\Yubico Authenticator" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+          <util:RemoveFolderEx Id="Remove" On="install" Property="INSTALLDIR" />
+        </Component>
+      </DirectoryRef>
+
+      <DirectoryRef Id="TARGETDIR">
+        <Merge Id="VCRedist" SourceFile="$(env.MERGEDPATH)" DiskId="1" Language="0"/>
+      </DirectoryRef>
+
+      <Feature Id="VCRedist" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+        <MergeRef Id="VCRedist"/>
+      </Feature>
+
+      <Feature Id="DefaultFeature" Level="1">
+         <ComponentGroupRef Id="ApplicationFiles"/>
+      </Feature>
+
+      <Feature Id="MainApplication" Title="Main Application" Level="1">
+        <ComponentRef Id="ApplicationShortcut" />   
+      </Feature>
+   </Product>
+</Wix>

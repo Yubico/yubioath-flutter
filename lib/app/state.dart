@@ -9,6 +9,10 @@ import 'models.dart';
 
 final _log = Logger('app.state');
 
+// Override this to alter the set of supported apps.
+final supportedAppsProvider =
+    Provider<List<Application>>((ref) => Application.values);
+
 // Default implementation is always focused, override with platform specific version.
 final windowStateProvider = Provider<WindowState>(
   (ref) => WindowState(focused: true, visible: true, active: true),
@@ -52,13 +56,21 @@ class SearchNotifier extends StateNotifier<String> {
 }
 
 // Override with platform implementation
-final attachedDevicesProvider = Provider<List<DeviceNode>>(
-  (ref) => [],
+final attachedDevicesProvider =
+    StateNotifierProvider<AttachedDevicesNotifier, List<DeviceNode>>(
+  (ref) => AttachedDevicesNotifier([]),
 );
+
+class AttachedDevicesNotifier extends StateNotifier<List<DeviceNode>> {
+  AttachedDevicesNotifier(List<DeviceNode> state) : super(state);
+
+  /// Force a refresh of all device data.
+  void refresh() {}
+}
 
 // Override with platform implementation
 final currentDeviceDataProvider = Provider<YubiKeyData?>(
-  (ref) => null,
+  (ref) => throw UnimplementedError(),
 );
 
 final currentDeviceProvider =
@@ -80,7 +92,7 @@ class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
         state = devices.firstWhere(
             (dev) => dev.when(
                   usbYubiKey: (path, name, pid, info) =>
-                      lastDevice == 'serial:${info.serial}',
+                      lastDevice == 'serial:${info?.serial}',
                   nfcReader: (path, name) => lastDevice == 'name:$name',
                 ),
             orElse: () => devices.whereType<UsbYubiKeyNode>().first);
@@ -94,7 +106,7 @@ class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
     state = device;
     device.when(
       usbYubiKey: (path, name, pid, info) {
-        final serial = info.serial;
+        final serial = info?.serial;
         if (serial != null) {
           _prefs.setString(_lastDevice, 'serial:$serial');
         }
@@ -106,20 +118,40 @@ class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
   }
 }
 
-final subPageProvider = StateNotifierProvider<SubPageNotifier, SubPage>(
-    (ref) => SubPageNotifier(SubPage.oath));
+final currentAppProvider =
+    StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
+  final notifier = CurrentAppNotifier(ref.watch(supportedAppsProvider));
+  ref.listen<YubiKeyData?>(currentDeviceDataProvider, (_, data) {
+    notifier._notifyDeviceChanged(data);
+  }, fireImmediately: true);
+  return notifier;
+});
 
-class SubPageNotifier extends StateNotifier<SubPage> {
-  SubPageNotifier(SubPage state) : super(state);
+class CurrentAppNotifier extends StateNotifier<Application> {
+  final List<Application> _supportedApps;
+  CurrentAppNotifier(this._supportedApps) : super(_supportedApps.first);
 
-  void setSubPage(SubPage page) {
-    state = page;
+  void setCurrentApp(Application app) {
+    state = app;
+  }
+
+  void _notifyDeviceChanged(YubiKeyData? data) {
+    if (data == null ||
+        state.getAvailability(data) != Availability.unsupported) {
+      // Keep current app
+      return;
+    }
+
+    state = _supportedApps.firstWhere(
+      (app) => app.getAvailability(data) == Availability.enabled,
+      orElse: () => _supportedApps.first,
+    );
   }
 }
 
 final menuActionsProvider = Provider.autoDispose<List<MenuAction>>((ref) {
-  switch (ref.watch(subPageProvider)) {
-    case SubPage.oath:
+  switch (ref.watch(currentAppProvider)) {
+    case Application.oath:
       return buildOathMenuActions(ref);
     // TODO: Handle other cases.
     default:

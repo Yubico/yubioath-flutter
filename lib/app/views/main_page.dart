@@ -9,19 +9,27 @@ import 'no_device_screen.dart';
 import 'device_info_screen.dart';
 import '../models.dart';
 import '../state.dart';
+import '../../fido/views/fido_screen.dart';
 import '../../oath/views/oath_screen.dart';
+import '../../management/views/management_screen.dart';
 
 class MainPage extends ConsumerWidget {
   const MainPage({Key? key}) : super(key: key);
 
-  Widget _buildSubPage(SubPage subPage, YubiKeyData? device) {
-    if (device == null) {
-      return const NoDeviceScreen();
+  Widget _buildSubPage(Application subPage, YubiKeyData device) {
+    if (subPage.getAvailability(device) != Availability.enabled) {
+      return const Center(
+        child: Text('This application is disabled'),
+      );
     }
-    // TODO: If page not supported by device, do something?
+
     switch (subPage) {
-      case SubPage.oath:
+      case Application.oath:
         return OathScreen(device);
+      case Application.management:
+        return ManagementScreen(device);
+      case Application.fido:
+        return FidoScreen(device);
       default:
         return DeviceInfoScreen(device);
     }
@@ -52,7 +60,7 @@ class MainPage extends ConsumerWidget {
   Scaffold _buildScaffold(BuildContext context, WidgetRef ref, bool hasDrawer) {
     final deviceNode = ref.watch(currentDeviceProvider);
     final deviceData = ref.watch(currentDeviceDataProvider);
-    final subPage = ref.watch(subPageProvider);
+    final subPage = ref.watch(currentAppProvider);
 
     Widget deviceWidget;
     if (deviceNode != null) {
@@ -132,7 +140,9 @@ class MainPage extends ConsumerWidget {
         ],
       ),
       drawer: hasDrawer ? const MainPageDrawer() : null,
-      body: _buildSubPage(subPage, deviceData),
+      body: deviceData == null
+          ? NoDeviceScreen(deviceNode)
+          : _buildSubPage(subPage, deviceData),
     );
   }
 }
