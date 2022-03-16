@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yubico.authenticator.SerializeHelpers.Companion.idAsString
-import com.yubico.authenticator.SerializeHelpers.Companion.toJson
 import com.yubico.authenticator.api.Pigeon
+import com.yubico.authenticator.data.device.toJson
+import com.yubico.authenticator.data.oath.idAsString
+import com.yubico.authenticator.data.oath.toJson
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Logger
