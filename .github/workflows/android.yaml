@@ -1,10 +1,6 @@
 name: Android
 
-on:
-  push:
-    branches: [ feature/android-native ]
-  pull_request:
-    branches: [ feature/android-native ]
+on: [push, pull_request]
 
 jobs:
   build:
