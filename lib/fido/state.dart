@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/models.dart';
-import '../core/models.dart';
 import '../core/state.dart';
 import 'models.dart';
 

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import '../../app/models.dart';
-import '../../core/models.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
 import '../rpc.dart';

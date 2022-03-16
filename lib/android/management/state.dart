@@ -5,7 +5,6 @@ import 'package:yubico_authenticator/management/models.dart';
 
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../core/models.dart';
 import '../../management/state.dart';
 
 final androidManagementState = StateNotifierProvider.autoDispose.family<
