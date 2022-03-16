@@ -30,21 +30,19 @@ class SerializeHelpers {
             )
         }
 
-        private fun serialize(version: Version) = with(version) {
-            JsonArray(
-                listOf(
-                    JsonPrimitive(major),
-                    JsonPrimitive(minor),
-                    JsonPrimitive(micro)
-                )
+        fun Version.toJson() = JsonArray(
+            listOf(
+                JsonPrimitive(major),
+                JsonPrimitive(minor),
+                JsonPrimitive(micro)
             )
-        }
+        )
 
         fun DeviceInfo.toJson(isNfcDevice: Boolean) = JsonObject(
             mapOf(
                 "config" to serialize(config),
                 "serial" to JsonPrimitive(serialNumber),
-                "version" to serialize(version),
+                "version" to version.toJson(),
                 "form_factor" to JsonPrimitive(formFactor.value),
                 "is_locked" to JsonPrimitive(isLocked),
                 "is_sky" to JsonPrimitive(false),  // FIXME return correct value
