@@ -74,17 +74,13 @@ class SerializeHelpers {
             )
 
 
-        fun serialize(code: Code?) =
-            when (code) {
-                null -> JsonNull
-                else -> JsonObject(
-                    mapOf(
-                        "value" to JsonPrimitive(code.value),
-                        "valid_from" to JsonPrimitive(code.validFrom / 1000),
-                        "valid_to" to JsonPrimitive(code.validUntil / 1000)
-                    )
-                )
-            }
+        fun Code.toJson() = JsonObject(
+            mapOf(
+                "value" to JsonPrimitive(value),
+                "valid_from" to JsonPrimitive(validFrom / 1000),
+                "valid_to" to JsonPrimitive(validUntil / 1000)
+            )
+        )
 
         fun credentialIdAsString(id: ByteArray): String = id.joinToString(
             separator = ""
@@ -105,7 +101,7 @@ class SerializeHelpers {
                 )
             )
 
-        fun Map<Credential, Code>.toJson(deviceId: String) =
+        fun Map<Credential, Code?>.toJson(deviceId: String) =
             JsonObject(
                 mapOf(
                     "entries" to JsonArray(
@@ -113,7 +109,7 @@ class SerializeHelpers {
                             JsonObject(
                                 mapOf(
                                     "credential" to credential.toJson(deviceId),
-                                    "code" to serialize(code)
+                                    "code" to (code?.toJson() ?: JsonNull)
                                 )
                             )
                         }

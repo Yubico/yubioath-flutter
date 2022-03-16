@@ -358,9 +358,9 @@ class MainViewModel : ViewModel() {
 
                         val credential = getOathCredential(session, credentialId)
 
-                        val resultJson = SerializeHelpers.serialize(
-                            session.calculateCode(credential)
-                        ).toString()
+                        val resultJson = session.calculateCode(credential)
+                            .toJson()
+                            .toString()
 
                         result.success(resultJson)
                     }
