@@ -83,9 +83,10 @@ class MainViewModel : ViewModel() {
 
                 try {
                     val deviceInfo = managementSession.deviceInfo
-                    val deviceInfoData =
-                        SerializeHelpers.serialize(deviceInfo, device is NfcYubiKeyDevice)
-                    it.resume(deviceInfoData.toString())
+                    val deviceInfoData = deviceInfo
+                        .toJson(device is NfcYubiKeyDevice)
+                        .toString()
+                    it.resume(deviceInfoData)
                 } catch (cause: Throwable) {
                     Logger.e("Failed to get device info", cause)
                     it.resumeWithException(cause)

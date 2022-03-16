@@ -40,28 +40,25 @@ class SerializeHelpers {
             )
         }
 
-        fun serialize(data: DeviceInfo, isNfcDevice: Boolean) =
-            with(data) {
-                JsonObject(
+        fun DeviceInfo.toJson(isNfcDevice: Boolean) = JsonObject(
+            mapOf(
+                "config" to serialize(config),
+                "serial" to JsonPrimitive(serialNumber),
+                "version" to serialize(version),
+                "form_factor" to JsonPrimitive(formFactor.value),
+                "is_locked" to JsonPrimitive(isLocked),
+                "is_sky" to JsonPrimitive(false),  // FIXME return correct value
+                "is_fips" to JsonPrimitive(false), // FIXME return correct value
+                "name" to JsonPrimitive("FIXME"),  // FIXME return correct value
+                "isNFC" to JsonPrimitive(isNfcDevice),
+                "supported_capabilities" to JsonObject(
                     mapOf(
-                        "config" to serialize(config),
-                        "serial" to JsonPrimitive(serialNumber),
-                        "version" to serialize(version),
-                        "form_factor" to JsonPrimitive(formFactor.value),
-                        "is_locked" to JsonPrimitive(isLocked),
-                        "is_sky" to JsonPrimitive(false),  // FIXME return correct value
-                        "is_fips" to JsonPrimitive(false), // FIXME return correct value
-                        "name" to JsonPrimitive("FIXME"),  // FIXME return correct value
-                        "isNFC" to JsonPrimitive(isNfcDevice),
-                        "supported_capabilities" to JsonObject(
-                            mapOf(
-                                "usb" to JsonPrimitive(getSupportedCapabilities(Transport.USB)),
-                                "nfc" to JsonPrimitive(getSupportedCapabilities(Transport.NFC)),
-                            )
-                        )
+                        "usb" to JsonPrimitive(getSupportedCapabilities(Transport.USB)),
+                        "nfc" to JsonPrimitive(getSupportedCapabilities(Transport.NFC)),
                     )
                 )
-            }
+            )
+        )
 
         fun OathSession.toJson(remembered: Boolean) = JsonObject(
             mapOf(
