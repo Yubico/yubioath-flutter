@@ -14,10 +14,9 @@ import com.yubico.yubikit.core.Logger
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
-import com.yubico.yubikit.management.ManagementSession
-import com.yubico.yubikit.management.ManagementSession.FEATURE_DEVICE_INFO
 import com.yubico.yubikit.oath.CredentialData
 import com.yubico.yubikit.oath.OathSession
+import com.yubico.yubikit.support.DeviceUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -76,17 +75,13 @@ class MainViewModel : ViewModel() {
 
         val deviceInfoData = suspendCoroutine<String> {
             device.requestConnection(SmartCardConnection::class.java) { result ->
-                val managementSession = ManagementSession(result.value)
-
-                if (!managementSession.supports(FEATURE_DEVICE_INFO)) {
-                    it.resume("NO_FEATURE_DEVICE_INFO")
-                    return@requestConnection
-                }
-
                 try {
-                    val deviceInfo = managementSession.deviceInfo
+                    val pid = (device as? UsbYubiKeyDevice)?.pid
+                    val deviceInfo = DeviceUtil.readInfo(result.value, pid)
+                    val name = DeviceUtil.getName(deviceInfo, pid?.type)
+
                     val deviceInfoData = deviceInfo
-                        .toJson(device is NfcYubiKeyDevice)
+                        .toJson(name, device is NfcYubiKeyDevice)
                         .toString()
                     it.resume(deviceInfoData)
                 } catch (cause: Throwable) {
