@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/desktop/models.dart';
 
 import '../../app/models.dart';
 import '../../fido/models.dart';
@@ -49,19 +50,30 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
   }
 
   @override
-  Future<void> reset() {
+  Future<void> reset() async {
     // TODO: implement reset
     throw UnimplementedError();
   }
 
   @override
-  Future<void> setPin(String newPin, {String? oldPin}) {
-    // TODO: implement setPin
-    throw UnimplementedError();
+  Future<PinResult> setPin(String newPin, {String? oldPin}) async {
+    try {
+      await _session.command('set_pin', params: {
+        'pin': oldPin,
+        'new_pin': newPin,
+      });
+      return PinResult.success();
+    } on RpcError catch (e) {
+      if (e.status == 'pin-validation') {
+        return PinResult.failed(e.body['retries'], e.body['auth_blocked']);
+      }
+      rethrow;
+    }
+    // TODO: Update state
   }
 
   @override
-  Future<void> unlock(String pin) {
+  Future<PinResult> unlock(String pin) {
     // TODO: implement unlock
     throw UnimplementedError();
   }

@@ -16,4 +16,18 @@ class FidoState with _$FidoState {
       _$FidoStateFromJson(json);
 
   bool get hasPin => info['options']['clientPin'] == true;
+
+  int get minPinLength => info['min_pin_length'] as int;
+
+  bool get credMgmt =>
+      info['options']['credMgmt'] == true ||
+      info['options']['credentialMgmtPreview'] == true;
+
+  bool? get bioEnroll => info['options']['bioEnroll'];
+}
+
+@freezed
+class PinResult with _$PinResult {
+  factory PinResult.success() = _Success;
+  factory PinResult.failed(int retries, bool authBlocked) = _Failure;
 }

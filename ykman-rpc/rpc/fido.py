@@ -26,7 +26,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-from .base import RpcNode, action, child
+from .base import RpcNode, action, child, RpcException
+from fido2.ctap import CtapError
 from fido2.ctap2 import (
     Ctap2,
     ClientPin,
@@ -40,6 +41,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class PinValidationException(RpcException):
+    def __init__(self, retries, auth_blocked):
+        super().__init__(
+            "pin-validation",
+            "Authentication is required",
+            dict(retries=retries, auth_blocked=auth_blocked),
+        )
+
+
 class Ctap2Node(RpcNode):
     def __init__(self, connection):
         super().__init__()
@@ -47,11 +57,14 @@ class Ctap2Node(RpcNode):
         self._info = self.ctap.info
         self.client_pin = ClientPin(self.ctap)
         self._pin = None
+        self._auth_blocked = False
 
     def get_data(self):
         self._info = self.ctap.get_info()
         logger.debug(f"Info: {self._info}")
-        data = dict(info=asdict(self._info), locked=False)
+        data = dict(
+            info=asdict(self._info), locked=False, auth_blocked=self._auth_blocked
+        )
         if self._info.options.get("clientPin"):
             data["locked"] = self._pin is None
             pin_retries, power_cycle = self.client_pin.get_pin_retries()
@@ -70,31 +83,50 @@ class Ctap2Node(RpcNode):
     def reset(self, params, event, signal):
         self.ctap.reset(event)
         self._pin = None
+        self._auth_blocked = False
         return dict()
+
+    def _handle_pin_error(self, e):
+        if e.code in (
+            CtapError.ERR.PIN_INVALID,
+            CtapError.ERR.PIN_BLOCKED,
+            CtapError.ERR.PIN_AUTH_BLOCKED,
+        ):
+            pin_retries, _ = self.client_pin.get_pin_retries()
+            raise PinValidationException(
+                pin_retries, e.code == CtapError.ERR.PIN_AUTH_BLOCKED
+            )
+        raise e
 
     @action(condition=lambda self: self._info.options["clientPin"])
     def verify_pin(self, params, event, signal):
         pin = params.pop("pin")
-        self.client_pin.get_pin_token(
-            pin, ClientPin.PERMISSION.GET_ASSERTION, "ykman.example.com"
-        )
-        self._pin = pin
-        return dict()
+        try:
+            self.client_pin.get_pin_token(
+                pin, ClientPin.PERMISSION.GET_ASSERTION, "ykman.example.com"
+            )
+            self._pin = pin
+            return dict()
+        except CtapError as e:
+            return self._handle_pin_error(e)
 
     @action
     def set_pin(self, params, event, signal):
         has_pin = self.ctap.get_info().options["clientPin"]
-        if has_pin:
-            self.client_pin.change_pin(
-                params.pop("pin"),
-                params.pop("new_pin"),
-            )
-        else:
-            self.client_pin.set_pin(
-                params.pop("new_pin"),
-            )
-        self._pin = None
-        return dict()
+        try:
+            if has_pin:
+                self.client_pin.change_pin(
+                    params.pop("pin"),
+                    params.pop("new_pin"),
+                )
+            else:
+                self.client_pin.set_pin(
+                    params.pop("new_pin"),
+                )
+            self._pin = None
+            return dict()
+        except CtapError as e:
+            return self._handle_pin_error(e)
 
     @child(condition=lambda self: "bioEnroll" in self._info.options and self._pin)
     def fingerprints(self):
