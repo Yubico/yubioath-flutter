@@ -3,6 +3,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'models.freezed.dart';
 part 'models.g.dart';
 
+enum InteractionEvent { remove, insert, touch }
+
 @freezed
 class FidoState with _$FidoState {
   const FidoState._();

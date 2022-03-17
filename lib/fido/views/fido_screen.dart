@@ -10,6 +10,7 @@ import '../../app/models.dart';
 import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../state.dart';
+import 'reset_dialog.dart';
 
 class FidoScreen extends ConsumerWidget {
   final YubiKeyData deviceData;
@@ -76,12 +77,18 @@ class FidoScreen extends ConsumerWidget {
                       title: Text('Credentials'),
                       subtitle: Text('Manage stored credentials on key'),
                     ),
-                  const ListTile(
-                    leading: CircleAvatar(
+                  ListTile(
+                    leading: const CircleAvatar(
                       child: Icon(Icons.delete_forever),
                     ),
-                    title: Text('Factory reset'),
-                    subtitle: Text('Delete all data and remove PIN'),
+                    title: const Text('Factory reset'),
+                    subtitle: const Text('Delete all data and remove PIN'),
+                    onTap: () async {
+                      await showDialog(
+                        context: context,
+                        builder: (context) => ResetDialog(deviceData.node),
+                      );
+                    },
                   ),
                 ],
               ));

@@ -10,7 +10,7 @@ final fidoStateProvider = StateNotifierProvider.autoDispose
 );
 
 abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
-  Future<void> reset();
+  Stream<InteractionEvent> reset();
   Future<PinResult> unlock(String pin);
   Future<PinResult> setPin(String newPin, {String? oldPin});
 }

@@ -1,12 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/desktop/models.dart';
 
 import '../../app/models.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
+import '../models.dart';
 import '../rpc.dart';
 import '../state.dart';
 
@@ -50,9 +51,30 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
   }
 
   @override
-  Future<void> reset() async {
-    // TODO: implement reset
-    throw UnimplementedError();
+  Stream<InteractionEvent> reset() {
+    final signaler = Signaler();
+    final controller = StreamController<InteractionEvent>();
+
+    controller.onCancel = () {
+      if (!controller.isClosed) {
+        signaler.cancel();
+      }
+    };
+    controller.onListen = () async {
+      try {
+        await _session.command('reset', signal: signaler);
+        await refresh();
+        await controller.sink.close();
+      } catch (e) {
+        controller.sink.addError(e);
+      }
+    };
+    controller.sink.addStream(signaler.signals
+        .where((s) => s.status == 'reset')
+        .map((signal) => InteractionEvent.values
+            .firstWhere((e) => e.name == signal.body['state'])));
+
+    return controller.stream;
   }
 
   @override
@@ -62,6 +84,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
         'pin': oldPin,
         'new_pin': newPin,
       });
+      await refresh();
       return PinResult.success();
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {

@@ -245,7 +245,7 @@ class AbstractDeviceNode(RpcNode):
                             info=asdict(self._info),
                         )
                 except Exception:
-                    logger.error(f"Unable to connect via {conn_type}", exc_info=True)
+                    logger.warning(f"Unable to connect via {conn_type}", exc_info=True)
         raise ValueError("No supported connections")
 
 

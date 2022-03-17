@@ -26,7 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-from .base import RpcNode, action, child, RpcException
+from .base import RpcNode, action, child, RpcException, TimeoutException
 from fido2.ctap import CtapError
 from fido2.ctap2 import (
     Ctap2,
@@ -35,7 +35,14 @@ from fido2.ctap2 import (
     FPBioEnrollment,
     CaptureError,
 )
+from fido2.pcsc import CtapPcscDevice
+from yubikit.core.fido import FidoConnection
+from ykman.hid import list_ctap_devices as list_ctap
+from ykman.pcsc import list_devices as list_ccid
+from smartcard.Exceptions import NoCardException, CardConnectionException
+
 from dataclasses import asdict
+from time import sleep
 import logging
 
 logger = logging.getLogger(__name__)
@@ -48,6 +55,10 @@ class PinValidationException(RpcException):
             "Authentication is required",
             dict(retries=retries, auth_blocked=auth_blocked),
         )
+
+
+def _ctap_id(ctap):
+    return (ctap.info.aaguid, ctap.info.firmware_version)
 
 
 class Ctap2Node(RpcNode):
@@ -79,9 +90,68 @@ class Ctap2Node(RpcNode):
                 data.update(uv_retries=uv_retries)
         return data
 
+    def _prepare_reset_nfc(self, event, signal):
+        reader_name = self.ctap.device._name
+        devices = list_ccid(reader_name)
+        if not devices or devices[0].reader.name != reader_name:
+            raise ValueError("Unable to isolate NFC reader")
+        dev = devices[0]
+        logger.debug(f"Reset over NFC using reader: {dev.reader.name}")
+
+        signal("reset", dict(state="remove"))
+        removed = False
+        while not event.wait(0.5):
+            sleep(0.5)
+            try:
+                with dev.open_connection(FidoConnection):
+                    if removed:
+                        sleep(1.0)  # Wait for the device to settle
+                        return dev.open_connection(FidoConnection)
+            except CardConnectionException:
+                pass  # Expected, ignore
+            except NoCardException:
+                if not removed:
+                    signal("reset", dict(state="insert"))
+                    removed = True
+
+        raise TimeoutException()
+
+    def _prepare_reset_usb(self, event, signal):
+        target = _ctap_id(self.ctap)
+        logger.debug(f"Reset over USB: {target}")
+
+        # TODO: Filter on target
+        n_keys = len(list_ctap())
+        if n_keys > 1:
+            raise ValueError("Only one YubiKey can be connected to perform a reset.")
+
+        signal("reset", dict(state="remove"))
+        removed = False
+        while not event.wait(0.5):
+            sleep(0.5)
+            keys = list_ctap()
+            if not keys:
+                if not removed:
+                    signal("reset", dict(state="insert"))
+                    removed = True
+            elif removed and len(keys) == 1:
+                connection = keys[0].open_connection(FidoConnection)
+                signal("reset", dict(state="touch"))
+                return connection
+
+        raise TimeoutException()
+
     @action
     def reset(self, params, event, signal):
+        if isinstance(self.ctap.device, CtapPcscDevice):
+            connection = self._prepare_reset_nfc(event, signal)
+        else:
+            connection = self._prepare_reset_usb(event, signal)
+
+        logger.debug("Performing reset...")
+        self.ctap = Ctap2(connection)
         self.ctap.reset(event)
+        self._info = self.ctap.get_info()
         self._pin = None
         self._auth_blocked = False
         return dict()
