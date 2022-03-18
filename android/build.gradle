@@ -26,6 +26,8 @@ allprojects {
         buildToolsVersion = "30.0.3"
 
         yubiKitVersion = "2.1.0-SNAPSHOT"
+        junitVersion = "4.13.2"
+        mockitoVersion = "3.9.0"
     }
 }
 

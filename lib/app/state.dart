@@ -94,8 +94,10 @@ class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
                   usbYubiKey: (path, name, pid, info) =>
                       lastDevice == 'serial:${info?.serial}',
                   nfcReader: (path, name) => lastDevice == 'name:$name',
-                ),
-            orElse: () => devices.whereType<UsbYubiKeyNode>().first);
+                ), orElse: () {
+          var usbDevices = devices.whereType<UsbYubiKeyNode>();
+          return usbDevices.isNotEmpty ? usbDevices.first : devices.first;
+        });
       } on StateError {
         state = null;
       }

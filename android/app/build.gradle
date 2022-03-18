@@ -80,4 +80,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
+
+    // testing dependencies
+    testImplementation "junit:junit:$project.junitVersion"
+    testImplementation "org.mockito:mockito-core:$project.mockitoVersion"
 }

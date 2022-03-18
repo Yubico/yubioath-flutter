@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yubico.authenticator.api.Pigeon
 import com.yubico.authenticator.data.device.toJson
+import com.yubico.authenticator.data.oath.calculateSteamCode
 import com.yubico.authenticator.data.oath.idAsString
+import com.yubico.authenticator.data.oath.isSteamCredential
 import com.yubico.authenticator.data.oath.toJson
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -14,6 +16,8 @@ import com.yubico.yubikit.core.Logger
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
+import com.yubico.yubikit.oath.Code
+import com.yubico.yubikit.oath.Credential
 import com.yubico.yubikit.oath.CredentialData
 import com.yubico.yubikit.oath.OathSession
 import com.yubico.yubikit.support.DeviceUtil
@@ -117,7 +121,7 @@ class MainViewModel : ViewModel() {
 
                 val isLocked = isOathSessionLocked(session)
                 if (!isLocked) {
-                    val resultJson = session.calculateCodes()
+                    val resultJson = calculateOathCodes(session)
                         .toJson(session.deviceId)
                         .toString()
                     it.resume(resultJson)
@@ -327,6 +331,19 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    private fun calculateOathCodes(session: OathSession): Map<Credential, Code> {
+        val timeStamp = System.currentTimeMillis()
+        return session.calculateCodes(timeStamp).map { (credential, code) ->
+            Pair(credential, if (credential.isSteamCredential()) {
+                credential.calculateSteamCode(timeStamp) { credentialId, challenge ->
+                    session.calculateResponse(credentialId, challenge)
+                }
+            } else {
+                code
+            })
+        }.toMap()
+    }
+
     fun refreshOathCodes(result: Pigeon.Result<String>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -336,7 +353,7 @@ class MainViewModel : ViewModel() {
 
                 useOathSession("Refresh codes", false) {
                     withUnlockedSession(it) { session ->
-                        val resultJson = session.calculateCodes()
+                        val resultJson = calculateOathCodes(session)
                             .toJson(session.deviceId)
                             .toString()
                         result.success(resultJson)
@@ -383,7 +400,7 @@ class MainViewModel : ViewModel() {
                     val isLocked = isOathSessionLocked(it)
 
                     if (!isLocked) {
-                        codes = it.calculateCodes()
+                        codes = calculateOathCodes(it)
                             .toJson(it.deviceId)
                             .toString()
                     }
