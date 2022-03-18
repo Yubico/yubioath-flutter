@@ -121,20 +121,25 @@ class Ctap2Node(RpcNode):
         logger.debug(f"Reset over USB: {dev_path}")
 
         signal("reset", dict(state="remove"))
-        removed = False
+        removed_state = None
         while not event.wait(0.5):
             sleep(0.5)
             keys = list_ctap()
             present = {k.descriptor.path for k in keys}
-            if dev_path not in present:
-                if not removed:
+            if removed_state is None:
+                if dev_path not in present:
                     signal("reset", dict(state="insert"))
-                    removed = True
-            elif removed:
-                key = next(k for k in keys if k.descriptor.path == dev_path)
-                connection = key.open_connection(FidoConnection)
-                signal("reset", dict(state="touch"))
-                return connection
+                    removed_state = present
+            else:
+                added = present - removed_state
+                if len(added) == 1:
+                    dev_path = next(iter(added))  # Path may have changed
+                    key = next(k for k in keys if k.descriptor.path == dev_path)
+                    connection = key.open_connection(FidoConnection)
+                    signal("reset", dict(state="touch"))
+                    return connection
+                elif len(added) > 1:
+                    raise ValueError("Multiple YubiKeys inserted")
 
         raise TimeoutException()
 
