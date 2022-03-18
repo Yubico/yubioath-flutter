@@ -101,7 +101,6 @@ class Ctap2Node(RpcNode):
         signal("reset", dict(state="remove"))
         removed = False
         while not event.wait(0.5):
-            sleep(0.5)
             try:
                 with dev.open_connection(FidoConnection):
                     if removed:
@@ -123,7 +122,6 @@ class Ctap2Node(RpcNode):
         signal("reset", dict(state="remove"))
         removed_state = None
         while not event.wait(0.5):
-            sleep(0.5)
             keys = list_ctap()
             present = {k.descriptor.path for k in keys}
             if removed_state is None:
