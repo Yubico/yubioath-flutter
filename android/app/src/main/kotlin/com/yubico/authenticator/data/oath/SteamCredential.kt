@@ -3,6 +3,7 @@ package com.yubico.authenticator.data.oath
 import com.yubico.yubikit.oath.Code
 import com.yubico.yubikit.oath.Credential
 import com.yubico.yubikit.oath.OathType
+import java.nio.ByteBuffer
 import kotlin.experimental.and
 
 /**
@@ -40,16 +41,12 @@ private fun format(code: ByteArray): String {
     val steamCharTable = "23456789BCDFGHJKMNPQRTVWXY"
     val charTableLen = steamCharTable.length
     val offset = code[code.size - 1].and(0x0f).toInt()
-    var number = code.copyOfRange(offset, offset + 4).foldIndexed(0u) { index, acc, byte ->
-        acc or (byte.toUByte().toUInt() shl (8 * (3 - index)))
-    }.and(0x7fffffffu).toInt()
+    var number = ByteBuffer.wrap(code, offset, 4).int.and(0x7fffffff)
     return String(CharArray(5) {
         steamCharTable[number % charTableLen].also { number /= charTableLen }
     })
 }
 
-private fun Long.toByteArray() = ByteArray(8) { i ->
-    ((this shr ((7 - i) * 8)) and 0xff).toByte()
-}
+private fun Long.toByteArray() = ByteBuffer.allocate(8).putLong(this).array()
 
 
