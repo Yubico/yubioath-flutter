@@ -1,16 +1,16 @@
 package com.yubico.authenticator.data.oath
 
 import com.yubico.yubikit.oath.Credential
+import com.yubico.yubikit.oath.OathSession
 import com.yubico.yubikit.oath.OathType
 import org.junit.Assert
 import org.junit.Test
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
+import org.mockito.Mockito.*
 
 class SteamCredentialTest {
 
     @Test
-    fun `recognize steam credential`() {
+    fun `recognize Steam credential`() {
         val c = mock(Credential::class.java)
         `when`(c.oathType).thenReturn(OathType.TOTP)
         `when`(c.issuer).thenReturn("Steam")
@@ -27,62 +27,74 @@ class SteamCredentialTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun `throw for non-Steam credential`() {
+        val s = mock(OathSession::class.java)
+
         val c = mock(Credential::class.java)
         `when`(c.oathType).thenReturn(OathType.HOTP)
         `when`(c.issuer).thenReturn("Steam")
 
-        c.calculateSteamCode(0L) { _, _ ->
-            byteArrayOf(0) // Code(byteArrayOf(0), 0, 0)
-        }
+        s.calculateSteamCode(c)
     }
 
     @Test
-    fun `code validity is correct`() {
-        val c = mock(Credential::class.java)
-        `when`(c.oathType).thenReturn(OathType.TOTP)
-        `when`(c.issuer).thenReturn("Steam")
-        `when`(c.accountName).thenReturn("accountName")
-        `when`(c.id).thenReturn("id".toByteArray())
-        `when`(c.period).thenReturn(30)
+    fun `calculate validity time slot`() {
+        val s = sessionWith("6ad0d2d1674ad2a7c725c075901977f195bb4649")
+        val c = steamCredential()
 
-        val ms = 100_000L
+        val time = 100_000L
 
-        val code = c.calculateSteamCode(ms) { _, _ ->
-            "6ad0d2d1674ad2a7c725c075901977f195bb4649".toByteArray()
-        }
+        val code = s.calculateSteamCode(c, time)
 
         Assert.assertEquals(90_000, code.validFrom)
         Assert.assertEquals(120_000, code.validUntil)
+    }
+
+    @Test
+    fun `calculate Steam code`() {
+
+        val c = steamCredential()
+
+        Assert.assertEquals(
+            "MV32B",
+            sessionWith("6ad0d2d1674ad2a7c725c075901977f195bb4649")
+                .calculateSteamCode(c).value
+        )
+        Assert.assertEquals(
+            "V8YBM",
+            sessionWith("c5f852852f839924171b6cf6d272a1467bc62958")
+                .calculateSteamCode(c).value
+        )
+        Assert.assertEquals(
+            "NN6VX",
+            sessionWith("0a7053666137e5d2c8e96e0b2b52d5b1f3be1cf8")
+                .calculateSteamCode(c).value
+        )
+        Assert.assertEquals(
+            "RB5N8",
+            sessionWith("ed6d29417dfc8c0b800a1891181632802fd965c9")
+                .calculateSteamCode(c).value
+        )
     }
 
     private fun String.fromHexString(): ByteArray = ByteArray(this.length / 2) {
         (this[it * 2 + 1].digitToInt(16) + (this[it * 2].digitToInt(16) * 16)).toByte()
     }
 
-    @Test
-    fun `code is correct`() {
-        val c = mock(Credential::class.java)
-        `when`(c.oathType).thenReturn(OathType.TOTP)
-        `when`(c.issuer).thenReturn("Steam")
-        `when`(c.accountName).thenReturn("accountName")
-        `when`(c.id).thenReturn("id".toByteArray())
-        `when`(c.period).thenReturn(30)
+    // OathSession always calculating specific response
+    private fun sessionWith(response: String) =
+        mock(OathSession::class.java).also {
+            `when`(
+                it.calculateResponse(
+                    isA(ByteArray::class.java),
+                    isA(ByteArray::class.java)
+                )
+            ).thenReturn(response.fromHexString())
+        }
 
-        Assert.assertEquals(
-            "MV32B", c.calculateSteamCode(0L)
-            { _, _ -> "6ad0d2d1674ad2a7c725c075901977f195bb4649".fromHexString() }.value
-        )
-        Assert.assertEquals(
-            "V8YBM", c.calculateSteamCode(0L)
-            { _, _ -> "c5f852852f839924171b6cf6d272a1467bc62958".fromHexString() }.value
-        )
-        Assert.assertEquals(
-            "NN6VX", c.calculateSteamCode(0L)
-            { _, _ -> "0a7053666137e5d2c8e96e0b2b52d5b1f3be1cf8".fromHexString() }.value
-        )
-        Assert.assertEquals(
-            "RB5N8", c.calculateSteamCode(0L)
-            { _, _ -> "ed6d29417dfc8c0b800a1891181632802fd965c9".fromHexString() }.value
-        )
+    // valid Steam Credential mock
+    private fun steamCredential() = mock(Credential::class.java).also {
+        `when`(it.oathType).thenReturn(OathType.TOTP)
+        `when`(it.issuer).thenReturn("Steam")
+        `when`(it.id).thenReturn("id".toByteArray())
     }
 }

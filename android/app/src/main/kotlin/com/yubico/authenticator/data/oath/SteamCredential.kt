@@ -2,6 +2,7 @@ package com.yubico.authenticator.data.oath
 
 import com.yubico.yubikit.oath.Code
 import com.yubico.yubikit.oath.Credential
+import com.yubico.yubikit.oath.OathSession
 import com.yubico.yubikit.oath.OathType
 import java.nio.ByteBuffer
 import kotlin.experimental.and
@@ -13,35 +14,34 @@ fun Credential.isSteamCredential(): Boolean =
     issuer == "Steam" && oathType == OathType.TOTP
 
 /**
- * @return Five character TOTP code for Steam
- * @param timestamp timestamp to compute the Steam code for
- * @param calculateResponse computes response for credential id and challenge based on the Steam
- *                          properties of the timestamp
+ * @return Code with value formatted for use with Steam
+ * @param credential credential that will get new Steam code
+ * @param timestamp the timestamp which is used for TOTP calculation
  * @throws IllegalArgumentException in case when the credential is not a Steam credential
  */
-fun Credential.calculateSteamCode(
-    timestamp: Long,
-    calculateResponse: (credentialId: ByteArray, challenge: ByteArray) -> ByteArray
+fun OathSession.calculateSteamCode(
+    credential: Credential,
+    timestamp: Long = 0,
 ): Code {
     val timeSlotMs = 30_000
-    if (!isSteamCredential()) {
+    if (!credential.isSteamCredential()) {
         throw IllegalArgumentException("This is not steam credential")
     }
 
     val currentTimeSlot = timestamp / timeSlotMs
 
     return Code(
-        format(calculateResponse(id, currentTimeSlot.toByteArray())),
+        calculateResponse(credential.id, currentTimeSlot.toByteArray()).formatAsSteam(),
         currentTimeSlot * timeSlotMs,
         (currentTimeSlot + 1) * timeSlotMs
     )
 }
 
-private fun format(code: ByteArray): String {
+private fun ByteArray.formatAsSteam(): String {
     val steamCharTable = "23456789BCDFGHJKMNPQRTVWXY"
     val charTableLen = steamCharTable.length
-    val offset = code[code.size - 1].and(0x0f).toInt()
-    var number = ByteBuffer.wrap(code, offset, 4).int.and(0x7fffffff)
+    val offset = this[this.size - 1].and(0x0f).toInt()
+    var number = ByteBuffer.wrap(this, offset, 4).int.and(0x7fffffff)
     return String(CharArray(5) {
         steamCharTable[number % charTableLen].also { number /= charTableLen }
     })

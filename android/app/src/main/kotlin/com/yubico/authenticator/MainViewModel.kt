@@ -335,9 +335,7 @@ class MainViewModel : ViewModel() {
         val timeStamp = System.currentTimeMillis()
         return session.calculateCodes(timeStamp).map { (credential, code) ->
             Pair(credential, if (credential.isSteamCredential()) {
-                credential.calculateSteamCode(timeStamp) { credentialId, challenge ->
-                    session.calculateResponse(credentialId, challenge)
-                }
+                session.calculateSteamCode(credential, timeStamp)
             } else {
                 code
             })
