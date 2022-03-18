@@ -44,7 +44,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   Widget build(BuildContext context) {
     // If current device changes, we need to pop back to the main Page.
     ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop();
+      // Prevent over-popping if reset causes currentDevice to change.
+      Navigator.of(context).popUntil((route) => route.isFirst);
     });
 
     return ResponsiveDialog(
@@ -79,23 +80,27 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                   _subscription = ref
                       .read(fidoStateProvider(widget.node.path).notifier)
                       .reset()
-                      .listen(
-                    (event) {
-                      setState(() {
-                        _interaction = event;
-                      });
-                    },
-                    onDone: () {
-                      _subscription = null;
-                      Navigator.of(context).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('FIDO application reset'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                  );
+                      .listen((event) {
+                    setState(() {
+                      _interaction = event;
+                    });
+                  }, onDone: () {
+                    _subscription = null;
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('FIDO application reset'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }, onError: (_) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Error performing reset'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  });
                 }
               : null,
           child: const Text('Reset'),
