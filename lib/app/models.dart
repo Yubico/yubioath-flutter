@@ -98,6 +98,8 @@ class DevicePath {
 
   @override
   int get hashCode => Object.hashAll(segments);
+
+  String get key => segments.join('/');
 }
 
 @freezed

@@ -117,25 +117,22 @@ class Ctap2Node(RpcNode):
         raise TimeoutException()
 
     def _prepare_reset_usb(self, event, signal):
-        target = _ctap_id(self.ctap)
-        logger.debug(f"Reset over USB: {target}")
-
-        # TODO: Filter on target
-        n_keys = len(list_ctap())
-        if n_keys > 1:
-            raise ValueError("Only one YubiKey can be connected to perform a reset.")
+        dev_path = self.ctap.device.descriptor.path
+        logger.debug(f"Reset over USB: {dev_path}")
 
         signal("reset", dict(state="remove"))
         removed = False
         while not event.wait(0.5):
             sleep(0.5)
             keys = list_ctap()
-            if not keys:
+            present = {k.descriptor.path for k in keys}
+            if dev_path not in present:
                 if not removed:
                     signal("reset", dict(state="insert"))
                     removed = True
-            elif removed and len(keys) == 1:
-                connection = keys[0].open_connection(FidoConnection)
+            elif removed:
+                key = next(k for k in keys if k.descriptor.path == dev_path)
+                connection = key.open_connection(FidoConnection)
                 signal("reset", dict(state="touch"))
                 return connection
 
@@ -143,6 +140,7 @@ class Ctap2Node(RpcNode):
 
     @action
     def reset(self, params, event, signal):
+        target = _ctap_id(self.ctap)
         if isinstance(self.ctap.device, CtapPcscDevice):
             connection = self._prepare_reset_nfc(event, signal)
         else:
@@ -150,6 +148,8 @@ class Ctap2Node(RpcNode):
 
         logger.debug("Performing reset...")
         self.ctap = Ctap2(connection)
+        if target != _ctap_id(self.ctap):
+            raise ValueError("Re-inserted YubiKey does not match initial device")
         self.ctap.reset(event)
         self._info = self.ctap.get_info()
         self._pin = None

@@ -52,8 +52,13 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
 
   @override
   Stream<InteractionEvent> reset() {
-    final signaler = Signaler();
     final controller = StreamController<InteractionEvent>();
+    final signaler = Signaler();
+    signaler.signals
+        .where((s) => s.status == 'reset')
+        .map((signal) => InteractionEvent.values
+            .firstWhere((e) => e.name == signal.body['state']))
+        .listen(controller.sink.add);
 
     controller.onCancel = () {
       if (!controller.isClosed) {
@@ -69,10 +74,6 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
         controller.sink.addError(e);
       }
     };
-    controller.sink.addStream(signaler.signals
-        .where((s) => s.status == 'reset')
-        .map((signal) => InteractionEvent.values
-            .firstWhere((e) => e.name == signal.body['state'])));
 
     return controller.stream;
   }
