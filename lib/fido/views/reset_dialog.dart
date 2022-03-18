@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/core/models.dart';
 
+import '../../core/models.dart';
 import '../state.dart';
 import '../../app/views/responsive_dialog.dart';
 import '../../fido/models.dart';

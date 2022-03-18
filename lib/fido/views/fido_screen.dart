@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/desktop/state.dart';
-import 'package:yubico_authenticator/fido/views/pin_dialog.dart';
-import 'package:yubico_authenticator/management/models.dart';
 
 import '../../app/models.dart';
 import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
+import '../../desktop/state.dart';
+import '../../management/models.dart';
 import '../state.dart';
+import 'pin_dialog.dart';
 import 'reset_dialog.dart';
 
 class FidoScreen extends ConsumerWidget {
