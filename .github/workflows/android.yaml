@@ -36,7 +36,12 @@ jobs:
         with:
           path: 'app'
 
-      - name: Run tests
+      - name: Run android tests
+        run: |
+          ./gradlew test
+        working-directory: ./app/android
+
+      - name: Run flutter tests
         run: |
           flutter test
           flutter analyze
