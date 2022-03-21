@@ -1,12 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import '../../app/models.dart';
-import '../../core/models.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
+import '../models.dart';
 import '../rpc.dart';
 import '../state.dart';
 
@@ -50,19 +51,53 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
   }
 
   @override
-  Future<void> reset() {
-    // TODO: implement reset
-    throw UnimplementedError();
+  Stream<InteractionEvent> reset() {
+    final controller = StreamController<InteractionEvent>();
+    final signaler = Signaler();
+    signaler.signals
+        .where((s) => s.status == 'reset')
+        .map((signal) => InteractionEvent.values
+            .firstWhere((e) => e.name == signal.body['state']))
+        .listen(controller.sink.add);
+
+    controller.onCancel = () {
+      if (!controller.isClosed) {
+        signaler.cancel();
+      }
+    };
+    controller.onListen = () async {
+      try {
+        await _session.command('reset', signal: signaler);
+        await refresh();
+        await controller.sink.close();
+      } catch (e) {
+        controller.sink.addError(e);
+      }
+    };
+
+    return controller.stream;
   }
 
   @override
-  Future<void> setPin(String newPin, {String? oldPin}) {
-    // TODO: implement setPin
-    throw UnimplementedError();
+  Future<PinResult> setPin(String newPin, {String? oldPin}) async {
+    try {
+      await _session.command('set_pin', params: {
+        'pin': oldPin,
+        'new_pin': newPin,
+      });
+      await refresh();
+      return PinResult.success();
+    } on RpcError catch (e) {
+      if (e.status == 'pin-validation') {
+        return PinResult.failed(e.body['retries'], e.body['auth_blocked']);
+      }
+      rethrow;
+    }
+    // TODO: Update state
   }
 
   @override
-  Future<void> unlock(String pin) {
+  Future<PinResult> unlock(String pin) {
     // TODO: implement unlock
     throw UnimplementedError();
   }

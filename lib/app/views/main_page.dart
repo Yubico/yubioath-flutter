@@ -16,22 +16,22 @@ import '../../management/views/management_screen.dart';
 class MainPage extends ConsumerWidget {
   const MainPage({Key? key}) : super(key: key);
 
-  Widget _buildSubPage(Application subPage, YubiKeyData device) {
-    if (subPage.getAvailability(device) != Availability.enabled) {
+  Widget _buildSubPage(Application app, YubiKeyData deviceData) {
+    if (app.getAvailability(deviceData) != Availability.enabled) {
       return const Center(
         child: Text('This application is disabled'),
       );
     }
 
-    switch (subPage) {
+    switch (app) {
       case Application.oath:
-        return OathScreen(device);
+        return OathScreen(deviceData);
       case Application.management:
-        return ManagementScreen(device);
+        return ManagementScreen(deviceData);
       case Application.fido:
-        return FidoScreen(device);
+        return FidoScreen(deviceData);
       default:
-        return DeviceInfoScreen(device);
+        return DeviceInfoScreen(deviceData);
     }
   }
 

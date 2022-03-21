@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import '../app/models.dart';
+import '../core/models.dart';
 import '../management/models.dart';
 
 final _log = Logger('yubikeyDataCommandProvider');
@@ -32,7 +33,11 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
 
       DeviceNode deviceNode = isNfc
           ? DeviceNode.nfcReader(DevicePath([]), name)
-          : DeviceNode.usbYubiKey(DevicePath([]), name, -1, deviceInfo);
+          : DeviceNode.usbYubiKey(
+              DevicePath([]),
+              name,
+              /*TODO: replace with correct PID*/ UsbPid.yk4OtpFidoCcid,
+              deviceInfo);
       state = YubiKeyData(deviceNode, name, deviceInfo);
     } on Exception catch (e) {
       _log.config('Invalid data for yubikey: $input. $e');

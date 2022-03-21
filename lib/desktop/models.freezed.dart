@@ -651,14 +651,23 @@ abstract class RpcError implements RpcResponse {
       throw _privateConstructorUsedError;
 }
 
+RpcState _$RpcStateFromJson(Map<String, dynamic> json) {
+  return _RpcState.fromJson(json);
+}
+
 /// @nodoc
 class _$RpcStateTearOff {
   const _$RpcStateTearOff();
 
-  _RpcState call(String version) {
+  _RpcState call(String version, bool isAdmin) {
     return _RpcState(
       version,
+      isAdmin,
     );
+  }
+
+  RpcState fromJson(Map<String, Object?> json) {
+    return RpcState.fromJson(json);
   }
 }
 
@@ -668,7 +677,9 @@ const $RpcState = _$RpcStateTearOff();
 /// @nodoc
 mixin _$RpcState {
   String get version => throw _privateConstructorUsedError;
+  bool get isAdmin => throw _privateConstructorUsedError;
 
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $RpcStateCopyWith<RpcState> get copyWith =>
       throw _privateConstructorUsedError;
@@ -678,7 +689,7 @@ mixin _$RpcState {
 abstract class $RpcStateCopyWith<$Res> {
   factory $RpcStateCopyWith(RpcState value, $Res Function(RpcState) then) =
       _$RpcStateCopyWithImpl<$Res>;
-  $Res call({String version});
+  $Res call({String version, bool isAdmin});
 }
 
 /// @nodoc
@@ -692,12 +703,17 @@ class _$RpcStateCopyWithImpl<$Res> implements $RpcStateCopyWith<$Res> {
   @override
   $Res call({
     Object? version = freezed,
+    Object? isAdmin = freezed,
   }) {
     return _then(_value.copyWith(
       version: version == freezed
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as String,
+      isAdmin: isAdmin == freezed
+          ? _value.isAdmin
+          : isAdmin // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -707,7 +723,7 @@ abstract class _$RpcStateCopyWith<$Res> implements $RpcStateCopyWith<$Res> {
   factory _$RpcStateCopyWith(_RpcState value, $Res Function(_RpcState) then) =
       __$RpcStateCopyWithImpl<$Res>;
   @override
-  $Res call({String version});
+  $Res call({String version, bool isAdmin});
 }
 
 /// @nodoc
@@ -722,27 +738,37 @@ class __$RpcStateCopyWithImpl<$Res> extends _$RpcStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? version = freezed,
+    Object? isAdmin = freezed,
   }) {
     return _then(_RpcState(
       version == freezed
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as String,
+      isAdmin == freezed
+          ? _value.isAdmin
+          : isAdmin // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
 
 /// @nodoc
-
+@JsonSerializable()
 class _$_RpcState implements _RpcState {
-  const _$_RpcState(this.version);
+  const _$_RpcState(this.version, this.isAdmin);
+
+  factory _$_RpcState.fromJson(Map<String, dynamic> json) =>
+      _$$_RpcStateFromJson(json);
 
   @override
   final String version;
+  @override
+  final bool isAdmin;
 
   @override
   String toString() {
-    return 'RpcState(version: $version)';
+    return 'RpcState(version: $version, isAdmin: $isAdmin)';
   }
 
   @override
@@ -750,24 +776,36 @@ class _$_RpcState implements _RpcState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _RpcState &&
-            const DeepCollectionEquality().equals(other.version, version));
+            const DeepCollectionEquality().equals(other.version, version) &&
+            const DeepCollectionEquality().equals(other.isAdmin, isAdmin));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(version));
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(version),
+      const DeepCollectionEquality().hash(isAdmin));
 
   @JsonKey(ignore: true)
   @override
   _$RpcStateCopyWith<_RpcState> get copyWith =>
       __$RpcStateCopyWithImpl<_RpcState>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_RpcStateToJson(this);
+  }
 }
 
 abstract class _RpcState implements RpcState {
-  const factory _RpcState(String version) = _$_RpcState;
+  const factory _RpcState(String version, bool isAdmin) = _$_RpcState;
+
+  factory _RpcState.fromJson(Map<String, dynamic> json) = _$_RpcState.fromJson;
 
   @override
   String get version;
+  @override
+  bool get isAdmin;
   @override
   @JsonKey(ignore: true)
   _$RpcStateCopyWith<_RpcState> get copyWith =>

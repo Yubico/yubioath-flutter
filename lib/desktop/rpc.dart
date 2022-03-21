@@ -139,7 +139,12 @@ class RpcSession {
         _log.fine('RECV', jsonEncode(response));
         response.map(
           signal: (signal) {
-            request.signal?._recv.sink.add(signal);
+            final signaler = request.signal;
+            if (signaler != null) {
+              signaler._recv.sink.add(signal);
+            } else {
+              _log.warning('Received unhandled signal: $signal');
+            }
           },
           success: (success) {
             request.completer.complete(success.body);

@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/models.dart';
-import '../core/models.dart';
 import '../core/state.dart';
 import 'models.dart';
 
@@ -11,7 +10,7 @@ final fidoStateProvider = StateNotifierProvider.autoDispose
 );
 
 abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
-  Future<void> reset();
-  Future<void> unlock(String pin);
-  Future<void> setPin(String newPin, {String? oldPin});
+  Stream<InteractionEvent> reset();
+  Future<PinResult> unlock(String pin);
+  Future<PinResult> setPin(String newPin, {String? oldPin});
 }

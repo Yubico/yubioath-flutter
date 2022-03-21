@@ -4,9 +4,14 @@ class ResponsiveDialog extends StatelessWidget {
   final Widget? title;
   final Widget child;
   final List<Widget> actions;
+  final Function()? onCancel;
 
   const ResponsiveDialog(
-      {Key? key, required this.child, this.title, this.actions = const []})
+      {Key? key,
+      required this.child,
+      this.title,
+      this.actions = const [],
+      this.onCancel})
       : super(key: key);
 
   @override
@@ -20,6 +25,12 @@ class ResponsiveDialog extends StatelessWidget {
                 appBar: AppBar(
                   title: title,
                   actions: actions,
+                  leading: BackButton(
+                    onPressed: () {
+                      onCancel?.call();
+                      Navigator.of(context).pop();
+                    },
+                  ),
                 ),
                 body: SingleChildScrollView(
                   padding: const EdgeInsets.all(18.0),
@@ -40,6 +51,7 @@ class ResponsiveDialog extends StatelessWidget {
               TextButton(
                 child: const Text('Cancel'),
                 onPressed: () {
+                  onCancel?.call();
                   Navigator.of(context).pop();
                 },
               ),

@@ -26,7 +26,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-from .base import RpcNode, action, child
+from .base import RpcNode, action, child, RpcException, TimeoutException
+from fido2.ctap import CtapError
 from fido2.ctap2 import (
     Ctap2,
     ClientPin,
@@ -34,10 +35,30 @@ from fido2.ctap2 import (
     FPBioEnrollment,
     CaptureError,
 )
+from fido2.pcsc import CtapPcscDevice
+from yubikit.core.fido import FidoConnection
+from ykman.hid import list_ctap_devices as list_ctap
+from ykman.pcsc import list_devices as list_ccid
+from smartcard.Exceptions import NoCardException, CardConnectionException
+
 from dataclasses import asdict
+from time import sleep
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+class PinValidationException(RpcException):
+    def __init__(self, retries, auth_blocked):
+        super().__init__(
+            "pin-validation",
+            "Authentication is required",
+            dict(retries=retries, auth_blocked=auth_blocked),
+        )
+
+
+def _ctap_id(ctap):
+    return (ctap.info.aaguid, ctap.info.firmware_version)
 
 
 class Ctap2Node(RpcNode):
@@ -47,11 +68,14 @@ class Ctap2Node(RpcNode):
         self._info = self.ctap.info
         self.client_pin = ClientPin(self.ctap)
         self._pin = None
+        self._auth_blocked = False
 
     def get_data(self):
         self._info = self.ctap.get_info()
         logger.debug(f"Info: {self._info}")
-        data = dict(info=asdict(self._info), locked=False)
+        data = dict(
+            info=asdict(self._info), locked=False, auth_blocked=self._auth_blocked
+        )
         if self._info.options.get("clientPin"):
             data["locked"] = self._pin is None
             pin_retries, power_cycle = self.client_pin.get_pin_retries()
@@ -66,35 +90,116 @@ class Ctap2Node(RpcNode):
                 data.update(uv_retries=uv_retries)
         return data
 
+    def _prepare_reset_nfc(self, event, signal):
+        reader_name = self.ctap.device._name
+        devices = list_ccid(reader_name)
+        if not devices or devices[0].reader.name != reader_name:
+            raise ValueError("Unable to isolate NFC reader")
+        dev = devices[0]
+        logger.debug(f"Reset over NFC using reader: {dev.reader.name}")
+
+        signal("reset", dict(state="remove"))
+        removed = False
+        while not event.wait(0.5):
+            try:
+                with dev.open_connection(FidoConnection):
+                    if removed:
+                        sleep(1.0)  # Wait for the device to settle
+                        return dev.open_connection(FidoConnection)
+            except CardConnectionException:
+                pass  # Expected, ignore
+            except NoCardException:
+                if not removed:
+                    signal("reset", dict(state="insert"))
+                    removed = True
+
+        raise TimeoutException()
+
+    def _prepare_reset_usb(self, event, signal):
+        dev_path = self.ctap.device.descriptor.path
+        logger.debug(f"Reset over USB: {dev_path}")
+
+        signal("reset", dict(state="remove"))
+        removed_state = None
+        while not event.wait(0.5):
+            keys = list_ctap()
+            present = {k.descriptor.path for k in keys}
+            if removed_state is None:
+                if dev_path not in present:
+                    signal("reset", dict(state="insert"))
+                    removed_state = present
+            else:
+                added = present - removed_state
+                if len(added) == 1:
+                    dev_path = next(iter(added))  # Path may have changed
+                    key = next(k for k in keys if k.descriptor.path == dev_path)
+                    connection = key.open_connection(FidoConnection)
+                    signal("reset", dict(state="touch"))
+                    return connection
+                elif len(added) > 1:
+                    raise ValueError("Multiple YubiKeys inserted")
+
+        raise TimeoutException()
+
     @action
     def reset(self, params, event, signal):
+        target = _ctap_id(self.ctap)
+        if isinstance(self.ctap.device, CtapPcscDevice):
+            connection = self._prepare_reset_nfc(event, signal)
+        else:
+            connection = self._prepare_reset_usb(event, signal)
+
+        logger.debug("Performing reset...")
+        self.ctap = Ctap2(connection)
+        if target != _ctap_id(self.ctap):
+            raise ValueError("Re-inserted YubiKey does not match initial device")
         self.ctap.reset(event)
+        self._info = self.ctap.get_info()
         self._pin = None
+        self._auth_blocked = False
         return dict()
+
+    def _handle_pin_error(self, e):
+        if e.code in (
+            CtapError.ERR.PIN_INVALID,
+            CtapError.ERR.PIN_BLOCKED,
+            CtapError.ERR.PIN_AUTH_BLOCKED,
+        ):
+            pin_retries, _ = self.client_pin.get_pin_retries()
+            raise PinValidationException(
+                pin_retries, e.code == CtapError.ERR.PIN_AUTH_BLOCKED
+            )
+        raise e
 
     @action(condition=lambda self: self._info.options["clientPin"])
     def verify_pin(self, params, event, signal):
         pin = params.pop("pin")
-        self.client_pin.get_pin_token(
-            pin, ClientPin.PERMISSION.GET_ASSERTION, "ykman.example.com"
-        )
-        self._pin = pin
-        return dict()
+        try:
+            self.client_pin.get_pin_token(
+                pin, ClientPin.PERMISSION.GET_ASSERTION, "ykman.example.com"
+            )
+            self._pin = pin
+            return dict()
+        except CtapError as e:
+            return self._handle_pin_error(e)
 
     @action
     def set_pin(self, params, event, signal):
         has_pin = self.ctap.get_info().options["clientPin"]
-        if has_pin:
-            self.client_pin.change_pin(
-                params.pop("pin"),
-                params.pop("new_pin"),
-            )
-        else:
-            self.client_pin.set_pin(
-                params.pop("new_pin"),
-            )
-        self._pin = None
-        return dict()
+        try:
+            if has_pin:
+                self.client_pin.change_pin(
+                    params.pop("pin"),
+                    params.pop("new_pin"),
+                )
+            else:
+                self.client_pin.set_pin(
+                    params.pop("new_pin"),
+                )
+            self._pin = None
+            return dict()
+        except CtapError as e:
+            return self._handle_pin_error(e)
 
     @child(condition=lambda self: "bioEnroll" in self._info.options and self._pin)
     def fingerprints(self):

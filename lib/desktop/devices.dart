@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
+import '../core/models.dart';
 import '../management/models.dart';
 import 'models.dart';
 import 'rpc.dart';
@@ -63,7 +64,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
       var scan = await _rpc.command('scan', ['usb']);
       final pids = {
         for (var e in (scan['pids'] as Map).entries)
-          int.parse(e.key): e.value as int
+          UsbPids.fromValue(int.parse(e.key)): e.value as int
       };
       final numDevices = pids.values.fold<int>(0, (a, b) => a + b);
       if (_usbState != scan['state'] || state.length != numDevices) {
@@ -76,7 +77,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
           final path = ['usb', id];
           final deviceResult = await _rpc.command('get', path);
           final deviceData = deviceResult['data'];
-          final pid = deviceData['pid'] as int;
+          final pid = UsbPids.fromValue(deviceData['pid'] as int);
           usbDevices.add(DeviceNode.usbYubiKey(
             DevicePath(path),
             deviceData['name'],
@@ -92,7 +93,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
             for (var i = 0; i < count; i++) {
               usbDevices.add(DeviceNode.usbYubiKey(
                   DevicePath(['invalid', '$pid-$i']),
-                  'YubiKey ($pid)',
+                  pid.displayName,
                   pid,
                   null) as UsbYubiKeyNode);
             }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/models.dart';
 import '../../management/models.dart';
 
 const _imagesForName = {

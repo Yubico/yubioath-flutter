@@ -42,3 +42,14 @@ Map<String, dynamic> _$$RpcErrorToJson(_$RpcError instance) =>
       'body': instance.body,
       'kind': instance.$type,
     };
+
+_$_RpcState _$$_RpcStateFromJson(Map<String, dynamic> json) => _$_RpcState(
+      json['version'] as String,
+      json['is_admin'] as bool,
+    );
+
+Map<String, dynamic> _$$_RpcStateToJson(_$_RpcState instance) =>
+    <String, dynamic>{
+      'version': instance.version,
+      'is_admin': instance.isAdmin,
+    };

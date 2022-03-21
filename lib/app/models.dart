@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../management/models.dart';
+import '../core/models.dart';
 
 part 'models.freezed.dart';
+
+const _listEquality = ListEquality();
 
 enum Availability { enabled, disabled, unsupported }
 
@@ -72,12 +75,17 @@ extension Applications on Application {
 }
 
 @freezed
+class ApplicationStateResult<T> with _$ApplicationStateResult {
+  factory ApplicationStateResult.none() = _None;
+  factory ApplicationStateResult.failure(String reason) = _Failure;
+  factory ApplicationStateResult.success(T state) = _Success;
+}
+
+@freezed
 class YubiKeyData with _$YubiKeyData {
   factory YubiKeyData(DeviceNode node, String name, DeviceInfo info) =
       _YubiKeyData;
 }
-
-const _listEquality = ListEquality();
 
 class DevicePath {
   final List<String> segments;
@@ -90,13 +98,16 @@ class DevicePath {
 
   @override
   int get hashCode => Object.hashAll(segments);
+
+  String get key => segments.join('/');
 }
 
 @freezed
 class DeviceNode with _$DeviceNode {
   const DeviceNode._();
   factory DeviceNode.usbYubiKey(
-      DevicePath path, String name, int pid, DeviceInfo? info) = UsbYubiKeyNode;
+          DevicePath path, String name, UsbPid pid, DeviceInfo? info) =
+      UsbYubiKeyNode;
   factory DeviceNode.nfcReader(DevicePath path, String name) = NfcReaderNode;
 
   Transport get transport =>

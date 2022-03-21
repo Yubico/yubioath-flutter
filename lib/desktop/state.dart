@@ -31,14 +31,14 @@ final rpcStateProvider = StateNotifierProvider<_RpcStateNotifier, RpcState>(
 
 class _RpcStateNotifier extends StateNotifier<RpcState> {
   final RpcSession rpc;
-  _RpcStateNotifier(this.rpc) : super(const RpcState('unknown')) {
+  _RpcStateNotifier(this.rpc) : super(const RpcState('unknown', false)) {
     _init();
   }
 
   _init() async {
     final response = await rpc.command('get', []);
     if (mounted) {
-      state = state.copyWith(version: response['data']['version']);
+      state = RpcState.fromJson(response['data']);
     }
   }
 }
@@ -132,12 +132,7 @@ class _DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
     if (!devices.contains(state)) {
       final lastDevice = _prefs.getString(_lastDevice) ?? '';
       try {
-        state = devices.firstWhere(
-            (dev) => dev.when(
-                  usbYubiKey: (path, name, pid, info) =>
-                      lastDevice == 'serial:${info?.serial}',
-                  nfcReader: (path, name) => lastDevice == 'name:$name',
-                ),
+        state = devices.firstWhere((dev) => dev.path.key == lastDevice,
             orElse: () => devices.whereType<UsbYubiKeyNode>().first);
       } on StateError {
         state = null;
@@ -148,16 +143,6 @@ class _DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
   @override
   setCurrentDevice(DeviceNode device) {
     state = device;
-    device.when(
-      usbYubiKey: (path, name, pid, info) {
-        final serial = info?.serial;
-        if (serial != null) {
-          _prefs.setString(_lastDevice, 'serial:$serial');
-        }
-      },
-      nfcReader: (path, name) {
-        _prefs.setString(_lastDevice, 'name:$name');
-      },
-    );
+    _prefs.setString(_lastDevice, device.path.key);
   }
 }
