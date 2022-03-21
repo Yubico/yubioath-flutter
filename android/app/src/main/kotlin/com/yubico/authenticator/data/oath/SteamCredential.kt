@@ -40,8 +40,8 @@ fun OathSession.calculateSteamCode(
 private fun ByteArray.formatAsSteam(): String {
     val steamCharTable = "23456789BCDFGHJKMNPQRTVWXY"
     val charTableLen = steamCharTable.length
-    val offset = this[this.size - 1].and(0x0f).toInt()
-    var number = ByteBuffer.wrap(this, offset, 4).int.and(0x7fffffff)
+    val offset = (this[this.size - 1] and 0x0f).toInt()
+    var number = ByteBuffer.wrap(this, offset, 4).int and 0x7fffffff
     return String(CharArray(5) {
         steamCharTable[number % charTableLen].also { number /= charTableLen }
     })
