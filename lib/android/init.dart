@@ -43,5 +43,6 @@ Future<List<Override>> initializeAndGetOverrides() async {
     credentialListProvider.overrideWithProvider(androidCredentialListProvider),
     currentAppProvider.overrideWithProvider(androidSubPageProvider),
     managementStateProvider.overrideWithProvider(androidManagementState),
+    currentDeviceProvider.overrideWithProvider(androidCurrentDeviceProvider)
   ];
 }
