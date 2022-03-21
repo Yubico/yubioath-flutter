@@ -113,12 +113,14 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
                                   padding: const EdgeInsets.all(8.0),
                                   child: SizedBox.square(
                                     dimension: 16,
-                                    child: code != null
-                                        ? CircleTimer(
-                                            code.validFrom * 1000,
-                                            code.validTo * 1000,
-                                          )
-                                        : null,
+                                    child:
+                                        credential.oathType == OathType.totp &&
+                                                code != null
+                                            ? CircleTimer(
+                                                code.validFrom * 1000,
+                                                code.validTo * 1000,
+                                              )
+                                            : null,
                                   ),
                                 )
                               ],
