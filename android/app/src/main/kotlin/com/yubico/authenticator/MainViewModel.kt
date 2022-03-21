@@ -16,10 +16,7 @@ import com.yubico.yubikit.core.Logger
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
-import com.yubico.yubikit.oath.Code
-import com.yubico.yubikit.oath.Credential
-import com.yubico.yubikit.oath.CredentialData
-import com.yubico.yubikit.oath.OathSession
+import com.yubico.yubikit.oath.*
 import com.yubico.yubikit.support.DeviceUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
