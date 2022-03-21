@@ -37,7 +37,7 @@ class SteamCredentialTest {
     }
 
     @Test
-    fun `calculate validity time slot`() {
+    fun `calculate Steam code validity time slot`() {
         val s = sessionWith("6ad0d2d1674ad2a7c725c075901977f195bb4649")
         val c = steamCredential()
 
