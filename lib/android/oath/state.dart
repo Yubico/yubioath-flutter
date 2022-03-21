@@ -168,18 +168,14 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         await _api.addAccount(credentialUri.toString(), requireTouch);
 
     var result = jsonDecode(resultString);
-    final credential = OathCredential.fromJson(result);
+    final pair = OathPair(OathCredential.fromJson(result['credential']),
+        result['code'] != null ? OathCode.fromJson(result['code']) : null);
 
     if (update && mounted) {
-      state = state!.toList()..add(OathPair(credential, null));
-      if (!requireTouch && credential.oathType == OathType.totp) {
-        // TODO handle correctly the account which have been added
-        // nfc and usb need different ways
-        // don't do: await calculate(credential);
-      }
+      state = state!.toList()..add(pair);
     }
 
-    return credential;
+    return pair.credential;
   }
 
   @override

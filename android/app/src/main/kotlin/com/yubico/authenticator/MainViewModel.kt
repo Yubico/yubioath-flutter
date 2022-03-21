@@ -243,10 +243,18 @@ class MainViewModel : ViewModel() {
                         val credentialData: CredentialData =
                             CredentialData.parseUri(URI.create(otpUri))
 
-                        val jsonResult = session
-                            .putCredential(credentialData, requireTouch)
+                        val credential = session.putCredential(credentialData, requireTouch)
+
+                        val code =
+                            if (credentialData.oathType == OathType.TOTP && !requireTouch) {
+                                // recalculate the code
+                                session.calculateCode(credential)
+                            } else null
+
+                        val jsonResult = Pair<Credential, Code?>(credential, code)
                             .toJson(session.deviceId)
                             .toString()
+
                         result.success(jsonResult)
                     }
                 }
