@@ -21,11 +21,9 @@ class FidoScreen extends ConsumerWidget {
       ref.watch(fidoStateProvider(deviceData.node.path)).when(
           none: () => const AppLoadingScreen(),
           failure: (reason) {
-            final fido2 = deviceData.info
-                        .supportedCapabilities[deviceData.node.transport]! &
-                    Capability.fido2.value !=
-                0;
-            if (!fido2) {
+            final supported = deviceData
+                .info.supportedCapabilities[deviceData.node.transport]!;
+            if (Capability.fido2.value & supported == 0) {
               return const AppFailureScreen(
                   'WebAuthn is supported by this device, but there are no management options available.');
             }
@@ -36,10 +34,6 @@ class FidoScreen extends ConsumerWidget {
                     'WebAuthn management requires elevated privileges.\nRestart this app as administrator.');
               }
             }
-            if (deviceData.info
-                        .supportedCapabilities[deviceData.node.transport]! &
-                    Capability.fido2.value ==
-                0) {}
             return AppFailureScreen(reason);
           },
           success: (state) => ListView(
