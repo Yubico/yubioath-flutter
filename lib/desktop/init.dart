@@ -100,5 +100,6 @@ Future<List<Override>> initializeAndGetOverrides(
     qrScannerProvider.overrideWithProvider(desktopQrScannerProvider),
     managementStateProvider.overrideWithProvider(desktopManagementState),
     fidoStateProvider.overrideWithProvider(desktopFidoState),
+    currentDeviceProvider.overrideWithProvider(desktopCurrentDeviceProvider)
   ];
 }

@@ -3,8 +3,10 @@ import 'dart:io';
 
 import 'package:logging/logging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../app/state.dart';
 import '../core/state.dart';
 import '../app/models.dart';
 import 'models.dart';
@@ -111,5 +113,51 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
           _log.fine('Window event ignored: $eventName');
       }
     }
+  }
+}
+
+final desktopCurrentDeviceProvider =
+    StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {
+  final provider = _DesktopCurrentDeviceNotifier(ref.watch(prefProvider));
+  ref.listen(attachedDevicesProvider, provider._updateAttachedDevices);
+  return provider;
+});
+
+class _DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
+  static const String _lastDevice = 'APP_STATE_LAST_DEVICE';
+  final SharedPreferences _prefs;
+  _DesktopCurrentDeviceNotifier(this._prefs) : super(null);
+
+  _updateAttachedDevices(List<DeviceNode>? previous, List<DeviceNode> devices) {
+    if (!devices.contains(state)) {
+      final lastDevice = _prefs.getString(_lastDevice) ?? '';
+      try {
+        state = devices.firstWhere(
+            (dev) => dev.when(
+                  usbYubiKey: (path, name, pid, info) =>
+                      lastDevice == 'serial:${info?.serial}',
+                  nfcReader: (path, name) => lastDevice == 'name:$name',
+                ),
+            orElse: () => devices.whereType<UsbYubiKeyNode>().first);
+      } on StateError {
+        state = null;
+      }
+    }
+  }
+
+  @override
+  setCurrentDevice(DeviceNode device) {
+    state = device;
+    device.when(
+      usbYubiKey: (path, name, pid, info) {
+        final serial = info?.serial;
+        if (serial != null) {
+          _prefs.setString(_lastDevice, 'serial:$serial');
+        }
+      },
+      nfcReader: (path, name) {
+        _prefs.setString(_lastDevice, 'name:$name');
+      },
+    );
   }
 }

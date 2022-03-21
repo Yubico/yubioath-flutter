@@ -73,51 +73,14 @@ final currentDeviceDataProvider = Provider<YubiKeyData?>(
   (ref) => throw UnimplementedError(),
 );
 
+// Override with platform implementation
 final currentDeviceProvider =
-    StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {
-  final provider = CurrentDeviceNotifier(ref.watch(prefProvider));
-  ref.listen(attachedDevicesProvider, provider._updateAttachedDevices);
-  return provider;
-});
+    StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>(
+        (ref) => throw UnimplementedError());
 
-class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
-  static const String _lastDevice = 'APP_STATE_LAST_DEVICE';
-  final SharedPreferences _prefs;
-  CurrentDeviceNotifier(this._prefs) : super(null);
-
-  _updateAttachedDevices(List<DeviceNode>? previous, List<DeviceNode> devices) {
-    if (!devices.contains(state)) {
-      final lastDevice = _prefs.getString(_lastDevice) ?? '';
-      try {
-        state = devices.firstWhere(
-            (dev) => dev.when(
-                  usbYubiKey: (path, name, pid, info) =>
-                      lastDevice == 'serial:${info?.serial}',
-                  nfcReader: (path, name) => lastDevice == 'name:$name',
-                ), orElse: () {
-          var usbDevices = devices.whereType<UsbYubiKeyNode>();
-          return usbDevices.isNotEmpty ? usbDevices.first : devices.first;
-        });
-      } on StateError {
-        state = null;
-      }
-    }
-  }
-
-  setCurrentDevice(DeviceNode device) {
-    state = device;
-    device.when(
-      usbYubiKey: (path, name, pid, info) {
-        final serial = info?.serial;
-        if (serial != null) {
-          _prefs.setString(_lastDevice, 'serial:$serial');
-        }
-      },
-      nfcReader: (path, name) {
-        _prefs.setString(_lastDevice, 'name:$name');
-      },
-    );
-  }
+abstract class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
+  CurrentDeviceNotifier(DeviceNode? state) : super(state);
+  setCurrentDevice(DeviceNode device);
 }
 
 final currentAppProvider =
