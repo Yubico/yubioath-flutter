@@ -85,6 +85,7 @@ class Ctap2Node(RpcNode):
             )
             if self._info.options.get("bioEnroll"):
                 uv_retries = self.client_pin.get_uv_retries()
+                # For compatibility with python-fido2 < 1.0
                 if isinstance(uv_retries, tuple):
                     uv_retries = uv_retries[0]
                 data.update(uv_retries=uv_retries)
@@ -302,7 +303,11 @@ class FingerprintsNode(RpcNode):
         self.refresh()
 
     def refresh(self):
-        self._templates = self.bio.enumerate_enrollments()
+        self._templates = {
+            # Treat empty strings as None
+            k: v if v else None
+            for k, v in self.bio.enumerate_enrollments().items()
+        }
 
     def list_children(self):
         return {
