@@ -15,6 +15,17 @@ import '../models.dart';
 import '../state.dart';
 import 'utils.dart';
 
+final uriProvider =
+    StateNotifierProvider<UriNotifier, String>((ref) => UriNotifier());
+
+class UriNotifier extends StateNotifier<String> {
+  UriNotifier() : super('');
+
+  setUri(String value) {
+    state = value;
+  }
+}
+
 final _secretFormatterPattern =
     RegExp('[abcdefghijklmnopqrstuvwxyz234567 ]', caseSensitive: false);
 
@@ -92,6 +103,21 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
       //TODO: This can probably be checked better to make sure it's the main page.
       Navigator.of(context).popUntil((route) => route.isFirst);
+    });
+    ref.listen<String>(uriProvider, (previous, next) {
+      if (next.isNotEmpty) {
+        final data = CredentialData.fromUri(Uri.parse(next));
+        setState(() {
+          _issuerController.text = data.issuer ?? '';
+          _accountController.text = data.name;
+          _secretController.text = data.secret;
+          _oathType = data.oathType;
+          _hashAlgorithm = data.hashAlgorithm;
+          _periodController.text = '${data.period}';
+          _digits = data.digits;
+          _qrState = _QrScanState.success;
+        });
+      }
     });
 
     final period = int.tryParse(_periodController.text) ?? -1;
@@ -352,7 +378,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   }
 }
 
-class DragDropTarget extends StatefulWidget {
+class DragDropTarget extends ConsumerStatefulWidget {
   final QrScanner qrScanner;
   DragDropTarget({Key? key, required this.qrScanner}) : super(key: key);
 
@@ -360,7 +386,7 @@ class DragDropTarget extends StatefulWidget {
   _DragDropTargetState createState() => _DragDropTargetState();
 }
 
-class _DragDropTargetState extends State<DragDropTarget> {
+class _DragDropTargetState extends ConsumerState<DragDropTarget> {
   final List<XFile> _list = [];
 
   bool _dragging = false;
@@ -368,38 +394,45 @@ class _DragDropTargetState extends State<DragDropTarget> {
   @override
   Widget build(BuildContext context) {
     return DropTarget(
-      onDragDone: (detail) async {
-        setState(() {
-          _list.addAll(detail.files);
-        });
-        print('onDragDone:');
-        for (final file in detail.files) {
-          File f = new File(file.path);
-          List<int> imageBytes = f.readAsBytesSync();
-          String base64Image = base64Encode(imageBytes);
-          final otpauth = await widget.qrScanner.scanQr(base64Image);
-          print('Scanning complete');
-          print(otpauth);
-        }
-      },
-      onDragEntered: (detail) {
-        setState(() {
-          _dragging = true;
-        });
-      },
-      onDragExited: (detail) {
-        setState(() {
-          _dragging = false;
-        });
-      },
-      child: Container(
-        height: 200,
-        width: 200,
-        color: _dragging ? Colors.blue.withOpacity(0.4) : Colors.black26,
-        child: _list.isEmpty
-            ? const Center(child: Text("Drop here"))
-            : Text(_list.join("\n")),
-      ),
-    );
+        onDragDone: (detail) async {
+          setState(() {
+            _list.addAll(detail.files);
+          });
+          print('onDragDone:');
+          for (final file in detail.files) {
+            File f = new File(file.path);
+            List<int> imageBytes = f.readAsBytesSync();
+            String base64Image = base64Encode(imageBytes);
+            final otpauth = await widget.qrScanner.scanQr(base64Image);
+            print('Scanning complete');
+            print(otpauth);
+            ref.read(uriProvider.notifier).setUri(otpauth);
+          }
+        },
+        onDragEntered: (detail) {
+          setState(() {
+            _dragging = true;
+          });
+        },
+        onDragExited: (detail) {
+          setState(() {
+            _dragging = false;
+          });
+        },
+        child: Container(
+            color: _dragging ? Colors.blue.withOpacity(0.4) : Colors.black26,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  height: 500,
+                  child: _list.isEmpty
+                      ? const Center(child: Text("Drop here"))
+                      : Text(_list.join("\n")),
+                )
+              ],
+            )));
   }
 }
