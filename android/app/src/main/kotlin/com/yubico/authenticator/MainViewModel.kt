@@ -214,18 +214,22 @@ class MainViewModel : ViewModel() {
     }
 
     /**
-     * Returns Steam code or standard TOTP code based on the <code>credential</code>
-     * @return
+     * Returns Steam code or standard TOTP code based on the credential.
+     * @param session OathSession which calculates the TOTP code
+     * @param credential
+     * @param timestamp time for TOTP calculation
+     *
+     * @return calculated Code
      */
     private fun calculateCode(
-        oathSession: OathSession,
+        session: OathSession,
         credential: Credential,
         timestamp: Long = 0
     ) =
         if (credential.isSteamCredential()) {
-            oathSession.calculateSteamCode(credential, timestamp)
+            session.calculateSteamCode(credential, timestamp)
         } else {
-            oathSession.calculateCode(credential, timestamp)
+            session.calculateCode(credential, timestamp)
         }
 
     private fun getOathCredential(oathSession: OathSession, credentialId: String) =
