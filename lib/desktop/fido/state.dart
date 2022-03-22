@@ -97,8 +97,70 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
   }
 
   @override
-  Future<PinResult> unlock(String pin) {
-    // TODO: implement unlock
+  Future<PinResult> unlock(String pin) async {
+    try {
+      await _session.command('verify_pin', params: {'pin': pin});
+      setState(requireState().copyWith(locked: false));
+      return PinResult.success();
+    } on RpcError catch (e) {
+      if (e.status == 'pin-validation') {
+        return PinResult.failed(e.body['retries'], e.body['auth_blocked']);
+      }
+      rethrow;
+    }
+  }
+}
+
+final desktopFingerprintProvider = StateNotifierProvider.autoDispose
+    .family<FidoFingerprintsNotifier, List<Fingerprint>?, DevicePath>(
+        (ref, devicePath) {
+  return _DesktopFidoFingerprintsNotifier(
+    ref.watch(_sessionProvider(devicePath)),
+    ref
+        .watch(desktopFidoState(devicePath))
+        .whenOrNull(success: (state) => state),
+  )..refresh();
+});
+
+class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
+  final RpcNodeSession _session;
+  final FidoState? fidoState;
+
+  _DesktopFidoFingerprintsNotifier(this._session, this.fidoState);
+
+  Future<void> refresh() async {
+    if (fidoState?.locked != false) {
+      state = null;
+    }
+
+    final result = await _session.command('fingerprints');
+    if (mounted) {
+      state = (result['children'] as Map<String, dynamic>)
+          .entries
+          .map((e) => Fingerprint(e.key, e.value['name']))
+          .toList();
+    }
+  }
+
+  @override
+  Future<void> deleteFingerprint(Fingerprint fingerprint) async {
+    await _session.command('delete', target: ['fingerprints', fingerprint.id]);
+    await refresh();
+  }
+
+  @override
+  Stream<FingerprintEvent> registerFingerprint(String label) {
+    // TODO: implement registerFingerprint
     throw UnimplementedError();
+  }
+
+  @override
+  Future<Fingerprint> renameFingerprint(
+      Fingerprint fingerprint, String label) async {
+    await _session.command('rename',
+        target: ['fingerprints', fingerprint.id], params: {'name': label});
+    final renamed = fingerprint.copyWith(label: label);
+    await refresh();
+    return renamed;
   }
 }

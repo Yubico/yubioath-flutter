@@ -8,9 +8,10 @@ import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../desktop/state.dart';
 import '../../management/models.dart';
+import '../models.dart';
 import '../state.dart';
-import 'pin_dialog.dart';
-import 'reset_dialog.dart';
+import 'fingerprint_page.dart';
+import 'main_page.dart';
 
 class FidoScreen extends ConsumerWidget {
   final YubiKeyData deviceData;
@@ -36,54 +37,39 @@ class FidoScreen extends ConsumerWidget {
             }
             return AppFailureScreen(reason);
           },
-          success: (state) => ListView(
-                children: [
-                  ListTile(
-                    leading: const CircleAvatar(
-                      child: Icon(Icons.pin),
-                    ),
-                    title: const Text('PIN'),
-                    subtitle:
-                        Text(state.hasPin ? 'Change your PIN' : 'Set a PIN'),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) =>
-                            FidoPinDialog(deviceData.node.path, state),
-                      );
-                    },
-                  ),
-                  if (state.bioEnroll != null)
-                    ListTile(
-                      leading: const CircleAvatar(
-                        child: Icon(Icons.fingerprint),
-                      ),
-                      title: const Text('Fingerprints'),
-                      subtitle: Text(state.bioEnroll == true
-                          ? 'Fingerprints have been registered'
-                          : 'No fingerprints registered'),
-                    ),
-                  if (state.credMgmt)
-                    const ListTile(
-                      leading: CircleAvatar(
-                        child: Icon(Icons.account_box),
-                      ),
-                      title: Text('Credentials'),
-                      subtitle: Text('Manage stored credentials on key'),
-                    ),
-                  ListTile(
-                    leading: const CircleAvatar(
-                      child: Icon(Icons.delete_forever),
-                    ),
-                    title: const Text('Factory reset'),
-                    subtitle: const Text('Delete all data and remove PIN'),
-                    onTap: () async {
-                      await showDialog(
-                        context: context,
-                        builder: (context) => ResetDialog(deviceData.node),
-                      );
-                    },
-                  ),
-                ],
-              ));
+          success: (state) => _SubPageHolder(deviceData.node, state));
+}
+
+class _SubPageHolder extends StatefulWidget {
+  final DeviceNode node;
+  final FidoState state;
+
+  const _SubPageHolder(this.node, this.state, {Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _SubPageHolderState();
+}
+
+class _SubPageHolderState extends State<_SubPageHolder> {
+  SubPage _subpage = SubPage.main;
+
+  void setSubPage(SubPage page) {
+    setState(() {
+      _subpage = page;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    switch (_subpage) {
+      case SubPage.fingerprints:
+        return FingerprintPage(widget.node, widget.state);
+      default:
+        return FidoMainPage(
+          widget.node,
+          widget.state,
+          setSubPage: setSubPage,
+        );
+    }
+  }
 }

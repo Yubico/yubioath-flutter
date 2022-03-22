@@ -5,6 +5,8 @@ part 'models.g.dart';
 
 enum InteractionEvent { remove, insert, touch }
 
+enum SubPage { main, fingerprints, credentials }
+
 @freezed
 class FidoState with _$FidoState {
   const FidoState._();
@@ -30,6 +32,24 @@ class FidoState with _$FidoState {
 
 @freezed
 class PinResult with _$PinResult {
-  factory PinResult.success() = _Success;
-  factory PinResult.failed(int retries, bool authBlocked) = _Failure;
+  factory PinResult.success() = _PinSuccess;
+  factory PinResult.failed(int retries, bool authBlocked) = _PinFailure;
+}
+
+@freezed
+class Fingerprint with _$Fingerprint {
+  factory Fingerprint(String id, String? label) = _Fingerprint;
+}
+
+@freezed
+class FingerprintEvent with _$FingerprintEvent {
+  factory FingerprintEvent.capture(int remaining) = _EventCapture;
+  factory FingerprintEvent.complete(String termplateId) = _EventComplete;
+  factory FingerprintEvent.error(int code) = _EventError;
+}
+
+@freezed
+class FidoCredential with _$FidoCredential {
+  factory FidoCredential(String rpId, String credentialId, String userName) =
+      _FidoCredential;
 }
