@@ -42,6 +42,7 @@ dependencies:
   json_annotation: ^4.4.0
   freezed_annotation: ^1.0.0
   window_manager: ^0.1.4
+  desktop_drop: ^0.3.3
 
 dev_dependencies:
   flutter_test:
