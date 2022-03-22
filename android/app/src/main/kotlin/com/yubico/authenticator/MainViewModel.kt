@@ -213,6 +213,21 @@ class MainViewModel : ViewModel() {
         return block(session)
     }
 
+    /**
+     * Returns Steam code or standard TOTP code based on the <code>credential</code>
+     * @return
+     */
+    private fun calculateCode(
+        oathSession: OathSession,
+        credential: Credential,
+        timestamp: Long = 0
+    ) =
+        if (credential.isSteamCredential()) {
+            oathSession.calculateSteamCode(credential, timestamp)
+        } else {
+            oathSession.calculateCode(credential, timestamp)
+        }
+
     private fun getOathCredential(oathSession: OathSession, credentialId: String) =
         oathSession.credentials.firstOrNull { credential ->
             (credential != null) && credential.idAsString() == credentialId
@@ -245,7 +260,7 @@ class MainViewModel : ViewModel() {
                         val code =
                             if (credentialData.oathType == OathType.TOTP && !requireTouch) {
                                 // recalculate the code
-                                session.calculateCode(credential)
+                                calculateCode(session, credential)
                             } else null
 
                         val jsonResult = Pair<Credential, Code?>(credential, code)
@@ -376,7 +391,7 @@ class MainViewModel : ViewModel() {
 
                         val credential = getOathCredential(session, credentialId)
 
-                        val resultJson = session.calculateCode(credential)
+                        val resultJson = calculateCode(session, credential)
                             .toJson()
                             .toString()
 
