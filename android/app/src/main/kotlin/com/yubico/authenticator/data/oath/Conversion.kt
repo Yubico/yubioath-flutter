@@ -44,14 +44,14 @@ fun Credential.toJson(deviceId: String) = JsonObject(
 fun Map<Credential, Code?>.toJson(deviceId: String) = JsonObject(
     mapOf(
         "entries" to JsonArray(
-            map { (credential, code) ->
-                JsonObject(
-                    mapOf(
-                        "credential" to credential.toJson(deviceId),
-                        "code" to (code?.toJson() ?: JsonNull)
-                    )
-                )
-            }
+            map { it.toPair().toJson(deviceId) }
         )
+    )
+)
+
+fun Pair<Credential, Code?>.toJson(deviceId: String) = JsonObject(
+    mapOf(
+        "credential" to first.toJson(deviceId),
+        "code" to (second?.toJson() ?: JsonNull)
     )
 )

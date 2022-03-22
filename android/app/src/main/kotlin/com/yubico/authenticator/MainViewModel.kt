@@ -16,10 +16,7 @@ import com.yubico.yubikit.core.Logger
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
-import com.yubico.yubikit.oath.Code
-import com.yubico.yubikit.oath.Credential
-import com.yubico.yubikit.oath.CredentialData
-import com.yubico.yubikit.oath.OathSession
+import com.yubico.yubikit.oath.*
 import com.yubico.yubikit.support.DeviceUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -216,6 +213,25 @@ class MainViewModel : ViewModel() {
         return block(session)
     }
 
+    /**
+     * Returns Steam code or standard TOTP code based on the credential.
+     * @param session OathSession which calculates the TOTP code
+     * @param credential
+     * @param timestamp time for TOTP calculation
+     *
+     * @return calculated Code
+     */
+    private fun calculateCode(
+        session: OathSession,
+        credential: Credential,
+        timestamp: Long = 0
+    ) =
+        if (credential.isSteamCredential()) {
+            session.calculateSteamCode(credential, timestamp)
+        } else {
+            session.calculateCode(credential, timestamp)
+        }
+
     private fun getOathCredential(oathSession: OathSession, credentialId: String) =
         oathSession.credentials.firstOrNull { credential ->
             (credential != null) && credential.idAsString() == credentialId
@@ -243,10 +259,18 @@ class MainViewModel : ViewModel() {
                         val credentialData: CredentialData =
                             CredentialData.parseUri(URI.create(otpUri))
 
-                        val jsonResult = session
-                            .putCredential(credentialData, requireTouch)
+                        val credential = session.putCredential(credentialData, requireTouch)
+
+                        val code =
+                            if (credentialData.oathType == OathType.TOTP && !requireTouch) {
+                                // recalculate the code
+                                calculateCode(session, credential)
+                            } else null
+
+                        val jsonResult = Pair<Credential, Code?>(credential, code)
                             .toJson(session.deviceId)
                             .toString()
+
                         result.success(jsonResult)
                     }
                 }
@@ -371,7 +395,7 @@ class MainViewModel : ViewModel() {
 
                         val credential = getOathCredential(session, credentialId)
 
-                        val resultJson = session.calculateCode(credential)
+                        val resultJson = calculateCode(session, credential)
                             .toJson()
                             .toString()
 
