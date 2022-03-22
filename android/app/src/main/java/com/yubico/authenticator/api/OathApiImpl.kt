@@ -1,17 +1,19 @@
 package com.yubico.authenticator.api
 
 import com.yubico.authenticator.MainViewModel
+import com.yubico.authenticator.api.Pigeon.OathApi
+import com.yubico.authenticator.api.Pigeon.Result
 
-class OathApiImpl(private val viewModel: MainViewModel) : Pigeon.OathApi {
+class OathApiImpl(private val viewModel: MainViewModel) : OathApi {
 
-    override fun reset(result: Pigeon.Result<Void>) {
+    override fun reset(result: Result<Void>) {
         viewModel.resetOathSession(result)
     }
 
     override fun unlock(
         password: String,
         remember: Boolean,
-        result: Pigeon.Result<Boolean>
+        result: Result<Boolean>
     ) {
         viewModel.unlockOathSession(password, remember, result)
     }
@@ -19,40 +21,40 @@ class OathApiImpl(private val viewModel: MainViewModel) : Pigeon.OathApi {
     override fun setPassword(
         currentPassword: String?,
         newPassword: String,
-        result: Pigeon.Result<Void>
+        result: Result<Void>
     ) {
         viewModel.setOathPassword(currentPassword, newPassword, result)
     }
 
-    override fun unsetPassword(currentPassword: String, result: Pigeon.Result<Void>) {
+    override fun unsetPassword(currentPassword: String, result: Result<Void>) {
         viewModel.unsetOathPassword(currentPassword, result)
     }
 
-    override fun forgetPassword(result: Pigeon.Result<Void>) {
+    override fun forgetPassword(result: Result<Void>) {
         viewModel.forgetPassword(result)
     }
 
     override fun addAccount(
         uri: String,
         requireTouch: Boolean,
-        result: Pigeon.Result<String>
+        result: Result<String>
     ) {
         viewModel.addAccount(uri, requireTouch, result)
     }
 
-    override fun renameAccount(uri: String, name: String, issuer: String?, result: Pigeon.Result<String>) {
+    override fun renameAccount(uri: String, name: String, issuer: String?, result: Result<String>) {
         viewModel.renameCredential(uri, name, issuer, result)
     }
 
-    override fun deleteAccount(uri: String, result: Pigeon.Result<Void>) {
+    override fun deleteAccount(uri: String, result: Result<Void>) {
         viewModel.deleteAccount(uri, result)
     }
 
-    override fun refreshCodes(result: Pigeon.Result<String>) {
+    override fun refreshCodes(result: Result<String>) {
         viewModel.refreshOathCodes(result)
     }
 
-    override fun calculate(uri: String, result: Pigeon.Result<String>) {
+    override fun calculate(uri: String, result: Result<String>) {
         viewModel.calculate(uri, result)
     }
 
