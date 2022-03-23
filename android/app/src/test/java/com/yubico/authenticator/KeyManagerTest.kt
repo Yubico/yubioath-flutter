@@ -19,17 +19,15 @@ class MockStoredSigner(private val secret: ByteArray) : AccessKey {
 class MockKeyProvider : KeyProvider {
     private val map: MutableMap<String, AccessKey> = mutableMapOf()
 
-    override fun hasKeys(deviceId: String): Boolean = map[deviceId] != null
+    override fun hasKey(deviceId: String): Boolean = map[deviceId] != null
 
-    override fun getKeys(deviceId: String): Sequence<AccessKey> = sequence {
-        map.values.forEach { yield(it) }
-    }
+    override fun getKey(deviceId: String): AccessKey? = map[deviceId]
 
     override fun addKey(deviceId: String, secret: ByteArray) {
         map[deviceId] = MockStoredSigner(secret)
     }
 
-    override fun clearKeys(deviceId: String) {
+    override fun removeKey(deviceId: String) {
         map.remove(deviceId)
     }
 
@@ -72,46 +70,60 @@ class KeyManagerTest {
     @Test
     fun `returns added key`() {
         keyManager.addKey(device1Id, secret1, true)
-        val keys1 = keyManager.getKeys(device1Id).toList()
-        Assert.assertEquals(secret1, keys1[0].calculateResponse(byteArrayOf()))
+        val key1 = keyManager.getKey(device1Id)
+        Assert.assertNotNull(key1)
+        Assert.assertEquals(secret1, key1!!.calculateResponse(byteArrayOf()))
 
         keyManager.addKey(device2Id, secret2, false)
-        val keys2 = keyManager.getKeys(device2Id).toList()
-        Assert.assertEquals(secret2, keys2[0].calculateResponse(byteArrayOf()))
-
+        val key2 = keyManager.getKey(device2Id)
+        Assert.assertNotNull(key2)
+        Assert.assertEquals(secret2, key2!!.calculateResponse(byteArrayOf()))
     }
 
     @Test
     fun `associates keys with correct devices`() {
         keyManager.addKey(device1Id, secret1, true)
 
-        Assert.assertEquals(0, keyManager.getKeys(device2Id).toList().size)
-        Assert.assertEquals(1, keyManager.getKeys(device1Id).toList().size)
+        Assert.assertNotNull(keyManager.getKey(device1Id))
+        Assert.assertNull(keyManager.getKey(device2Id))
 
         keyManager.addKey(device2Id, secret2, false)
-        Assert.assertEquals(1, keyManager.getKeys(device2Id).toList().size)
-        Assert.assertEquals(1, keyManager.getKeys(device1Id).toList().size)
+        Assert.assertNotNull(keyManager.getKey(device2Id))
+        Assert.assertNotNull(keyManager.getKey(device1Id))
     }
 
     @Test
     fun `clears keys for device`() {
-        keyManager.addKey(device2Id, secret2, true)
         keyManager.addKey(device1Id, secret1, true)
+        keyManager.addKey(device2Id, secret2, true)
 
-        keyManager.clearKeys(device1Id)
+        keyManager.removeKey(device1Id)
 
-        Assert.assertTrue(keyManager.getKeys(device2Id).toList().size == 1)
-        Assert.assertTrue(keyManager.getKeys(device1Id).toList().isEmpty())
+        Assert.assertNotNull(keyManager.getKey(device2Id))
+        Assert.assertNull(keyManager.getKey(device1Id))
     }
 
     @Test
     fun `clears all keys`() {
-        keyManager.addKey(device2Id, secret2, true)
         keyManager.addKey(device1Id, secret1, true)
+        keyManager.addKey(device2Id, secret2, false)
 
         keyManager.clearAll()
 
-        Assert.assertTrue(keyManager.getKeys(device2Id).toList().isEmpty())
-        Assert.assertTrue(keyManager.getKeys(device1Id).toList().isEmpty())
+        Assert.assertNull(keyManager.getKey(device1Id))
+        Assert.assertNull(keyManager.getKey(device2Id))
+    }
+
+    @Test
+    fun `can overwrite stored key`() {
+        keyManager.addKey(device1Id, secret1, true)
+        keyManager.addKey(device1Id, secret2, true)
+
+        val key1 = keyManager.getKey(device1Id)
+        Assert.assertEquals(secret2, key1!!.calculateResponse(byteArrayOf()))
+
+        keyManager.addKey(device1Id, secret1, true)
+        val key2 = keyManager.getKey(device1Id)
+        Assert.assertEquals(secret1, key2!!.calculateResponse(byteArrayOf()))
     }
 }

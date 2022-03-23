@@ -343,7 +343,7 @@ class MainViewModel : ViewModel() {
                         // test current password sent by the user
                         if (session.unlock(currentPassword.toCharArray())) {
                             session.deleteAccessKey()
-                            keyManager.clearKeys(session.deviceId)
+                            keyManager.removeKey(session.deviceId)
                             Logger.d("Successfully unset password")
                             result.success(null)
                             return@useOathSession
@@ -500,7 +500,7 @@ class MainViewModel : ViewModel() {
         }
 
         val deviceId = session.deviceId
-        val accessKey = keyManager.getKeys(deviceId).firstOrNull()
+        val accessKey = keyManager.getKey(deviceId)
             ?: return true // we have no access key to unlock the session
 
         val unlockSucceed = session.unlock(accessKey)
@@ -509,7 +509,7 @@ class MainViewModel : ViewModel() {
             return false // we have everything to unlock the session
         }
 
-        keyManager.clearKeys(deviceId) // remove invalid access keys from [KeyManager]
+        keyManager.removeKey(deviceId) // remove invalid access keys from [KeyManager]
         return true // the unlock did not work, session is locked
     }
 
