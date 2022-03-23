@@ -38,13 +38,19 @@ class PinResult with _$PinResult {
 
 @freezed
 class Fingerprint with _$Fingerprint {
-  factory Fingerprint(String id, String? label) = _Fingerprint;
+  const Fingerprint._();
+  factory Fingerprint(String templateId, String? name) = _Fingerprint;
+
+  factory Fingerprint.fromJson(Map<String, dynamic> json) =>
+      _$FingerprintFromJson(json);
+
+  String get label => name ?? 'Unnamed (ID: $templateId)';
 }
 
 @freezed
 class FingerprintEvent with _$FingerprintEvent {
   factory FingerprintEvent.capture(int remaining) = _EventCapture;
-  factory FingerprintEvent.complete(String termplateId) = _EventComplete;
+  factory FingerprintEvent.complete(Fingerprint fingerprint) = _EventComplete;
   factory FingerprintEvent.error(int code) = _EventError;
 }
 

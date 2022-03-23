@@ -16,3 +16,15 @@ Map<String, dynamic> _$$_FidoStateToJson(_$_FidoState instance) =>
       'info': instance.info,
       'locked': instance.locked,
     };
+
+_$_Fingerprint _$$_FingerprintFromJson(Map<String, dynamic> json) =>
+    _$_Fingerprint(
+      json['template_id'] as String,
+      json['name'] as String?,
+    );
+
+Map<String, dynamic> _$$_FingerprintToJson(_$_Fingerprint instance) =>
+    <String, dynamic>{
+      'template_id': instance.templateId,
+      'name': instance.name,
+    };

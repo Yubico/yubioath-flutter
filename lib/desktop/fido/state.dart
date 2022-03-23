@@ -144,22 +144,59 @@ class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 
   @override
   Future<void> deleteFingerprint(Fingerprint fingerprint) async {
-    await _session.command('delete', target: ['fingerprints', fingerprint.id]);
+    await _session
+        .command('delete', target: ['fingerprints', fingerprint.templateId]);
     await refresh();
   }
 
   @override
-  Stream<FingerprintEvent> registerFingerprint(String label) {
-    // TODO: implement registerFingerprint
-    throw UnimplementedError();
+  Stream<FingerprintEvent> registerFingerprint({String? name}) {
+    final controller = StreamController<FingerprintEvent>();
+    final signaler = Signaler();
+    signaler.signals.listen((signal) {
+      switch (signal.status) {
+        case 'capture':
+          controller.sink
+              .add(FingerprintEvent.capture(signal.body['remaining']));
+          break;
+        case 'capture-error':
+          controller.sink.add(FingerprintEvent.error(signal.body['code']));
+          break;
+      }
+    });
+
+    controller.onCancel = () {
+      if (!controller.isClosed) {
+        signaler.cancel();
+      }
+    };
+    controller.onListen = () async {
+      try {
+        final result = await _session.command(
+          'add',
+          target: ['fingerprints'],
+          params: {'name': name},
+          signal: signaler,
+        );
+        controller.sink
+            .add(FingerprintEvent.complete(Fingerprint.fromJson(result)));
+        await refresh();
+        await controller.sink.close();
+      } catch (e) {
+        controller.sink.addError(e);
+      }
+    };
+
+    return controller.stream;
   }
 
   @override
   Future<Fingerprint> renameFingerprint(
-      Fingerprint fingerprint, String label) async {
+      Fingerprint fingerprint, String name) async {
     await _session.command('rename',
-        target: ['fingerprints', fingerprint.id], params: {'name': label});
-    final renamed = fingerprint.copyWith(label: label);
+        target: ['fingerprints', fingerprint.templateId],
+        params: {'name': name});
+    final renamed = fingerprint.copyWith(name: name);
     await refresh();
     return renamed;
   }

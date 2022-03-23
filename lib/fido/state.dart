@@ -31,8 +31,8 @@ abstract class FidoFingerprintsNotifier
     super.state = value != null ? List.unmodifiable(value) : null;
   }
 
-  Stream<FingerprintEvent> registerFingerprint(String label);
-  Future<Fingerprint> renameFingerprint(Fingerprint fingerprint, String label);
+  Stream<FingerprintEvent> registerFingerprint({String? name});
+  Future<Fingerprint> renameFingerprint(Fingerprint fingerprint, String name);
   Future<void> deleteFingerprint(Fingerprint fingerprint);
 }
 

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/models.dart';
 import '../models.dart';
 import '../state.dart';
+import 'add_fingerprint_dialog.dart';
 import 'delete_fingerprint_dialog.dart';
 import 'rename_fingerprint_dialog.dart';
 import 'unlock_view.dart';
@@ -39,7 +40,7 @@ class FingerprintPage extends ConsumerWidget {
           ),
         ),
         ...fingerprints.map((fp) => ListTile(
-              title: Text(fp.label ?? 'Unnamed (ID: ${fp.id})'),
+              title: Text(fp.label),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -64,6 +65,23 @@ class FingerprintPage extends ConsumerWidget {
                 ],
               ),
             )),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Wrap(
+            children: [
+              OutlinedButton.icon(
+                icon: const Icon(Icons.fingerprint),
+                label: const Text('Add fingerprint'),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AddFingerprintDialog(node),
+                  );
+                },
+              )
+            ],
+          ),
+        ),
       ],
     );
   }

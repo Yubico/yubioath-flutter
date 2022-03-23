@@ -504,15 +504,23 @@ abstract class _PinFailure implements PinResult {
       throw _privateConstructorUsedError;
 }
 
+Fingerprint _$FingerprintFromJson(Map<String, dynamic> json) {
+  return _Fingerprint.fromJson(json);
+}
+
 /// @nodoc
 class _$FingerprintTearOff {
   const _$FingerprintTearOff();
 
-  _Fingerprint call(String id, String? label) {
+  _Fingerprint call(String templateId, String? name) {
     return _Fingerprint(
-      id,
-      label,
+      templateId,
+      name,
     );
+  }
+
+  Fingerprint fromJson(Map<String, Object?> json) {
+    return Fingerprint.fromJson(json);
   }
 }
 
@@ -521,9 +529,10 @@ const $Fingerprint = _$FingerprintTearOff();
 
 /// @nodoc
 mixin _$Fingerprint {
-  String get id => throw _privateConstructorUsedError;
-  String? get label => throw _privateConstructorUsedError;
+  String get templateId => throw _privateConstructorUsedError;
+  String? get name => throw _privateConstructorUsedError;
 
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $FingerprintCopyWith<Fingerprint> get copyWith =>
       throw _privateConstructorUsedError;
@@ -534,7 +543,7 @@ abstract class $FingerprintCopyWith<$Res> {
   factory $FingerprintCopyWith(
           Fingerprint value, $Res Function(Fingerprint) then) =
       _$FingerprintCopyWithImpl<$Res>;
-  $Res call({String id, String? label});
+  $Res call({String templateId, String? name});
 }
 
 /// @nodoc
@@ -547,17 +556,17 @@ class _$FingerprintCopyWithImpl<$Res> implements $FingerprintCopyWith<$Res> {
 
   @override
   $Res call({
-    Object? id = freezed,
-    Object? label = freezed,
+    Object? templateId = freezed,
+    Object? name = freezed,
   }) {
     return _then(_value.copyWith(
-      id: id == freezed
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
+      templateId: templateId == freezed
+          ? _value.templateId
+          : templateId // ignore: cast_nullable_to_non_nullable
               as String,
-      label: label == freezed
-          ? _value.label
-          : label // ignore: cast_nullable_to_non_nullable
+      name: name == freezed
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -570,7 +579,7 @@ abstract class _$FingerprintCopyWith<$Res>
           _Fingerprint value, $Res Function(_Fingerprint) then) =
       __$FingerprintCopyWithImpl<$Res>;
   @override
-  $Res call({String id, String? label});
+  $Res call({String templateId, String? name});
 }
 
 /// @nodoc
@@ -585,35 +594,38 @@ class __$FingerprintCopyWithImpl<$Res> extends _$FingerprintCopyWithImpl<$Res>
 
   @override
   $Res call({
-    Object? id = freezed,
-    Object? label = freezed,
+    Object? templateId = freezed,
+    Object? name = freezed,
   }) {
     return _then(_Fingerprint(
-      id == freezed
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
+      templateId == freezed
+          ? _value.templateId
+          : templateId // ignore: cast_nullable_to_non_nullable
               as String,
-      label == freezed
-          ? _value.label
-          : label // ignore: cast_nullable_to_non_nullable
+      name == freezed
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
 }
 
 /// @nodoc
+@JsonSerializable()
+class _$_Fingerprint extends _Fingerprint {
+  _$_Fingerprint(this.templateId, this.name) : super._();
 
-class _$_Fingerprint implements _Fingerprint {
-  _$_Fingerprint(this.id, this.label);
+  factory _$_Fingerprint.fromJson(Map<String, dynamic> json) =>
+      _$$_FingerprintFromJson(json);
 
   @override
-  final String id;
+  final String templateId;
   @override
-  final String? label;
+  final String? name;
 
   @override
   String toString() {
-    return 'Fingerprint(id: $id, label: $label)';
+    return 'Fingerprint(templateId: $templateId, name: $name)';
   }
 
   @override
@@ -621,29 +633,39 @@ class _$_Fingerprint implements _Fingerprint {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _Fingerprint &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.label, label));
+            const DeepCollectionEquality()
+                .equals(other.templateId, templateId) &&
+            const DeepCollectionEquality().equals(other.name, name));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(id),
-      const DeepCollectionEquality().hash(label));
+      const DeepCollectionEquality().hash(templateId),
+      const DeepCollectionEquality().hash(name));
 
   @JsonKey(ignore: true)
   @override
   _$FingerprintCopyWith<_Fingerprint> get copyWith =>
       __$FingerprintCopyWithImpl<_Fingerprint>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_FingerprintToJson(this);
+  }
 }
 
-abstract class _Fingerprint implements Fingerprint {
-  factory _Fingerprint(String id, String? label) = _$_Fingerprint;
+abstract class _Fingerprint extends Fingerprint {
+  factory _Fingerprint(String templateId, String? name) = _$_Fingerprint;
+  _Fingerprint._() : super._();
+
+  factory _Fingerprint.fromJson(Map<String, dynamic> json) =
+      _$_Fingerprint.fromJson;
 
   @override
-  String get id;
+  String get templateId;
   @override
-  String? get label;
+  String? get name;
   @override
   @JsonKey(ignore: true)
   _$FingerprintCopyWith<_Fingerprint> get copyWith =>
@@ -660,9 +682,9 @@ class _$FingerprintEventTearOff {
     );
   }
 
-  _EventComplete complete(String termplateId) {
+  _EventComplete complete(Fingerprint fingerprint) {
     return _EventComplete(
-      termplateId,
+      fingerprint,
     );
   }
 
@@ -681,21 +703,21 @@ mixin _$FingerprintEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(int remaining) capture,
-    required TResult Function(String termplateId) complete,
+    required TResult Function(Fingerprint fingerprint) complete,
     required TResult Function(int code) error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(int remaining)? capture,
-    TResult Function(String termplateId)? complete,
+    TResult Function(Fingerprint fingerprint)? complete,
     TResult Function(int code)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int remaining)? capture,
-    TResult Function(String termplateId)? complete,
+    TResult Function(Fingerprint fingerprint)? complete,
     TResult Function(int code)? error,
     required TResult orElse(),
   }) =>
@@ -807,7 +829,7 @@ class _$_EventCapture implements _EventCapture {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(int remaining) capture,
-    required TResult Function(String termplateId) complete,
+    required TResult Function(Fingerprint fingerprint) complete,
     required TResult Function(int code) error,
   }) {
     return capture(remaining);
@@ -817,7 +839,7 @@ class _$_EventCapture implements _EventCapture {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(int remaining)? capture,
-    TResult Function(String termplateId)? complete,
+    TResult Function(Fingerprint fingerprint)? complete,
     TResult Function(int code)? error,
   }) {
     return capture?.call(remaining);
@@ -827,7 +849,7 @@ class _$_EventCapture implements _EventCapture {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int remaining)? capture,
-    TResult Function(String termplateId)? complete,
+    TResult Function(Fingerprint fingerprint)? complete,
     TResult Function(int code)? error,
     required TResult orElse(),
   }) {
@@ -886,7 +908,9 @@ abstract class _$EventCompleteCopyWith<$Res> {
   factory _$EventCompleteCopyWith(
           _EventComplete value, $Res Function(_EventComplete) then) =
       __$EventCompleteCopyWithImpl<$Res>;
-  $Res call({String termplateId});
+  $Res call({Fingerprint fingerprint});
+
+  $FingerprintCopyWith<$Res> get fingerprint;
 }
 
 /// @nodoc
@@ -902,28 +926,35 @@ class __$EventCompleteCopyWithImpl<$Res>
 
   @override
   $Res call({
-    Object? termplateId = freezed,
+    Object? fingerprint = freezed,
   }) {
     return _then(_EventComplete(
-      termplateId == freezed
-          ? _value.termplateId
-          : termplateId // ignore: cast_nullable_to_non_nullable
-              as String,
+      fingerprint == freezed
+          ? _value.fingerprint
+          : fingerprint // ignore: cast_nullable_to_non_nullable
+              as Fingerprint,
     ));
+  }
+
+  @override
+  $FingerprintCopyWith<$Res> get fingerprint {
+    return $FingerprintCopyWith<$Res>(_value.fingerprint, (value) {
+      return _then(_value.copyWith(fingerprint: value));
+    });
   }
 }
 
 /// @nodoc
 
 class _$_EventComplete implements _EventComplete {
-  _$_EventComplete(this.termplateId);
+  _$_EventComplete(this.fingerprint);
 
   @override
-  final String termplateId;
+  final Fingerprint fingerprint;
 
   @override
   String toString() {
-    return 'FingerprintEvent.complete(termplateId: $termplateId)';
+    return 'FingerprintEvent.complete(fingerprint: $fingerprint)';
   }
 
   @override
@@ -932,12 +963,12 @@ class _$_EventComplete implements _EventComplete {
         (other.runtimeType == runtimeType &&
             other is _EventComplete &&
             const DeepCollectionEquality()
-                .equals(other.termplateId, termplateId));
+                .equals(other.fingerprint, fingerprint));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(termplateId));
+      runtimeType, const DeepCollectionEquality().hash(fingerprint));
 
   @JsonKey(ignore: true)
   @override
@@ -948,32 +979,32 @@ class _$_EventComplete implements _EventComplete {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(int remaining) capture,
-    required TResult Function(String termplateId) complete,
+    required TResult Function(Fingerprint fingerprint) complete,
     required TResult Function(int code) error,
   }) {
-    return complete(termplateId);
+    return complete(fingerprint);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(int remaining)? capture,
-    TResult Function(String termplateId)? complete,
+    TResult Function(Fingerprint fingerprint)? complete,
     TResult Function(int code)? error,
   }) {
-    return complete?.call(termplateId);
+    return complete?.call(fingerprint);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int remaining)? capture,
-    TResult Function(String termplateId)? complete,
+    TResult Function(Fingerprint fingerprint)? complete,
     TResult Function(int code)? error,
     required TResult orElse(),
   }) {
     if (complete != null) {
-      return complete(termplateId);
+      return complete(fingerprint);
     }
     return orElse();
   }
@@ -1014,9 +1045,9 @@ class _$_EventComplete implements _EventComplete {
 }
 
 abstract class _EventComplete implements FingerprintEvent {
-  factory _EventComplete(String termplateId) = _$_EventComplete;
+  factory _EventComplete(Fingerprint fingerprint) = _$_EventComplete;
 
-  String get termplateId;
+  Fingerprint get fingerprint;
   @JsonKey(ignore: true)
   _$EventCompleteCopyWith<_EventComplete> get copyWith =>
       throw _privateConstructorUsedError;
@@ -1088,7 +1119,7 @@ class _$_EventError implements _EventError {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(int remaining) capture,
-    required TResult Function(String termplateId) complete,
+    required TResult Function(Fingerprint fingerprint) complete,
     required TResult Function(int code) error,
   }) {
     return error(code);
@@ -1098,7 +1129,7 @@ class _$_EventError implements _EventError {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(int remaining)? capture,
-    TResult Function(String termplateId)? complete,
+    TResult Function(Fingerprint fingerprint)? complete,
     TResult Function(int code)? error,
   }) {
     return error?.call(code);
@@ -1108,7 +1139,7 @@ class _$_EventError implements _EventError {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int remaining)? capture,
-    TResult Function(String termplateId)? complete,
+    TResult Function(Fingerprint fingerprint)? complete,
     TResult Function(int code)? error,
     required TResult orElse(),
   }) {

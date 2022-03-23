@@ -20,7 +20,7 @@ class DeleteFingerprintDialog extends ConsumerWidget {
       Navigator.of(context).pop(false);
     });
 
-    final label = fingerprint.label ?? 'Unnamed (ID: ${fingerprint.id})';
+    final label = fingerprint.label;
 
     return ResponsiveDialog(
       title: const Text('Delete fingerprint'),

@@ -25,7 +25,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
   @override
   void initState() {
     super.initState();
-    _label = widget.fingerprint.label ?? '';
+    _label = widget.fingerprint.label;
   }
 
   @override
@@ -36,14 +36,13 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
     });
 
     final fingerprint = widget.fingerprint;
-    final label = fingerprint.label ?? 'Unnamed (ID: ${fingerprint.id})';
 
     return ResponsiveDialog(
       title: const Text('Rename fingerprint'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Rename $label?'),
+          Text('Rename ${fingerprint.label}?'),
           const Text('This will change the label of the fingerprint.'),
           TextFormField(
             initialValue: _label,
