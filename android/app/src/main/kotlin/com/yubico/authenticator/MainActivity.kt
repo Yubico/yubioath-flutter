@@ -1,6 +1,5 @@
 package com.yubico.authenticator
 
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels

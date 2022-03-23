@@ -10,6 +10,8 @@ import com.yubico.authenticator.data.oath.calculateSteamCode
 import com.yubico.authenticator.data.oath.idAsString
 import com.yubico.authenticator.data.oath.isSteamCredential
 import com.yubico.authenticator.data.oath.toJson
+import com.yubico.authenticator.keystore.ClearingMemProvider
+import com.yubico.authenticator.keystore.KeyStoreProvider
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Logger
@@ -47,7 +49,7 @@ class MainViewModel : ViewModel() {
     val yubiKeyDevice = MutableLiveData<YubiKeyDevice?>()
     private var isUsbKeyConnected: Boolean = false
 
-    private var _oathSessionPassword: CharArray? = null
+    private val keyManager = KeyManager(KeyStoreProvider(), ClearingMemProvider())
 
     private var _operationContext = OperationContext.Oath
 
@@ -100,7 +102,7 @@ class MainViewModel : ViewModel() {
         val oathSessionData = suspendCoroutine<String> {
             device.requestConnection(SmartCardConnection::class.java) { result ->
                 val oathSession = OathSession(result.value)
-                val isRemembered = false
+                val isRemembered = keyManager.isRemembered(oathSession.deviceId)
                 val oathSessionData = oathSession
                     .toJson(isRemembered)
                     .toString()
@@ -179,7 +181,7 @@ class MainViewModel : ViewModel() {
 
         if (isUsbKeyConnected) {
             // forget the current password only for usb keys
-            _oathSessionPassword = null
+            // TODO: clear from memory store
             _fManagementApi.updateDeviceInfo("") {}
         }
 
@@ -320,9 +322,9 @@ class MainViewModel : ViewModel() {
                             throw Exception("Provided current password is invalid")
                         }
                     }
-                    val newPass = password.toCharArray()
-                    session.setPassword(newPass)
-                    _oathSessionPassword = newPass
+                    val accessKey = session.deriveAccessKey(password.toCharArray())
+                    session.setAccessKey(accessKey)
+                    keyManager.addKey(session.deviceId, accessKey, false)
                     Logger.d("Successfully set password")
                 }
             } catch (cause: Throwable) {
@@ -341,7 +343,7 @@ class MainViewModel : ViewModel() {
                         // test current password sent by the user
                         if (session.unlock(currentPassword.toCharArray())) {
                             session.deleteAccessKey()
-                            _oathSessionPassword = null
+                            keyManager.clearKeys(session.deviceId)
                             Logger.d("Successfully unset password")
                             result.success(null)
                             return@useOathSession
@@ -418,7 +420,9 @@ class MainViewModel : ViewModel() {
             try {
                 var codes: String? = null
                 useOathSession("Unlocking", true) {
-                    _oathSessionPassword = password.toCharArray()
+                    val accessKey = it.deriveAccessKey(password.toCharArray())
+                    keyManager.addKey(it.deviceId, accessKey, remember)
+
                     val isLocked = isOathSessionLocked(it)
 
                     if (!isLocked) {
@@ -431,7 +435,9 @@ class MainViewModel : ViewModel() {
                 }
 
                 codes?.let {
-                    _fOathApi.updateOathCredentials(it) {}
+                    viewModelScope.launch(Dispatchers.Main) {
+                        _fOathApi.updateOathCredentials(it) {}
+                    }
                 }
 
             } catch (cause: Throwable) {
@@ -493,21 +499,23 @@ class MainViewModel : ViewModel() {
             return false
         }
 
-        if (_oathSessionPassword == null) {
-            return true // we have no password to unlock
-        }
+        val deviceId = session.deviceId
+        val accessKey = keyManager.getKeys(deviceId).firstOrNull()
+            ?: return true // we have no access key to unlock the session
 
-        val unlockSucceed = session.unlock(_oathSessionPassword!!)
+        val unlockSucceed = session.unlock(accessKey)
 
         if (unlockSucceed) {
             return false // we have everything to unlock the session
         }
 
-        _oathSessionPassword = null // reset the password as well as it did not work
+        keyManager.clearKeys(deviceId) // remove invalid access keys from [KeyManager]
         return true // the unlock did not work, session is locked
     }
 
     fun forgetPassword(result: Pigeon.Result<Void>) {
+        keyManager.clearAll()
+        Logger.d("Cleared all keys.")
         result.success(null)
     }
 
