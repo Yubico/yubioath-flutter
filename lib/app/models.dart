@@ -75,10 +75,10 @@ extension Applications on Application {
 }
 
 @freezed
-class ApplicationStateResult<T> with _$ApplicationStateResult {
-  factory ApplicationStateResult.none() = _None;
-  factory ApplicationStateResult.failure(String reason) = _Failure;
-  factory ApplicationStateResult.success(T state) = _Success;
+class ApplicationStateResult<T> with _$ApplicationStateResult<T> {
+  factory ApplicationStateResult.none() = _None<T>;
+  factory ApplicationStateResult.failure(String reason) = _Failure<T>;
+  factory ApplicationStateResult.success(T state) = _Success<T>;
 }
 
 @freezed

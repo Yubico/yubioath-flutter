@@ -34,10 +34,10 @@ class PinResult with _$PinResult {
 }
 
 @freezed
-class LockedCollection<T> with _$LockedCollection {
-  factory LockedCollection.unknown() = _Unknown;
-  factory LockedCollection.locked() = _Locked;
-  factory LockedCollection.opened(List<T> values) = _Opened;
+class LockedCollection<T> with _$LockedCollection<T> {
+  factory LockedCollection.unknown() = _Unknown<T>;
+  factory LockedCollection.locked() = _Locked<T>;
+  factory LockedCollection.opened(List<T> values) = _Opened<T>;
 }
 
 @freezed
