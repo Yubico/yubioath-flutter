@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/models.dart';
-import '../state.dart';
+import '../models.dart';
 
-class UnlockView extends ConsumerWidget {
-  final DeviceNode node;
+class UnlockView extends StatelessWidget {
+  final Future<PinResult> Function(String pin) onUnlock;
 
-  const UnlockView(this.node, {Key? key}) : super(key: key);
+  const UnlockView({required this.onUnlock, Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Padding(
@@ -33,9 +31,8 @@ class UnlockView extends ConsumerWidget {
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'PIN'),
                 onSubmitted: (pin) async {
-                  await ref
-                      .read(fidoStateProvider(node.path).notifier)
-                      .unlock(pin);
+                  // TODO: Handle wrong PIN
+                  await onUnlock(pin);
                 },
               ),
             ],

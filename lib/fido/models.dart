@@ -11,10 +11,7 @@ enum SubPage { main, fingerprints, credentials }
 class FidoState with _$FidoState {
   const FidoState._();
 
-  factory FidoState({
-    required Map<String, dynamic> info,
-    required bool locked,
-  }) = _FidoState;
+  factory FidoState({required Map<String, dynamic> info}) = _FidoState;
 
   factory FidoState.fromJson(Map<String, dynamic> json) =>
       _$FidoStateFromJson(json);
@@ -37,6 +34,13 @@ class PinResult with _$PinResult {
 }
 
 @freezed
+class LockedCollection<T> with _$LockedCollection {
+  factory LockedCollection.unknown() = _Unknown;
+  factory LockedCollection.locked() = _Locked;
+  factory LockedCollection.opened(List<T> values) = _Opened;
+}
+
+@freezed
 class Fingerprint with _$Fingerprint {
   const Fingerprint._();
   factory Fingerprint(String templateId, String? name) = _Fingerprint;
@@ -56,6 +60,13 @@ class FingerprintEvent with _$FingerprintEvent {
 
 @freezed
 class FidoCredential with _$FidoCredential {
-  factory FidoCredential(String rpId, String credentialId, String userName) =
-      _FidoCredential;
+  factory FidoCredential({
+    required String rpId,
+    required String credentialId,
+    required String userId,
+    required String userName,
+  }) = _FidoCredential;
+
+  factory FidoCredential.fromJson(Map<String, dynamic> json) =>
+      _$FidoCredentialFromJson(json);
 }

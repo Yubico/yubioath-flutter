@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/app/state.dart';
 
 import '../../app/models.dart';
 import '../../app/views/app_failure_screen.dart';
@@ -10,8 +11,15 @@ import '../../desktop/state.dart';
 import '../../management/models.dart';
 import '../models.dart';
 import '../state.dart';
+import 'credential_page.dart';
 import 'fingerprint_page.dart';
 import 'main_page.dart';
+
+final _subPageProvider = StateProvider<SubPage>((ref) {
+  // Reset whenever the device changes.
+  ref.watch(currentDeviceProvider);
+  return SubPage.main;
+});
 
 class FidoScreen extends ConsumerWidget {
   final YubiKeyData deviceData;
@@ -37,39 +45,48 @@ class FidoScreen extends ConsumerWidget {
             }
             return AppFailureScreen(reason);
           },
-          success: (state) => _SubPageHolder(deviceData.node, state));
+          success: (state) {
+            setSubPage(value) {
+              ref.read(_subPageProvider.notifier).state = value;
+            }
+
+            switch (ref.watch(_subPageProvider)) {
+              case SubPage.fingerprints:
+                return WithBackButton(
+                  goBack: () {
+                    setSubPage(SubPage.main);
+                  },
+                  child: FingerprintPage(deviceData.node, state),
+                );
+              case SubPage.credentials:
+                return WithBackButton(
+                  goBack: () {
+                    setSubPage(SubPage.main);
+                  },
+                  child: CredentialPage(deviceData.node, state),
+                );
+              default:
+                return FidoMainPage(
+                  deviceData.node,
+                  state,
+                  setSubPage: setSubPage,
+                );
+            }
+          });
 }
 
-class _SubPageHolder extends StatefulWidget {
-  final DeviceNode node;
-  final FidoState state;
-
-  const _SubPageHolder(this.node, this.state, {Key? key}) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => _SubPageHolderState();
-}
-
-class _SubPageHolderState extends State<_SubPageHolder> {
-  SubPage _subpage = SubPage.main;
-
-  void setSubPage(SubPage page) {
-    setState(() {
-      _subpage = page;
-    });
-  }
+class WithBackButton extends StatelessWidget {
+  final Function() goBack;
+  final Widget child;
+  const WithBackButton({Key? key, required this.goBack, required this.child})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    switch (_subpage) {
-      case SubPage.fingerprints:
-        return FingerprintPage(widget.node, widget.state);
-      default:
-        return FidoMainPage(
-          widget.node,
-          widget.state,
-          setSubPage: setSubPage,
-        );
-    }
-  }
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          TextButton(onPressed: goBack, child: const Text('Back')),
+          Expanded(child: child),
+        ],
+      );
 }

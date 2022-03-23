@@ -21,10 +21,9 @@ FidoState _$FidoStateFromJson(Map<String, dynamic> json) {
 class _$FidoStateTearOff {
   const _$FidoStateTearOff();
 
-  _FidoState call({required Map<String, dynamic> info, required bool locked}) {
+  _FidoState call({required Map<String, dynamic> info}) {
     return _FidoState(
       info: info,
-      locked: locked,
     );
   }
 
@@ -39,7 +38,6 @@ const $FidoState = _$FidoStateTearOff();
 /// @nodoc
 mixin _$FidoState {
   Map<String, dynamic> get info => throw _privateConstructorUsedError;
-  bool get locked => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -51,7 +49,7 @@ mixin _$FidoState {
 abstract class $FidoStateCopyWith<$Res> {
   factory $FidoStateCopyWith(FidoState value, $Res Function(FidoState) then) =
       _$FidoStateCopyWithImpl<$Res>;
-  $Res call({Map<String, dynamic> info, bool locked});
+  $Res call({Map<String, dynamic> info});
 }
 
 /// @nodoc
@@ -65,17 +63,12 @@ class _$FidoStateCopyWithImpl<$Res> implements $FidoStateCopyWith<$Res> {
   @override
   $Res call({
     Object? info = freezed,
-    Object? locked = freezed,
   }) {
     return _then(_value.copyWith(
       info: info == freezed
           ? _value.info
           : info // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
-      locked: locked == freezed
-          ? _value.locked
-          : locked // ignore: cast_nullable_to_non_nullable
-              as bool,
     ));
   }
 }
@@ -86,7 +79,7 @@ abstract class _$FidoStateCopyWith<$Res> implements $FidoStateCopyWith<$Res> {
           _FidoState value, $Res Function(_FidoState) then) =
       __$FidoStateCopyWithImpl<$Res>;
   @override
-  $Res call({Map<String, dynamic> info, bool locked});
+  $Res call({Map<String, dynamic> info});
 }
 
 /// @nodoc
@@ -101,17 +94,12 @@ class __$FidoStateCopyWithImpl<$Res> extends _$FidoStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? info = freezed,
-    Object? locked = freezed,
   }) {
     return _then(_FidoState(
       info: info == freezed
           ? _value.info
           : info // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
-      locked: locked == freezed
-          ? _value.locked
-          : locked // ignore: cast_nullable_to_non_nullable
-              as bool,
     ));
   }
 }
@@ -119,19 +107,17 @@ class __$FidoStateCopyWithImpl<$Res> extends _$FidoStateCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$_FidoState extends _FidoState {
-  _$_FidoState({required this.info, required this.locked}) : super._();
+  _$_FidoState({required this.info}) : super._();
 
   factory _$_FidoState.fromJson(Map<String, dynamic> json) =>
       _$$_FidoStateFromJson(json);
 
   @override
   final Map<String, dynamic> info;
-  @override
-  final bool locked;
 
   @override
   String toString() {
-    return 'FidoState(info: $info, locked: $locked)';
+    return 'FidoState(info: $info)';
   }
 
   @override
@@ -139,15 +125,12 @@ class _$_FidoState extends _FidoState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _FidoState &&
-            const DeepCollectionEquality().equals(other.info, info) &&
-            const DeepCollectionEquality().equals(other.locked, locked));
+            const DeepCollectionEquality().equals(other.info, info));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(info),
-      const DeepCollectionEquality().hash(locked));
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(info));
 
   @JsonKey(ignore: true)
   @override
@@ -161,9 +144,7 @@ class _$_FidoState extends _FidoState {
 }
 
 abstract class _FidoState extends FidoState {
-  factory _FidoState(
-      {required Map<String, dynamic> info,
-      required bool locked}) = _$_FidoState;
+  factory _FidoState({required Map<String, dynamic> info}) = _$_FidoState;
   _FidoState._() : super._();
 
   factory _FidoState.fromJson(Map<String, dynamic> json) =
@@ -171,8 +152,6 @@ abstract class _FidoState extends FidoState {
 
   @override
   Map<String, dynamic> get info;
-  @override
-  bool get locked;
   @override
   @JsonKey(ignore: true)
   _$FidoStateCopyWith<_FidoState> get copyWith =>
@@ -501,6 +480,450 @@ abstract class _PinFailure implements PinResult {
   bool get authBlocked;
   @JsonKey(ignore: true)
   _$PinFailureCopyWith<_PinFailure> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+class _$LockedCollectionTearOff {
+  const _$LockedCollectionTearOff();
+
+  _Unknown<T> unknown<T>() {
+    return _Unknown<T>();
+  }
+
+  _Locked<T> locked<T>() {
+    return _Locked<T>();
+  }
+
+  _Opened<T> opened<T>(List<T> values) {
+    return _Opened<T>(
+      values,
+    );
+  }
+}
+
+/// @nodoc
+const $LockedCollection = _$LockedCollectionTearOff();
+
+/// @nodoc
+mixin _$LockedCollection<T> {
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() unknown,
+    required TResult Function() locked,
+    required TResult Function(List<T> values) opened,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? unknown,
+    TResult Function()? locked,
+    TResult Function(List<T> values)? opened,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? unknown,
+    TResult Function()? locked,
+    TResult Function(List<T> values)? opened,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Unknown<T> value) unknown,
+    required TResult Function(_Locked<T> value) locked,
+    required TResult Function(_Opened<T> value) opened,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_Unknown<T> value)? unknown,
+    TResult Function(_Locked<T> value)? locked,
+    TResult Function(_Opened<T> value)? opened,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Unknown<T> value)? unknown,
+    TResult Function(_Locked<T> value)? locked,
+    TResult Function(_Opened<T> value)? opened,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $LockedCollectionCopyWith<T, $Res> {
+  factory $LockedCollectionCopyWith(
+          LockedCollection<T> value, $Res Function(LockedCollection<T>) then) =
+      _$LockedCollectionCopyWithImpl<T, $Res>;
+}
+
+/// @nodoc
+class _$LockedCollectionCopyWithImpl<T, $Res>
+    implements $LockedCollectionCopyWith<T, $Res> {
+  _$LockedCollectionCopyWithImpl(this._value, this._then);
+
+  final LockedCollection<T> _value;
+  // ignore: unused_field
+  final $Res Function(LockedCollection<T>) _then;
+}
+
+/// @nodoc
+abstract class _$UnknownCopyWith<T, $Res> {
+  factory _$UnknownCopyWith(
+          _Unknown<T> value, $Res Function(_Unknown<T>) then) =
+      __$UnknownCopyWithImpl<T, $Res>;
+}
+
+/// @nodoc
+class __$UnknownCopyWithImpl<T, $Res>
+    extends _$LockedCollectionCopyWithImpl<T, $Res>
+    implements _$UnknownCopyWith<T, $Res> {
+  __$UnknownCopyWithImpl(_Unknown<T> _value, $Res Function(_Unknown<T>) _then)
+      : super(_value, (v) => _then(v as _Unknown<T>));
+
+  @override
+  _Unknown<T> get _value => super._value as _Unknown<T>;
+}
+
+/// @nodoc
+
+class _$_Unknown<T> implements _Unknown<T> {
+  _$_Unknown();
+
+  @override
+  String toString() {
+    return 'LockedCollection<$T>.unknown()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _Unknown<T>);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() unknown,
+    required TResult Function() locked,
+    required TResult Function(List<T> values) opened,
+  }) {
+    return unknown();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? unknown,
+    TResult Function()? locked,
+    TResult Function(List<T> values)? opened,
+  }) {
+    return unknown?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? unknown,
+    TResult Function()? locked,
+    TResult Function(List<T> values)? opened,
+    required TResult orElse(),
+  }) {
+    if (unknown != null) {
+      return unknown();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Unknown<T> value) unknown,
+    required TResult Function(_Locked<T> value) locked,
+    required TResult Function(_Opened<T> value) opened,
+  }) {
+    return unknown(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_Unknown<T> value)? unknown,
+    TResult Function(_Locked<T> value)? locked,
+    TResult Function(_Opened<T> value)? opened,
+  }) {
+    return unknown?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Unknown<T> value)? unknown,
+    TResult Function(_Locked<T> value)? locked,
+    TResult Function(_Opened<T> value)? opened,
+    required TResult orElse(),
+  }) {
+    if (unknown != null) {
+      return unknown(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _Unknown<T> implements LockedCollection<T> {
+  factory _Unknown() = _$_Unknown<T>;
+}
+
+/// @nodoc
+abstract class _$LockedCopyWith<T, $Res> {
+  factory _$LockedCopyWith(_Locked<T> value, $Res Function(_Locked<T>) then) =
+      __$LockedCopyWithImpl<T, $Res>;
+}
+
+/// @nodoc
+class __$LockedCopyWithImpl<T, $Res>
+    extends _$LockedCollectionCopyWithImpl<T, $Res>
+    implements _$LockedCopyWith<T, $Res> {
+  __$LockedCopyWithImpl(_Locked<T> _value, $Res Function(_Locked<T>) _then)
+      : super(_value, (v) => _then(v as _Locked<T>));
+
+  @override
+  _Locked<T> get _value => super._value as _Locked<T>;
+}
+
+/// @nodoc
+
+class _$_Locked<T> implements _Locked<T> {
+  _$_Locked();
+
+  @override
+  String toString() {
+    return 'LockedCollection<$T>.locked()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _Locked<T>);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() unknown,
+    required TResult Function() locked,
+    required TResult Function(List<T> values) opened,
+  }) {
+    return locked();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? unknown,
+    TResult Function()? locked,
+    TResult Function(List<T> values)? opened,
+  }) {
+    return locked?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? unknown,
+    TResult Function()? locked,
+    TResult Function(List<T> values)? opened,
+    required TResult orElse(),
+  }) {
+    if (locked != null) {
+      return locked();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Unknown<T> value) unknown,
+    required TResult Function(_Locked<T> value) locked,
+    required TResult Function(_Opened<T> value) opened,
+  }) {
+    return locked(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_Unknown<T> value)? unknown,
+    TResult Function(_Locked<T> value)? locked,
+    TResult Function(_Opened<T> value)? opened,
+  }) {
+    return locked?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Unknown<T> value)? unknown,
+    TResult Function(_Locked<T> value)? locked,
+    TResult Function(_Opened<T> value)? opened,
+    required TResult orElse(),
+  }) {
+    if (locked != null) {
+      return locked(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _Locked<T> implements LockedCollection<T> {
+  factory _Locked() = _$_Locked<T>;
+}
+
+/// @nodoc
+abstract class _$OpenedCopyWith<T, $Res> {
+  factory _$OpenedCopyWith(_Opened<T> value, $Res Function(_Opened<T>) then) =
+      __$OpenedCopyWithImpl<T, $Res>;
+  $Res call({List<T> values});
+}
+
+/// @nodoc
+class __$OpenedCopyWithImpl<T, $Res>
+    extends _$LockedCollectionCopyWithImpl<T, $Res>
+    implements _$OpenedCopyWith<T, $Res> {
+  __$OpenedCopyWithImpl(_Opened<T> _value, $Res Function(_Opened<T>) _then)
+      : super(_value, (v) => _then(v as _Opened<T>));
+
+  @override
+  _Opened<T> get _value => super._value as _Opened<T>;
+
+  @override
+  $Res call({
+    Object? values = freezed,
+  }) {
+    return _then(_Opened<T>(
+      values == freezed
+          ? _value.values
+          : values // ignore: cast_nullable_to_non_nullable
+              as List<T>,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_Opened<T> implements _Opened<T> {
+  _$_Opened(this.values);
+
+  @override
+  final List<T> values;
+
+  @override
+  String toString() {
+    return 'LockedCollection<$T>.opened(values: $values)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _Opened<T> &&
+            const DeepCollectionEquality().equals(other.values, values));
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(values));
+
+  @JsonKey(ignore: true)
+  @override
+  _$OpenedCopyWith<T, _Opened<T>> get copyWith =>
+      __$OpenedCopyWithImpl<T, _Opened<T>>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() unknown,
+    required TResult Function() locked,
+    required TResult Function(List<T> values) opened,
+  }) {
+    return opened(values);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? unknown,
+    TResult Function()? locked,
+    TResult Function(List<T> values)? opened,
+  }) {
+    return opened?.call(values);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? unknown,
+    TResult Function()? locked,
+    TResult Function(List<T> values)? opened,
+    required TResult orElse(),
+  }) {
+    if (opened != null) {
+      return opened(values);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Unknown<T> value) unknown,
+    required TResult Function(_Locked<T> value) locked,
+    required TResult Function(_Opened<T> value) opened,
+  }) {
+    return opened(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_Unknown<T> value)? unknown,
+    TResult Function(_Locked<T> value)? locked,
+    TResult Function(_Opened<T> value)? opened,
+  }) {
+    return opened?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Unknown<T> value)? unknown,
+    TResult Function(_Locked<T> value)? locked,
+    TResult Function(_Opened<T> value)? opened,
+    required TResult orElse(),
+  }) {
+    if (opened != null) {
+      return opened(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _Opened<T> implements LockedCollection<T> {
+  factory _Opened(List<T> values) = _$_Opened<T>;
+
+  List<T> get values;
+  @JsonKey(ignore: true)
+  _$OpenedCopyWith<T, _Opened<T>> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1193,16 +1616,29 @@ abstract class _EventError implements FingerprintEvent {
       throw _privateConstructorUsedError;
 }
 
+FidoCredential _$FidoCredentialFromJson(Map<String, dynamic> json) {
+  return _FidoCredential.fromJson(json);
+}
+
 /// @nodoc
 class _$FidoCredentialTearOff {
   const _$FidoCredentialTearOff();
 
-  _FidoCredential call(String rpId, String credentialId, String userName) {
+  _FidoCredential call(
+      {required String rpId,
+      required String credentialId,
+      required String userId,
+      required String userName}) {
     return _FidoCredential(
-      rpId,
-      credentialId,
-      userName,
+      rpId: rpId,
+      credentialId: credentialId,
+      userId: userId,
+      userName: userName,
     );
+  }
+
+  FidoCredential fromJson(Map<String, Object?> json) {
+    return FidoCredential.fromJson(json);
   }
 }
 
@@ -1213,8 +1649,10 @@ const $FidoCredential = _$FidoCredentialTearOff();
 mixin _$FidoCredential {
   String get rpId => throw _privateConstructorUsedError;
   String get credentialId => throw _privateConstructorUsedError;
+  String get userId => throw _privateConstructorUsedError;
   String get userName => throw _privateConstructorUsedError;
 
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $FidoCredentialCopyWith<FidoCredential> get copyWith =>
       throw _privateConstructorUsedError;
@@ -1225,7 +1663,7 @@ abstract class $FidoCredentialCopyWith<$Res> {
   factory $FidoCredentialCopyWith(
           FidoCredential value, $Res Function(FidoCredential) then) =
       _$FidoCredentialCopyWithImpl<$Res>;
-  $Res call({String rpId, String credentialId, String userName});
+  $Res call({String rpId, String credentialId, String userId, String userName});
 }
 
 /// @nodoc
@@ -1241,6 +1679,7 @@ class _$FidoCredentialCopyWithImpl<$Res>
   $Res call({
     Object? rpId = freezed,
     Object? credentialId = freezed,
+    Object? userId = freezed,
     Object? userName = freezed,
   }) {
     return _then(_value.copyWith(
@@ -1251,6 +1690,10 @@ class _$FidoCredentialCopyWithImpl<$Res>
       credentialId: credentialId == freezed
           ? _value.credentialId
           : credentialId // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: userId == freezed
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
               as String,
       userName: userName == freezed
           ? _value.userName
@@ -1267,7 +1710,7 @@ abstract class _$FidoCredentialCopyWith<$Res>
           _FidoCredential value, $Res Function(_FidoCredential) then) =
       __$FidoCredentialCopyWithImpl<$Res>;
   @override
-  $Res call({String rpId, String credentialId, String userName});
+  $Res call({String rpId, String credentialId, String userId, String userName});
 }
 
 /// @nodoc
@@ -1285,18 +1728,23 @@ class __$FidoCredentialCopyWithImpl<$Res>
   $Res call({
     Object? rpId = freezed,
     Object? credentialId = freezed,
+    Object? userId = freezed,
     Object? userName = freezed,
   }) {
     return _then(_FidoCredential(
-      rpId == freezed
+      rpId: rpId == freezed
           ? _value.rpId
           : rpId // ignore: cast_nullable_to_non_nullable
               as String,
-      credentialId == freezed
+      credentialId: credentialId == freezed
           ? _value.credentialId
           : credentialId // ignore: cast_nullable_to_non_nullable
               as String,
-      userName == freezed
+      userId: userId == freezed
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      userName: userName == freezed
           ? _value.userName
           : userName // ignore: cast_nullable_to_non_nullable
               as String,
@@ -1305,20 +1753,29 @@ class __$FidoCredentialCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
+@JsonSerializable()
 class _$_FidoCredential implements _FidoCredential {
-  _$_FidoCredential(this.rpId, this.credentialId, this.userName);
+  _$_FidoCredential(
+      {required this.rpId,
+      required this.credentialId,
+      required this.userId,
+      required this.userName});
+
+  factory _$_FidoCredential.fromJson(Map<String, dynamic> json) =>
+      _$$_FidoCredentialFromJson(json);
 
   @override
   final String rpId;
   @override
   final String credentialId;
   @override
+  final String userId;
+  @override
   final String userName;
 
   @override
   String toString() {
-    return 'FidoCredential(rpId: $rpId, credentialId: $credentialId, userName: $userName)';
+    return 'FidoCredential(rpId: $rpId, credentialId: $credentialId, userId: $userId, userName: $userName)';
   }
 
   @override
@@ -1329,6 +1786,7 @@ class _$_FidoCredential implements _FidoCredential {
             const DeepCollectionEquality().equals(other.rpId, rpId) &&
             const DeepCollectionEquality()
                 .equals(other.credentialId, credentialId) &&
+            const DeepCollectionEquality().equals(other.userId, userId) &&
             const DeepCollectionEquality().equals(other.userName, userName));
   }
 
@@ -1337,22 +1795,36 @@ class _$_FidoCredential implements _FidoCredential {
       runtimeType,
       const DeepCollectionEquality().hash(rpId),
       const DeepCollectionEquality().hash(credentialId),
+      const DeepCollectionEquality().hash(userId),
       const DeepCollectionEquality().hash(userName));
 
   @JsonKey(ignore: true)
   @override
   _$FidoCredentialCopyWith<_FidoCredential> get copyWith =>
       __$FidoCredentialCopyWithImpl<_FidoCredential>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_FidoCredentialToJson(this);
+  }
 }
 
 abstract class _FidoCredential implements FidoCredential {
-  factory _FidoCredential(String rpId, String credentialId, String userName) =
-      _$_FidoCredential;
+  factory _FidoCredential(
+      {required String rpId,
+      required String credentialId,
+      required String userId,
+      required String userName}) = _$_FidoCredential;
+
+  factory _FidoCredential.fromJson(Map<String, dynamic> json) =
+      _$_FidoCredential.fromJson;
 
   @override
   String get rpId;
   @override
   String get credentialId;
+  @override
+  String get userId;
   @override
   String get userName;
   @override

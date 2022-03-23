@@ -50,10 +50,14 @@ class FidoMainPage extends StatelessWidget {
               child: Icon(Icons.account_box),
             ),
             title: const Text('Credentials'),
-            subtitle: const Text('Manage stored credentials on key'),
-            onTap: () {
-              setSubPage(SubPage.credentials);
-            },
+            subtitle: Text(state.hasPin
+                ? 'Manage stored credentials on key'
+                : 'Set a PIN to manage credentials'),
+            onTap: state.hasPin
+                ? () {
+                    setSubPage(SubPage.credentials);
+                  }
+                : null,
           ),
         ListTile(
           leading: const CircleAvatar(

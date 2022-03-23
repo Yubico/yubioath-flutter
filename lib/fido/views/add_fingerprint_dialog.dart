@@ -10,7 +10,7 @@ import '../../fido/models.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 
-final _log = Logger('fido.views.reset_dialog');
+final _log = Logger('fido.views.add_fingerprint_dialog');
 
 class AddFingerprintDialog extends ConsumerStatefulWidget {
   final DeviceNode node;
@@ -83,8 +83,8 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
           _color = _animateColor(Colors.redAccent);
         });
       });
-    }, onError: (e) {
-      _log.severe('Error adding fingerprint', e);
+    }, onError: (error, stacktrace) {
+      _log.severe('Error adding fingerprint', error, stacktrace);
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

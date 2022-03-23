@@ -4,38 +4,38 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/models.dart';
 import '../models.dart';
 import '../state.dart';
-import 'add_fingerprint_dialog.dart';
-import 'delete_fingerprint_dialog.dart';
-import 'rename_fingerprint_dialog.dart';
+import 'delete_credential_dialog.dart';
+import 'rename_credential_dialog.dart';
 import 'unlock_view.dart';
 
-class FingerprintPage extends ConsumerWidget {
+class CredentialPage extends ConsumerWidget {
   final DeviceNode node;
   final FidoState state;
 
-  const FingerprintPage(this.node, this.state, {Key? key}) : super(key: key);
+  const CredentialPage(this.node, this.state, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(fingerprintProvider(node.path)).when(
+    return ref.watch(credentialProvider(node.path)).when(
           unknown: () => const Center(child: CircularProgressIndicator()),
           locked: () => UnlockView(
             onUnlock: (pin) async {
               return ref
-                  .read(fingerprintProvider(node.path).notifier)
+                  .read(credentialProvider(node.path).notifier)
                   .unlock(pin);
             },
           ),
-          opened: (fingerprints) => ListView(
+          opened: (credentials) => ListView(
             children: [
               ListTile(
                 title: Text(
-                  'FINGERPRINTS',
+                  'CREDENTIALS',
                   style: Theme.of(context).textTheme.bodyText2,
                 ),
               ),
-              ...fingerprints.map((fp) => ListTile(
-                    title: Text(fp.label),
+              ...credentials.map((cred) => ListTile(
+                    title: Text(cred.userName),
+                    subtitle: Text(cred.rpId),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -44,7 +44,7 @@ class FingerprintPage extends ConsumerWidget {
                               showDialog(
                                 context: context,
                                 builder: (context) =>
-                                    RenameFingerprintDialog(node, fp),
+                                    RenameCredentialDialog(node, cred),
                               );
                             },
                             icon: const Icon(Icons.edit)),
@@ -53,30 +53,13 @@ class FingerprintPage extends ConsumerWidget {
                               showDialog(
                                 context: context,
                                 builder: (context) =>
-                                    DeleteFingerprintDialog(node, fp),
+                                    DeleteCredentialDialog(node, cred),
                               );
                             },
                             icon: const Icon(Icons.delete)),
                       ],
                     ),
                   )),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Wrap(
-                  children: [
-                    OutlinedButton.icon(
-                      icon: const Icon(Icons.fingerprint),
-                      label: const Text('Add fingerprint'),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AddFingerprintDialog(node),
-                        );
-                      },
-                    )
-                  ],
-                ),
-              ),
             ],
           ),
         );

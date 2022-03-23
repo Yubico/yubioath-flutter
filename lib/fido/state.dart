@@ -12,45 +12,41 @@ final fidoStateProvider = StateNotifierProvider.autoDispose
 
 abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
   Stream<InteractionEvent> reset();
-  Future<PinResult> unlock(String pin);
   Future<PinResult> setPin(String newPin, {String? oldPin});
 }
 
-final fingerprintProvider = StateNotifierProvider.autoDispose
-    .family<FidoFingerprintsNotifier, List<Fingerprint>?, DevicePath>(
+abstract class LockedCollectionNotifier<T>
+    extends StateNotifier<LockedCollection<T>> {
+  LockedCollectionNotifier() : super(LockedCollection.unknown());
+  Future<PinResult> unlock(String pin);
+
+  @protected
+  void setItems(List<T> items) {
+    if (mounted) {
+      state = LockedCollection.opened(List.unmodifiable(items));
+    }
+  }
+}
+
+final fingerprintProvider = StateNotifierProvider.autoDispose.family<
+    FidoFingerprintsNotifier, LockedCollection<Fingerprint>, DevicePath>(
   (ref, arg) => throw UnimplementedError(),
 );
 
 abstract class FidoFingerprintsNotifier
-    extends StateNotifier<List<Fingerprint>?> {
-  FidoFingerprintsNotifier() : super(null);
-
-  @override
-  @protected
-  set state(List<Fingerprint>? value) {
-    super.state = value != null ? List.unmodifiable(value) : null;
-  }
-
+    extends LockedCollectionNotifier<Fingerprint> {
   Stream<FingerprintEvent> registerFingerprint({String? name});
   Future<Fingerprint> renameFingerprint(Fingerprint fingerprint, String name);
   Future<void> deleteFingerprint(Fingerprint fingerprint);
 }
 
-final credentialProvider = StateNotifierProvider.autoDispose
-    .family<FidoCredentialsNotifier, List<FidoCredential>?, DevicePath>(
+final credentialProvider = StateNotifierProvider.autoDispose.family<
+    FidoCredentialsNotifier, LockedCollection<FidoCredential>, DevicePath>(
   (ref, arg) => throw UnimplementedError(),
 );
 
 abstract class FidoCredentialsNotifier
-    extends StateNotifier<List<FidoCredential>?> {
-  FidoCredentialsNotifier() : super(null);
-
-  @override
-  @protected
-  set state(List<FidoCredential>? value) {
-    super.state = value != null ? List.unmodifiable(value) : null;
-  }
-
+    extends LockedCollectionNotifier<FidoCredential> {
   Future<FidoCredential> renameCredential(
       FidoCredential credential, String label);
   Future<void> deleteCredential(FidoCredential credential);
