@@ -4,8 +4,8 @@ import 'package:yubico_authenticator/management/models.dart';
 import '../app/models.dart';
 import '../core/state.dart';
 
-final managementStateProvider = StateNotifierProvider.autoDispose.family<
-    ManagementStateNotifier, ApplicationStateResult<DeviceInfo>, DevicePath>(
+final managementStateProvider = StateNotifierProvider.autoDispose
+    .family<ManagementStateNotifier, AsyncValue<DeviceInfo>, DevicePath>(
   (ref, devicePath) => throw UnimplementedError(),
 );
 

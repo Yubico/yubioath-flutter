@@ -28,7 +28,7 @@ final _sessionProvider =
 );
 
 final desktopFidoState = StateNotifierProvider.autoDispose
-    .family<FidoStateNotifier, ApplicationStateResult<FidoState>, DevicePath>(
+    .family<FidoStateNotifier, AsyncValue<FidoState>, DevicePath>(
   (ref, devicePath) {
     final session = ref.watch(_sessionProvider(devicePath));
     final notifier = _DesktopFidoStateNotifier(session);
@@ -106,7 +106,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
 
 final desktopFingerprintProvider = StateNotifierProvider.autoDispose.family<
     FidoFingerprintsNotifier,
-    LockedCollection<Fingerprint>,
+    AsyncValue<List<Fingerprint>>,
     DevicePath>((ref, devicePath) {
   final session = ref.watch(_sessionProvider(devicePath));
   final notifier = _DesktopFidoFingerprintsNotifier(
@@ -135,7 +135,7 @@ class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
     if (pin != null) {
       unlock(pin, remember: false);
     } else {
-      state = LockedCollection.locked();
+      state = const AsyncValue.error('locked');
     }
   }
 
@@ -232,7 +232,7 @@ class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 
 final desktopCredentialProvider = StateNotifierProvider.autoDispose.family<
     FidoCredentialsNotifier,
-    LockedCollection<FidoCredential>,
+    AsyncValue<List<FidoCredential>>,
     DevicePath>((ref, devicePath) {
   final session = ref.watch(_sessionProvider(devicePath));
   final notifier = _DesktopFidoCredentialsNotifier(
@@ -261,7 +261,7 @@ class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
     if (pin != null) {
       unlock(pin, remember: false);
     } else {
-      state = LockedCollection.locked();
+      state = const AsyncValue.error('locked');
     }
   }
 

@@ -240,9 +240,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       title: const Text('Toggle applications'),
       child:
           ref.watch(managementStateProvider(widget.deviceData.node.path)).when(
-                none: () => const AppLoadingScreen(),
-                failure: (reason) => AppFailureScreen(reason),
-                success: (info) {
+                loading: () => const AppLoadingScreen(),
+                error: (error, _) => AppFailureScreen('$error'),
+                data: (info) {
                   // TODO: Check mode for < YK5 intead
                   changed = !_mapEquals(
                     _enabled,

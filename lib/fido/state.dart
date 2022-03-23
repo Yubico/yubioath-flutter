@@ -6,7 +6,7 @@ import '../core/state.dart';
 import 'models.dart';
 
 final fidoStateProvider = StateNotifierProvider.autoDispose
-    .family<FidoStateNotifier, ApplicationStateResult<FidoState>, DevicePath>(
+    .family<FidoStateNotifier, AsyncValue<FidoState>, DevicePath>(
   (ref, devicePath) => throw UnimplementedError(),
 );
 
@@ -16,20 +16,20 @@ abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
 }
 
 abstract class LockedCollectionNotifier<T>
-    extends StateNotifier<LockedCollection<T>> {
-  LockedCollectionNotifier() : super(LockedCollection.unknown());
+    extends StateNotifier<AsyncValue<List<T>>> {
+  LockedCollectionNotifier() : super(const AsyncValue.loading());
   Future<PinResult> unlock(String pin);
 
   @protected
   void setItems(List<T> items) {
     if (mounted) {
-      state = LockedCollection.opened(List.unmodifiable(items));
+      state = AsyncValue.data(List.unmodifiable(items));
     }
   }
 }
 
 final fingerprintProvider = StateNotifierProvider.autoDispose.family<
-    FidoFingerprintsNotifier, LockedCollection<Fingerprint>, DevicePath>(
+    FidoFingerprintsNotifier, AsyncValue<List<Fingerprint>>, DevicePath>(
   (ref, arg) => throw UnimplementedError(),
 );
 
@@ -41,7 +41,7 @@ abstract class FidoFingerprintsNotifier
 }
 
 final credentialProvider = StateNotifierProvider.autoDispose.family<
-    FidoCredentialsNotifier, LockedCollection<FidoCredential>, DevicePath>(
+    FidoCredentialsNotifier, AsyncValue<List<FidoCredential>>, DevicePath>(
   (ref, arg) => throw UnimplementedError(),
 );
 

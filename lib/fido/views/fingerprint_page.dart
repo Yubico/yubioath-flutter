@@ -18,15 +18,15 @@ class FingerprintPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(fingerprintProvider(node.path)).when(
-          unknown: () => const Center(child: CircularProgressIndicator()),
-          locked: () => UnlockView(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => UnlockView(
             onUnlock: (pin) async {
               return ref
                   .read(fingerprintProvider(node.path).notifier)
                   .unlock(pin);
             },
           ),
-          opened: (fingerprints) => ListView(
+          data: (fingerprints) => ListView(
             children: [
               ListTile(
                 title: Text(

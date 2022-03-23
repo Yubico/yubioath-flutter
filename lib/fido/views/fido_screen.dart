@@ -28,8 +28,8 @@ class FidoScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) =>
       ref.watch(fidoStateProvider(deviceData.node.path)).when(
-          none: () => const AppLoadingScreen(),
-          failure: (reason) {
+          loading: () => const AppLoadingScreen(),
+          error: (error, _) {
             final supported = deviceData
                 .info.supportedCapabilities[deviceData.node.transport]!;
             if (Capability.fido2.value & supported == 0) {
@@ -43,9 +43,9 @@ class FidoScreen extends ConsumerWidget {
                     'WebAuthn management requires elevated privileges.\nRestart this app as administrator.');
               }
             }
-            return AppFailureScreen(reason);
+            return AppFailureScreen('$error');
           },
-          success: (state) {
+          data: (state) {
             setSubPage(value) {
               ref.read(_subPageProvider.notifier).state = value;
             }

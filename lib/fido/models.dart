@@ -34,13 +34,6 @@ class PinResult with _$PinResult {
 }
 
 @freezed
-class LockedCollection<T> with _$LockedCollection<T> {
-  factory LockedCollection.unknown() = _Unknown<T>;
-  factory LockedCollection.locked() = _Locked<T>;
-  factory LockedCollection.opened(List<T> values) = _Opened<T>;
-}
-
-@freezed
 class Fingerprint with _$Fingerprint {
   const Fingerprint._();
   factory Fingerprint(String templateId, String? name) = _Fingerprint;
