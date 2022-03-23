@@ -64,11 +64,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<bool> setPassword(String? current, String password) async {
     try {
-      if (current != null) {
-        await _api.changePassword(current, password);
-      } else {
-        await _api.setPassword(password);
-      }
+      await _api.setPassword(current, password);
       return true;
     } on PlatformException catch (e) {
       _log.config('Calling set password failed with exception: $e');
@@ -183,12 +179,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       OathCredential credential, String? issuer, String name) async {
     try {
       String response;
-      if (issuer != null) {
-        response =
-            await _api.renameAccountWithIssuer(credential.id, name, issuer);
-      } else {
-        response = await _api.renameAccount(credential.id, name);
-      }
+      response = await _api.renameAccount(credential.id, name, issuer);
 
       var responseJson = jsonDecode(response);
 
