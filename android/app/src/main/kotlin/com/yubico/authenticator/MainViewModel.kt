@@ -413,7 +413,7 @@ class MainViewModel : ViewModel() {
     fun unlockOathSession(
         password: String,
         remember: Boolean,
-        result: Pigeon.Result<Boolean>
+        result: Pigeon.Result<Long>
     ) {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -431,7 +431,18 @@ class MainViewModel : ViewModel() {
                             .toString()
                     }
 
-                    result.success(!isLocked)
+                    val resultValue = (if (!isLocked) {
+                        1L
+                    } else {
+                        0L
+                    }) or
+                            (if (keyManager.isRemembered(it.deviceId)) {
+                                2L
+                            } else {
+                                0L
+                            })
+
+                    result.success(resultValue)
                 }
 
                 codes?.let {

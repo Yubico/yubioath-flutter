@@ -13,7 +13,7 @@ class OathApiImpl(private val viewModel: MainViewModel) : OathApi {
     override fun unlock(
         password: String,
         remember: Boolean,
-        result: Result<Boolean>
+        result: Result<Long>
     ) {
         viewModel.unlockOathSession(password, remember, result)
     }

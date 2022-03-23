@@ -34,7 +34,7 @@ public class Pigeon {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface OathApi {
     void reset(Result<Void> result);
-    void unlock(@NonNull String password, @NonNull Boolean remember, Result<Boolean> result);
+    void unlock(@NonNull String password, @NonNull Boolean remember, Result<Long> result);
     void setPassword(@Nullable String currentPassword, @NonNull String newPassword, Result<Void> result);
     void unsetPassword(@NonNull String currentPassword, Result<Void> result);
     void forgetPassword(Result<Void> result);
@@ -96,8 +96,8 @@ public class Pigeon {
               if (rememberArg == null) {
                 throw new NullPointerException("rememberArg unexpectedly null.");
               }
-              Result<Boolean> resultCallback = new Result<Boolean>() {
-                public void success(Boolean result) {
+              Result<Long> resultCallback = new Result<Long>() {
+                public void success(Long result) {
                   wrapped.put("result", result);
                   reply.reply(wrapped);
                 }

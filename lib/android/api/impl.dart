@@ -44,7 +44,7 @@ class OathApi {
     }
   }
 
-  Future<bool> unlock(String arg_password, bool arg_remember) async {
+  Future<int> unlock(String arg_password, bool arg_remember) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.OathApi.unlock', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
@@ -67,7 +67,7 @@ class OathApi {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (replyMap['result'] as bool?)!;
+      return (replyMap['result'] as int?)!;
     }
   }
 

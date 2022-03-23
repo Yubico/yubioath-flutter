@@ -6,7 +6,7 @@ abstract class OathApi {
   void reset();
 
   @async
-  bool unlock(String password, bool remember);
+  int unlock(String password, bool remember);
 
   @async
   void setPassword(String? currentPassword, String newPassword);
