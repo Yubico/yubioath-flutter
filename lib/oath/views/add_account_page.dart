@@ -1,30 +1,17 @@
 import 'dart:math';
-import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:desktop_drop/desktop_drop.dart';
-import 'package:cross_file/cross_file.dart';
 
 import '../../app/state.dart';
 import '../../app/models.dart';
 import '../../app/views/responsive_dialog.dart';
+import '../../widgets/file_drop_target.dart';
 import '../models.dart';
 import '../state.dart';
 import 'utils.dart';
-
-final uriProvider =
-    StateNotifierProvider<UriNotifier, String>((ref) => UriNotifier());
-
-class UriNotifier extends StateNotifier<String> {
-  UriNotifier() : super('');
-
-  setUri(String value) {
-    state = value;
-  }
-}
 
 final _secretFormatterPattern =
     RegExp('[abcdefghijklmnopqrstuvwxyz234567 ]', caseSensitive: false);
@@ -104,21 +91,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       //TODO: This can probably be checked better to make sure it's the main page.
       Navigator.of(context).popUntil((route) => route.isFirst);
     });
-    ref.listen<String>(uriProvider, (previous, next) {
-      if (next.isNotEmpty) {
-        final data = CredentialData.fromUri(Uri.parse(next));
-        setState(() {
-          _issuerController.text = data.issuer ?? '';
-          _accountController.text = data.name;
-          _secretController.text = data.secret;
-          _oathType = data.oathType;
-          _hashAlgorithm = data.hashAlgorithm;
-          _periodController.text = '${data.period}';
-          _digits = data.digits;
-          _qrState = _QrScanState.success;
-        });
-      }
-    });
 
     final period = int.tryParse(_periodController.text) ?? -1;
     final remaining = getRemainingKeySpace(
@@ -139,12 +111,25 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     return ResponsiveDialog(
       title: const Text('Add account'),
-      child: Stack(children: <Widget>[
-        if (qrScanner != null)
-          DragDropTarget(
-            qrScanner: qrScanner,
-          ),
-        Column(
+      child: FileDropTarget(
+        onFileDropped: (fileData) async {
+          if (qrScanner != null) {
+            final b64Image = base64Encode(fileData);
+            final otpauth = await qrScanner.scanQr(b64Image);
+            final data = CredentialData.fromUri(Uri.parse(otpauth));
+            setState(() {
+              _issuerController.text = data.issuer ?? '';
+              _accountController.text = data.name;
+              _secretController.text = data.secret;
+              _oathType = data.oathType;
+              _hashAlgorithm = data.hashAlgorithm;
+              _periodController.text = '${data.period}';
+              _digits = data.digits;
+              _qrState = _QrScanState.success;
+            });
+          }
+        },
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -334,8 +319,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     child: e,
                   ))
               .toList(),
-        )
-      ]),
+        ),
+      ),
       actions: [
         TextButton(
           onPressed: isValid
@@ -375,64 +360,5 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         ),
       ],
     );
-  }
-}
-
-class DragDropTarget extends ConsumerStatefulWidget {
-  final QrScanner qrScanner;
-  DragDropTarget({Key? key, required this.qrScanner}) : super(key: key);
-
-  @override
-  _DragDropTargetState createState() => _DragDropTargetState();
-}
-
-class _DragDropTargetState extends ConsumerState<DragDropTarget> {
-  final List<XFile> _list = [];
-
-  bool _dragging = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return DropTarget(
-        onDragDone: (detail) async {
-          setState(() {
-            _list.addAll(detail.files);
-          });
-          print('onDragDone:');
-          for (final file in detail.files) {
-            File f = new File(file.path);
-            List<int> imageBytes = f.readAsBytesSync();
-            String base64Image = base64Encode(imageBytes);
-            final otpauth = await widget.qrScanner.scanQr(base64Image);
-            print('Scanning complete');
-            print(otpauth);
-            ref.read(uriProvider.notifier).setUri(otpauth);
-          }
-        },
-        onDragEntered: (detail) {
-          setState(() {
-            _dragging = true;
-          });
-        },
-        onDragExited: (detail) {
-          setState(() {
-            _dragging = false;
-          });
-        },
-        child: Container(
-            color: _dragging ? Colors.blue.withOpacity(0.4) : Colors.black26,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  height: 500,
-                  child: _list.isEmpty
-                      ? const Center(child: Text("Drop here"))
-                      : Text(_list.join("\n")),
-                )
-              ],
-            )));
   }
 }
