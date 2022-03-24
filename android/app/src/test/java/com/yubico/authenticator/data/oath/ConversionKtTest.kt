@@ -7,10 +7,10 @@ class ConversionKtTest {
 
     @Test
     fun computeUnlockOathSessionValue() {
-        assertEquals(0, computeUnlockOathSessionValue(isLocked = false, isRemembered = false))
-        assertEquals(1, computeUnlockOathSessionValue(isLocked = true, isRemembered = false))
-        assertEquals(2, computeUnlockOathSessionValue(isLocked = false, isRemembered = true))
-        assertEquals(3, computeUnlockOathSessionValue(isLocked = true, isRemembered = true))
+        assertEquals(0, computeUnlockOathSessionValue(isUnlocked = false, isRemembered = false))
+        assertEquals(1, computeUnlockOathSessionValue(isUnlocked = true, isRemembered = false))
+        assertEquals(2, computeUnlockOathSessionValue(isUnlocked = false, isRemembered = true))
+        assertEquals(3, computeUnlockOathSessionValue(isUnlocked = true, isRemembered = true))
 
     }
 }

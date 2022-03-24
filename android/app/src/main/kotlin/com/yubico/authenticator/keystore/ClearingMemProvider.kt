@@ -8,10 +8,10 @@ import javax.crypto.spec.SecretKeySpec
 import kotlin.concurrent.schedule
 
 class ClearingMemProvider : KeyProvider {
-    private val map = mutableMapOf<String, Mac>()
+    private var current: Pair<String, Mac>? = null
     private var clearAllTask: TimerTask? = null
 
-    override fun hasKey(deviceId: String): Boolean = map.contains(deviceId)
+    override fun hasKey(deviceId: String): Boolean = current?.first == deviceId
 
     override fun getKey(deviceId: String): AccessKey? {
 
@@ -21,26 +21,34 @@ class ClearingMemProvider : KeyProvider {
                 clearAll()
             }
 
-        map[deviceId]?.let {
-            return MemStoredSigner(it)
+        current?.let {
+
+            if (it.first != deviceId) {
+                return null
+            }
+
+            return MemStoredSigner(it.second)
         }
 
         return null
     }
 
     override fun addKey(deviceId: String, secret: ByteArray) {
-        map[deviceId] =
+        current = Pair(deviceId,
             Mac.getInstance(KeyProperties.KEY_ALGORITHM_HMAC_SHA1)
                 .apply {
                     init(SecretKeySpec(secret, algorithm))
                 }
+        )
     }
 
     override fun removeKey(deviceId: String) {
-        map.remove(deviceId)
+        current = null
     }
 
-    override fun clearAll() = map.clear()
+    override fun clearAll() {
+        current = null
+    }
 
     private inner class MemStoredSigner(val mac: Mac) : AccessKey {
         override fun calculateResponse(challenge: ByteArray?): ByteArray? = mac.doFinal(challenge)

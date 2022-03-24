@@ -104,6 +104,10 @@ class MainViewModel : ViewModel() {
                     oathSession.unlock(it)
                 } ?: false
 
+                if (!isRemembered) {
+                    _memoryKeyProvider.clearAll();
+                }
+
                 val oathSessionData = oathSession
                     .toJson(isRemembered)
                     .toString()
@@ -422,16 +426,16 @@ class MainViewModel : ViewModel() {
                     val accessKey = it.deriveAccessKey(password.toCharArray())
                     _keyManager.addKey(it.deviceId, accessKey, remember)
 
-                    val isLocked = isOathSessionLocked(it)
+                    val unlocked = !isOathSessionLocked(it)
                     val isRemembered = _keyManager.isRemembered(it.deviceId)
 
-                    if (!isLocked) {
+                    if (unlocked) {
                         codes = calculateOathCodes(it)
                             .toJson(it.deviceId)
                             .toString()
                     }
 
-                    result.success(computeUnlockOathSessionValue(isLocked, isRemembered))
+                    result.success(computeUnlockOathSessionValue(unlocked, isRemembered))
                 }
 
                 codes?.let {

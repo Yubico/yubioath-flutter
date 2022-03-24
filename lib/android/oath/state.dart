@@ -50,14 +50,14 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
     try {
       final unlockResponse = await _api.unlock(password, remember);
 
-      var unlockSuccess = (unlockResponse & 0x1) != 0;
+      var unlocked = (unlockResponse & 0x1) != 0;
       var remembered = (unlockResponse & 0x2) != 0;
 
-      if (unlockSuccess) {
+      if (unlocked) {
         _log.config('applet unlocked');
         setState(requireState().copyWith(locked: false));
       }
-      return Pair(unlockSuccess, remembered);
+      return Pair(unlocked, remembered);
     } on PlatformException catch (e) {
       _log.config('Calling unlock failed with exception: $e');
       return Pair(false, false);
