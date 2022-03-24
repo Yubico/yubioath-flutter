@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
+import '../../app/views/app_failure_screen.dart';
 import '../models.dart';
 import '../state.dart';
 import 'delete_credential_dialog.dart';
 import 'rename_credential_dialog.dart';
-import 'unlock_view.dart';
 
 class CredentialPage extends ConsumerWidget {
   final DeviceNode node;
@@ -18,13 +18,7 @@ class CredentialPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(credentialProvider(node.path)).when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => UnlockView(
-            onUnlock: (pin) async {
-              return ref
-                  .read(credentialProvider(node.path).notifier)
-                  .unlock(pin);
-            },
-          ),
+          error: (error, _) => AppFailureScreen('$error'),
           data: (credentials) => ListView(
             children: [
               ListTile(

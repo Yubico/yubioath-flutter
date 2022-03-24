@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
 import '../models.dart';
+import '../state.dart';
 import 'pin_dialog.dart';
+import 'pin_entry_dialog.dart';
 import 'reset_dialog.dart';
 
-class FidoMainPage extends StatelessWidget {
+class FidoMainPage extends ConsumerWidget {
   final DeviceNode node;
   final FidoState state;
   final Function(SubPage page) setSubPage;
@@ -14,8 +17,21 @@ class FidoMainPage extends StatelessWidget {
       {required this.setSubPage, Key? key})
       : super(key: key);
 
+  _openLockedPage(BuildContext context, WidgetRef ref, SubPage subPage) async {
+    final unlocked = ref.read(fidoPinProvider(node.path));
+    if (unlocked) {
+      setSubPage(subPage);
+    } else {
+      final result = await showDialog(
+          context: context, builder: (context) => PinEntryDialog(node.path));
+      if (result == true) {
+        setSubPage(subPage);
+      }
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListView(
       children: [
         ListTile(
@@ -41,7 +57,7 @@ class FidoMainPage extends StatelessWidget {
                 ? 'Fingerprints have been registered'
                 : 'No fingerprints registered'),
             onTap: () {
-              setSubPage(SubPage.fingerprints);
+              _openLockedPage(context, ref, SubPage.fingerprints);
             },
           ),
         if (state.credMgmt)
@@ -50,14 +66,13 @@ class FidoMainPage extends StatelessWidget {
               child: Icon(Icons.account_box),
             ),
             title: const Text('Credentials'),
+            enabled: state.hasPin,
             subtitle: Text(state.hasPin
                 ? 'Manage stored credentials on key'
                 : 'Set a PIN to manage credentials'),
-            onTap: state.hasPin
-                ? () {
-                    setSubPage(SubPage.credentials);
-                  }
-                : null,
+            onTap: () {
+              _openLockedPage(context, ref, SubPage.credentials);
+            },
           ),
         ListTile(
           leading: const CircleAvatar(

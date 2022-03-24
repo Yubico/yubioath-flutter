@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
+import '../../app/views/app_failure_screen.dart';
 import '../models.dart';
 import '../state.dart';
 import 'add_fingerprint_dialog.dart';
 import 'delete_fingerprint_dialog.dart';
 import 'rename_fingerprint_dialog.dart';
-import 'unlock_view.dart';
 
 class FingerprintPage extends ConsumerWidget {
   final DeviceNode node;
@@ -19,13 +19,7 @@ class FingerprintPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(fingerprintProvider(node.path)).when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => UnlockView(
-            onUnlock: (pin) async {
-              return ref
-                  .read(fingerprintProvider(node.path).notifier)
-                  .unlock(pin);
-            },
-          ),
+          error: (error, _) => AppFailureScreen('$error'),
           data: (fingerprints) => ListView(
             children: [
               ListTile(

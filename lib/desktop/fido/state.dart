@@ -46,17 +46,11 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
   final RpcNodeSession _session;
   _DesktopFidoStateNotifier(this._session) : super();
 
-  Future<void> refresh() async {
-    try {
-      final result = await _session.command('get');
-      _log.config('application status', jsonEncode(result));
-      final fidoState = FidoState.fromJson(result['data']);
-      setState(fidoState);
-    } catch (error) {
-      _log.severe('Unable to update FIDO state', jsonEncode(error));
-      setFailure('Failed to update FIDO');
-    }
-  }
+  Future<void> refresh() => updateState(() async {
+        final result = await _session.command('get');
+        _log.config('application status', jsonEncode(result));
+        return FidoState.fromJson(result['data']);
+      });
 
   @override
   Stream<InteractionEvent> reset() {
@@ -104,6 +98,39 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
   }
 }
 
+final desktopFidoPinProvider = StateNotifierProvider.autoDispose
+    .family<PinNotifier, bool, DevicePath>((ref, devicePath) {
+  return _DesktopPinNotifier(ref.watch(_sessionProvider(devicePath)),
+      ref.watch(_pinProvider(devicePath).notifier));
+});
+
+class _DesktopPinNotifier extends PinNotifier {
+  final RpcNodeSession _session;
+  final StateController<String?> _pinController;
+
+  _DesktopPinNotifier(this._session, this._pinController)
+      : super(_pinController.state != null);
+
+  @override
+  Future<PinResult> unlock(String pin) async {
+    try {
+      await _session.command(
+        'verify_pin',
+        params: {'pin': pin},
+      );
+      _pinController.state = pin;
+
+      return PinResult.success();
+    } on RpcError catch (e) {
+      if (e.status == 'pin-validation') {
+        _pinController.state = null;
+        return PinResult.failed(e.body['retries'], e.body['auth_blocked']);
+      }
+      rethrow;
+    }
+  }
+}
+
 final desktopFingerprintProvider = StateNotifierProvider.autoDispose.family<
     FidoFingerprintsNotifier,
     AsyncValue<List<Fingerprint>>,
@@ -116,7 +143,7 @@ final desktopFingerprintProvider = StateNotifierProvider.autoDispose.family<
   session.setErrorHandler('auth-required', (_) async {
     final pin = ref.read(_pinProvider(devicePath));
     if (pin != null) {
-      await notifier.unlock(pin, remember: false);
+      await notifier._unlock(pin);
     }
   });
   ref.onDispose(() {
@@ -127,38 +154,31 @@ final desktopFingerprintProvider = StateNotifierProvider.autoDispose.family<
 
 class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   final RpcNodeSession _session;
-  final StateController<String?> _pin;
-  bool locked = true;
+  final StateController<String?> _pinNotifier;
 
-  _DesktopFidoFingerprintsNotifier(this._session, this._pin) {
-    final pin = _pin.state;
+  _DesktopFidoFingerprintsNotifier(this._session, this._pinNotifier) {
+    final pin = _pinNotifier.state;
     if (pin != null) {
-      unlock(pin, remember: false);
+      _unlock(pin);
     } else {
       state = const AsyncValue.error('locked');
     }
   }
 
-  @override
-  Future<PinResult> unlock(String pin, {bool remember = true}) async {
+  Future<void> _unlock(String pin) async {
     try {
       await _session.command(
         'unlock',
         target: ['fingerprints'],
         params: {'pin': pin},
       );
-      locked = false;
-      if (remember) {
-        _pin.state = pin;
-      }
       await _refresh();
-      return PinResult.success();
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
-        _pin.state = null;
-        return PinResult.failed(e.body['retries'], e.body['auth_blocked']);
+        _pinNotifier.state = null;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 
@@ -242,7 +262,7 @@ final desktopCredentialProvider = StateNotifierProvider.autoDispose.family<
   session.setErrorHandler('auth-required', (_) async {
     final pin = ref.read(_pinProvider(devicePath));
     if (pin != null) {
-      await notifier.unlock(pin, remember: false);
+      await notifier._unlock(pin);
     }
   });
   ref.onDispose(() {
@@ -253,38 +273,31 @@ final desktopCredentialProvider = StateNotifierProvider.autoDispose.family<
 
 class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
   final RpcNodeSession _session;
-  final StateController<String?> _pin;
-  bool locked = true;
+  final StateController<String?> _pinNotifier;
 
-  _DesktopFidoCredentialsNotifier(this._session, this._pin) {
-    final pin = _pin.state;
+  _DesktopFidoCredentialsNotifier(this._session, this._pinNotifier) {
+    final pin = _pinNotifier.state;
     if (pin != null) {
-      unlock(pin, remember: false);
+      _unlock(pin);
     } else {
       state = const AsyncValue.error('locked');
     }
   }
 
-  @override
-  Future<PinResult> unlock(String pin, {bool remember = true}) async {
+  Future<void> _unlock(String pin) async {
     try {
       await _session.command(
         'unlock',
         target: ['credentials'],
         params: {'pin': pin},
       );
-      locked = false;
-      if (remember) {
-        _pin.state = pin;
-      }
       await _refresh();
-      return PinResult.success();
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
-        _pin.state = null;
-        return PinResult.failed(e.body['retries'], e.body['auth_blocked']);
+        _pinNotifier.state = null;
+      } else {
+        rethrow;
       }
-      rethrow;
     }
   }
 

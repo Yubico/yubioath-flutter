@@ -41,12 +41,15 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     super.dispose();
   }
 
-  Animation<Color?> _animateColor(Color color, {Function? atPeak}) {
+  Animation<Color?> _animateColor(Color color,
+      {Function? atPeak, bool reverse = true}) {
     final animation =
         ColorTween(begin: Colors.black, end: color).animate(_animator);
     _animator.forward().then((_) {
-      atPeak?.call();
-      _animator.reverse();
+      if (reverse) {
+        atPeak?.call();
+        _animator.reverse();
+      }
     });
     return animation;
   }
@@ -72,7 +75,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
               _samples += 1;
               _remaining = remaining;
             });
-          });
+          }, reverse: remaining > 0);
         }, complete: (fingerprint) {
           _remaining = 0;
           _fingerprint = fingerprint;
