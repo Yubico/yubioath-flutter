@@ -6,7 +6,6 @@ import '../../app/views/app_failure_screen.dart';
 import '../models.dart';
 import '../state.dart';
 import 'delete_credential_dialog.dart';
-import 'rename_credential_dialog.dart';
 
 class CredentialPage extends ConsumerWidget {
   final DeviceNode node;
@@ -33,15 +32,6 @@ class CredentialPage extends ConsumerWidget {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        IconButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    RenameCredentialDialog(node, cred),
-                              );
-                            },
-                            icon: const Icon(Icons.edit)),
                         IconButton(
                             onPressed: () {
                               showDialog(

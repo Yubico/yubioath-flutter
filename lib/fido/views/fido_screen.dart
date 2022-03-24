@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/app/state.dart';
 
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../desktop/state.dart';
@@ -75,6 +75,7 @@ class FidoScreen extends ConsumerWidget {
           });
 }
 
+// TODO: Replace this with the AppBar back button
 class WithBackButton extends StatelessWidget {
   final Function() goBack;
   final Widget child;

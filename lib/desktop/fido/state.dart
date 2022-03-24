@@ -326,10 +326,4 @@ class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
     ]);
     await _refresh();
   }
-
-  @override
-  Future<FidoCredential> renameCredential(
-      FidoCredential credential, String label) {
-    throw UnimplementedError();
-  }
 }

@@ -56,7 +56,5 @@ final credentialProvider = StateNotifierProvider.autoDispose.family<
 
 abstract class FidoCredentialsNotifier
     extends LockedCollectionNotifier<FidoCredential> {
-  Future<FidoCredential> renameCredential(
-      FidoCredential credential, String label);
   Future<void> deleteCredential(FidoCredential credential);
 }
