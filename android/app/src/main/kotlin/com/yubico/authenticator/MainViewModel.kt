@@ -46,7 +46,8 @@ class MainViewModel : ViewModel() {
     val yubiKeyDevice = MutableLiveData<YubiKeyDevice?>()
     private var isUsbKeyConnected: Boolean = false
 
-    private val keyManager = KeyManager(KeyStoreProvider(), ClearingMemProvider())
+    private val memoryKeyProvider = ClearingMemProvider()
+    private val keyManager = KeyManager(KeyStoreProvider(), memoryKeyProvider)
 
     private var _operationContext = OperationContext.Oath
 
@@ -178,13 +179,11 @@ class MainViewModel : ViewModel() {
     }
 
     fun yubikeyDetached() {
-
         if (isUsbKeyConnected) {
-            // forget the current password only for usb keys
-            // TODO: clear from memory store
+            // clear keys from memory
+            memoryKeyProvider.clearAll()
             _fManagementApi.updateDeviceInfo("") {}
         }
-
     }
 
     fun onDialogClosed(result: Pigeon.Result<Void>) {
