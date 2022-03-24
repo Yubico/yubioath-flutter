@@ -6,10 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yubico.authenticator.api.Pigeon
 import com.yubico.authenticator.data.device.toJson
-import com.yubico.authenticator.data.oath.calculateSteamCode
-import com.yubico.authenticator.data.oath.idAsString
-import com.yubico.authenticator.data.oath.isSteamCredential
-import com.yubico.authenticator.data.oath.toJson
+import com.yubico.authenticator.data.oath.*
 import com.yubico.authenticator.keystore.ClearingMemProvider
 import com.yubico.authenticator.keystore.KeyStoreProvider
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
@@ -427,6 +424,7 @@ class MainViewModel : ViewModel() {
                     keyManager.addKey(it.deviceId, accessKey, remember)
 
                     val isLocked = isOathSessionLocked(it)
+                    val isRemembered = keyManager.isRemembered(it.deviceId)
 
                     if (!isLocked) {
                         codes = calculateOathCodes(it)
@@ -434,18 +432,7 @@ class MainViewModel : ViewModel() {
                             .toString()
                     }
 
-                    val resultValue = (if (!isLocked) {
-                        1L
-                    } else {
-                        0L
-                    }) or
-                            (if (keyManager.isRemembered(it.deviceId)) {
-                                2L
-                            } else {
-                                0L
-                            })
-
-                    result.success(resultValue)
+                    result.success(computeUnlockOathSessionValue(isLocked, isRemembered))
                 }
 
                 codes?.let {
