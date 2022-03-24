@@ -15,9 +15,9 @@ class OathScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(oathStateProvider(deviceData.node.path)).when(
-          none: () => const AppLoadingScreen(),
-          failure: (reason) => AppFailureScreen(reason),
-          success: (oathState) {
+          loading: () => const AppLoadingScreen(),
+          error: (error, _) => AppFailureScreen('$error'),
+          data: (oathState) {
             if (oathState.locked) {
               return ListView(
                 children: [

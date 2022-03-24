@@ -75,13 +75,6 @@ extension Applications on Application {
 }
 
 @freezed
-class ApplicationStateResult<T> with _$ApplicationStateResult {
-  factory ApplicationStateResult.none() = _None;
-  factory ApplicationStateResult.failure(String reason) = _Failure;
-  factory ApplicationStateResult.success(T state) = _Success;
-}
-
-@freezed
 class YubiKeyData with _$YubiKeyData {
   factory YubiKeyData(DeviceNode node, String name, DeviceInfo info) =
       _YubiKeyData;

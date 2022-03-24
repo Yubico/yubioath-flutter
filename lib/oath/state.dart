@@ -11,7 +11,7 @@ import '../core/state.dart';
 import 'models.dart';
 
 final oathStateProvider = StateNotifierProvider.autoDispose
-    .family<OathStateNotifier, ApplicationStateResult<OathState>, DevicePath>(
+    .family<OathStateNotifier, AsyncValue<OathState>, DevicePath>(
   (ref, devicePath) => throw UnimplementedError(),
 );
 

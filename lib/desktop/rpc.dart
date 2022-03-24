@@ -16,6 +16,8 @@ class Signaler {
 
   Stream<Signal> get signals => _recv.stream;
 
+  Stream<String> get _sendStream => _send.stream;
+
   void cancel() {
     _send.add('cancel');
   }
@@ -122,14 +124,13 @@ class RpcSession {
   void _send(Map data) {
     _log.fine('SEND', jsonEncode(data));
     _process.stdin.writeln(jsonEncode(data));
-    _process.stdin.flush();
   }
 
   void _pump() async {
     await for (final request in _requests.stream) {
       _send(request.toJson());
 
-      request.signal?._send.stream.listen((status) {
+      final signalSubscription = request.signal?._sendStream.listen((status) {
         _send({'kind': 'signal', 'status': status});
       });
 
@@ -157,12 +158,31 @@ class RpcSession {
         );
       }
 
+      await signalSubscription?.cancel();
       request.signal?._close();
     }
   }
 }
 
 typedef ErrorHandler = Future<void> Function(RpcError e);
+
+class _MultiSignaler extends Signaler {
+  final Signaler delegate;
+  @override
+  final Stream<String> _sendStream;
+
+  _MultiSignaler(this.delegate)
+      : _sendStream = delegate._send.stream.asBroadcastStream() {
+    signals.listen(delegate._recv.sink.add);
+  }
+
+  @override
+  void _close() {}
+
+  void _reallyClose() {
+    super._close();
+  }
+}
 
 class RpcNodeSession {
   final RpcSession _rpc;
@@ -186,7 +206,12 @@ class RpcNodeSession {
     Map<dynamic, dynamic>? params,
     Signaler? signal,
   }) async {
+    bool wrapped = false;
     try {
+      if (signal != null && signal is! _MultiSignaler) {
+        signal = _MultiSignaler(signal);
+        wrapped = true;
+      }
       return await _rpc.command(
         action,
         devicePath.segments + subPath + target,
@@ -198,9 +223,18 @@ class RpcNodeSession {
       if (handler != null) {
         _log.info('Attempting recovery on "${e.status}"');
         await handler(e);
-        return command(action, target: target, params: params, signal: signal);
+        return await command(
+          action,
+          target: target,
+          params: params,
+          signal: signal,
+        );
       }
       rethrow;
+    } finally {
+      if (wrapped) {
+        (signal as _MultiSignaler)._reallyClose();
+      }
     }
   }
 }

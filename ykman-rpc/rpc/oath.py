@@ -32,7 +32,7 @@ from .base import (
     child,
     ChildResetException,
     TimeoutException,
-    RpcException,
+    AuthRequiredException,
     encode_bytes,
     decode_bytes,
 )
@@ -48,11 +48,6 @@ import os
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-class AuthRequiredException(RpcException):
-    def __init__(self):
-        super().__init__("auth-required", "Authentication is required")
 
 
 @unique
