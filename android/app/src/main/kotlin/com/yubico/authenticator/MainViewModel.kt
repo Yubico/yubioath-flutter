@@ -102,7 +102,10 @@ class MainViewModel : ViewModel() {
         val oathSessionData = suspendCoroutine<String> {
             device.requestConnection(SmartCardConnection::class.java) { result ->
                 val oathSession = OathSession(result.value)
-                val isRemembered = keyManager.isRemembered(oathSession.deviceId)
+                val isRemembered = keyManager.getKey(oathSession.deviceId)?.let {
+                    oathSession.unlock(it)
+                } ?: false
+
                 val oathSessionData = oathSession
                     .toJson(isRemembered)
                     .toString()
