@@ -1,12 +1,17 @@
 import 'package:pigeon/pigeon.dart';
 
+class UnlockResponse {
+  bool? isUnlocked;
+  bool? isRemembered;
+}
+
 @HostApi()
 abstract class OathApi {
   @async
   void reset();
 
   @async
-  int unlock(String password, bool remember);
+  UnlockResponse unlock(String password, bool remember);
 
   @async
   void setPassword(String? currentPassword, String newPassword);

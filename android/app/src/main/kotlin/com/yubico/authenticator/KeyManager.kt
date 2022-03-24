@@ -35,6 +35,9 @@ import com.yubico.yubikit.oath.AccessKey
 
 class KeyManager(private val permStore: KeyProvider, private val memStore: KeyProvider) {
 
+    /**
+     * @return true if this deviceId is stored in permanent KeyStore
+     */
     fun isRemembered(deviceId: String) = permStore.hasKey(deviceId)
 
     fun getKey(deviceId: String): AccessKey? {
@@ -48,10 +51,10 @@ class KeyManager(private val permStore: KeyProvider, private val memStore: KeyPr
     fun addKey(deviceId: String, secret: ByteArray, remember: Boolean) {
         if (remember) {
             memStore.removeKey(deviceId)
-            permStore.addKey(deviceId, secret)
+            permStore.putKey(deviceId, secret)
         } else {
             permStore.removeKey(deviceId)
-            memStore.addKey(deviceId, secret)
+            memStore.putKey(deviceId, secret)
         }
     }
 

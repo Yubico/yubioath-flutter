@@ -23,7 +23,7 @@ class KeyStoreProvider : KeyProvider {
             null
         }
 
-    override fun addKey(deviceId: String, secret: ByteArray) {
+    override fun putKey(deviceId: String, secret: ByteArray) {
         keystore.setEntry(
             deviceId,
             KeyStore.SecretKeyEntry(

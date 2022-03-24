@@ -5,7 +5,7 @@ import com.yubico.yubikit.oath.AccessKey
 interface KeyProvider {
     fun hasKey(deviceId: String): Boolean
     fun getKey(deviceId: String): AccessKey?
-    fun addKey(deviceId: String, secret: ByteArray)
+    fun putKey(deviceId: String, secret: ByteArray)
     fun removeKey(deviceId: String)
     fun clearAll()
 }

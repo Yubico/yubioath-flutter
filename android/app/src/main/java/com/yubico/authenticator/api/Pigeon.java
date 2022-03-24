@@ -22,6 +22,54 @@ import java.util.HashMap;
 @SuppressWarnings({"unused", "unchecked", "CodeBlock2Expr", "RedundantSuppression"})
 public class Pigeon {
 
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class UnlockResponse {
+    private @Nullable Boolean isUnlocked;
+    public @Nullable Boolean getIsUnlocked() { return isUnlocked; }
+    public void setIsUnlocked(@Nullable Boolean setterArg) {
+      this.isUnlocked = setterArg;
+    }
+
+    private @Nullable Boolean isRemembered;
+    public @Nullable Boolean getIsRemembered() { return isRemembered; }
+    public void setIsRemembered(@Nullable Boolean setterArg) {
+      this.isRemembered = setterArg;
+    }
+
+    public static class Builder {
+      private @Nullable Boolean isUnlocked;
+      public @NonNull Builder setIsUnlocked(@Nullable Boolean setterArg) {
+        this.isUnlocked = setterArg;
+        return this;
+      }
+      private @Nullable Boolean isRemembered;
+      public @NonNull Builder setIsRemembered(@Nullable Boolean setterArg) {
+        this.isRemembered = setterArg;
+        return this;
+      }
+      public @NonNull UnlockResponse build() {
+        UnlockResponse pigeonReturn = new UnlockResponse();
+        pigeonReturn.setIsUnlocked(isUnlocked);
+        pigeonReturn.setIsRemembered(isRemembered);
+        return pigeonReturn;
+      }
+    }
+    @NonNull Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("isUnlocked", isUnlocked);
+      toMapResult.put("isRemembered", isRemembered);
+      return toMapResult;
+    }
+    static @NonNull UnlockResponse fromMap(@NonNull Map<String, Object> map) {
+      UnlockResponse pigeonResult = new UnlockResponse();
+      Object isUnlocked = map.get("isUnlocked");
+      pigeonResult.setIsUnlocked((Boolean)isUnlocked);
+      Object isRemembered = map.get("isRemembered");
+      pigeonResult.setIsRemembered((Boolean)isRemembered);
+      return pigeonResult;
+    }
+  }
+
   public interface Result<T> {
     void success(T result);
     void error(Throwable error);
@@ -29,12 +77,33 @@ public class Pigeon {
   private static class OathApiCodec extends StandardMessageCodec {
     public static final OathApiCodec INSTANCE = new OathApiCodec();
     private OathApiCodec() {}
+    @Override
+    protected Object readValueOfType(byte type, ByteBuffer buffer) {
+      switch (type) {
+        case (byte)128:         
+          return UnlockResponse.fromMap((Map<String, Object>) readValue(buffer));
+        
+        default:        
+          return super.readValueOfType(type, buffer);
+        
+      }
+    }
+    @Override
+    protected void writeValue(ByteArrayOutputStream stream, Object value)     {
+      if (value instanceof UnlockResponse) {
+        stream.write(128);
+        writeValue(stream, ((UnlockResponse) value).toMap());
+      } else 
+{
+        super.writeValue(stream, value);
+      }
+    }
   }
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface OathApi {
     void reset(Result<Void> result);
-    void unlock(@NonNull String password, @NonNull Boolean remember, Result<Long> result);
+    void unlock(@NonNull String password, @NonNull Boolean remember, Result<UnlockResponse> result);
     void setPassword(@Nullable String currentPassword, @NonNull String newPassword, Result<Void> result);
     void unsetPassword(@NonNull String currentPassword, Result<Void> result);
     void forgetPassword(Result<Void> result);
@@ -96,8 +165,8 @@ public class Pigeon {
               if (rememberArg == null) {
                 throw new NullPointerException("rememberArg unexpectedly null.");
               }
-              Result<Long> resultCallback = new Result<Long>() {
-                public void success(Long result) {
+              Result<UnlockResponse> resultCallback = new Result<UnlockResponse>() {
+                public void success(UnlockResponse result) {
                   wrapped.put("result", result);
                   reply.reply(wrapped);
                 }

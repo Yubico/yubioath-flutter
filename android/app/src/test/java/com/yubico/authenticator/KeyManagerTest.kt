@@ -23,7 +23,7 @@ class MockKeyProvider : KeyProvider {
 
     override fun getKey(deviceId: String): AccessKey? = map[deviceId]
 
-    override fun addKey(deviceId: String, secret: ByteArray) {
+    override fun putKey(deviceId: String, secret: ByteArray) {
         map[deviceId] = MockStoredSigner(secret)
     }
 

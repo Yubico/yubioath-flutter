@@ -22,18 +22,15 @@ class ClearingMemProvider : KeyProvider {
             }
 
         current?.let {
-
-            if (it.first != deviceId) {
-                return null
+            if (it.first == deviceId) {
+                return MemStoredSigner(it.second)
             }
-
-            return MemStoredSigner(it.second)
         }
 
         return null
     }
 
-    override fun addKey(deviceId: String, secret: ByteArray) {
+    override fun putKey(deviceId: String, secret: ByteArray) {
         current = Pair(deviceId,
             Mac.getInstance(KeyProperties.KEY_ALGORITHM_HMAC_SHA1)
                 .apply {

@@ -50,8 +50,8 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
     try {
       final unlockResponse = await _api.unlock(password, remember);
 
-      var unlocked = (unlockResponse & 0x1) != 0;
-      var remembered = (unlockResponse & 0x2) != 0;
+      final unlocked = unlockResponse.isUnlocked == true;
+      final remembered = unlockResponse.isRemembered == true;
 
       if (unlocked) {
         _log.config('applet unlocked');

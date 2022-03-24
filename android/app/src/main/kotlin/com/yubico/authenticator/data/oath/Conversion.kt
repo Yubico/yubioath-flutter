@@ -55,10 +55,3 @@ fun Pair<Credential, Code?>.toJson(deviceId: String) = JsonObject(
         "code" to (second?.toJson() ?: JsonNull)
     )
 )
-
-fun computeUnlockOathSessionValue(isUnlocked: Boolean, isRemembered: Boolean) : Long {
-    val unlockedBit = 0x1L
-    val rememberBit = 0x2L
-
-    return (if (isUnlocked) unlockedBit else 0L) or (if (isRemembered) rememberBit else 0L)
-}
