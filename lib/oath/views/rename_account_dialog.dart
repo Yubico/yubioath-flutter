@@ -22,7 +22,6 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
 class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   late String _issuer;
   late String _account;
-  _RenameAccountDialogState();
 
   @override
   void initState() {
