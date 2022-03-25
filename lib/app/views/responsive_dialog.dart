@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ResponsiveDialog extends StatelessWidget {
+class ResponsiveDialog extends StatefulWidget {
   final Widget? title;
   final Widget child;
   final List<Widget> actions;
@@ -15,6 +15,13 @@ class ResponsiveDialog extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<ResponsiveDialog> createState() => _ResponsiveDialogState();
+}
+
+class _ResponsiveDialogState extends State<ResponsiveDialog> {
+  final Key _childKey = GlobalKey();
+
+  @override
   Widget build(BuildContext context) =>
       LayoutBuilder(builder: ((context, constraints) {
         if (constraints.maxWidth < 540) {
@@ -23,39 +30,39 @@ class ResponsiveDialog extends StatelessWidget {
               insetPadding: const EdgeInsets.all(0),
               child: Scaffold(
                 appBar: AppBar(
-                  title: title,
-                  actions: actions,
+                  title: widget.title,
+                  actions: widget.actions,
                   leading: BackButton(
                     onPressed: () {
-                      onCancel?.call();
+                      widget.onCancel?.call();
                       Navigator.of(context).pop();
                     },
                   ),
                 ),
                 body: SingleChildScrollView(
                   padding: const EdgeInsets.all(18.0),
-                  child: child,
+                  child: Container(key: _childKey, child: widget.child),
                 ),
               ));
         } else {
           // Dialog
           return AlertDialog(
             insetPadding: EdgeInsets.zero,
-            title: title,
+            title: widget.title,
             scrollable: true,
             content: SizedBox(
               width: 380,
-              child: child,
+              child: Container(key: _childKey, child: widget.child),
             ),
             actions: [
               TextButton(
                 child: const Text('Cancel'),
                 onPressed: () {
-                  onCancel?.call();
+                  widget.onCancel?.call();
                   Navigator.of(context).pop();
                 },
               ),
-              ...actions
+              ...widget.actions
             ],
           );
         }
