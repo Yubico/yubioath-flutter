@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -109,3 +111,23 @@ abstract class QrScanner {
 final qrScannerProvider = Provider<QrScanner?>(
   (ref) => null,
 );
+
+final contextProvider =
+    StateNotifierProvider<ContextProvider, Function(BuildContext)?>(
+        (ref) => ContextProvider());
+
+class ContextProvider extends StateNotifier<Function(BuildContext)?> {
+  ContextProvider() : super(null);
+
+  Future<T> withContext<T>(Future<T> Function(BuildContext context) action) {
+    final completer = Completer<T>();
+    if (mounted) {
+      state = (context) async {
+        completer.complete(await action(context));
+      };
+    } else {
+      completer.completeError('Not attached');
+    }
+    return completer.future;
+  }
+}

@@ -14,6 +14,12 @@ class MainPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<Function(BuildContext)?>(
+      contextProvider,
+      (previous, next) {
+        next?.call(context);
+      },
+    );
     final deviceData = ref.watch(currentDeviceDataProvider);
     if (deviceData == null) {
       final node = ref.watch(currentDeviceProvider);
