@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/state.dart';
 import '../../app/models.dart';
 import '../../app/views/responsive_dialog.dart';
@@ -322,12 +323,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             credentialListProvider(widget.device.path).notifier)
                         .addAccount(cred.toUri(), requireTouch: _touch);
                     Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Account added'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    showMessage(context, 'Account added');
                   } else {
                     setState(() {
                       _validateSecretLength = true;

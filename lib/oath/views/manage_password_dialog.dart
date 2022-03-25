@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/views/responsive_dialog.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
@@ -66,12 +67,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                               .unsetPassword(_currentPassword);
                           if (result) {
                             Navigator.of(context).pop();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Password removed'),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
+                            showMessage(context, 'Password removed');
                           } else {
                             setState(() {
                               _currentIsWrong = true;
@@ -88,12 +84,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                           .read(oathStateProvider(widget.path).notifier)
                           .forgetPassword();
                       Navigator.of(context).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Password forgotten'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
+                      showMessage(context, 'Password forgotten');
                     },
                   ),
               ],
@@ -149,12 +140,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                       .setPassword(_currentPassword, _newPassword);
                   if (result) {
                     Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Password set'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    showMessage(context, 'Password set');
                   } else {
                     setState(() {
                       _currentIsWrong = true;

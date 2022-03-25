@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
+import '../../app/message.dart';
 import '../state.dart';
 import '../../app/views/responsive_dialog.dart';
 import '../../fido/models.dart';
@@ -89,12 +90,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     }, onError: (error, stacktrace) {
       _log.severe('Error adding fingerprint', error, stacktrace);
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error adding fingerprint'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      showMessage(context, 'Error adding fingerprint');
     });
   }
 
@@ -180,12 +176,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                       .read(fingerprintProvider(widget.node.path).notifier)
                       .renameFingerprint(_fingerprint!, _label);
                   Navigator.of(context).pop(true);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Fingerprint added'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                  showMessage(context, 'Fingerprint added');
                 }
               : null,
           child: const Text('Save'),

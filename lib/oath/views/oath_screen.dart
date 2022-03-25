@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/oath/models.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
@@ -29,19 +30,9 @@ class OathScreen extends ConsumerWidget {
                               oathStateProvider(deviceData.node.path).notifier)
                           .unlock(password, remember: remember);
                       if (!result.first) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Wrong password'),
-                            duration: Duration(seconds: 1),
-                          ),
-                        );
+                        showMessage(context, 'Wrong password');
                       } else if (remember && !result.second) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Failed to remember password'),
-                            duration: Duration(seconds: 1),
-                          ),
-                        );
+                        showMessage(context, 'Failed to remember password');
                       }
                     },
                   ),

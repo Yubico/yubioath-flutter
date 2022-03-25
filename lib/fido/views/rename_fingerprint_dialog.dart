@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/views/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
@@ -72,12 +73,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
                       .read(fingerprintProvider(widget.device.path).notifier)
                       .renameFingerprint(fingerprint, _label);
                   Navigator.of(context).pop(renamed);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Fingerprint renamed'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                  showMessage(context, 'Fingerprint renamed');
                 }
               : null,
           child: const Text('Save'),

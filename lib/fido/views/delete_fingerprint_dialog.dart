@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/views/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
@@ -43,12 +44,7 @@ class DeleteFingerprintDialog extends ConsumerWidget {
                 .read(fingerprintProvider(device.path).notifier)
                 .deleteFingerprint(fingerprint);
             Navigator.of(context).pop(true);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Fingerprint deleted'),
-                duration: Duration(seconds: 2),
-              ),
-            );
+            showMessage(context, 'Fingerprint deleted');
           },
           child: const Text('Delete'),
         ),

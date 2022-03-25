@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../models.dart';
@@ -92,23 +93,13 @@ mixin AccountMixin {
   Future<OathCode> calculateCode(BuildContext context, WidgetRef ref) async {
     Function? close;
     if (credential.touchRequired) {
-      close = ScaffoldMessenger.of(context)
-          .showSnackBar(
-            const SnackBar(
-              content: Text('Touch your YubiKey'),
-              duration: Duration(seconds: 30),
-            ),
-          )
+      close = showMessage(context, 'Touch your YubiKey',
+              duration: const Duration(seconds: 30))
           .close;
     } else if (credential.oathType == OathType.hotp) {
       final showPrompt = Timer(const Duration(milliseconds: 500), () {
-        close = ScaffoldMessenger.of(context)
-            .showSnackBar(
-              const SnackBar(
-                content: Text('Touch your YubiKey'),
-                duration: Duration(seconds: 30),
-              ),
-            )
+        close = showMessage(context, 'Touch your YubiKey',
+                duration: const Duration(seconds: 30))
             .close;
       });
       close = showPrompt.cancel;
@@ -129,12 +120,7 @@ mixin AccountMixin {
     final code = getCode(ref);
     if (code != null) {
       Clipboard.setData(ClipboardData(text: code.value));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Code copied to clipboard'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      showMessage(context, 'Code copied to clipboard');
     }
   }
 
@@ -189,12 +175,7 @@ mixin AccountMixin {
             ? null
             : (context) {
                 Clipboard.setData(ClipboardData(text: code.value));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Code copied to clipboard'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
+                showMessage(context, 'Code copied to clipboard');
               },
       ),
       MenuAction(

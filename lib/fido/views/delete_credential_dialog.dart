@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/views/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
@@ -43,12 +44,7 @@ class DeleteCredentialDialog extends ConsumerWidget {
                 .read(credentialProvider(device.path).notifier)
                 .deleteCredential(credential);
             Navigator.of(context).pop(true);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Credential deleted'),
-                duration: Duration(seconds: 2),
-              ),
-            );
+            showMessage(context, 'Credential deleted');
           },
           child: const Text('Delete'),
         ),
