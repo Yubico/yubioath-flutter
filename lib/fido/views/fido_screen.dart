@@ -7,6 +7,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
+import '../../app/views/app_page.dart';
 import '../../desktop/state.dart';
 import '../../management/models.dart';
 import '../models.dart';
@@ -26,8 +27,16 @@ class FidoScreen extends ConsumerWidget {
   const FidoScreen(this.deviceData, {Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      ref.watch(fidoStateProvider(deviceData.node.path)).when(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final subPage = ref.watch(_subPageProvider);
+    return AppPage(
+      onBack: subPage != SubPage.main
+          ? () {
+              ref.read(_subPageProvider.notifier).state = SubPage.main;
+            }
+          : null,
+      title: const Text('WebAuthn'),
+      child: ref.watch(fidoStateProvider(deviceData.node.path)).when(
           loading: () => const AppLoadingScreen(),
           error: (error, _) {
             final supported = deviceData
@@ -46,48 +55,21 @@ class FidoScreen extends ConsumerWidget {
             return AppFailureScreen('$error');
           },
           data: (state) {
-            setSubPage(value) {
-              ref.read(_subPageProvider.notifier).state = value;
-            }
-
-            switch (ref.watch(_subPageProvider)) {
+            switch (subPage) {
               case SubPage.fingerprints:
-                return WithBackButton(
-                  goBack: () {
-                    setSubPage(SubPage.main);
-                  },
-                  child: FingerprintPage(deviceData.node, state),
-                );
+                return FingerprintPage(deviceData.node, state);
               case SubPage.credentials:
-                return WithBackButton(
-                  goBack: () {
-                    setSubPage(SubPage.main);
-                  },
-                  child: CredentialPage(deviceData.node, state),
-                );
+                return CredentialPage(deviceData.node, state);
               default:
                 return FidoMainPage(
                   deviceData.node,
                   state,
-                  setSubPage: setSubPage,
+                  setSubPage: (page) {
+                    ref.read(_subPageProvider.notifier).state = page;
+                  },
                 );
             }
-          });
-}
-
-// TODO: Replace this with the AppBar back button
-class WithBackButton extends StatelessWidget {
-  final Function() goBack;
-  final Widget child;
-  const WithBackButton({Key? key, required this.goBack, required this.child})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          TextButton(onPressed: goBack, child: const Text('Back')),
-          Expanded(child: child),
-        ],
-      );
+          }),
+    );
+  }
 }

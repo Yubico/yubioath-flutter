@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/oath/models.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
+import '../../app/views/app_page.dart';
+import '../models.dart';
 import '../state.dart';
 import 'account_list.dart';
 
@@ -15,48 +17,76 @@ class OathScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(oathStateProvider(deviceData.node.path)).when(
-          loading: () => const AppLoadingScreen(),
-          error: (error, _) => AppFailureScreen('$error'),
-          data: (oathState) {
-            if (oathState.locked) {
-              return ListView(
-                children: [
-                  _UnlockForm(
-                    keystore: oathState.keystore,
-                    onSubmit: (password, remember) async {
-                      final result = await ref
-                          .read(
-                              oathStateProvider(deviceData.node.path).notifier)
-                          .unlock(password, remember: remember);
-                      if (!result.first) {
-                        showMessage(context, 'Wrong password');
-                      } else if (remember && !result.second) {
-                        showMessage(context, 'Failed to remember password');
-                      }
-                    },
-                  ),
-                ],
-              );
-            } else {
-              final accounts =
-                  ref.watch(credentialListProvider(deviceData.node.path));
-              if (accounts == null) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Center(child: CircularProgressIndicator()),
+    return AppPage(
+      title: Focus(
+        canRequestFocus: false,
+        onKeyEvent: (node, event) {
+          if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+            node.focusInDirection(TraversalDirection.down);
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: Builder(builder: (context) {
+          return TextFormField(
+            initialValue: ref.read(searchProvider),
+            decoration: const InputDecoration(
+              hintText: 'Search...',
+              border: InputBorder.none,
+            ),
+            onChanged: (value) {
+              ref.read(searchProvider.notifier).setFilter(value);
+            },
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (value) {
+              Focus.of(context).focusInDirection(TraversalDirection.down);
+            },
+          );
+        }),
+      ),
+      child: ref.watch(oathStateProvider(deviceData.node.path)).when(
+            loading: () => const AppLoadingScreen(),
+            error: (error, _) => AppFailureScreen('$error'),
+            data: (oathState) {
+              if (oathState.locked) {
+                return ListView(
+                  children: [
+                    _UnlockForm(
+                      keystore: oathState.keystore,
+                      onSubmit: (password, remember) async {
+                        final result = await ref
+                            .read(oathStateProvider(deviceData.node.path)
+                                .notifier)
+                            .unlock(password, remember: remember);
+                        if (!result.first) {
+                          showMessage(context, 'Wrong password');
+                        } else if (remember && !result.second) {
+                          showMessage(context, 'Failed to remember password');
+                        }
+                      },
+                    ),
                   ],
                 );
+              } else {
+                final accounts =
+                    ref.watch(credentialListProvider(deviceData.node.path));
+                if (accounts == null) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Center(child: CircularProgressIndicator()),
+                    ],
+                  );
+                }
+                return AccountList(
+                  deviceData,
+                  ref.watch(filteredCredentialsProvider(accounts)),
+                  ref.watch(favoritesProvider),
+                );
               }
-              return AccountList(
-                deviceData,
-                ref.watch(filteredCredentialsProvider(accounts)),
-                ref.watch(favoritesProvider),
-              );
-            }
-          },
-        );
+            },
+          ),
+    );
   }
 }
 

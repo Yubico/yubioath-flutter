@@ -30,6 +30,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               insetPadding: const EdgeInsets.all(0),
               child: Scaffold(
                 appBar: AppBar(
+                  centerTitle: true,
                   title: widget.title,
                   actions: widget.actions,
                   leading: BackButton(

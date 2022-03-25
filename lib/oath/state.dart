@@ -10,6 +10,17 @@ import '../core/models.dart';
 import '../core/state.dart';
 import 'models.dart';
 
+final searchProvider =
+    StateNotifierProvider<SearchNotifier, String>((ref) => SearchNotifier());
+
+class SearchNotifier extends StateNotifier<String> {
+  SearchNotifier() : super('');
+
+  setFilter(String value) {
+    state = value;
+  }
+}
+
 final oathStateProvider = StateNotifierProvider.autoDispose
     .family<OathStateNotifier, AsyncValue<OathState>, DevicePath>(
   (ref, devicePath) => throw UnimplementedError(),

@@ -44,17 +44,6 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   }
 }
 
-final searchProvider =
-    StateNotifierProvider<SearchNotifier, String>((ref) => SearchNotifier());
-
-class SearchNotifier extends StateNotifier<String> {
-  SearchNotifier() : super('');
-
-  setFilter(String value) {
-    state = value;
-  }
-}
-
 // Override with platform implementation
 final attachedDevicesProvider =
     StateNotifierProvider<AttachedDevicesNotifier, List<DeviceNode>>(

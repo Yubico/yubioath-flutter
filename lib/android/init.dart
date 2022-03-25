@@ -50,6 +50,6 @@ Future<Widget> initialize() async {
       managementStateProvider.overrideWithProvider(androidManagementState),
       currentDeviceProvider.overrideWithProvider(androidCurrentDeviceProvider)
     ],
-    child: YubicoAuthenticatorApp(page: MainPage()),
+    child: const YubicoAuthenticatorApp(page: MainPage()),
   );
 }

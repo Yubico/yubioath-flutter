@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/models.dart';
 import '../../desktop/state.dart';
 import '../models.dart';
+import 'app_page.dart';
 import 'device_avatar.dart';
 
 class NoDeviceScreen extends ConsumerWidget {
@@ -26,27 +27,29 @@ class NoDeviceScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: node?.map(usbYubiKey: (node) {
-              return [
-                const DeviceAvatar(child: Icon(Icons.usb_off)),
-                Text(
-                  _getErrorMessage(ref, node.pid),
-                  textAlign: TextAlign.center,
-                ),
-              ];
-            }, nfcReader: (node) {
-              return const [
-                DeviceAvatar(child: Icon(Icons.wifi)),
-                Text('Place your YubiKey on the NFC reader'),
-              ];
-            }) ??
-            const [
-              DeviceAvatar(child: Icon(Icons.usb)),
-              Text('Insert your YubiKey'),
-            ],
+    return AppPage(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: node?.map(usbYubiKey: (node) {
+                return [
+                  const DeviceAvatar(child: Icon(Icons.usb_off)),
+                  Text(
+                    _getErrorMessage(ref, node.pid),
+                    textAlign: TextAlign.center,
+                  ),
+                ];
+              }, nfcReader: (node) {
+                return const [
+                  DeviceAvatar(child: Icon(Icons.wifi)),
+                  Text('Place your YubiKey on the NFC reader'),
+                ];
+              }) ??
+              const [
+                DeviceAvatar(child: Icon(Icons.usb)),
+                Text('Insert your YubiKey'),
+              ],
+        ),
       ),
     );
   }
