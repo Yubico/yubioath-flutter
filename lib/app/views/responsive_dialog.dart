@@ -46,6 +46,9 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               ));
         } else {
           // Dialog
+          final cancelText = widget.onCancel == null && widget.actions.isEmpty
+              ? 'Close'
+              : 'Cancel';
           return AlertDialog(
             insetPadding: EdgeInsets.zero,
             title: widget.title,
@@ -56,7 +59,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
             ),
             actions: [
               TextButton(
-                child: const Text('Cancel'),
+                child: Text(cancelText),
                 onPressed: () {
                   widget.onCancel?.call();
                   Navigator.of(context).pop();
