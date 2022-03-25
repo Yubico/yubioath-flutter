@@ -108,7 +108,7 @@ Future<Widget> initialize() async {
         ref.listen<Level>(logLevelProvider, (_, level) {
           rpc.setLogLevel(level);
         });
-        return const MainPage();
+        return MainPage();
       },
     )),
   );

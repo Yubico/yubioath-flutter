@@ -14,7 +14,8 @@ import '../../oath/views/oath_screen.dart';
 import '../../management/views/management_screen.dart';
 
 class MainPage extends ConsumerWidget {
-  const MainPage({Key? key}) : super(key: key);
+  final Key _scaffoldKey = GlobalKey();
+  MainPage({Key? key}) : super(key: key);
 
   Widget _buildSubPage(Application app, YubiKeyData deviceData) {
     if (app.getAvailability(deviceData) != Availability.enabled) {
@@ -84,6 +85,7 @@ class MainPage extends ConsumerWidget {
       );
     }
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         /*
         The following can be used to customize the appearence of the app bar,
