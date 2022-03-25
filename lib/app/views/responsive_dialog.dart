@@ -49,24 +49,27 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
           final cancelText = widget.onCancel == null && widget.actions.isEmpty
               ? 'Close'
               : 'Cancel';
-          return AlertDialog(
-            insetPadding: EdgeInsets.zero,
-            title: widget.title,
-            scrollable: true,
-            content: SizedBox(
-              width: 380,
-              child: Container(key: _childKey, child: widget.child),
-            ),
-            actions: [
-              TextButton(
-                child: Text(cancelText),
-                onPressed: () {
-                  widget.onCancel?.call();
-                  Navigator.of(context).pop();
-                },
+          return Scaffold(
+            backgroundColor: Colors.transparent,
+            body: AlertDialog(
+              insetPadding: EdgeInsets.zero,
+              title: widget.title,
+              scrollable: true,
+              content: SizedBox(
+                width: 380,
+                child: Container(key: _childKey, child: widget.child),
               ),
-              ...widget.actions
-            ],
+              actions: [
+                TextButton(
+                  child: Text(cancelText),
+                  onPressed: () {
+                    widget.onCancel?.call();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ...widget.actions
+              ],
+            ),
           );
         }
       }));
