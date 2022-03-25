@@ -5,7 +5,7 @@ import '../app/models.dart';
 import '../app/state.dart';
 import 'state.dart';
 import 'views/add_account_page.dart';
-import 'views/password_dialog.dart';
+import 'views/manage_password_dialog.dart';
 import 'views/reset_dialog.dart';
 
 List<MenuAction> buildOathMenuActions(AutoDisposeProviderRef ref) {
@@ -32,7 +32,8 @@ List<MenuAction> buildOathMenuActions(AutoDisposeProviderRef ref) {
                       action: (context) {
                         showDialog(
                           context: context,
-                          builder: (context) => ManagePasswordDialog(device),
+                          builder: (context) =>
+                              ManagePasswordDialog(device.path, oathState),
                         );
                       },
                     ),
