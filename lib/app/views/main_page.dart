@@ -43,16 +43,18 @@ class MainPage extends ConsumerWidget {
             return _buildScaffold(context, ref, true);
           } else {
             // Two-column layout
-            return Row(
-              children: [
-                const SizedBox(
-                  width: 240,
-                  child: MainPageDrawer(shouldPop: false),
-                ),
-                Expanded(
-                  child: _buildScaffold(context, ref, false),
-                ),
-              ],
+            return Scaffold(
+              body: Row(
+                children: [
+                  const SizedBox(
+                    width: 240,
+                    child: MainPageDrawer(shouldPop: false),
+                  ),
+                  Expanded(
+                    child: _buildScaffold(context, ref, false),
+                  ),
+                ],
+              ),
             );
           }
         },
