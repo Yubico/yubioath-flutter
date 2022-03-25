@@ -48,13 +48,16 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<Pair<bool, bool>> unlock(String password,
       {bool remember = false}) async {
     try {
-      final unlockSuccess = await _api.unlock(password, remember);
+      final unlockResponse = await _api.unlock(password, remember);
 
-      if (unlockSuccess) {
+      final unlocked = unlockResponse.isUnlocked == true;
+      final remembered = unlockResponse.isRemembered == true;
+
+      if (unlocked) {
         _log.config('applet unlocked');
         setData(state.value!.copyWith(locked: false));
       }
-      return Pair(unlockSuccess, false); // TODO: provide correct second param
+      return Pair(unlocked, remembered);
     } on PlatformException catch (e) {
       _log.config('Calling unlock failed with exception: $e');
       return Pair(false, false);

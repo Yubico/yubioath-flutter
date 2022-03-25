@@ -8,8 +8,54 @@ import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 
+class UnlockResponse {
+  UnlockResponse({
+    this.isUnlocked,
+    this.isRemembered,
+  });
+
+  bool? isUnlocked;
+  bool? isRemembered;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['isUnlocked'] = isUnlocked;
+    pigeonMap['isRemembered'] = isRemembered;
+    return pigeonMap;
+  }
+
+  static UnlockResponse decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return UnlockResponse(
+      isUnlocked: pigeonMap['isUnlocked'] as bool?,
+      isRemembered: pigeonMap['isRemembered'] as bool?,
+    );
+  }
+}
+
 class _OathApiCodec extends StandardMessageCodec {
   const _OathApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is UnlockResponse) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else 
+{
+      super.writeValue(buffer, value);
+    }
+  }
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128:       
+        return UnlockResponse.decode(readValue(buffer)!);
+      
+      default:      
+        return super.readValueOfType(type, buffer);
+      
+    }
+  }
 }
 
 class OathApi {
@@ -44,7 +90,7 @@ class OathApi {
     }
   }
 
-  Future<bool> unlock(String arg_password, bool arg_remember) async {
+  Future<UnlockResponse> unlock(String arg_password, bool arg_remember) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.OathApi.unlock', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
@@ -67,7 +113,7 @@ class OathApi {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (replyMap['result'] as bool?)!;
+      return (replyMap['result'] as UnlockResponse?)!;
     }
   }
 

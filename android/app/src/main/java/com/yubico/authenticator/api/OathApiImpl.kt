@@ -3,6 +3,7 @@ package com.yubico.authenticator.api
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.api.Pigeon.OathApi
 import com.yubico.authenticator.api.Pigeon.Result
+import com.yubico.authenticator.api.Pigeon.UnlockResponse
 
 class OathApiImpl(private val viewModel: MainViewModel) : OathApi {
 
@@ -13,7 +14,7 @@ class OathApiImpl(private val viewModel: MainViewModel) : OathApi {
     override fun unlock(
         password: String,
         remember: Boolean,
-        result: Result<Boolean>
+        result: Result<UnlockResponse>
     ) {
         viewModel.unlockOathSession(password, remember, result)
     }

@@ -6,10 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yubico.authenticator.api.Pigeon
 import com.yubico.authenticator.data.device.toJson
-import com.yubico.authenticator.data.oath.calculateSteamCode
-import com.yubico.authenticator.data.oath.idAsString
-import com.yubico.authenticator.data.oath.isSteamCredential
-import com.yubico.authenticator.data.oath.toJson
+import com.yubico.authenticator.data.oath.*
+import com.yubico.authenticator.keystore.ClearingMemProvider
+import com.yubico.authenticator.keystore.KeyStoreProvider
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Logger
@@ -45,9 +44,11 @@ class MainViewModel : ViewModel() {
     val handleYubiKey: LiveData<Boolean> = _handleYubiKey
 
     val yubiKeyDevice = MutableLiveData<YubiKeyDevice?>()
-    private var isUsbKeyConnected: Boolean = false
+    private var _isUsbKey: Boolean = false
+    private var _previousNfcDeviceId = ""
 
-    private var _oathSessionPassword: CharArray? = null
+    private val _memoryKeyProvider = ClearingMemProvider()
+    private val _keyManager = KeyManager(KeyStoreProvider(), _memoryKeyProvider)
 
     private var _operationContext = OperationContext.Oath
 
@@ -100,7 +101,23 @@ class MainViewModel : ViewModel() {
         val oathSessionData = suspendCoroutine<String> {
             device.requestConnection(SmartCardConnection::class.java) { result ->
                 val oathSession = OathSession(result.value)
-                val isRemembered = false
+
+                val deviceId = oathSession.deviceId
+
+                _previousNfcDeviceId = if (device is NfcYubiKeyDevice) {
+                    if (deviceId != _previousNfcDeviceId) {
+                        // devices are different, clear access key for previous device
+                        _memoryKeyProvider.removeKey(_previousNfcDeviceId)
+                    }
+                    deviceId
+                } else {
+                    ""
+                }
+
+                // calling unlock session will remove invalid access keys
+                tryToUnlockOathSession(oathSession)
+                val isRemembered = _keyManager.isRemembered(oathSession.deviceId)
+
                 val oathSessionData = oathSession
                     .toJson(isRemembered)
                     .toString()
@@ -115,9 +132,7 @@ class MainViewModel : ViewModel() {
         val sendOathCodes = suspendCoroutine<String> {
             device.requestConnection(SmartCardConnection::class.java) { result ->
                 val session = OathSession(result.value)
-
-                val isLocked = isOathSessionLocked(session)
-                if (!isLocked) {
+                if (tryToUnlockOathSession(session)) {
                     val resultJson = calculateOathCodes(session)
                         .toJson(session.deviceId)
                         .toString()
@@ -136,7 +151,7 @@ class MainViewModel : ViewModel() {
         withContext(Dispatchers.IO) {
             pendingYubiKeyAction.value?.let {
                 _pendingYubiKeyAction.postValue(null)
-                if (!isUsbKeyConnected) {
+                if (!_isUsbKey) {
                     withContext(Dispatchers.Main) {
                         requestHideDialog()
                     }
@@ -147,7 +162,7 @@ class MainViewModel : ViewModel() {
 
     suspend fun yubikeyAttached(device: YubiKeyDevice) {
 
-        isUsbKeyConnected = device is UsbYubiKeyDevice
+        _isUsbKey = device is UsbYubiKeyDevice
 
         withContext(Dispatchers.IO) {
             if (pendingYubiKeyAction.value != null) {
@@ -176,13 +191,11 @@ class MainViewModel : ViewModel() {
     }
 
     fun yubikeyDetached() {
-
-        if (isUsbKeyConnected) {
-            // forget the current password only for usb keys
-            _oathSessionPassword = null
+        if (_isUsbKey) {
+            // clear keys from memory
+            _memoryKeyProvider.clearAll()
             _fManagementApi.updateDeviceInfo("") {}
         }
-
     }
 
     fun onDialogClosed(result: Pigeon.Result<Void>) {
@@ -206,8 +219,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun <T> withUnlockedSession(session: OathSession, block: (OathSession) -> T): T {
-        val isLocked = isOathSessionLocked(session)
-        if (isLocked) {
+        if (!tryToUnlockOathSession(session)) {
             throw Exception("Session is locked")
         }
         return block(session)
@@ -320,9 +332,9 @@ class MainViewModel : ViewModel() {
                             throw Exception("Provided current password is invalid")
                         }
                     }
-                    val newPass = password.toCharArray()
-                    session.setPassword(newPass)
-                    _oathSessionPassword = newPass
+                    val accessKey = session.deriveAccessKey(password.toCharArray())
+                    session.setAccessKey(accessKey)
+                    _keyManager.addKey(session.deviceId, accessKey, false)
                     Logger.d("Successfully set password")
                 }
             } catch (cause: Throwable) {
@@ -341,7 +353,7 @@ class MainViewModel : ViewModel() {
                         // test current password sent by the user
                         if (session.unlock(currentPassword.toCharArray())) {
                             session.deleteAccessKey()
-                            _oathSessionPassword = null
+                            _keyManager.removeKey(session.deviceId)
                             Logger.d("Successfully unset password")
                             result.success(null)
                             return@useOathSession
@@ -369,7 +381,7 @@ class MainViewModel : ViewModel() {
     fun refreshOathCodes(result: Pigeon.Result<String>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                if (!isUsbKeyConnected) {
+                if (!_isUsbKey) {
                     throw Exception("Cannot refresh for nfc key")
                 }
 
@@ -411,27 +423,32 @@ class MainViewModel : ViewModel() {
     fun unlockOathSession(
         password: String,
         remember: Boolean,
-        result: Pigeon.Result<Boolean>
+        result: Pigeon.Result<Pigeon.UnlockResponse>
     ) {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 var codes: String? = null
                 useOathSession("Unlocking", true) {
-                    _oathSessionPassword = password.toCharArray()
-                    val isLocked = isOathSessionLocked(it)
+                    val accessKey = it.deriveAccessKey(password.toCharArray())
+                    _keyManager.addKey(it.deviceId, accessKey, remember)
 
-                    if (!isLocked) {
+                    val response = Pigeon.UnlockResponse().apply {
+                        isUnlocked = tryToUnlockOathSession(it)
+                        isRemembered = _keyManager.isRemembered(it.deviceId)
+                    }
+                    if (response.isUnlocked == true) {
                         codes = calculateOathCodes(it)
                             .toJson(it.deviceId)
                             .toString()
                     }
-
-                    result.success(!isLocked)
+                    result.success(response)
                 }
 
                 codes?.let {
-                    _fOathApi.updateOathCredentials(it) {}
+                    viewModelScope.launch(Dispatchers.Main) {
+                        _fOathApi.updateOathCredentials(it) {}
+                    }
                 }
 
             } catch (cause: Throwable) {
@@ -459,7 +476,7 @@ class MainViewModel : ViewModel() {
         queryUserToTap: Boolean,
         action: (OathSession) -> T
     ) = suspendCoroutine<T> { outer ->
-        if (queryUserToTap && !isUsbKeyConnected) {
+        if (queryUserToTap && !_isUsbKey) {
             viewModelScope.launch(Dispatchers.Main) {
                 requestShowDialog(title)
             }
@@ -484,30 +501,33 @@ class MainViewModel : ViewModel() {
     }
 
     /**
-     * returns true if the session cannot be unlocked (either we don't have a password, or the password is incorrect
+     * Tries to unlocks [OathSession] with [AccessKey] stored in [KeyManager]. On failure clears
+     * relevant access keys from [KeyManager]
      *
-     * returns false if we can unlock the session
+     * @return true if we the session is not locked or it was successfully unlocked, false otherwise
      */
-    private fun isOathSessionLocked(session: OathSession): Boolean {
+    private fun tryToUnlockOathSession(session: OathSession): Boolean {
         if (!session.isLocked) {
-            return false
+            return true
         }
 
-        if (_oathSessionPassword == null) {
-            return true // we have no password to unlock
-        }
+        val deviceId = session.deviceId
+        val accessKey = _keyManager.getKey(deviceId)
+            ?: return false // we have no access key to unlock the session
 
-        val unlockSucceed = session.unlock(_oathSessionPassword!!)
+        val unlockSucceed = session.unlock(accessKey)
 
         if (unlockSucceed) {
-            return false // we have everything to unlock the session
+            return true
         }
 
-        _oathSessionPassword = null // reset the password as well as it did not work
-        return true // the unlock did not work, session is locked
+        _keyManager.removeKey(deviceId) // remove invalid access keys from [KeyManager]
+        return false // the unlock did not work, session is locked
     }
 
     fun forgetPassword(result: Pigeon.Result<Void>) {
+        _keyManager.clearAll()
+        Logger.d("Cleared all keys.")
         result.success(null)
     }
 
