@@ -20,13 +20,7 @@ final rpcProvider = Provider<RpcSession>((ref) {
 });
 
 final rpcStateProvider = StateNotifierProvider<_RpcStateNotifier, RpcState>(
-  (ref) {
-    final rpc = ref.watch(rpcProvider);
-    ref.listen<Level>(logLevelProvider, (_, level) {
-      rpc.setLogLevel(level);
-    }, fireImmediately: true);
-    return _RpcStateNotifier(rpc);
-  },
+  (ref) => _RpcStateNotifier(ref.watch(rpcProvider)),
 );
 
 class _RpcStateNotifier extends StateNotifier<RpcState> {

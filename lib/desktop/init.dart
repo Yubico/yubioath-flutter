@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../app/app.dart';
+import '../app/views/main_page.dart';
+import '../core/state.dart';
 import '../fido/state.dart';
 import '../oath/state.dart';
 import '../app/models.dart';
@@ -24,16 +27,6 @@ final _log = Logger('desktop.init');
 const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
 const String _keyHeight = 'DESKTOP_WINDOW_HEIGHT';
 
-initializeLogging() {
-  Logger.root.onRecord.listen((record) {
-    stderr.writeln('[${record.loggerName}] ${record.level}: ${record.message}');
-    if (record.error != null) {
-      stderr.writeln(record.error);
-    }
-  });
-  _log.info('Logging initialized, outputting to stderr');
-}
-
 class _WindowResizeListener extends WindowListener {
   final SharedPreferences _prefs;
   _WindowResizeListener(this._prefs);
@@ -46,9 +39,17 @@ class _WindowResizeListener extends WindowListener {
   }
 }
 
-Future<List<Override>> initializeAndGetOverrides(
-    SharedPreferences prefs) async {
+Future<Widget> initialize() async {
+  Logger.root.onRecord.listen((record) {
+    stderr.writeln('[${record.loggerName}] ${record.level}: ${record.message}');
+    if (record.error != null) {
+      stderr.writeln(record.error);
+    }
+  });
+  _log.info('Logging initialized, outputting to stderr');
+
   await windowManager.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
 
   unawaited(windowManager.waitUntilReadyToShow().then((_) async {
     await windowManager.setMinimumSize(const Size(270, 0));
@@ -78,31 +79,43 @@ Future<List<Override>> initializeAndGetOverrides(
   }
 
   _log.info('Starting subprocess: $exe');
-  var rpc = await RpcSession.launch(exe!);
+  final rpc = await RpcSession.launch(exe!);
   _log.info('ykman-rpc process started', exe);
   rpc.setLogLevel(Logger.root.level);
 
-  return [
-    supportedAppsProvider.overrideWithValue([
-      Application.oath,
-      Application.fido,
-      Application.otp,
-      Application.piv,
-      Application.management,
-    ]),
-    rpcProvider.overrideWithValue(rpc),
-    windowStateProvider.overrideWithProvider(desktopWindowStateProvider),
-    attachedDevicesProvider.overrideWithProvider(desktopDevicesProvider),
-    currentDeviceDataProvider.overrideWithProvider(desktopDeviceDataProvider),
-    oathStateProvider.overrideWithProvider(desktopOathState),
-    credentialListProvider
-        .overrideWithProvider(desktopOathCredentialListProvider),
-    qrScannerProvider.overrideWithProvider(desktopQrScannerProvider),
-    managementStateProvider.overrideWithProvider(desktopManagementState),
-    fidoStateProvider.overrideWithProvider(desktopFidoState),
-    fidoPinProvider.overrideWithProvider(desktopFidoPinProvider),
-    fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
-    credentialProvider.overrideWithProvider(desktopCredentialProvider),
-    currentDeviceProvider.overrideWithProvider(desktopCurrentDeviceProvider)
-  ];
+  return ProviderScope(
+    overrides: [
+      supportedAppsProvider.overrideWithValue([
+        Application.oath,
+        Application.fido,
+        Application.otp,
+        Application.piv,
+        Application.management,
+      ]),
+      prefProvider.overrideWithValue(prefs),
+      rpcProvider.overrideWithValue(rpc),
+      windowStateProvider.overrideWithProvider(desktopWindowStateProvider),
+      attachedDevicesProvider.overrideWithProvider(desktopDevicesProvider),
+      currentDeviceDataProvider.overrideWithProvider(desktopDeviceDataProvider),
+      oathStateProvider.overrideWithProvider(desktopOathState),
+      credentialListProvider
+          .overrideWithProvider(desktopOathCredentialListProvider),
+      qrScannerProvider.overrideWithProvider(desktopQrScannerProvider),
+      managementStateProvider.overrideWithProvider(desktopManagementState),
+      fidoStateProvider.overrideWithProvider(desktopFidoState),
+      fidoPinProvider.overrideWithProvider(desktopFidoPinProvider),
+      fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
+      credentialProvider.overrideWithProvider(desktopCredentialProvider),
+      currentDeviceProvider.overrideWithProvider(desktopCurrentDeviceProvider)
+    ],
+    child: YubicoAuthenticatorApp(page: Consumer(
+      builder: (context, ref, child) {
+        // Keep RPC log level synced with main app.
+        ref.listen<Level>(logLevelProvider, (_, level) {
+          rpc.setLogLevel(level);
+        });
+        return const MainPage();
+      },
+    )),
+  );
 }
