@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:logging/logging.dart';
 import 'package:async/async.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/models.dart';
 import 'models.dart';
@@ -46,6 +47,7 @@ class _Request {
 }
 
 const _py2level = {
+  'TRAFFIC': Level.FINE,
   'DEBUG': Level.CONFIG,
   'INFO': Level.INFO,
   'WARNING': Level.WARNING,
@@ -83,7 +85,7 @@ class RpcSession {
           //time: DateTime.fromMillisecondsSinceEpoch(event['time'] * 1000),
         );
       } catch (e) {
-        _log.severe(e.toString(), event);
+        _log.error(e.toString(), event);
       }
     });
 
@@ -122,7 +124,7 @@ class RpcSession {
   }
 
   void _send(Map data) {
-    _log.fine('SEND', jsonEncode(data));
+    _log.traffic('SEND', jsonEncode(data));
     _process.stdin.writeln(jsonEncode(data));
   }
 
@@ -137,7 +139,7 @@ class RpcSession {
       bool completed = false;
       while (!completed) {
         final response = await _responses.next;
-        _log.fine('RECV', jsonEncode(response));
+        _log.traffic('RECV', jsonEncode(response));
         response.map(
           signal: (signal) {
             final signaler = request.signal;

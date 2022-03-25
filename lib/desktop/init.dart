@@ -40,13 +40,7 @@ class _WindowResizeListener extends WindowListener {
 }
 
 Future<Widget> initialize() async {
-  Logger.root.onRecord.listen((record) {
-    stderr.writeln('[${record.loggerName}] ${record.level}: ${record.message}');
-    if (record.error != null) {
-      stderr.writeln(record.error);
-    }
-  });
-  _log.info('Logging initialized, outputting to stderr');
+  _initLogging();
 
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
@@ -118,4 +112,29 @@ Future<Widget> initialize() async {
       },
     )),
   );
+}
+
+void _initLogging() {
+  Logger.root.onRecord.listen((record) {
+    stderr.writeln('[${record.loggerName}] ${record.level}: ${record.message}');
+    if (record.error != null) {
+      stderr.writeln(record.error);
+    }
+  });
+
+  final arguments = Platform.executableArguments;
+  final logLevelIndex = arguments.indexOf('--log-level');
+  if (logLevelIndex != -1) {
+    try {
+      final levelName = arguments[logLevelIndex + 1];
+      Level level = Level.LEVELS
+          .firstWhere((level) => level.name == levelName.toUpperCase());
+      Logger.root.level = level;
+      _log.info('Log level initialized from command line argument');
+    } catch (error) {
+      _log.severe('Failed to set log level', error);
+    }
+  }
+
+  _log.info('Logging initialized, outputting to stderr');
 }

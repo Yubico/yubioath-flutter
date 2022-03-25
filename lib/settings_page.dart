@@ -4,7 +4,6 @@ import 'package:logging/logging.dart';
 
 import 'app/state.dart';
 import 'app/views/responsive_dialog.dart';
-import 'core/state.dart';
 
 final _log = Logger('settings');
 
@@ -31,20 +30,7 @@ class SettingsPage extends ConsumerWidget {
                 .toList(),
             onChanged: (mode) {
               ref.read(themeModeProvider.notifier).setThemeMode(mode!);
-            },
-          ),
-          DropdownButtonFormField<Level>(
-            decoration: const InputDecoration(labelText: 'Logging'),
-            value: ref.watch(logLevelProvider),
-            items: [Level.INFO, Level.CONFIG, Level.FINE]
-                .map((e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(e.name.toUpperCase()),
-                    ))
-                .toList(),
-            onChanged: (level) {
-              ref.read(logLevelProvider.notifier).setLogLevel(level!);
-              _log.config('Log level set to $level');
+              _log.config('Set theme mode to $mode');
             },
           ),
         ],
