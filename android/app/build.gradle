@@ -43,7 +43,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.yubico.authenticator"
+        applicationId "com.yubico.yubioath"
         minSdkVersion project.minSdkVersion
         targetSdkVersion project.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
