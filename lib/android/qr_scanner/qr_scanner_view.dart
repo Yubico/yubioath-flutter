@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../app/navigation_service.dart';
