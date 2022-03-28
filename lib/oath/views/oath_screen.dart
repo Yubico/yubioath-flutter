@@ -79,7 +79,8 @@ class OathScreen extends ConsumerWidget {
                   );
                 }
                 return AccountList(
-                  deviceData,
+                  deviceData.node.path,
+                  oathState,
                   ref.watch(filteredCredentialsProvider(accounts)),
                   ref.watch(favoritesProvider),
                 );

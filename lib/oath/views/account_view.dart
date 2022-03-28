@@ -4,18 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widgets/circle_timer.dart';
-import '../../app/models.dart';
 import '../models.dart';
 import 'account_dialog.dart';
 import 'account_mixin.dart';
 
 class AccountView extends ConsumerWidget with AccountMixin {
-  final YubiKeyData deviceData;
   @override
   final OathCredential credential;
   final FocusNode? focusNode;
-  AccountView(this.deviceData, this.credential, {Key? key, this.focusNode})
-      : super(key: key);
+  AccountView(this.credential, {Key? key, this.focusNode}) : super(key: key);
 
   Color _iconColor(int shade) {
     final colors = [

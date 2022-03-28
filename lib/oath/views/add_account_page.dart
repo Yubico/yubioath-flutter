@@ -18,8 +18,8 @@ final _secretFormatterPattern =
 enum _QrScanState { none, scanning, success, failed }
 
 class OathAddAccountPage extends ConsumerStatefulWidget {
-  const OathAddAccountPage({required this.device, Key? key}) : super(key: key);
-  final DeviceNode device;
+  const OathAddAccountPage(this.devicePath, {Key? key}) : super(key: key);
+  final DevicePath devicePath;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -320,7 +320,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
                     ref
                         .read(
-                            credentialListProvider(widget.device.path).notifier)
+                            credentialListProvider(widget.devicePath).notifier)
                         .addAccount(cred.toUri(), requireTouch: _touch);
                     Navigator.of(context).pop();
                     showMessage(context, 'Account added');

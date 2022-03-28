@@ -14,8 +14,8 @@ import '../../app/state.dart';
 final _log = Logger('fido.views.add_fingerprint_dialog');
 
 class AddFingerprintDialog extends ConsumerStatefulWidget {
-  final DeviceNode node;
-  const AddFingerprintDialog(this.node, {Key? key}) : super(key: key);
+  final DevicePath devicePath;
+  const AddFingerprintDialog(this.devicePath, {Key? key}) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -66,7 +66,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
         ColorTween(begin: Colors.black, end: Colors.black).animate(_animator);
 
     _subscription = ref
-        .read(fingerprintProvider(widget.node.path).notifier)
+        .read(fingerprintProvider(widget.devicePath).notifier)
         .registerFingerprint()
         .listen((event) {
       setState(() {
@@ -173,7 +173,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
           onPressed: _fingerprint != null && _label.isNotEmpty
               ? () async {
                   await ref
-                      .read(fingerprintProvider(widget.node.path).notifier)
+                      .read(fingerprintProvider(widget.devicePath).notifier)
                       .renameFingerprint(_fingerprint!, _label);
                   Navigator.of(context).pop(true);
                   showMessage(context, 'Fingerprint added');

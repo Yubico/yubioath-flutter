@@ -9,9 +9,9 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 
 class RenameFingerprintDialog extends ConsumerStatefulWidget {
-  final DeviceNode device;
+  final DevicePath devicePath;
   final Fingerprint fingerprint;
-  const RenameFingerprintDialog(this.device, this.fingerprint, {Key? key})
+  const RenameFingerprintDialog(this.devicePath, this.fingerprint, {Key? key})
       : super(key: key);
 
   @override
@@ -70,7 +70,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           onPressed: _label.isNotEmpty
               ? () async {
                   final renamed = await ref
-                      .read(fingerprintProvider(widget.device.path).notifier)
+                      .read(fingerprintProvider(widget.devicePath).notifier)
                       .renameFingerprint(fingerprint, _label);
                   Navigator.of(context).pop(renamed);
                   showMessage(context, 'Fingerprint renamed');

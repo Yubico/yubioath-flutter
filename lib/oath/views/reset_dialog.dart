@@ -8,8 +8,8 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 
 class ResetDialog extends ConsumerWidget {
-  final DeviceNode device;
-  const ResetDialog(this.device, {Key? key}) : super(key: key);
+  final DevicePath devicePath;
+  const ResetDialog(this.devicePath, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,7 +38,7 @@ class ResetDialog extends ConsumerWidget {
       actions: [
         TextButton(
           onPressed: () async {
-            await ref.read(oathStateProvider(device.path).notifier).reset();
+            await ref.read(oathStateProvider(devicePath).notifier).reset();
             Navigator.of(context).pop();
             showMessage(context, 'OATH application reset');
           },

@@ -9,9 +9,9 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 
 class DeleteCredentialDialog extends ConsumerWidget {
-  final DeviceNode device;
+  final DevicePath devicePath;
   final FidoCredential credential;
-  const DeleteCredentialDialog(this.device, this.credential, {Key? key})
+  const DeleteCredentialDialog(this.devicePath, this.credential, {Key? key})
       : super(key: key);
 
   @override
@@ -41,7 +41,7 @@ class DeleteCredentialDialog extends ConsumerWidget {
         TextButton(
           onPressed: () async {
             await ref
-                .read(credentialProvider(device.path).notifier)
+                .read(credentialProvider(devicePath).notifier)
                 .deleteCredential(credential);
             Navigator.of(context).pop(true);
             showMessage(context, 'Credential deleted');

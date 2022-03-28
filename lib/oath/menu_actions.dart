@@ -21,8 +21,7 @@ List<MenuAction> buildOathMenuActions(AutoDisposeProviderRef ref) {
                       action: (context) {
                         showDialog(
                           context: context,
-                          builder: (context) =>
-                              OathAddAccountPage(device: device),
+                          builder: (context) => OathAddAccountPage(device.path),
                         );
                       },
                     ),
@@ -44,7 +43,7 @@ List<MenuAction> buildOathMenuActions(AutoDisposeProviderRef ref) {
                     action: (context) {
                       showDialog(
                         context: context,
-                        builder: (context) => ResetDialog(device),
+                        builder: (context) => ResetDialog(device.path),
                       );
                     },
                   ),

@@ -6,10 +6,12 @@ import '../models.dart';
 import 'account_view.dart';
 
 class AccountList extends StatefulWidget {
-  final YubiKeyData deviceData;
+  final DevicePath devicePath;
+  final OathState oathState;
   final List<OathPair> credentials;
   final List<String> favorites;
-  const AccountList(this.deviceData, this.credentials, this.favorites,
+  const AccountList(
+      this.devicePath, this.oathState, this.credentials, this.favorites,
       {Key? key})
       : super(key: key);
 
@@ -92,7 +94,6 @@ class _AccountListState extends State<AccountList> {
           ),
         ...pinnedCreds.map(
           (entry) => AccountView(
-            widget.deviceData,
             entry.credential,
             focusNode: _focusNodes[entry.credential],
           ),
@@ -106,7 +107,6 @@ class _AccountListState extends State<AccountList> {
           ),
         ...creds.map(
           (entry) => AccountView(
-            widget.deviceData,
             entry.credential,
             focusNode: _focusNodes[entry.credential],
           ),

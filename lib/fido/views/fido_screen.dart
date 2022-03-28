@@ -57,9 +57,9 @@ class FidoScreen extends ConsumerWidget {
           data: (state) {
             switch (subPage) {
               case SubPage.fingerprints:
-                return FingerprintPage(deviceData.node, state);
+                return FingerprintPage(deviceData.node.path, state);
               case SubPage.credentials:
-                return CredentialPage(deviceData.node, state);
+                return CredentialPage(deviceData.node.path, state);
               default:
                 return FidoMainPage(
                   deviceData.node,

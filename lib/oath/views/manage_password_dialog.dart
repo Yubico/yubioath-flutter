@@ -154,28 +154,3 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
     );
   }
 }
-
-class ManagePasswordDialog2 extends ConsumerWidget {
-  final DeviceNode device;
-  final OathState state;
-  const ManagePasswordDialog2(this.device, this.state, {Key? key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop();
-    });
-
-    return ResponsiveDialog(
-      title: const Text('Manage password'),
-      child: ManagePasswordDialog(
-        device.path,
-        state,
-        // Prevents from losing state on responsive change.
-        key: GlobalKey(),
-      ),
-    );
-  }
-}

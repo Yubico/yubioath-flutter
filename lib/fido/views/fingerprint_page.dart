@@ -10,14 +10,15 @@ import 'delete_fingerprint_dialog.dart';
 import 'rename_fingerprint_dialog.dart';
 
 class FingerprintPage extends ConsumerWidget {
-  final DeviceNode node;
+  final DevicePath devicePath;
   final FidoState state;
 
-  const FingerprintPage(this.node, this.state, {Key? key}) : super(key: key);
+  const FingerprintPage(this.devicePath, this.state, {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(fingerprintProvider(node.path)).when(
+    return ref.watch(fingerprintProvider(devicePath)).when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, _) => AppFailureScreen('$error'),
           data: (fingerprints) => ListView(
@@ -38,7 +39,7 @@ class FingerprintPage extends ConsumerWidget {
                               showDialog(
                                 context: context,
                                 builder: (context) =>
-                                    RenameFingerprintDialog(node, fp),
+                                    RenameFingerprintDialog(devicePath, fp),
                               );
                             },
                             icon: const Icon(Icons.edit)),
@@ -47,7 +48,7 @@ class FingerprintPage extends ConsumerWidget {
                               showDialog(
                                 context: context,
                                 builder: (context) =>
-                                    DeleteFingerprintDialog(node, fp),
+                                    DeleteFingerprintDialog(devicePath, fp),
                               );
                             },
                             icon: const Icon(Icons.delete)),
@@ -64,7 +65,8 @@ class FingerprintPage extends ConsumerWidget {
                       onPressed: () {
                         showDialog(
                           context: context,
-                          builder: (context) => AddFingerprintDialog(node),
+                          builder: (context) =>
+                              AddFingerprintDialog(devicePath),
                         );
                       },
                     )
