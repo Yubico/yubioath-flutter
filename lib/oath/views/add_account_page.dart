@@ -44,7 +44,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       setState(() {
         _qrState = _QrScanState.scanning;
       });
-      final otpauth = await qrScanner.scanQr(null);
+      final otpauth = await qrScanner.scanQr();
       final data = CredentialData.fromUri(Uri.parse(otpauth));
       setState(() {
         _issuerController.text = data.issuer ?? '';

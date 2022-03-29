@@ -101,10 +101,7 @@ class RootNode(RpcNode):
 
     @action(closes_child=False)
     def qr(self, params, event, signal):
-        if "image" in params:
-            return dict(result=scan_qr(params["image"]))
-        else:
-            return dict(result=scan_qr())
+        return dict(result=scan_qr(params["image"]))
 
 
 class ReadersNode(RpcNode):

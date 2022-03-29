@@ -160,7 +160,7 @@ final menuActionsProvider = Provider.autoDispose<List<MenuAction>>((ref) {
 });
 
 abstract class QrScanner {
-  Future<String> scanQr(String? filePath);
+  Future<String> scanQr([String? imageData]);
 }
 
 final qrScannerProvider = Provider<QrScanner?>(
