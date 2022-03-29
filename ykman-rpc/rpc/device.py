@@ -110,7 +110,7 @@ class RootNode(RpcNode):
 
     @action(closes_child=False)
     def qr(self, params, event, signal):
-        return dict(result=scan_qr())
+        return dict(result=scan_qr(params.get("image")))
 
 
 def _id_from_fingerprint(fp):
