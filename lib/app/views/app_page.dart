@@ -25,7 +25,9 @@ class AppPage extends ConsumerWidget {
                 children: [
                   const SizedBox(
                     width: 240,
-                    child: MainPageDrawer(shouldPop: false),
+                    child: ListTileTheme(
+                        style: ListTileStyle.drawer,
+                        child: MainPageDrawer(shouldPop: false)),
                   ),
                   Expanded(
                     child: _buildScaffold(context, ref, false),
