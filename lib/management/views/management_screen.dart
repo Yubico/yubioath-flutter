@@ -7,6 +7,7 @@ import '../../app/state.dart';
 import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../app/views/responsive_dialog.dart';
+import '../../core/models.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -239,9 +240,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       title: const Text('Toggle applications'),
       child:
           ref.watch(managementStateProvider(widget.deviceData.node.path)).when(
-                none: () => const AppLoadingScreen(),
-                failure: (reason) => AppFailureScreen(reason),
-                success: (info) {
+                loading: () => const AppLoadingScreen(),
+                error: (error, _) => AppFailureScreen('$error'),
+                data: (info) {
                   // TODO: Check mode for < YK5 intead
                   changed = !_mapEquals(
                     _enabled,

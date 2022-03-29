@@ -13,7 +13,7 @@ List<MenuAction> buildOathMenuActions(AutoDisposeProviderRef ref) {
   if (device != null) {
     final state = ref.watch(oathStateProvider(device.path));
     return state.whenOrNull(
-            success: (oathState) => [
+            data: (oathState) => [
                   if (!oathState.locked) ...[
                     MenuAction(
                       text: 'Add credential',

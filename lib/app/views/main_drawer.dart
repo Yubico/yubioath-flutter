@@ -109,7 +109,7 @@ class MainPageDrawer extends ConsumerWidget {
             },
           ),
           DrawerItem(
-            titleText: 'About',
+            titleText: 'Help and feedback',
             icon: const Icon(Icons.help_outline),
             onTap: () {
               final nav = Navigator.of(context);

@@ -85,6 +85,7 @@ def _handle_incoming(event, recv, error, cmd_queue):
         except RpcException as e:
             error(e.status, e.message, e.body)
         except Exception as e:
+            logger.exception("Unhandled exception")
             error("exception", f"{e!r}")
     event.set()
     cmd_queue.put(None)
@@ -126,6 +127,7 @@ def process(
         except RpcException as e:
             error(e.status, e.message, e.body)
         except Exception as e:
+            logger.exception("Unhandled exception")
             error("exception", f"{e!r}")
         cmd_queue.task_done()
 

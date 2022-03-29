@@ -16,5 +16,8 @@ class RpcResponse with _$RpcResponse {
 
 @freezed
 class RpcState with _$RpcState {
-  const factory RpcState(String version) = _RpcState;
+  const factory RpcState(String version, bool isAdmin) = _RpcState;
+
+  factory RpcState.fromJson(Map<String, dynamic> json) =>
+      _$RpcStateFromJson(json);
 }

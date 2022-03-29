@@ -1,15 +1,13 @@
 import 'dart:developer' as developer;
-import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'android/init.dart' as android;
+import 'app/logging.dart';
 import 'app/app.dart';
-import 'app/views/main_page.dart';
 import 'core/state.dart';
 import 'desktop/init.dart' as desktop;
 import 'error_page.dart';
@@ -17,46 +15,34 @@ import 'error_page.dart';
 final _log = Logger('main');
 
 void main() async {
-  // Set YUBIOATH_DEV_LOG=true to use the developer log.
-  if (kDebugMode && Platform.environment['YUBIOATH_DEV_LOG'] == 'true') {
-    _initializeDebugLogging();
-    Logger.root.level = Level.INFO;
-    _log.info('Logging to debug console');
-  } else {
-    if (isDesktop) {
-      desktop.initializeLogging();
-    }
-    if (isAndroid) {
-      android.initializeLogging();
-    }
-  }
-
   WidgetsFlutterBinding.ensureInitialized();
+  final logBuffer = initLogBuffer(1000);
 
-  var prefs = await SharedPreferences.getInstance();
-  List<Override> overrides = [
-    prefProvider.overrideWithValue(prefs),
-  ];
-  Widget page;
   try {
-    // Platform specific initialization
+    final Widget initializedApp;
     if (isDesktop) {
-      _log.config('Initializing desktop platform.');
-      overrides.addAll(await desktop.initializeAndGetOverrides(prefs));
+      initializedApp = await desktop.initialize();
     } else if (isAndroid) {
-      _log.config('Initializing Android platform.');
-      overrides.addAll(await android.initializeAndGetOverrides());
+      initializedApp = await android.initialize();
+    } else {
+      _initializeDebugLogging();
+      throw UnimplementedError('Platform not supported');
     }
-    page = const MainPage();
+    runApp(LogBuffer(
+      logBuffer,
+      child: initializedApp,
+    ));
   } catch (e) {
     _log.warning('Platform initialization failed: $e');
-    page = ErrorPage(error: e.toString());
+    runApp(
+      ProviderScope(
+        child: YubicoAuthenticatorApp(page: ErrorPage(error: e.toString())),
+        overrides: [
+          prefProvider.overrideWithValue(await SharedPreferences.getInstance())
+        ],
+      ),
+    );
   }
-
-  runApp(ProviderScope(
-    overrides: overrides,
-    child: YubicoAuthenticatorApp(page: page),
-  ));
 }
 
 void _initializeDebugLogging() {

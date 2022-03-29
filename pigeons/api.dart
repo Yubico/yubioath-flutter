@@ -1,18 +1,20 @@
 import 'package:pigeon/pigeon.dart';
 
+class UnlockResponse {
+  bool? isUnlocked;
+  bool? isRemembered;
+}
+
 @HostApi()
 abstract class OathApi {
   @async
   void reset();
 
   @async
-  bool unlock(String password, bool remember);
+  UnlockResponse unlock(String password, bool remember);
 
   @async
-  void setPassword(String newPassword);
-
-  @async
-  void changePassword(String currentPassword, String newPassword);
+  void setPassword(String? currentPassword, String newPassword);
 
   @async
   void unsetPassword(String currentPassword);
@@ -24,10 +26,7 @@ abstract class OathApi {
   String addAccount(String uri, bool requireTouch);
 
   @async
-  String renameAccount(String uri, String name);
-
-  @async
-  String renameAccountWithIssuer(String uri, String name, String issuer);
+  String renameAccount(String uri, String name, String? issuer);
 
   @async
   void deleteAccount(String uri);

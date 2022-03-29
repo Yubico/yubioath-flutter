@@ -25,20 +25,6 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
         return;
       }
 
-      /// a workaround for yubikeys without DEVICE_INFO
-      /// once we have support functionality implemented,
-      /// the following block will not be needed
-      if (input == 'NO_FEATURE_DEVICE_INFO') {
-        // empty data to show some general information in the app
-        DeviceConfig config = DeviceConfig({}, 0, 0, 0);
-        DeviceInfo deviceInfo = DeviceInfo(config, 0, const Version(1, 0, 0),
-            FormFactor.unknown, {}, true, false, false);
-        DeviceNode deviceNode =
-            DeviceNode.nfcReader(DevicePath([]), 'Generic YubiKey');
-        state = YubiKeyData(deviceNode, 'Generic Yubikey', deviceInfo);
-        return;
-      }
-
       var args = jsonDecode(input);
 
       DeviceInfo deviceInfo = DeviceInfo.fromJson(args);
@@ -47,7 +33,11 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
 
       DeviceNode deviceNode = isNfc
           ? DeviceNode.nfcReader(DevicePath([]), name)
-          : DeviceNode.usbYubiKey(DevicePath([]), name, -1, deviceInfo);
+          : DeviceNode.usbYubiKey(
+              DevicePath([]),
+              name,
+              /*TODO: replace with correct PID*/ UsbPid.yk4OtpFidoCcid,
+              deviceInfo);
       state = YubiKeyData(deviceNode, name, deviceInfo);
     } on Exception catch (e) {
       _log.config('Invalid data for yubikey: $input. $e');

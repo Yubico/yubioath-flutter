@@ -83,6 +83,11 @@ class TimeoutException(RpcException):
         super().__init__("timeout", "Command timed out waiting for user action")
 
 
+class AuthRequiredException(RpcException):
+    def __init__(self):
+        super().__init__("auth-required", "Authentication is required")
+
+
 class ChildResetException(Exception):
     def __init__(self, message):
         self.message = message

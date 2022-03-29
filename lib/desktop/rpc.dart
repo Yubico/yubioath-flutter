@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:logging/logging.dart';
 import 'package:async/async.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/models.dart';
 import 'models.dart';
@@ -15,6 +16,8 @@ class Signaler {
   final _recv = StreamController<Signal>();
 
   Stream<Signal> get signals => _recv.stream;
+
+  Stream<String> get _sendStream => _send.stream;
 
   void cancel() {
     _send.add('cancel');
@@ -44,6 +47,7 @@ class _Request {
 }
 
 const _py2level = {
+  'TRAFFIC': Level.FINE,
   'DEBUG': Level.CONFIG,
   'INFO': Level.INFO,
   'WARNING': Level.WARNING,
@@ -81,7 +85,7 @@ class RpcSession {
           //time: DateTime.fromMillisecondsSinceEpoch(event['time'] * 1000),
         );
       } catch (e) {
-        _log.severe(e.toString(), event);
+        _log.error(e.toString(), event);
       }
     });
 
@@ -120,26 +124,30 @@ class RpcSession {
   }
 
   void _send(Map data) {
-    _log.fine('SEND', jsonEncode(data));
+    _log.traffic('SEND', jsonEncode(data));
     _process.stdin.writeln(jsonEncode(data));
-    _process.stdin.flush();
   }
 
   void _pump() async {
     await for (final request in _requests.stream) {
       _send(request.toJson());
 
-      request.signal?._send.stream.listen((status) {
+      final signalSubscription = request.signal?._sendStream.listen((status) {
         _send({'kind': 'signal', 'status': status});
       });
 
       bool completed = false;
       while (!completed) {
         final response = await _responses.next;
-        _log.fine('RECV', jsonEncode(response));
+        _log.traffic('RECV', jsonEncode(response));
         response.map(
           signal: (signal) {
-            request.signal?._recv.sink.add(signal);
+            final signaler = request.signal;
+            if (signaler != null) {
+              signaler._recv.sink.add(signal);
+            } else {
+              _log.warning('Received unhandled signal: $signal');
+            }
           },
           success: (success) {
             request.completer.complete(success.body);
@@ -152,12 +160,31 @@ class RpcSession {
         );
       }
 
+      await signalSubscription?.cancel();
       request.signal?._close();
     }
   }
 }
 
 typedef ErrorHandler = Future<void> Function(RpcError e);
+
+class _MultiSignaler extends Signaler {
+  final Signaler delegate;
+  @override
+  final Stream<String> _sendStream;
+
+  _MultiSignaler(this.delegate)
+      : _sendStream = delegate._send.stream.asBroadcastStream() {
+    signals.listen(delegate._recv.sink.add);
+  }
+
+  @override
+  void _close() {}
+
+  void _reallyClose() {
+    super._close();
+  }
+}
 
 class RpcNodeSession {
   final RpcSession _rpc;
@@ -181,7 +208,12 @@ class RpcNodeSession {
     Map<dynamic, dynamic>? params,
     Signaler? signal,
   }) async {
+    bool wrapped = false;
     try {
+      if (signal != null && signal is! _MultiSignaler) {
+        signal = _MultiSignaler(signal);
+        wrapped = true;
+      }
       return await _rpc.command(
         action,
         devicePath.segments + subPath + target,
@@ -193,9 +225,18 @@ class RpcNodeSession {
       if (handler != null) {
         _log.info('Attempting recovery on "${e.status}"');
         await handler(e);
-        return command(action, target: target, params: params, signal: signal);
+        return await command(
+          action,
+          target: target,
+          params: params,
+          signal: signal,
+        );
       }
       rethrow;
+    } finally {
+      if (wrapped) {
+        (signal as _MultiSignaler)._reallyClose();
+      }
     }
   }
 }

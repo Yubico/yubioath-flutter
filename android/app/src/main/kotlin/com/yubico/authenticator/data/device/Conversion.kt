@@ -30,16 +30,16 @@ fun Version.toJson() = JsonArray(
     )
 )
 
-fun DeviceInfo.toJson(isNfcDevice: Boolean) = JsonObject(
+fun DeviceInfo.toJson(name: String, isNfcDevice: Boolean) = JsonObject(
     mapOf(
         "config" to config.toJson(),
         "serial" to JsonPrimitive(serialNumber),
         "version" to version.toJson(),
         "form_factor" to JsonPrimitive(formFactor.value),
         "is_locked" to JsonPrimitive(isLocked),
-        "is_sky" to JsonPrimitive(false),  // FIXME return correct value
-        "is_fips" to JsonPrimitive(false), // FIXME return correct value
-        "name" to JsonPrimitive("FIXME"),  // FIXME return correct value
+        "is_sky" to JsonPrimitive(isSky),
+        "is_fips" to JsonPrimitive(isFips),
+        "name" to JsonPrimitive(name),
         "is_nfc" to JsonPrimitive(isNfcDevice),
         "supported_capabilities" to JsonObject(
             mapOf(

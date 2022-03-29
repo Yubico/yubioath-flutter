@@ -22,7 +22,7 @@ class CancelException implements Exception {}
 final oathApiProvider = StateProvider((_) => OathApi());
 
 final androidOathStateProvider = StateNotifierProvider.autoDispose
-    .family<OathStateNotifier, ApplicationStateResult<OathState>, DevicePath>(
+    .family<OathStateNotifier, AsyncValue<OathState>, DevicePath>(
         (ref, devicePath) => _AndroidOathStateNotifier(
             ref.watch(androidStateProvider), ref.watch(oathApiProvider)));
 
@@ -31,7 +31,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
 
   _AndroidOathStateNotifier(OathState? newState, this._api) : super() {
     if (newState != null) {
-      setState(newState);
+      setData(newState);
     }
   }
 
@@ -48,13 +48,16 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<Pair<bool, bool>> unlock(String password,
       {bool remember = false}) async {
     try {
-      final unlockSuccess = await _api.unlock(password, remember);
+      final unlockResponse = await _api.unlock(password, remember);
 
-      if (unlockSuccess) {
+      final unlocked = unlockResponse.isUnlocked == true;
+      final remembered = unlockResponse.isRemembered == true;
+
+      if (unlocked) {
         _log.config('applet unlocked');
-        setState(requireState().copyWith(locked: false));
+        setData(state.value!.copyWith(locked: false));
       }
-      return Pair(unlockSuccess, false); // TODO: provide correct second param
+      return Pair(unlocked, remembered);
     } on PlatformException catch (e) {
       _log.config('Calling unlock failed with exception: $e');
       return Pair(false, false);
@@ -64,11 +67,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<bool> setPassword(String? current, String password) async {
     try {
-      if (current != null) {
-        await _api.changePassword(current, password);
-      } else {
-        await _api.setPassword(password);
-      }
+      await _api.setPassword(current, password);
       return true;
     } on PlatformException catch (e) {
       _log.config('Calling set password failed with exception: $e');
@@ -103,8 +102,8 @@ final androidCredentialListProvider = StateNotifierProvider.autoDispose
     var notifier = _AndroidCredentialListNotifier(
       ref.watch(oathApiProvider),
       ref.watch(androidCredentialsProvider),
-      ref.watch(oathStateProvider(devicePath).select(
-          (r) => r.whenOrNull(success: (state) => state.locked) ?? true)),
+      ref.watch(oathStateProvider(devicePath)
+          .select((r) => r.whenOrNull(data: (state) => state.locked) ?? true)),
     );
     ref.listen<WindowState>(windowStateProvider, (_, windowState) {
       notifier._notifyWindowState(windowState);
@@ -168,18 +167,14 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         await _api.addAccount(credentialUri.toString(), requireTouch);
 
     var result = jsonDecode(resultString);
-    final credential = OathCredential.fromJson(result);
+    final pair = OathPair(OathCredential.fromJson(result['credential']),
+        result['code'] != null ? OathCode.fromJson(result['code']) : null);
 
     if (update && mounted) {
-      state = state!.toList()..add(OathPair(credential, null));
-      if (!requireTouch && credential.oathType == OathType.totp) {
-        // TODO handle correctly the account which have been added
-        // nfc and usb need different ways
-        // don't do: await calculate(credential);
-      }
+      state = state!.toList()..add(pair);
     }
 
-    return credential;
+    return pair.credential;
   }
 
   @override
@@ -187,12 +182,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       OathCredential credential, String? issuer, String name) async {
     try {
       String response;
-      if (issuer != null) {
-        response =
-            await _api.renameAccountWithIssuer(credential.id, name, issuer);
-      } else {
-        response = await _api.renameAccount(credential.id, name);
-      }
+      response = await _api.renameAccount(credential.id, name, issuer);
 
       var responseJson = jsonDecode(response);
 

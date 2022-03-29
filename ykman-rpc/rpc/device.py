@@ -51,13 +51,22 @@ from yubikit.logging import LOG_LEVEL
 
 from ykman.pcsc import list_devices, YK_READER_NAME
 from smartcard.Exceptions import SmartcardException
+from hashlib import sha256
 from dataclasses import asdict
 from typing import Mapping, Tuple
 
 import os
+import sys
+import ctypes
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+def _is_admin():
+    if sys.platform == "win32":
+        return bool(ctypes.windll.shell32.IsUserAnAdmin())
+    return os.getuid() == 0
 
 
 class RootNode(RpcNode):
@@ -78,7 +87,7 @@ class RootNode(RpcNode):
         return self._child
 
     def get_data(self):
-        return dict(version=ykman_version)
+        return dict(version=ykman_version, is_admin=_is_admin())
 
     @child
     def usb(self):
@@ -104,6 +113,12 @@ class RootNode(RpcNode):
         return dict(result=scan_qr(params.get("image")))
 
 
+def _id_from_fingerprint(fp):
+    if isinstance(fp, str):
+        fp = fp.encode()
+    return sha256(fp).hexdigest()[:16]
+
+
 class ReadersNode(RpcNode):
     def __init__(self):
         super().__init__()
@@ -124,7 +139,7 @@ class ReadersNode(RpcNode):
             self._readers = {}
             self._reader_mapping = {}
             for device in devices:
-                dev_id = os.urandom(4).hex()
+                dev_id = _id_from_fingerprint(device.fingerprint)
                 self._reader_mapping[dev_id] = device
                 self._readers[dev_id] = dict(name=device.reader.name)
             self._state = state
@@ -179,9 +194,10 @@ class DevicesNode(RpcNode):
             self._devices = {}
             self._device_mapping = {}
             for dev, info in list_all_devices():
-                dev_id = str(info.serial) if info.serial else os.urandom(4).hex()
-                while dev_id in self._device_mapping:
-                    dev_id = os.urandom(4).hex()
+                if info.serial:
+                    dev_id = str(info.serial)
+                else:
+                    dev_id = _id_from_fingerprint(dev.fingerprint)
                 self._device_mapping[dev_id] = (dev, info)
                 name = get_name(info, dev.pid.get_type() if dev.pid else None)
                 self._devices[dev_id] = dict(pid=dev.pid, name=name, serial=info.serial)
@@ -237,7 +253,7 @@ class AbstractDeviceNode(RpcNode):
                             info=asdict(self._info),
                         )
                 except Exception:
-                    logger.error(f"Unable to connect via {conn_type}", exc_info=True)
+                    logger.warning(f"Unable to connect via {conn_type}", exc_info=True)
         raise ValueError("No supported connections")
 
 

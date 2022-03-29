@@ -48,3 +48,28 @@ class _AndroidAttachedDevicesNotifier extends AttachedDevicesNotifier {
 
 final androidDeviceDataProvider =
     Provider<YubiKeyData?>((ref) => ref.watch(androidYubikeyProvider));
+
+final androidCurrentDeviceProvider =
+    StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {
+  final provider = _AndroidCurrentDeviceNotifier();
+  ref.listen(attachedDevicesProvider, provider._updateAttachedDevices);
+  return provider;
+});
+
+class _AndroidCurrentDeviceNotifier extends CurrentDeviceNotifier {
+  _AndroidCurrentDeviceNotifier() : super(null);
+
+  _updateAttachedDevices(
+      List<DeviceNode>? previous, List<DeviceNode?> devices) {
+    if (devices.isNotEmpty) {
+      state = devices.first;
+    } else {
+      state = null;
+    }
+  }
+
+  @override
+  setCurrentDevice(DeviceNode device) {
+    state = device;
+  }
+}

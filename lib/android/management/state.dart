@@ -5,11 +5,10 @@ import 'package:yubico_authenticator/management/models.dart';
 
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../core/models.dart';
 import '../../management/state.dart';
 
-final androidManagementState = StateNotifierProvider.autoDispose.family<
-    ManagementStateNotifier, ApplicationStateResult<DeviceInfo>, DevicePath>(
+final androidManagementState = StateNotifierProvider.autoDispose
+    .family<ManagementStateNotifier, AsyncValue<DeviceInfo>, DevicePath>(
   (ref, devicePath) {
     // Make sure to rebuild if currentDevice changes (as on reboot)
     ref.watch(currentDeviceProvider);
@@ -35,7 +34,7 @@ class _AndroidManagementStateNotifier extends ManagementStateNotifier {
       String newLockCode = '',
       bool reboot = false}) async {
     if (reboot) {
-      unsetState();
+      state = const AsyncValue.loading();
     }
 
     _ref.read(attachedDevicesProvider.notifier).refresh();

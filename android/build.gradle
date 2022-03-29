@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.3'
+        classpath 'com.android.tools.build:gradle:7.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:1.6.10"
     }
@@ -20,12 +20,14 @@ allprojects {
     }
 
     project.ext {
-        minSdkVersion = 21
+        minSdkVersion = 23
         targetSdkVersion = 31
         compileSdkVersion = 31
         buildToolsVersion = "30.0.3"
 
         yubiKitVersion = "2.1.0-SNAPSHOT"
+        junitVersion = "4.13.2"
+        mockitoVersion = "3.9.0"
     }
 }
 

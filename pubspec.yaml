@@ -41,7 +41,7 @@ dependencies:
   flutter_riverpod: ^1.0.0
   json_annotation: ^4.4.0
   freezed_annotation: ^1.0.0
-  window_manager: ^0.1.4
+  window_manager: ^0.2.0
   desktop_drop: ^0.3.3
 
 dev_dependencies:
@@ -58,7 +58,7 @@ dev_dependencies:
   build_runner: ^2.1.4
   freezed: ^1.0.0
   json_serializable: ^6.0.0
-  pigeon: ^1.0.19
+  pigeon: ^2.0.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -18,8 +18,8 @@ final _sessionProvider =
   (ref, devicePath) => RpcNodeSession(ref.watch(rpcProvider), devicePath, []),
 );
 
-final desktopManagementState = StateNotifierProvider.autoDispose.family<
-    ManagementStateNotifier, ApplicationStateResult<DeviceInfo>, DevicePath>(
+final desktopManagementState = StateNotifierProvider.autoDispose
+    .family<ManagementStateNotifier, AsyncValue<DeviceInfo>, DevicePath>(
   (ref, devicePath) {
     // Make sure to rebuild if currentDevice changes (as on reboot)
     ref.watch(currentDeviceProvider);
@@ -41,36 +41,30 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
   List<String> _subpath = [];
   _DesktopManagementStateNotifier(this._ref, this._session) : super();
 
-  void refresh() async {
-    try {
-      final result = await _session.command('get');
-      final info = DeviceInfo.fromJson(result['data']['info']);
-      final interfaces = (result['children'] as Map).keys.toSet();
-      for (final iface in [
-        // This is the preferred order
-        UsbInterface.ccid,
-        UsbInterface.otp,
-        UsbInterface.fido,
-      ]) {
-        if (interfaces.contains(iface.name)) {
-          final path = [iface.name, 'management'];
-          try {
-            await _session.command('get', target: path);
-            _subpath = path;
-            _log.config('Using transport $iface for management');
-            setState(info);
-            return;
-          } catch (e) {
-            _log.warning('Failed connecting to management via $iface');
+  Future<void> refresh() => updateState(() async {
+        final result = await _session.command('get');
+        final info = DeviceInfo.fromJson(result['data']['info']);
+        final interfaces = (result['children'] as Map).keys.toSet();
+        for (final iface in [
+          // This is the preferred order
+          UsbInterface.ccid,
+          UsbInterface.otp,
+          UsbInterface.fido,
+        ]) {
+          if (interfaces.contains(iface.name)) {
+            final path = [iface.name, 'management'];
+            try {
+              await _session.command('get', target: path);
+              _subpath = path;
+              _log.config('Using transport $iface for management');
+              return info;
+            } catch (e) {
+              _log.warning('Failed connecting to management via $iface');
+            }
           }
         }
-      }
-      setFailure('Failed connecting over all interfaces');
-    } catch (error) {
-      _log.severe('Failed getting device info');
-      setFailure('Failed to connect');
-    }
-  }
+        throw 'Failed connection over all interfaces';
+      });
 
   @override
   Future<void> setMode(int mode,
@@ -88,7 +82,7 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
       String newLockCode = '',
       bool reboot = false}) async {
     if (reboot) {
-      unsetState();
+      state = const AsyncValue.loading();
     }
     await _session.command('configure', target: _subpath, params: {
       ...config.toJson(),

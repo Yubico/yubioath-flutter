@@ -3,6 +3,7 @@ package com.yubico.authenticator.api
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.api.Pigeon.OathApi
 import com.yubico.authenticator.api.Pigeon.Result
+import com.yubico.authenticator.api.Pigeon.UnlockResponse
 
 class OathApiImpl(private val viewModel: MainViewModel) : OathApi {
 
@@ -13,20 +14,13 @@ class OathApiImpl(private val viewModel: MainViewModel) : OathApi {
     override fun unlock(
         password: String,
         remember: Boolean,
-        result: Result<Boolean>
+        result: Result<UnlockResponse>
     ) {
         viewModel.unlockOathSession(password, remember, result)
     }
 
     override fun setPassword(
-        newPassword: String,
-        result: Result<Void>
-    ) {
-        viewModel.setOathPassword(null, newPassword, result)
-    }
-
-    override fun changePassword(
-        currentPassword: String,
+        currentPassword: String?,
         newPassword: String,
         result: Result<Void>
     ) {
@@ -49,16 +43,7 @@ class OathApiImpl(private val viewModel: MainViewModel) : OathApi {
         viewModel.addAccount(uri, requireTouch, result)
     }
 
-    override fun renameAccount(uri: String, name: String, result: Result<String>) {
-        viewModel.renameCredential(uri, name, null, result)
-    }
-
-    override fun renameAccountWithIssuer(
-        uri: String,
-        name: String,
-        issuer: String,
-        result: Result<String>
-    ) {
+    override fun renameAccount(uri: String, name: String, issuer: String?, result: Result<String>) {
         viewModel.renameCredential(uri, name, issuer, result)
     }
 

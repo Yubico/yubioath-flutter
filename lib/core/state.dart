@@ -5,8 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'models.dart';
-
 final isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 final isAndroid = Platform.isAndroid;
 
@@ -28,33 +26,21 @@ class LogLevelNotifier extends StateNotifier<Level> {
 }
 
 abstract class ApplicationStateNotifier<T>
-    extends StateNotifier<ApplicationStateResult<T>> {
-  ApplicationStateNotifier() : super(ApplicationStateResult.none());
+    extends StateNotifier<AsyncValue<T>> {
+  ApplicationStateNotifier() : super(const AsyncValue.loading());
 
   @protected
-  T requireState() => state.maybeWhen(
-        success: (state) => state,
-        orElse: () => throw UnsupportedError('State is not available'),
-      );
-
-  @protected
-  void setState(T value) {
+  Future<void> updateState(Future<T> Function() guarded) async {
+    final result = await AsyncValue.guard(guarded);
     if (mounted) {
-      state = ApplicationStateResult.success(value);
+      state = result;
     }
   }
 
   @protected
-  void setFailure(String reason) {
+  void setData(T value) {
     if (mounted) {
-      state = ApplicationStateResult.failure(reason);
-    }
-  }
-
-  @protected
-  void unsetState() {
-    if (mounted) {
-      state = ApplicationStateResult.none();
+      state = AsyncValue.data(value);
     }
   }
 }

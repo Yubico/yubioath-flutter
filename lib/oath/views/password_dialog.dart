@@ -174,7 +174,7 @@ class ManagePasswordDialog extends ConsumerWidget {
     });
 
     return ref.watch(oathStateProvider(device.path)).maybeWhen(
-          success: (state) => ResponsiveDialog(
+          data: (state) => ResponsiveDialog(
             title: const Text('Manage password'),
             child: _ManagePasswordForm(
               device.path,
