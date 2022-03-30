@@ -73,7 +73,8 @@ Future<Widget> initialize() async {
   }
 
   _log.info('Starting subprocess: $exe');
-  final rpc = await RpcSession.launch(exe!);
+  final rpc = RpcSession(exe!);
+  await rpc.initialize();
   _log.info('ykman-rpc process started', exe);
   rpc.setLogLevel(Logger.root.level);
 

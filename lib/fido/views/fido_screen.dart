@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/device_avatar.dart';
 import '../../desktop/state.dart';
 import '../../management/models.dart';
 import '../models.dart';
@@ -48,8 +50,42 @@ class FidoScreen extends ConsumerWidget {
             if (Platform.isWindows) {
               if (!ref
                   .watch(rpcStateProvider.select((state) => state.isAdmin))) {
-                return const AppFailureScreen(
-                    'WebAuthn management requires elevated privileges.\nRestart this app as administrator.');
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const DeviceAvatar(child: Icon(Icons.lock)),
+                      const Text(
+                        'WebAuthn management requires elevated privileges.',
+                        textAlign: TextAlign.center,
+                      ),
+                      OutlinedButton.icon(
+                          icon: const Icon(Icons.lock_open),
+                          label: const Text('Unlock'),
+                          onPressed: () async {
+                            final controller = showMessage(
+                                context, 'Elevating permissions...',
+                                duration: const Duration(seconds: 30));
+                            try {
+                              if (await ref.read(rpcProvider).elevate()) {
+                                ref.refresh(rpcProvider);
+                              } else {
+                                showMessage(context, 'Permission denied');
+                              }
+                            } finally {
+                              controller.close();
+                            }
+                          }),
+                    ]
+                        .map((e) => Padding(
+                              child: e,
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                            ))
+                        .toList(),
+                  ),
+                );
               }
             }
             return AppFailureScreen('$error');

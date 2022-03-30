@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -31,6 +32,10 @@ final desktopFidoState = StateNotifierProvider.autoDispose
     .family<FidoStateNotifier, AsyncValue<FidoState>, DevicePath>(
   (ref, devicePath) {
     final session = ref.watch(_sessionProvider(devicePath));
+    if (Platform.isWindows) {
+      // Make sure to rebuild if isAdmin changes
+      ref.watch(rpcStateProvider.select((state) => state.isAdmin));
+    }
     final notifier = _DesktopFidoStateNotifier(session);
     session.setErrorHandler('state-reset', (_) async {
       ref.refresh(_sessionProvider(devicePath));

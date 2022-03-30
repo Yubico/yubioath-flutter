@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/models.dart';
 import '../../desktop/state.dart';
+import '../message.dart';
 import '../models.dart';
 import 'app_page.dart';
 import 'device_avatar.dart';
@@ -13,16 +14,45 @@ class NoDeviceScreen extends ConsumerWidget {
   final DeviceNode? node;
   const NoDeviceScreen(this.node, {Key? key}) : super(key: key);
 
-  String _getErrorMessage(WidgetRef ref, UsbPid pid) {
-    // TODO: Handle more cases
+  List<Widget> _buildUsbPid(BuildContext context, WidgetRef ref, UsbPid pid) {
     if (pid.usbInterfaces == UsbInterface.fido.value) {
-      if (Platform.isWindows) {
-        if (!ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
-          return 'WebAuthn management requires elevated privileges.\nRestart this app as administrator.';
-        }
+      if (Platform.isWindows &&
+          !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
+        return [
+          const DeviceAvatar(child: Icon(Icons.lock)),
+          const Text('WebAuthn management requires elevated privileges.'),
+          OutlinedButton.icon(
+              icon: const Icon(Icons.lock_open),
+              label: const Text('Unlock'),
+              onPressed: () async {
+                final controller = showMessage(
+                    context, 'Elevating permissions...',
+                    duration: const Duration(seconds: 30));
+                try {
+                  if (await ref.read(rpcProvider).elevate()) {
+                    ref.refresh(rpcProvider);
+                  } else {
+                    showMessage(context, 'Permission denied');
+                  }
+                } finally {
+                  controller.close();
+                }
+              }),
+        ]
+            .map((e) => Padding(
+                  child: e,
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                ))
+            .toList();
       }
     }
-    return 'This YubiKey cannot be accessed';
+    return [
+      const DeviceAvatar(child: Icon(Icons.usb_off)),
+      const Text(
+        'This YubiKey cannot be accessed',
+        textAlign: TextAlign.center,
+      ),
+    ];
   }
 
   @override
@@ -32,13 +62,7 @@ class NoDeviceScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: node?.map(usbYubiKey: (node) {
-                return [
-                  const DeviceAvatar(child: Icon(Icons.usb_off)),
-                  Text(
-                    _getErrorMessage(ref, node.pid),
-                    textAlign: TextAlign.center,
-                  ),
-                ];
+                return _buildUsbPid(context, ref, node.pid);
               }, nfcReader: (node) {
                 return const [
                   DeviceAvatar(child: Icon(Icons.wifi)),
