@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widgets/circle_timer.dart';
 import '../models.dart';
+import '../state.dart';
 import 'account_dialog.dart';
 import 'account_mixin.dart';
 
@@ -65,7 +66,9 @@ class AccountView extends ConsumerWidget with AccountMixin {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final code = getCode(ref);
-    final expired = isExpired(ref);
+    final expired = code == null ||
+        (credential.oathType == OathType.totp &&
+            ref.watch(expiredProvider(code.validTo)));
     final calculateReady = code == null ||
         credential.oathType == OathType.hotp ||
         (credential.touchRequired && expired);
@@ -115,34 +118,35 @@ class AccountView extends ConsumerWidget with AccountMixin {
             style: const TextStyle(fontSize: 18),
           ),
         ),
-        title: Text(
-          formatCode(ref),
-          style: expired
-              ? Theme.of(context)
-                  .textTheme
-                  .headline5
-                  ?.copyWith(color: Colors.grey)
-              : Theme.of(context).textTheme.headline5,
-        ),
-        subtitle: Text(
-          label,
-          style: Theme.of(context).textTheme.caption,
-          overflow: TextOverflow.fade,
-          maxLines: 1,
-          softWrap: false,
-        ),
-        trailing: calculateReady
-            ? Icon(
-                credential.touchRequired ? Icons.touch_app : Icons.refresh,
-                size: 18,
+        title: Text(title),
+        subtitle: subtitle != null
+            ? Text(
+                subtitle!,
+                overflow: TextOverflow.fade,
+                maxLines: 1,
+                softWrap: false,
               )
-            : SizedBox.square(
-                dimension: 16,
-                child: CircleTimer(
-                  code.validFrom * 1000,
-                  code.validTo * 1000,
+            : null,
+        trailing: Chip(
+          avatar: calculateReady
+              ? Icon(
+                  credential.touchRequired ? Icons.touch_app : Icons.refresh,
+                  size: 18,
+                )
+              : SizedBox.square(
+                  dimension: 16,
+                  child: CircleTimer(
+                    code.validFrom * 1000,
+                    code.validTo * 1000,
+                  ),
                 ),
-              ),
+          label: Text(
+            formatCode(code),
+            style: const TextStyle(
+              fontSize: 22.0,
+            ),
+          ),
+        ),
       ),
     );
   }

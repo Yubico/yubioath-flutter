@@ -62,11 +62,17 @@ mixin AccountMixin {
       : credential.name;
 
   @protected
+  String get title => credential.issuer ?? credential.name;
+
+  @protected
+  String? get subtitle => credential.issuer != null ? credential.name : null;
+
+  @protected
   OathCode? getCode(WidgetRef ref) => ref.watch(codeProvider(credential));
 
   @protected
-  String formatCode(WidgetRef ref) {
-    final value = getCode(ref)?.value;
+  String formatCode(OathCode? code) {
+    final value = code?.value;
     if (value == null) {
       return '••• •••';
     } else if (value.length < 6) {
@@ -78,8 +84,7 @@ mixin AccountMixin {
   }
 
   @protected
-  bool isExpired(WidgetRef ref) {
-    final code = getCode(ref);
+  bool isExpired(OathCode? code, WidgetRef ref) {
     return code == null ||
         (credential.oathType == OathType.totp &&
             ref.watch(expiredProvider(code.validTo)));
@@ -151,7 +156,7 @@ mixin AccountMixin {
       return [];
     }
     final code = getCode(ref);
-    final expired = isExpired(ref);
+    final expired = isExpired(code, ref);
     final manual =
         credential.touchRequired || credential.oathType == OathType.hotp;
     final ready = expired || credential.oathType == OathType.hotp;
