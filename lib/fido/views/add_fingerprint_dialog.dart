@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import '../../app/message.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../state.dart';
-import '../../app/views/responsive_dialog.dart';
 import '../../fido/models.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';

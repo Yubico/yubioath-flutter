@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
-import '../../app/views/responsive_dialog.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 

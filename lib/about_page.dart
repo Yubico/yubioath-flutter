@@ -8,9 +8,9 @@ import 'package:logging/logging.dart';
 
 import 'app/logging.dart';
 import 'app/message.dart';
-import 'app/views/responsive_dialog.dart';
 import 'core/state.dart';
 import 'desktop/state.dart';
+import 'widgets/responsive_dialog.dart';
 
 final _log = Logger('about');
 

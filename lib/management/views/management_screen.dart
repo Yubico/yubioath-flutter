@@ -7,8 +7,8 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
-import '../../app/views/responsive_dialog.dart';
 import '../../core/models.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 

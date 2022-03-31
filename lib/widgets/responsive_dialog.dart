@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'dialog_frame.dart';
+
 class ResponsiveDialog extends StatefulWidget {
   final Widget? title;
   final Widget child;
@@ -26,33 +28,30 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
       LayoutBuilder(builder: ((context, constraints) {
         if (constraints.maxWidth < 540) {
           // Fullscreen
-          return Dialog(
-              insetPadding: const EdgeInsets.all(0),
-              child: Scaffold(
-                appBar: AppBar(
-                  centerTitle: true,
-                  title: widget.title,
-                  actions: widget.actions,
-                  leading: BackButton(
-                    onPressed: () {
-                      widget.onCancel?.call();
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-                body: SingleChildScrollView(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Container(key: _childKey, child: widget.child),
-                ),
-              ));
+          return Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: widget.title,
+              actions: widget.actions,
+              leading: BackButton(
+                onPressed: () {
+                  widget.onCancel?.call();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(18.0),
+              child: Container(key: _childKey, child: widget.child),
+            ),
+          );
         } else {
           // Dialog
           final cancelText = widget.onCancel == null && widget.actions.isEmpty
               ? 'Close'
               : 'Cancel';
-          return Scaffold(
-            backgroundColor: Colors.transparent,
-            body: AlertDialog(
+          return DialogFrame(
+            child: AlertDialog(
               insetPadding: EdgeInsets.zero,
               title: widget.title,
               scrollable: true,
