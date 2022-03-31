@@ -42,7 +42,10 @@ dependencies:
   json_annotation: ^4.4.0
   freezed_annotation: ^1.0.0
   window_manager: ^0.2.0
-  mobile_scanner: ^1.0.0
+  mobile_scanner:
+    git:
+      url: https://github.com/AdamVe/mobile_scanner.git
+      ref: just-android
 
 dev_dependencies:
   flutter_test:
