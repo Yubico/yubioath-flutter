@@ -8,8 +8,14 @@ class AppPage extends ConsumerWidget {
   final Key _scaffoldKey = GlobalKey();
   final Widget? title;
   final Widget child;
+  final Widget? floatingActionButton;
   final void Function()? onBack;
-  AppPage({Key? key, this.title, required this.child, this.onBack})
+  AppPage(
+      {Key? key,
+      this.title,
+      required this.child,
+      this.onBack,
+      this.floatingActionButton})
       : super(key: key);
 
   @override
@@ -54,6 +60,7 @@ class AppPage extends ConsumerWidget {
       ),
       drawer: hasDrawer ? const MainPageDrawer() : null,
       body: child,
+      floatingActionButton: floatingActionButton,
     );
   }
 }

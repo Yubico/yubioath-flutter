@@ -4,7 +4,6 @@ import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/state.dart';
-import '../oath/menu_actions.dart';
 import 'models.dart';
 
 final _log = Logger('app.state');
@@ -102,16 +101,6 @@ class CurrentAppNotifier extends StateNotifier<Application> {
     );
   }
 }
-
-final menuActionsProvider = Provider.autoDispose<List<MenuAction>>((ref) {
-  switch (ref.watch(currentAppProvider)) {
-    case Application.oath:
-      return buildOathMenuActions(ref);
-    // TODO: Handle other cases.
-    default:
-      return [];
-  }
-});
 
 abstract class QrScanner {
   Future<String> scanQr();

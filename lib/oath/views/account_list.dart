@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
 import '../models.dart';
+import '../state.dart';
 import 'account_view.dart';
 
-class AccountList extends StatefulWidget {
+class AccountList extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OathState oathState;
-  final List<OathPair> credentials;
-  final List<String> favorites;
-  const AccountList(
-      this.devicePath, this.oathState, this.credentials, this.favorites,
-      {Key? key})
+  const AccountList(this.devicePath, this.oathState, {Key? key})
       : super(key: key);
 
   @override
-  State<AccountList> createState() => _AccountListState();
+  ConsumerState<AccountList> createState() => _AccountListState();
 }
 
-class _AccountListState extends State<AccountList> {
+class _AccountListState extends ConsumerState<AccountList> {
   List<OathCredential> _credentials = [];
   Map<OathCredential, FocusNode> _focusNodes = {};
 
@@ -68,16 +66,27 @@ class _AccountListState extends State<AccountList> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.credentials.isEmpty) {
+    final accounts = ref.watch(credentialListProvider(widget.devicePath));
+    if (accounts == null) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Center(child: CircularProgressIndicator()),
+        ],
+      );
+    }
+    final credentials = ref.watch(filteredCredentialsProvider(accounts));
+    final favorites = ref.watch(favoritesProvider);
+    if (credentials.isEmpty) {
       return const Center(
         child: Text('No credentials'),
       );
     }
 
-    final pinnedCreds = widget.credentials
-        .where((entry) => widget.favorites.contains(entry.credential.id));
-    final creds = widget.credentials
-        .where((entry) => !widget.favorites.contains(entry.credential.id));
+    final pinnedCreds =
+        credentials.where((entry) => favorites.contains(entry.credential.id));
+    final creds =
+        credentials.where((entry) => !favorites.contains(entry.credential.id));
 
     _credentials =
         pinnedCreds.followedBy(creds).map((e) => e.credential).toList();
@@ -86,10 +95,9 @@ class _AccountListState extends State<AccountList> {
     return ListView(
       children: [
         if (pinnedCreds.isNotEmpty)
-          ListTile(
+          const ListTile(
             title: Text(
-              'PINNED',
-              style: Theme.of(context).textTheme.bodyText2,
+              'Pinned',
             ),
           ),
         ...pinnedCreds.map(
@@ -99,10 +107,9 @@ class _AccountListState extends State<AccountList> {
           ),
         ),
         if (creds.isNotEmpty)
-          ListTile(
+          const ListTile(
             title: Text(
-              'ACCOUNTS',
-              style: Theme.of(context).textTheme.bodyText2,
+              'Accounts',
             ),
           ),
         ...creds.map(
@@ -111,6 +118,8 @@ class _AccountListState extends State<AccountList> {
             focusNode: _focusNodes[entry.credential],
           ),
         ),
+        // Make sure FAB doesn't block content
+        const SizedBox(height: 72.0),
       ],
     );
   }

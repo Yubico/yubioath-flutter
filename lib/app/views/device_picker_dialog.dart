@@ -6,15 +6,14 @@ import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 
-class MainActionsDialog extends ConsumerWidget {
-  const MainActionsDialog({Key? key}) : super(key: key);
+class DevicePickerDialog extends ConsumerWidget {
+  const DevicePickerDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final devices = ref.watch(attachedDevicesProvider).toList();
     final currentNode = ref.watch(currentDeviceProvider);
     final data = ref.watch(currentDeviceDataProvider);
-    final actions = ref.watch(menuActionsProvider);
 
     if (currentNode != null) {
       devices.removeWhere((e) => e.path == currentNode.path);
@@ -30,6 +29,7 @@ class MainActionsDialog extends ConsumerWidget {
               Navigator.of(context).pop();
             },
           ),
+        if (devices.isNotEmpty) const Divider(),
         ...devices.map(
           (e) => _DeviceRow(
             e,
@@ -49,16 +49,6 @@ class MainActionsDialog extends ConsumerWidget {
             'No YubiKey found',
             style: Theme.of(context).textTheme.titleMedium,
           )),
-        if (actions.isNotEmpty) const Divider(),
-        ...actions.map((a) => ListTile(
-              dense: true,
-              leading: a.icon,
-              title: Text(a.text),
-              onTap: () {
-                Navigator.of(context).pop();
-                a.action?.call(context);
-              },
-            )),
       ],
     );
   }

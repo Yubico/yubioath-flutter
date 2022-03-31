@@ -10,6 +10,9 @@ import '../../app/views/app_page.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_list.dart';
+import 'add_account_page.dart';
+import 'manage_password_dialog.dart';
+import 'reset_dialog.dart';
 
 class OathScreen extends ConsumerWidget {
   final YubiKeyData deviceData;
@@ -17,78 +20,171 @@ class OathScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return AppPage(
-      title: Focus(
-        canRequestFocus: false,
-        onKeyEvent: (node, event) {
-          if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-            node.focusInDirection(TraversalDirection.down);
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
-        child: Builder(builder: (context) {
-          return TextFormField(
-            initialValue: ref.read(searchProvider),
-            decoration: const InputDecoration(
-              hintText: 'Search...',
-              border: InputBorder.none,
+    return ref.watch(oathStateProvider(deviceData.node.path)).when(
+          loading: () => AppPage(child: const AppLoadingScreen()),
+          error: (error, _) => AppPage(child: AppFailureScreen('$error')),
+          data: (oathState) => oathState.locked
+              ? _LockedView(deviceData.node.path, oathState)
+              : _UnlockedView(deviceData.node.path, oathState),
+        );
+  }
+}
+
+class _LockedView extends ConsumerWidget {
+  final DevicePath devicePath;
+  final OathState oathState;
+
+  const _LockedView(this.devicePath, this.oathState, {Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => AppPage(
+          child: ListView(
+        children: [
+          const ListTile(
+            title: Text(
+              'Unlock',
             ),
-            onChanged: (value) {
-              ref.read(searchProvider.notifier).setFilter(value);
-            },
-            textInputAction: TextInputAction.next,
-            onFieldSubmitted: (value) {
-              Focus.of(context).focusInDirection(TraversalDirection.down);
-            },
-          );
-        }),
-      ),
-      child: ref.watch(oathStateProvider(deviceData.node.path)).when(
-            loading: () => const AppLoadingScreen(),
-            error: (error, _) => AppFailureScreen('$error'),
-            data: (oathState) {
-              if (oathState.locked) {
-                return ListView(
-                  children: [
-                    _UnlockForm(
-                      keystore: oathState.keystore,
-                      onSubmit: (password, remember) async {
-                        final result = await ref
-                            .read(oathStateProvider(deviceData.node.path)
-                                .notifier)
-                            .unlock(password, remember: remember);
-                        if (!result.first) {
-                          showMessage(context, 'Wrong password');
-                        } else if (remember && !result.second) {
-                          showMessage(context, 'Failed to remember password');
-                        }
-                      },
-                    ),
-                  ],
-                );
-              } else {
-                final accounts =
-                    ref.watch(credentialListProvider(deviceData.node.path));
-                if (accounts == null) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Center(child: CircularProgressIndicator()),
-                    ],
-                  );
-                }
-                return AccountList(
-                  deviceData.node.path,
-                  oathState,
-                  ref.watch(filteredCredentialsProvider(accounts)),
-                  ref.watch(favoritesProvider),
-                );
+          ),
+          _UnlockForm(
+            keystore: oathState.keystore,
+            onSubmit: (password, remember) async {
+              final result = await ref
+                  .read(oathStateProvider(devicePath).notifier)
+                  .unlock(password, remember: remember);
+              if (!result.first) {
+                showMessage(context, 'Wrong password');
+              } else if (remember && !result.second) {
+                showMessage(context, 'Failed to remember password');
               }
             },
           ),
-    );
-  }
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+            child: Wrap(
+              spacing: 4.0,
+              runSpacing: 4.0,
+              children: [
+                OutlinedButton.icon(
+                    icon: const Icon(Icons.password),
+                    label: Text(
+                        oathState.hasKey ? 'Change password' : 'Set password'),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) =>
+                            ManagePasswordDialog(devicePath, oathState),
+                      );
+                    }),
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.delete_forever),
+                  label: const Text('Reset'),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => ResetDialog(devicePath),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ));
+}
+
+class _UnlockedView extends ConsumerWidget {
+  final DevicePath devicePath;
+  final OathState oathState;
+
+  const _UnlockedView(this.devicePath, this.oathState, {Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => AppPage(
+        title: Focus(
+          canRequestFocus: false,
+          onKeyEvent: (node, event) {
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              node.focusInDirection(TraversalDirection.down);
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: Builder(builder: (context) {
+            return TextFormField(
+              initialValue: ref.read(searchProvider),
+              decoration: const InputDecoration(
+                hintText: 'Search accounts...',
+                border: InputBorder.none,
+              ),
+              onChanged: (value) {
+                ref.read(searchProvider.notifier).setFilter(value);
+              },
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (value) {
+                Focus.of(context).focusInDirection(TraversalDirection.down);
+              },
+            );
+          }),
+        ),
+        child: AccountList(devicePath, oathState),
+        floatingActionButton: FloatingActionButton.extended(
+          icon: const Icon(Icons.add),
+          label: const Text('Setup'),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          foregroundColor: Theme.of(context).colorScheme.onSecondary,
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              constraints: MediaQuery.of(context).size.width > 540
+                  ? const BoxConstraints(maxWidth: 380)
+                  : null,
+              builder: (context) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.add),
+                    title: const Text('Add account'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      showDialog(
+                        context: context,
+                        builder: (context) => OathAddAccountPage(devicePath),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.password),
+                    title: Text(
+                        oathState.hasKey ? 'Change password' : 'Set password'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      showDialog(
+                        context: context,
+                        builder: (context) =>
+                            ManagePasswordDialog(devicePath, oathState),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.delete_forever),
+                    title: const Text('Delete all data'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      showDialog(
+                        context: context,
+                        builder: (context) => ResetDialog(devicePath),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      );
 }
 
 class _UnlockForm extends StatefulWidget {
@@ -114,32 +210,31 @@ class _UnlockFormState extends State<_UnlockForm> {
       //crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24.0),
-                child: Text(
-                  'Unlock YubiKey',
-                  style: Theme.of(context).textTheme.headline5,
-                ),
-              ),
               const Text(
                 'Enter the password for your YubiKey. If you don\'t know your password, you\'ll need to reset the YubiKey.',
               ),
-              TextField(
-                autofocus: true,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
-                onChanged: (value) {
-                  setState(() {
-                    _password = value;
-                  });
-                },
-                onSubmitted: (value) {
-                  widget.onSubmit(value, _remember);
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: TextField(
+                  autofocus: true,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _password = value;
+                    });
+                  },
+                  onSubmitted: (value) {
+                    widget.onSubmit(value, _remember);
+                  },
+                ),
               ),
             ],
           ),

@@ -6,10 +6,11 @@ ScaffoldFeatureController showMessage(
   Duration duration = const Duration(seconds: 1),
 }) {
   final width = MediaQuery.of(context).size.width;
+  final narrow = width < 540;
   return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(message),
     duration: duration,
-    behavior: SnackBarBehavior.floating,
-    width: width < 540 ? null : 400,
+    behavior: narrow ? SnackBarBehavior.fixed : SnackBarBehavior.floating,
+    width: narrow ? null : 400,
   ));
 }

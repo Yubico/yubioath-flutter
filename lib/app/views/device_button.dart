@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../state.dart';
 import 'device_avatar.dart';
-import 'main_actions_dialog.dart';
+import 'device_picker_dialog.dart';
 
 class DeviceButton extends ConsumerWidget {
   const DeviceButton({Key? key}) : super(key: key);
@@ -41,7 +41,7 @@ class DeviceButton extends ConsumerWidget {
         onPressed: () {
           showDialog(
             context: context,
-            builder: (context) => const MainActionsDialog(),
+            builder: (context) => const DevicePickerDialog(),
           );
         },
       ),
