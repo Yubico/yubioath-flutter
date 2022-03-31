@@ -138,12 +138,19 @@ class RpcSession {
     // Launch the elevated process
     final process =
         await Process.start('powershell.exe', ['-NoProfile', '-Command', '-']);
+
+    _log.info('Attempting to elevate $executable');
     process.stdin.writeln(
-        'Start-Process $executable -Verb runAs -WindowStyle hidden -ArgumentList "--tcp $port $nonce"');
+        'Start-Process "$executable" -Verb runAs -WindowStyle hidden -ArgumentList "--tcp $port $nonce"');
     await process.stdin.flush();
     await process.stdin.close();
     if (await process.exitCode != 0) {
       await server.close();
+      final error = await process.stderr
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter())
+          .join('\n');
+      _log.warning('Failed to elevate RPC process', error);
       return false;
     }
     _log.config('Elevated RPC process started');
