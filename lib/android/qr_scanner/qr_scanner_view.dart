@@ -4,18 +4,23 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../app/navigation_service.dart';
 import '../../oath/models.dart';
 
+/// Status of view state
+enum _ScanStatus { looking, error, success }
+
 class OverlayClipper extends CustomClipper<Path> {
+  /// helper method to calculate position of the rect
+  Rect _getOverlayRect(Size size, double width) => Rect.fromCenter(
+      center: Offset(size.width / 2, size.height / 2),
+      width: width,
+      height: width);
+
   @override
   Path getClip(Size size) {
     const r = 40.0;
     var w = size.width - 40;
     return Path()
       ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..addRRect(RRect.fromRectXY(
-          Rect.fromPoints(
-              const Offset(32, 32), Offset(size.width - 32, 32 + w)),
-          r,
-          r))
+      ..addRRect(RRect.fromRectXY(_getOverlayRect(size, w), r, r))
       ..fillType = PathFillType.evenOdd;
   }
 
@@ -26,49 +31,64 @@ class OverlayClipper extends CustomClipper<Path> {
 class MobileScannerWrapper extends StatelessWidget {
   final MobileScannerController controller;
   final Function(Barcode barcode, MobileScannerArguments? args)? onDetect;
-  final Color frameColor;
+  final _ScanStatus status;
 
   const MobileScannerWrapper({
     Key? key,
     required this.controller,
-    required this.frameColor,
     required this.onDetect,
+    required this.status,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    const radius = 40.0;
-    var dimension = MediaQuery.of(context).size.width - 64;
+    var backgroundColor = status == _ScanStatus.looking
+        ? Colors.white
+        : status == _ScanStatus.error
+            ? Colors.red.shade900
+            : Colors.green.shade900;
+
+    var size = MediaQuery.of(context).size;
+    var positionRect = Rect.fromCenter(
+        center: Offset(size.width / 2, size.height / 2 - 51),
+        width: size.width - 38,
+        height: size.width - 38);
+
     return Stack(children: [
       MobileScanner(
           controller: controller,
+          allowDuplicates: true,
           onDetect: (barcode, args) {
             onDetect?.call(barcode, args);
           }),
       ClipPath(
           clipper: OverlayClipper(),
           child: Opacity(
-              opacity: 0.5,
+              opacity: 0.3,
               child: ColoredBox(
-                  color: Colors.white,
+                  color: backgroundColor,
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: const [Spacer()],
                   )))),
-      Positioned.fromRect(
-          rect: Rect.fromPoints(
-              const Offset(32, 32), Offset(dimension + 32, 60 + dimension)),
-          child: DecoratedBox(
-              child: SizedBox(
-                width: dimension,
-                height: dimension,
-              ),
-              decoration: BoxDecoration(
-                  border: Border.all(color: frameColor, width: 5),
-                  borderRadius:
-                      const BorderRadius.all(Radius.circular(radius)))))
+      if (status == _ScanStatus.success)
+        Positioned.fromRect(
+            rect: positionRect,
+            child: Icon(
+              Icons.check_circle,
+              size: 200,
+              color: Colors.green.shade400,
+            )),
+      if (status == _ScanStatus.error)
+        Positioned.fromRect(
+            rect: positionRect,
+            child: Icon(
+              Icons.error,
+              size: 200,
+              color: Colors.red.shade400,
+            )),
     ]);
   }
 }
@@ -82,32 +102,61 @@ class QrScannerView extends StatefulWidget {
 
 class _QrScannerViewState extends State<QrScannerView> {
   String? _scannedString;
+
+  // will be used later
+  // ignore: unused_field
   CredentialData? _credentialData;
-  String? _scanningError;
-  Color _frameColor = Colors.grey;
+  _ScanStatus _status = _ScanStatus.looking;
+
   final MobileScannerController _controller =
       MobileScannerController(facing: CameraFacing.back, torchEnabled: false);
 
-  void handleResult(String? code) {
+  void setError() {
+    _credentialData = null;
+    _scannedString = null;
+    _status = _ScanStatus.error;
+
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      resetError();
+    });
+  }
+
+  void resetError() {
+    setState(() {
+      _credentialData = null;
+      _scannedString = null;
+      _status = _ScanStatus.looking;
+    });
+  }
+
+  void handleResult(String? code, MobileScannerArguments? args) {
+    if (_status != _ScanStatus.looking) {
+      // on success and error ignore reported codes
+      return;
+    }
     setState(() {
       if (code != null) {
         try {
           var parsedCredential = CredentialData.fromUri(Uri.parse(code));
-          _frameColor = Colors.green;
           _credentialData = parsedCredential;
-          _scanningError = null;
           _scannedString = code;
+          _status = _ScanStatus.success;
+
+          Future.delayed(const Duration(milliseconds: 800), () {
+            BuildContext dialogContext =
+                NavigationService.navigatorKey.currentContext!;
+            if (Navigator.of(dialogContext).canPop()) {
+              // prevent several callbacks
+              Navigator.of(dialogContext).pop(_scannedString);
+            }
+          });
         } on ArgumentError catch (_) {
-          _frameColor = Colors.red;
-          _credentialData = null;
-          _scanningError = 'Invalid code';
-          _scannedString = null;
+          setError();
+        } catch (e) {
+          setError();
         }
       } else {
-        _frameColor = Colors.red;
-        _credentialData = null;
-        _scanningError = 'Invalid code';
-        _scannedString = null;
+        setError();
       }
     });
   }
@@ -119,7 +168,6 @@ class _QrScannerViewState extends State<QrScannerView> {
         child: Scaffold(
             appBar: AppBar(
               title: const Text('Scan QR code'),
-              //actions: actions,
               leading: BackButton(
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -129,150 +177,53 @@ class _QrScannerViewState extends State<QrScannerView> {
             body: Stack(children: [
               MobileScannerWrapper(
                 controller: _controller,
-                frameColor: _frameColor,
-                onDetect: (barcode, _) => handleResult(barcode.rawValue),
+                status: _status,
+                onDetect: (barcode, args) =>
+                    handleResult(barcode.rawValue, args),
               ),
               Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 32, horizontal: 32),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SizedBox(
-                        height: 32,
-                      ),
-                      if (_credentialData == null && _scanningError == null)
-                        Card(
-                            elevation: 10,
-                            child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  // mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text('Scan QR code',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5),
-                                    const SizedBox(height: 16),
-                                    Text('or',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge),
-                                    const SizedBox(height: 16),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        OutlinedButton(
-                                          onPressed: () {
-                                            Navigator.of(dialogContext).pop('');
-                                          },
-                                          child: const Text('Add manually'),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ))),
-                      if (_credentialData != null)
-                        Card(
-                            elevation: 10,
-                            child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Successfully scanned',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
-                                    Text('Name',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall),
-                                    Text(_credentialData?.name ?? '',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline6),
-                                    if (_credentialData?.issuer != null)
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(
-                                            height: 16,
-                                          ),
-                                          Text('Issuer',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall),
-                                          Text(_credentialData?.issuer ?? '',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline6),
-                                          const SizedBox(
-                                            height: 32,
-                                          ),
-                                        ],
-                                      ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            if (Navigator.of(dialogContext)
-                                                .canPop()) {
-                                              // prevent several callbacks
-                                              Navigator.of(dialogContext)
-                                                  .pop(_scannedString);
-                                            }
-                                          },
-                                          child: const Text('Add this'),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ))),
-                      if (_scanningError != null)
-                        Card(
-                            elevation: 10,
-                            child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text('Scan failed, try again',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5),
-                                    const SizedBox(height: 16),
-                                    Text('or',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge),
-                                    const SizedBox(height: 16),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        OutlinedButton(
-                                          onPressed: () {
-                                            Navigator.of(dialogContext).pop('');
-                                          },
-                                          child: const Text('Add manually'),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ))),
+                      Column(children: [
+                        const SizedBox(
+                          height: 32,
+                        ),
+                        if (_status == _ScanStatus.looking)
+                          Text('Looking for a code...',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline6
+                                  ?.copyWith(color: Colors.black)),
+                        if (_status == _ScanStatus.success)
+                          Text('Found a valid code',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline6
+                                  ?.copyWith(color: Colors.white)),
+                        if (_status == _ScanStatus.error)
+                          Text('This code is not valid, try again.',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline6
+                                  ?.copyWith(color: Colors.white)),
+                      ]),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          MaterialButton(
+                            color: Colors.white38,
+                            onPressed: () {
+                              Navigator.of(dialogContext).pop('');
+                            },
+                            child: const Text('Add manually'),
+                          )
+                        ],
+                      )
                     ],
                   )),
             ])));
