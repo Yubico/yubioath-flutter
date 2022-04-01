@@ -163,7 +163,6 @@ class _QrScannerViewState extends State<QrScannerView> {
 
   @override
   Widget build(BuildContext context) {
-    BuildContext dialogContext = NavigationService.navigatorKey.currentContext!;
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -218,7 +217,7 @@ class _QrScannerViewState extends State<QrScannerView> {
                           MaterialButton(
                             color: Colors.white38,
                             onPressed: () {
-                              Navigator.of(dialogContext).pop('');
+                              Navigator.of(context).pop('');
                             },
                             child: const Text('Add manually'),
                           )
