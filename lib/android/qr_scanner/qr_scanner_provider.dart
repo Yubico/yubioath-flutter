@@ -9,7 +9,7 @@ class AndroidQrScanner implements QrScanner {
   AndroidQrScanner();
 
   @override
-  Future<String> scanQr() async {
+  Future<String> scanQr([String? _]) async {
     var code =
         await Navigator.of(NavigationService.navigatorKey.currentContext!)
             .push(MaterialPageRoute(
