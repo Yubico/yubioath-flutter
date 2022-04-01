@@ -46,6 +46,7 @@ dependencies:
     git:
       url: https://github.com/AdamVe/mobile_scanner.git
       ref: just-android
+  desktop_drop: ^0.3.3
 
 dev_dependencies:
   flutter_test:

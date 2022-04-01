@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/state.dart';
 import '../../app/models.dart';
 import '../../app/views/responsive_dialog.dart';
+import '../../widgets/file_drop_target.dart';
 import '../models.dart';
 import '../state.dart';
 import 'utils.dart';
@@ -109,196 +111,215 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     return ResponsiveDialog(
       title: const Text('Add account'),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Account details',
-            style: Theme.of(context).textTheme.headline6,
-          ),
-          TextField(
-            controller: _issuerController,
-            autofocus: true,
-            enabled: issuerRemaining > 0,
-            maxLength: max(issuerRemaining, 1),
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Issuer (optional)',
-              helperText: '', // Prevents dialog resizing when enabled = false
+      child: FileDropTarget(
+        onFileDropped: (fileData) async {
+          if (qrScanner != null) {
+            final b64Image = base64Encode(fileData);
+            final otpauth = await qrScanner.scanQr(b64Image);
+            final data = CredentialData.fromUri(Uri.parse(otpauth));
+            setState(() {
+              _issuerController.text = data.issuer ?? '';
+              _accountController.text = data.name;
+              _secretController.text = data.secret;
+              _oathType = data.oathType;
+              _hashAlgorithm = data.hashAlgorithm;
+              _periodController.text = '${data.period}';
+              _digits = data.digits;
+              _qrState = _QrScanState.success;
+            });
+          }
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Account details',
+              style: Theme.of(context).textTheme.headline6,
             ),
-            onChanged: (value) {
-              setState(() {
-                // Update maxlengths
-              });
-            },
-          ),
-          TextField(
-            controller: _accountController,
-            maxLength: nameRemaining,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Account name',
-              helperText: '', // Prevents dialog resizing when enabled = false
-            ),
-            onChanged: (value) {
-              setState(() {
-                // Update maxlengths
-              });
-            },
-          ),
-          TextField(
-            controller: _secretController,
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.allow(_secretFormatterPattern)
-            ],
-            decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'Secret key',
-                errorText: _validateSecretLength && !secretLengthValid
-                    ? 'Invalid length'
-                    : null),
-            enabled: _qrState != _QrScanState.success,
-            onChanged: (value) {
-              setState(() {
-                _validateSecretLength = false;
-              });
-            },
-          ),
-          if (qrScanner != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 24.0),
-              child: Row(
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      _scanQrCode(qrScanner);
-                    },
-                    icon: const Icon(Icons.qr_code),
-                    label: const Text('Scan QR code'),
-                  ),
-                  const SizedBox(width: 8.0),
-                  ..._buildQrStatus(),
-                ],
+            TextField(
+              controller: _issuerController,
+              autofocus: true,
+              enabled: issuerRemaining > 0,
+              maxLength: max(issuerRemaining, 1),
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Issuer (optional)',
+                helperText: '', // Prevents dialog resizing when enabled = false
               ),
+              onChanged: (value) {
+                setState(() {
+                  // Update maxlengths
+                });
+              },
             ),
-          const Divider(),
-          Text(
-            'Options',
-            style: Theme.of(context).textTheme.headline6,
-          ),
-          Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 4.0,
-            runSpacing: 8.0,
-            children: [
-              FilterChip(
-                label: const Text('Require touch'),
-                selected: _touch,
-                onSelected: (value) {
-                  setState(() {
-                    _touch = value;
-                  });
-                },
+            TextField(
+              controller: _accountController,
+              maxLength: nameRemaining,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Account name',
+                helperText: '', // Prevents dialog resizing when enabled = false
               ),
-              Chip(
-                label: DropdownButtonHideUnderline(
-                  child: DropdownButton<OathType>(
-                    value: _oathType,
-                    isDense: true,
-                    underline: null,
-                    items: OathType.values
-                        .map((e) => DropdownMenuItem(
-                              value: e,
-                              child: Text(e.name.toUpperCase()),
-                            ))
-                        .toList(),
-                    onChanged: _qrState != _QrScanState.success
-                        ? (type) {
-                            setState(() {
-                              _oathType = type ?? OathType.totp;
-                            });
-                          }
-                        : null,
-                  ),
+              onChanged: (value) {
+                setState(() {
+                  // Update maxlengths
+                });
+              },
+            ),
+            TextField(
+              controller: _secretController,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(_secretFormatterPattern)
+              ],
+              decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: 'Secret key',
+                  errorText: _validateSecretLength && !secretLengthValid
+                      ? 'Invalid length'
+                      : null),
+              enabled: _qrState != _QrScanState.success,
+              onChanged: (value) {
+                setState(() {
+                  _validateSecretLength = false;
+                });
+              },
+            ),
+            if (qrScanner != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 24.0),
+                child: Row(
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        _scanQrCode(qrScanner);
+                      },
+                      icon: const Icon(Icons.qr_code),
+                      label: const Text('Scan QR code'),
+                    ),
+                    const SizedBox(width: 8.0),
+                    ..._buildQrStatus(),
+                  ],
                 ),
               ),
-              Chip(
-                label: DropdownButtonHideUnderline(
-                  child: DropdownButton<HashAlgorithm>(
-                    value: _hashAlgorithm,
-                    isDense: true,
-                    underline: null,
-                    items: HashAlgorithm.values
-                        .map((e) => DropdownMenuItem(
-                              value: e,
-                              child: Text(e.name.toUpperCase()),
-                            ))
-                        .toList(),
-                    onChanged: _qrState != _QrScanState.success
-                        ? (type) {
-                            setState(() {
-                              _hashAlgorithm = type ?? HashAlgorithm.sha1;
-                            });
-                          }
-                        : null,
-                  ),
+            const Divider(),
+            Text(
+              'Options',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 4.0,
+              runSpacing: 8.0,
+              children: [
+                FilterChip(
+                  label: const Text('Require touch'),
+                  selected: _touch,
+                  onSelected: (value) {
+                    setState(() {
+                      _touch = value;
+                    });
+                  },
                 ),
-              ),
-              if (_oathType == OathType.totp)
                 Chip(
                   label: DropdownButtonHideUnderline(
-                    child: DropdownButton<int>(
-                      value:
-                          int.tryParse(_periodController.text) ?? defaultPeriod,
+                    child: DropdownButton<OathType>(
+                      value: _oathType,
                       isDense: true,
                       underline: null,
-                      items: [20, 30, 45, 60]
+                      items: OathType.values
                           .map((e) => DropdownMenuItem(
                                 value: e,
-                                child: Text('$e sec'),
+                                child: Text(e.name.toUpperCase()),
                               ))
                           .toList(),
                       onChanged: _qrState != _QrScanState.success
-                          ? (period) {
+                          ? (type) {
                               setState(() {
-                                _periodController.text =
-                                    '${period ?? defaultPeriod}';
+                                _oathType = type ?? OathType.totp;
                               });
                             }
                           : null,
                     ),
                   ),
                 ),
-              Chip(
-                label: DropdownButtonHideUnderline(
-                  child: DropdownButton<int>(
-                    value: _digits,
-                    isDense: true,
-                    underline: null,
-                    items: [6, 7, 8]
-                        .map((e) => DropdownMenuItem(
-                              value: e,
-                              child: Text('$e digits'),
-                            ))
-                        .toList(),
-                    onChanged: _qrState != _QrScanState.success
-                        ? (digits) {
-                            setState(() {
-                              _digits = digits ?? defaultDigits;
-                            });
-                          }
-                        : null,
+                Chip(
+                  label: DropdownButtonHideUnderline(
+                    child: DropdownButton<HashAlgorithm>(
+                      value: _hashAlgorithm,
+                      isDense: true,
+                      underline: null,
+                      items: HashAlgorithm.values
+                          .map((e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e.name.toUpperCase()),
+                              ))
+                          .toList(),
+                      onChanged: _qrState != _QrScanState.success
+                          ? (type) {
+                              setState(() {
+                                _hashAlgorithm = type ?? HashAlgorithm.sha1;
+                              });
+                            }
+                          : null,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ]
-            .map((e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: e,
-                ))
-            .toList(),
+                if (_oathType == OathType.totp)
+                  Chip(
+                    label: DropdownButtonHideUnderline(
+                      child: DropdownButton<int>(
+                        value: int.tryParse(_periodController.text) ??
+                            defaultPeriod,
+                        isDense: true,
+                        underline: null,
+                        items: [20, 30, 45, 60]
+                            .map((e) => DropdownMenuItem(
+                                  value: e,
+                                  child: Text('$e sec'),
+                                ))
+                            .toList(),
+                        onChanged: _qrState != _QrScanState.success
+                            ? (period) {
+                                setState(() {
+                                  _periodController.text =
+                                      '${period ?? defaultPeriod}';
+                                });
+                              }
+                            : null,
+                      ),
+                    ),
+                  ),
+                Chip(
+                  label: DropdownButtonHideUnderline(
+                    child: DropdownButton<int>(
+                      value: _digits,
+                      isDense: true,
+                      underline: null,
+                      items: [6, 7, 8]
+                          .map((e) => DropdownMenuItem(
+                                value: e,
+                                child: Text('$e digits'),
+                              ))
+                          .toList(),
+                      onChanged: _qrState != _QrScanState.success
+                          ? (digits) {
+                              setState(() {
+                                _digits = digits ?? defaultDigits;
+                              });
+                            }
+                          : null,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ]
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: e,
+                  ))
+              .toList(),
+        ),
       ),
       actions: [
         TextButton(
