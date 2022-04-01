@@ -104,8 +104,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     final secret = _secretController.text.replaceAll(' ', '');
     final secretLengthValid = secret.length * 5 % 8 < 5;
-    final isValid =
-        _accountController.text.isNotEmpty && secret.isNotEmpty && period > 0;
+    final isValid = _accountController.text.isNotEmpty &&
+        secret.isNotEmpty &&
+        issuerRemaining >= -1 &&
+        nameRemaining >= 0 &&
+        period > 0;
 
     final qrScanner = ref.watch(qrScannerProvider);
 
@@ -154,7 +157,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             ),
             TextField(
               controller: _accountController,
-              maxLength: nameRemaining,
+              maxLength: max(nameRemaining, 1),
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Account name',
