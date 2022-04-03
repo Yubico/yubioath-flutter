@@ -212,7 +212,12 @@ class DevicesNode(RpcNode):
         return self._devices
 
     def create_child(self, name):
-        return UsbDeviceNode(*self._device_mapping[name])
+        if name not in self._device_mapping and self._list_state == 0:
+            self.list_children()
+        try:
+            return UsbDeviceNode(*self._device_mapping[name])
+        except KeyError:
+            raise NoSuchNodeException(name)
 
 
 class AbstractDeviceNode(RpcNode):

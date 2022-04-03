@@ -211,8 +211,10 @@ class OathNode(RpcNode):
         self._remember_key(None)
         return dict()
 
-    @child(condition=lambda self: not self.session.locked)
+    @child
     def accounts(self):
+        if self.session.locked:
+            raise AuthRequiredException()
         return CredentialsNode(self.session)
 
 

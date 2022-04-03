@@ -7,7 +7,7 @@ import sys
 
 
 if __name__ == "__main__":
-    try:
+    if "--tcp" in sys.argv:
         index = sys.argv.index("--tcp")
         port = int(sys.argv[index + 1])
         nonce = sys.argv[index + 2].encode()
@@ -17,5 +17,5 @@ if __name__ == "__main__":
         sock.sendall(nonce + b"\n")
 
         run_rpc_socket(sock)
-    except ValueError:
+    else:
         run_rpc_pipes(sys.stdout, sys.stdin)

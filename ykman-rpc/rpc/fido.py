@@ -84,11 +84,16 @@ class Ctap2Node(RpcNode):
         self._info = self.ctap.info
         self.client_pin = ClientPin(self.ctap)
         self._auth_blocked = False
+        self._token = None
 
     def get_data(self):
         self._info = self.ctap.get_info()
         logger.debug(f"Info: {self._info}")
-        data = dict(info=asdict(self._info), auth_blocked=self._auth_blocked)
+        data = dict(
+            info=asdict(self._info),
+            auth_blocked=self._auth_blocked,
+            unlocked=self._token is not None,
+        )
         if self._info.options.get("clientPin"):
             pin_retries, power_cycle = self.client_pin.get_pin_retries()
             data.update(
@@ -169,15 +174,24 @@ class Ctap2Node(RpcNode):
         self.ctap.reset(event)
         self._info = self.ctap.get_info()
         self._auth_blocked = False
+        self._token = None
         return dict()
 
     @action(condition=lambda self: self._info.options["clientPin"])
-    def verify_pin(self, params, event, signal):
+    def unlock(self, params, event, signal):
         pin = params.pop("pin")
+        permissions = 0
+        if CredentialManagement.is_supported(self._info):
+            permissions |= ClientPin.PERMISSION.CREDENTIAL_MGMT
+        if BioEnrollment.is_supported(self._info):
+            permissions |= ClientPin.PERMISSION.BIO_ENROLL
         try:
-            self.client_pin.get_pin_token(
-                pin, ClientPin.PERMISSION.GET_ASSERTION, "ykman.example.com"
-            )
+            if permissions:
+                self._token = self.client_pin.get_pin_token(pin, permissions)
+            else:
+                self.client_pin.get_pin_token(
+                    pin, ClientPin.PERMISSION.GET_ASSERTION, "ykman.example.com"
+                )
             return dict()
         except CtapError as e:
             return _handle_pin_error(e, self.client_pin)
@@ -201,42 +215,27 @@ class Ctap2Node(RpcNode):
 
     @child(condition=lambda self: BioEnrollment.is_supported(self._info))
     def fingerprints(self):
-        return FingerprintsNode(self.client_pin)
+        if not self._token:
+            raise AuthRequiredException()
+        bio = FPBioEnrollment(
+            self.client_pin.ctap, self.client_pin.protocol, self._token
+        )
+        return FingerprintsNode(bio)
 
     @child(condition=lambda self: CredentialManagement.is_supported(self._info))
     def credentials(self):
-        return CredentialsRpsNode(self.client_pin)
-        token = self.client_pin.get_pin_token(
-            self._pin, ClientPin.PERMISSION.CREDENTIAL_MGMT
-        )
-        creds = CredentialManagement(self.ctap, self.client_pin.protocol, token)
+        if not self._token:
+            raise AuthRequiredException()
+        creds = CredentialManagement(self.ctap, self.client_pin.protocol, self._token)
         return CredentialsRpsNode(creds)
 
 
 class CredentialsRpsNode(RpcNode):
-    def __init__(self, client_pin):
+    def __init__(self, credman):
         super().__init__()
-        self.client_pin = client_pin
-        self.credman = None
+        self.credman = credman
         self._rps = {}
-
-    def get_data(self):
-        return dict(locked=self.credman is None)
-
-    @action
-    def unlock(self, params, event, signal):
-        pin = params.pop("pin")
-        try:
-            token = self.client_pin.get_pin_token(
-                pin, ClientPin.PERMISSION.CREDENTIAL_MGMT
-            )
-            self.credman = CredentialManagement(
-                self.client_pin.ctap, self.client_pin.protocol, token
-            )
-            self.refresh()
-            return dict()
-        except CtapError as e:
-            return _handle_pin_error(e, self.client_pin)
+        self.refresh()
 
     def refresh(self):
         data = self.credman.get_metadata()
@@ -309,27 +308,11 @@ class CredentialNode(RpcNode):
 
 
 class FingerprintsNode(RpcNode):
-    def __init__(self, client_pin):
+    def __init__(self, bio):
         super().__init__()
-        self.client_pin = client_pin
-        self.bio = None
+        self.bio = bio
         self._templates = {}
-
-    def get_data(self):
-        return dict(locked=self.bio is None)
-
-    @action
-    def unlock(self, params, event, signal):
-        pin = params.pop("pin")
-        try:
-            token = self.client_pin.get_pin_token(pin, ClientPin.PERMISSION.BIO_ENROLL)
-            self.bio = FPBioEnrollment(
-                self.client_pin.ctap, self.client_pin.protocol, token
-            )
-            self.refresh()
-            return dict()
-        except CtapError as e:
-            return _handle_pin_error(e, self.client_pin)
+        self.refresh()
 
     def refresh(self):
         self._templates = {
@@ -354,8 +337,6 @@ class FingerprintsNode(RpcNode):
 
     @action
     def add(self, params, event, signal):
-        if self.bio is None:
-            raise AuthRequiredException()
         name = params.get("name", None)
         enroller = self.bio.enroll()
         template_id = None
