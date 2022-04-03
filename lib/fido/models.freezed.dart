@@ -21,9 +21,11 @@ FidoState _$FidoStateFromJson(Map<String, dynamic> json) {
 class _$FidoStateTearOff {
   const _$FidoStateTearOff();
 
-  _FidoState call({required Map<String, dynamic> info}) {
+  _FidoState call(
+      {required Map<String, dynamic> info, required bool unlocked}) {
     return _FidoState(
       info: info,
+      unlocked: unlocked,
     );
   }
 
@@ -38,6 +40,7 @@ const $FidoState = _$FidoStateTearOff();
 /// @nodoc
 mixin _$FidoState {
   Map<String, dynamic> get info => throw _privateConstructorUsedError;
+  bool get unlocked => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -49,7 +52,7 @@ mixin _$FidoState {
 abstract class $FidoStateCopyWith<$Res> {
   factory $FidoStateCopyWith(FidoState value, $Res Function(FidoState) then) =
       _$FidoStateCopyWithImpl<$Res>;
-  $Res call({Map<String, dynamic> info});
+  $Res call({Map<String, dynamic> info, bool unlocked});
 }
 
 /// @nodoc
@@ -63,12 +66,17 @@ class _$FidoStateCopyWithImpl<$Res> implements $FidoStateCopyWith<$Res> {
   @override
   $Res call({
     Object? info = freezed,
+    Object? unlocked = freezed,
   }) {
     return _then(_value.copyWith(
       info: info == freezed
           ? _value.info
           : info // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
+      unlocked: unlocked == freezed
+          ? _value.unlocked
+          : unlocked // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -79,7 +87,7 @@ abstract class _$FidoStateCopyWith<$Res> implements $FidoStateCopyWith<$Res> {
           _FidoState value, $Res Function(_FidoState) then) =
       __$FidoStateCopyWithImpl<$Res>;
   @override
-  $Res call({Map<String, dynamic> info});
+  $Res call({Map<String, dynamic> info, bool unlocked});
 }
 
 /// @nodoc
@@ -94,12 +102,17 @@ class __$FidoStateCopyWithImpl<$Res> extends _$FidoStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? info = freezed,
+    Object? unlocked = freezed,
   }) {
     return _then(_FidoState(
       info: info == freezed
           ? _value.info
           : info // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
+      unlocked: unlocked == freezed
+          ? _value.unlocked
+          : unlocked // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -107,17 +120,19 @@ class __$FidoStateCopyWithImpl<$Res> extends _$FidoStateCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$_FidoState extends _FidoState {
-  _$_FidoState({required this.info}) : super._();
+  _$_FidoState({required this.info, required this.unlocked}) : super._();
 
   factory _$_FidoState.fromJson(Map<String, dynamic> json) =>
       _$$_FidoStateFromJson(json);
 
   @override
   final Map<String, dynamic> info;
+  @override
+  final bool unlocked;
 
   @override
   String toString() {
-    return 'FidoState(info: $info)';
+    return 'FidoState(info: $info, unlocked: $unlocked)';
   }
 
   @override
@@ -125,12 +140,15 @@ class _$_FidoState extends _FidoState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _FidoState &&
-            const DeepCollectionEquality().equals(other.info, info));
+            const DeepCollectionEquality().equals(other.info, info) &&
+            const DeepCollectionEquality().equals(other.unlocked, unlocked));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(info));
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(info),
+      const DeepCollectionEquality().hash(unlocked));
 
   @JsonKey(ignore: true)
   @override
@@ -144,7 +162,9 @@ class _$_FidoState extends _FidoState {
 }
 
 abstract class _FidoState extends FidoState {
-  factory _FidoState({required Map<String, dynamic> info}) = _$_FidoState;
+  factory _FidoState(
+      {required Map<String, dynamic> info,
+      required bool unlocked}) = _$_FidoState;
   _FidoState._() : super._();
 
   factory _FidoState.fromJson(Map<String, dynamic> json) =
@@ -152,6 +172,8 @@ abstract class _FidoState extends FidoState {
 
   @override
   Map<String, dynamic> get info;
+  @override
+  bool get unlocked;
   @override
   @JsonKey(ignore: true)
   _$FidoStateCopyWith<_FidoState> get copyWith =>

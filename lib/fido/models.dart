@@ -5,13 +5,13 @@ part 'models.g.dart';
 
 enum InteractionEvent { remove, insert, touch }
 
-enum SubPage { main, fingerprints, credentials }
-
 @freezed
 class FidoState with _$FidoState {
   const FidoState._();
 
-  factory FidoState({required Map<String, dynamic> info}) = _FidoState;
+  factory FidoState(
+      {required Map<String, dynamic> info,
+      required bool unlocked}) = _FidoState;
 
   factory FidoState.fromJson(Map<String, dynamic> json) =>
       _$FidoStateFromJson(json);

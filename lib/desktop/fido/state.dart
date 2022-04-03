@@ -36,9 +36,21 @@ final desktopFidoState = StateNotifierProvider.autoDispose
       // Make sure to rebuild if isAdmin changes
       ref.watch(rpcStateProvider.select((state) => state.isAdmin));
     }
-    final notifier = _DesktopFidoStateNotifier(session);
+    final notifier = _DesktopFidoStateNotifier(
+      session,
+      ref.watch(_pinProvider(devicePath).notifier),
+    );
     session.setErrorHandler('state-reset', (_) async {
       ref.refresh(_sessionProvider(devicePath));
+    });
+    session.setErrorHandler('auth-required', (_) async {
+      final pin = ref.read(_pinProvider(devicePath));
+      if (pin != null) {
+        await notifier.unlock(pin);
+      }
+    });
+    ref.onDispose(() {
+      session.unsetErrorHandler('auth-required');
     });
     ref.onDispose(() {
       session.unsetErrorHandler('state-reset');
@@ -49,7 +61,8 @@ final desktopFidoState = StateNotifierProvider.autoDispose
 
 class _DesktopFidoStateNotifier extends FidoStateNotifier {
   final RpcNodeSession _session;
-  _DesktopFidoStateNotifier(this._session) : super();
+  final StateController<String?> _pinController;
+  _DesktopFidoStateNotifier(this._session, this._pinController) : super();
 
   Future<void> refresh() => updateState(() async {
         final result = await _session.command('get');
@@ -92,8 +105,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
         'pin': oldPin,
         'new_pin': newPin,
       });
-      await refresh();
-      return PinResult.success();
+      return unlock(newPin);
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
         return PinResult.failed(e.body['retries'], e.body['auth_blocked']);
@@ -101,26 +113,12 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
       rethrow;
     }
   }
-}
-
-final desktopFidoPinProvider = StateNotifierProvider.autoDispose
-    .family<PinNotifier, bool, DevicePath>((ref, devicePath) {
-  return _DesktopPinNotifier(ref.watch(_sessionProvider(devicePath)),
-      ref.watch(_pinProvider(devicePath).notifier));
-});
-
-class _DesktopPinNotifier extends PinNotifier {
-  final RpcNodeSession _session;
-  final StateController<String?> _pinController;
-
-  _DesktopPinNotifier(this._session, this._pinController)
-      : super(_pinController.state != null);
 
   @override
   Future<PinResult> unlock(String pin) async {
     try {
       await _session.command(
-        'verify_pin',
+        'unlock',
         params: {'pin': pin},
       );
       _pinController.state = pin;
@@ -137,54 +135,16 @@ class _DesktopPinNotifier extends PinNotifier {
 }
 
 final desktopFingerprintProvider = StateNotifierProvider.autoDispose.family<
-    FidoFingerprintsNotifier,
-    AsyncValue<List<Fingerprint>>,
-    DevicePath>((ref, devicePath) {
-  final session = ref.watch(_sessionProvider(devicePath));
-  final notifier = _DesktopFidoFingerprintsNotifier(
-    session,
-    ref.watch(_pinProvider(devicePath).notifier),
-  );
-  session.setErrorHandler('auth-required', (_) async {
-    final pin = ref.read(_pinProvider(devicePath));
-    if (pin != null) {
-      await notifier._unlock(pin);
-    }
-  });
-  ref.onDispose(() {
-    session.unsetErrorHandler('auth-required');
-  });
-  return notifier;
-});
+        FidoFingerprintsNotifier, AsyncValue<List<Fingerprint>>, DevicePath>(
+    (ref, devicePath) => _DesktopFidoFingerprintsNotifier(
+          ref.watch(_sessionProvider(devicePath)),
+        ));
 
 class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   final RpcNodeSession _session;
-  final StateController<String?> _pinNotifier;
 
-  _DesktopFidoFingerprintsNotifier(this._session, this._pinNotifier) {
-    final pin = _pinNotifier.state;
-    if (pin != null) {
-      _unlock(pin);
-    } else {
-      state = const AsyncValue.error('locked');
-    }
-  }
-
-  Future<void> _unlock(String pin) async {
-    try {
-      await _session.command(
-        'unlock',
-        target: ['fingerprints'],
-        params: {'pin': pin},
-      );
-      await _refresh();
-    } on RpcError catch (e) {
-      if (e.status == 'pin-validation') {
-        _pinNotifier.state = null;
-      } else {
-        rethrow;
-      }
-    }
+  _DesktopFidoFingerprintsNotifier(this._session) {
+    _refresh();
   }
 
   Future<void> _refresh() async {
@@ -256,54 +216,16 @@ class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 }
 
 final desktopCredentialProvider = StateNotifierProvider.autoDispose.family<
-    FidoCredentialsNotifier,
-    AsyncValue<List<FidoCredential>>,
-    DevicePath>((ref, devicePath) {
-  final session = ref.watch(_sessionProvider(devicePath));
-  final notifier = _DesktopFidoCredentialsNotifier(
-    session,
-    ref.watch(_pinProvider(devicePath).notifier),
-  );
-  session.setErrorHandler('auth-required', (_) async {
-    final pin = ref.read(_pinProvider(devicePath));
-    if (pin != null) {
-      await notifier._unlock(pin);
-    }
-  });
-  ref.onDispose(() {
-    session.unsetErrorHandler('auth-required');
-  });
-  return notifier;
-});
+        FidoCredentialsNotifier, AsyncValue<List<FidoCredential>>, DevicePath>(
+    (ref, devicePath) => _DesktopFidoCredentialsNotifier(
+          ref.watch(_sessionProvider(devicePath)),
+        ));
 
 class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
   final RpcNodeSession _session;
-  final StateController<String?> _pinNotifier;
 
-  _DesktopFidoCredentialsNotifier(this._session, this._pinNotifier) {
-    final pin = _pinNotifier.state;
-    if (pin != null) {
-      _unlock(pin);
-    } else {
-      state = const AsyncValue.error('locked');
-    }
-  }
-
-  Future<void> _unlock(String pin) async {
-    try {
-      await _session.command(
-        'unlock',
-        target: ['credentials'],
-        params: {'pin': pin},
-      );
-      await _refresh();
-    } on RpcError catch (e) {
-      if (e.status == 'pin-validation') {
-        _pinNotifier.state = null;
-      } else {
-        rethrow;
-      }
-    }
+  _DesktopFidoCredentialsNotifier(this._session) {
+    _refresh();
   }
 
   Future<void> _refresh() async {

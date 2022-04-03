@@ -161,7 +161,11 @@ class RpcSession {
     _log.config('Client connected: $client');
 
     // Stop the old subprocess.
-    _connection.dispose();
+    try {
+      _connection.dispose();
+    } catch (error) {
+      _log.warning('Failed to dispose existing process', error);
+    }
 
     bool authenticated = false;
     final completer = Completer<void>();
