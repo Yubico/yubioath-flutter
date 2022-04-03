@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -144,6 +145,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
             formatCode(code),
             style: const TextStyle(
               fontSize: 22.0,
+              fontFeatures: [FontFeature.tabularFigures()],
             ),
           ),
         ),

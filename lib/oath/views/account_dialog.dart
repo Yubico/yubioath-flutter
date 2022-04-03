@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -90,8 +92,8 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
                 label: Text(
                   formatCode(code),
                   style: const TextStyle(
-                    fontSize: 32.0,
-                  ),
+                      fontSize: 32.0,
+                      fontFeatures: [FontFeature.tabularFigures()]),
                 ),
               ),
             )

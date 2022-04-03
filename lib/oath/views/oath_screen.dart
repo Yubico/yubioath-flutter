@@ -15,17 +15,25 @@ import 'manage_password_dialog.dart';
 import 'reset_dialog.dart';
 
 class OathScreen extends ConsumerWidget {
-  final YubiKeyData deviceData;
-  const OathScreen(this.deviceData, {Key? key}) : super(key: key);
+  final DevicePath devicePath;
+  const OathScreen(this.devicePath, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(oathStateProvider(deviceData.node.path)).when(
-          loading: () => AppPage(child: const AppLoadingScreen()),
-          error: (error, _) => AppPage(child: AppFailureScreen('$error')),
+    return ref.watch(oathStateProvider(devicePath)).when(
+          loading: () => AppPage(
+            title: const Text('Authenticator'),
+            centered: true,
+            child: const AppLoadingScreen(),
+          ),
+          error: (error, _) => AppPage(
+            title: const Text('Authenticator'),
+            centered: true,
+            child: AppFailureScreen('$error'),
+          ),
           data: (oathState) => oathState.locked
-              ? _LockedView(deviceData.node.path, oathState)
-              : _UnlockedView(deviceData.node.path, oathState),
+              ? _LockedView(devicePath, oathState)
+              : _UnlockedView(devicePath, oathState),
         );
   }
 }
@@ -39,59 +47,48 @@ class _LockedView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => AppPage(
-          child: ListView(
-        children: [
-          const ListTile(
-            title: Text(
-              'Unlock',
+        title: const Text('Authenticator'),
+        child: Column(
+          children: [
+            const ListTile(title: Text('Unlock')),
+            _UnlockForm(
+              devicePath,
+              keystore: oathState.keystore,
             ),
-          ),
-          _UnlockForm(
-            keystore: oathState.keystore,
-            onSubmit: (password, remember) async {
-              final result = await ref
-                  .read(oathStateProvider(devicePath).notifier)
-                  .unlock(password, remember: remember);
-              if (!result.first) {
-                showMessage(context, 'Wrong password');
-              } else if (remember && !result.second) {
-                showMessage(context, 'Failed to remember password');
-              }
-            },
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-            child: Wrap(
-              spacing: 4.0,
-              runSpacing: 4.0,
-              children: [
-                OutlinedButton.icon(
-                    icon: const Icon(Icons.password),
-                    label: Text(
-                        oathState.hasKey ? 'Change password' : 'Set password'),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) =>
-                            ManagePasswordDialog(devicePath, oathState),
-                      );
-                    }),
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.delete_forever),
-                  label: const Text('Reset'),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => ResetDialog(devicePath),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
-      ));
+          ],
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          icon: const Icon(Icons.password),
+          label: const Text('Setup'),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          foregroundColor: Theme.of(context).colorScheme.onSecondary,
+          onPressed: () {
+            showBottomMenu(context, [
+              MenuAction(
+                text: 'Change password',
+                icon: const Icon(Icons.password),
+                action: (context) {
+                  showDialog(
+                    context: context,
+                    builder: (context) =>
+                        ManagePasswordDialog(devicePath, oathState),
+                  );
+                },
+              ),
+              MenuAction(
+                text: 'Delete all data',
+                icon: const Icon(Icons.delete_outline),
+                action: (context) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => ResetDialog(devicePath),
+                  );
+                },
+              ),
+            ]);
+          },
+        ),
+      );
 }
 
 class _UnlockedView extends ConsumerWidget {
@@ -131,110 +128,107 @@ class _UnlockedView extends ConsumerWidget {
         ),
         child: AccountList(devicePath, oathState),
         floatingActionButton: FloatingActionButton.extended(
-          icon: const Icon(Icons.add),
+          icon: const Icon(Icons.person_add_alt),
           label: const Text('Setup'),
           backgroundColor: Theme.of(context).colorScheme.secondary,
           foregroundColor: Theme.of(context).colorScheme.onSecondary,
           onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              constraints: MediaQuery.of(context).size.width > 540
-                  ? const BoxConstraints(maxWidth: 380)
-                  : null,
-              builder: (context) => Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.add),
-                    title: const Text('Add account'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      showDialog(
-                        context: context,
-                        builder: (context) => OathAddAccountPage(devicePath),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.password),
-                    title: Text(
-                        oathState.hasKey ? 'Change password' : 'Set password'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      showDialog(
-                        context: context,
-                        builder: (context) =>
-                            ManagePasswordDialog(devicePath, oathState),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.delete_forever),
-                    title: const Text('Delete all data'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      showDialog(
-                        context: context,
-                        builder: (context) => ResetDialog(devicePath),
-                      );
-                    },
-                  ),
-                ],
+            showBottomMenu(context, [
+              MenuAction(
+                text: 'Add account',
+                icon: const Icon(Icons.person_add_alt),
+                action: (context) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => OathAddAccountPage(devicePath),
+                  );
+                },
               ),
-            );
+              MenuAction(
+                text: oathState.hasKey ? 'Change password' : 'Set password',
+                icon: const Icon(Icons.password),
+                action: (context) {
+                  showDialog(
+                    context: context,
+                    builder: (context) =>
+                        ManagePasswordDialog(devicePath, oathState),
+                  );
+                },
+              ),
+              MenuAction(
+                text: 'Delete all data',
+                icon: const Icon(Icons.delete_outline),
+                action: (context) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => ResetDialog(devicePath),
+                  );
+                },
+              ),
+            ]);
           },
         ),
       );
 }
 
-class _UnlockForm extends StatefulWidget {
+class _UnlockForm extends ConsumerStatefulWidget {
+  final DevicePath _devicePath;
   final KeystoreState keystore;
-  final Function(String, bool) onSubmit;
-  const _UnlockForm({Key? key, required this.keystore, required this.onSubmit})
+  const _UnlockForm(this._devicePath, {Key? key, required this.keystore})
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _UnlockFormState();
+  ConsumerState<_UnlockForm> createState() => _UnlockFormState();
 }
 
-class _UnlockFormState extends State<_UnlockForm> {
-  // TODO: Use a TextEditingController so we can clear it on wrong entry
-  String _password = '';
+class _UnlockFormState extends ConsumerState<_UnlockForm> {
+  final _passwordController = TextEditingController();
   bool _remember = false;
+  bool _wrong = false;
+
+  void _submit() async {
+    setState(() {
+      _wrong = false;
+    });
+    final result = await ref
+        .read(oathStateProvider(widget._devicePath).notifier)
+        .unlock(_passwordController.text, remember: _remember);
+    if (!result.first) {
+      setState(() {
+        _wrong = true;
+        _passwordController.clear();
+      });
+      showMessage(context, 'Wrong password');
+    } else if (_remember && !result.second) {
+      showMessage(context, 'Failed to remember password');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final keystoreFailed = widget.keystore == KeystoreState.failed;
     return Column(
-      //mainAxisAlignment: MainAxisAlignment.center,
-      //crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'Enter the password for your YubiKey. If you don\'t know your password, you\'ll need to reset the YubiKey.',
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: TextField(
-                  autofocus: true,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _password = value;
-                    });
-                  },
-                  onSubmitted: (value) {
-                    widget.onSubmit(value, _remember);
-                  },
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _passwordController,
+                autofocus: true,
+                obscureText: true,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: 'Password',
+                  errorText: _wrong ? 'Wrong password' : null,
+                  helperText: '', // Prevents resizing when errorText shown
                 ),
+                onChanged: (_) => setState(() {}), // Update state on change
+                onSubmitted: (_) => _submit(),
               ),
             ],
           ),
@@ -259,9 +253,7 @@ class _UnlockFormState extends State<_UnlockForm> {
           alignment: Alignment.centerRight,
           child: ElevatedButton(
             child: const Text('Unlock'),
-            onPressed: () {
-              widget.onSubmit(_password, _remember);
-            },
+            onPressed: _passwordController.text.isNotEmpty ? _submit : null,
           ),
         ),
       ],

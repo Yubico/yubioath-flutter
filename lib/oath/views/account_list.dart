@@ -92,7 +92,7 @@ class _AccountListState extends ConsumerState<AccountList> {
         pinnedCreds.followedBy(creds).map((e) => e.credential).toList();
     _updateFocusNodes();
 
-    return ListView(
+    return Column(
       children: [
         if (pinnedCreds.isNotEmpty)
           const ListTile(
@@ -118,8 +118,6 @@ class _AccountListState extends ConsumerState<AccountList> {
             focusNode: _focusNodes[entry.credential],
           ),
         ),
-        // Make sure FAB doesn't block content
-        const SizedBox(height: 72.0),
       ],
     );
   }
