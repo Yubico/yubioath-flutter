@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:async/async.dart';
 import 'package:yubico_authenticator/app/logging.dart';
@@ -75,10 +76,10 @@ class _RpcConnection {
 
   Future<RpcResponse> getResponse() => _responses.next;
 
-  void dispose() {
+  Future<void> close() async {
     _sink.writeln('');
-    _sink.close();
-    _responses.cancel(immediate: true);
+    await _responses.cancel();
+    await _sink.close();
   }
 }
 
@@ -162,7 +163,7 @@ class RpcSession {
 
     // Stop the old subprocess.
     try {
-      _connection.dispose();
+      await command('quit', []);
     } catch (error) {
       _log.warning('Failed to dispose existing process', error);
     }
@@ -238,6 +239,12 @@ class RpcSession {
 
   void _pump() async {
     await for (final request in _requests.stream) {
+      if (request.action == 'quit') {
+        await _connection.close();
+        request.completer.complete({});
+        continue;
+      }
+
       _send(request.toJson());
 
       final signalSubscription = request.signal?._sendStream.listen((status) {
