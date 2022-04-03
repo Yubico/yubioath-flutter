@@ -9,13 +9,13 @@ class AppPage extends ConsumerWidget {
   final Widget? title;
   final Widget child;
   final Widget? floatingActionButton;
-  final void Function()? onBack;
+  final bool centered;
   AppPage(
       {Key? key,
       this.title,
       required this.child,
-      this.onBack,
-      this.floatingActionButton})
+      this.floatingActionButton,
+      this.centered = false})
       : super(key: key);
 
   @override
@@ -45,21 +45,24 @@ class AppPage extends ConsumerWidget {
         },
       );
 
+  Widget _buildScrollView() => SingleChildScrollView(
+        // Make sure FAB doesn't block content
+        padding: floatingActionButton != null
+            ? const EdgeInsets.only(bottom: 72)
+            : null,
+        child: child,
+      );
+
   Scaffold _buildScaffold(BuildContext context, WidgetRef ref, bool hasDrawer) {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        leading: onBack != null
-            ? BackButton(
-                onPressed: onBack,
-              )
-            : null,
         title: title,
         centerTitle: true,
         actions: const [DeviceButton()],
       ),
       drawer: hasDrawer ? const MainPageDrawer() : null,
-      body: child,
+      body: centered ? Center(child: _buildScrollView()) : _buildScrollView(),
       floatingActionButton: floatingActionButton,
     );
   }

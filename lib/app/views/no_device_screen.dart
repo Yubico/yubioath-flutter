@@ -58,22 +58,21 @@ class NoDeviceScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppPage(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: node?.map(usbYubiKey: (node) {
-                return _buildUsbPid(context, ref, node.pid);
-              }, nfcReader: (node) {
-                return const [
-                  DeviceAvatar(child: Icon(Icons.wifi)),
-                  Text('Place your YubiKey on the NFC reader'),
-                ];
-              }) ??
-              const [
-                DeviceAvatar(child: Icon(Icons.usb)),
-                Text('Insert your YubiKey'),
-              ],
-        ),
+      centered: true,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: node?.map(usbYubiKey: (node) {
+              return _buildUsbPid(context, ref, node.pid);
+            }, nfcReader: (node) {
+              return const [
+                DeviceAvatar(child: Icon(Icons.wifi)),
+                Text('Place your YubiKey on the NFC reader'),
+              ];
+            }) ??
+            const [
+              DeviceAvatar(child: Icon(Icons.usb)),
+              Text('Insert your YubiKey'),
+            ],
       ),
     );
   }

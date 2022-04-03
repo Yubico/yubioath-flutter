@@ -28,7 +28,7 @@ class MainPage extends ConsumerWidget {
 
     switch (app) {
       case Application.oath:
-        return OathScreen(deviceData);
+        return OathScreen(deviceData.node.path);
       case Application.management:
         return ManagementScreen(deviceData);
       case Application.fido:
