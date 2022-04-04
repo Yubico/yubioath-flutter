@@ -27,6 +27,31 @@ apply plugin: "org.jetbrains.kotlin.plugin.serialization"
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
+    signingConfigs {
+        release {
+
+            // Recreate keystore file
+            String keystoreFileName = 'yubioath-android.jks'
+            File keystoreDir = new File('app');
+            if (!keystoreDir.exists()) {
+                mkdir(keystoreDir)
+            }
+            File keystoreFile = new File('app/' + keystoreFileName)
+            byte[] keystoreData = System.getenv('YUBIOATH_STORE_BASE64').decodeBase64()
+            FileOutputStream keystoreFileOutputStream = new FileOutputStream(keystoreFile)
+            try {
+                keystoreFileOutputStream.write(keystoreData)
+            } finally {
+                keystoreFileOutputStream.close()
+            }
+
+            // set signing properties
+            storeFile file(keystoreFileName)
+            storePassword System.getenv('YUBIOATH_STORE_PASSWORD')
+            keyAlias System.getenv('YUBIOATH_KEY_ALIAS')
+            keyPassword System.getenv('YUBIOATH_KEY_PASSWORD')
+        }
+    }
     compileSdkVersion flutter.compileSdkVersion
 
     compileOptions {
@@ -55,6 +80,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     lint {
