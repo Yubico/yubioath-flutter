@@ -192,7 +192,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   errorText: _validateSecretLength && !secretLengthValid
                       ? 'Invalid length'
                       : null),
-              enabled: _qrState != _QrScanState.success,
+              readOnly: _qrState == _QrScanState.success,
               onChanged: (value) {
                 setState(() {
                   _validateSecretLength = false;
