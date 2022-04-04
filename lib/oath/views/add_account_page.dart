@@ -38,6 +38,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   int _digits = defaultDigits;
   bool _validateSecretLength = false;
   _QrScanState _qrState = _QrScanState.none;
+  bool _isObscure = true;
 
   _scanQrCode(QrScanner qrScanner) async {
     try {
@@ -54,6 +55,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         _hashAlgorithm = data.hashAlgorithm;
         _periodController.text = '${data.period}';
         _digits = data.digits;
+        _isObscure = true;
         _qrState = _QrScanState.success;
       });
     } catch (e) {
@@ -104,8 +106,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     final secret = _secretController.text.replaceAll(' ', '');
     final secretLengthValid = secret.length * 5 % 8 < 5;
-    final isValid =
-        _accountController.text.isNotEmpty && secret.isNotEmpty && period > 0;
+    final isValid = _accountController.text.isNotEmpty &&
+        secret.isNotEmpty &&
+        issuerRemaining >= -1 &&
+        nameRemaining >= 0 &&
+        period > 0;
 
     final qrScanner = ref.watch(qrScannerProvider);
 
@@ -154,7 +159,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             ),
             TextField(
               controller: _accountController,
-              maxLength: nameRemaining,
+              maxLength: max(nameRemaining, 1),
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Account name',
@@ -168,16 +173,27 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             ),
             TextField(
               controller: _secretController,
+              obscureText: _isObscure,
               inputFormatters: <TextInputFormatter>[
                 FilteringTextInputFormatter.allow(_secretFormatterPattern)
               ],
               decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isObscure ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isObscure = !_isObscure;
+                      });
+                    },
+                  ),
                   border: const OutlineInputBorder(),
                   labelText: 'Secret key',
                   errorText: _validateSecretLength && !secretLengthValid
                       ? 'Invalid length'
                       : null),
-              enabled: _qrState != _QrScanState.success,
+              readOnly: _qrState == _QrScanState.success,
               onChanged: (value) {
                 setState(() {
                   _validateSecretLength = false;
