@@ -18,8 +18,8 @@ final _secretFormatterPattern =
 enum _QrScanState { none, scanning, success, failed }
 
 class OathAddAccountPage extends ConsumerStatefulWidget {
-  const OathAddAccountPage(this.devicePath, {Key? key}) : super(key: key);
   final DevicePath devicePath;
+  const OathAddAccountPage(this.devicePath, {Key? key}) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

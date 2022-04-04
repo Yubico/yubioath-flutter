@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/management/models.dart';
 
+import '../../management/models.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
