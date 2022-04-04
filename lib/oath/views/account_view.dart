@@ -141,11 +141,14 @@ class AccountView extends ConsumerWidget with AccountMixin {
                     code.validTo * 1000,
                   ),
                 ),
-          label: Text(
-            formatCode(code),
-            style: const TextStyle(
-              fontSize: 22.0,
-              fontFeatures: [FontFeature.tabularFigures()],
+          label: Opacity(
+            opacity: expired ? 0.3 : 1.0,
+            child: Text(
+              formatCode(code),
+              style: const TextStyle(
+                fontSize: 22.0,
+                fontFeatures: [FontFeature.tabularFigures()],
+              ),
             ),
           ),
         ),
