@@ -38,6 +38,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   int _digits = defaultDigits;
   bool _validateSecretLength = false;
   _QrScanState _qrState = _QrScanState.none;
+  bool isObscure = true;
 
   _scanQrCode(QrScanner qrScanner) async {
     try {
@@ -171,10 +172,21 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             ),
             TextField(
               controller: _secretController,
+              obscureText: isObscure,
               inputFormatters: <TextInputFormatter>[
                 FilteringTextInputFormatter.allow(_secretFormatterPattern)
               ],
               decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      isObscure ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isObscure = !isObscure;
+                      });
+                    },
+                  ),
                   border: const OutlineInputBorder(),
                   labelText: 'Secret key',
                   errorText: _validateSecretLength && !secretLengthValid
