@@ -209,6 +209,7 @@ class Ctap2Node(RpcNode):
                 self.client_pin.set_pin(
                     params.pop("new_pin"),
                 )
+            self._info = self.ctap.get_info()
             return dict()
         except CtapError as e:
             return _handle_pin_error(e, self.client_pin)
