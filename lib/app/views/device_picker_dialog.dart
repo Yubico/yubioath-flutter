@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/management/models.dart';
@@ -21,14 +23,23 @@ class DevicePickerDialog extends ConsumerWidget {
 
     return SimpleDialog(
       children: [
-        if (currentNode != null)
-          _CurrentDeviceRow(
-            currentNode,
-            data: data,
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),
+        currentNode == null
+            ? ListTile(
+                leading: const DeviceAvatar(child: Icon(Icons.no_cell)),
+                title: const Text('No YubiKey'),
+                subtitle: Text(Platform.isAndroid
+                    ? 'Insert or tap a YubiKey'
+                    : (devices.isEmpty
+                        ? 'Insert a YubiKey'
+                        : 'Insert a YubiKey, or select an item below')),
+              )
+            : _CurrentDeviceRow(
+                currentNode,
+                data: data,
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+              ),
         if (devices.isNotEmpty) const Divider(),
         ...devices.map(
           (e) => _DeviceRow(
@@ -43,12 +54,6 @@ class DevicePickerDialog extends ConsumerWidget {
             },
           ),
         ),
-        if (currentNode == null && devices.isEmpty)
-          Center(
-              child: Text(
-            'No YubiKey found',
-            style: Theme.of(context).textTheme.titleMedium,
-          )),
       ],
     );
   }

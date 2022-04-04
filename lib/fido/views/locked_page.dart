@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/app/message.dart';
-import 'package:yubico_authenticator/fido/state.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/app_page.dart';
 import '../models.dart';
+import '../state.dart';
 import 'pin_dialog.dart';
 import 'reset_dialog.dart';
 
