@@ -3,7 +3,7 @@ name: Android
 on: [push, pull_request]
 
 jobs:
-  build-debug build-release:
+  build-release:
     name: Release apk
     runs-on: ubuntu-latest
 
