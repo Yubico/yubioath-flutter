@@ -139,51 +139,6 @@ class FidoUnlockedPage extends ConsumerWidget {
               },
             ),
           ]);
-          showModalBottomSheet(
-            context: context,
-            constraints: MediaQuery.of(context).size.width > 540
-                ? const BoxConstraints(maxWidth: 380)
-                : null,
-            builder: (context) => Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (state.bioEnroll != null)
-                  ListTile(
-                    leading: const Icon(Icons.fingerprint),
-                    title: const Text('Add fingerprint'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      showDialog(
-                        context: context,
-                        builder: (context) => AddFingerprintDialog(node.path),
-                      );
-                    },
-                  ),
-                ListTile(
-                  leading: const Icon(Icons.pin_outlined),
-                  title: const Text('Change PIN'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    showDialog(
-                      context: context,
-                      builder: (context) => FidoPinDialog(node.path, state),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.delete_outline),
-                  title: const Text('Delete all data'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    showDialog(
-                      context: context,
-                      builder: (context) => ResetDialog(node),
-                    );
-                  },
-                ),
-              ],
-            ),
-          );
         },
       ),
     );
