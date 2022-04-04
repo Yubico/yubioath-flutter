@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models.dart';
+import 'app_page.dart';
 
 class DeviceInfoScreen extends StatelessWidget {
   final YubiKeyData device;
@@ -8,13 +9,10 @@ class DeviceInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Text('This page intentionally left blank (for now)'),
-        ],
-      ),
+    return AppPage(
+      title: const Text('Coming soon!'),
+      centered: true,
+      child: const Text('This page intentionally left blank (for now)'),
     );
   }
 }

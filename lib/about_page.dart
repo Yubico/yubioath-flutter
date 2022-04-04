@@ -7,9 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import 'app/logging.dart';
-import 'app/views/responsive_dialog.dart';
+import 'app/message.dart';
 import 'core/state.dart';
 import 'desktop/state.dart';
+import 'widgets/responsive_dialog.dart';
 
 final _log = Logger('about');
 
@@ -42,12 +43,7 @@ class AboutPage extends ConsumerWidget {
                 final data = response['diagnostics'];
                 final text = const JsonEncoder.withIndent('  ').convert(data);
                 await Clipboard.setData(ClipboardData(text: text));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Diagnostic data copied to clipboard'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
+                showMessage(context, 'Diagnostic data copied to clipboard');
               },
               child: const Text('Run diagnostics...'),
             ),
@@ -79,12 +75,7 @@ class LoggingPanel extends ConsumerWidget {
           onChanged: (level) {
             ref.read(logLevelProvider.notifier).setLogLevel(level!);
             _log.config('Log level set to $level');
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Log level set to $level'),
-                duration: const Duration(seconds: 2),
-              ),
-            );
+            showMessage(context, 'Log level set to $level');
           },
         ),
         const SizedBox(width: 8.0),
@@ -94,12 +85,7 @@ class LoggingPanel extends ConsumerWidget {
             _log.info('Copying log to clipboard...');
             final logs = LogBuffer.of(context).getLogs().join('\n');
             await Clipboard.setData(ClipboardData(text: logs));
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Log copied to clipboard'),
-                duration: Duration(seconds: 2),
-              ),
-            );
+            showMessage(context, 'Log copied to clipboard');
           },
         ),
       ],

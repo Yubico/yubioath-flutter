@@ -8,11 +8,13 @@ part of 'models.dart';
 
 _$_FidoState _$$_FidoStateFromJson(Map<String, dynamic> json) => _$_FidoState(
       info: json['info'] as Map<String, dynamic>,
+      unlocked: json['unlocked'] as bool,
     );
 
 Map<String, dynamic> _$$_FidoStateToJson(_$_FidoState instance) =>
     <String, dynamic>{
       'info': instance.info,
+      'unlocked': instance.unlocked,
     };
 
 _$_Fingerprint _$$_FingerprintFromJson(Map<String, dynamic> json) =>

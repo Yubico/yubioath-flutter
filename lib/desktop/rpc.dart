@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:logging/logging.dart';
 import 'package:async/async.dart';
@@ -55,47 +56,154 @@ const _py2level = {
   'CRITICAL': Level.SHOUT,
 };
 
-class RpcSession {
-  final Process _process;
-  final StreamController<_Request> _requests = StreamController();
+class _RpcConnection {
+  final IOSink _sink;
   final StreamQueue<RpcResponse> _responses;
-
-  RpcSession(this._process)
-      : _responses = StreamQueue(_process.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .map((event) {
+  _RpcConnection(this._sink, Stream<String> stream)
+      : _responses = StreamQueue(stream.map((event) {
           try {
             return RpcResponse.fromJson(jsonDecode(event));
           } catch (e) {
             _log.severe('Response was not valid JSON', event);
             return RpcResponse.error('invalid-response', e.toString(), {});
           }
-        })) {
-    _process.stderr
+        }));
+
+  void send(Map data) {
+    _sink.writeln(jsonEncode(data));
+  }
+
+  Future<RpcResponse> getResponse() => _responses.next;
+
+  Future<void> close() async {
+    _sink.writeln('');
+    await _responses.cancel();
+    await _sink.close();
+  }
+}
+
+class RpcSession {
+  final String executable;
+  late _RpcConnection _connection;
+  final StreamController<_Request> _requests = StreamController();
+
+  RpcSession(this.executable);
+
+  static void _logEntry(String entry) {
+    try {
+      final record = jsonDecode(entry);
+      Logger('rpc.${record['name']}').log(
+        _py2level[record['level']] ?? Level.INFO,
+        record['message'],
+        record['exc_text'],
+        //time: DateTime.fromMillisecondsSinceEpoch(event['time'] * 1000),
+      );
+    } catch (e) {
+      _log.error(e.toString(), entry);
+    }
+  }
+
+  Future<void> initialize() async {
+    final process = await Process.start(executable, []);
+    _log.config('RPC process started');
+    process.stderr
         .transform(const Utf8Decoder())
         .transform(const LineSplitter())
-        .listen((event) {
-      try {
-        final record = jsonDecode(event);
-        Logger('rpc.${record['name']}').log(
-          _py2level[record['level']] ?? Level.INFO,
-          record['message'],
-          record['exc_text'],
-          //time: DateTime.fromMillisecondsSinceEpoch(event['time'] * 1000),
-        );
-      } catch (e) {
-        _log.error(e.toString(), event);
-      }
-    });
+        .listen(_logEntry);
 
-    _log.info('Launched ykman subprocess...');
+    // Communicate with rpc over stdin/stdout.
+    _connection = _RpcConnection(
+      process.stdin,
+      process.stdout
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter()),
+    );
+
     _pump();
   }
 
-  static Future<RpcSession> launch(String executable) async {
-    var process = await Process.start(executable, []);
-    return RpcSession(process);
+  Future<bool> elevate() async {
+    if (!Platform.isWindows) {
+      throw Exception('Elevate is only available for Windows');
+    }
+
+    final random = Random.secure();
+    final nonce = base64Encode(List.generate(32, (_) => random.nextInt(256)));
+
+    // Bind to random port
+    final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+    final port = server.port;
+    _log.config('Listening for RPC connection on $port');
+
+    // Launch the elevated process
+    final process =
+        await Process.start('powershell.exe', ['-NoProfile', '-Command', '-']);
+
+    _log.info('Attempting to elevate $executable');
+    process.stdin.writeln(
+        'Start-Process "$executable" -Verb runAs -WindowStyle hidden -ArgumentList "--tcp $port $nonce"');
+    await process.stdin.flush();
+    await process.stdin.close();
+    if (await process.exitCode != 0) {
+      await server.close();
+      final error = await process.stderr
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter())
+          .join('\n');
+      _log.warning('Failed to elevate RPC process', error);
+      return false;
+    }
+    _log.config('Elevated RPC process started');
+
+    // Accept only a single connection
+    final client = await server.first;
+    await server.close();
+    _log.config('Client connected: $client');
+
+    // Stop the old subprocess.
+    try {
+      await command('quit', []);
+    } catch (error) {
+      _log.warning('Failed to dispose existing process', error);
+    }
+
+    bool authenticated = false;
+    final completer = Completer<void>();
+    final read =
+        utf8.decoder.bind(client).transform(const LineSplitter()).map((line) {
+      // The nonce needs to be received first.
+      if (!authenticated) {
+        if (nonce == line) {
+          _log.config('Client authenticated with correct nonce');
+          authenticated = true;
+          completer.complete();
+          return '';
+        } else {
+          _log.warning('Client used WRONG NONCE: $line');
+          client.close();
+          completer.completeError(Exception('Invalid nonce'));
+          throw Exception('Invalid nonce');
+        }
+      } else {
+        // Filter out (and log) log messages
+        final type = line[0];
+        final message = line.substring(1);
+        switch (type) {
+          case 'O':
+            return message;
+          case 'E':
+            _logEntry(message);
+            return '';
+          default:
+            _log.error('Invalid message: $line');
+            throw Exception('Invalid message type: $type');
+        }
+      }
+    }).where((line) => line.isNotEmpty);
+    _connection = _RpcConnection(client, read);
+
+    await completer.future;
+    return true;
   }
 
   Future<Map<String, dynamic>> command(String action, List<String>? target,
@@ -125,11 +233,17 @@ class RpcSession {
 
   void _send(Map data) {
     _log.traffic('SEND', jsonEncode(data));
-    _process.stdin.writeln(jsonEncode(data));
+    _connection.send(data);
   }
 
   void _pump() async {
     await for (final request in _requests.stream) {
+      if (request.action == 'quit') {
+        await _connection.close();
+        request.completer.complete({});
+        continue;
+      }
+
       _send(request.toJson());
 
       final signalSubscription = request.signal?._sendStream.listen((status) {
@@ -138,7 +252,7 @@ class RpcSession {
 
       bool completed = false;
       while (!completed) {
-        final response = await _responses.next;
+        final response = await _connection.getResponse();
         _log.traffic('RECV', jsonEncode(response));
         response.map(
           signal: (signal) {

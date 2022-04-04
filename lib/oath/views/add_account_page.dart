@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/state.dart';
 import '../../app/models.dart';
-import '../../app/views/responsive_dialog.dart';
 import '../../widgets/file_drop_target.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import 'utils.dart';
@@ -19,8 +20,8 @@ final _secretFormatterPattern =
 enum _QrScanState { none, scanning, success, failed }
 
 class OathAddAccountPage extends ConsumerStatefulWidget {
-  const OathAddAccountPage({required this.device, Key? key}) : super(key: key);
-  final DeviceNode device;
+  final DevicePath devicePath;
+  const OathAddAccountPage(this.devicePath, {Key? key}) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -356,15 +357,10 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
                     ref
                         .read(
-                            credentialListProvider(widget.device.path).notifier)
+                            credentialListProvider(widget.devicePath).notifier)
                         .addAccount(cred.toUri(), requireTouch: _touch);
                     Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Account added'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    showMessage(context, 'Account added');
                   } else {
                     setState(() {
                       _validateSecretLength = true;

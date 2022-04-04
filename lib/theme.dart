@@ -6,6 +6,7 @@ const primaryBlue = Color(0xff325f74);
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
+        useMaterial3: true,
         brightness: Brightness.light,
         colorScheme:
             ColorScheme.fromSwatch(brightness: Brightness.light).copyWith(
@@ -34,6 +35,7 @@ class AppTheme {
       );
 
   static ThemeData get darkTheme => ThemeData(
+        useMaterial3: true,
         brightness: Brightness.dark,
         colorScheme:
             ColorScheme.fromSwatch(brightness: Brightness.dark).copyWith(

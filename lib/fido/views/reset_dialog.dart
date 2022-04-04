@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
+import '../../app/message.dart';
 import '../../core/models.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../state.dart';
-import '../../app/views/responsive_dialog.dart';
 import '../../fido/models.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
@@ -90,21 +91,11 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                   }, onDone: () {
                     _subscription = null;
                     Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('FIDO application reset'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    showMessage(context, 'FIDO application reset');
                   }, onError: (e) {
                     _log.severe('Error performing FIDO reset', e);
                     Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Error performing reset'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    showMessage(context, 'Error performing reset');
                   });
                 }
               : null,

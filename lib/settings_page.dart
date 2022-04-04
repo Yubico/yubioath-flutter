@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import 'app/state.dart';
-import 'app/views/responsive_dialog.dart';
+import 'widgets/responsive_dialog.dart';
 
 final _log = Logger('settings');
 

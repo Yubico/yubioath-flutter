@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widgets/circle_timer.dart';
+import '../../widgets/dialog_frame.dart';
 import '../models.dart';
 import 'account_mixin.dart';
 
@@ -56,85 +57,49 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final code = getCode(ref);
-
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-      child: Dialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        insetPadding: const EdgeInsets.all(0),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            actions: _buildActions(context, ref),
-          ),
-          body: LayoutBuilder(builder: (context, constraints) {
-            return ListView(
-              children: [
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Container(
-                    alignment: Alignment.center,
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    padding: const EdgeInsets.all(20.0),
-                    child: GestureDetector(
-                      onTap: () {}, // Blocks parent detector GestureDetector
-                      child: Material(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0)),
-                        elevation: 16.0,
-                        child: SizedBox(
-                          width: 320,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 12.0, horizontal: 12.0),
-                            child: Column(
-                              children: [
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text(
-                                    formatCode(ref),
-                                    softWrap: false,
-                                    style: isExpired(ref)
-                                        ? Theme.of(context)
-                                            .textTheme
-                                            .headline2
-                                            ?.copyWith(color: Colors.grey)
-                                        : Theme.of(context).textTheme.headline2,
-                                  ),
-                                ),
-                                Text(label),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox.square(
-                                    dimension: 16,
-                                    child:
-                                        credential.oathType == OathType.totp &&
-                                                code != null
-                                            ? CircleTimer(
-                                                code.validFrom * 1000,
-                                                code.validTo * 1000,
-                                              )
-                                            : null,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
+    final expired = isExpired(code, ref);
+    final calculateReady = code == null ||
+        credential.oathType == OathType.hotp ||
+        (credential.touchRequired && expired);
+    return DialogFrame(
+      child: AlertDialog(
+        title: Text(title),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
+        actionsAlignment: MainAxisAlignment.center,
+        actionsPadding: EdgeInsets.zero,
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(subtitle ?? ''),
+            const SizedBox(height: 8.0),
+            Center(
+              child: Chip(
+                avatar: calculateReady
+                    ? Icon(
+                        credential.touchRequired
+                            ? Icons.touch_app
+                            : Icons.refresh,
+                        size: 36,
+                      )
+                    : SizedBox.square(
+                        dimension: 32,
+                        child: CircleTimer(
+                          code.validFrom * 1000,
+                          code.validTo * 1000,
                         ),
                       ),
-                    ),
-                  ),
+                label: Text(
+                  formatCode(code),
+                  style: const TextStyle(
+                      fontSize: 32.0,
+                      fontFeatures: [FontFeature.tabularFigures()]),
                 ),
-              ],
-            );
-          }),
+              ),
+            )
+          ],
         ),
+        actions: _buildActions(context, ref),
       ),
     );
   }

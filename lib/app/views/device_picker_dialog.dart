@@ -1,20 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/management/models.dart';
 
+import '../../management/models.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 
-class MainActionsDialog extends ConsumerWidget {
-  const MainActionsDialog({Key? key}) : super(key: key);
+class DevicePickerDialog extends ConsumerWidget {
+  const DevicePickerDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final devices = ref.watch(attachedDevicesProvider).toList();
     final currentNode = ref.watch(currentDeviceProvider);
     final data = ref.watch(currentDeviceDataProvider);
-    final actions = ref.watch(menuActionsProvider);
 
     if (currentNode != null) {
       devices.removeWhere((e) => e.path == currentNode.path);
@@ -22,14 +23,24 @@ class MainActionsDialog extends ConsumerWidget {
 
     return SimpleDialog(
       children: [
-        if (currentNode != null)
-          _CurrentDeviceRow(
-            currentNode,
-            data: data,
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-          ),
+        currentNode == null
+            ? ListTile(
+                leading: const DeviceAvatar(child: Icon(Icons.no_cell)),
+                title: const Text('No YubiKey'),
+                subtitle: Text(Platform.isAndroid
+                    ? 'Insert or tap a YubiKey'
+                    : (devices.isEmpty
+                        ? 'Insert a YubiKey'
+                        : 'Insert a YubiKey, or select an item below')),
+              )
+            : _CurrentDeviceRow(
+                currentNode,
+                data: data,
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+        if (devices.isNotEmpty) const Divider(),
         ...devices.map(
           (e) => _DeviceRow(
             e,
@@ -43,22 +54,6 @@ class MainActionsDialog extends ConsumerWidget {
             },
           ),
         ),
-        if (currentNode == null && devices.isEmpty)
-          Center(
-              child: Text(
-            'No YubiKey found',
-            style: Theme.of(context).textTheme.titleMedium,
-          )),
-        if (actions.isNotEmpty) const Divider(),
-        ...actions.map((a) => ListTile(
-              dense: true,
-              leading: a.icon,
-              title: Text(a.text),
-              onTap: () {
-                Navigator.of(context).pop();
-                a.action?.call(context);
-              },
-            )),
       ],
     );
   }

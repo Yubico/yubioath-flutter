@@ -168,6 +168,9 @@ class RpcNode:
         action = getattr(self, name, None)
         options = getattr(action, MARKER_ACTION, None)
         if options is not None:
+            condition = options["condition"]
+            if condition and not condition(self):
+                raise NoSuchActionException(name)
             if options["closes_child"] and self._child:
                 self._close_child()
             return action
@@ -178,7 +181,11 @@ class RpcNode:
 
     def create_child(self, name):
         child = getattr(self, name, None)
-        if hasattr(child, MARKER_CHILD):
+        options = getattr(child, MARKER_CHILD, None)
+        if options is not None:
+            condition = options["condition"]
+            if condition and not condition(self):
+                raise NoSuchNodeException(name)
             return child()
         raise NoSuchNodeException(name)
 

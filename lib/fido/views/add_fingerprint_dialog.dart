@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
+import '../../app/message.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../state.dart';
-import '../../app/views/responsive_dialog.dart';
 import '../../fido/models.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
@@ -13,8 +14,8 @@ import '../../app/state.dart';
 final _log = Logger('fido.views.add_fingerprint_dialog');
 
 class AddFingerprintDialog extends ConsumerStatefulWidget {
-  final DeviceNode node;
-  const AddFingerprintDialog(this.node, {Key? key}) : super(key: key);
+  final DevicePath devicePath;
+  const AddFingerprintDialog(this.devicePath, {Key? key}) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -65,7 +66,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
         ColorTween(begin: Colors.black, end: Colors.black).animate(_animator);
 
     _subscription = ref
-        .read(fingerprintProvider(widget.node.path).notifier)
+        .read(fingerprintProvider(widget.devicePath).notifier)
         .registerFingerprint()
         .listen((event) {
       setState(() {
@@ -89,12 +90,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     }, onError: (error, stacktrace) {
       _log.severe('Error adding fingerprint', error, stacktrace);
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error adding fingerprint'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      showMessage(context, 'Error adding fingerprint');
     });
   }
 
@@ -177,15 +173,10 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
           onPressed: _fingerprint != null && _label.isNotEmpty
               ? () async {
                   await ref
-                      .read(fingerprintProvider(widget.node.path).notifier)
+                      .read(fingerprintProvider(widget.devicePath).notifier)
                       .renameFingerprint(_fingerprint!, _label);
                   Navigator.of(context).pop(true);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Fingerprint added'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                  showMessage(context, 'Fingerprint added');
                 }
               : null,
           child: const Text('Save'),

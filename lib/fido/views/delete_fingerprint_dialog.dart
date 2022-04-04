@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/views/responsive_dialog.dart';
+import '../../app/message.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 
 class DeleteFingerprintDialog extends ConsumerWidget {
-  final DeviceNode device;
+  final DevicePath devicePath;
   final Fingerprint fingerprint;
-  const DeleteFingerprintDialog(this.device, this.fingerprint, {Key? key})
+  const DeleteFingerprintDialog(this.devicePath, this.fingerprint, {Key? key})
       : super(key: key);
 
   @override
@@ -40,15 +41,10 @@ class DeleteFingerprintDialog extends ConsumerWidget {
         TextButton(
           onPressed: () async {
             await ref
-                .read(fingerprintProvider(device.path).notifier)
+                .read(fingerprintProvider(devicePath).notifier)
                 .deleteFingerprint(fingerprint);
             Navigator.of(context).pop(true);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Fingerprint deleted'),
-                duration: Duration(seconds: 2),
-              ),
-            );
+            showMessage(context, 'Fingerprint deleted');
           },
           child: const Text('Delete'),
         ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../app/views/responsive_dialog.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -121,12 +122,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                       .setPin(_newPin, oldPin: oldPin);
                   result.when(success: () {
                     Navigator.of(context).pop(true);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('PIN set'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    showMessage(context, 'PIN set');
                   }, failed: (retries, authBlocked) {
                     setState(() {
                       if (authBlocked) {

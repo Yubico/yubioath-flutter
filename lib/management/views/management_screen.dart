@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
-import '../../app/views/responsive_dialog.dart';
 import '../../core/models.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -193,12 +194,11 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     try {
       if (reboot) {
         // This will take longer, show a message
-        close = ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(
-              content: Text('Reconfiguring YubiKey...'),
-              duration: Duration(seconds: 8),
-            ))
-            .close;
+        close = showMessage(
+          context,
+          'Reconfiguring YubiKey...',
+          duration: const Duration(seconds: 8),
+        ).close;
       }
       await ref
           .read(managementStateProvider(widget.deviceData.node.path).notifier)
@@ -207,10 +207,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                 .copyWith(enabledCapabilities: _enabled),
             reboot: reboot,
           );
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Configuration updated'),
-        duration: Duration(seconds: 2),
-      ));
+      showMessage(context, 'Configuration updated');
     } finally {
       close?.call();
     }
@@ -221,10 +218,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
           UsbInterfaces.forCapabilites(
               info.config.enabledCapabilities[Transport.usb] ?? 0),
           onSubmit: (enabledInterfaces) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Not yet implemented!'),
-          duration: Duration(seconds: 1),
-        ));
+        showMessage(context, 'Not yet implemented!');
       });
 
   @override

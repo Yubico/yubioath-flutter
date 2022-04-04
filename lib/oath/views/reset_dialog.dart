@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/views/responsive_dialog.dart';
+import '../../app/message.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../state.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 
 class ResetDialog extends ConsumerWidget {
-  final DeviceNode device;
-  const ResetDialog(this.device, {Key? key}) : super(key: key);
+  final DevicePath devicePath;
+  const ResetDialog(this.devicePath, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,14 +38,9 @@ class ResetDialog extends ConsumerWidget {
       actions: [
         TextButton(
           onPressed: () async {
-            await ref.read(oathStateProvider(device.path).notifier).reset();
+            await ref.read(oathStateProvider(devicePath).notifier).reset();
             Navigator.of(context).pop();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('OATH application reset'),
-                duration: Duration(seconds: 2),
-              ),
-            );
+            showMessage(context, 'OATH application reset');
           },
           child: const Text('Reset'),
         ),

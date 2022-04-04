@@ -54,9 +54,9 @@ class _JsonLoggingFormatter(logging.Formatter):
         return json.dumps(data)
 
 
-def _init_logging():
+def _init_logging(stream=None):
     logging.disable(logging.NOTSET)
-    logging.basicConfig()
+    logging.basicConfig(stream=stream)
     logging.root.handlers[0].setFormatter(_JsonLoggingFormatter())
 
 
@@ -155,9 +155,43 @@ def run_rpc_pipes(stdout, stdin):
         stdout.flush()
 
     def recv():
-        line = stdin.readline()
+        line = (stdin.readline() or "").strip()
         if line:
-            return json.loads(line.strip())
+            return json.loads(line)
+        return None
+
+    run_rpc(send, recv)
+
+
+class _WriteLog:
+    def __init__(self, socket):
+        self._socket = socket
+
+    def write(self, value):
+        self._socket.sendall(b"E" + value.encode())
+
+
+def run_rpc_socket(sock):
+    _init_logging(_WriteLog(sock))
+
+    def _json_encode(value):
+        if isinstance(value, bytes):
+            return encode_bytes(value)
+        raise TypeError(type(value))
+
+    def send(data):
+        sock.sendall(b"O" + json.dumps(data, default=_json_encode).encode() + b"\n")
+
+    def recv():
+        line = b""
+        while not line.endswith(b"\n"):
+            chunk = sock.recv(1024)
+            if not chunk:
+                return None
+            line += chunk
+        line = line.strip()
+        if line:
+            return json.loads(line)
         return None
 
     run_rpc(send, recv)

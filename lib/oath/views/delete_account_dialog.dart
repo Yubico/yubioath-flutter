@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/views/responsive_dialog.dart';
+import '../../app/message.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../../app/models.dart';
@@ -50,12 +51,7 @@ class DeleteAccountDialog extends ConsumerWidget {
                 .read(credentialListProvider(device.path).notifier)
                 .deleteAccount(credential);
             Navigator.of(context).pop(true);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Account deleted'),
-                duration: Duration(seconds: 2),
-              ),
-            );
+            showMessage(context, 'Account deleted');
           },
           child: const Text('Delete'),
         ),

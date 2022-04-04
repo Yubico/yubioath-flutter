@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/views/responsive_dialog.dart';
+import '../../app/message.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../../app/models.dart';
@@ -22,7 +23,6 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
 class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   late String _issuer;
   late String _account;
-  _RenameAccountDialogState();
 
   @override
   void initState() {
@@ -108,12 +108,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                       .renameAccount(credential,
                           _issuer.isNotEmpty ? _issuer : null, _account);
                   Navigator.of(context).pop(renamed);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Account renamed'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                  showMessage(context, 'Account renamed');
                 }
               : null,
           child: const Text('Save'),

@@ -73,7 +73,8 @@ Future<Widget> initialize() async {
   }
 
   _log.info('Starting subprocess: $exe');
-  final rpc = await RpcSession.launch(exe!);
+  final rpc = RpcSession(exe!);
+  await rpc.initialize();
   _log.info('ykman-rpc process started', exe);
   rpc.setLogLevel(Logger.root.level);
 
@@ -90,17 +91,19 @@ Future<Widget> initialize() async {
       rpcProvider.overrideWithValue(rpc),
       windowStateProvider.overrideWithProvider(desktopWindowStateProvider),
       attachedDevicesProvider.overrideWithProvider(desktopDevicesProvider),
+      currentDeviceProvider.overrideWithProvider(desktopCurrentDeviceProvider),
       currentDeviceDataProvider.overrideWithProvider(desktopDeviceDataProvider),
+      // OATH
       oathStateProvider.overrideWithProvider(desktopOathState),
       credentialListProvider
           .overrideWithProvider(desktopOathCredentialListProvider),
       qrScannerProvider.overrideWithProvider(desktopQrScannerProvider),
+      // Management
       managementStateProvider.overrideWithProvider(desktopManagementState),
+      // FIDO
       fidoStateProvider.overrideWithProvider(desktopFidoState),
-      fidoPinProvider.overrideWithProvider(desktopFidoPinProvider),
       fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
       credentialProvider.overrideWithProvider(desktopCredentialProvider),
-      currentDeviceProvider.overrideWithProvider(desktopCurrentDeviceProvider)
     ],
     child: YubicoAuthenticatorApp(page: Consumer(
       builder: (context, ref, child) {

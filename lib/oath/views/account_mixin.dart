@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../models.dart';
@@ -61,11 +62,17 @@ mixin AccountMixin {
       : credential.name;
 
   @protected
+  String get title => credential.issuer ?? credential.name;
+
+  @protected
+  String? get subtitle => credential.issuer != null ? credential.name : null;
+
+  @protected
   OathCode? getCode(WidgetRef ref) => ref.watch(codeProvider(credential));
 
   @protected
-  String formatCode(WidgetRef ref) {
-    final value = getCode(ref)?.value;
+  String formatCode(OathCode? code) {
+    final value = code?.value;
     if (value == null) {
       return '••• •••';
     } else if (value.length < 6) {
@@ -77,8 +84,7 @@ mixin AccountMixin {
   }
 
   @protected
-  bool isExpired(WidgetRef ref) {
-    final code = getCode(ref);
+  bool isExpired(OathCode? code, WidgetRef ref) {
     return code == null ||
         (credential.oathType == OathType.totp &&
             ref.watch(expiredProvider(code.validTo)));
@@ -92,23 +98,13 @@ mixin AccountMixin {
   Future<OathCode> calculateCode(BuildContext context, WidgetRef ref) async {
     Function? close;
     if (credential.touchRequired) {
-      close = ScaffoldMessenger.of(context)
-          .showSnackBar(
-            const SnackBar(
-              content: Text('Touch your YubiKey'),
-              duration: Duration(seconds: 30),
-            ),
-          )
+      close = showMessage(context, 'Touch your YubiKey',
+              duration: const Duration(seconds: 30))
           .close;
     } else if (credential.oathType == OathType.hotp) {
       final showPrompt = Timer(const Duration(milliseconds: 500), () {
-        close = ScaffoldMessenger.of(context)
-            .showSnackBar(
-              const SnackBar(
-                content: Text('Touch your YubiKey'),
-                duration: Duration(seconds: 30),
-              ),
-            )
+        close = showMessage(context, 'Touch your YubiKey',
+                duration: const Duration(seconds: 30))
             .close;
       });
       close = showPrompt.cancel;
@@ -129,12 +125,7 @@ mixin AccountMixin {
     final code = getCode(ref);
     if (code != null) {
       Clipboard.setData(ClipboardData(text: code.value));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Code copied to clipboard'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      showMessage(context, 'Code copied to clipboard');
     }
   }
 
@@ -165,7 +156,7 @@ mixin AccountMixin {
       return [];
     }
     final code = getCode(ref);
-    final expired = isExpired(ref);
+    final expired = isExpired(code, ref);
     final manual =
         credential.touchRequired || credential.oathType == OathType.hotp;
     final ready = expired || credential.oathType == OathType.hotp;
@@ -189,12 +180,7 @@ mixin AccountMixin {
             ? null
             : (context) {
                 Clipboard.setData(ClipboardData(text: code.value));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Code copied to clipboard'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
+                showMessage(context, 'Code copied to clipboard');
               },
       ),
       MenuAction(
