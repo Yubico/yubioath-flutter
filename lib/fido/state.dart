@@ -16,18 +16,6 @@ abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
   Future<PinResult> unlock(String pin);
 }
 
-/*
-final fidoPinProvider =
-    StateNotifierProvider.autoDispose.family<PinNotifier, bool, DevicePath>(
-  (ref, devicePath) => throw UnimplementedError(),
-);
-
-abstract class PinNotifier extends StateNotifier<bool> {
-  PinNotifier(bool unlocked) : super(unlocked);
-  Future<PinResult> unlock(String pin);
-}
-*/
-
 abstract class LockedCollectionNotifier<T>
     extends StateNotifier<AsyncValue<List<T>>> {
   LockedCollectionNotifier() : super(const AsyncValue.loading());
