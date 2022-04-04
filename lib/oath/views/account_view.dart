@@ -128,27 +128,45 @@ class AccountView extends ConsumerWidget with AccountMixin {
                 softWrap: false,
               )
             : null,
-        trailing: Chip(
-          avatar: calculateReady
-              ? Icon(
-                  credential.touchRequired ? Icons.touch_app : Icons.refresh,
-                  size: 18,
-                )
-              : SizedBox.square(
-                  dimension: 16,
-                  child: CircleTimer(
-                    code.validFrom * 1000,
-                    code.validTo * 1000,
+        trailing: DecoratedBox(
+          decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+            border: Border.all(width: 1.0, color: Colors.grey.shade500),
+          ),
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                calculateReady
+                    ? Icon(
+                        credential.touchRequired
+                            ? Icons.touch_app
+                            : Icons.refresh,
+                        size: 18,
+                      )
+                    : SizedBox.square(
+                        dimension: 16,
+                        child: CircleTimer(
+                          code.validFrom * 1000,
+                          code.validTo * 1000,
+                        ),
+                      ),
+                if (code != null) const SizedBox(width: 8.0),
+                Opacity(
+                  opacity: expired ? 0.4 : 1.0,
+                  child: Text(
+                    formatCode(code),
+                    style: const TextStyle(
+                      fontSize: 22.0,
+                      fontFeatures: [FontFeature.tabularFigures()],
+                    ),
                   ),
                 ),
-          label: Opacity(
-            opacity: expired ? 0.3 : 1.0,
-            child: Text(
-              formatCode(code),
-              style: const TextStyle(
-                fontSize: 22.0,
-                fontFeatures: [FontFeature.tabularFigures()],
-              ),
+              ],
             ),
           ),
         ),
