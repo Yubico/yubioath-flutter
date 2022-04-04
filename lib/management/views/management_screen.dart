@@ -207,6 +207,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                 .copyWith(enabledCapabilities: _enabled),
             reboot: reboot,
           );
+      if (!reboot) Navigator.pop(context);
       showMessage(context, 'Configuration updated');
     } finally {
       close?.call();

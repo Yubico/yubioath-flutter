@@ -119,7 +119,12 @@ class AccountView extends ConsumerWidget with AccountMixin {
             style: const TextStyle(fontSize: 18),
           ),
         ),
-        title: Text(title),
+        title: Text(
+          title,
+          overflow: TextOverflow.fade,
+          maxLines: 1,
+          softWrap: false,
+        ),
         subtitle: subtitle != null
             ? Text(
                 subtitle!,

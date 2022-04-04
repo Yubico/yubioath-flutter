@@ -113,7 +113,7 @@ class _UnlockedView extends ConsumerWidget {
             return TextFormField(
               initialValue: ref.read(searchProvider),
               decoration: const InputDecoration(
-                hintText: 'Search accounts...',
+                hintText: 'Search accounts',
                 border: InputBorder.none,
               ),
               onChanged: (value) {

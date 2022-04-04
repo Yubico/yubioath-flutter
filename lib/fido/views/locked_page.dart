@@ -41,12 +41,17 @@ class FidoLockedPage extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(Icons.pin),
+        icon: Icon(state.bioEnroll != null ? Icons.fingerprint : Icons.pin),
         label: const Text('Setup'),
         backgroundColor: Theme.of(context).colorScheme.secondary,
         foregroundColor: Theme.of(context).colorScheme.onSecondary,
         onPressed: () {
           showBottomMenu(context, [
+            if (state.bioEnroll != null)
+              MenuAction(
+                text: 'Add fingerprint',
+                icon: const Icon(Icons.fingerprint),
+              ),
             MenuAction(
               text: state.hasPin ? 'Change PIN' : 'Set PIN',
               icon: const Icon(Icons.pin_outlined),
