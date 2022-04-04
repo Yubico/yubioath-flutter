@@ -3,7 +3,7 @@ name: Android
 on: [push, pull_request]
 
 jobs:
-  build:
+  build-debug:
     name: Debug apk
     runs-on: ubuntu-latest
 
@@ -56,6 +56,71 @@ jobs:
           export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3,4,5,6,7 | sed -r 's/\//_/g')
           mkdir artifacts
           mv build/app/outputs/flutter-apk/app-debug.apk artifacts/yubico-authenticator-debug-${REF}.apk
+        working-directory: ./app
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: yubico-authenticator-android
+          path: app/artifacts/*
+
+  build-release:
+    name: Release apk
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Yubikit Next
+        uses: actions/checkout@v2
+        with:
+          repository: Yubico/yubikit-android
+          ref: next
+          path: kit
+
+      - name: set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+
+      - name: Build Yubikit-android
+        run: ./gradlew --stacktrace check test build javadocJar publishToMavenLocal
+        working-directory: ./kit
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          channel: 'beta'
+      - run: |
+          flutter config
+          flutter --version
+
+      - uses: actions/checkout@v2
+        with:
+          path: 'app'
+
+      - name: Run flutter tests
+        run: |
+          flutter test
+          flutter analyze
+        working-directory: ./app
+
+      - name: Build the App
+        run: flutter build apk --release
+        env:
+          YUBIOATH_STORE_BASE64: ${{ secrets.YUBIOATH_STORE_BASE64 }}
+          YUBIOATH_KEY_ALIAS: ${{ secrets.YUBIOATH_KEY_ALIAS }}
+          YUBIOATH_KEY_PASSWORD: ${{ secrets.YUBIOATH_KEY_PASSWORD }}
+          YUBIOATH_STORE_PASSWORD: ${{ secrets.YUBIOATH_STORE_PASSWORD }}
+        working-directory: ./app
+
+      - name: Run android tests
+        run: |
+          ./gradlew test
+        working-directory: ./app/android
+
+      - name: Upload artifacts
+        run: |
+          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3,4,5,6,7 | sed -r 's/\//_/g')
+          mkdir artifacts
+          mv build/app/outputs/flutter-apk/app-release.apk artifacts/yubico-authenticator-release-${REF}.apk
         working-directory: ./app
 
       - uses: actions/upload-artifact@v2
