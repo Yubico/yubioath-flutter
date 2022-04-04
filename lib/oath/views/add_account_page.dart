@@ -38,7 +38,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   int _digits = defaultDigits;
   bool _validateSecretLength = false;
   _QrScanState _qrState = _QrScanState.none;
-  bool isObscure = true;
+  bool _isObscure = true;
 
   _scanQrCode(QrScanner qrScanner) async {
     try {
@@ -55,6 +55,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         _hashAlgorithm = data.hashAlgorithm;
         _periodController.text = '${data.period}';
         _digits = data.digits;
+        _isObscure = true;
         _qrState = _QrScanState.success;
       });
     } catch (e) {
@@ -172,18 +173,18 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             ),
             TextField(
               controller: _secretController,
-              obscureText: isObscure,
+              obscureText: _isObscure,
               inputFormatters: <TextInputFormatter>[
                 FilteringTextInputFormatter.allow(_secretFormatterPattern)
               ],
               decoration: InputDecoration(
                   suffixIcon: IconButton(
                     icon: Icon(
-                      isObscure ? Icons.visibility : Icons.visibility_off,
+                      _isObscure ? Icons.visibility : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
-                        isObscure = !isObscure;
+                        _isObscure = !_isObscure;
                       });
                     },
                   ),
