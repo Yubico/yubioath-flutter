@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/fido/state.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/app_page.dart';
 import '../models.dart';
+import '../state.dart';
 import 'add_fingerprint_dialog.dart';
 import 'delete_credential_dialog.dart';
 import 'delete_fingerprint_dialog.dart';

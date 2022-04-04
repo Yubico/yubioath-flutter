@@ -26,7 +26,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
   @override
   void initState() {
     super.initState();
-    _label = widget.fingerprint.label;
+    _label = widget.fingerprint.name ?? '';
   }
 
   @override
