@@ -7,18 +7,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/app.dart';
 import '../app/models.dart';
+import '../app/state.dart';
 import '../app/views/main_page.dart';
 import '../core/state.dart';
 import '../management/state.dart';
-import '../app/state.dart';
 import '../oath/state.dart';
-
 import 'management/state.dart';
 import 'oath/state.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
-import 'views/tap_request_dialog.dart';
-
 import 'state.dart';
+import 'views/tap_request_dialog.dart';
 
 final _log = Logger('android.init');
 
@@ -54,6 +52,12 @@ Future<Widget> initialize() async {
       currentDeviceProvider.overrideWithProvider(androidCurrentDeviceProvider),
       qrScannerProvider.overrideWithProvider(androidQrScannerProvider)
     ],
-    child: const YubicoAuthenticatorApp(page: MainPage()),
+    child: YubicoAuthenticatorApp(page: Consumer(
+      builder: (context, ref, child) {
+        // activates the sub page provider
+        ref.watch(androidSubPageProvider);
+        return const MainPage();
+      },
+    )),
   );
 }
