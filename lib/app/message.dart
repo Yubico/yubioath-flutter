@@ -42,7 +42,6 @@ class _BottomMenu extends ConsumerWidget {
 
     return Column(
       mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
       children: actions
           .map((a) => ListTile(
                 leading: a.icon,
