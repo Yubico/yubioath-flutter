@@ -41,20 +41,22 @@ class _BottomMenu extends ConsumerWidget {
       Navigator.of(context).pop();
     });
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: actions
-          .map((a) => ListTile(
-                leading: a.icon,
-                title: Text(a.text),
-                onTap: a.action == null
-                    ? null
-                    : () {
-                        Navigator.pop(context);
-                        a.action?.call(context);
-                      },
-              ))
-          .toList(),
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: actions
+            .map((a) => ListTile(
+                  leading: a.icon,
+                  title: Text(a.text),
+                  onTap: a.action == null
+                      ? null
+                      : () {
+                          Navigator.pop(context);
+                          a.action?.call(context);
+                        },
+                ))
+            .toList(),
+      ),
     );
   }
 }
