@@ -1,0 +1,32 @@
+
+android {
+    signingConfigs {
+        release
+    }
+}
+
+/*
+Updates release signing config.
+The release build will be not signed if YUBIOATH_STORE_BASE64 is not present in the env.
+
+To setup env locally use following:
+
+export YUBIOATH_STORE_BASE64=`base64 store.jks`
+export YUBIOATH_STORE_PASSWORD=...
+export YUBIOATH_KEY_ALIAS=...
+export YUBIOATH_KEY_PASSWORD=...
+*/
+
+def keystoreData = System.getenv('YUBIOATH_STORE_BASE64')
+if (keystoreData) {
+    file("$buildDir/keystore").mkdirs()
+    def keystore = file("$buildDir/keystore/yubioath-android.jks")
+    keystore.delete()
+    keystore << keystoreData.decodeBase64()
+
+    android.signingConfigs.release.storeFile = keystore
+    android.signingConfigs.release.storePassword System.getenv('YUBIOATH_STORE_PASSWORD')
+    android.signingConfigs.release.keyAlias System.getenv('YUBIOATH_KEY_ALIAS')
+    android.signingConfigs.release.keyPassword System.getenv('YUBIOATH_KEY_PASSWORD')
+    android.buildTypes.release.signingConfig = android.signingConfigs.release
+}
