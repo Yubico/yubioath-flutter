@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/message_page.dart';
 import '../models.dart';
 import '../state.dart';
 import 'add_fingerprint_dialog.dart';
@@ -21,6 +22,104 @@ class FidoUnlockedPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    List<Widget> children = [
+      if (state.credMgmt)
+        ...ref.watch(credentialProvider(node.path)).maybeWhen(
+              data: (creds) => creds.isNotEmpty
+                  ? [
+                      const ListTile(title: Text('Credentials')),
+                      ...creds.map((cred) => ListTile(
+                            leading:
+                                const CircleAvatar(child: Icon(Icons.link)),
+                            title: Text(cred.userName),
+                            subtitle: Text(cred.rpId),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            DeleteCredentialDialog(
+                                                node.path, cred),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.delete)),
+                              ],
+                            ),
+                          )),
+                    ]
+                  : [],
+              orElse: () => [],
+            ),
+      if (state.bioEnroll != null)
+        ...ref.watch(fingerprintProvider(node.path)).maybeWhen(
+              data: (fingerprints) => fingerprints.isNotEmpty
+                  ? [
+                      const ListTile(title: Text('Fingerprints')),
+                      ...fingerprints.map((fp) => ListTile(
+                            leading: const CircleAvatar(
+                                child: Icon(Icons.fingerprint)),
+                            title: Text(fp.label),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            RenameFingerprintDialog(
+                                                node.path, fp),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.edit)),
+                                IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            DeleteFingerprintDialog(
+                                                node.path, fp),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.delete)),
+                              ],
+                            ),
+                          ))
+                    ]
+                  : [],
+              orElse: () => [],
+            ),
+    ];
+
+    if (children.isNotEmpty) {
+      return AppPage(
+        title: const Text('WebAuthn'),
+        child: Column(
+          children: children,
+        ),
+        floatingActionButton: _buildFab(context),
+      );
+    }
+
+    if (state.bioEnroll == false) {
+      return MessagePage(
+        title: const Text('WebAuthn'),
+        header: 'No fingerprints',
+        message: 'Add one or more (up to five) fingerprints',
+        floatingActionButton: _buildFab(context),
+      );
+    }
+
+    return MessagePage(
+      title: const Text('WebAuthn'),
+      header: 'No discoverable accounts',
+      message: 'Register as a Security Key on websites',
+      floatingActionButton: _buildFab(context),
+    );
+
     return AppPage(
       title: const Text('WebAuthn'),
       child: Column(
@@ -100,47 +199,51 @@ class FidoUnlockedPage extends ConsumerWidget {
           ],
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        icon: Icon(state.bioEnroll != null ? Icons.fingerprint : Icons.pin),
-        label: const Text('Setup'),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        foregroundColor: Theme.of(context).colorScheme.onSecondary,
-        onPressed: () {
-          showBottomMenu(context, [
-            if (state.bioEnroll != null)
-              MenuAction(
-                text: 'Add fingerprint',
-                icon: const Icon(Icons.fingerprint),
-                action: (context) {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AddFingerprintDialog(node.path),
-                  );
-                },
-              ),
+      floatingActionButton: _buildFab(context),
+    );
+  }
+
+  FloatingActionButton _buildFab(BuildContext context) {
+    return FloatingActionButton.extended(
+      icon: Icon(state.bioEnroll != null ? Icons.fingerprint : Icons.pin),
+      label: const Text('Setup'),
+      backgroundColor: Theme.of(context).colorScheme.secondary,
+      foregroundColor: Theme.of(context).colorScheme.onSecondary,
+      onPressed: () {
+        showBottomMenu(context, [
+          if (state.bioEnroll != null)
             MenuAction(
-              text: 'Change PIN',
-              icon: const Icon(Icons.pin_outlined),
+              text: 'Add fingerprint',
+              icon: const Icon(Icons.fingerprint),
               action: (context) {
                 showDialog(
                   context: context,
-                  builder: (context) => FidoPinDialog(node.path, state),
+                  builder: (context) => AddFingerprintDialog(node.path),
                 );
               },
             ),
-            MenuAction(
-              text: 'Delete all data',
-              icon: const Icon(Icons.delete_outline),
-              action: (context) {
-                showDialog(
-                  context: context,
-                  builder: (context) => ResetDialog(node),
-                );
-              },
-            ),
-          ]);
-        },
-      ),
+          MenuAction(
+            text: 'Change PIN',
+            icon: const Icon(Icons.pin_outlined),
+            action: (context) {
+              showDialog(
+                context: context,
+                builder: (context) => FidoPinDialog(node.path, state),
+              );
+            },
+          ),
+          MenuAction(
+            text: 'Delete all data',
+            icon: const Icon(Icons.delete_outline),
+            action: (context) {
+              showDialog(
+                context: context,
+                builder: (context) => ResetDialog(node),
+              );
+            },
+          ),
+        ]);
+      },
     );
   }
 }

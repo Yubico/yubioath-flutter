@@ -28,8 +28,8 @@ class _CapabilityForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 6.0,
-      runSpacing: 6.0,
+      spacing: 4.0,
+      runSpacing: 8.0,
       children: Capability.values
           .where((c) => capabilities & c.value != 0)
           .map((c) => FilterChip(

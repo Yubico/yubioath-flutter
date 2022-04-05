@@ -105,6 +105,14 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     }
   }
 
+  void _submit() async {
+    await ref
+        .read(fingerprintProvider(widget.devicePath).notifier)
+        .renameFingerprint(_fingerprint!, _label);
+    Navigator.of(context).pop(true);
+    showMessage(context, 'Fingerprint added');
+  }
+
   @override
   Widget build(BuildContext context) {
     // If current device changes, we need to pop back to the main Page.
@@ -157,6 +165,9 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                 _label = value.trim();
               });
             },
+            onFieldSubmitted: (_) {
+              _submit();
+            },
           ),
         ]
             .map((e) => Padding(
@@ -170,15 +181,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
       },
       actions: [
         TextButton(
-          onPressed: _fingerprint != null && _label.isNotEmpty
-              ? () async {
-                  await ref
-                      .read(fingerprintProvider(widget.devicePath).notifier)
-                      .renameFingerprint(_fingerprint!, _label);
-                  Navigator.of(context).pop(true);
-                  showMessage(context, 'Fingerprint added');
-                }
-              : null,
+          onPressed: _fingerprint != null && _label.isNotEmpty ? _submit : null,
           child: const Text('Save'),
         ),
       ],
