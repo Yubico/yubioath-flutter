@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../widgets/circle_timer.dart';
 import '../models.dart';
 import '../state.dart';
 import 'delete_account_dialog.dart';
@@ -216,5 +218,72 @@ mixin AccountMixin {
         },
       ),
     ];
+  }
+
+  @protected
+  Widget buildCodeView(WidgetRef ref, {bool big = false}) {
+    final code = getCode(ref);
+    final expired = isExpired(code, ref);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.rectangle,
+        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+        border: Border.all(width: 1.0, color: Colors.grey.shade500),
+      ),
+      child: AnimatedSize(
+        alignment: Alignment.centerRight,
+        duration: const Duration(milliseconds: 100),
+        child: Padding(
+          padding: big
+              ? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0)
+              : const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: code == null
+                ? [
+                    Icon(
+                      credential.oathType == OathType.hotp
+                          ? Icons.refresh
+                          : Icons.touch_app,
+                      size: big ? 36 : 18,
+                    ),
+                    Text('', style: TextStyle(fontSize: big ? 32.0 : 22.0)),
+                  ]
+                : [
+                    if (credential.oathType == OathType.totp) ...[
+                      ...expired
+                          ? [
+                              if (credential.touchRequired) ...[
+                                const Icon(Icons.touch_app),
+                                const SizedBox(width: 8.0),
+                              ]
+                            ]
+                          : [
+                              SizedBox.square(
+                                dimension: big ? 32 : 16,
+                                child: CircleTimer(
+                                  code.validFrom * 1000,
+                                  code.validTo * 1000,
+                                ),
+                              ),
+                              const SizedBox(width: 8.0),
+                            ],
+                    ],
+                    Opacity(
+                      opacity: expired ? 0.4 : 1.0,
+                      child: Text(
+                        formatCode(code),
+                        style: TextStyle(
+                          fontSize: big ? 32.0 : 22.0,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                    ),
+                  ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -58,7 +58,6 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final code = getCode(ref);
-    final expired = isExpired(code, ref);
     if (code == null) {
       Timer(Duration.zero, () => calculateCode(context, ref));
     }
@@ -74,57 +73,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
           children: [
             Text(subtitle ?? ''),
             const SizedBox(height: 8.0),
-            Center(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-                  border: Border.all(width: 1.0, color: Colors.grey.shade500),
-                ),
-                child: AnimatedSize(
-                  alignment: Alignment.centerRight,
-                  duration: const Duration(milliseconds: 100),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: code == null
-                          ? [
-                              const Icon(Icons.touch_app, size: 36),
-                              const Text('', style: TextStyle(fontSize: 32.0)),
-                            ]
-                          : [
-                              if (credential.oathType == OathType.totp) ...[
-                                credential.touchRequired && expired
-                                    ? const Icon(Icons.touch_app)
-                                    : SizedBox.square(
-                                        dimension: 32,
-                                        child: CircleTimer(
-                                          code.validFrom * 1000,
-                                          code.validTo * 1000,
-                                        ),
-                                      ),
-                                const SizedBox(width: 8.0)
-                              ],
-                              Opacity(
-                                opacity: expired ? 0.4 : 1.0,
-                                child: Text(
-                                  formatCode(code),
-                                  style: const TextStyle(
-                                    fontSize: 32.0,
-                                    fontFeatures: [
-                                      FontFeature.tabularFigures()
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            Center(child: buildCodeView(ref, big: true)),
           ],
         ),
         actions: _buildActions(context, ref),
