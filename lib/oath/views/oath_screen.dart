@@ -71,8 +71,9 @@ class _UnlockedView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final accounts = ref.watch(credentialListProvider(devicePath));
-    if (accounts?.isEmpty ?? false) {
+    final isEmpty = ref.watch(credentialListProvider(devicePath)
+        .select((value) => value?.isEmpty == true));
+    if (isEmpty) {
       return MessagePage(
         title: const Text('Authenticator'),
         header: 'No accounts',
