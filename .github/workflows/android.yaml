@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: Debug apk
     runs-on: ubuntu-latest
 
     steps:
@@ -43,7 +42,12 @@ jobs:
         working-directory: ./app
 
       - name: Build the App
-        run: flutter build apk --debug
+        run: flutter build apk --release
+        env:
+          YUBIOATH_STORE_BASE64: ${{ secrets.YUBIOATH_STORE_BASE64 }}
+          YUBIOATH_KEY_ALIAS: ${{ secrets.YUBIOATH_KEY_ALIAS }}
+          YUBIOATH_KEY_PASSWORD: ${{ secrets.YUBIOATH_KEY_PASSWORD }}
+          YUBIOATH_STORE_PASSWORD: ${{ secrets.YUBIOATH_STORE_PASSWORD }}
         working-directory: ./app
 
       - name: Run android tests
@@ -55,7 +59,7 @@ jobs:
         run: |
           export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3,4,5,6,7 | sed -r 's/\//_/g')
           mkdir artifacts
-          mv build/app/outputs/flutter-apk/app-debug.apk artifacts/yubico-authenticator-debug-${REF}.apk
+          mv build/app/outputs/flutter-apk/app-release.apk artifacts/yubico-authenticator-${REF}.apk
         working-directory: ./app
 
       - uses: actions/upload-artifact@v2

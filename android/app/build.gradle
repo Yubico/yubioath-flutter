@@ -27,6 +27,7 @@ apply plugin: "org.jetbrains.kotlin.plugin.serialization"
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
+
     compileSdkVersion flutter.compileSdkVersion
 
     compileOptions {
@@ -62,6 +63,8 @@ android {
     }
 
 }
+
+apply from: "signing.gradle"
 
 flutter {
     source '../..'
