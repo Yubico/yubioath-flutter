@@ -236,7 +236,7 @@ class MainViewModel : ViewModel() {
     private fun calculateCode(
         session: OathSession,
         credential: Credential,
-        timestamp: Long = 0
+        timestamp: Long
     ) =
         if (credential.isSteamCredential()) {
             session.calculateSteamCode(credential, timestamp)
@@ -276,7 +276,7 @@ class MainViewModel : ViewModel() {
                         val code =
                             if (credentialData.oathType == OathType.TOTP && !requireTouch) {
                                 // recalculate the code
-                                calculateCode(session, credential)
+                                calculateCode(session, credential, System.currentTimeMillis())
                             } else null
 
                         val jsonResult = Pair<Credential, Code?>(credential, code)
@@ -407,7 +407,7 @@ class MainViewModel : ViewModel() {
 
                         val credential = getOathCredential(session, credentialId)
 
-                        val resultJson = calculateCode(session, credential)
+                        val resultJson = calculateCode(session, credential, System.currentTimeMillis())
                             .toJson()
                             .toString()
 

@@ -22,12 +22,11 @@ ScaffoldFeatureController showMessage(
 Future<void> showBottomMenu(
     BuildContext context, List<MenuAction> actions) async {
   await showModalBottomSheet(
-    context: context,
-    constraints: MediaQuery.of(context).size.width > 540
-        ? const BoxConstraints(maxWidth: 380)
-        : null,
-    builder: (context) => _BottomMenu(actions),
-  );
+      context: context,
+      constraints: MediaQuery.of(context).size.width > 540
+          ? const BoxConstraints(maxWidth: 380)
+          : null,
+      builder: (context) => SafeArea(child: _BottomMenu(actions)));
 }
 
 class _BottomMenu extends ConsumerWidget {

@@ -21,7 +21,7 @@ fun Credential.isSteamCredential(): Boolean =
  */
 fun OathSession.calculateSteamCode(
     credential: Credential,
-    timestamp: Long = 0,
+    timestamp: Long,
 ): Code {
     val timeSlotMs = 30_000
     if (!credential.isSteamCredential()) {
