@@ -145,33 +145,40 @@ class AccountView extends ConsumerWidget with AccountMixin {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                calculateReady
-                    ? Icon(
-                        credential.touchRequired
-                            ? Icons.touch_app
-                            : Icons.refresh,
+              children: code == null
+                  ? [
+                      Icon(
+                        credential.oathType == OathType.hotp
+                            ? Icons.refresh
+                            : Icons.touch_app,
                         size: 18,
-                      )
-                    : SizedBox.square(
-                        dimension: 16,
-                        child: CircleTimer(
-                          code.validFrom * 1000,
-                          code.validTo * 1000,
+                      ),
+                      const Text('', style: TextStyle(fontSize: 22.0)),
+                    ]
+                  : [
+                      if (credential.oathType == OathType.totp) ...[
+                        credential.touchRequired && expired
+                            ? const Icon(Icons.touch_app)
+                            : SizedBox.square(
+                                dimension: 16,
+                                child: CircleTimer(
+                                  code.validFrom * 1000,
+                                  code.validTo * 1000,
+                                ),
+                              ),
+                        const SizedBox(width: 8.0)
+                      ],
+                      Opacity(
+                        opacity: expired ? 0.4 : 1.0,
+                        child: Text(
+                          formatCode(code),
+                          style: const TextStyle(
+                            fontSize: 22.0,
+                            fontFeatures: [FontFeature.tabularFigures()],
+                          ),
                         ),
                       ),
-                if (code != null) const SizedBox(width: 8.0),
-                Opacity(
-                  opacity: expired ? 0.4 : 1.0,
-                  child: Text(
-                    formatCode(code),
-                    style: const TextStyle(
-                      fontSize: 22.0,
-                      fontFeatures: [FontFeature.tabularFigures()],
-                    ),
-                  ),
-                ),
-              ],
+                    ],
             ),
           ),
         ),
