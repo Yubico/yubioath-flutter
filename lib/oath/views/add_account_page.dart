@@ -40,6 +40,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   bool _validateSecretLength = false;
   _QrScanState _qrState = _QrScanState.none;
   bool _isObscure = true;
+  List<int> _periodValues = [20, 30, 45, 60];
+  List<int> _digitsValues = [6, 8];
 
   _scanQrCode(QrScanner qrScanner) async {
     try {
@@ -48,22 +50,28 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       });
       final otpauth = await qrScanner.scanQr();
       final data = CredentialData.fromUri(Uri.parse(otpauth));
-      setState(() {
-        _issuerController.text = data.issuer ?? '';
-        _accountController.text = data.name;
-        _secretController.text = data.secret;
-        _oathType = data.oathType;
-        _hashAlgorithm = data.hashAlgorithm;
-        _periodController.text = '${data.period}';
-        _digits = data.digits;
-        _isObscure = true;
-        _qrState = _QrScanState.success;
-      });
+      _loadCredentialData(data);
     } catch (e) {
       setState(() {
         _qrState = _QrScanState.failed;
       });
     }
+  }
+
+  _loadCredentialData(CredentialData data) {
+    setState(() {
+      _issuerController.text = data.issuer ?? '';
+      _accountController.text = data.name;
+      _secretController.text = data.secret;
+      _oathType = data.oathType;
+      _hashAlgorithm = data.hashAlgorithm;
+      _periodValues = [data.period];
+      _periodController.text = '${data.period}';
+      _digitsValues = [data.digits];
+      _digits = data.digits;
+      _isObscure = true;
+      _qrState = _QrScanState.success;
+    });
   }
 
   List<Widget> _buildQrStatus() {
@@ -123,16 +131,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             final b64Image = base64Encode(fileData);
             final otpauth = await qrScanner.scanQr(b64Image);
             final data = CredentialData.fromUri(Uri.parse(otpauth));
-            setState(() {
-              _issuerController.text = data.issuer ?? '';
-              _accountController.text = data.name;
-              _secretController.text = data.secret;
-              _oathType = data.oathType;
-              _hashAlgorithm = data.hashAlgorithm;
-              _periodController.text = '${data.period}';
-              _digits = data.digits;
-              _qrState = _QrScanState.success;
-            });
+            _loadCredentialData(data);
           }
         },
         child: Column(
@@ -289,7 +288,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             defaultPeriod,
                         isDense: true,
                         underline: null,
-                        items: [20, 30, 45, 60]
+                        items: _periodValues
                             .map((e) => DropdownMenuItem(
                                   value: e,
                                   child: Text('$e sec'),
@@ -312,7 +311,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       value: _digits,
                       isDense: true,
                       underline: null,
-                      items: [6, 7, 8]
+                      items: _digitsValues
                           .map((e) => DropdownMenuItem(
                                 value: e,
                                 child: Text('$e digits'),
