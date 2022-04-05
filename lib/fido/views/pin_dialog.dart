@@ -73,7 +73,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             obscureText: true,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              labelText: 'New password',
+              labelText: 'New PIN',
               enabled: !hasPin || _currentPin.isNotEmpty,
               errorText: _newPinError,
             ),
@@ -88,7 +88,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             obscureText: true,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              labelText: 'Confirm password',
+              labelText: 'Confirm PIN',
               enabled: _newPin.isNotEmpty,
             ),
             onChanged: (value) {
