@@ -54,7 +54,7 @@ Future<Widget> initialize() async {
     child: YubicoAuthenticatorApp(page: Consumer(
       builder: (context, ref, child) {
         // activates the sub page provider
-        ref.watch(androidSubPageProvider);
+        ref.read(androidSubPageProvider);
         return const MainPage();
       },
     )),

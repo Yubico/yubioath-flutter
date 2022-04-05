@@ -22,12 +22,11 @@ ScaffoldFeatureController showMessage(
 Future<void> showBottomMenu(
     BuildContext context, List<MenuAction> actions) async {
   await showModalBottomSheet(
-    context: context,
-    constraints: MediaQuery.of(context).size.width > 540
-        ? const BoxConstraints(maxWidth: 380)
-        : null,
-    builder: (context) => _BottomMenu(actions),
-  );
+      context: context,
+      constraints: MediaQuery.of(context).size.width > 540
+          ? const BoxConstraints(maxWidth: 380)
+          : null,
+      builder: (context) => SafeArea(child: _BottomMenu(actions)));
 }
 
 class _BottomMenu extends ConsumerWidget {
@@ -41,23 +40,22 @@ class _BottomMenu extends ConsumerWidget {
       Navigator.of(context).pop();
     });
 
-    return SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: actions
-            .map((a) => ListTile(
-                  leading: a.icon,
-                  title: Text(a.text),
-                  enabled: a.action != null,
-                  onTap: a.action == null
-                      ? null
-                      : () {
-                          Navigator.pop(context);
-                          a.action?.call(context);
-                        },
-                ))
-            .toList(),
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: actions
+          .map((a) => ListTile(
+                leading: a.icon,
+                title: Text(a.text),
+                enabled: a.action != null,
+                onTap: a.action == null
+                    ? null
+                    : () {
+                        Navigator.pop(context);
+                        a.action?.call(context);
+                      },
+              ))
+          .toList(),
     );
   }
 }
