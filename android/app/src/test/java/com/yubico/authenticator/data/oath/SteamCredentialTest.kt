@@ -33,7 +33,7 @@ class SteamCredentialTest {
         `when`(c.oathType).thenReturn(OathType.HOTP)
         `when`(c.issuer).thenReturn("Steam")
 
-        s.calculateSteamCode(c)
+        s.calculateSteamCode(c, 0)
     }
 
     @Test
@@ -57,22 +57,22 @@ class SteamCredentialTest {
         Assert.assertEquals(
             "MV32B",
             sessionWith("6ad0d2d1674ad2a7c725c075901977f195bb4649")
-                .calculateSteamCode(c).value
+                .calculateSteamCode(c, 0).value
         )
         Assert.assertEquals(
             "V8YBM",
             sessionWith("c5f852852f839924171b6cf6d272a1467bc62958")
-                .calculateSteamCode(c).value
+                .calculateSteamCode(c, 0).value
         )
         Assert.assertEquals(
             "NN6VX",
             sessionWith("0a7053666137e5d2c8e96e0b2b52d5b1f3be1cf8")
-                .calculateSteamCode(c).value
+                .calculateSteamCode(c, 0).value
         )
         Assert.assertEquals(
             "RB5N8",
             sessionWith("ed6d29417dfc8c0b800a1891181632802fd965c9")
-                .calculateSteamCode(c).value
+                .calculateSteamCode(c, 0).value
         )
     }
 
