@@ -140,6 +140,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
             border: Border.all(width: 1.0, color: Colors.grey.shade500),
           ),
           child: AnimatedSize(
+            alignment: Alignment.centerRight,
             duration: const Duration(milliseconds: 100),
             child: Padding(
               padding:
@@ -159,17 +160,23 @@ class AccountView extends ConsumerWidget with AccountMixin {
                       ]
                     : [
                         if (credential.oathType == OathType.totp) ...[
-                          if (credential.touchRequired && expired)
-                            const Icon(Icons.touch_app),
-                          if (!expired)
-                            SizedBox.square(
-                              dimension: 16,
-                              child: CircleTimer(
-                                code.validFrom * 1000,
-                                code.validTo * 1000,
-                              ),
-                            ),
-                          const SizedBox(width: 8.0)
+                          ...expired
+                              ? [
+                                  if (credential.touchRequired) ...[
+                                    const Icon(Icons.touch_app),
+                                    const SizedBox(width: 8.0),
+                                  ]
+                                ]
+                              : [
+                                  SizedBox.square(
+                                    dimension: 16,
+                                    child: CircleTimer(
+                                      code.validFrom * 1000,
+                                      code.validTo * 1000,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                ],
                         ],
                         Opacity(
                           opacity: expired ? 0.4 : 1.0,

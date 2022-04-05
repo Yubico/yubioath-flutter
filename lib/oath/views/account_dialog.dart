@@ -82,6 +82,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
                   border: Border.all(width: 1.0, color: Colors.grey.shade500),
                 ),
                 child: AnimatedSize(
+                  alignment: Alignment.centerRight,
                   duration: const Duration(milliseconds: 100),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
