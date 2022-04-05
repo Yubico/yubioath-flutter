@@ -38,7 +38,6 @@ Future<Widget> initialize() async {
     overrides: [
       supportedAppsProvider.overrideWithValue([
         Application.oath,
-        Application.management,
       ]),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
       attachedDevicesProvider
