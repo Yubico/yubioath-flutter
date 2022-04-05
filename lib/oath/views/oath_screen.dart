@@ -71,8 +71,9 @@ class _UnlockedView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final accounts = ref.watch(credentialListProvider(devicePath));
-    if (accounts?.isEmpty ?? false) {
+    final isEmpty = ref.watch(credentialListProvider(devicePath)
+        .select((value) => value?.isEmpty == true));
+    if (isEmpty) {
       return MessagePage(
         title: const Text('Authenticator'),
         header: 'No accounts',
@@ -115,10 +116,8 @@ class _UnlockedView extends ConsumerWidget {
 
   FloatingActionButton _buildFab(BuildContext context) {
     final fab = FloatingActionButton.extended(
-      icon: const Icon(Icons.person_add_alt),
+      icon: const Icon(Icons.person_add_alt_1),
       label: const Text('Setup'),
-      backgroundColor: Theme.of(context).colorScheme.secondary,
-      foregroundColor: Theme.of(context).colorScheme.onSecondary,
       onPressed: () {
         showBottomMenu(context, [
           MenuAction(
@@ -237,7 +236,7 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
                     },
                   ),
                   OutlinedButton.icon(
-                    icon: const Icon(Icons.delete),
+                    icon: const Icon(Icons.delete_outlined),
                     label: const Text('Reset OATH'),
                     onPressed: () {
                       showDialog(

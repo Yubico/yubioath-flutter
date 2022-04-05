@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
 import '../../app/message.dart';
 import '../../app/state.dart';
@@ -13,6 +14,8 @@ import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import 'utils.dart';
+
+final _log = Logger('oath.view.add_account_page');
 
 final _secretFormatterPattern =
     RegExp('[abcdefghijklmnopqrstuvwxyz234567 ]', caseSensitive: false);
@@ -340,7 +343,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       actions: [
         TextButton(
           onPressed: isValid
-              ? () {
+              ? () async {
                   if (secretLengthValid) {
                     final issuer = _issuerController.text;
 
@@ -354,12 +357,17 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       period: period,
                     );
 
-                    ref
-                        .read(
-                            credentialListProvider(widget.devicePath).notifier)
-                        .addAccount(cred.toUri(), requireTouch: _touch);
-                    Navigator.of(context).pop();
-                    showMessage(context, 'Account added');
+                    try {
+                      await ref
+                          .read(credentialListProvider(widget.devicePath)
+                              .notifier)
+                          .addAccount(cred.toUri(), requireTouch: _touch);
+                      Navigator.of(context).pop();
+                      showMessage(context, 'Account added');
+                    } catch (e) {
+                      _log.severe('Failed to add account', e);
+                      showMessage(context, 'Failed adding account');
+                    }
                   } else {
                     setState(() {
                       _validateSecretLength = true;

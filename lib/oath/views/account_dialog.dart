@@ -1,9 +1,8 @@
-import 'dart:ui';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../widgets/circle_timer.dart';
 import '../../widgets/dialog_frame.dart';
 import '../models.dart';
 import 'account_mixin.dart';
@@ -57,10 +56,9 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final code = getCode(ref);
-    final expired = isExpired(code, ref);
-    final calculateReady = code == null ||
-        credential.oathType == OathType.hotp ||
-        (credential.touchRequired && expired);
+    if (code == null) {
+      Timer(Duration.zero, () => calculateCode(context, ref));
+    }
     return DialogFrame(
       child: AlertDialog(
         title: Text(title),
@@ -73,50 +71,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
           children: [
             Text(subtitle ?? ''),
             const SizedBox(height: 8.0),
-            Center(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-                  border: Border.all(width: 1.0, color: Colors.grey.shade500),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      calculateReady
-                          ? Icon(
-                              credential.touchRequired
-                                  ? Icons.touch_app
-                                  : Icons.refresh,
-                              size: 36,
-                            )
-                          : SizedBox.square(
-                              dimension: 32,
-                              child: CircleTimer(
-                                code.validFrom * 1000,
-                                code.validTo * 1000,
-                              ),
-                            ),
-                      if (code != null) ...[
-                        const SizedBox(width: 8.0),
-                        Opacity(
-                          opacity: expired ? 0.4 : 1.0,
-                          child: Text(
-                            formatCode(code),
-                            style: const TextStyle(
-                                fontSize: 32.0,
-                                fontFeatures: [FontFeature.tabularFigures()]),
-                          ),
-                        )
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            Center(child: buildCodeView(ref, big: true)),
           ],
         ),
         actions: _buildActions(context, ref),

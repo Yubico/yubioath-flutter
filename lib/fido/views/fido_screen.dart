@@ -30,13 +30,25 @@ class FidoScreen extends ConsumerWidget {
               ),
           error: (error, _) {
             final supported = deviceData
-                .info.supportedCapabilities[deviceData.node.transport]!;
+                    .info.supportedCapabilities[deviceData.node.transport] ??
+                0;
             if (Capability.fido2.value & supported == 0) {
               return const MessagePage(
                 title: Text('WebAuthn'),
                 header: 'No management options',
                 message:
                     'WebAuthn is supported by this device, but there are no management options available.',
+              );
+            }
+            final enabled = deviceData.info.config
+                    .enabledCapabilities[deviceData.node.transport] ??
+                0;
+            if (Capability.fido2.value & enabled == 0) {
+              return const MessagePage(
+                title: Text('WebAuthn'),
+                header: 'FIDO2 disabled',
+                message:
+                    'WebAuthn requires the FIDO2 application to be enabled on your YubiKey',
               );
             }
             if (Platform.isWindows) {

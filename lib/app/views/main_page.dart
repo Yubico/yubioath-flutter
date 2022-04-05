@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'message_page.dart';
 import 'no_device_screen.dart';
-import 'device_info_screen.dart';
 import '../models.dart';
 import '../state.dart';
 import '../../fido/views/fido_screen.dart';
@@ -36,7 +35,10 @@ class MainPage extends ConsumerWidget {
       case Application.fido:
         return FidoScreen(deviceData);
       default:
-        return DeviceInfoScreen(deviceData);
+        return const MessagePage(
+          header: 'Not implemented',
+          message: 'This section has not yet been implemented',
+        );
     }
   }
 }

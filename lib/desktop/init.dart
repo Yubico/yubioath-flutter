@@ -83,8 +83,6 @@ Future<Widget> initialize() async {
       supportedAppsProvider.overrideWithValue([
         Application.oath,
         Application.fido,
-        Application.otp,
-        Application.piv,
         Application.management,
       ]),
       prefProvider.overrideWithValue(prefs),
