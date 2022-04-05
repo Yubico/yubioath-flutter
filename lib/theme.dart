@@ -21,6 +21,9 @@ class AppTheme {
           backgroundColor: Colors.white,
           foregroundColor: Colors.grey.shade800,
         ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: primaryBlue,
+        ),
         textTheme: TextTheme(
           bodyText1: TextStyle(
             color: Colors.grey.shade600,
@@ -43,6 +46,10 @@ class AppTheme {
           secondary: primaryGreen,
         ),
         toggleableActiveColor: primaryGreen,
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          foregroundColor: Colors.grey.shade900,
+          backgroundColor: primaryGreen,
+        ),
         textTheme: TextTheme(
           bodyText1: TextStyle(
             color: Colors.grey.shade400,

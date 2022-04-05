@@ -50,11 +50,8 @@ class FidoLockedPage extends ConsumerWidget {
 
   FloatingActionButton _buildFab(BuildContext context) {
     return FloatingActionButton.extended(
-      icon: Icon(
-          state.bioEnroll != null ? Icons.fingerprint : Icons.pin_outlined),
+      icon: Icon(state.bioEnroll != null ? Icons.fingerprint : Icons.pin),
       label: const Text('Setup'),
-      backgroundColor: Theme.of(context).colorScheme.secondary,
-      foregroundColor: Theme.of(context).colorScheme.onSecondary,
       onPressed: () {
         showBottomMenu(context, [
           if (state.bioEnroll != null)

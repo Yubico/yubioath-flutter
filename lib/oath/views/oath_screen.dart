@@ -116,10 +116,8 @@ class _UnlockedView extends ConsumerWidget {
 
   FloatingActionButton _buildFab(BuildContext context) {
     final fab = FloatingActionButton.extended(
-      icon: const Icon(Icons.person_add_alt),
+      icon: const Icon(Icons.person_add_alt_1),
       label: const Text('Setup'),
-      backgroundColor: Theme.of(context).colorScheme.secondary,
-      foregroundColor: Theme.of(context).colorScheme.onSecondary,
       onPressed: () {
         showBottomMenu(context, [
           MenuAction(
