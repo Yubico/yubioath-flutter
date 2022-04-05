@@ -3,8 +3,7 @@ name: Android
 on: [push, pull_request]
 
 jobs:
-  build-release:
-    name: Release apk
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -61,7 +60,7 @@ jobs:
         run: |
           export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3,4,5,6,7 | sed -r 's/\//_/g')
           mkdir artifacts
-          mv build/app/outputs/flutter-apk/app-release.apk artifacts/yubico-authenticator-release-${REF}.apk
+          mv build/app/outputs/flutter-apk/app-release.apk artifacts/yubico-authenticator-${REF}.apk
         working-directory: ./app
 
       - uses: actions/upload-artifact@v2
