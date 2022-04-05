@@ -237,7 +237,7 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
                     },
                   ),
                   OutlinedButton.icon(
-                    icon: const Icon(Icons.delete),
+                    icon: const Icon(Icons.delete_outlined),
                     label: const Text('Reset OATH'),
                     onPressed: () {
                       showDialog(

@@ -45,7 +45,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                                                 node.path, cred),
                                       );
                                     },
-                                    icon: const Icon(Icons.delete)),
+                                    icon: const Icon(Icons.delete_outlined)),
                               ],
                             ),
                           )),
@@ -84,7 +84,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                                                 node.path, fp),
                                       );
                                     },
-                                    icon: const Icon(Icons.delete)),
+                                    icon: const Icon(Icons.delete_outlined)),
                               ],
                             ),
                           ))
@@ -123,7 +123,8 @@ class FidoUnlockedPage extends ConsumerWidget {
 
   FloatingActionButton _buildFab(BuildContext context) {
     return FloatingActionButton.extended(
-      icon: Icon(state.bioEnroll != null ? Icons.fingerprint : Icons.pin),
+      icon: Icon(
+          state.bioEnroll != null ? Icons.fingerprint : Icons.pin_outlined),
       label: const Text('Setup'),
       backgroundColor: Theme.of(context).colorScheme.secondary,
       foregroundColor: Theme.of(context).colorScheme.onSecondary,

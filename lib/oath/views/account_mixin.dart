@@ -186,16 +186,15 @@ mixin AccountMixin {
       MenuAction(
         text: pinned ? 'Unpin account' : 'Pin account',
         //TODO: Replace this with a custom icon.
-        //Icon(pinned ? Icons.push_pin_remove : Icons.push_pin),
         icon: pinned
             ? CustomPaint(
                 painter: _StrikethroughPainter(
                     Theme.of(context).iconTheme.color ?? Colors.black),
                 child: ClipPath(
                     clipper: _StrikethroughClipper(),
-                    child: const Icon(Icons.push_pin)),
+                    child: const Icon(Icons.push_pin_outlined)),
               )
-            : const Icon(Icons.push_pin),
+            : const Icon(Icons.push_pin_outlined),
         action: (context) {
           ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
         },
@@ -203,7 +202,7 @@ mixin AccountMixin {
       if (deviceData.info.version.major >= 5 &&
           deviceData.info.version.minor >= 3)
         MenuAction(
-          icon: const Icon(Icons.edit),
+          icon: const Icon(Icons.edit_outlined),
           text: 'Rename account',
           action: (context) async {
             await renameCredential(context, ref);
@@ -211,7 +210,7 @@ mixin AccountMixin {
         ),
       MenuAction(
         text: 'Delete account',
-        icon: const Icon(Icons.delete),
+        icon: const Icon(Icons.delete_outlined),
         action: (context) async {
           await deleteCredential(context, ref);
         },
