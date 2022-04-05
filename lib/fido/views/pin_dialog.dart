@@ -32,8 +32,10 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       Navigator.of(context).pop();
     });
 
-    final minPinLength = widget.state.minPinLength;
     final hasPin = widget.state.hasPin;
+    final isValid = _newPin.isNotEmpty &&
+        _newPin == _confirmPin &&
+        (!hasPin || _currentPin.isNotEmpty);
 
     return ResponsiveDialog(
       title: Text(hasPin ? 'Change PIN' : 'Set PIN'),
@@ -71,7 +73,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             obscureText: true,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              labelText: 'New password',
+              labelText: 'New PIN',
               enabled: !hasPin || _currentPin.isNotEmpty,
               errorText: _newPinError,
             ),
@@ -86,13 +88,18 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             obscureText: true,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              labelText: 'Confirm password',
+              labelText: 'Confirm PIN',
               enabled: _newPin.isNotEmpty,
             ),
             onChanged: (value) {
               setState(() {
                 _confirmPin = value;
               });
+            },
+            onFieldSubmitted: (_) {
+              if (isValid) {
+                _submit();
+              }
             },
           ),
         ]
@@ -105,39 +112,36 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       actions: [
         TextButton(
           child: const Text('Save'),
-          onPressed: _newPin.isNotEmpty &&
-                  _newPin == _confirmPin &&
-                  (!hasPin || _currentPin.isNotEmpty)
-              ? () async {
-                  final oldPin = _currentPin.isNotEmpty ? _currentPin : null;
-                  if (_newPin.length < minPinLength) {
-                    setState(() {
-                      _newPinError =
-                          'New PIN must be at least $minPinLength characters';
-                    });
-                    return;
-                  }
-                  final result = await ref
-                      .read(fidoStateProvider(widget.devicePath).notifier)
-                      .setPin(_newPin, oldPin: oldPin);
-                  result.when(success: () {
-                    Navigator.of(context).pop(true);
-                    showMessage(context, 'PIN set');
-                  }, failed: (retries, authBlocked) {
-                    setState(() {
-                      if (authBlocked) {
-                        _currentPinError =
-                            'PIN has been blocked until the YubiKey is removed and reinserted';
-                      } else {
-                        _currentPinError =
-                            'Wrong PIN ($retries tries remaining)';
-                      }
-                    });
-                  });
-                }
-              : null,
+          onPressed: isValid ? _submit : null,
         ),
       ],
     );
+  }
+
+  void _submit() async {
+    final minPinLength = widget.state.minPinLength;
+    final oldPin = _currentPin.isNotEmpty ? _currentPin : null;
+    if (_newPin.length < minPinLength) {
+      setState(() {
+        _newPinError = 'New PIN must be at least $minPinLength characters';
+      });
+      return;
+    }
+    final result = await ref
+        .read(fidoStateProvider(widget.devicePath).notifier)
+        .setPin(_newPin, oldPin: oldPin);
+    result.when(success: () {
+      Navigator.of(context).pop(true);
+      showMessage(context, 'PIN set');
+    }, failed: (retries, authBlocked) {
+      setState(() {
+        if (authBlocked) {
+          _currentPinError =
+              'PIN has been blocked until the YubiKey is removed and reinserted';
+        } else {
+          _currentPinError = 'Wrong PIN ($retries tries remaining)';
+        }
+      });
+    });
   }
 }

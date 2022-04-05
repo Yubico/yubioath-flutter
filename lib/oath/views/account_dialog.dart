@@ -74,29 +74,49 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
             Text(subtitle ?? ''),
             const SizedBox(height: 8.0),
             Center(
-              child: Chip(
-                avatar: calculateReady
-                    ? Icon(
-                        credential.touchRequired
-                            ? Icons.touch_app
-                            : Icons.refresh,
-                        size: 36,
-                      )
-                    : SizedBox.square(
-                        dimension: 32,
-                        child: CircleTimer(
-                          code.validFrom * 1000,
-                          code.validTo * 1000,
-                        ),
-                      ),
-                label: Text(
-                  formatCode(code),
-                  style: const TextStyle(
-                      fontSize: 32.0,
-                      fontFeatures: [FontFeature.tabularFigures()]),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                  border: Border.all(width: 1.0, color: Colors.grey.shade500),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      calculateReady
+                          ? Icon(
+                              credential.touchRequired
+                                  ? Icons.touch_app
+                                  : Icons.refresh,
+                              size: 36,
+                            )
+                          : SizedBox.square(
+                              dimension: 32,
+                              child: CircleTimer(
+                                code.validFrom * 1000,
+                                code.validTo * 1000,
+                              ),
+                            ),
+                      if (code != null) ...[
+                        const SizedBox(width: 8.0),
+                        Opacity(
+                          opacity: expired ? 0.4 : 1.0,
+                          child: Text(
+                            formatCode(code),
+                            style: const TextStyle(
+                                fontSize: 32.0,
+                                fontFeatures: [FontFeature.tabularFigures()]),
+                          ),
+                        )
+                      ],
+                    ],
+                  ),
                 ),
               ),
-            )
+            ),
           ],
         ),
         actions: _buildActions(context, ref),

@@ -74,7 +74,7 @@ mixin AccountMixin {
   String formatCode(OathCode? code) {
     final value = code?.value;
     if (value == null) {
-      return '••• •••';
+      return '';
     } else if (value.length < 6) {
       return value;
     } else {

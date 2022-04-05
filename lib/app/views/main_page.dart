@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'message_page.dart';
 import 'no_device_screen.dart';
 import 'device_info_screen.dart';
 import '../models.dart';
@@ -21,8 +22,9 @@ class MainPage extends ConsumerWidget {
     }
     final app = ref.watch(currentAppProvider);
     if (app.getAvailability(deviceData) != Availability.enabled) {
-      return const Center(
-        child: Text('This application is disabled'),
+      return const MessagePage(
+        header: 'Application disabled',
+        message: 'Enable the application on your YubiKey to access',
       );
     }
 

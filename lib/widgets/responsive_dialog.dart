@@ -33,7 +33,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               centerTitle: true,
               title: widget.title,
               actions: widget.actions,
-              leading: BackButton(
+              leading: CloseButton(
                 onPressed: () {
                   widget.onCancel?.call();
                   Navigator.of(context).pop();
