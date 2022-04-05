@@ -42,6 +42,9 @@ jobs:
     - name: Build the app
       run: flutter build linux
 
+    - name: Check generated files
+      run: git diff --exit-code
+
     - name: Rename and archive app
       run: |
         export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)

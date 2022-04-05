@@ -56,7 +56,8 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               },
             ),
             Wrap(
-              spacing: 8.0,
+              spacing: 4.0,
+              runSpacing: 8.0,
               children: [
                 OutlinedButton(
                   child: const Text('Remove password'),

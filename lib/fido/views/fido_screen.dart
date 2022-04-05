@@ -9,6 +9,7 @@ import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/device_avatar.dart';
+import '../../app/views/message_page.dart';
 import '../../desktop/state.dart';
 import '../../management/models.dart';
 import '../state.dart';
@@ -31,11 +32,12 @@ class FidoScreen extends ConsumerWidget {
             final supported = deviceData
                 .info.supportedCapabilities[deviceData.node.transport]!;
             if (Capability.fido2.value & supported == 0) {
-              return AppPage(
-                  title: const Text('WebAuthn'),
-                  centered: true,
-                  child: const AppFailureScreen(
-                      'WebAuthn is supported by this device, but there are no management options available.'));
+              return const MessagePage(
+                title: Text('WebAuthn'),
+                header: 'No management options',
+                message:
+                    'WebAuthn is supported by this device, but there are no management options available.',
+              );
             }
             if (Platform.isWindows) {
               if (!ref

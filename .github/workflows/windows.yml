@@ -38,6 +38,9 @@ jobs:
       - name: Build the app
         run: flutter build windows
 
+      - name: Check generated files
+        run: git diff --exit-code
+
       - name: Move .dll files
         run: |
           $dest = "build\windows\runner\Release"

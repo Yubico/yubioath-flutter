@@ -48,6 +48,7 @@ class _BottomMenu extends ConsumerWidget {
             .map((a) => ListTile(
                   leading: a.icon,
                   title: Text(a.text),
+                  enabled: a.action != null,
                   onTap: a.action == null
                       ? null
                       : () {
