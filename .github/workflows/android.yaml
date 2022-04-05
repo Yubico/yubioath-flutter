@@ -53,7 +53,6 @@ jobs:
       - name: Run android tests
         run: |
           ./gradlew test
-        env:
         working-directory: ./app/android
 
       - name: Upload artifacts
