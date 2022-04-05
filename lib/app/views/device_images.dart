@@ -11,6 +11,7 @@ const _imagesForName = {
   'FIDO U2F Security Key': 'sky1',
   'Security Key by Yubico': 'sky2',
   'Security Key NFC': 'sky3',
+  'Security Key C NFC': 'skycnfc',
   'YubiKey NEO': 'neo',
   'YubiKey Standard': 'standard',
 };
