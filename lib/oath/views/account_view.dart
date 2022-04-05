@@ -139,46 +139,50 @@ class AccountView extends ConsumerWidget with AccountMixin {
             borderRadius: const BorderRadius.all(Radius.circular(30.0)),
             border: Border.all(width: 1.0, color: Colors.grey.shade500),
           ),
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: code == null
-                  ? [
-                      Icon(
-                        credential.oathType == OathType.hotp
-                            ? Icons.refresh
-                            : Icons.touch_app,
-                        size: 18,
-                      ),
-                      const Text('', style: TextStyle(fontSize: 22.0)),
-                    ]
-                  : [
-                      if (credential.oathType == OathType.totp) ...[
-                        credential.touchRequired && expired
-                            ? const Icon(Icons.touch_app)
-                            : SizedBox.square(
-                                dimension: 16,
-                                child: CircleTimer(
-                                  code.validFrom * 1000,
-                                  code.validTo * 1000,
-                                ),
+          child: AnimatedSize(
+            duration: const Duration(milliseconds: 100),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: code == null
+                    ? [
+                        Icon(
+                          credential.oathType == OathType.hotp
+                              ? Icons.refresh
+                              : Icons.touch_app,
+                          size: 18,
+                        ),
+                        const Text('', style: TextStyle(fontSize: 22.0)),
+                      ]
+                    : [
+                        if (credential.oathType == OathType.totp) ...[
+                          if (credential.touchRequired && expired)
+                            const Icon(Icons.touch_app),
+                          if (!expired)
+                            SizedBox.square(
+                              dimension: 16,
+                              child: CircleTimer(
+                                code.validFrom * 1000,
+                                code.validTo * 1000,
                               ),
-                        const SizedBox(width: 8.0)
-                      ],
-                      Opacity(
-                        opacity: expired ? 0.4 : 1.0,
-                        child: Text(
-                          formatCode(code),
-                          style: const TextStyle(
-                            fontSize: 22.0,
-                            fontFeatures: [FontFeature.tabularFigures()],
+                            ),
+                          const SizedBox(width: 8.0)
+                        ],
+                        Opacity(
+                          opacity: expired ? 0.4 : 1.0,
+                          child: Text(
+                            formatCode(code),
+                            style: const TextStyle(
+                              fontSize: 22.0,
+                              fontFeatures: [FontFeature.tabularFigures()],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+              ),
             ),
           ),
         ),
