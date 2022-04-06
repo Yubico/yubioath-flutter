@@ -336,6 +336,7 @@ class MainViewModel : ViewModel() {
                     session.setAccessKey(accessKey)
                     _keyManager.addKey(session.deviceId, accessKey, false)
                     Logger.d("Successfully set password")
+                    result.success(null)
                 }
             } catch (cause: Throwable) {
                 result.error(cause)
