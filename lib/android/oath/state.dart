@@ -162,17 +162,14 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
 
   @override
   Future<OathCredential> addAccount(Uri credentialUri,
-      {bool requireTouch = false, bool update = true}) async {
+      {bool requireTouch = false}) async {
     String resultString =
         await _api.addAccount(credentialUri.toString(), requireTouch);
 
     var result = jsonDecode(resultString);
     final pair = OathPair(OathCredential.fromJson(result['credential']),
         result['code'] != null ? OathCode.fromJson(result['code']) : null);
-
-    if (update && mounted) {
-      state = state!.toList()..add(pair);
-    }
+    refresh();
 
     return pair.credential;
   }
