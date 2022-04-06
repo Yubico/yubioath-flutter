@@ -45,12 +45,14 @@ class AppPage extends ConsumerWidget {
         },
       );
 
-  Widget _buildScrollView() => SingleChildScrollView(
-        // Make sure FAB doesn't block content
-        padding: floatingActionButton != null
-            ? const EdgeInsets.only(bottom: 72)
-            : null,
-        child: child,
+  Widget _buildScrollView() => SafeArea(
+        child: SingleChildScrollView(
+          // Make sure FAB doesn't block content
+          padding: floatingActionButton != null
+              ? const EdgeInsets.only(bottom: 72)
+              : null,
+          child: child,
+        ),
       );
 
   Scaffold _buildScaffold(BuildContext context, WidgetRef ref, bool hasDrawer) {

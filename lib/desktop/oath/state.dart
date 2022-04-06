@@ -262,21 +262,15 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
 
   @override
   Future<OathCredential> addAccount(Uri otpauth,
-      {bool requireTouch = false, bool update = true}) async {
+      {bool requireTouch = false}) async {
     var result = await _session.command('put', target: [
       'accounts'
     ], params: {
       'uri': otpauth.toString(),
       'require_touch': requireTouch,
     });
-    final credential = OathCredential.fromJson(result);
-    if (update && mounted) {
-      state = state!.toList()..add(OathPair(credential, null));
-      if (!requireTouch && credential.oathType == OathType.totp) {
-        await calculate(credential);
-      }
-    }
-    return credential;
+    refresh();
+    return OathCredential.fromJson(result);
   }
 
   @override
