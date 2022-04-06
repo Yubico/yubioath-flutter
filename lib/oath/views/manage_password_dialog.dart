@@ -25,12 +25,30 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   String _confirmPassword = '';
   bool _currentIsWrong = false;
 
+  _submit() async {
+    final result = await ref
+        .read(oathStateProvider(widget.path).notifier)
+        .setPassword(_currentPassword, _newPassword);
+    if (result) {
+      Navigator.of(context).pop();
+      showMessage(context, 'Password set');
+    } else {
+      setState(() {
+        _currentIsWrong = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // If current device changes, we need to pop back to the main Page.
     ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
       Navigator.of(context).pop();
     });
+
+    final isValid = _newPassword.isNotEmpty &&
+        _newPassword == _confirmPassword &&
+        (!widget.state.hasKey || _currentPassword.isNotEmpty);
 
     return ResponsiveDialog(
       title: const Text('Manage password'),
@@ -122,6 +140,11 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 _confirmPassword = value;
               });
             },
+            onSubmitted: (_) {
+              if (isValid) {
+                _submit();
+              }
+            },
           ),
         ]
             .map((e) => Padding(
@@ -132,23 +155,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _newPassword.isNotEmpty &&
-                  _newPassword == _confirmPassword &&
-                  (!widget.state.hasKey || _currentPassword.isNotEmpty)
-              ? () async {
-                  final result = await ref
-                      .read(oathStateProvider(widget.path).notifier)
-                      .setPassword(_currentPassword, _newPassword);
-                  if (result) {
-                    Navigator.of(context).pop();
-                    showMessage(context, 'Password set');
-                  } else {
-                    setState(() {
-                      _currentIsWrong = true;
-                    });
-                  }
-                }
-              : null,
+          onPressed: isValid ? _submit : null,
           child: const Text('Save'),
         )
       ],
