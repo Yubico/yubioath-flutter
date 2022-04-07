@@ -18,6 +18,7 @@ import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.oath.*
 import com.yubico.yubikit.support.DeviceUtil
 import kotlinx.coroutines.*
+import java.lang.IllegalStateException
 import java.net.URI
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -157,29 +158,30 @@ class MainViewModel : ViewModel() {
 
         _isUsbKey = device is UsbYubiKeyDevice
 
-        withContext(Dispatchers.IO) {
-            if (pendingYubiKeyAction.value != null) {
-                provideYubiKey(Result.success(device))
-            } else {
-                withContext(Dispatchers.Main) {
-                    when (_operationContext) {
-                        OperationContext.Oath -> {
-                            try {
-                                sendDeviceInfo(device)
-                            } catch (cause: Throwable) {
-                                Logger.e("Failed to send device info", cause)
-                            }
-                            sendOathInfo(device)
-                            sendOathCodes(device)
-                        }
-                        OperationContext.Yubikey -> {
-                            sendDeviceInfo(device)
-                        }
+        try {
 
-                        else -> {}
+            withContext(Dispatchers.IO) {
+                if (pendingYubiKeyAction.value != null) {
+                    provideYubiKey(Result.success(device))
+                } else {
+                    withContext(Dispatchers.Main) {
+                        when (_operationContext) {
+                            OperationContext.Oath -> {
+                                sendDeviceInfo(device)
+                                sendOathInfo(device)
+                                sendOathCodes(device)
+                            }
+                            OperationContext.Yubikey -> {
+                                sendDeviceInfo(device)
+                            }
+
+                            else -> {}
+                        }
                     }
                 }
             }
+        } catch (illegalStateException: IllegalStateException) {
+            // ignored
         }
     }
 
