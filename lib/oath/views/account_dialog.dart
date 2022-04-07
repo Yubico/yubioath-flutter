@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/state.dart';
 import '../../widgets/dialog_frame.dart';
 import '../models.dart';
 import 'account_mixin.dart';
@@ -57,7 +58,9 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
   Widget build(BuildContext context, WidgetRef ref) {
     final code = getCode(ref);
     if (code == null) {
-      Timer(Duration.zero, () => calculateCode(context, ref));
+      if (isDesktop) {
+        Timer(Duration.zero, () => calculateCode(context, ref));
+      }
     }
     return DialogFrame(
       child: AlertDialog(
