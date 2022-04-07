@@ -142,7 +142,7 @@ class _UnlockedView extends ConsumerWidget {
             },
           ),
           MenuAction(
-            text: 'Delete all data',
+            text: 'Reset OATH',
             icon: const Icon(Icons.delete_outline),
             action: (context) {
               showDialog(

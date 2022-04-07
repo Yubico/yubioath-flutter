@@ -70,7 +70,7 @@ class FidoLockedPage extends ConsumerWidget {
             },
           ),
           MenuAction(
-            text: 'Delete all data',
+            text: 'Reset FIDO',
             icon: const Icon(Icons.delete_outline),
             action: (context) {
               showDialog(

@@ -71,10 +71,10 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
           children: [
             Text(subtitle ?? ''),
             const SizedBox(height: 8.0),
-            Center(child: buildCodeView(ref, big: true)),
+            Center(child: FittedBox(child: buildCodeView(ref, big: true))),
           ],
         ),
-        actions: _buildActions(context, ref),
+        actions: [FittedBox(child: Row(children: _buildActions(context, ref)))],
       ),
     );
   }
