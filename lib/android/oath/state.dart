@@ -41,7 +41,8 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<void> reset() async {
     try {
       await _api.reset();
-      setData(state.value!.copyWith(locked: false, remembered: false));
+      setData(state.value!
+          .copyWith(locked: false, remembered: false, hasKey: false));
       _ref.read(androidCredentialsProvider.notifier).reset();
     } catch (e) {
       _log.config('Calling reset failed with exception: $e');
