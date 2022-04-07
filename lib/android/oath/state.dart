@@ -177,9 +177,24 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         await _api.addAccount(credentialUri.toString(), requireTouch);
 
     var result = jsonDecode(resultString);
-    final pair = OathPair(OathCredential.fromJson(result['credential']),
-        result['code'] != null ? OathCode.fromJson(result['code']) : null);
-    refresh();
+    final newCredential = OathCredential.fromJson(result['credential']);
+    final newCode =
+        result['code'] != null ? OathCode.fromJson(result['code']) : null;
+    final pair = OathPair(newCredential, newCode);
+
+    if (mounted) {
+      final newState = state!.toList();
+
+      // this should not happen when adding a new credential
+      // but if we
+      final index = newState.indexWhere((e) => e.credential == newCredential);
+      if (index > 0) {
+        newState.removeAt(index);
+      }
+
+      newState.add(pair);
+      state = newState;
+    }
 
     return pair.credential;
   }

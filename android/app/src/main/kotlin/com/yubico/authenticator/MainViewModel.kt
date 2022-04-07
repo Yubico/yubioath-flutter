@@ -272,7 +272,7 @@ class MainViewModel : ViewModel() {
                             .toJson(session.deviceId)
                             .toString()
 
-                        result.success(jsonResult)
+                        returnSuccess(result, jsonResult)
                     }
                 }
             } catch (cause: Throwable) {
