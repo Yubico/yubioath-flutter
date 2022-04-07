@@ -185,13 +185,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     if (mounted) {
       final newState = state!.toList();
 
-      // this should not happen when adding a new credential
-      // but if we
-      final index = newState.indexWhere((e) => e.credential == newCredential);
-      if (index > 0) {
-        newState.removeAt(index);
-      }
-
+      /// remove any duplicates to our new credential
+      newState.removeWhere((e) => e.credential == newCredential);
       newState.add(pair);
       state = newState;
     }
