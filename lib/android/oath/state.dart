@@ -55,7 +55,10 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
 
       if (unlocked) {
         _log.config('applet unlocked');
-        setData(state.value!.copyWith(locked: false));
+        setData(state.value!.copyWith(
+          locked: false,
+          remembered: remembered,
+        ));
       }
       return Pair(unlocked, remembered);
     } on PlatformException catch (e) {
@@ -68,6 +71,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<bool> setPassword(String? current, String password) async {
     try {
       await _api.setPassword(current, password);
+      setData(state.value!.copyWith(hasKey: true));
       return true;
     } on PlatformException catch (e) {
       _log.config('Calling set password failed with exception: $e');
@@ -79,6 +83,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<bool> unsetPassword(String current) async {
     try {
       await _api.unsetPassword(current);
+      setData(state.value!.copyWith(hasKey: false, locked: false));
       return true;
     } on PlatformException catch (e) {
       _log.config('Calling unset password failed with exception: $e');
@@ -90,6 +95,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<void> forgetPassword() async {
     try {
       await _api.forgetPassword();
+      setData(state.value!.copyWith(remembered: false));
     } on PlatformException catch (e) {
       _log.config('Calling forgetPassword failed with exception: $e');
     }
