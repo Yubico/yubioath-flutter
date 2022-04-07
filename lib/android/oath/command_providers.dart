@@ -42,4 +42,8 @@ class _CredentialsProvider extends StateNotifier<List<OathPair>> {
 
     state = pairs;
   }
+
+  void reset() {
+    state = [];
+  }
 }

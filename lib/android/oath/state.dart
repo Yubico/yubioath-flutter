@@ -24,12 +24,14 @@ final oathApiProvider = StateProvider((_) => OathApi());
 final androidOathStateProvider = StateNotifierProvider.autoDispose
     .family<OathStateNotifier, AsyncValue<OathState>, DevicePath>(
         (ref, devicePath) => _AndroidOathStateNotifier(
-            ref.watch(androidStateProvider), ref.watch(oathApiProvider)));
+            ref.watch(androidStateProvider), ref.watch(oathApiProvider), ref));
 
 class _AndroidOathStateNotifier extends OathStateNotifier {
   final OathApi _api;
+  final Ref _ref;
 
-  _AndroidOathStateNotifier(OathState? newState, this._api) : super() {
+  _AndroidOathStateNotifier(OathState? newState, this._api, this._ref)
+      : super() {
     if (newState != null) {
       setData(newState);
     }
@@ -39,6 +41,8 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<void> reset() async {
     try {
       await _api.reset();
+      setData(state.value!.copyWith(locked: false, remembered: false));
+      _ref.read(androidCredentialsProvider.notifier).reset();
     } catch (e) {
       _log.config('Calling reset failed with exception: $e');
     }

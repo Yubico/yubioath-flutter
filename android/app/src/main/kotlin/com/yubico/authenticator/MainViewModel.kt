@@ -453,6 +453,7 @@ class MainViewModel : ViewModel() {
                 useOathSession("Reset YubiKey", true) {
                     // note, it is ok to reset locked session
                     it.reset()
+                    _keyManager.removeKey(it.deviceId)
                     returnSuccess(result)
                 }
             } catch (e: Throwable) {
