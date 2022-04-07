@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../api/impl.dart';
 import '../../app/navigation_service.dart';
+import '../api/impl.dart';
 
 class FDialogApiImpl extends FDialogApi {
   static _TapRequestDialogState? dialogState;
@@ -47,7 +47,7 @@ class _TapRequestDialogState extends ConsumerState<TapRequestDialog> {
   String _resultMessage = '';
 
   /// mutable icon in the dialog, changes based on the operation result
-  IconData _icon = Icons.nfc;
+  IconData _icon = Icons.wifi;
 
   bool _canPop = true;
   bool _userCancelled = false;

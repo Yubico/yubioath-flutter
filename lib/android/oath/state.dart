@@ -24,12 +24,14 @@ final oathApiProvider = StateProvider((_) => OathApi());
 final androidOathStateProvider = StateNotifierProvider.autoDispose
     .family<OathStateNotifier, AsyncValue<OathState>, DevicePath>(
         (ref, devicePath) => _AndroidOathStateNotifier(
-            ref.watch(androidStateProvider), ref.watch(oathApiProvider)));
+            ref.watch(androidStateProvider), ref.watch(oathApiProvider), ref));
 
 class _AndroidOathStateNotifier extends OathStateNotifier {
   final OathApi _api;
+  final Ref _ref;
 
-  _AndroidOathStateNotifier(OathState? newState, this._api) : super() {
+  _AndroidOathStateNotifier(OathState? newState, this._api, this._ref)
+      : super() {
     if (newState != null) {
       setData(newState);
     }
@@ -39,6 +41,8 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<void> reset() async {
     try {
       await _api.reset();
+      setData(state.value!.copyWith(locked: false, remembered: false));
+      _ref.read(androidCredentialsProvider.notifier).reset();
     } catch (e) {
       _log.config('Calling reset failed with exception: $e');
     }
@@ -55,7 +59,10 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
 
       if (unlocked) {
         _log.config('applet unlocked');
-        setData(state.value!.copyWith(locked: false));
+        setData(state.value!.copyWith(
+          locked: false,
+          remembered: remembered,
+        ));
       }
       return Pair(unlocked, remembered);
     } on PlatformException catch (e) {
@@ -68,6 +75,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<bool> setPassword(String? current, String password) async {
     try {
       await _api.setPassword(current, password);
+      setData(state.value!.copyWith(hasKey: true));
       return true;
     } on PlatformException catch (e) {
       _log.config('Calling set password failed with exception: $e');
@@ -79,6 +87,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<bool> unsetPassword(String current) async {
     try {
       await _api.unsetPassword(current);
+      setData(state.value!.copyWith(hasKey: false, locked: false));
       return true;
     } on PlatformException catch (e) {
       _log.config('Calling unset password failed with exception: $e');
@@ -90,6 +99,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<void> forgetPassword() async {
     try {
       await _api.forgetPassword();
+      setData(state.value!.copyWith(remembered: false));
     } on PlatformException catch (e) {
       _log.config('Calling forgetPassword failed with exception: $e');
     }
@@ -167,9 +177,19 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         await _api.addAccount(credentialUri.toString(), requireTouch);
 
     var result = jsonDecode(resultString);
-    final pair = OathPair(OathCredential.fromJson(result['credential']),
-        result['code'] != null ? OathCode.fromJson(result['code']) : null);
-    refresh();
+    final newCredential = OathCredential.fromJson(result['credential']);
+    final newCode =
+        result['code'] != null ? OathCode.fromJson(result['code']) : null;
+    final pair = OathPair(newCredential, newCode);
+
+    if (mounted) {
+      final newState = state!.toList();
+
+      /// remove any duplicates to our new credential
+      newState.removeWhere((e) => e.credential == newCredential);
+      newState.add(pair);
+      state = newState;
+    }
 
     return pair.credential;
   }

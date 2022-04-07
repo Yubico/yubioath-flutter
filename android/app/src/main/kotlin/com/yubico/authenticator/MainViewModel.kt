@@ -17,9 +17,7 @@ import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.oath.*
 import com.yubico.yubikit.support.DeviceUtil
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.net.URI
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -151,11 +149,6 @@ class MainViewModel : ViewModel() {
         withContext(Dispatchers.IO) {
             pendingYubiKeyAction.value?.let {
                 _pendingYubiKeyAction.postValue(null)
-                if (!_isUsbKey) {
-                    withContext(Dispatchers.Main) {
-                        requestHideDialog()
-                    }
-                }
                 it.action.invoke(result)
             }
         }
@@ -214,10 +207,6 @@ class MainViewModel : ViewModel() {
     private fun requestShowDialog(message: String) =
         _fDialogApi.showDialogApi(message) { }
 
-    private fun requestHideDialog() {
-        _fDialogApi.closeDialogApi { }
-    }
-
     private fun <T> withUnlockedSession(session: OathSession, block: (OathSession) -> T): T {
         if (!tryToUnlockOathSession(session)) {
             throw Exception("Session is locked")
@@ -256,7 +245,7 @@ class MainViewModel : ViewModel() {
                 withUnlockedSession(session) {
                     val credential = getOathCredential(session, credentialId)
                     session.deleteCredential(credential)
-                    result.success(null)
+                    returnSuccess(result)
                 }
             }
         }
@@ -283,11 +272,11 @@ class MainViewModel : ViewModel() {
                             .toJson(session.deviceId)
                             .toString()
 
-                        result.success(jsonResult)
+                        returnSuccess(result, jsonResult)
                     }
                 }
             } catch (cause: Throwable) {
-                result.error(cause)
+                returnError(result, cause)
             }
         }
     }
@@ -310,11 +299,11 @@ class MainViewModel : ViewModel() {
                                 .toJson(session.deviceId)
                                 .toString()
 
-                        result.success(jsonResult)
+                        returnSuccess(result, jsonResult)
                     }
                 }
             } catch (cause: Throwable) {
-                result.error(cause)
+                returnError(result, cause)
             }
         }
     }
@@ -336,9 +325,10 @@ class MainViewModel : ViewModel() {
                     session.setAccessKey(accessKey)
                     _keyManager.addKey(session.deviceId, accessKey, false)
                     Logger.d("Successfully set password")
+                    returnSuccess(result)
                 }
             } catch (cause: Throwable) {
-                result.error(cause)
+                returnError(result, cause)
             }
         }
     }
@@ -355,14 +345,14 @@ class MainViewModel : ViewModel() {
                             session.deleteAccessKey()
                             _keyManager.removeKey(session.deviceId)
                             Logger.d("Successfully unset password")
-                            result.success(null)
+                            returnSuccess(result)
                             return@useOathSession
                         }
                     }
-                    result.error(Exception("Unset password failed"))
+                    returnError(result, Exception("Unset password failed"))
                 }
             } catch (cause: Throwable) {
-                result.error(cause)
+                returnError(result, cause)
             }
         }
     }
@@ -390,11 +380,11 @@ class MainViewModel : ViewModel() {
                         val resultJson = calculateOathCodes(session)
                             .toJson(session.deviceId)
                             .toString()
-                        result.success(resultJson)
+                        returnSuccess(result, resultJson)
                     }
                 }
             } catch (cause: Throwable) {
-                result.error(cause)
+                returnError(result, cause)
             }
         }
     }
@@ -411,11 +401,11 @@ class MainViewModel : ViewModel() {
                             .toJson()
                             .toString()
 
-                        result.success(resultJson)
+                        returnSuccess(result, resultJson)
                     }
                 }
             } catch (cause: Throwable) {
-                result.error(cause)
+                returnError(result, cause)
             }
         }
     }
@@ -442,7 +432,7 @@ class MainViewModel : ViewModel() {
                             .toJson(it.deviceId)
                             .toString()
                     }
-                    result.success(response)
+                    returnSuccess(result, response)
                 }
 
                 codes?.let {
@@ -452,7 +442,7 @@ class MainViewModel : ViewModel() {
                 }
 
             } catch (cause: Throwable) {
-                result.error(cause)
+                returnError(result, cause)
             }
         }
     }
@@ -463,10 +453,11 @@ class MainViewModel : ViewModel() {
                 useOathSession("Reset YubiKey", true) {
                     // note, it is ok to reset locked session
                     it.reset()
-                    result.success(null)
+                    _keyManager.removeKey(it.deviceId)
+                    returnSuccess(result)
                 }
             } catch (e: Throwable) {
-                result.error(e)
+                returnError(result, e)
             }
         }
     }
@@ -528,7 +519,40 @@ class MainViewModel : ViewModel() {
     fun forgetPassword(result: Pigeon.Result<Void>) {
         _keyManager.clearAll()
         Logger.d("Cleared all keys.")
-        result.success(null)
+        returnSuccess(result)
+    }
+
+
+    /// for nfc connection waits for the dialog to be closed and then returns success data
+    /// for usb connection returns success data directly
+    private fun <T> returnSuccess(result: Pigeon.Result<T>, data: T? = null) {
+        viewModelScope.launch(Dispatchers.Main) {
+            if (!_isUsbKey) {
+                _fDialogApi.closeDialogApi {
+                    viewModelScope.launch(Dispatchers.Main) {
+                        result.success(data)
+                    }
+                }
+            } else {
+                result.success(data)
+            }
+        }
+    }
+
+    /// for nfc connection waits for the dialog to be closed and then returns error
+    /// for usb connection returns error directly
+    private fun <T> returnError(result: Pigeon.Result<T>, error: Throwable) {
+        viewModelScope.launch(Dispatchers.Main) {
+            if (!_isUsbKey) {
+                _fDialogApi.closeDialogApi {
+                    viewModelScope.launch(Dispatchers.Main) {
+                        result.error(error)
+                    }
+                }
+            } else {
+                result.error(error)
+            }
+        }
     }
 
 }
