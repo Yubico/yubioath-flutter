@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/android/oath/command_providers.dart';
 
 import '../app/models.dart';
 import '../core/models.dart';
@@ -11,17 +12,22 @@ final _log = Logger('yubikeyDataCommandProvider');
 
 final androidYubikeyProvider =
     StateNotifierProvider<_YubikeyProvider, YubiKeyData?>((ref) {
-  return _YubikeyProvider(null);
+  return _YubikeyProvider(null, ref);
 });
 
 class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
-  _YubikeyProvider(YubiKeyData? yubiKeyData) : super(yubiKeyData);
+  final Ref _ref;
+  _YubikeyProvider(YubiKeyData? yubiKeyData, this._ref) : super(yubiKeyData);
 
   void setFromString(String input) {
     try {
       if (input.isEmpty) {
         _log.config('Yubikey was detached.');
         state = null;
+
+        // reset other providers when YubiKey is removed
+        _ref.read(androidStateProvider.notifier).reset();
+        _ref.read(androidCredentialsProvider.notifier).reset();
         return;
       }
 

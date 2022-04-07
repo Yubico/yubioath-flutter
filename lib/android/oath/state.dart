@@ -128,7 +128,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   final bool _locked;
   Timer? _timer;
 
-  _AndroidCredentialListNotifier(this._api, List<OathPair> pairs, this._locked)
+  _AndroidCredentialListNotifier(this._api, List<OathPair>? pairs, this._locked)
       : super() {
     state = pairs;
     _scheduleRefresh();
