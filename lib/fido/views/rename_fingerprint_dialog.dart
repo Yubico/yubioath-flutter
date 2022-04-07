@@ -29,6 +29,14 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
     _label = widget.fingerprint.name ?? '';
   }
 
+  _submit() async {
+    final renamed = await ref
+        .read(fingerprintProvider(widget.devicePath).notifier)
+        .renameFingerprint(widget.fingerprint, _label);
+    Navigator.of(context).pop(renamed);
+    showMessage(context, 'Fingerprint renamed');
+  }
+
   @override
   Widget build(BuildContext context) {
     // If current device changes, we need to pop back to the main Page.
@@ -36,14 +44,12 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
       Navigator.of(context).pop();
     });
 
-    final fingerprint = widget.fingerprint;
-
     return ResponsiveDialog(
       title: const Text('Rename fingerprint'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Rename ${fingerprint.label}?'),
+          Text('Rename ${widget.fingerprint.label}?'),
           const Text('This will change the label of the fingerprint.'),
           TextFormField(
             initialValue: _label,
@@ -57,6 +63,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
                 _label = value.trim();
               });
             },
+            onFieldSubmitted: (_) {
+              if (_label.isNotEmpty) {
+                _submit();
+              }
+            },
           ),
         ]
             .map((e) => Padding(
@@ -67,15 +78,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _label.isNotEmpty
-              ? () async {
-                  final renamed = await ref
-                      .read(fingerprintProvider(widget.devicePath).notifier)
-                      .renameFingerprint(fingerprint, _label);
-                  Navigator.of(context).pop(renamed);
-                  showMessage(context, 'Fingerprint renamed');
-                }
-              : null,
+          onPressed: _label.isNotEmpty ? _submit : null,
           child: const Text('Save'),
         ),
       ],
