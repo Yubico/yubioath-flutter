@@ -26,8 +26,8 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
         state = null;
 
         // reset other providers when YubiKey is removed
-        _ref.read(androidStateProvider.notifier).reset();
-        _ref.read(androidCredentialsProvider.notifier).reset();
+        _ref.refresh(androidStateProvider);
+        _ref.refresh(androidCredentialsProvider);
         return;
       }
 

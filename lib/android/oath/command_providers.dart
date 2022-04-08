@@ -20,10 +20,6 @@ class _StateProvider extends StateNotifier<OathState?> {
         locked: resultJson['locked'],
         keystore: KeystoreState.unknown);
   }
-
-  void reset() {
-    state = null;
-  }
 }
 
 final androidCredentialsProvider =
@@ -45,9 +41,5 @@ class _CredentialsProvider extends StateNotifier<List<OathPair>?> {
     }
 
     state = pairs;
-  }
-
-  void reset() {
-    state = null;
   }
 }
