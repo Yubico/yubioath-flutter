@@ -8,10 +8,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/android/api/impl.dart';
 import 'package:yubico_authenticator/app/models.dart';
+import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/oath/state.dart';
 
-import '../../app/state.dart';
 import '../../oath/models.dart';
 import 'command_providers.dart';
 
@@ -41,8 +41,9 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<void> reset() async {
     try {
       await _api.reset();
-      setData(state.value!.copyWith(locked: false, remembered: false));
-      _ref.read(androidCredentialsProvider.notifier).reset();
+      setData(state.value!
+          .copyWith(locked: false, remembered: false, hasKey: false));
+      _ref.refresh(androidStateProvider);
     } catch (e) {
       _log.config('Calling reset failed with exception: $e');
     }
@@ -110,10 +111,9 @@ final androidCredentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
     var notifier = _AndroidCredentialListNotifier(
+      ref.watch(currentDeviceProvider),
       ref.watch(oathApiProvider),
       ref.watch(androidCredentialsProvider),
-      ref.watch(oathStateProvider(devicePath)
-          .select((r) => r.whenOrNull(data: (state) => state.locked) ?? true)),
     );
     ref.listen<WindowState>(windowStateProvider, (_, windowState) {
       notifier._notifyWindowState(windowState);
@@ -123,18 +123,19 @@ final androidCredentialListProvider = StateNotifierProvider.autoDispose
 );
 
 class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
+  final DeviceNode? _currentDevice;
   final OathApi _api;
-  final bool _locked;
   Timer? _timer;
 
-  _AndroidCredentialListNotifier(this._api, List<OathPair> pairs, this._locked)
+  _AndroidCredentialListNotifier(
+      this._currentDevice, this._api, List<OathPair>? pairs)
       : super() {
     state = pairs;
     _scheduleRefresh();
   }
 
   void _notifyWindowState(WindowState windowState) {
-    if (_locked) return;
+    if (_currentDevice == null) return;
     if (windowState.active) {
       _scheduleRefresh();
     } else {
@@ -238,7 +239,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   }
 
   refresh() async {
-    if (_locked) return;
+    if (_currentDevice == null) return;
     _log.config('refreshing credentials...');
 
     final pairs = [];
@@ -274,7 +275,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
 
   _scheduleRefresh() {
     _timer?.cancel();
-    if (_locked) return;
+    if (_currentDevice == null) return;
     if (state == null) {
       refresh();
     } else if (mounted) {

@@ -23,12 +23,12 @@ class _StateProvider extends StateNotifier<OathState?> {
 }
 
 final androidCredentialsProvider =
-    StateNotifierProvider<_CredentialsProvider, List<OathPair>>((ref) {
-  return _CredentialsProvider([]);
+    StateNotifierProvider<_CredentialsProvider, List<OathPair>?>((ref) {
+  return _CredentialsProvider(null);
 });
 
-class _CredentialsProvider extends StateNotifier<List<OathPair>> {
-  _CredentialsProvider(List<OathPair> credentials) : super(credentials);
+class _CredentialsProvider extends StateNotifier<List<OathPair>?> {
+  _CredentialsProvider(List<OathPair>? credentials) : super(credentials);
 
   void setFromString(String input) {
     var result = jsonDecode(input);
@@ -41,9 +41,5 @@ class _CredentialsProvider extends StateNotifier<List<OathPair>> {
     }
 
     state = pairs;
-  }
-
-  void reset() {
-    state = [];
   }
 }

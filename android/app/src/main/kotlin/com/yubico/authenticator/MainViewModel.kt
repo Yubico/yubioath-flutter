@@ -18,7 +18,9 @@ import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.oath.*
 import com.yubico.yubikit.support.DeviceUtil
 import kotlinx.coroutines.*
+import java.lang.IllegalStateException
 import java.net.URI
+import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -37,6 +39,8 @@ enum class OperationContext(val value: Long) {
 }
 
 class MainViewModel : ViewModel() {
+
+    private val _dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     private val _handleYubiKey = MutableLiveData(true)
     val handleYubiKey: LiveData<Boolean> = _handleYubiKey
@@ -146,7 +150,7 @@ class MainViewModel : ViewModel() {
     private val pendingYubiKeyAction: LiveData<YubiKeyAction?> = _pendingYubiKeyAction
 
     private suspend fun provideYubiKey(result: Result<YubiKeyDevice, Exception>) =
-        withContext(Dispatchers.IO) {
+        withContext(_dispatcher) {
             pendingYubiKeyAction.value?.let {
                 _pendingYubiKeyAction.postValue(null)
                 it.action.invoke(result)
@@ -157,29 +161,30 @@ class MainViewModel : ViewModel() {
 
         _isUsbKey = device is UsbYubiKeyDevice
 
-        withContext(Dispatchers.IO) {
-            if (pendingYubiKeyAction.value != null) {
-                provideYubiKey(Result.success(device))
-            } else {
-                withContext(Dispatchers.Main) {
-                    when (_operationContext) {
-                        OperationContext.Oath -> {
-                            try {
-                                sendDeviceInfo(device)
-                            } catch (cause: Throwable) {
-                                Logger.e("Failed to send device info", cause)
-                            }
-                            sendOathInfo(device)
-                            sendOathCodes(device)
-                        }
-                        OperationContext.Yubikey -> {
-                            sendDeviceInfo(device)
-                        }
+        try {
 
-                        else -> {}
+            withContext(_dispatcher) {
+                if (pendingYubiKeyAction.value != null) {
+                    provideYubiKey(Result.success(device))
+                } else {
+                    withContext(Dispatchers.Main) {
+                        when (_operationContext) {
+                            OperationContext.Oath -> {
+                                sendDeviceInfo(device)
+                                sendOathInfo(device)
+                                sendOathCodes(device)
+                            }
+                            OperationContext.Yubikey -> {
+                                sendDeviceInfo(device)
+                            }
+
+                            else -> {}
+                        }
                     }
                 }
             }
+        } catch (illegalStateException: IllegalStateException) {
+            // ignored
         }
     }
 
@@ -187,6 +192,7 @@ class MainViewModel : ViewModel() {
         if (_isUsbKey) {
             // clear keys from memory
             _memoryKeyProvider.clearAll()
+            _pendingYubiKeyAction.postValue(null)
             _fManagementApi.updateDeviceInfo("") {}
         }
     }
@@ -240,7 +246,7 @@ class MainViewModel : ViewModel() {
 
 
     fun deleteAccount(credentialId: String, result: Pigeon.Result<Void>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(_dispatcher) {
             useOathSession("Delete account", true) { session ->
                 withUnlockedSession(session) {
                     val credential = getOathCredential(session, credentialId)
@@ -253,7 +259,7 @@ class MainViewModel : ViewModel() {
 
     fun addAccount(otpUri: String, requireTouch: Boolean, result: Pigeon.Result<String>) {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(_dispatcher) {
             try {
                 useOathSession("Add account", true) { session ->
                     withUnlockedSession(session) {
@@ -288,7 +294,7 @@ class MainViewModel : ViewModel() {
         result: Pigeon.Result<String>
     ) {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(_dispatcher) {
             try {
                 useOathSession("Rename", true) { session ->
                     withUnlockedSession(session) {
@@ -309,7 +315,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun setOathPassword(current: String?, password: String, result: Pigeon.Result<Void>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(_dispatcher) {
             try {
                 useOathSession("Set password", true) { session ->
                     if (session.isAccessKeySet) {
@@ -336,7 +342,7 @@ class MainViewModel : ViewModel() {
 
     fun unsetOathPassword(currentPassword: String, result: Pigeon.Result<Void>) {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(_dispatcher) {
             try {
                 useOathSession("Unset password", true) { session ->
                     if (session.isAccessKeySet) {
@@ -369,7 +375,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun refreshOathCodes(result: Pigeon.Result<String>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(_dispatcher) {
             try {
                 if (!_isUsbKey) {
                     throw Exception("Cannot refresh for nfc key")
@@ -390,7 +396,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun calculate(credentialId: String, result: Pigeon.Result<String>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(_dispatcher) {
             try {
                 useOathSession("Calculate", true) {
                     withUnlockedSession(it) { session ->
@@ -416,7 +422,7 @@ class MainViewModel : ViewModel() {
         result: Pigeon.Result<Pigeon.UnlockResponse>
     ) {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(_dispatcher) {
             try {
                 var codes: String? = null
                 useOathSession("Unlocking", true) {
@@ -448,7 +454,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun resetOathSession(result: Pigeon.Result<Void>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(_dispatcher) {
             try {
                 useOathSession("Reset YubiKey", true) {
                     // note, it is ok to reset locked session
@@ -485,7 +491,7 @@ class MainViewModel : ViewModel() {
         })
 
         yubiKeyDevice.value?.let {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(_dispatcher) {
                 provideYubiKey(Result.success(it))
             }
         }
