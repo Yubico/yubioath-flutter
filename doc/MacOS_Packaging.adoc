@@ -19,23 +19,23 @@ The following commands can be done to re-sign the files using the Yubico
 signing key:
 
   # Sign the main binary, with the entitlements:
-  codesign -f --timestamp --options runtime --entitlements macos/ykman.entitlements --sign 'Application' build/macos/ykman/ykman
+  codesign -f --timestamp --options runtime --entitlements macos/ykman.entitlements --sign 'Application' build/macos/ykman-rpc/ykman-rpc
 
   # Sign the dylib and so files, without entitlements:
-  codesign -f --timestamp --options runtime --sign 'Application' $(find build/macos/ykman/ -name "*.dylib" -o -name "*.so")
+  codesign -f --timestamp --options runtime --sign 'Application' $(find build/macos/ykman-rpc/ -name "*.dylib" -o -name "*.so")
 
   # Sign the Python binary (if it exists), without entitlements:
-  codesign -f --timestamp --options runtime --sign 'Application' build/macos/ykman/Python
+  codesign -f --timestamp --options runtime --sign 'Application' build/macos/ykman-rpc/Python
 
 ==== Signing the GUI
 After signing the CLI, make a release build of the GUI and then re-sign it with
 the Yubico key:
 
-  codesign --timestamp --options runtime --sign 'Application' --entitlements macos/Runner/Release.entitlements --deep build/macos/Build/Products/Release/flutter_rpc_test.app
+  codesign --timestamp --options runtime --sign 'Application' --entitlements macos/Runner/Release.entitlements --deep "build/macos/Build/Products/Release/Yubico Authenticator.app"
 
 The app should now be properly signed, and needs to be Notarized. Create a zip file with the .app, and:
 
-  xcrun altool -t osx -f app.zip --primary-bundle-id com.example.flutterRpcTest --notarize-app -u $APPLE_ID -p $PASSWORD
+  xcrun altool -t osx -f app.zip --primary-bundle-id com.yubico.authenticator --notarize-app -u $APPLE_ID -p $PASSWORD
 
 This will return a $APP_GUID.
 
@@ -45,19 +45,29 @@ To check if notarization is complete:
 
 When the notarization is complete, and successful, the original .app bundle (not the .zip archive) needs to be stapled.
 
-  xcrun stapler staple -v build/macos/Build/Products/Release/flutter_rpc_test.app
+  xcrun stapler staple -v "build/macos/Build/Products/Release/Yubico Authenticator.app"
 
 Create the installer with productbuild.
 
-  productbuild --sign 'Installer' --component build/macos/Build/Products/Release/flutter_rpc_test.app /Applications/ output-file-xyz.pkg
+  productbuild --sign 'Installer' --component "build/macos/Build/Products/Release/Yubico Authenticator.app" /Applications/ output-file-xyz.pkg
 
 Then notarize and staple (when ready) the .pkg as well:
 
-  xcrun altool -t osx -f <pkg file>.pkg --primary-bundle-id com.example.flutterRpcTest --notarize-app -u $APPLE_ID -p $PASSWORD
+  xcrun altool -t osx -f output-file-xyz.pkg --primary-bundle-id com.yubico.authenticator --notarize-app -u $APPLE_ID -p $PASSWORD
   xcrun altool --notarization-info $APP_GUID -u $APPLE_ID -p $PASSWORD
   xcrun stapler staple -v <pkg file>
 
 Finally, we're done! The .pkg is ready for distribution.
+
+
+==== Creating a dmg
+Repeat all the steps from above until (and including) notarization of the .zip.
+Afterwards create a directory containing the .app and the following shortcut:
+
+  ln -s /Applications/ Applications
+
+Open Disk Utility. Press File > New image > Image from Folder.
+Choose the folder you just created.
 
 
 === Signing for the App Store
