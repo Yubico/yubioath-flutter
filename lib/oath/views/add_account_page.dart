@@ -1,5 +1,5 @@
-import 'dart:math';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import '../../app/message.dart';
-import '../../app/state.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
@@ -145,6 +145,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               style: Theme.of(context).textTheme.headline6,
             ),
             TextField(
+              key: const Key('issuer'),
               controller: _issuerController,
               autofocus: true,
               enabled: issuerRemaining > 0,
@@ -161,6 +162,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               },
             ),
             TextField(
+              key: const Key('name'),
               controller: _accountController,
               maxLength: max(nameRemaining, 1),
               decoration: const InputDecoration(
@@ -175,6 +177,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               },
             ),
             TextField(
+              key: const Key('secret'),
               controller: _secretController,
               obscureText: _isObscure,
               inputFormatters: <TextInputFormatter>[
@@ -375,7 +378,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   }
                 }
               : null,
-          child: const Text('Save'),
+          child: const Text('Save', key: Key('save_btn')),
         ),
       ],
     );

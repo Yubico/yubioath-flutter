@@ -49,6 +49,8 @@ dependencies:
   desktop_drop: ^0.3.3
 
 dev_dependencies:
+  integration_test:
+    sdk: flutter
   flutter_test:
     sdk: flutter
 
