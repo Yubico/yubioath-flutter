@@ -22,6 +22,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
 
+    - name: Install Rosetta
+      run: |
+        /usr/sbin/softwareupdate --install-rosetta --agree-to-license
+
     - uses: subosito/flutter-action@v1
       with:
         channel: 'beta'
