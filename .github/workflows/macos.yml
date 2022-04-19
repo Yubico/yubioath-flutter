@@ -25,22 +25,19 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         channel: 'beta'
-        cache: true
-        cache-key: flutter
-        cache-path: ${{ runner.tool_cache }}/flutter
-    - run: flutter config --enable-macos-desktop
-    - run: flutter --version
+    - run: arch -x86_64 flutter config --enable-macos-desktop
+    - run: arch -x86_64 flutter --version
 
     - name: Run tests
       run: |
-        flutter test
-        flutter analyze
+        arch -x86_64 flutter test
+        arch -x86_64 flutter analyze
 
     - name: Install ykman
       run: ./build-ykman.sh
 
     - name: Build the app
-      run: flutter build macos
+      run: arch -x86_64 flutter build macos
 
     - name: Check generated files
       run: git diff --exit-code
