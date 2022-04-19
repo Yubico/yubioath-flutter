@@ -25,6 +25,9 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         channel: 'beta'
+        cache: true
+        cache-key: flutter
+        cache-path: ${{ runner.tool_cache }}/flutter
     - run: flutter config --enable-macos-desktop
     - run: flutter --version
 
