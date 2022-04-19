@@ -22,22 +22,23 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
 
-    - uses: subosito/flutter-action@v2
+    - uses: subosito/flutter-action@SiongSng:fix-macos-arch
       with:
         channel: 'beta'
-    - run: arch -x86_64 flutter config --enable-macos-desktop
-    - run: arch -x86_64 flutter --version
+        architecture: x64
+    - run: flutter --version
+    - run: flutter config --enable-macos-desktop
 
     - name: Run tests
       run: |
-        arch -x86_64 flutter test
-        arch -x86_64 flutter analyze
+        flutter test
+        flutter analyze
 
     - name: Install ykman
       run: ./build-ykman.sh
 
     - name: Build the app
-      run: arch -x86_64 flutter build macos
+      run: flutter build macos
 
     - name: Check generated files
       run: git diff --exit-code
