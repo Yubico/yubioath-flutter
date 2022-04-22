@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:qrscanner_mlkit/qrscanner_mlkit_view.dart';
 
 import '../../app/navigation_service.dart';
 import '../../oath/models.dart';
@@ -29,13 +29,11 @@ class OverlayClipper extends CustomClipper<Path> {
 }
 
 class MobileScannerWrapper extends StatelessWidget {
-  final MobileScannerController controller;
-  final Function(Barcode barcode, MobileScannerArguments? args)? onDetect;
+  final Function(ScannedData) onDetect;
   final _ScanStatus status;
 
   const MobileScannerWrapper({
     Key? key,
-    required this.controller,
     required this.onDetect,
     required this.status,
   }) : super(key: key);
@@ -55,12 +53,9 @@ class MobileScannerWrapper extends StatelessWidget {
         height: size.width - 38);
 
     return Stack(children: [
-      MobileScanner(
-          controller: controller,
-          allowDuplicates: true,
-          onDetect: (barcode, args) {
-            onDetect?.call(barcode, args);
-          }),
+      QrScannerMLKitView(onDetect: (scannedData) {
+        onDetect.call(scannedData);
+      }),
       ClipPath(
           clipper: OverlayClipper(),
           child: Opacity(
@@ -108,9 +103,6 @@ class _QrScannerViewState extends State<QrScannerView> {
   CredentialData? _credentialData;
   _ScanStatus _status = _ScanStatus.looking;
 
-  final MobileScannerController _controller =
-      MobileScannerController(facing: CameraFacing.back, torchEnabled: false);
-
   void setError() {
     _credentialData = null;
     _scannedString = null;
@@ -129,13 +121,14 @@ class _QrScannerViewState extends State<QrScannerView> {
     });
   }
 
-  void handleResult(String? code, MobileScannerArguments? args) {
+  void handleResult(ScannedData scannedData) {
     if (_status != _ScanStatus.looking) {
       // on success and error ignore reported codes
       return;
     }
     setState(() {
-      if (code != null) {
+      if (scannedData.data.isNotEmpty) {
+        var code = scannedData.data;
         try {
           var parsedCredential = CredentialData.fromUri(Uri.parse(code));
           _credentialData = parsedCredential;
@@ -175,10 +168,8 @@ class _QrScannerViewState extends State<QrScannerView> {
             ),
             body: Stack(children: [
               MobileScannerWrapper(
-                controller: _controller,
                 status: _status,
-                onDetect: (barcode, args) =>
-                    handleResult(barcode.rawValue, args),
+                onDetect: (scannedData) => handleResult(scannedData),
               ),
               Padding(
                   padding:

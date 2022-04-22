@@ -42,10 +42,8 @@ dependencies:
   json_annotation: ^4.4.0
   freezed_annotation: ^1.0.0
   window_manager: ^0.2.0
-  mobile_scanner:
-    git:
-      url: https://github.com/AdamVe/mobile_scanner.git
-      ref: just-android
+  qrscanner_mlkit:
+    path: ./android/flutter_plugins/qrscanner_mlkit
   desktop_drop: ^0.3.3
 
 dev_dependencies:

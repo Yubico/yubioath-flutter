@@ -352,15 +352,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
-  mobile_scanner:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: just-android
-      resolved-ref: b5473703e1e9c845dfedf129d394d0535367c9e6
-      url: "https://github.com/AdamVe/mobile_scanner.git"
-    source: git
-    version: "1.0.0"
   package_config:
     dependency: transitive
     description:
@@ -445,6 +436,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  qrscanner_mlkit:
+    dependency: "direct main"
+    description:
+      path: "android/flutter_plugins/qrscanner_mlkit"
+      relative: true
+    source: path
+    version: "1.0.0"
   riverpod:
     dependency: transitive
     description:
@@ -661,5 +659,5 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=2.17.0-0 <3.0.0"
+  dart: ">=2.17.0-266.1.beta <3.0.0"
   flutter: ">=2.8.0"
