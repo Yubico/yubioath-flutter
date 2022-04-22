@@ -5,11 +5,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Rect
-import android.opengl.Visibility
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -20,10 +20,8 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
-import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.common.InputImage
+import com.google.zxing.*
+import com.google.zxing.common.HybridBinarizer
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
@@ -32,9 +30,11 @@ import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 import org.json.JSONArray
 import org.json.JSONObject
-import org.w3c.dom.Text
+import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.Result
+
 
 class QRScannerViewFactory(
     private val binaryMessenger: BinaryMessenger,
@@ -65,6 +65,8 @@ internal class QRScannerView(
     creationParams: Map<String?, Any?>?
 ) : PlatformView {
 
+    private val uiThreadHandler = Handler(Looper.getMainLooper())
+
     companion object {
         const val TAG = "QRScannerView"
 
@@ -75,7 +77,8 @@ internal class QRScannerView(
                 Manifest.permission.CAMERA,
             ).toTypedArray()
 
-        private const val CHANNEL_NAME = "com.yubico.authenticator.flutter_plugins.qr_scanner_channel"
+        private const val CHANNEL_NAME =
+            "com.yubico.authenticator.flutter_plugins.qr_scanner_channel"
     }
 
     private fun allPermissionsGranted(activity: Activity) = PERMISSIONS_TO_REQUEST.all {
@@ -92,7 +95,8 @@ internal class QRScannerView(
         )
     }
 
-    private val qrScannerView = LayoutInflater.from(context).inflate(R.layout.qr_scanner_view, null, false)
+    private val qrScannerView =
+        LayoutInflater.from(context).inflate(R.layout.qr_scanner_view, null, false)
     private val previewView = qrScannerView.findViewById<PreviewView>(R.id.preview_view).apply {
         implementationMode = PreviewView.ImplementationMode.COMPATIBLE
     }
@@ -195,7 +199,9 @@ internal class QRScannerView(
                                         )
                                     }
                                 )
-                                methodChannel.invokeMethod("codes", codes.toString())
+                                uiThreadHandler.post {
+                                    methodChannel.invokeMethod("codes", codes.toString())
+                                }
                             }
                         }
                     })
@@ -221,36 +227,38 @@ internal class QRScannerView(
     private class BarcodeAnalyzer(private val listener: BarcodeAnalyzerListener) :
         ImageAnalysis.Analyzer {
 
-        private val barcodeScannerOptions = BarcodeScannerOptions.Builder()
-            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-            .build()
-
-        private val scanner = BarcodeScanning.getClient(barcodeScannerOptions)
+        private fun ByteBuffer.toByteArray(): ByteArray {
+            rewind()
+            val data = ByteArray(remaining())
+            get(data)
+            return data
+        }
 
         override fun analyze(imageProxy: ImageProxy) {
+            try {
+                val buffer = imageProxy.planes[0].buffer
+                val intArray = buffer.toByteArray().map { it.toInt() }.toIntArray()
 
-            @androidx.camera.core.ExperimentalGetImage
-            val mediaImage = imageProxy.image ?: return
+                val source: LuminanceSource =
+                    RGBLuminanceSource(imageProxy.width, imageProxy.height, intArray)
 
-            val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-
-            scanner.process(image)
-                .addOnFailureListener {
-                    listener.invoke(Result.failure(it))
+                val binary = BinaryBitmap(HybridBinarizer(source))
+                val reader = MultiFormatReader()
+                val result: com.google.zxing.Result = reader.decode(binary)
+                val barcode = result.text
+                Log.d(TAG, "Result text: ${result.text}")
+                Log.d(TAG, "Result points: ")
+                result.resultPoints?.map {
+                    Log.d(TAG, "[${it.x}, ${it.y}]")
                 }
-                .addOnCompleteListener {
-                    imageProxy.close()
-
-                    if (it.isSuccessful) {
-                        val result =
-                            it.result.filter { barcode -> barcode.rawValue != null && barcode.boundingBox != null }
-                                .map { barcode ->
-                                    BarcodeInfo(barcode.rawValue!!, barcode.boundingBox!!)
-                                }
-                        listener.invoke(Result.success(result))
-                    }
-                }
-
+                Log.d(TAG, "Result points: ${result.resultPoints}")
+                listener.invoke(Result.success(listOf(BarcodeInfo(barcode, Rect(0, 0, 0, 0)))))
+            } catch (_: NotFoundException) {
+                // ignored: no code was found
+            } finally {
+                // important call
+                imageProxy.close()
+            }
         }
     }
 

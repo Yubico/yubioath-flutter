@@ -1,62 +1,153 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:qrscanner_mlkit/qrscanner_mlkit.dart';
+import 'package:qrscanner_mlkit/qrscanner_mlkit_view.dart';
+
+import 'cutout_overlay.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const QRCodeScannerExampleApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-  final _qrscannerMlkitPlugin = QRScannerMLKit();
-
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion = await _qrscannerMlkitPlugin.getPlatformVersion() ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
-  }
+class QRCodeScannerExampleApp extends StatelessWidget {
+  const QRCodeScannerExampleApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+      title: 'QR Scanner Example',
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
+      ),
+      home: const AppHomePage(title: 'QR Scanner Example'),
+    );
+  }
+}
+
+class AppHomePage extends StatelessWidget {
+  const AppHomePage({Key? key, required this.title}) : super(key: key);
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const QRScannerPage()),
+                  );
+                },
+                child: const Text("Open QR Scanner")),
+          ],
         ),
       ),
     );
+  }
+}
+
+class QRScannerPage extends StatefulWidget {
+  const QRScannerPage({Key? key}) : super(key: key);
+
+  @override
+  QRScannerPageState createState() => QRScannerPageState();
+}
+
+class QRScannerPageState extends State<QRScannerPage> {
+  String? currentCode;
+
+  QRScannerPageState({Key? key}) : super();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Stack(
+      children: [
+        QrScannerMLKitView(onDetect: (result) {
+          if (currentCode == null) {
+            setState(() {
+              currentCode = result.data;
+            });
+          }
+        }),
+        const Positioned(
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: CutoutOverlay(
+              border: 150,
+            )),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Back'),
+                ),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.refresh),
+                  label: const Text("Again"),
+                  onPressed: () {
+                    setState(() {
+                      currentCode = null;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 80,
+          left: 0,
+          right: 0,
+          child: Card(
+              margin: const EdgeInsets.all(20),
+              elevation: 100,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    const Text("Found QR code:"),
+                    Text(currentCode ?? "NO CODE DETECTED"),
+                  ],
+                ),
+              )),
+        ),
+        Positioned(
+          top: 50,
+          left: 0,
+          right: 0,
+          child: Card(
+              margin: const EdgeInsets.all(20),
+              elevation: 100,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: const [
+                    Text("QR scanner example"),
+                  ],
+                ),
+              )),
+        )
+      ],
+    ));
   }
 }
