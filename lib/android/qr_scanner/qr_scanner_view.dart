@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qrscanner_mlkit/qrscanner_mlkit_view.dart';
+import 'package:qrscanner_zxing/qrscanner_zxing_view.dart';
 
 import '../../app/navigation_service.dart';
 import '../../oath/models.dart';
@@ -53,7 +53,7 @@ class MobileScannerWrapper extends StatelessWidget {
         height: size.width - 38);
 
     return Stack(children: [
-      QrScannerMLKitView(onDetect: (scannedData) {
+      QrScannerZxingView(onDetect: (scannedData) {
         onDetect.call(scannedData);
       }),
       ClipPath(

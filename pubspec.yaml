@@ -42,8 +42,8 @@ dependencies:
   json_annotation: ^4.4.0
   freezed_annotation: ^1.0.0
   window_manager: ^0.2.0
-  qrscanner_mlkit:
-    path: ./android/flutter_plugins/qrscanner_mlkit
+  qrscanner_zxing:
+    path: android/flutter_plugins/qrscanner_zxing
   desktop_drop: ^0.3.3
 
 dev_dependencies:

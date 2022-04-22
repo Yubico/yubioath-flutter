@@ -1,0 +1,25 @@
+name: qrscanner_zxing
+description: Android-only QR Scanner plugin based on zxing and CameraX API's
+version: 1.0.0
+homepage:
+
+environment:
+  sdk: ">=2.17.0-266.1.beta <3.0.0"
+  flutter: ">=2.5.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.yubico.authenticator.flutter_plugins.qrscanner_zxing
+        pluginClass: QRScannerZxingPlugin
