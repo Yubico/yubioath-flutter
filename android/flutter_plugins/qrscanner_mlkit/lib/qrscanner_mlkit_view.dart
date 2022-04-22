@@ -40,7 +40,9 @@ class QrScannerMLKitViewState extends State<QrScannerMLKitView> {
           widget.onDetect(ScannedData(rawValue, locationRect));
         }
       } catch (e) {
-        print("Exception on receive: $e");
+        if (kDebugMode) {
+          debugPrint("Exception in onDetect: $e}");
+        }
       }
     });
   }
@@ -53,10 +55,6 @@ class QrScannerMLKitViewState extends State<QrScannerMLKitView> {
 
   @override
   Widget build(BuildContext context) {
-    if (kDebugMode) {
-      print("Building QrScannerView");
-    }
-
     const String viewType = 'qrScannerNativeView';
     final Map<String, dynamic> creationParams = <String, dynamic>{};
 
