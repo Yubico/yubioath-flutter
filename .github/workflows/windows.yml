@@ -39,7 +39,7 @@ jobs:
         run: flutter build windows
 
       - name: Check generated files
-        run: git diff --exit-code
+        run: git diff -I '.*android.*flutter_plugins.*qrscanner_zxing' --exit-code
 
       - name: Move .dll files
         run: |
