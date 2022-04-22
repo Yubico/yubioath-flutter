@@ -250,7 +250,6 @@ internal class QRScannerView(
                 result.resultPoints?.map {
                     Log.d(TAG, "[${it.x}, ${it.y}]")
                 }
-                Log.d(TAG, "Result points: ${result.resultPoints}")
                 listener.invoke(Result.success(listOf(BarcodeInfo(barcode, Rect(0, 0, 0, 0)))))
             } catch (_: NotFoundException) {
                 // ignored: no code was found
