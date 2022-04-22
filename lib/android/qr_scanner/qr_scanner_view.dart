@@ -53,7 +53,7 @@ class MobileScannerWrapper extends StatelessWidget {
         height: size.width - 38);
 
     return Stack(children: [
-      QrScannerZxingView(onDetect: (scannedData) {
+      QRScannerZxingView(onDetect: (scannedData) {
         onDetect.call(scannedData);
       }),
       ClipPath(
