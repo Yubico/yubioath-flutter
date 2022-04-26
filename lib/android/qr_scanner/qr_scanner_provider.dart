@@ -12,8 +12,10 @@ class AndroidQrScanner implements QrScanner {
   Future<String> scanQr([String? _]) async {
     var code =
         await Navigator.of(NavigationService.navigatorKey.currentContext!)
-            .push(MaterialPageRoute(
-      builder: (context) => const QrScannerView(),
+            .push(PageRouteBuilder(
+      pageBuilder: (_, __, ___) => const QrScannerView(),
+      transitionDuration: const Duration(seconds: 0),
+      reverseTransitionDuration: const Duration(seconds: 0),
     ));
 
     return code;

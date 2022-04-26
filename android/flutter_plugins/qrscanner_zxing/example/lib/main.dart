@@ -40,10 +40,12 @@ class AppHomePage extends StatelessWidget {
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const QRScannerPage()),
-                  );
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (_, __, ___) => const QRScannerPage(),
+                        transitionDuration: const Duration(seconds: 0),
+                        reverseTransitionDuration: const Duration(seconds: 0),
+                      ));
                 },
                 child: const Text("Open QR Scanner")),
           ],
