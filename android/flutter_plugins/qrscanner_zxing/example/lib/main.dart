@@ -72,20 +72,27 @@ class QRScannerPageState extends State<QRScannerPage> {
     return Scaffold(
         body: Stack(
       children: [
-        QRScannerZxingView(onDetect: (result) {
-          if (currentCode == null) {
-            setState(() {
-              currentCode = result.data;
-            });
-          }
-        }),
+        Positioned(
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: QRScannerZxingView(
+                marginPct: 10,
+                onDetect: (result) {
+                  if (currentCode == null) {
+                    setState(() {
+                      currentCode = result;
+                    });
+                  }
+                })),
         const Positioned(
             top: 0,
             bottom: 0,
             left: 0,
             right: 0,
             child: CutoutOverlay(
-              border: 150,
+              marginPct: 5,
             )),
         Positioned(
           bottom: 0,

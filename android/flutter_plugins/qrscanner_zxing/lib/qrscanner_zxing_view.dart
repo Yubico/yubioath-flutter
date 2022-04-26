@@ -6,17 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
-class ScannedData {
-  final String data;
-  final Rect location;
-
-  ScannedData(this.data, this.location);
-}
-
 class QRScannerZxingView extends StatefulWidget {
-  final Function(ScannedData data) onDetect;
+  final int marginPct;
+  final Function(String rawData) onDetect;
 
-  const QRScannerZxingView({Key? key, required this.onDetect})
+  const QRScannerZxingView(
+      {Key? key, required this.marginPct, required this.onDetect})
       : super(key: key);
 
   @override
@@ -24,23 +19,21 @@ class QRScannerZxingView extends StatefulWidget {
 }
 
 class QRScannerZxingViewState extends State<QRScannerZxingView> {
+
+  bool? permissionsGranted = null;
+
   final MethodChannel channel = const MethodChannel(
       "com.yubico.authenticator.flutter_plugins.qr_scanner_channel");
 
   QRScannerZxingViewState() : super() {
     channel.setMethodCallHandler((call) async {
       try {
-        var barcodes = jsonDecode(call.arguments);
-        if (barcodes is List && barcodes.isNotEmpty) {
-          var firstBarcode = barcodes[0];
-          var rawValue = firstBarcode["value"];
-          var location = firstBarcode["location"];
-          double l = location[0].toDouble();
-          double t = location[1].toDouble();
-          double r = location[2].toDouble();
-          double b = location[3].toDouble();
-          var locationRect = Rect.fromLTRB(l, t, r, b);
-          widget.onDetect(ScannedData(rawValue, locationRect));
+        switch (call.method) {
+          case "codeFound":
+            var arguments = jsonDecode(call.arguments);
+            var rawValue = arguments["value"];
+            widget.onDetect(rawValue);
+            return;
         }
       } catch (e) {
         if (kDebugMode) {
@@ -59,32 +52,32 @@ class QRScannerZxingViewState extends State<QRScannerZxingView> {
   @override
   Widget build(BuildContext context) {
     const String viewType = 'qrScannerNativeView';
-    const Map<String, dynamic> creationParams = <String, dynamic>{};
-
+    Map<String, dynamic> creationParams = <String, dynamic>{
+      "margin": widget.marginPct
+    };
     return PlatformViewLink(
-      viewType: viewType,
-      surfaceFactory:
-          (BuildContext context, PlatformViewController controller) {
-        return AndroidViewSurface(
-          controller: controller as AndroidViewController,
-          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-        );
-      },
-      onCreatePlatformView: (PlatformViewCreationParams params) {
-        return PlatformViewsService.initExpensiveAndroidView(
-          id: params.id,
-          viewType: viewType,
-          layoutDirection: TextDirection.ltr,
-          creationParams: creationParams,
-          creationParamsCodec: const StandardMessageCodec(),
-          onFocus: () {
-            params.onFocusChanged(true);
-          },
-        )
-          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-          ..create();
-      },
-    );
+        viewType: viewType,
+        surfaceFactory:
+            (BuildContext context, PlatformViewController controller) {
+          return AndroidViewSurface(
+            controller: controller as AndroidViewController,
+            gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+          );
+        },
+        onCreatePlatformView: (PlatformViewCreationParams params) {
+          return PlatformViewsService.initExpensiveAndroidView(
+            id: params.id,
+            viewType: viewType,
+            layoutDirection: TextDirection.ltr,
+            creationParams: creationParams,
+            creationParamsCodec: const StandardMessageCodec(),
+            onFocus: () {
+              params.onFocusChanged(true);
+            },
+          )
+            ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+            ..create();
+        });
   }
 }

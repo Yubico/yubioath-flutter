@@ -3,20 +3,22 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class CutoutOverlay extends StatelessWidget {
-  final int border;
-  const CutoutOverlay({Key? key, this.border = 30}) : super(key: key);
+  final int marginPct;
+  const CutoutOverlay({Key? key, required this.marginPct}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: CutoutPainter(border: border),
-    );
+    return GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        child: CustomPaint(
+          painter: CutoutPainter(marginPct: marginPct),
+        ));
   }
 }
 
 class CutoutPainter extends CustomPainter {
-  final int border;
-  CutoutPainter({required this.border});
+  final int marginPct;
+  CutoutPainter({required this.marginPct});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -26,7 +28,9 @@ class CutoutPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
 
-    final cutoutWidth = min(size.width - border, size.height - border);
+    final shorterDim = min(size.width, size.height);
+
+    final cutoutWidth = shorterDim - (2 * shorterDim * marginPct / 100);
 
     final cutoutRect = Rect.fromCenter(
       center: Offset(size.width / 2, size.height / 2),

@@ -29,7 +29,7 @@ class OverlayClipper extends CustomClipper<Path> {
 }
 
 class MobileScannerWrapper extends StatelessWidget {
-  final Function(ScannedData) onDetect;
+  final Function(String) onDetect;
   final _ScanStatus status;
 
   const MobileScannerWrapper({
@@ -53,9 +53,11 @@ class MobileScannerWrapper extends StatelessWidget {
         height: size.width - 38);
 
     return Stack(children: [
-      QRScannerZxingView(onDetect: (scannedData) {
-        onDetect.call(scannedData);
-      }),
+      QRScannerZxingView(
+          marginPct: 20,
+          onDetect: (barCode) {
+            onDetect.call(barCode);
+          }),
       ClipPath(
           clipper: OverlayClipper(),
           child: Opacity(
@@ -121,18 +123,17 @@ class _QrScannerViewState extends State<QrScannerView> {
     });
   }
 
-  void handleResult(ScannedData scannedData) {
+  void handleResult(String barCode) {
     if (_status != _ScanStatus.looking) {
       // on success and error ignore reported codes
       return;
     }
     setState(() {
-      if (scannedData.data.isNotEmpty) {
-        var code = scannedData.data;
+      if (barCode.isNotEmpty) {
         try {
-          var parsedCredential = CredentialData.fromUri(Uri.parse(code));
+          var parsedCredential = CredentialData.fromUri(Uri.parse(barCode));
           _credentialData = parsedCredential;
-          _scannedString = code;
+          _scannedString = barCode;
           _status = _ScanStatus.success;
 
           Future.delayed(const Duration(milliseconds: 800), () {

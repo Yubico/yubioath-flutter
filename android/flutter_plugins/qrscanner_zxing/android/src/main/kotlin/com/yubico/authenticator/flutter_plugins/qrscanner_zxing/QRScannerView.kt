@@ -4,17 +4,12 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
@@ -28,12 +23,12 @@ import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
-import org.json.JSONArray
 import org.json.JSONObject
 import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.Result
+import kotlin.math.min
 
 class QRScannerViewFactory(
     private val binaryMessenger: BinaryMessenger,
@@ -53,8 +48,7 @@ class QRScannerViewFactory(
     }
 }
 
-data class BarcodeInfo(val rawData: String, val rect: Rect)
-typealias BarcodeAnalyzerListener = (Result<List<BarcodeInfo>>) -> Unit
+typealias BarcodeAnalyzerListener = (Result<String>) -> Unit
 
 internal class QRScannerView(
     context: Context,
@@ -66,6 +60,8 @@ internal class QRScannerView(
 
     private val uiThreadHandler = Handler(Looper.getMainLooper())
 
+    private var marginPct: Double? = null
+
     companion object {
         const val TAG = "QRScannerView"
 
@@ -76,6 +72,10 @@ internal class QRScannerView(
                 Manifest.permission.CAMERA,
             ).toTypedArray()
 
+        // view related
+        private const val QR_SCANNER_ASPECT_RATIO = AspectRatio.RATIO_4_3
+
+        // communication channel
         private const val CHANNEL_NAME =
             "com.yubico.authenticator.flutter_plugins.qr_scanner_channel"
     }
@@ -95,7 +95,10 @@ internal class QRScannerView(
     }
 
     private val qrScannerView = View.inflate(context, R.layout.qr_scanner_view, null)
-    private val previewView = qrScannerView.findViewById<PreviewView>(R.id.preview_view)
+    private val previewView = qrScannerView.findViewById<PreviewView>(R.id.preview_view).also {
+        it.scaleType = PreviewView.ScaleType.FILL_CENTER
+    }
+    private val infoText = qrScannerView.findViewById<TextView>(R.id.info_text)
 
     private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     private val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -122,74 +125,83 @@ internal class QRScannerView(
 
     init {
 
+        // read margin parameter
+        // only use it if it has reasonable value
+        if (creationParams?.get("margin") is Number) {
+            val marginValue = creationParams["margin"] as Number
+            if (marginValue.toDouble() > 0.0 && marginValue.toDouble() < 45) {
+                marginPct = marginValue.toDouble()
+            }
+        }
+
         if (context is Activity) {
             permissionsGranted = allPermissionsGranted(context)
 
             if (!permissionsGranted) {
-                previewView.visibility = View.GONE
-                permissionsResultRegistrar.setListener(
-                    object : PluginRegistry.RequestPermissionsResultListener {
-                        override fun onRequestPermissionsResult(
-                            requestCode: Int,
-                            permissions: Array<out String>,
-                            grantResults: IntArray
-                        ): Boolean {
-                            if (requestCode == PERMISSION_REQUEST_CODE) {
-                                if (permissions.size == 1 && grantResults.size == 1) {
-                                    if (permissions.first() == PERMISSIONS_TO_REQUEST.first() &&
-                                        grantResults.first() == PackageManager.PERMISSION_GRANTED
-                                    ) {
-                                        bindUseCases(context)
-                                    }
-                                }
-
-                                return true
-                            }
-
-                            return false
-                        }
-                    })
-
-                requestPermissions(context)
-
+                requestPermissionsFromUser(context)
             } else {
                 bindUseCases(context)
             }
         }
     }
 
+    private fun requestPermissionsFromUser(activity: Activity) {
+        permissionsResultRegistrar.setListener(
+            object : PluginRegistry.RequestPermissionsResultListener {
+                override fun onRequestPermissionsResult(
+                    requestCode: Int,
+                    permissions: Array<out String>,
+                    grantResults: IntArray
+                ): Boolean {
+                    if (requestCode == PERMISSION_REQUEST_CODE) {
+                        if (permissions.size == 1 && grantResults.size == 1) {
+                            if (permissions.first() == PERMISSIONS_TO_REQUEST.first() &&
+                                grantResults.first() == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                previewView.visibility = View.VISIBLE
+                                infoText.visibility = View.GONE
+                                bindUseCases(activity)
+                            } else {
+                                previewView.visibility = View.GONE
+                                infoText.visibility = View.VISIBLE
+                                infoText.setText(R.string.please_grant_permissions)
+                            }
+                        } else {
+                            previewView.visibility = View.GONE
+                            infoText.visibility = View.VISIBLE
+                            infoText.setText(R.string.please_grant_permissions)
+                        }
+                        return true
+                    }
+
+                    return false
+                }
+            })
+
+        requestPermissions(activity)
+    }
+
     private fun bindUseCases(context: Context) {
         cameraProviderFuture.addListener({
+            previewView.visibility = View.VISIBLE
             cameraProvider = cameraProviderFuture.get()
 
             cameraProvider?.unbindAll()
 
             imageAnalyzer = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .setTargetAspectRatio(QR_SCANNER_ASPECT_RATIO)
                 .build()
                 .also {
-                    it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { analyzeResult ->
+                    it.setAnalyzer(cameraExecutor, BarcodeAnalyzer(marginPct) { analyzeResult ->
                         if (analyzeResult.isSuccess) {
                             analyzeResult.getOrNull()?.let { result ->
-                                val codes = JSONArray(
-                                    result.map { barcodeInfo ->
-                                        JSONObject(
-                                            mapOf(
-                                                "value" to barcodeInfo.rawData,
-                                                "location" to JSONArray(
-                                                    listOf(
-                                                        barcodeInfo.rect.left.toDouble(),
-                                                        barcodeInfo.rect.top.toDouble(),
-                                                        barcodeInfo.rect.right.toDouble(),
-                                                        barcodeInfo.rect.bottom.toDouble()
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    }
-                                )
                                 uiThreadHandler.post {
-                                    methodChannel.invokeMethod("codes", codes.toString())
+                                    methodChannel.invokeMethod(
+                                        "codeFound", JSONObject(
+                                            mapOf("value" to result)
+                                        ).toString()
+                                    )
                                 }
                             }
                         }
@@ -197,6 +209,7 @@ internal class QRScannerView(
                 }
 
             preview = Preview.Builder()
+                .setTargetAspectRatio(QR_SCANNER_ASPECT_RATIO)
                 .build()
                 .also {
                     it.setSurfaceProvider(previewView.surfaceProvider)
@@ -207,13 +220,13 @@ internal class QRScannerView(
                 cameraSelector,
                 preview, imageAnalyzer
             )
-
-            previewView.visibility = View.VISIBLE
-
         }, ContextCompat.getMainExecutor(context))
     }
 
-    private class BarcodeAnalyzer(private val listener: BarcodeAnalyzerListener) :
+    private class BarcodeAnalyzer(
+        private val marginPct: Double?,
+        private val listener: BarcodeAnalyzerListener
+    ) :
         ImageAnalysis.Analyzer {
 
         private fun ByteBuffer.toByteArray(): ByteArray {
@@ -231,16 +244,28 @@ internal class QRScannerView(
                 val source: LuminanceSource =
                     RGBLuminanceSource(imageProxy.width, imageProxy.height, intArray)
 
-                val binary = BinaryBitmap(HybridBinarizer(source))
-                val reader = MultiFormatReader()
-                val result: com.google.zxing.Result = reader.decode(binary)
-                val barcode = result.text
-                Log.d(TAG, "Result text: ${result.text}")
-                Log.d(TAG, "Result points: ")
-                result.resultPoints?.map {
-                    Log.d(TAG, "[${it.x}, ${it.y}]")
+                val fullSize = BinaryBitmap(HybridBinarizer(source))
+
+                val bitmapToProcess = if (marginPct != null) {
+                    val shorterDim = min(imageProxy.width, imageProxy.height)
+                    val cropMargin = marginPct * 0.01 * shorterDim
+                    val cropWH = shorterDim - 2.0 * cropMargin
+                    val cropT = (imageProxy.height - cropWH) / 2.0
+                    val cropL = (imageProxy.width - cropWH) / 2.0
+                    fullSize.crop(
+                        cropL.toInt(),
+                        cropT.toInt(),
+                        cropWH.toInt(),
+                        cropWH.toInt()
+                    )
+                } else {
+                    fullSize
                 }
-                listener.invoke(Result.success(listOf(BarcodeInfo(barcode, Rect(0, 0, 0, 0)))))
+
+                val reader = MultiFormatReader()
+                val result: com.google.zxing.Result = reader.decode(bitmapToProcess)
+                Log.d(TAG, "Result text: ${result.text}")
+                listener.invoke(Result.success(result.text))
             } catch (_: NotFoundException) {
                 // ignored: no code was found
             } finally {
