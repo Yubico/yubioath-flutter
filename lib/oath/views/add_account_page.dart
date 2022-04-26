@@ -24,7 +24,10 @@ enum _QrScanState { none, scanning, success, failed }
 
 class OathAddAccountPage extends ConsumerStatefulWidget {
   final DevicePath devicePath;
-  const OathAddAccountPage(this.devicePath, {Key? key}) : super(key: key);
+  final bool openQrScanner;
+  const OathAddAccountPage(this.devicePath,
+      {Key? key, required this.openQrScanner})
+      : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -95,6 +98,18 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         ];
       default:
         return [];
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    final qrScanner = ref.read(qrScannerProvider);
+    if (qrScanner != null && widget.openQrScanner) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scanQrCode(qrScanner);
+      });
     }
   }
 
