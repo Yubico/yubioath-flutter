@@ -94,14 +94,8 @@ internal class QRScannerView(
         )
     }
 
-    private val qrScannerView =
-        LayoutInflater.from(context).inflate(R.layout.qr_scanner_view, null, false)
-    private val previewView = qrScannerView.findViewById<PreviewView>(R.id.preview_view).apply {
-        implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-    }
-    private val infoView = qrScannerView.findViewById<TextView>(R.id.text_info).apply {
-        setText(R.string.initializing)
-    }
+    private val qrScannerView = View.inflate(context, R.layout.qr_scanner_view, null)
+    private val previewView = qrScannerView.findViewById<PreviewView>(R.id.preview_view)
 
     private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     private val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -120,7 +114,6 @@ internal class QRScannerView(
         preview = null
         imageAnalyzer = null
         cameraExecutor.shutdown()
-
         Log.d(TAG, "View disposed")
     }
 
@@ -134,7 +127,6 @@ internal class QRScannerView(
 
             if (!permissionsGranted) {
                 previewView.visibility = View.GONE
-                infoView.setText(R.string.initializing)
                 permissionsResultRegistrar.setListener(
                     object : PluginRegistry.RequestPermissionsResultListener {
                         override fun onRequestPermissionsResult(
@@ -148,8 +140,6 @@ internal class QRScannerView(
                                         grantResults.first() == PackageManager.PERMISSION_GRANTED
                                     ) {
                                         bindUseCases(context)
-                                    } else {
-                                        infoView.setText(R.string.permissions_missing)
                                     }
                                 }
 

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 class ScannedData {
@@ -13,6 +15,7 @@ class ScannedData {
 
 class QRScannerZxingView extends StatefulWidget {
   final Function(ScannedData data) onDetect;
+
   const QRScannerZxingView({Key? key, required this.onDetect})
       : super(key: key);
 
@@ -56,13 +59,32 @@ class QRScannerZxingViewState extends State<QRScannerZxingView> {
   @override
   Widget build(BuildContext context) {
     const String viewType = 'qrScannerNativeView';
-    final Map<String, dynamic> creationParams = <String, dynamic>{};
+    const Map<String, dynamic> creationParams = <String, dynamic>{};
 
-    return AndroidView(
+    return PlatformViewLink(
       viewType: viewType,
-      layoutDirection: TextDirection.ltr,
-      creationParams: creationParams,
-      creationParamsCodec: const StandardMessageCodec(),
+      surfaceFactory:
+          (BuildContext context, PlatformViewController controller) {
+        return AndroidViewSurface(
+          controller: controller as AndroidViewController,
+          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+        );
+      },
+      onCreatePlatformView: (PlatformViewCreationParams params) {
+        return PlatformViewsService.initExpensiveAndroidView(
+          id: params.id,
+          viewType: viewType,
+          layoutDirection: TextDirection.ltr,
+          creationParams: creationParams,
+          creationParamsCodec: const StandardMessageCodec(),
+          onFocus: () {
+            params.onFocusChanged(true);
+          },
+        )
+          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+          ..create();
+      },
     );
   }
 }
