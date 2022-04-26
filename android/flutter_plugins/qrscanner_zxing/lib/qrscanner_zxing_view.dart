@@ -19,9 +19,6 @@ class QRScannerZxingView extends StatefulWidget {
 }
 
 class QRScannerZxingViewState extends State<QRScannerZxingView> {
-
-  bool? permissionsGranted = null;
-
   final MethodChannel channel = const MethodChannel(
       "com.yubico.authenticator.flutter_plugins.qr_scanner_channel");
 
