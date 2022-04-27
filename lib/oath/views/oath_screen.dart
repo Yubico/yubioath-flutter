@@ -94,6 +94,7 @@ class _UnlockedView extends ConsumerWidget {
         },
         child: Builder(builder: (context) {
           return TextFormField(
+            key: const Key('search_accounts'),
             initialValue: ref.read(searchProvider),
             decoration: const InputDecoration(
               hintText: 'Search accounts',
