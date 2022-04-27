@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,11 +23,10 @@ ScaffoldFeatureController showMessage(
 
 Future<void> showBottomMenu(
     BuildContext context, List<MenuAction> actions) async {
+  var width = Platform.isAndroid ? 0 : MediaQuery.of(context).size.width;
   await showModalBottomSheet(
       context: context,
-      constraints: MediaQuery.of(context).size.width > 540
-          ? const BoxConstraints(maxWidth: 380)
-          : null,
+      constraints: width > 540 ? const BoxConstraints(maxWidth: 380) : null,
       builder: (context) => SafeArea(child: _BottomMenu(actions)));
 }
 
