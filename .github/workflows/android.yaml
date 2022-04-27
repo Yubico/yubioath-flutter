@@ -24,7 +24,7 @@ jobs:
         working-directory: ./kit
 
       - name: Install Flutter
-        uses: subosito/flutter-action@v1
+        uses: subosito/flutter-action@v3
         with:
           channel: 'beta'
       - run: |

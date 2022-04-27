@@ -22,7 +22,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
 
-    - uses: subosito/flutter-action@main
+    - uses: subosito/flutter-action@v3
       with:
         channel: 'beta'
         architecture: 'x64'
