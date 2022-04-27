@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="please_grant_permissions">The QR scanner cannot work properly because grant of Camera permissions is missing.\n\nPlease, fix this by changing the Camera permissions setting in the phone Settings.</string>
+    <string name="initializing">Please wait…</string>
+</resources>

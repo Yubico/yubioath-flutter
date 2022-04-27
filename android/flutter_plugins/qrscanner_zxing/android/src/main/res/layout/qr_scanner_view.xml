@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/background_dark">
+
+    <TextView
+        android:id="@+id/info_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@android:color/black"
+        android:background="@android:color/background_light"
+        android:gravity="left"
+        android:textSize="12sp"
+        android:lineSpacingMultiplier="1.2"
+        android:layout_margin="32dp"
+        android:padding="16dp"
+        android:drawableStart="@android:drawable/ic_dialog_alert"
+        android:drawablePadding="16dp"
+        android:text="@string/please_grant_permissions" />
+
+    <androidx.camera.view.PreviewView
+        android:visibility="gone"
+        android:id="@+id/preview_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</FrameLayout>
