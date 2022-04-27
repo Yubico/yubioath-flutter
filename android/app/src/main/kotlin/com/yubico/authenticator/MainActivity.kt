@@ -1,7 +1,6 @@
 package com.yubico.authenticator
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.api.AppApiImpl
@@ -30,17 +29,6 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // simple logger
-        Logger.setLogger(object : Logger() {
-            override fun logDebug(message: String) {
-                Log.d("yubico-authenticator", message)
-            }
-
-            override fun logError(message: String, throwable: Throwable) {
-                Log.e("yubico-authenticator", message, throwable)
-            }
-        })
 
         yubikit = YubiKitManager(this)
 
@@ -86,6 +74,8 @@ class MainActivity : FlutterFragmentActivity() {
         }
     }
 
+
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
@@ -97,6 +87,23 @@ class MainActivity : FlutterFragmentActivity() {
         Pigeon.OathApi.setup(messenger, OathApiImpl(viewModel))
         Pigeon.AppApi.setup(messenger, AppApiImpl(viewModel))
         Pigeon.HDialogApi.setup(messenger, HDialogApiImpl(viewModel))
+
+
+        // simple logger for yubikit
+        Logger.setLogger(object : Logger() {
+            init {
+                FlutterLog.create(messenger, this@MainActivity)
+            }
+
+            override fun logDebug(message: String) {
+                FlutterLog.d(message)
+            }
+
+            override fun logError(message: String, throwable: Throwable) {
+                FlutterLog.e(message, throwable.message ?: throwable.toString())
+            }
+        })
+
     }
 
 }
