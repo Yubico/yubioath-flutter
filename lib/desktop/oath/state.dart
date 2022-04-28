@@ -182,7 +182,7 @@ final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
     var notifier = _DesktopCredentialListNotifier(
-      ref.watch(contextProvider.notifier).withContext,
+      ref.watch(withContextProvider),
       ref.watch(_sessionProvider(devicePath)),
       ref.watch(oathStateProvider(devicePath)
           .select((r) => r.whenOrNull(data: (state) => state.locked) ?? true)),

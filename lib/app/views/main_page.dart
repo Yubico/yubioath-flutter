@@ -15,7 +15,7 @@ class MainPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<Function(BuildContext)?>(
-      contextProvider,
+      contextConsumer,
       (previous, next) {
         next?.call(context);
       },

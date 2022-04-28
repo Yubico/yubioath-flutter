@@ -58,8 +58,7 @@ Future<Widget> initialize() async {
         ref.read(androidSubPageProvider);
 
         /// initializes global handler for dialogs
-        FDialogApi.setup(
-            FDialogApiImpl(ref.watch(contextProvider.notifier).withContext));
+        FDialogApi.setup(FDialogApiImpl(ref.watch(withContextProvider)));
         return const MainPage();
       },
     )),

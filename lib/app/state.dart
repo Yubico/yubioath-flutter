@@ -112,19 +112,12 @@ final qrScannerProvider = Provider<QrScanner?>(
   (ref) => null,
 );
 
-final contextProvider =
-    StateNotifierProvider<ContextProvider, Function(BuildContext)?>(
-        (ref) => ContextProvider());
+final contextConsumer =
+    StateNotifierProvider<ContextConsumer, Function(BuildContext)?>(
+        (ref) => ContextConsumer());
 
-/// Signature for the callback to [ContextProvider.withContext].
-///
-/// The callback will be invoked with a [BuildContext] that can be used to open
-/// dialogs, show Snackbars, etc.
-typedef WithContext = Future<T> Function<T>(
-    Future<T> Function(BuildContext context) action);
-
-class ContextProvider extends StateNotifier<Function(BuildContext)?> {
-  ContextProvider() : super(null);
+class ContextConsumer extends StateNotifier<Function(BuildContext)?> {
+  ContextConsumer() : super(null);
 
   Future<T> withContext<T>(Future<T> Function(BuildContext context) action) {
     final completer = Completer<T>();
@@ -138,3 +131,13 @@ class ContextProvider extends StateNotifier<Function(BuildContext)?> {
     return completer.future;
   }
 }
+
+/// A callback which will be invoked with a [BuildContext] that can be used to
+/// open dialogs, show Snackbars, etc.
+///
+/// Used with the [withContextProvider] provider.
+typedef WithContext = Future<T> Function<T>(
+    Future<T> Function(BuildContext context) action);
+
+final withContextProvider = Provider<WithContext>(
+    (ref) => ref.watch(contextConsumer.notifier).withContext);
