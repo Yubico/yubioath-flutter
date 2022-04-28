@@ -116,6 +116,10 @@ final contextProvider =
     StateNotifierProvider<ContextProvider, Function(BuildContext)?>(
         (ref) => ContextProvider());
 
+/// Signature for the callback to [ContextProvider.withContext].
+///
+/// The callback will be invoked with a [BuildContext] that can be used to open
+/// dialogs, show Snackbars, etc.
 typedef WithContext = Future<T> Function<T>(
     Future<T> Function(BuildContext context) action);
 
