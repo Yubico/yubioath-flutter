@@ -116,6 +116,9 @@ final contextProvider =
     StateNotifierProvider<ContextProvider, Function(BuildContext)?>(
         (ref) => ContextProvider());
 
+typedef WithContext = Future<T> Function<T>(
+    Future<T> Function(BuildContext context) action);
+
 class ContextProvider extends StateNotifier<Function(BuildContext)?> {
   ContextProvider() : super(null);
 

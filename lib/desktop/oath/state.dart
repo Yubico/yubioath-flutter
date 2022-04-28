@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/views/user_interaction.dart';
 
 import '../../app/models.dart';
 import '../../app/state.dart';
@@ -181,6 +182,7 @@ final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
     var notifier = _DesktopCredentialListNotifier(
+      ref.watch(contextProvider.notifier).withContext,
       ref.watch(_sessionProvider(devicePath)),
       ref.watch(oathStateProvider(devicePath)
           .select((r) => r.whenOrNull(data: (state) => state.locked) ?? true)),
@@ -211,10 +213,12 @@ String _formatSteam(String response) {
 }
 
 class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
+  final WithContext _withContext;
   final RpcNodeSession _session;
   final bool _locked;
   Timer? _timer;
-  _DesktopCredentialListNotifier(this._session, this._locked) : super();
+  _DesktopCredentialListNotifier(this._withContext, this._session, this._locked)
+      : super();
 
   void _notifyWindowState(WindowState windowState) {
     if (_locked) return;
@@ -236,28 +240,45 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
   Future<OathCode> calculate(OathCredential credential,
       {bool update = true}) async {
     final OathCode code;
-    if (credential.isSteam) {
-      final timeStep = DateTime.now().millisecondsSinceEpoch ~/ 30000;
-      var result = await _session.command('calculate', target: [
-        'accounts',
-        credential.id
-      ], params: {
-        'challenge': timeStep.toRadixString(16).padLeft(16, '0'),
+    final signaler = Signaler();
+    UserInteractionController? controller;
+    try {
+      signaler.signals.listen((signal) async {
+        if (signal.status == 'touch') {
+          controller = await _withContext(
+            (context) async => promptUserInteraction(
+              context,
+              title: 'Touch Required',
+              description: 'Touch the button on your YubiKey now.',
+            ),
+          );
+        }
       });
-      code = OathCode(
-          _formatSteam(result['response']), timeStep * 30, (timeStep + 1) * 30);
-    } else {
-      var result =
-          await _session.command('code', target: ['accounts', credential.id]);
-      code = OathCode.fromJson(result);
+      if (credential.isSteam) {
+        final timeStep = DateTime.now().millisecondsSinceEpoch ~/ 30000;
+        var result = await _session.command('calculate',
+            target: ['accounts', credential.id],
+            params: {
+              'challenge': timeStep.toRadixString(16).padLeft(16, '0'),
+            },
+            signal: signaler);
+        code = OathCode(_formatSteam(result['response']), timeStep * 30,
+            (timeStep + 1) * 30);
+      } else {
+        var result = await _session.command('code',
+            target: ['accounts', credential.id], signal: signaler);
+        code = OathCode.fromJson(result);
+      }
+      _log.config('Calculate', jsonEncode(code));
+      if (update && mounted) {
+        final creds = state!.toList();
+        final i = creds.indexWhere((e) => e.credential.id == credential.id);
+        state = creds..[i] = creds[i].copyWith(code: code);
+      }
+      return code;
+    } finally {
+      controller?.close();
     }
-    _log.config('Calculate', jsonEncode(code));
-    if (update && mounted) {
-      final creds = state!.toList();
-      final i = creds.indexWhere((e) => e.credential.id == credential.id);
-      state = creds..[i] = creds[i].copyWith(code: code);
-    }
-    return code;
   }
 
   @override
