@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../theme.dart';
-import 'navigation_service.dart';
 import 'state.dart';
 
 class YubicoAuthenticatorApp extends ConsumerWidget {
@@ -13,7 +12,6 @@ class YubicoAuthenticatorApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      navigatorKey: NavigationService.navigatorKey,
       title: 'Yubico Authenticator',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

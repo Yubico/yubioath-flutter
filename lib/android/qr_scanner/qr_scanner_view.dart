@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qrscanner_zxing/qrscanner_zxing_view.dart';
 
-import '../../app/navigation_service.dart';
 import '../../oath/models.dart';
 
 /// Status of view state
@@ -136,12 +135,11 @@ class _QrScannerViewState extends State<QrScannerView> {
           _scannedString = barCode;
           _status = _ScanStatus.success;
 
+          final navigator = Navigator.of(context);
           Future.delayed(const Duration(milliseconds: 800), () {
-            BuildContext dialogContext =
-                NavigationService.navigatorKey.currentContext!;
-            if (Navigator.of(dialogContext).canPop()) {
+            if (navigator.canPop()) {
               // prevent several callbacks
-              Navigator.of(dialogContext).pop(_scannedString);
+              navigator.pop(_scannedString);
             }
           });
         } on ArgumentError catch (_) {
