@@ -13,6 +13,7 @@ import '../app/views/main_page.dart';
 import '../core/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
+import 'api/impl.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
@@ -33,9 +34,6 @@ Future<Widget> initialize() async {
     }
   });
   _log.info('Logging initialized, outputting to stderr');
-
-  /// initializes global handler for dialogs
-  TapRequestDialog.initialize();
 
   return ProviderScope(
     overrides: [
@@ -58,6 +56,10 @@ Future<Widget> initialize() async {
       builder: (context, ref, child) {
         // activates the sub page provider
         ref.read(androidSubPageProvider);
+
+        /// initializes global handler for dialogs
+        FDialogApi.setup(
+            FDialogApiImpl(ref.watch(contextProvider.notifier).withContext));
         return const MainPage();
       },
     )),
