@@ -28,9 +28,9 @@
  * SUCH DAMAGE.
  */
 
-package com.yubico.authenticator
+package com.yubico.authenticator.oath
 
-import com.yubico.authenticator.keystore.KeyProvider
+import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.yubikit.oath.AccessKey
 
 class KeyManager(private val permStore: KeyProvider, private val memStore: KeyProvider) {

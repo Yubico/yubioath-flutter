@@ -1,4 +1,4 @@
-package com.yubico.authenticator.api
+package com.yubico.authenticator.oath
 
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.api.Pigeon.OathApi

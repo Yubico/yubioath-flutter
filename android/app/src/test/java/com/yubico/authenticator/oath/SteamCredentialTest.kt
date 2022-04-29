@@ -1,4 +1,4 @@
-package com.yubico.authenticator.data.oath
+package com.yubico.authenticator.oath
 
 import com.yubico.yubikit.oath.Credential
 import com.yubico.yubikit.oath.OathSession

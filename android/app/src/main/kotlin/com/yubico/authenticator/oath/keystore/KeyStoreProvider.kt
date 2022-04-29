@@ -1,4 +1,4 @@
-package com.yubico.authenticator.keystore
+package com.yubico.authenticator.oath.keystore
 
 import android.security.keystore.KeyProperties
 import android.security.keystore.KeyProtection
@@ -48,6 +48,6 @@ class KeyStoreProvider : KeyProvider {
             init(keystore.getKey(deviceId, null))
         }
 
-        override fun calculateResponse(challenge: ByteArray?): ByteArray? = mac.doFinal(challenge)
+        override fun calculateResponse(challenge: ByteArray): ByteArray = mac.doFinal(challenge)
     }
 }

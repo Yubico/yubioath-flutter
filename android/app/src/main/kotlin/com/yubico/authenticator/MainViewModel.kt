@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yubico.authenticator.api.Pigeon
 import com.yubico.authenticator.data.device.toJson
-import com.yubico.authenticator.data.oath.*
-import com.yubico.authenticator.keystore.ClearingMemProvider
-import com.yubico.authenticator.keystore.KeyStoreProvider
+import com.yubico.authenticator.oath.*
+import com.yubico.authenticator.oath.keystore.ClearingMemProvider
+import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Logger

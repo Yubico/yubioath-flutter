@@ -1,4 +1,4 @@
-package com.yubico.authenticator.keystore
+package com.yubico.authenticator.oath.keystore
 
 import android.security.keystore.KeyProperties
 import com.yubico.yubikit.oath.AccessKey
@@ -48,6 +48,6 @@ class ClearingMemProvider : KeyProvider {
     }
 
     private inner class MemStoredSigner(val mac: Mac) : AccessKey {
-        override fun calculateResponse(challenge: ByteArray?): ByteArray? = mac.doFinal(challenge)
+        override fun calculateResponse(challenge: ByteArray): ByteArray = mac.doFinal(challenge)
     }
 }

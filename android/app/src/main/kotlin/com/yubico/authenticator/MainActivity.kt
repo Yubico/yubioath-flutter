@@ -5,7 +5,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.api.AppApiImpl
 import com.yubico.authenticator.api.HDialogApiImpl
-import com.yubico.authenticator.api.OathApiImpl
+import com.yubico.authenticator.oath.OathApiImpl
 import com.yubico.authenticator.api.Pigeon
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
