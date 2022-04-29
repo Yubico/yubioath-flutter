@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -109,3 +111,33 @@ abstract class QrScanner {
 final qrScannerProvider = Provider<QrScanner?>(
   (ref) => null,
 );
+
+final contextConsumer =
+    StateNotifierProvider<ContextConsumer, Function(BuildContext)?>(
+        (ref) => ContextConsumer());
+
+class ContextConsumer extends StateNotifier<Function(BuildContext)?> {
+  ContextConsumer() : super(null);
+
+  Future<T> withContext<T>(Future<T> Function(BuildContext context) action) {
+    final completer = Completer<T>();
+    if (mounted) {
+      state = (context) async {
+        completer.complete(await action(context));
+      };
+    } else {
+      completer.completeError('Not attached');
+    }
+    return completer.future;
+  }
+}
+
+/// A callback which will be invoked with a [BuildContext] that can be used to
+/// open dialogs, show Snackbars, etc.
+///
+/// Used with the [withContextProvider] provider.
+typedef WithContext = Future<T> Function<T>(
+    Future<T> Function(BuildContext context) action);
+
+final withContextProvider = Provider<WithContext>(
+    (ref) => ref.watch(contextConsumer.notifier).withContext);

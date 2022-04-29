@@ -98,28 +98,10 @@ mixin AccountMixin {
 
   @protected
   Future<OathCode> calculateCode(BuildContext context, WidgetRef ref) async {
-    Function? close;
-    if (credential.touchRequired) {
-      close = showMessage(context, 'Touch your YubiKey',
-              duration: const Duration(seconds: 30))
-          .close;
-    } else if (credential.oathType == OathType.hotp) {
-      final showPrompt = Timer(const Duration(milliseconds: 500), () {
-        close = showMessage(context, 'Touch your YubiKey',
-                duration: const Duration(seconds: 30))
-            .close;
-      });
-      close = showPrompt.cancel;
-    }
-    try {
-      final node = ref.read(currentDeviceProvider)!;
-      return await ref
-          .read(credentialListProvider(node.path).notifier)
-          .calculate(credential);
-    } finally {
-      // Hide the touch prompt when done
-      close?.call();
-    }
+    final node = ref.read(currentDeviceProvider)!;
+    return await ref
+        .read(credentialListProvider(node.path).notifier)
+        .calculate(credential);
   }
 
   @protected
