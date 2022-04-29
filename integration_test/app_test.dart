@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/android/init.dart' as android;
-import 'package:yubico_authenticator/app/logging.dart';
 import 'package:yubico_authenticator/app/views/no_device_screen.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/desktop/init.dart' as desktop;
@@ -44,8 +43,6 @@ void main() {
 
   group('end-to-end test', () {
     testWidgets('Add account', (WidgetTester tester) async {
-      final logBuffer = initLogBuffer(1000);
-
       final Widget initializedApp;
       if (isDesktop) {
         initializedApp = await desktop.initialize();
@@ -55,10 +52,7 @@ void main() {
         throw UnimplementedError('Platform not supported');
       }
 
-      await tester.pumpWidget(LogBuffer(
-        logBuffer,
-        child: initializedApp,
-      ));
+      await tester.pumpWidget(initializedApp);
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.byType(NoDeviceScreen), findsNothing,

@@ -83,7 +83,8 @@ class LoggingPanel extends ConsumerWidget {
           child: const Text('Copy log'),
           onPressed: () async {
             _log.info('Copying log to clipboard...');
-            final logs = LogBuffer.of(context).getLogs().join('\n');
+            final logs =
+                ref.read(logLevelProvider.notifier).getLogs().join('\n');
             await Clipboard.setData(ClipboardData(text: logs));
             showMessage(context, 'Log copied to clipboard');
           },

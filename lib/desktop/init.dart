@@ -103,15 +103,7 @@ Future<Widget> initialize() async {
       fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
       credentialProvider.overrideWithProvider(desktopCredentialProvider),
     ],
-    child: YubicoAuthenticatorApp(page: Consumer(
-      builder: (context, ref, child) {
-        // Keep RPC log level synced with main app.
-        ref.listen<Level>(logLevelProvider, (_, level) {
-          rpc.setLogLevel(level);
-        });
-        return const MainPage();
-      },
-    )),
+    child: const YubicoAuthenticatorApp(page: MainPage()),
   );
 }
 
