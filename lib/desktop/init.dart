@@ -39,8 +39,8 @@ class _WindowResizeListener extends WindowListener {
   }
 }
 
-Future<Widget> initialize() async {
-  _initLogging();
+Future<Widget> initialize(List<String> argv) async {
+  _initLogging(argv);
 
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
@@ -107,7 +107,7 @@ Future<Widget> initialize() async {
   );
 }
 
-void _initLogging() {
+void _initLogging(List<String> argv) {
   Logger.root.onRecord.listen((record) {
     stderr.writeln('[${record.loggerName}] ${record.level}: ${record.message}');
     if (record.error != null) {
@@ -115,11 +115,10 @@ void _initLogging() {
     }
   });
 
-  final arguments = Platform.executableArguments;
-  final logLevelIndex = arguments.indexOf('--log-level');
+  final logLevelIndex = argv.indexOf('--log-level');
   if (logLevelIndex != -1) {
     try {
-      final levelName = arguments[logLevelIndex + 1];
+      final levelName = argv[logLevelIndex + 1];
       Level level = Level.LEVELS
           .firstWhere((level) => level.name == levelName.toUpperCase());
       Logger.root.level = level;

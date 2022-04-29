@@ -13,13 +13,13 @@ import 'error_page.dart';
 
 final _log = Logger('main');
 
-void main() async {
+void main(List<String> argv) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
     final Widget initializedApp;
     if (isDesktop) {
-      initializedApp = await desktop.initialize();
+      initializedApp = await desktop.initialize(argv);
     } else if (isAndroid) {
       initializedApp = await android.initialize();
     } else {

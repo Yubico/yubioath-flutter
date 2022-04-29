@@ -45,7 +45,7 @@ void main() {
     testWidgets('Add account', (WidgetTester tester) async {
       final Widget initializedApp;
       if (isDesktop) {
-        initializedApp = await desktop.initialize();
+        initializedApp = await desktop.initialize([]);
       } else if (isAndroid) {
         initializedApp = await android.initialize();
       } else {
