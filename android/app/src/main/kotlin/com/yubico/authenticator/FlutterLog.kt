@@ -16,30 +16,37 @@ class FlutterLog(messenger: BinaryMessenger, private val activity: MainActivity)
             instance = FlutterLog(messenger, activity)
         }
 
+        @Suppress("unused")
         fun t(message: String, error: String? = null) {
             instance.log("t", message, error)
         }
 
+        @Suppress("unused")
         fun d(message: String, error: String? = null) {
             instance.log("d", message, error)
         }
 
+        @Suppress("unused")
         fun i(message: String, error: String? = null) {
             instance.log("i", message, error)
         }
 
+        @Suppress("unused")
         fun w(message: String, error: String? = null) {
             instance.log("w", message, error)
         }
 
+        @Suppress("unused")
         fun e(message: String, error: String? = null) {
             instance.log("e", message, error)
         }
 
+        @Suppress("unused")
         fun wtf(message: String, error: String? = null) {
             instance.log("wtf", message, error)
         }
 
+        @Suppress("unused")
         fun v(message: String, error: String? = null) {
             instance.log("v", message, error)
         }

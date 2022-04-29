@@ -1,7 +1,9 @@
 package com.yubico.authenticator
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.yubico.authenticator.api.Pigeon
-import com.yubico.yubikit.core.Logger
+import io.flutter.plugin.common.BinaryMessenger
 
 enum class OperationContext(val value: Long) {
     Oath(0), Yubikey(1), Invalid(-1);
@@ -11,18 +13,17 @@ enum class OperationContext(val value: Long) {
     }
 }
 
-class AppContext : Pigeon.AppApi {
+class AppContext(messenger: BinaryMessenger) : Pigeon.AppApi {
+    private var _appContext = MutableLiveData(OperationContext.Oath)
+    val appContext: LiveData<OperationContext> = _appContext
 
-    private var _operationContext = OperationContext.Oath
-
-    fun getContext() : OperationContext {
-        return _operationContext
+    init {
+        Pigeon.AppApi.setup(messenger, this)
     }
 
     override fun setContext(subPageIndex: Long, result: Pigeon.Result<Void>) {
-        _operationContext = OperationContext.getByValue(subPageIndex)
-        Logger.d("Operation context is now $_operationContext")
+        _appContext.value = OperationContext.getByValue(subPageIndex)
+        FlutterLog.d("App context is now $_appContext")
         result.success(null)
     }
-
 }
