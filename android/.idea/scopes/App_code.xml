@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="App code" pattern="(test[android.app]:com.yubico.authenticator.oath..*||src[android.app]:com.yubico.authenticator..*)&amp;&amp;!src[android.app]:com.yubico.authenticator.api.Pigeon" />
+</component>
