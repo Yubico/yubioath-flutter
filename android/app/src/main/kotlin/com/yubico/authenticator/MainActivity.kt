@@ -3,7 +3,6 @@ package com.yubico.authenticator
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.yubico.authenticator.api.AppApiImpl
 import com.yubico.authenticator.api.HDialogApiImpl
 import com.yubico.authenticator.oath.OathApiImpl
 import com.yubico.authenticator.api.Pigeon
@@ -75,17 +74,19 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
 
+    val appContext = AppContext()
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
         val messenger = flutterEngine.dartExecutor.binaryMessenger
 
+        viewModel.setAppContext(appContext)
         viewModel.setFOathApi(Pigeon.FOathApi(messenger))
         viewModel.setFManagementApi(Pigeon.FManagementApi(messenger))
         viewModel.setFDialogApi(Pigeon.FDialogApi(messenger))
         Pigeon.OathApi.setup(messenger, OathApiImpl(viewModel))
-        Pigeon.AppApi.setup(messenger, AppApiImpl(viewModel))
+        Pigeon.AppApi.setup(messenger, appContext)
         Pigeon.HDialogApi.setup(messenger, HDialogApiImpl(viewModel))
 
 

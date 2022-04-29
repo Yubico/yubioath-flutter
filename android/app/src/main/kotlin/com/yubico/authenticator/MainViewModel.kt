@@ -30,13 +30,7 @@ data class YubiKeyAction(
     val action: suspend (Result<YubiKeyDevice, Exception>) -> Unit
 )
 
-enum class OperationContext(val value: Long) {
-    Oath(0), Yubikey(1), Invalid(-1);
 
-    companion object {
-        fun getByValue(value: Long) = values().firstOrNull { it.value == value } ?: Invalid
-    }
-}
 
 class MainViewModel : ViewModel() {
 
@@ -52,15 +46,17 @@ class MainViewModel : ViewModel() {
     private val _memoryKeyProvider = ClearingMemProvider()
     private val _keyManager = KeyManager(KeyStoreProvider(), _memoryKeyProvider)
 
-    private var _operationContext = OperationContext.Oath
+
 
     private lateinit var _fOathApi: Pigeon.FOathApi
     private lateinit var _fManagementApi: Pigeon.FManagementApi
     private lateinit var _fDialogApi: Pigeon.FDialogApi
 
-    fun setContext(value: OperationContext) {
-        _operationContext = value
-        Logger.d("Operation context is now $_operationContext")
+
+    private lateinit var _appContext : AppContext
+
+    fun setAppContext(appContext: AppContext) {
+        _appContext = appContext
     }
 
     fun setFOathApi(oathApi: Pigeon.FOathApi) {
@@ -168,7 +164,7 @@ class MainViewModel : ViewModel() {
                     provideYubiKey(Result.success(device))
                 } else {
                     withContext(Dispatchers.Main) {
-                        when (_operationContext) {
+                        when (_appContext.getContext()) {
                             OperationContext.Oath -> {
                                 sendDeviceInfo(device)
                                 sendOathInfo(device)
