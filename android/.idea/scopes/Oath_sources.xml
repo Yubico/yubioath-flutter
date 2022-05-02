@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Oath sources" pattern="src[android.app]:com.yubico.authenticator.oath..*||test[android.app]:com.yubico.authenticator.oath..*" />
+</component>

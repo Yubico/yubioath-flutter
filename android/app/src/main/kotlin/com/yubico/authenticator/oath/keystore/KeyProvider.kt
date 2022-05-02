@@ -1,4 +1,4 @@
-package com.yubico.authenticator.keystore
+package com.yubico.authenticator.oath.keystore
 
 import com.yubico.yubikit.oath.AccessKey
 

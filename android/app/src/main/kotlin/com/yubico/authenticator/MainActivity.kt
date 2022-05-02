@@ -3,10 +3,7 @@ package com.yubico.authenticator
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.yubico.authenticator.api.AppApiImpl
-import com.yubico.authenticator.api.HDialogApiImpl
-import com.yubico.authenticator.api.OathApiImpl
-import com.yubico.authenticator.api.Pigeon
+import com.yubico.authenticator.oath.OathManager
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
@@ -14,9 +11,9 @@ import com.yubico.yubikit.android.transport.usb.UsbConfiguration
 import com.yubico.yubikit.core.Logger
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.BinaryMessenger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.properties.Delegates
 
 class MainActivity : FlutterFragmentActivity() {
@@ -56,40 +53,9 @@ class MainActivity : FlutterFragmentActivity() {
                 yubikit.stopUsbDiscovery()
             }
         }
-
-        viewModel.yubiKeyDevice.observe(this) { yubikey ->
-
-            lifecycleScope.launch(Dispatchers.Main) {
-                withContext(Dispatchers.Main) {
-                    if (yubikey != null) {
-                        Logger.d("A device was connected: $yubikey")
-                        viewModel.yubikeyAttached(yubikey)
-
-                    } else {
-                        Logger.d("A device was disconnected")
-                        viewModel.yubikeyDetached()
-                    }
-                }
-            }
-        }
     }
 
-
-
-    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
-        super.configureFlutterEngine(flutterEngine)
-
-        val messenger = flutterEngine.dartExecutor.binaryMessenger
-
-        viewModel.setFOathApi(Pigeon.FOathApi(messenger))
-        viewModel.setFManagementApi(Pigeon.FManagementApi(messenger))
-        viewModel.setFDialogApi(Pigeon.FDialogApi(messenger))
-        Pigeon.OathApi.setup(messenger, OathApiImpl(viewModel))
-        Pigeon.AppApi.setup(messenger, AppApiImpl(viewModel))
-        Pigeon.HDialogApi.setup(messenger, HDialogApiImpl(viewModel))
-
-
-        // simple logger for yubikit
+    private fun initializeLogger(messenger: BinaryMessenger) {
         Logger.setLogger(object : Logger() {
             init {
                 FlutterLog.create(messenger, this@MainActivity)
@@ -103,6 +69,23 @@ class MainActivity : FlutterFragmentActivity() {
                 FlutterLog.e(message, throwable.message ?: throwable.toString())
             }
         })
+    }
+
+    private lateinit var appContext: AppContext
+    private lateinit var oathManager: OathManager
+    private lateinit var dialogManager: DialogManager
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+
+        val messenger = flutterEngine.dartExecutor.binaryMessenger
+
+        appContext = AppContext(messenger)
+        dialogManager = DialogManager(messenger, this.lifecycleScope)
+
+        oathManager = OathManager(this, messenger, appContext, viewModel, dialogManager)
+
+        initializeLogger(messenger)
 
     }
 

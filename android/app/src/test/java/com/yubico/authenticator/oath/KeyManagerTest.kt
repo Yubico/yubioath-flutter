@@ -1,13 +1,13 @@
-package com.yubico.authenticator
+package com.yubico.authenticator.oath
 
-import com.yubico.authenticator.keystore.KeyProvider
+import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.yubikit.oath.AccessKey
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
 /**
- *  Implementation of [StoredSigner] which returns [secret] for any challenge.
+ *  Implementation of [AccessKey] which returns [secret] for any challenge.
  */
 class MockStoredSigner(private val secret: ByteArray) : AccessKey {
     override fun calculateResponse(challenge: ByteArray): ByteArray = secret
