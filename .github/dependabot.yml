@@ -1,0 +1,7 @@
+version: 2
+enable-beta-ecosystems: true # required for the pub package manager
+updates:
+  - package-ecosystem: "pub"
+    directory: "/"
+    schedule:
+      interval: "weekly"
