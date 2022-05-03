@@ -66,7 +66,7 @@ class LoggingPanel extends ConsumerWidget {
         DropdownButton<Level>(
           value: ref.watch(logLevelProvider),
           isDense: true,
-          items: [Level.WARNING, Level.INFO, Level.CONFIG, Level.FINE]
+          items: Levels.LEVELS
               .map((e) => DropdownMenuItem(
                     value: e,
                     child: Text(e.name.toUpperCase()),
@@ -74,7 +74,7 @@ class LoggingPanel extends ConsumerWidget {
               .toList(),
           onChanged: (level) {
             ref.read(logLevelProvider.notifier).setLogLevel(level!);
-            _log.config('Log level set to $level');
+            _log.debug('Log level set to $level');
             showMessage(context, 'Log level set to $level');
           },
         ),

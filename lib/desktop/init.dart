@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/app.dart';
 import '../app/views/main_page.dart';
@@ -119,12 +120,12 @@ void _initLogging(List<String> argv) {
   if (logLevelIndex != -1) {
     try {
       final levelName = argv[logLevelIndex + 1];
-      Level level = Level.LEVELS
+      Level level = Levels.LEVELS
           .firstWhere((level) => level.name == levelName.toUpperCase());
       Logger.root.level = level;
       _log.info('Log level initialized from command line argument');
     } catch (error) {
-      _log.severe('Failed to set log level', error);
+      _log.error('Failed to set log level', error);
     }
   }
 

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../../app/message.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -83,12 +84,12 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
           // This needs a short delay to ensure the field is enabled first
           Timer(const Duration(milliseconds: 100), _nameFocus.requestFocus);
         }, error: (code) {
-          _log.config('Fingerprint capture error (code: $code)');
+          _log.debug('Fingerprint capture error (code: $code)');
           _color = _animateColor(Colors.redAccent);
         });
       });
     }, onError: (error, stacktrace) {
-      _log.severe('Error adding fingerprint', error, stacktrace);
+      _log.error('Error adding fingerprint', error, stacktrace);
       Navigator.of(context).pop();
       showMessage(context, 'Error adding fingerprint');
     });

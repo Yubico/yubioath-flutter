@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/android/oath/command_providers.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/models.dart';
 import '../core/models.dart';
@@ -22,7 +23,7 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
   void setFromString(String input) {
     try {
       if (input.isEmpty) {
-        _log.config('Yubikey was detached.');
+        _log.debug('Yubikey was detached.');
         state = null;
 
         // reset other providers when YubiKey is removed
@@ -46,7 +47,7 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
               deviceInfo);
       state = YubiKeyData(deviceNode, name, deviceInfo);
     } on Exception catch (e) {
-      _log.config('Invalid data for yubikey: $input. $e');
+      _log.debug('Invalid data for yubikey: $input. $e');
       state = null;
     }
   }

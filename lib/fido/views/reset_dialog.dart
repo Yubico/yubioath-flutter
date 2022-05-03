@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../../app/message.dart';
 import '../../core/models.dart';
@@ -93,7 +94,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                     Navigator.of(context).pop();
                     showMessage(context, 'FIDO application reset');
                   }, onError: (e) {
-                    _log.severe('Error performing FIDO reset', e);
+                    _log.error('Error performing FIDO reset', e);
                     Navigator.of(context).pop();
                     showMessage(context, 'Error performing reset');
                   });

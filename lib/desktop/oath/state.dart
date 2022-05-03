@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 import 'package:yubico_authenticator/app/views/user_interaction.dart';
 
 import '../../app/models.dart';
@@ -72,7 +73,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
 
   refresh() => updateState(() async {
         final result = await _session.command('get');
-        _log.config('application status', jsonEncode(result));
+        _log.debug('application status', jsonEncode(result));
         var oathState = OathState.fromJson(result['data']);
         final key = _ref.read(_oathLockKeyProvider(_session.devicePath));
         if (oathState.locked && key != null) {
@@ -107,7 +108,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
     final bool valid = validate['valid'];
     final bool remembered = validate['remembered'];
     if (valid) {
-      _log.config('applet unlocked');
+      _log.debug('applet unlocked');
       _ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
       setData(state.value!.copyWith(
         locked: false,
@@ -148,7 +149,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
       await _session.command('set_key', params: {'key': key});
       _ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
     }
-    _log.config('OATH key set');
+    _log.debug('OATH key set');
 
     if (!oathState.hasKey) {
       setData(oathState.copyWith(hasKey: true));
@@ -231,7 +232,7 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
 
   @override
   void dispose() {
-    _log.config('OATH notifier discarded');
+    _log.debug('OATH notifier discarded');
     _timer?.cancel();
     super.dispose();
   }
@@ -269,7 +270,7 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
             target: ['accounts', credential.id], signal: signaler);
         code = OathCode.fromJson(result);
       }
-      _log.config('Calculate', jsonEncode(code));
+      _log.debug('Calculate', jsonEncode(code));
       if (update && mounted) {
         final creds = state!.toList();
         final i = creds.indexWhere((e) => e.credential.id == credential.id);
@@ -333,9 +334,9 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
 
   refresh() async {
     if (_locked) return;
-    _log.config('refreshing credentials...');
+    _log.debug('refreshing credentials...');
     var result = await _session.command('calculate_all', target: ['accounts']);
-    _log.config('Entries', jsonEncode(result));
+    _log.debug('Entries', jsonEncode(result));
 
     final pairs = [];
     for (var e in result['entries']) {
@@ -368,7 +369,7 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
     _timer?.cancel();
     if (_locked) return;
     if (state == null) {
-      _log.config('No OATH state, refresh immediately');
+      _log.debug('No OATH state, refresh immediately');
       refresh();
     } else if (mounted) {
       final expirations = (state ?? [])
@@ -379,16 +380,16 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
           .whereType<OathCode>()
           .map((e) => e.validTo);
       if (expirations.isEmpty) {
-        _log.config('No expirations, no refresh');
+        _log.debug('No expirations, no refresh');
         _timer = null;
       } else {
         final earliest = expirations.reduce(min) * 1000;
         final now = DateTime.now().millisecondsSinceEpoch;
         if (earliest < now) {
-          _log.config('Already expired, refresh immediately');
+          _log.debug('Already expired, refresh immediately');
           refresh();
         } else {
-          _log.config('Schedule refresh in ${earliest - now}ms');
+          _log.debug('Schedule refresh in ${earliest - now}ms');
           _timer = Timer(Duration(milliseconds: earliest - now), refresh);
         }
       }

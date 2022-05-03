@@ -64,7 +64,7 @@ class _RpcConnection {
           try {
             return RpcResponse.fromJson(jsonDecode(event));
           } catch (e) {
-            _log.severe('Response was not valid JSON', event);
+            _log.error('Response was not valid JSON', event);
             return RpcResponse.error('invalid-response', e.toString(), {});
           }
         }));
@@ -105,7 +105,7 @@ class RpcSession {
 
   Future<void> initialize() async {
     final process = await Process.start(executable, []);
-    _log.config('RPC process started');
+    _log.debug('RPC process started');
     process.stderr
         .transform(const Utf8Decoder())
         .transform(const LineSplitter())
@@ -133,7 +133,7 @@ class RpcSession {
     // Bind to random port
     final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
     final port = server.port;
-    _log.config('Listening for RPC connection on $port');
+    _log.debug('Listening for RPC connection on $port');
 
     // Launch the elevated process
     final process =
@@ -153,12 +153,12 @@ class RpcSession {
       _log.warning('Failed to elevate RPC process', error);
       return false;
     }
-    _log.config('Elevated RPC process started');
+    _log.debug('Elevated RPC process started');
 
     // Accept only a single connection
     final client = await server.first;
     await server.close();
-    _log.config('Client connected: $client');
+    _log.debug('Client connected: $client');
 
     // Stop the old subprocess.
     try {
@@ -174,7 +174,7 @@ class RpcSession {
       // The nonce needs to be received first.
       if (!authenticated) {
         if (nonce == line) {
-          _log.config('Client authenticated with correct nonce');
+          _log.debug('Client authenticated with correct nonce');
           authenticated = true;
           completer.complete();
           return '';
@@ -213,22 +213,13 @@ class RpcSession {
     return request.completer.future;
   }
 
-  setLogLevel(Level level) {
-    String pyLevel;
-    if (level.value <= Level.FINE.value) {
-      pyLevel = 'traffic';
-    } else if (level.value <= Level.CONFIG.value) {
-      pyLevel = 'debug';
-    } else if (level.value <= Level.INFO.value) {
-      pyLevel = 'info';
-    } else if (level.value <= Level.WARNING.value) {
-      pyLevel = 'warning';
-    } else if (level.value <= Level.SEVERE.value) {
-      pyLevel = 'error';
-    } else {
-      pyLevel = 'critical';
-    }
-    command('logging', [], params: {'level': pyLevel});
+  void setLogLevel(Level level) async {
+    final name = Levels.LEVELS
+        .firstWhere((e) => level.value <= e.value, orElse: () => Level.OFF)
+        .name
+        .toLowerCase();
+
+    await command('logging', [], params: {'level': name});
   }
 
   void _send(Map data) {

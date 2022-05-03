@@ -2,15 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
+class Levels {
+  /// Key for tracing information ([value] = 500).
+  static const Level TRAFFIC = Level('TRAFFIC', 500);
+
+  /// Key for static configuration messages ([value] = 700).
+  static const Level DEBUG = Level('DEBUG', 700);
+
+  /// Key for informational messages ([value] = 800).
+  static const Level INFO = Level.INFO;
+
+  /// Key for potential problems ([value] = 900).
+  static const Level WARNING = Level.WARNING;
+
+  /// Key for serious failures ([value] = 1000).
+  static const Level ERROR = Level('ERROR', 1000);
+
+  static const List<Level> LEVELS = [
+    TRAFFIC,
+    DEBUG,
+    INFO,
+    WARNING,
+    ERROR,
+  ];
+}
+
 extension LoggerExt on Logger {
-  void critical(Object? message, [Object? error, StackTrace? stackTrace]) =>
-      shout(message, error, stackTrace);
   void error(Object? message, [Object? error, StackTrace? stackTrace]) =>
-      severe(message, error, stackTrace);
+      log(Levels.ERROR, message, error, stackTrace);
   void debug(Object? message, [Object? error, StackTrace? stackTrace]) =>
-      config(message, error, stackTrace);
+      log(Levels.DEBUG, message, error, stackTrace);
   void traffic(Object? message, [Object? error, StackTrace? stackTrace]) =>
-      fine(message, error, stackTrace);
+      log(Levels.TRAFFIC, message, error, stackTrace);
 }
 
 final logLevelProvider =

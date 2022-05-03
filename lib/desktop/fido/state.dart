@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../../app/models.dart';
 import '../../fido/models.dart';
@@ -66,7 +67,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
 
   Future<void> refresh() => updateState(() async {
         final result = await _session.command('get');
-        _log.config('application status', jsonEncode(result));
+        _log.debug('application status', jsonEncode(result));
         return FidoState.fromJson(result['data']);
       });
 
