@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import com.yubico.authenticator.*
 import com.yubico.authenticator.api.Pigeon.*
 import com.yubico.authenticator.data.device.toJson
+import com.yubico.authenticator.oath.Model.Companion.toJson
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
@@ -44,6 +45,8 @@ class OathManager(
 
     private val _pendingYubiKeyAction = MutableLiveData<YubiKeyAction?>()
     private val pendingYubiKeyAction: LiveData<YubiKeyAction?> = _pendingYubiKeyAction
+
+    private val _model = Model()
 
     init {
         OathApi.setup(messenger, this)
@@ -112,6 +115,7 @@ class OathManager(
             _memoryKeyProvider.clearAll()
             _pendingYubiKeyAction.postValue(null)
             _fManagementApi.updateDeviceInfo("") {}
+            _model.reset()
         }
     }
 
@@ -147,9 +151,8 @@ class OathManager(
                         isRemembered = _keyManager.isRemembered(it.deviceId)
                     }
                     if (response.isUnlocked == true) {
-                        codes = calculateOathCodes(it)
-                            .toJson(it.deviceId)
-                            .toString()
+                        _model.update(it.deviceId, calculateOathCodes(it).model(it.deviceId))
+                        codes = _model.credentials.toJson().toString()
                     }
                     returnSuccess(result, response)
                 }
@@ -243,11 +246,19 @@ class OathManager(
                                 calculateCode(session, credential, System.currentTimeMillis())
                             } else null
 
-                        val jsonResult = Pair<Credential, Code?>(credential, code)
-                            .toJson(session.deviceId)
-                            .toString()
+                        val addedCred = _model.add(
+                            session.deviceId,
+                            credential.model(session.deviceId),
+                            code?.model()
+                        )
 
-                        returnSuccess(result, jsonResult)
+                        if (addedCred != null) {
+                            val jsonResult = addedCred.toJson().toString()
+                            returnSuccess(result, jsonResult)
+                        } else {
+                            // TODO - figure out better error handling here
+                            returnError(result, java.lang.IllegalStateException())
+                        }
                     }
                 }
             } catch (cause: Throwable) {
@@ -263,12 +274,20 @@ class OathManager(
                     withUnlockedSession(session) {
                         val credential = getOathCredential(session, uri)
 
-                        val jsonResult =
-                            session.renameCredential(credential, name, issuer)
-                                .toJson(session.deviceId)
-                                .toString()
+                        val renamedCredential = _model.rename(
+                            it.deviceId,
+                            credential.model(it.deviceId),
+                            session.renameCredential(credential, name, issuer).model(it.deviceId)
+                        )
 
-                        returnSuccess(result, jsonResult)
+                        if (renamedCredential != null) {
+                            val jsonResult = renamedCredential.toJson().toString()
+
+                            returnSuccess(result, jsonResult)
+                        } else {
+                            // TODO - figure out better error handling here
+                            returnError(result, java.lang.IllegalStateException())
+                        }
                     }
                 }
             } catch (cause: Throwable) {
@@ -298,9 +317,12 @@ class OathManager(
 
                 useOathSession("Refresh codes", false) {
                     withUnlockedSession(it) { session ->
-                        val resultJson = calculateOathCodes(session)
-                            .toJson(session.deviceId)
-                            .toString()
+
+                        _model.update(
+                            session.deviceId,
+                            calculateOathCodes(session).model(session.deviceId)
+                        )
+                        val resultJson = _model.credentials.toJson().toString()
                         returnSuccess(result, resultJson)
                     }
                 }
@@ -318,12 +340,20 @@ class OathManager(
 
                         val credential = getOathCredential(session, uri)
 
-                        val resultJson =
-                            calculateCode(session, credential, System.currentTimeMillis())
-                                .toJson()
-                                .toString()
+                        val code = _model.updateCode(
+                            session.deviceId,
+                            credential.model(session.deviceId),
+                            calculateCode(session, credential, System.currentTimeMillis()).model()
+                        )
 
-                        returnSuccess(result, resultJson)
+                        if (code != null) {
+                            val resultJson = code.toJson().toString()
+
+                            returnSuccess(result, resultJson)
+                        } else {
+                            // TODO - figure out better error handling here
+                            returnError(result, java.lang.IllegalStateException())
+                        }
                     }
                 }
             } catch (cause: Throwable) {
@@ -411,9 +441,11 @@ class OathManager(
             device.requestConnection(SmartCardConnection::class.java) { result ->
                 val session = OathSession(result.value)
                 if (tryToUnlockOathSession(session)) {
-                    val resultJson = calculateOathCodes(session)
-                        .toJson(session.deviceId)
-                        .toString()
+                    _model.update(
+                        session.deviceId,
+                        calculateOathCodes(session).model(session.deviceId)
+                    )
+                    val resultJson = _model.credentials.toJson().toString()
                     it.resume(resultJson)
                 }
             }
@@ -503,7 +535,7 @@ class OathManager(
 
     private fun getOathCredential(oathSession: OathSession, credentialId: String) =
         oathSession.credentials.firstOrNull { credential ->
-            (credential != null) && credential.idAsString() == credentialId
+            (credential != null) && credential.id.asString() == credentialId
         } ?: throw Exception("Failed to find account to delete")
 
 
