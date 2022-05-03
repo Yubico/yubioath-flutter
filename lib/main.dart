@@ -6,7 +6,6 @@ import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'android/init.dart' as android;
-import 'app/logging.dart';
 import 'app/app.dart';
 import 'core/state.dart';
 import 'desktop/init.dart' as desktop;
@@ -14,24 +13,20 @@ import 'error_page.dart';
 
 final _log = Logger('main');
 
-void main() async {
+void main(List<String> argv) async {
   WidgetsFlutterBinding.ensureInitialized();
-  final logBuffer = initLogBuffer(1000);
 
   try {
     final Widget initializedApp;
     if (isDesktop) {
-      initializedApp = await desktop.initialize();
+      initializedApp = await desktop.initialize(argv);
     } else if (isAndroid) {
       initializedApp = await android.initialize();
     } else {
       _initializeDebugLogging();
       throw UnimplementedError('Platform not supported');
     }
-    runApp(LogBuffer(
-      logBuffer,
-      child: initializedApp,
-    ));
+    runApp(initializedApp);
   } catch (e) {
     _log.warning('Platform initialization failed: $e');
     runApp(

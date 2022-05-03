@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 import 'package:yubico_authenticator/management/models.dart';
 
 import '../../app/models.dart';
@@ -56,7 +57,7 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
             try {
               await _session.command('get', target: path);
               _subpath = path;
-              _log.config('Using transport $iface for management');
+              _log.debug('Using transport $iface for management');
               return info;
             } catch (e) {
               _log.warning('Failed connecting to management via $iface');

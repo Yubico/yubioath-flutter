@@ -5,6 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/state.dart';
 import '../core/state.dart';
@@ -74,7 +75,7 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
 
   @override
   set state(WindowState value) {
-    _log.config('Window state changed: $value');
+    _log.debug('Window state changed: $value');
     super.state = value;
   }
 
@@ -104,7 +105,7 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
           _idleTimer?.cancel();
           break;
         default:
-          _log.fine('Window event ignored: $eventName');
+          _log.traffic('Window event ignored: $eventName');
       }
     }
   }

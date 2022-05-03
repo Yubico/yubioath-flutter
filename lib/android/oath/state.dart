@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/android/api/impl.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 import 'package:yubico_authenticator/app/models.dart';
 import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/core/models.dart';
@@ -45,7 +46,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
           .copyWith(locked: false, remembered: false, hasKey: false));
       _ref.refresh(androidStateProvider);
     } catch (e) {
-      _log.config('Calling reset failed with exception: $e');
+      _log.debug('Calling reset failed with exception: $e');
     }
   }
 
@@ -59,7 +60,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       final remembered = unlockResponse.isRemembered == true;
 
       if (unlocked) {
-        _log.config('applet unlocked');
+        _log.debug('applet unlocked');
         setData(state.value!.copyWith(
           locked: false,
           remembered: remembered,
@@ -67,7 +68,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       }
       return Pair(unlocked, remembered);
     } on PlatformException catch (e) {
-      _log.config('Calling unlock failed with exception: $e');
+      _log.debug('Calling unlock failed with exception: $e');
       return Pair(false, false);
     }
   }
@@ -79,7 +80,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       setData(state.value!.copyWith(hasKey: true));
       return true;
     } on PlatformException catch (e) {
-      _log.config('Calling set password failed with exception: $e');
+      _log.debug('Calling set password failed with exception: $e');
       return false;
     }
   }
@@ -91,7 +92,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       setData(state.value!.copyWith(hasKey: false, locked: false));
       return true;
     } on PlatformException catch (e) {
-      _log.config('Calling unset password failed with exception: $e');
+      _log.debug('Calling unset password failed with exception: $e');
       return false;
     }
   }
@@ -102,7 +103,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       await _api.forgetPassword();
       setData(state.value!.copyWith(remembered: false));
     } on PlatformException catch (e) {
-      _log.config('Calling forgetPassword failed with exception: $e');
+      _log.debug('Calling forgetPassword failed with exception: $e');
     }
   }
 }
@@ -162,7 +163,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     var resultJson = await _api.calculate(credential.id);
     var result = jsonDecode(resultJson);
     code = OathCode.fromJson(result);
-    _log.config('Calculate', jsonEncode(code));
+    _log.debug('Calculate', jsonEncode(code));
     if (update && mounted) {
       final creds = state!.toList();
       final i = creds.indexWhere((e) => e.credential.id == credential.id);
@@ -219,7 +220,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
 
       return renamedCredential;
     } on PlatformException catch (e) {
-      _log.config('Failed to execute renameOathCredential: ${e.message}');
+      _log.debug('Failed to execute renameOathCredential: ${e.message}');
     }
 
     return credential;
@@ -234,13 +235,13 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         state = state!.toList()..removeWhere((e) => e.credential == credential);
       }
     } catch (e) {
-      _log.config('Call to delete credential failed: $e');
+      _log.debug('Call to delete credential failed: $e');
     }
   }
 
   refresh() async {
     if (_currentDevice == null) return;
-    _log.config('refreshing credentials...');
+    _log.debug('refreshing credentials...');
 
     final pairs = [];
 
@@ -269,7 +270,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         _scheduleRefresh();
       }
     } catch (e) {
-      _log.config('Failure refreshing codes: $e');
+      _log.debug('Failure refreshing codes: $e');
     }
   }
 

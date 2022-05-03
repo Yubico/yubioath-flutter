@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import 'app/state.dart';
 import 'widgets/responsive_dialog.dart';
@@ -30,7 +31,7 @@ class SettingsPage extends ConsumerWidget {
                 .toList(),
             onChanged: (mode) {
               ref.read(themeModeProvider.notifier).setThemeMode(mode!);
-              _log.config('Set theme mode to $mode');
+              _log.debug('Set theme mode to $mode');
             },
           ),
         ],

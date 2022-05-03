@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../core/state.dart';
 import 'models.dart';
@@ -28,7 +29,7 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   ThemeModeNotifier(this._prefs) : super(_fromName(_prefs.getString(_key)));
 
   void setThemeMode(ThemeMode mode) {
-    _log.config('Set theme to $mode');
+    _log.debug('Set theme to $mode');
     state = mode;
     _prefs.setString(_key, mode.name);
   }

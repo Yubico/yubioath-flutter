@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/app.dart';
 import '../app/views/main_page.dart';
@@ -39,8 +40,8 @@ class _WindowResizeListener extends WindowListener {
   }
 }
 
-Future<Widget> initialize() async {
-  _initLogging();
+Future<Widget> initialize(List<String> argv) async {
+  _initLogging(argv);
 
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
@@ -103,19 +104,11 @@ Future<Widget> initialize() async {
       fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
       credentialProvider.overrideWithProvider(desktopCredentialProvider),
     ],
-    child: YubicoAuthenticatorApp(page: Consumer(
-      builder: (context, ref, child) {
-        // Keep RPC log level synced with main app.
-        ref.listen<Level>(logLevelProvider, (_, level) {
-          rpc.setLogLevel(level);
-        });
-        return const MainPage();
-      },
-    )),
+    child: const YubicoAuthenticatorApp(page: MainPage()),
   );
 }
 
-void _initLogging() {
+void _initLogging(List<String> argv) {
   Logger.root.onRecord.listen((record) {
     stderr.writeln('[${record.loggerName}] ${record.level}: ${record.message}');
     if (record.error != null) {
@@ -123,17 +116,16 @@ void _initLogging() {
     }
   });
 
-  final arguments = Platform.executableArguments;
-  final logLevelIndex = arguments.indexOf('--log-level');
+  final logLevelIndex = argv.indexOf('--log-level');
   if (logLevelIndex != -1) {
     try {
-      final levelName = arguments[logLevelIndex + 1];
-      Level level = Level.LEVELS
+      final levelName = argv[logLevelIndex + 1];
+      Level level = Levels.LEVELS
           .firstWhere((level) => level.name == levelName.toUpperCase());
       Logger.root.level = level;
       _log.info('Log level initialized from command line argument');
     } catch (error) {
-      _log.severe('Failed to set log level', error);
+      _log.error('Failed to set log level', error);
     }
   }
 

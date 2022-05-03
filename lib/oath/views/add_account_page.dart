@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -383,7 +384,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       Navigator.of(context).pop();
                       showMessage(context, 'Account added');
                     } catch (e) {
-                      _log.severe('Failed to add account', e);
+                      _log.error('Failed to add account', e);
                       showMessage(context, 'Failed adding account');
                     }
                   } else {

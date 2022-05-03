@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
@@ -36,7 +37,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
   UsbDeviceNotifier(this._rpc) : super([]);
 
   void refresh() {
-    _log.config('Refreshing all USB devics');
+    _log.debug('Refreshing all USB devics');
     _usbState = -1;
     _pollDevices();
   }
@@ -106,7 +107,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
         }
       }
     } on RpcError catch (e) {
-      _log.severe('Error polling USB', jsonEncode(e));
+      _log.error('Error polling USB', jsonEncode(e));
     }
 
     if (mounted) {
@@ -163,7 +164,7 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
             .toList();
       }
     } on RpcError catch (e) {
-      _log.severe('Error polling NFC', jsonEncode(e));
+      _log.error('Error polling NFC', jsonEncode(e));
     }
 
     if (mounted) {
@@ -249,7 +250,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<YubiKeyData?> {
     _pollTimer?.cancel();
     final node = _deviceNode!;
     try {
-      _log.config('Polling for USB device changes...');
+      _log.debug('Polling for USB device changes...');
       var result = await _rpc.command('get', node.path.segments);
       if (mounted) {
         if (result['data']['present']) {
@@ -260,7 +261,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<YubiKeyData?> {
         }
       }
     } on RpcError catch (e) {
-      _log.severe('Error polling NFC', jsonEncode(e));
+      _log.error('Error polling NFC', jsonEncode(e));
     }
     if (mounted) {
       _pollTimer = Timer(
