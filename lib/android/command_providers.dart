@@ -45,7 +45,15 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
               name,
               /*TODO: replace with correct PID*/ UsbPid.yk4OtpFidoCcid,
               deviceInfo);
-      state = YubiKeyData(deviceNode, name, deviceInfo);
+
+      // reset oath providers on key change
+      var yubiKeyData = YubiKeyData(deviceNode, name, deviceInfo);
+      if (state != yubiKeyData) {
+        _ref.refresh(androidStateProvider);
+        _ref.refresh(androidCredentialsProvider);
+      }
+
+      state = yubiKeyData;
     } on Exception catch (e) {
       _log.debug('Invalid data for yubikey: $input. $e');
       state = null;
