@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Yubico Authenticator
+GenericName=Yubico Authenticator
+Exec=authenticator
+Icon=com.yubico.yubioath
+Type=Application
+Categories=Utility;
+Keywords=Yubico;Authenticator;
