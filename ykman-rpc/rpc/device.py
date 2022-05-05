@@ -34,18 +34,14 @@ from .management import ManagementNode
 from .qr import scan_qr
 from ykman import __version__ as ykman_version
 from ykman.base import PID
-from ykman.device import (
-    scan_devices,
-    list_all_devices,
-    get_name,
-    read_info,
-)
+from ykman.device import scan_devices, list_all_devices
 from ykman.diagnostics import get_diagnostics
 from ykman.logging import set_log_level
 from yubikit.core import TRANSPORT
 from yubikit.core.smartcard import SmartCardConnection, ApduError, SW
 from yubikit.core.otp import OtpConnection
 from yubikit.core.fido import FidoConnection
+from yubikit.support import get_name, read_info
 from yubikit.management import CAPABILITY
 from yubikit.logging import LOG_LEVEL
 
@@ -199,7 +195,7 @@ class DevicesNode(RpcNode):
                 else:
                     dev_id = _id_from_fingerprint(dev.fingerprint)
                 self._device_mapping[dev_id] = (dev, info)
-                name = get_name(info, dev.pid.get_type() if dev.pid else None)
+                name = get_name(info, dev.pid.yubikey_type if dev.pid else None)
                 self._devices[dev_id] = dict(pid=dev.pid, name=name, serial=info.serial)
 
             if sum(state[0].values()) == len(self._devices):
@@ -249,8 +245,8 @@ class AbstractDeviceNode(RpcNode):
                 try:
                     with self._device.open_connection(conn_type) as conn:
                         pid = self._device.pid
-                        self._info = read_info(pid, conn)
-                        name = get_name(self._info, pid.get_type() if pid else None)
+                        self._info = read_info(conn, pid)
+                        name = get_name(self._info, pid.yubikey_type if pid else None)
                         return dict(
                             pid=pid,
                             name=name,
@@ -296,13 +292,13 @@ class ReaderDeviceNode(AbstractDeviceNode):
     @child
     def ccid(self):
         connection = self._device.open_connection(SmartCardConnection)
-        info = read_info(None, connection)
+        info = read_info(connection)
         return ConnectionNode(self._device, connection, info)
 
     @child
     def fido(self):
         with self._device.open_connection(SmartCardConnection) as conn:
-            info = read_info(None, conn)
+            info = read_info(conn)
         connection = self._device.open_connection(FidoConnection)
         return ConnectionNode(self._device, connection, info)
 
@@ -313,7 +309,7 @@ class ConnectionNode(RpcNode):
         self._device = device
         self._transport = device.transport
         self._connection = connection
-        self._info = info or read_info(device.pid, self._connection)
+        self._info = info or read_info(self._connection, device.pid)
 
     def __call__(self, *args, **kwargs):
         try:
@@ -342,7 +338,7 @@ class ConnectionNode(RpcNode):
             isinstance(self._connection, SmartCardConnection)
             or self._transport == TRANSPORT.USB
         ):
-            self._info = read_info(self._device.pid, self._connection)
+            self._info = read_info(self._connection, self._device.pid)
         return dict(version=self._info.version, serial=self._info.serial)
 
     @child(

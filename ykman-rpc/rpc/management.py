@@ -31,7 +31,7 @@ from yubikit.core import require_version, NotSupportedError, TRANSPORT
 from yubikit.core.smartcard import SmartCardConnection
 from yubikit.core.otp import OtpConnection
 from yubikit.core.fido import FidoConnection
-from yubikit.management import ManagementSession, DeviceConfig, Mode, USB_INTERFACE
+from yubikit.management import ManagementSession, DeviceConfig, Mode
 from ykman.device import connect_to_device
 from dataclasses import asdict
 from time import sleep
@@ -62,25 +62,16 @@ class ManagementNode(RpcNode):
         return actions
 
     def _await_reboot(self, serial, usb_enabled):
-        # TODO: Clean up once "support" is merged into ykman.
-        iface = USB_INTERFACE.for_capabilities(usb_enabled)
-        connection_types = []
+        ifaces = usb_enabled.usb_interfaces
 
         # Prefer to use the "same" connection type as before
-        if iface.supports_connection(self._connection_type):
-            if issubclass(self._connection_type, SmartCardConnection):
-                connection_types = [SmartCardConnection]
-            elif issubclass(self._connection_type, OtpConnection):
-                connection_types = [OtpConnection]
-            elif issubclass(self._connection_type, FidoConnection):
-                connection_types = [FidoConnection]
-
-        # Allow any expected connection type
-        if not connection_types:
+        if self._connection_type.usb_interface in ifaces:
+            connection_types = [self._connection_type]
+        else:
             connection_types = [
                 t
                 for t in [SmartCardConnection, OtpConnection, FidoConnection]
-                if iface.supports_connection(t)
+                if ifaces.supports_connection(t)
             ]
 
         self.session.close()
@@ -117,8 +108,8 @@ class ManagementNode(RpcNode):
     @action
     def set_mode(self, params, event, signal):
         self.session.set_mode(
-            Mode.from_code(params["mode"]),
+            Mode(params["interfaces"]),
             params.pop("challenge_response_timeout", 0),
-            params.pop("auto_eject_timeout", 0),
+            params.pop("auto_eject_timeout"),
         )
         return dict()

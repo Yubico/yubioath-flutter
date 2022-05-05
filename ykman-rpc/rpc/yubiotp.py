@@ -39,6 +39,7 @@ from yubikit.yubiotp import (
     YubiOtpSlotConfiguration,
     StaticTicketSlotConfiguration,
 )
+from typing import Dict
 
 
 class YubiOtpNode(RpcNode):
@@ -48,7 +49,7 @@ class YubiOtpNode(RpcNode):
 
     def get_data(self):
         state = self.session.get_config_state()
-        data = {}
+        data: Dict[str, bool] = {}
         try:
             data.update(
                 slot1_configured=state.is_configured(SLOT.ONE),
@@ -97,7 +98,7 @@ class SlotNode(RpcNode):
 
     def get_data(self):
         self._state = self.session.get_config_state()
-        data = {}
+        data: Dict[str, bool] = {}
         try:
             data.update(is_configured=self._state.is_configured(self.slot))
             data.update(is_touch_triggered=self._state.is_touch_triggered(self.slot))

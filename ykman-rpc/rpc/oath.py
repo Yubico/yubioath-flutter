@@ -61,10 +61,11 @@ class KEYSTORE(str, Enum):
 
 class OathNode(RpcNode):
     _keystore_state = KEYSTORE.UNKNOWN
+    _oath_keys = None
 
     @classmethod
     def _get_keys(cls):
-        if not hasattr(cls, "_oath_keys"):
+        if not cls._oath_keys:
             cls._oath_keys = AppData("oath_keys")
         return cls._oath_keys
 

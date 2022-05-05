@@ -5,8 +5,8 @@ import io
 from PIL import Image
 
 
-def scan_qr(image_data = None):
-    if (image_data):
+def scan_qr(image_data=None):
+    if image_data:
         msg = base64.b64decode(image_data)
         buf = io.BytesIO(msg)
         img = Image.open(buf)
