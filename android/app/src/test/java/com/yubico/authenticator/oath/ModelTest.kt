@@ -1,6 +1,10 @@
 package com.yubico.authenticator.oath
 
 import com.yubico.authenticator.oath.Model.Companion.isInteractive
+import com.yubico.authenticator.oath.OathTestHelper.code
+import com.yubico.authenticator.oath.OathTestHelper.emptyCredentials
+import com.yubico.authenticator.oath.OathTestHelper.hotp
+import com.yubico.authenticator.oath.OathTestHelper.totp
 import org.junit.Assert.*
 
 import org.junit.Test
@@ -50,11 +54,11 @@ class ModelTest {
         val noDevice = ""
         val device1 = "d1"
         val device2 = "d2"
-        assertEquals(noDevice, model.deviceId)
+        assertEquals(noDevice, model.session.deviceId)
         model.update(device1, emptyCredentials())
-        assertEquals(device1, model.deviceId)
+        assertEquals(device1, model.session.deviceId)
         model.update(device2, emptyCredentials())
-        assertEquals(device2, model.deviceId)
+        assertEquals(device2, model.session.deviceId)
     }
 
     @Test
@@ -100,7 +104,7 @@ class ModelTest {
 
         model.update(d1, m2)
 
-        assertEquals("device1", model.deviceId)
+        assertEquals("device1", model.session.deviceId)
         assertEquals(3, model.credentials.size)
         assertTrue(model.credentials.containsKey(cred1))
         assertTrue(model.credentials.containsKey(cred2))
@@ -307,67 +311,7 @@ class ModelTest {
         model.update("device", mapOf(totp() to code()))
         model.reset()
 
-        assertEquals("", model.deviceId)
+        assertEquals("", model.session.deviceId)
         assertTrue(model.credentials.isEmpty())
-    }
-
-    // helper methods
-    private fun totp(
-        deviceId: String = nextDevice(),
-        name: String = nextName(),
-        issuer: String? = nextIssuer(),
-        touchRequired: Boolean = false,
-        period: Int = 30
-    ) = cred(deviceId, name, issuer, Model.OathType.TOTP, touchRequired, period)
-
-    private fun hotp(
-        deviceId: String = nextDevice(),
-        name: String = nextName(),
-        issuer: String = nextIssuer(),
-        touchRequired: Boolean = false,
-        period: Int = 30
-    ) = cred(deviceId, name, issuer, Model.OathType.HOTP, touchRequired, period)
-
-    private fun cred(
-        deviceId: String = nextDevice(),
-        name: String = nextName(),
-        issuer: String? = nextIssuer(),
-        type: Model.OathType,
-        touchRequired: Boolean = false,
-        period: Int = 30
-    ) =
-        Model.Credential(
-            deviceId = deviceId,
-            id = """otpauth://${type.name}/${name}?secret=aabbaabbaabbaabb&issuer=${issuer}""",
-            oathType = type,
-            period = period,
-            issuer = issuer,
-            accountName = name,
-            touchRequired = touchRequired
-        )
-
-    private fun code(
-        value: String = "111111",
-        from: Long = 1000,
-        to: Long = 2000
-    ) = Model.Code(value, from, to)
-
-    private fun emptyCredentials() = emptyMap<Model.Credential, Model.Code>()
-
-    companion object {
-        private var nameCounter = 0
-        private fun nextName(): String {
-            return "name${nameCounter++}"
-        }
-
-        private var issuerCounter = 0
-        private fun nextIssuer(): String {
-            return "issuer${issuerCounter++}"
-        }
-
-        private var deviceCounter = 0
-        private fun nextDevice(): String {
-            return "deviceId${deviceCounter++}"
-        }
     }
 }

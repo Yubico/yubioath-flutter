@@ -19,7 +19,6 @@ import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
 import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.net.URI
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
@@ -33,12 +32,6 @@ class OathManager(
     private val appViewModel: MainViewModel,
     private val dialogManager: DialogManager
 ) : OathApi {
-
-    // application specific Json settings
-    private val json = Json {
-        allowStructuredMapKeys = true
-        encodeDefaults = true
-    }
 
     private val _dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(SupervisorJob() + _dispatcher)
@@ -159,7 +152,7 @@ class OathManager(
                     }
                     if (response.isUnlocked == true) {
                         _model.update(it.deviceId, calculateOathCodes(it).model(it.deviceId))
-                        codes = json.encodeToString(_model.credentials)
+                        codes = jsonSerializer.encodeToString(_model.credentials)
                     }
                     returnSuccess(result, response)
                 }
@@ -260,7 +253,7 @@ class OathManager(
                         )
 
                         if (addedCred != null) {
-                            val jsonResult = json.encodeToString(addedCred)
+                            val jsonResult = jsonSerializer.encodeToString(addedCred)
                             returnSuccess(result, jsonResult)
                         } else {
                             // TODO - figure out better error handling here
@@ -289,7 +282,7 @@ class OathManager(
 
                         if (renamedCredential != null) {
                             val jsonResult =
-                                json.encodeToString(renamedCredential)
+                                jsonSerializer.encodeToString(renamedCredential)
 
                             returnSuccess(result, jsonResult)
                         } else {
@@ -330,7 +323,7 @@ class OathManager(
                             session.deviceId,
                             calculateOathCodes(session).model(session.deviceId)
                         )
-                        val resultJson = json.encodeToString(_model.credentials)
+                        val resultJson = jsonSerializer.encodeToString(_model.credentials)
                         returnSuccess(result, resultJson)
                     }
                 }
@@ -355,7 +348,7 @@ class OathManager(
                         )
 
                         if (code != null) {
-                            val resultJson = json.encodeToString(code)
+                            val resultJson = jsonSerializer.encodeToString(code)
 
                             returnSuccess(result, resultJson)
                         } else {
@@ -441,7 +434,7 @@ class OathManager(
                     oathSession.isLocked
                 )
 
-                val oathSessionData = json.encodeToString(_model.session)
+                val oathSessionData = jsonSerializer.encodeToString(_model.session)
                 it.resume(oathSessionData)
             }
         }
@@ -458,7 +451,7 @@ class OathManager(
                         session.deviceId,
                         calculateOathCodes(session).model(session.deviceId)
                     )
-                    val resultJson = json.encodeToString(_model.credentials)
+                    val resultJson = jsonSerializer.encodeToString(_model.credentials)
                     it.resume(resultJson)
                 }
             }
