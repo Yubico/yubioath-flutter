@@ -5,6 +5,7 @@ import com.yubico.authenticator.oath.OathTestHelper.hotp
 import com.yubico.authenticator.oath.OathTestHelper.totp
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.encodeToJsonElement
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -78,6 +79,17 @@ class SerializationTest {
         assertTrue(jsonObject.containsKey("value"))
         assertTrue(jsonObject.containsKey("valid_from"))
         assertTrue(jsonObject.containsKey("valid_to"))
+    }
+
+    @Test
+    fun `code json content`() {
+        val c = code(value = "001122", from = 1000, to = 2000)
+
+        val jsonObject : JsonObject = jsonSerializer.encodeToJsonElement(c) as JsonObject
+
+        assertEquals(JsonPrimitive(1000), jsonObject["valid_from"])
+        assertEquals(JsonPrimitive(2000), jsonObject["valid_to"])
+        assertEquals(JsonPrimitive("001122"), jsonObject["value"])
     }
 
     @Test

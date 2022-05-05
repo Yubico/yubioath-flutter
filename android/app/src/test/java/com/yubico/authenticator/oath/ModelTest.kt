@@ -1,6 +1,5 @@
 package com.yubico.authenticator.oath
 
-import com.yubico.authenticator.oath.Model.Companion.isInteractive
 import com.yubico.authenticator.oath.OathTestHelper.code
 import com.yubico.authenticator.oath.OathTestHelper.emptyCredentials
 import com.yubico.authenticator.oath.OathTestHelper.hotp

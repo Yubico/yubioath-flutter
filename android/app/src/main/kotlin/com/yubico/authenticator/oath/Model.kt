@@ -9,6 +9,10 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
+fun Model.Credential.isInteractive(): Boolean {
+    return oathType == Model.OathType.HOTP || (oathType == Model.OathType.TOTP && touchRequired)
+}
+
 class Model {
 
     @Serializable
@@ -55,12 +59,15 @@ class Model {
         }
     }
 
+
     @Serializable
     class Code(
         val value: String? = null,
         @SerialName("valid_from")
+        @Suppress("unused")
         val validFrom: Long,
         @SerialName("valid_to")
+        @Suppress("unused")
         val validTo: Long
     )
 
@@ -86,15 +93,6 @@ class Model {
 
     }
 
-    companion object {
-
-        fun Credential.isInteractive(): Boolean {
-            return oathType == OathType.HOTP || (oathType == OathType.TOTP && touchRequired)
-        }
-
-    }
-
-    //var deviceId: String = ""; private set
     var session = Session()
     var credentials = mutableMapOf<Credential, Code?>(); private set
 
@@ -122,7 +120,6 @@ class Model {
             // remove obsolete credentials
             this.credentials.filter { entry ->
                 // get only keys which are not present in the input map
-                //credentials.filter { it.key.id == entry.key.id }.isEmpty()
                 !credentials.contains(entry.key)
             }.forEach(action = {
                 this.credentials.remove(it.key)
