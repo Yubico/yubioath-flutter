@@ -25,8 +25,10 @@ class _AndroidManagementStateNotifier extends ManagementStateNotifier {
   void refresh() async {}
 
   @override
-  Future<void> setMode(int mode,
-      {int challengeResponseTimeout = 0, int autoEjectTimeout = 0}) async {}
+  Future<void> setMode(
+      {required int interfaces,
+      int challengeResponseTimeout = 0,
+      int? autoEjectTimeout}) async {}
 
   @override
   Future<void> writeConfig(DeviceConfig config,
