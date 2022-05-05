@@ -8,7 +8,7 @@ fun ByteArray.asString() = joinToString(
     separator = ""
 ) { b -> "%02x".format(b) }
 
-// covert yubikit types to Model types
+// convert yubikit types to Model types
 fun Credential.model(deviceId: String) = Model.Credential(
     deviceId = deviceId,
     id = id.asString(),
