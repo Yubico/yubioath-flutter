@@ -13,11 +13,13 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
+    //noinspection GroovyUnusedAssignment
     flutterVersionCode = '1'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
+    //noinspection GroovyUnusedAssignment
     flutterVersionName = '1.0'
 }
 
@@ -26,7 +28,7 @@ def authenticatorVersionName = "6.0.0-alpha.2"
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: "org.jetbrains.kotlin.plugin.serialization"
+apply plugin: 'kotlinx-serialization'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
@@ -80,6 +82,7 @@ dependencies {
     api "com.yubico.yubikit:oath:$project.yubiKitVersion"
     api "com.yubico.yubikit:support:$project.yubiKitVersion"
 
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2'
 
     // Lifecycle

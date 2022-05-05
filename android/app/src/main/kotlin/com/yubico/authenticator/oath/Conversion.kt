@@ -2,19 +2,7 @@ package com.yubico.authenticator.oath
 
 import com.yubico.yubikit.oath.Code
 import com.yubico.yubikit.oath.Credential
-import com.yubico.yubikit.oath.OathSession
 import com.yubico.yubikit.oath.OathType
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-
-fun OathSession.toJson(remembered: Boolean) = JsonObject(
-    mapOf(
-        "deviceId" to JsonPrimitive(deviceId),
-        "hasKey" to JsonPrimitive(isAccessKeySet),
-        "remembered" to JsonPrimitive(remembered),
-        "locked" to JsonPrimitive(isLocked)
-    )
-)
 
 fun ByteArray.asString() = joinToString(
     separator = ""
@@ -36,8 +24,8 @@ fun Credential.model(deviceId: String) = Model.Credential(
 
 fun Code.model() = Model.Code(
     value,
-    validFrom,
-    validUntil
+    validFrom / 1000,
+    validUntil / 1000
 )
 
 fun Map<Credential, Code?>.model(deviceId: String): Map<Model.Credential, Model.Code?> =

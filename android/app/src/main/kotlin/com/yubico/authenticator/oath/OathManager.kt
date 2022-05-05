@@ -7,7 +7,6 @@ import androidx.lifecycle.Observer
 import com.yubico.authenticator.*
 import com.yubico.authenticator.api.Pigeon.*
 import com.yubico.authenticator.data.device.toJson
-import com.yubico.authenticator.oath.Model.Companion.toJson
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
@@ -19,6 +18,8 @@ import com.yubico.yubikit.oath.*
 import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
 import kotlinx.coroutines.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.net.URI
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
@@ -32,6 +33,12 @@ class OathManager(
     private val appViewModel: MainViewModel,
     private val dialogManager: DialogManager
 ) : OathApi {
+
+    // application specific Json settings
+    private val json = Json {
+        allowStructuredMapKeys = true
+        encodeDefaults = true
+    }
 
     private val _dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(SupervisorJob() + _dispatcher)
@@ -152,7 +159,7 @@ class OathManager(
                     }
                     if (response.isUnlocked == true) {
                         _model.update(it.deviceId, calculateOathCodes(it).model(it.deviceId))
-                        codes = _model.credentials.toJson().toString()
+                        codes = json.encodeToString(_model.credentials)
                     }
                     returnSuccess(result, response)
                 }
@@ -253,7 +260,7 @@ class OathManager(
                         )
 
                         if (addedCred != null) {
-                            val jsonResult = addedCred.toJson().toString()
+                            val jsonResult = json.encodeToString(addedCred)
                             returnSuccess(result, jsonResult)
                         } else {
                             // TODO - figure out better error handling here
@@ -281,7 +288,8 @@ class OathManager(
                         )
 
                         if (renamedCredential != null) {
-                            val jsonResult = renamedCredential.toJson().toString()
+                            val jsonResult =
+                                json.encodeToString(renamedCredential)
 
                             returnSuccess(result, jsonResult)
                         } else {
@@ -322,7 +330,7 @@ class OathManager(
                             session.deviceId,
                             calculateOathCodes(session).model(session.deviceId)
                         )
-                        val resultJson = _model.credentials.toJson().toString()
+                        val resultJson = json.encodeToString(_model.credentials)
                         returnSuccess(result, resultJson)
                     }
                 }
@@ -347,7 +355,7 @@ class OathManager(
                         )
 
                         if (code != null) {
-                            val resultJson = code.toJson().toString()
+                            val resultJson = json.encodeToString(code)
 
                             returnSuccess(result, resultJson)
                         } else {
@@ -426,9 +434,14 @@ class OathManager(
                 tryToUnlockOathSession(oathSession)
                 val isRemembered = _keyManager.isRemembered(oathSession.deviceId)
 
-                val oathSessionData = oathSession
-                    .toJson(isRemembered)
-                    .toString()
+                _model.session = Model.Session(
+                    oathSession.deviceId,
+                    oathSession.isAccessKeySet,
+                    isRemembered,
+                    oathSession.isLocked
+                )
+
+                val oathSessionData = json.encodeToString(_model.session)
                 it.resume(oathSessionData)
             }
         }
@@ -445,7 +458,7 @@ class OathManager(
                         session.deviceId,
                         calculateOathCodes(session).model(session.deviceId)
                     )
-                    val resultJson = _model.credentials.toJson().toString()
+                    val resultJson = json.encodeToString(_model.credentials)
                     it.resume(resultJson)
                 }
             }

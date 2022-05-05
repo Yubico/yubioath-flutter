@@ -1,23 +1,48 @@
 package com.yubico.authenticator.oath
 
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 class Model {
 
+    @Serializable
+    data class Session(
+        @SerialName("device_id")
+        val deviceId: String = "",
+        @SerialName("has_key")
+        val isAccessKeySet: Boolean = false,
+        @SerialName("remembered")
+        val isRemembered: Boolean = false,
+        @SerialName("locked")
+        val isLocked: Boolean = false,
+        @SerialName("keystore")
+        val keystoreState: String = "unknown"
+    )
+
+    @Serializable(with = OathTypeSerializer::class)
     enum class OathType(val value: Byte) {
-        TOTP(0x20), HOTP(0x10)
+        TOTP(0x20),
+        HOTP(0x10);
     }
 
+    @Serializable
     data class Credential(
+        @SerialName("device_id")
         val deviceId: String,
         val id: String,
+        @SerialName("oath_type")
         val oathType: OathType,
         val period: Int,
         val issuer: String? = null,
+        @SerialName("name")
         val accountName: String,
+        @SerialName("touch_required")
         val touchRequired: Boolean
     ) {
         override fun equals(other: Any?): Boolean =
@@ -30,16 +55,36 @@ class Model {
         }
     }
 
-    data class Code(
+    @Serializable
+    class Code(
         val value: String? = null,
+        @SerialName("valid_from")
         val validFrom: Long,
-        val validUntil: Long
+        @SerialName("valid_to")
+        val validTo: Long
     )
 
+    @Serializable
     data class CredentialWithCode(
         val credential: Credential,
         val code: Code?
     )
+
+    object OathTypeSerializer : KSerializer<OathType> {
+        override fun deserialize(decoder: Decoder): OathType =
+            when (decoder.decodeByte()) {
+                OathType.HOTP.value -> OathType.HOTP
+                else -> OathType.TOTP
+            }
+
+        override val descriptor: SerialDescriptor =
+            PrimitiveSerialDescriptor("OathType", PrimitiveKind.BYTE)
+
+        override fun serialize(encoder: Encoder, value: OathType) {
+            encoder.encodeByte(value = value.value)
+        }
+
+    }
 
     companion object {
 
@@ -47,65 +92,25 @@ class Model {
             return oathType == OathType.HOTP || (oathType == OathType.TOTP && touchRequired)
         }
 
-        fun Code.toJson() = JsonObject(
-            mapOf(
-                "value" to JsonPrimitive(value),
-                "valid_from" to JsonPrimitive(validFrom / 1000),
-                "valid_to" to JsonPrimitive(validUntil / 1000)
-            )
-        )
-
-        fun Credential.toJson() = JsonObject(
-            mapOf(
-                "id" to JsonPrimitive(id),
-                "device_id" to JsonPrimitive(deviceId),
-                "issuer" to JsonPrimitive(issuer),
-                "name" to JsonPrimitive(accountName),
-                "oath_type" to JsonPrimitive(oathType.value),
-                "period" to JsonPrimitive(period),
-                "touch_required" to JsonPrimitive(touchRequired),
-            )
-        )
-
-        fun Pair<Credential, Code?>.toJson() = JsonObject(
-            mapOf(
-                "credential" to first.toJson(),
-                "code" to (second?.toJson() ?: JsonNull)
-            )
-        )
-
-        fun CredentialWithCode.toJson() = JsonObject(
-            mapOf(
-                "credential" to credential.toJson(),
-                "code" to (code?.toJson() ?: JsonNull)
-            )
-        )
-
-        fun Map<Credential, Code?>.toJson() = JsonObject(
-            mapOf(
-                "entries" to JsonArray(
-                    map { it.toPair().toJson() }
-                )
-            )
-        )
     }
 
-    var deviceId: String = ""; private set
+    //var deviceId: String = ""; private set
+    var session = Session()
     var credentials = mutableMapOf<Credential, Code?>(); private set
 
     // resets the model to initial values
     // used when a usb key has been disconnected
     fun reset() {
         this.credentials.clear()
-        this.deviceId = ""
+        this.session = Session()
     }
 
     fun update(deviceId: String, credentials: Map<Credential, Code?>) {
-        if (this.deviceId != deviceId) {
+        if (this.session.deviceId != deviceId) {
             // device was changed, we use the new list
             this.credentials.clear()
             this.credentials.putAll(from = credentials)
-            this.deviceId = deviceId
+            this.session = Session(deviceId)
         } else {
 
             // update codes for non interactive keys
@@ -126,7 +131,7 @@ class Model {
     }
 
     fun add(deviceId: String, credential: Credential, code: Code?): CredentialWithCode? {
-        if (this.deviceId != deviceId) {
+        if (this.session.deviceId != deviceId) {
             return null
         }
 
@@ -140,7 +145,7 @@ class Model {
         oldCredential: Credential,
         newCredential: Credential
     ): Credential? {
-        if (this.deviceId != deviceId) {
+        if (this.session.deviceId != deviceId) {
             return null
         }
 
@@ -162,7 +167,7 @@ class Model {
     }
 
     fun updateCode(deviceId: String, credential: Credential, code: Code?): Code? {
-        if (this.deviceId != deviceId) {
+        if (this.session.deviceId != deviceId) {
             return null
         }
 

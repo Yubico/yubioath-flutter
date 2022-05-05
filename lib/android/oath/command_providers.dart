@@ -14,11 +14,7 @@ class _StateProvider extends StateNotifier<OathState?> {
 
   void setFromString(String input) {
     var resultJson = jsonDecode(input);
-    state = OathState(resultJson['deviceId'],
-        hasKey: resultJson['hasKey'],
-        remembered: resultJson['remembered'],
-        locked: resultJson['locked'],
-        keystore: KeystoreState.unknown);
+    state = OathState.fromJson(resultJson);
   }
 }
 
@@ -33,11 +29,21 @@ class _CredentialsProvider extends StateNotifier<List<OathPair>?> {
   void setFromString(String input) {
     var result = jsonDecode(input);
 
+    /// structure of data in the json object is:
+    /// [credential1, code1, credential2, code2, ...]
+
     final List<OathPair> pairs = [];
-    for (var e in result['entries']) {
-      final credential = OathCredential.fromJson(e['credential']);
-      final code = e['code'] == null ? null : OathCode.fromJson(e['code']);
-      pairs.add(OathPair(credential, code));
+    if (result is List<dynamic>) {
+      for (var index = 0; index < result.length / 2; index++) {
+        final credential = result[index * 2];
+        final code = result[index * 2 + 1];
+        pairs.add(
+          OathPair(
+            OathCredential.fromJson(credential),
+            code == null ? null : OathCode.fromJson(code),
+          ),
+        );
+      }
     }
 
     state = pairs;
