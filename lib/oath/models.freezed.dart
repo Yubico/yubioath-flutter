@@ -474,6 +474,10 @@ abstract class _OathCode implements OathCode {
       throw _privateConstructorUsedError;
 }
 
+OathPair _$OathPairFromJson(Map<String, dynamic> json) {
+  return _OathPair.fromJson(json);
+}
+
 /// @nodoc
 class _$OathPairTearOff {
   const _$OathPairTearOff();
@@ -483,6 +487,10 @@ class _$OathPairTearOff {
       credential,
       code,
     );
+  }
+
+  OathPair fromJson(Map<String, Object?> json) {
+    return OathPair.fromJson(json);
   }
 }
 
@@ -494,6 +502,7 @@ mixin _$OathPair {
   OathCredential get credential => throw _privateConstructorUsedError;
   OathCode? get code => throw _privateConstructorUsedError;
 
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $OathPairCopyWith<OathPair> get copyWith =>
       throw _privateConstructorUsedError;
@@ -594,9 +603,12 @@ class __$OathPairCopyWithImpl<$Res> extends _$OathPairCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
+@JsonSerializable()
 class _$_OathPair implements _OathPair {
   _$_OathPair(this.credential, this.code);
+
+  factory _$_OathPair.fromJson(Map<String, dynamic> json) =>
+      _$$_OathPairFromJson(json);
 
   @override
   final OathCredential credential;
@@ -628,10 +640,17 @@ class _$_OathPair implements _OathPair {
   @override
   _$OathPairCopyWith<_OathPair> get copyWith =>
       __$OathPairCopyWithImpl<_OathPair>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_OathPairToJson(this);
+  }
 }
 
 abstract class _OathPair implements OathPair {
   factory _OathPair(OathCredential credential, OathCode? code) = _$_OathPair;
+
+  factory _OathPair.fromJson(Map<String, dynamic> json) = _$_OathPair.fromJson;
 
   @override
   OathCredential get credential;

@@ -46,6 +46,19 @@ Map<String, dynamic> _$$_OathCodeToJson(_$_OathCode instance) =>
       'valid_to': instance.validTo,
     };
 
+_$_OathPair _$$_OathPairFromJson(Map<String, dynamic> json) => _$_OathPair(
+      OathCredential.fromJson(json['credential'] as Map<String, dynamic>),
+      json['code'] == null
+          ? null
+          : OathCode.fromJson(json['code'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$_OathPairToJson(_$_OathPair instance) =>
+    <String, dynamic>{
+      'credential': instance.credential,
+      'code': instance.code,
+    };
+
 _$_OathState _$$_OathStateFromJson(Map<String, dynamic> json) => _$_OathState(
       json['device_id'] as String,
       hasKey: json['has_key'] as bool,
