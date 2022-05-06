@@ -34,8 +34,8 @@ jobs:
         flutter test
         flutter analyze
 
-    - name: Install ykman
-      run: ./build-ykman.sh
+    - name: Build the Helper
+      run: ./build-helper.sh
 
     - name: Build the app
       run: flutter build macos
