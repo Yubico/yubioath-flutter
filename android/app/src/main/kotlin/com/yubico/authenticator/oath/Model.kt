@@ -81,7 +81,8 @@ class Model {
         override fun deserialize(decoder: Decoder): OathType =
             when (decoder.decodeByte()) {
                 OathType.HOTP.value -> OathType.HOTP
-                else -> OathType.TOTP
+                OathType.TOTP.value -> OathType.TOTP
+                else -> throw IllegalArgumentException()
             }
 
         override val descriptor: SerialDescriptor =
