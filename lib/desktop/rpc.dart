@@ -10,7 +10,7 @@ import 'package:yubico_authenticator/app/logging.dart';
 import '../app/models.dart';
 import 'models.dart';
 
-final _log = Logger('rpc');
+final _log = Logger('helper');
 
 class Signaler {
   final _send = StreamController<String>();
@@ -92,7 +92,7 @@ class RpcSession {
   static void _logEntry(String entry) {
     try {
       final record = jsonDecode(entry);
-      Logger('rpc.${record['name']}').log(
+      Logger('helper.${record['name']}').log(
         _py2level[record['level']] ?? Level.INFO,
         record['message'],
         record['exc_text'],
@@ -105,7 +105,7 @@ class RpcSession {
 
   Future<void> initialize() async {
     final process = await Process.start(executable, []);
-    _log.debug('RPC process started');
+    _log.debug('Helper process started');
     process.stderr
         .transform(const Utf8Decoder())
         .transform(const LineSplitter())
@@ -133,7 +133,7 @@ class RpcSession {
     // Bind to random port
     final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
     final port = server.port;
-    _log.debug('Listening for RPC connection on $port');
+    _log.debug('Listening for Helper connection on $port');
 
     // Launch the elevated process
     final process =
@@ -150,15 +150,15 @@ class RpcSession {
           .transform(const Utf8Decoder())
           .transform(const LineSplitter())
           .join('\n');
-      _log.warning('Failed to elevate RPC process', error);
+      _log.warning('Failed to elevate the Helper process', error);
       return false;
     }
-    _log.debug('Elevated RPC process started');
+    _log.debug('Elevated Helper process started');
 
     // Accept only a single connection
     final client = await server.first;
     await server.close();
-    _log.debug('Client connected: $client');
+    _log.debug('Helper connected: $client');
 
     // Stop the old subprocess.
     try {
@@ -174,12 +174,12 @@ class RpcSession {
       // The nonce needs to be received first.
       if (!authenticated) {
         if (nonce == line) {
-          _log.debug('Client authenticated with correct nonce');
+          _log.debug('Helper authenticated with correct nonce');
           authenticated = true;
           completer.complete();
           return '';
         } else {
-          _log.warning('Client used WRONG NONCE: $line');
+          _log.warning('Helper used WRONG NONCE: $line');
           client.close();
           completer.completeError(Exception('Invalid nonce'));
           throw Exception('Invalid nonce');

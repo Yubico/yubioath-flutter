@@ -15,22 +15,22 @@ case "$(uname)" in
 		OS="windows";;
 esac
 
-echo "Building ykman-rpc for $OS..."
+echo "Building authenticator-helper for $OS..."
 OUTPUT="build/$OS"
 
-cd ykman-rpc
+cd helper
 poetry install
-rm -rf ../$OUTPUT/ykman-rpc
-poetry run pyinstaller ykman-rpc.spec --distpath ../$OUTPUT
+rm -rf ../$OUTPUT/helper
+poetry run pyinstaller authenticator-helper.spec --distpath ../$OUTPUT
 cd ..
 
 # Fixup permissions (should probably be more strict)
-find $OUTPUT/ykman-rpc -type f -exec chmod a-x {} +
-chmod a+x $OUTPUT/ykman-rpc/ykman-rpc
+find $OUTPUT/helper -type f -exec chmod a-x {} +
+chmod a+x $OUTPUT/helper/authenticator-helper
 
 # Adhoc sign executable (MacOS)
 if [ "$OS" = "macos" ]; then
-	codesign -f --timestamp --entitlements macos/ykman.entitlements --sign - $OUTPUT/ykman-rpc/ykman-rpc
+	codesign -f --timestamp --entitlements macos/helper.entitlements --sign - $OUTPUT/helper/authenticator-helper
 fi
 
 echo "All done, output in $OUTPUT/"

@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "ykman-rpc"
+name = "authenticator-helper"
 version = "0.1.0"
-description = "Yubico Authenticator helper app"
+description = "Yubico Authenticator Helper"
 authors = ["Dain Nilsson <dain@yubico.com>"]
 
 [tool.poetry.dependencies]
