@@ -105,9 +105,9 @@ class ModelTest {
 
         assertEquals("device1", model.session.deviceId)
         assertEquals(3, model.credentials.size)
-        assertTrue(model.credentials.containsKey(cred1))
-        assertTrue(model.credentials.containsKey(cred2))
-        assertTrue(model.credentials.containsKey(cred3))
+        assertTrue(model.credentials.find { it.credential == cred1 } != null)
+        assertTrue(model.credentials.find { it.credential == cred2 } != null)
+        assertTrue(model.credentials.find { it.credential == cred3 } != null)
     }
 
     @Test
@@ -117,13 +117,13 @@ class ModelTest {
         val m1 = mapOf(cred to code)
         model.update(cred.deviceId, m1)
 
-        assertTrue(model.credentials.containsValue(code))
+        assertTrue(model.credentials.find { it.code == code } != null)
 
         val updatedCode = code(value = "121212")
         val m2 = mapOf(cred to updatedCode)
         model.update(cred.deviceId, m2)
 
-        assertTrue(model.credentials.containsValue(updatedCode))
+        assertTrue(model.credentials.find { it.code == updatedCode } != null)
     }
 
     @Test
@@ -138,16 +138,16 @@ class ModelTest {
         val m1 = mapOf(hotp to hotpCode, totp to totpCode)
         model.update(d, m1)
 
-        assertTrue(model.credentials.containsValue(hotpCode))
+        assertTrue(model.credentials.find { it.code == hotpCode } != null)
 
         val updatedTotpCode = code(value = "121212")
         val updatedHotpCode = code(value = "098765")
         val m2 = mapOf(hotp to updatedHotpCode, totp to updatedTotpCode)
         model.update(d, m2)
 
-        assertTrue(model.credentials.containsValue(updatedTotpCode))
-        assertTrue(model.credentials.containsValue(hotpCode))
-        assertFalse(model.credentials.containsValue(updatedHotpCode))
+        assertTrue(model.credentials.find { it.code == updatedTotpCode } != null)
+        assertTrue(model.credentials.find { it.code == hotpCode } != null)
+        assertFalse(model.credentials.find { it.code == updatedHotpCode } != null)
     }
 
     @Test
@@ -166,7 +166,7 @@ class ModelTest {
         model.update(d, mapOf(totp to newCode))
 
         assertEquals(1, model.credentials.size)
-        assertEquals("00000", model.credentials[totp]?.value)
+        assertEquals("00000", model.credentials.find { it.credential == totp }?.code?.value)
     }
 
     @Test
@@ -203,7 +203,7 @@ class ModelTest {
 
         // only t1 is part of credentials
         assertEquals(1, model.credentials.size)
-        assertTrue(model.credentials.containsKey(t1))
+        assertTrue(model.credentials.find { it.credential == t1 } != null)
     }
 
     @Test

@@ -53,6 +53,9 @@ class OathCode with _$OathCode {
 @freezed
 class OathPair with _$OathPair {
   factory OathPair(OathCredential credential, OathCode? code) = _OathPair;
+
+  factory OathPair.fromJson(Map<String, dynamic> json) =>
+      _$OathPairFromJson(json);
 }
 
 @freezed

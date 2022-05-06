@@ -93,36 +93,41 @@ class Model {
 
     }
 
+    private var _credentials = mutableMapOf<Credential, Code?>(); private set
+
     var session = Session()
-    var credentials = mutableMapOf<Credential, Code?>(); private set
+    val credentials: List<CredentialWithCode>
+        get() = _credentials.map {
+            CredentialWithCode(it.key, it.value)
+        }
 
     // resets the model to initial values
     // used when a usb key has been disconnected
     fun reset() {
-        this.credentials.clear()
+        this._credentials.clear()
         this.session = Session()
     }
 
     fun update(deviceId: String, credentials: Map<Credential, Code?>) {
         if (this.session.deviceId != deviceId) {
             // device was changed, we use the new list
-            this.credentials.clear()
-            this.credentials.putAll(from = credentials)
+            this._credentials.clear()
+            this._credentials.putAll(from = credentials)
             this.session = Session(deviceId)
         } else {
 
             // update codes for non interactive keys
             for ((credential, code) in credentials) {
                 if (!credential.isInteractive()) {
-                    this.credentials[credential] = code
+                    this._credentials[credential] = code
                 }
             }
             // remove obsolete credentials
-            this.credentials.filter { entry ->
+            this._credentials.filter { entry ->
                 // get only keys which are not present in the input map
                 !credentials.contains(entry.key)
             }.forEach(action = {
-                this.credentials.remove(it.key)
+                this._credentials.remove(it.key)
             })
         }
     }
@@ -132,7 +137,7 @@ class Model {
             return null
         }
 
-        credentials[credential] = code
+        _credentials[credential] = code
 
         return CredentialWithCode(credential, code)
     }
@@ -150,15 +155,15 @@ class Model {
             return null
         }
 
-        if (!credentials.contains(oldCredential)) {
+        if (!_credentials.contains(oldCredential)) {
             return null
         }
 
         // preserve code
-        val code = credentials[oldCredential]
+        val code = _credentials[oldCredential]
 
-        credentials.remove(oldCredential)
-        credentials[newCredential] = code
+        _credentials.remove(oldCredential)
+        _credentials[newCredential] = code
 
         return newCredential
     }
@@ -168,11 +173,11 @@ class Model {
             return null
         }
 
-        if (!credentials.contains(credential)) {
+        if (!_credentials.contains(credential)) {
             return null
         }
 
-        credentials[credential] = code
+        _credentials[credential] = code
 
         return code
     }

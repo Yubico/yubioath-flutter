@@ -7,8 +7,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.encodeToJsonElement
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 
 class SerializationTest {
@@ -16,7 +15,7 @@ class SerializationTest {
     @Test
     fun `serialization settings`() {
         assertTrue(jsonSerializer.configuration.encodeDefaults)
-        assertTrue(jsonSerializer.configuration.allowStructuredMapKeys)
+        assertFalse(jsonSerializer.configuration.allowStructuredMapKeys)
     }
 
     @Test
@@ -94,32 +93,25 @@ class SerializationTest {
 
     @Test
     fun `credentials json type`() {
-        val m = mapOf(totp() to code(), hotp() to code())
+        val l = listOf(
+            Model.CredentialWithCode(totp(), code()), Model.CredentialWithCode(hotp(), code()),
+        )
 
-        val jsonElement = jsonSerializer.encodeToJsonElement(m)
+        val jsonElement = jsonSerializer.encodeToJsonElement(l)
         assertTrue(jsonElement is JsonArray)
     }
 
     @Test
     fun `credentials json size`() {
-        val m1 = mapOf<Model.Credential, Model.Code?>()
-        val jsonElement1 = jsonSerializer.encodeToJsonElement(m1) as JsonArray
+        val l1 = listOf<Model.CredentialWithCode>()
+        val jsonElement1 = jsonSerializer.encodeToJsonElement(l1) as JsonArray
         assertEquals(0, jsonElement1.size)
 
-        val m2 = mapOf(totp() to code(), hotp() to code())
-        val jsonElement2 = jsonSerializer.encodeToJsonElement(m2) as JsonArray
-        assertEquals(4, jsonElement2.size)
+        val l2 = listOf(
+            Model.CredentialWithCode(totp(), code()), Model.CredentialWithCode(hotp(), code()),
+        )
+        val jsonElement2 = jsonSerializer.encodeToJsonElement(l2) as JsonArray
+        assertEquals(2, jsonElement2.size)
     }
 
-    @Test
-    fun `credentials json content`() {
-        val m = mapOf(totp() to code())
-        val jsonElement = jsonSerializer.encodeToJsonElement(m) as JsonArray
-
-        // the first element is Credential which has device_id property
-        assertTrue((jsonElement[0] as JsonObject).containsKey("device_id"))
-
-        // the second element is Credential which has value property
-        assertTrue((jsonElement[1] as JsonObject).containsKey("value"))
-    }
 }

@@ -29,23 +29,10 @@ class _CredentialsProvider extends StateNotifier<List<OathPair>?> {
   void setFromString(String input) {
     var result = jsonDecode(input);
 
-    /// structure of data in the json object is:
-    /// [credential1, code1, credential2, code2, ...]
-
-    final List<OathPair> pairs = [];
-    if (result is List<dynamic>) {
-      for (var index = 0; index < result.length / 2; index++) {
-        final credential = result[index * 2];
-        final code = result[index * 2 + 1];
-        pairs.add(
-          OathPair(
-            OathCredential.fromJson(credential),
-            code == null ? null : OathCode.fromJson(code),
-          ),
-        );
-      }
+    if (result is List) {
+      state = result.map((e) => OathPair.fromJson(e)).toList();
+    } else {
+      state = [];
     }
-
-    state = pairs;
   }
 }
