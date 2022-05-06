@@ -62,7 +62,8 @@ class MainActivity : FlutterFragmentActivity() {
             }
 
             override fun logDebug(message: String) {
-                FlutterLog.d(message)
+                // redirect yubikit debug logs to flutter traffic
+                FlutterLog.t(message)
             }
 
             override fun logError(message: String, throwable: Throwable) {
