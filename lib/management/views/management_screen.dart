@@ -204,7 +204,12 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
         .read(managementStateProvider(widget.deviceData.node.path).notifier)
         .setMode(interfaces: _interfaces);
     showMessage(
-        context, 'Configuration updated, remove and reinsert your YubiKey');
+        context,
+        widget.deviceData.node.maybeMap(
+            nfcReader: (_) => 'Configuration updated',
+            orElse: () =>
+                'Configuration updated, remove and reinsert your YubiKey'));
+    Navigator.pop(context);
   }
 
   void _submitForm() {

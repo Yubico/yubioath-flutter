@@ -6,7 +6,7 @@ authors = ["Dain Nilsson <dain@yubico.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-yubikey-manager = { git = "https://github.com/Yubico/yubikey-manager.git", rev = "e37f5f8" }
+yubikey-manager = { git = "https://github.com/Yubico/yubikey-manager.git", branch = "next" }
 fido2 = {version = "1.0.0rc1", allow-prereleases = true}
 mss = "^6.1.0"
 zxing-cpp = "^1.2.0"

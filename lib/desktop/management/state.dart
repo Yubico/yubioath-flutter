@@ -77,6 +77,7 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
       'challenge_response_timeout': challengeResponseTimeout,
       'auto_eject_timeout': autoEjectTimeout,
     });
+    _ref.read(attachedDevicesProvider.notifier).refresh();
   }
 
   @override
