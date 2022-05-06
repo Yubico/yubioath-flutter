@@ -45,53 +45,25 @@ class _CapabilityForm extends StatelessWidget {
   }
 }
 
-class _ModeForm extends StatefulWidget {
-  final int initialInterfaces;
-  final Function(int) onSubmit;
-  const _ModeForm(this.initialInterfaces, {required this.onSubmit, Key? key})
+class _ModeForm extends StatelessWidget {
+  final int interfaces;
+  final Function(int) onChanged;
+  const _ModeForm(this.interfaces, {required this.onChanged, Key? key})
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ModeFormState();
-}
-
-class _ModeFormState extends State<_ModeForm> {
-  int _enabledInterfaces = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _enabledInterfaces = widget.initialInterfaces;
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final valid = _enabledInterfaces != 0 &&
-        _enabledInterfaces != widget.initialInterfaces;
     return Column(children: [
       ...UsbInterface.values.map(
         (iface) => CheckboxListTile(
           title: Text(iface.name.toUpperCase()),
-          value: iface.value & _enabledInterfaces != 0,
+          value: iface.value & interfaces != 0,
           onChanged: (_) {
-            setState(() {
-              _enabledInterfaces ^= iface.value;
-            });
+            onChanged(interfaces ^ iface.value);
           },
         ),
       ),
-      Container(
-        padding: const EdgeInsets.all(16.0),
-        alignment: Alignment.centerRight,
-        child: ElevatedButton(
-          onPressed: valid
-              ? () {
-                  widget.onSubmit(_enabledInterfaces);
-                }
-              : null,
-          child: const Text('Apply changes'),
-        ),
-      )
+      Text(interfaces == 0 ? 'At least one interface must be enabled' : ''),
     ]);
   }
 }
@@ -156,11 +128,14 @@ class ManagementScreen extends ConsumerStatefulWidget {
 
 class _ManagementScreenState extends ConsumerState<ManagementScreen> {
   late Map<Transport, int> _enabled;
+  late int _interfaces;
 
   @override
   void initState() {
     super.initState();
     _enabled = widget.deviceData.info.config.enabledCapabilities;
+    _interfaces = UsbInterfaces.forCapabilites(
+        widget.deviceData.info.config.enabledCapabilities[Transport.usb] ?? 0);
   }
 
   Widget _buildCapabilitiesForm(
@@ -216,11 +191,34 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
 
   Widget _buildModeForm(BuildContext context, WidgetRef ref, DeviceInfo info) =>
       _ModeForm(
-          UsbInterfaces.forCapabilites(
-              info.config.enabledCapabilities[Transport.usb] ?? 0),
-          onSubmit: (enabledInterfaces) {
-        showMessage(context, 'Not yet implemented!');
-      });
+        _interfaces,
+        onChanged: (interfaces) {
+          setState(() {
+            _interfaces = interfaces;
+          });
+        },
+      );
+
+  void _submitModeForm() async {
+    await ref
+        .read(managementStateProvider(widget.deviceData.node.path).notifier)
+        .setMode(interfaces: _interfaces);
+    showMessage(
+        context,
+        widget.deviceData.node.maybeMap(
+            nfcReader: (_) => 'Configuration updated',
+            orElse: () =>
+                'Configuration updated, remove and reinsert your YubiKey'));
+    Navigator.pop(context);
+  }
+
+  void _submitForm() {
+    if (widget.deviceData.info.version.major > 4) {
+      _submitCapabilitiesForm();
+    } else {
+      _submitModeForm();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -229,7 +227,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       Navigator.of(context).popUntil((route) => route.isFirst);
     });
 
-    bool changed = false;
+    bool canSave = false;
 
     return ResponsiveDialog(
       title: const Text('Toggle applications'),
@@ -238,14 +236,26 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                 loading: () => const AppLoadingScreen(),
                 error: (error, _) => AppFailureScreen('$error'),
                 data: (info) {
+                  bool hasConfig = info.version.major > 4;
                   // TODO: Check mode for < YK5 intead
-                  changed = !_mapEquals(
-                    _enabled,
-                    info.config.enabledCapabilities,
-                  );
+                  if (hasConfig) {
+                    canSave = !_mapEquals(
+                      _enabled,
+                      info.config.enabledCapabilities,
+                    );
+                  } else {
+                    canSave = _interfaces != 0 &&
+                        _interfaces !=
+                            UsbInterfaces.forCapabilites(widget
+                                    .deviceData
+                                    .info
+                                    .config
+                                    .enabledCapabilities[Transport.usb] ??
+                                0);
+                  }
                   return Column(
                     children: [
-                      info.version.major > 4
+                      hasConfig
                           ? _buildCapabilitiesForm(context, ref, info)
                           : _buildModeForm(context, ref, info),
                     ],
@@ -254,7 +264,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
               ),
       actions: [
         TextButton(
-          onPressed: changed ? _submitCapabilitiesForm : null,
+          onPressed: canSave ? _submitForm : null,
           child: const Text('Save'),
         ),
       ],

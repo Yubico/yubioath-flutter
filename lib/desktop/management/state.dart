@@ -68,13 +68,16 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
       });
 
   @override
-  Future<void> setMode(int mode,
-      {int challengeResponseTimeout = 0, int autoEjectTimeout = 0}) async {
+  Future<void> setMode(
+      {required int interfaces,
+      int challengeResponseTimeout = 0,
+      int? autoEjectTimeout}) async {
     await _session.command('set_mode', target: _subpath, params: {
-      'mode': mode,
+      'interfaces': interfaces,
       'challenge_response_timeout': challengeResponseTimeout,
       'auto_eject_timeout': autoEjectTimeout,
     });
+    _ref.read(attachedDevicesProvider.notifier).refresh();
   }
 
   @override

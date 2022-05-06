@@ -16,6 +16,9 @@ abstract class ManagementStateNotifier
       String newLockCode = '',
       bool reboot = false});
 
-  Future<void> setMode(int mode,
-      {int challengeResponseTimeout = 0, int autoEjectTimeout = 0});
+  Future<void> setMode({
+    required int interfaces,
+    int challengeResponseTimeout = 0,
+    int? autoEjectTimeout,
+  });
 }
