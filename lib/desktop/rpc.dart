@@ -92,12 +92,18 @@ class RpcSession {
   static void _logEntry(String entry) {
     try {
       final record = jsonDecode(entry);
-      Logger('helper.${record['name']}').log(
-        _py2level[record['level']] ?? Level.INFO,
-        record['message'],
-        record['exc_text'],
-        //time: DateTime.fromMillisecondsSinceEpoch(event['time'] * 1000),
-      );
+      var entryLevel = _py2level[record['level']];
+      if (entryLevel == null) {
+        Logger('helper.${record['name']}')
+            .log(Levels.ERROR, 'Invalid log level: ${record['level']}');
+      } else {
+        Logger('helper.${record['name']}').log(
+          entryLevel,
+          record['message'],
+          record['exc_text'],
+          //time: DateTime.fromMillisecondsSinceEpoch(event['time'] * 1000),
+        );
+      }
     } catch (e) {
       _log.error(e.toString(), entry);
     }
