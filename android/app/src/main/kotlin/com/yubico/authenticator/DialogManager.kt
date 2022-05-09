@@ -41,10 +41,14 @@ class DialogManager(messenger: BinaryMessenger, private var coroutineScope: Coro
                 onCancelled?.invoke()
                 result.success(null)
             } catch (cause: Throwable) {
-                FlutterLog.d("Failed to close dialog during User cancel action")
+                FlutterLog.d(TAG, "Failed to close dialog during User cancel action")
                 result.error(Exception("Failed to close dialog during User cancel action"))
             }
         }
+    }
+
+    companion object {
+        const val TAG = "dialogManager"
     }
 
 }

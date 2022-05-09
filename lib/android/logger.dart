@@ -1,45 +1,32 @@
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 
-import '../app/logging.dart';
+final _log = Logger('android.logger');
 
 class AndroidLogger {
-  final _androidLogger = Logger('android.redirect');
   final MethodChannel _channel = const MethodChannel('android.log.redirect');
 
-  static AndroidLogger? instance;
-  static void initialize() {
-    instance = AndroidLogger();
+  AndroidLogger() {
+    Logger.root.onRecord.listen((record) {
+      if (record.level >= Logger.root.level) {
+        log(record);
+      }
+    });
+    _log.info('Logging initialized, outputting to Android/logcat');
   }
 
-  AndroidLogger() {
-    _channel.setMethodCallHandler((call) async {
-      var level = call.arguments['level'];
-      var message = call.arguments['message'];
-      var error = call.arguments['error'];
+  void setLogLevel(Level level) async {
+    await _channel.invokeMethod('setLevel', {
+      'level': level.value,
+    });
+  }
 
-      switch (level) {
-        case 't':
-        case 'v':
-          _androidLogger.traffic(message, error);
-          break;
-        case 'd':
-          _androidLogger.debug(message, error);
-          break;
-        case 'w':
-          _androidLogger.warning(message, error);
-          break;
-        case 'e':
-        case 'wtf':
-          _androidLogger.error(message, error);
-          break;
-        case 'i':
-        default:
-          _androidLogger.info(message, error);
-          break;
-      }
-
-      return 0;
+  void log(LogRecord record) async {
+    await _channel.invokeMethod('log', {
+      'loggerName': record.loggerName,
+      'level': record.level.value,
+      'message': record.message,
+      'error': record.error
     });
   }
 }

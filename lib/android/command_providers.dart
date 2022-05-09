@@ -48,7 +48,7 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
 
       // reset oath providers on key change
       var yubiKeyData = YubiKeyData(deviceNode, name, deviceInfo);
-      if (state != yubiKeyData) {
+      if (state != yubiKeyData && state != null) {
         _ref.refresh(androidStateProvider);
         _ref.refresh(androidCredentialsProvider);
       }
