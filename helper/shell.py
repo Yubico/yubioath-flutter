@@ -228,22 +228,22 @@ def log_stderr(stderr):
 @click.command()
 @click.argument("executable", nargs=-1)
 def shell(executable):
-    """A basic shell for interacting with the ykman rpc."""
-    rpc = subprocess.Popen(  # nosec
-        executable or [sys.executable, "ykman-rpc.py"],
+    """A basic shell for interacting with the Yubico Authenticator Helper."""
+    helper = subprocess.Popen(  # nosec
+        executable or [sys.executable, "authenticator-helper.py"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         encoding="utf8",
     )
 
-    Thread(daemon=True, target=log_stderr, args=(rpc.stderr,)).start()
+    Thread(daemon=True, target=log_stderr, args=(helper.stderr,)).start()
 
     click.echo("Shell starting...")
-    shell = RpcShell(rpc.stdin, cast(IO[str], rpc.stdout))
+    shell = RpcShell(helper.stdin, cast(IO[str], helper.stdout))
     shell.cmdloop()
     click.echo("Stopping...")
-    rpc.communicate()
+    helper.communicate()
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from rpc import run_rpc_pipes, run_rpc_socket
+from helper import run_rpc_pipes, run_rpc_socket
 
 import socket
 import sys

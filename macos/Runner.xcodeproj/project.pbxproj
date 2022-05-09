@@ -26,7 +26,7 @@
 		33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F22044A3C60003C045 /* Assets.xcassets */; };
 		33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F42044A3C60003C045 /* MainMenu.xib */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
-		A549BDAB2747CBBE0016F37D /* ykman-rpc in Resources */ = {isa = PBXBuildFile; fileRef = A549BDAA2747CBBE0016F37D /* ykman-rpc */; };
+		A5DD3DBC2825505C001ACA3A /* helper in Resources */ = {isa = PBXBuildFile; fileRef = A5DD3DBB2825505C001ACA3A /* helper */; };
 		CCE73883AA6E76B42D34D392 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5437883A25FD13EEA6A730E /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
@@ -71,7 +71,7 @@
 		6EAF9B998D311C2D6DD1409C /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
-		A549BDAA2747CBBE0016F37D /* ykman-rpc */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "ykman-rpc"; path = "../build/macos/ykman-rpc"; sourceTree = "<group>"; };
+		A5DD3DBB2825505C001ACA3A /* helper */ = {isa = PBXFileReference; lastKnownFileType = folder; name = helper; path = ../build/macos/helper; sourceTree = "<group>"; };
 		E5437883A25FD13EEA6A730E /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F18D61C5361D1EF615E824EE /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		FFD2BDD751CD366AEDC4D417 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
@@ -122,7 +122,7 @@
 		33CC11242044D66E0003C045 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				A549BDAA2747CBBE0016F37D /* ykman-rpc */,
+				A5DD3DBB2825505C001ACA3A /* helper */,
 				33CC10F22044A3C60003C045 /* Assets.xcassets */,
 				33CC10F42044A3C60003C045 /* MainMenu.xib */,
 				33CC10F72044A3C60003C045 /* Info.plist */,
@@ -248,8 +248,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A549BDAB2747CBBE0016F37D /* ykman-rpc in Resources */,
 				33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */,
+				A5DD3DBC2825505C001ACA3A /* helper in Resources */,
 				33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
