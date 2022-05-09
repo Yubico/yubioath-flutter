@@ -60,6 +60,10 @@ class OathManager(
         }
     }
 
+    companion object {
+        const val TAG = "OathManager"
+    }
+
     private val deviceObserver =
         Observer<YubiKeyDevice?> { yubiKeyDevice ->
             if (yubiKeyDevice != null) {
@@ -70,13 +74,13 @@ class OathManager(
         }
 
     private fun installObservers() {
-        FlutterLog.d("Installed oath observers")
+        FlutterLog.d(TAG, "Installed oath observers")
         appViewModel.yubiKeyDevice.observe(lifecycleOwner, deviceObserver)
     }
 
     private fun uninstallObservers() {
         appViewModel.yubiKeyDevice.removeObserver(deviceObserver)
-        FlutterLog.d("Uninstalled oath observers")
+        FlutterLog.d(TAG, "Uninstalled oath observers")
     }
 
     private suspend fun provideYubiKey(result: com.yubico.yubikit.core.util.Result<YubiKeyDevice, Exception>) =
@@ -87,7 +91,7 @@ class OathManager(
 
     private var _isUsbKey = false
     private fun yubikeyAttached(device: YubiKeyDevice) {
-        FlutterLog.d("Device connected")
+        FlutterLog.d(TAG, "Device connected")
 
         _isUsbKey = device is UsbYubiKeyDevice
 
@@ -110,7 +114,7 @@ class OathManager(
 
     private fun yubikeyDetached() {
         if (_isUsbKey) {
-            FlutterLog.d("Device disconnected")
+            FlutterLog.d(TAG, "Device disconnected")
             // clear keys from memory
             _memoryKeyProvider.clearAll()
             _pendingYubiKeyAction.postValue(null)
@@ -513,7 +517,7 @@ class OathManager(
         if (queryUserToTap && !_isUsbKey) {
             dialogManager.showDialog(title) {
                 coroutineScope.launch(Dispatchers.Main) {
-                    FlutterLog.d("Cancelled Dialog $title")
+                    FlutterLog.d(TAG, "Cancelled Dialog $title")
                     provideYubiKey(com.yubico.yubikit.core.util.Result.failure(Exception("User canceled")))
                 }
             }
