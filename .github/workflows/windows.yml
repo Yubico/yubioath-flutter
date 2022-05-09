@@ -32,8 +32,8 @@ jobs:
           flutter test
           flutter analyze
 
-      - name: Install ykman
-        run: .\build-ykman.bat
+      - name: Build the Helper
+        run: .\build-helper.bat
 
       - name: Build the app
         run: flutter build windows
@@ -44,9 +44,9 @@ jobs:
       - name: Move .dll files
         run: |
           $dest = "build\windows\runner\Release"
-          cp $dest\ykman-rpc\MSVCP140.dll $dest\
-          cp $dest\ykman-rpc\VCRUNTIME140.dll $dest\
-          cp $dest\ykman-rpc\VCRUNTIME140_1.dll $dest\
+          cp $dest\helper\MSVCP140.dll $dest\
+          cp $dest\helper\VCRUNTIME140.dll $dest\
+          cp $dest\helper\VCRUNTIME140_1.dll $dest\
 
 
       - name: Create an unsigned .msi installer package

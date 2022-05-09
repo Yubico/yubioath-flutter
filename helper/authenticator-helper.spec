@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ["ykman-rpc.py"],
+    ["authenticator-helper.py"],
     pathex=[],
     binaries=[],
     datas=[],
@@ -26,14 +26,14 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="ykman-rpc",
+    name="authenticator-helper",
     icon="NONE",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
     console=True,
-    manifest="ykman-rpc.exe.manifest",
+    manifest="authenticator-helper.exe.manifest",
     version="version_info.txt",
     disable_windowed_traceback=False,
     target_arch=None,
@@ -48,5 +48,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name="ykman-rpc",
+    name="helper",
 )

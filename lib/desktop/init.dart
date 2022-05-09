@@ -59,10 +59,10 @@ Future<Widget> initialize(List<String> argv) async {
     }
   }));
 
-  // Either use the _YKMAN_EXE environment variable, or look relative to executable.
-  var exe = Platform.environment['_YKMAN_PATH'];
+  // Either use the _HELPER_PATH environment variable, or look relative to executable.
+  var exe = Platform.environment['_HELPER_PATH'];
   if (exe?.isEmpty ?? true) {
-    var relativePath = 'ykman-rpc/ykman-rpc';
+    var relativePath = 'helper/authenticator-helper';
     if (Platform.isMacOS) {
       relativePath = '../Resources/' + relativePath;
     } else if (Platform.isWindows) {
@@ -73,10 +73,10 @@ Future<Widget> initialize(List<String> argv) async {
         .toFilePath();
   }
 
-  _log.info('Starting subprocess: $exe');
+  _log.info('Starting Helper subprocess: $exe');
   final rpc = RpcSession(exe!);
   await rpc.initialize();
-  _log.info('ykman-rpc process started', exe);
+  _log.info('Helper process started', exe);
   rpc.setLogLevel(Logger.root.level);
 
   return ProviderScope(

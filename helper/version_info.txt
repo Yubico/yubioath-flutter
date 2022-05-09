@@ -30,11 +30,11 @@ VSVersionInfo(
       StringTable(
         '040904b0',
         [StringStruct('CompanyName', 'Yubico'),
-        StringStruct('FileDescription', 'YubiKey Manager RPC'),
+        StringStruct('FileDescription', 'Yubico Authenticator Helper'),
         StringStruct('FileVersion', '4.1.0.0'),
-        StringStruct('LegalCopyright', 'Copyright (c) 2021 Yubico AB'),
-        StringStruct('OriginalFilename', 'ykman-rpc.exe'),
-        StringStruct('ProductName', 'YubiKey Manager'),
+        StringStruct('LegalCopyright', 'Copyright (c) 2022 Yubico AB'),
+        StringStruct('OriginalFilename', 'authenticator-helper.exe'),
+        StringStruct('ProductName', 'Yubico Authenticator'),
         StringStruct('ProductVersion', '4.1.0.0')])
       ]), 
     VarFileInfo([VarStruct('Translation', [1033, 1200])])
