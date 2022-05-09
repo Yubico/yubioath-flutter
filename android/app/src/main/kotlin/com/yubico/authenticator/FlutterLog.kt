@@ -60,9 +60,12 @@ class FlutterLog(messenger: BinaryMessenger) {
                     val message = call.argument<String>("message")
                     val error = call.argument<String>("error")
                     val loggerName = call.argument<String>("loggerName")
-                    val level = logLevelFromArgument(call.argument("level"))
+                    val levelValue = call.argument<String>("level")
+                    val level = logLevelFromArgument(levelValue)
 
-                    if (loggerName != null && message != null) {
+                    if (level == null) {
+                        loggerError("Invalid level for message from [$loggerName]: $levelValue")
+                    } else if (loggerName != null && message != null) {
                         log(level, loggerName, message, error)
                         result.success(null)
                     } else {
@@ -70,17 +73,26 @@ class FlutterLog(messenger: BinaryMessenger) {
                     }
                 }
                 "setLevel" -> {
-                    _level = logLevelFromArgument(call.argument("level"))
+                    val levelArgValue = call.argument<String>("level")
+                    val requestedLogLevel = logLevelFromArgument(levelArgValue)
+                    if (requestedLogLevel != null) {
+                        _level = requestedLogLevel
+                    } else {
+                        loggerError("Invalid log level requested: $levelArgValue")
+                    }
                 }
             }
         }
     }
 
-    private fun logLevelFromArgument(argValue: String?) : LogLevel =
-        LogLevel.values().firstOrNull { it.name == argValue?.uppercase() } ?: LogLevel.INFO
+    private fun logLevelFromArgument(argValue: String?): LogLevel? =
+        LogLevel.values().firstOrNull { it.name == argValue?.uppercase() }
+
+    private fun loggerError(message: String) {
+        log(LogLevel.ERROR, "FlutterLog", message, null)
+    }
 
     private fun log(level: LogLevel, loggerName: String, message: String, error: String?) {
-
         if (level < _level) {
             return
         }
