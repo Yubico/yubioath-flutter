@@ -86,18 +86,18 @@ class FlutterLog(messenger: BinaryMessenger) {
             return
         }
 
-        val messageWithLoggerName = "[$loggerName] $message"
+        val logMessage = "[$loggerName] ${level.name}: $message"
 
         when (level) {
-            LogLevel.TRAFFIC -> Log.v(TAG, messageWithLoggerName)
-            LogLevel.DEBUG -> Log.d(TAG, messageWithLoggerName)
-            LogLevel.INFO -> Log.i(TAG, messageWithLoggerName)
-            LogLevel.WARNING -> Log.w(TAG, messageWithLoggerName)
-            LogLevel.ERROR -> Log.e(TAG, messageWithLoggerName)
+            LogLevel.TRAFFIC -> Log.v(TAG, logMessage)
+            LogLevel.DEBUG -> Log.d(TAG, logMessage)
+            LogLevel.INFO -> Log.i(TAG, logMessage)
+            LogLevel.WARNING -> Log.w(TAG, logMessage)
+            LogLevel.ERROR -> Log.e(TAG, logMessage)
         }
 
         error?.let {
-            Log.e(TAG, "[$loggerName] $error")
+            Log.e(TAG, "[$loggerName] ${level.name}: $error")
         }
     }
 }
