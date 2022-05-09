@@ -6,29 +6,28 @@ import io.flutter.plugin.common.MethodChannel
 
 class FlutterLog(messenger: BinaryMessenger) {
 
-    private enum class LogLevel(val value: Int) {
-        TRAFFIC(500),
-        DEBUG(700),
-        INFO(800),
-        WARNING(900),
-        ERROR(1000);
-
-        companion object {
-            fun fromInt(value: Int?) = values().firstOrNull { it.value == value }
-        }
+    private enum class LogLevel {
+        TRAFFIC,
+        DEBUG,
+        INFO,
+        WARNING,
+        ERROR
     }
 
     private var _channel = MethodChannel(messenger, "android.log.redirect")
     private var _level = LogLevel.INFO
 
     companion object {
-
         private const val TAG = "yubico-authenticator"
 
         private lateinit var instance: FlutterLog
 
         fun create(messenger: BinaryMessenger) {
             instance = FlutterLog(messenger)
+        }
+
+        private val logLevelFromArgument: (String?) -> LogLevel = { argValue ->
+            LogLevel.valueOf(argValue?.uppercase() ?: "INFO")
         }
 
         @Suppress("unused")
@@ -59,14 +58,15 @@ class FlutterLog(messenger: BinaryMessenger) {
 
     init {
         _channel.setMethodCallHandler { call, result ->
+
             when (call.method) {
                 "log" -> {
                     val message = call.argument<String>("message")
                     val error = call.argument<String?>("error")
                     val loggerName = call.argument<String>("loggerName")
-                    val level = LogLevel.fromInt(call.argument<Int>("level"))
+                    val level = logLevelFromArgument(call.argument("level"))
 
-                    if (level != null && loggerName != null && message != null) {
+                    if (loggerName != null && message != null) {
                         log(level, loggerName, message, error)
                         result.success(null)
                     } else {
@@ -74,11 +74,9 @@ class FlutterLog(messenger: BinaryMessenger) {
                     }
                 }
                 "setLevel" -> {
-                    _level = LogLevel.fromInt(call.argument<Int>("level")) ?: LogLevel.INFO
+                    _level = logLevelFromArgument(call.argument("level"))
                 }
             }
-
-
         }
     }
 

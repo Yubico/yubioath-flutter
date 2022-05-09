@@ -17,14 +17,14 @@ class AndroidLogger {
 
   void setLogLevel(Level level) async {
     await _channel.invokeMethod('setLevel', {
-      'level': level.value,
+      'level': level.name,
     });
   }
 
   void log(LogRecord record) async {
     await _channel.invokeMethod('log', {
       'loggerName': record.loggerName,
-      'level': record.level.value,
+      'level': record.level.name,
       'message': record.message,
       'error': record.error
     });
