@@ -23,6 +23,8 @@ class FlutterLog(messenger: BinaryMessenger) {
 
     companion object {
 
+        private const val TAG = "yubico-authenticator"
+
         private lateinit var instance: FlutterLog
 
         fun create(messenger: BinaryMessenger) {
@@ -86,16 +88,18 @@ class FlutterLog(messenger: BinaryMessenger) {
             return
         }
 
+        val messageWithLoggerName = "[$loggerName] $message"
+
         when (level) {
-            LogLevel.TRAFFIC -> Log.v(loggerName, message)
-            LogLevel.DEBUG -> Log.d(loggerName, message)
-            LogLevel.INFO -> Log.i(loggerName, message)
-            LogLevel.WARNING -> Log.w(loggerName, message)
-            LogLevel.ERROR -> Log.e(loggerName, message)
+            LogLevel.TRAFFIC -> Log.v(TAG, messageWithLoggerName)
+            LogLevel.DEBUG -> Log.d(TAG, messageWithLoggerName)
+            LogLevel.INFO -> Log.i(TAG, messageWithLoggerName)
+            LogLevel.WARNING -> Log.w(TAG, messageWithLoggerName)
+            LogLevel.ERROR -> Log.e(TAG, messageWithLoggerName)
         }
 
         error?.let {
-            Log.e(loggerName, error)
+            Log.e(TAG, "[$loggerName] $error")
         }
     }
 }
