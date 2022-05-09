@@ -26,10 +26,6 @@ class FlutterLog(messenger: BinaryMessenger) {
             instance = FlutterLog(messenger)
         }
 
-        private val logLevelFromArgument: (String?) -> LogLevel = { argValue ->
-            LogLevel.valueOf(argValue?.uppercase() ?: "INFO")
-        }
-
         @Suppress("unused")
         fun t(tag: String, message: String, error: String? = null) {
             instance.log(LogLevel.TRAFFIC, tag, message, error)
@@ -62,7 +58,7 @@ class FlutterLog(messenger: BinaryMessenger) {
             when (call.method) {
                 "log" -> {
                     val message = call.argument<String>("message")
-                    val error = call.argument<String?>("error")
+                    val error = call.argument<String>("error")
                     val loggerName = call.argument<String>("loggerName")
                     val level = logLevelFromArgument(call.argument("level"))
 
@@ -79,6 +75,9 @@ class FlutterLog(messenger: BinaryMessenger) {
             }
         }
     }
+
+    private fun logLevelFromArgument(argValue: String?) : LogLevel =
+        LogLevel.values().firstOrNull { it.name == argValue?.uppercase() } ?: LogLevel.INFO
 
     private fun log(level: LogLevel, loggerName: String, message: String, error: String?) {
 
