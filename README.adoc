@@ -7,20 +7,20 @@ https://flutter.dev/desktop
 Development has been done using the "Install from git" method of installing the
 SDK, from the "beta" channel.
 
-You will also need to provide a compiled version of ykman-rpc, as described in
+You will also need to provide a compiled version of the Helper, as described in
 the next section.
 
 
-=== Building ykman-rpc
+=== Building the Yubico Authenticator Helper
 Requirements: Python >= 3.8 and Poetry.
 
-The GUI requires a compiled version of ykman-rpc to run, which is built from
-the sources in ykman-rpc/ in this repository. This needs to be build prior to
-running `flutter build` or `flutter run`, by running `build-ykman.sh` (or
-`build-ykman.bat` on Windows).
+The GUI requires a compiled version of Helper to run, which is built from the
+sources in helper/ in this repository. This needs to be build prior to running
+`flutter build` or `flutter run`, by running `build-helper.sh` (or
+`build-helper.bat` on Windows).
 
-NOTE: You will need to re-run `ykman-build.sh` if changes have been made to
-ykman-rpc's code, or if `flutter clean` has been run.
+NOTE: You will need to re-run `ykman-helper.sh` if changes have been made to
+Helper's code, or if `flutter clean` has been run.
 
 
 === Running the app
