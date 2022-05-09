@@ -243,19 +243,19 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     if (_currentDevice == null) return;
     _log.debug('refreshing credentials...');
 
+    final pairs = [];
+
     try {
-      _log.debug('Asking kotlin to refresh codes...');
-
       var resultString = await _api.refreshCodes();
+      var result = jsonDecode(resultString);
 
-      _log.debug('Received cred json from kotlin...');
+      for (var e in result['entries']) {
+        final credential = OathCredential.fromJson(e['credential']);
+        final code = e['code'] == null ? null : OathCode.fromJson(e['code']);
+        pairs.add(OathPair(credential, code));
+      }
 
       if (mounted) {
-        var result = jsonDecode(resultString);
-
-        final pairs =
-            (result as List).map((e) => OathPair.fromJson(e)).toList();
-
         final current = state?.toList() ?? [];
         for (var pair in pairs) {
           final i =
@@ -268,12 +268,9 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         }
         state = current;
         _scheduleRefresh();
-      } else {
-        _log.debug('Did not update creds as view is not mounted');
       }
     } catch (e) {
-      _log.error('Failure refreshing codes: $e');
-      _log.error('Mounted: $mounted');
+      _log.debug('Failure refreshing codes: $e');
     }
   }
 
@@ -298,10 +295,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         if (earliest < now) {
           refresh();
         } else {
-          var nextRefresh = Duration(milliseconds: earliest - now);
-          _log.debug('Scheduling next refresh in $nextRefresh');
-
-          _timer = Timer(nextRefresh, refresh);
+          _timer = Timer(Duration(milliseconds: earliest - now), refresh);
         }
       }
     }
