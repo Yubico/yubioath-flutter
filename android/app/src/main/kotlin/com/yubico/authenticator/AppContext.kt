@@ -23,7 +23,11 @@ class AppContext(messenger: BinaryMessenger) : Pigeon.AppApi {
 
     override fun setContext(subPageIndex: Long, result: Pigeon.Result<Void>) {
         _appContext.value = OperationContext.getByValue(subPageIndex)
-        FlutterLog.d("App context is now $_appContext")
+        FlutterLog.d(TAG, "App context is now $_appContext")
         result.success(null)
+    }
+
+    companion object {
+        const val TAG = "appContext"
     }
 }

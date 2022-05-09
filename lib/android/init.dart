@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yubico_authenticator/android/logger.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/app.dart';
 import '../app/models.dart';
@@ -20,21 +21,9 @@ import 'qr_scanner/qr_scanner_provider.dart';
 import 'state.dart';
 import 'views/tap_request_dialog.dart';
 
-final _log = Logger('android.init');
+final androidLogger = AndroidLogger();
 
 Future<Widget> initialize() async {
-  AndroidLogger.initialize();
-
-  Logger.root.onRecord.listen((record) {
-    if (record.level >= Logger.root.level) {
-      debugPrint('[${record.loggerName}] ${record.level}: ${record.message}');
-      if (record.error != null) {
-        debugPrint(record.error.toString());
-      }
-    }
-  });
-  _log.info('Logging initialized, outputting to stderr');
-
   return ProviderScope(
     overrides: [
       supportedAppsProvider.overrideWithValue([
@@ -56,6 +45,12 @@ Future<Widget> initialize() async {
       builder: (context, ref, child) {
         // activates the sub page provider
         ref.read(androidSubPageProvider);
+
+        ref.listen(logLevelProvider, (oldLevel, newLevel) {
+          if (oldLevel != newLevel && newLevel is Level) {
+            androidLogger.setLogLevel(newLevel);
+          }
+        });
 
         /// initializes global handler for dialogs
         FDialogApi.setup(FDialogApiImpl(ref.watch(withContextProvider)));

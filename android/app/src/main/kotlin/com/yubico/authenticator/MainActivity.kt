@@ -57,16 +57,19 @@ class MainActivity : FlutterFragmentActivity() {
 
     private fun initializeLogger(messenger: BinaryMessenger) {
         Logger.setLogger(object : Logger() {
+            private val TAG = "yubikit"
+
             init {
-                FlutterLog.create(messenger, this@MainActivity)
+                FlutterLog.create(messenger)
             }
 
             override fun logDebug(message: String) {
-                FlutterLog.d(message)
+                // redirect yubikit debug logs to flutter traffic
+                FlutterLog.t(TAG, message)
             }
 
             override fun logError(message: String, throwable: Throwable) {
-                FlutterLog.e(message, throwable.message ?: throwable.toString())
+                FlutterLog.e(TAG, message, throwable.message ?: throwable.toString())
             }
         })
     }
