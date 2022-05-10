@@ -127,6 +127,43 @@ class ModelTest {
     }
 
     @Test
+    fun `update uses all credentials from its input `() {
+        val d = "device"
+        model.update(d, emptyCredentials())
+
+        // in next update the device has credentials
+        val totp1 = totp(deviceId = d, name = "totp1", touchRequired = false)
+        val code1 = code(value = "111111")
+        val totp2 = totp(deviceId = d, name = "totp2", touchRequired = true)
+        val code2 = code(value = "222222")
+        val hotp1 = hotp(deviceId = d, name = "hotp1", touchRequired = false)
+        val code3 = code(value = "33333")
+        val hotp2 = hotp(deviceId = d, name = "hotp2", touchRequired = true)
+        val code4 = code(value = "4444")
+
+        val m1 = mapOf(totp1 to code1, totp2 to code2, hotp1 to code3, hotp2 to code4)
+        model.update(d, m1)
+
+        // all four are present
+        val foundTotp1 = model.credentials.find { it.credential == totp1 }
+        assertTrue(foundTotp1 != null)
+        assertEquals("111111", foundTotp1?.code?.value)
+
+        val foundTotp2 = model.credentials.find { it.credential == totp2 }
+        assertTrue(foundTotp2 != null)
+        assertEquals("222222", foundTotp2?.code?.value)
+
+        val foundHotp1 = model.credentials.find { it.credential == hotp1 }
+        assertTrue(foundHotp1 != null)
+        assertEquals("33333", foundHotp1?.code?.value)
+
+        val foundHotp2 = model.credentials.find { it.credential == hotp2 }
+        assertTrue(foundHotp2 != null)
+        assertEquals("4444", foundHotp2?.code?.value)
+
+    }
+
+    @Test
     fun `update preserves non-interactive codes`() {
         val d = "device"
         val totp = totp(d, name = "totpCred")
