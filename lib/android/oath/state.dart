@@ -243,17 +243,11 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     if (_currentDevice == null) return;
     _log.debug('refreshing credentials...');
 
-    final pairs = [];
-
     try {
       var resultString = await _api.refreshCodes();
       var result = jsonDecode(resultString);
 
-      for (var e in result['entries']) {
-        final credential = OathCredential.fromJson(e['credential']);
-        final code = e['code'] == null ? null : OathCode.fromJson(e['code']);
-        pairs.add(OathPair(credential, code));
-      }
+      final pairs = result.map((e) => OathPair.fromJson(e)).toList();
 
       if (mounted) {
         final current = state?.toList() ?? [];

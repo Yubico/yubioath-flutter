@@ -110,7 +110,11 @@ class Model {
     }
 
     fun update(deviceId: String, credentials: Map<Credential, Code?>) {
-        if (this.session.deviceId != deviceId) {
+
+        // is the model already holding credentials for the deviceId
+        val sameDevice = this._credentials.keys.firstOrNull()?.deviceId == deviceId
+
+        if (!sameDevice) {
             // device was changed, we use the new list
             this._credentials.clear()
             this._credentials.putAll(from = credentials)
@@ -119,7 +123,7 @@ class Model {
 
             // update codes for non interactive keys
             for ((credential, code) in credentials) {
-                if (!credential.isInteractive()) {
+                if (!credential.isInteractive() || !this._credentials.contains(credential)) {
                     this._credentials[credential] = code
                 }
             }
