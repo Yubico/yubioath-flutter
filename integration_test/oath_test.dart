@@ -8,6 +8,7 @@ import 'package:yubico_authenticator/android/init.dart' as android;
 import 'package:yubico_authenticator/app/views/no_device_screen.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/desktop/init.dart' as desktop;
+import 'package:yubico_authenticator/oath/views/account_list.dart';
 import 'package:yubico_authenticator/oath/views/oath_screen.dart';
 
 Future<void> addDelay(int ms) async {
@@ -148,7 +149,7 @@ void main() {
     });
   });
   group('TOTP tests', () {
-    testWidgets('first TOTP test', (WidgetTester tester) async {
+    testWidgets('Add 32 TOTP accounts and reset oath', (WidgetTester tester) async {
       final Widget initializedApp;
       if (isDesktop) {
         initializedApp = await desktop.initialize([]);
@@ -163,6 +164,53 @@ void main() {
 
       expect(find.byType(NoDeviceScreen), findsNothing, reason: 'No YubiKey connected');
       expect(find.byType(OathScreen), findsOneWidget);
+
+      for (var i = 0; i < 32; i += 1) {
+        await tester.tap(find.byType(FloatingActionButton));
+        await tester.pump(const Duration(milliseconds: 300));
+
+        await tester.tap(find.text('Add account'));
+        await tester.pump(const Duration(milliseconds: 300));
+
+        var issuer = generateRandomIssuer();
+        var name = generateRandomName();
+        var secret = 'abba';
+
+        /// this random fails: generateRandomSecret();
+
+        await tester.enterText(find.byKey(const Key('issuer')), issuer);
+        await tester.pump(const Duration(milliseconds: 5));
+        await tester.enterText(find.byKey(const Key('name')), name);
+        await tester.pump(const Duration(milliseconds: 5));
+        await tester.enterText(find.byKey(const Key('secret')), secret);
+
+        await tester.pump(const Duration(milliseconds: 300));
+
+        await tester.tap(find.byKey(const Key('save_btn')));
+
+        await tester.pump(const Duration(milliseconds: 300));
+
+        expect(find.byType(OathScreen), findsOneWidget);
+
+        await tester.enterText(find.byKey(const Key('search_accounts')), issuer);
+
+        await tester.pump(const Duration(milliseconds: 500));
+
+        expect(find.descendant(of: find.byType(AccountList), matching: find.textContaining(issuer)), findsOneWidget);
+
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pump(const Duration(milliseconds: 300));
+
+      await tester.tap(find.text('Reset OATH'));
+      await tester.pump(const Duration(milliseconds: 300));
+
+      await tester.tap(find.text('Reset'));
+      await tester.pump(const Duration(milliseconds: 300));
+
+      await tester.pump(const Duration(seconds: 3));
     });
   });
   group('HOTP tests', () {
