@@ -11,12 +11,10 @@ import '../state.dart';
 class ManagePasswordDialog extends ConsumerStatefulWidget {
   final DevicePath path;
   final OathState state;
-  const ManagePasswordDialog(this.path, this.state, {Key? key})
-      : super(key: key);
+  const ManagePasswordDialog(this.path, this.state, {Key? key}) : super(key: key);
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _ManagePasswordDialogState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _ManagePasswordDialogState();
 }
 
 class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
@@ -26,9 +24,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   bool _currentIsWrong = false;
 
   _submit() async {
-    final result = await ref
-        .read(oathStateProvider(widget.path).notifier)
-        .setPassword(_currentPassword, _newPassword);
+    final result = await ref.read(oathStateProvider(widget.path).notifier).setPassword(_currentPassword, _newPassword);
     if (result) {
       Navigator.of(context).pop();
       showMessage(context, 'Password set');
@@ -61,6 +57,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               style: Theme.of(context).textTheme.headline6,
             ),
             TextField(
+              key: const Key('current oath password'),
               autofocus: true,
               obscureText: true,
               decoration: InputDecoration(
@@ -81,9 +78,8 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                   child: const Text('Remove password'),
                   onPressed: _currentPassword.isNotEmpty
                       ? () async {
-                          final result = await ref
-                              .read(oathStateProvider(widget.path).notifier)
-                              .unsetPassword(_currentPassword);
+                          final result =
+                              await ref.read(oathStateProvider(widget.path).notifier).unsetPassword(_currentPassword);
                           if (result) {
                             Navigator.of(context).pop();
                             showMessage(context, 'Password removed');
@@ -99,9 +95,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                   OutlinedButton(
                     child: const Text('Clear saved password'),
                     onPressed: () async {
-                      await ref
-                          .read(oathStateProvider(widget.path).notifier)
-                          .forgetPassword();
+                      await ref.read(oathStateProvider(widget.path).notifier).forgetPassword();
                       Navigator.of(context).pop();
                       showMessage(context, 'Password forgotten');
                     },
@@ -115,6 +109,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             style: Theme.of(context).textTheme.headline6,
           ),
           TextField(
+            key: const Key('new oath password'),
             autofocus: !widget.state.hasKey,
             obscureText: true,
             decoration: InputDecoration(
@@ -129,6 +124,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             },
           ),
           TextField(
+            key: const Key('confirm oath password'),
             obscureText: true,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
