@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yubico_authenticator/android/logger.dart';
+import 'package:yubico_authenticator/android/window_state_provider.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/app.dart';
@@ -44,12 +45,16 @@ Future<Widget> initialize() async {
       currentAppProvider.overrideWithProvider(androidSubPageProvider),
       managementStateProvider.overrideWithProvider(androidManagementState),
       currentDeviceProvider.overrideWithProvider(androidCurrentDeviceProvider),
-      qrScannerProvider.overrideWithProvider(androidQrScannerProvider)
+      qrScannerProvider.overrideWithProvider(androidQrScannerProvider),
+      windowStateProvider.overrideWithProvider(androidWindowStateProvider)
     ],
     child: YubicoAuthenticatorApp(page: Consumer(
       builder: (context, ref, child) {
         // activates the sub page provider
         ref.read(androidSubPageProvider);
+
+        // activates window state provider
+        ref.read(androidWindowStateProvider);
 
         ref.listen(logLevelProvider, (oldLevel, newLevel) {
           if (oldLevel != newLevel && newLevel is Level) {
