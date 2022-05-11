@@ -21,7 +21,7 @@ class FlutterLog(messenger: BinaryMessenger) {
                     if (level == null) {
                         loggerError("Invalid level for message from [$loggerName]: $levelValue")
                     } else if (loggerName != null && message != null) {
-                        log(level, loggerName, message, error)
+                        Log.log(level, loggerName, message, error)
                         result.success(null)
                     } else {
                         result.error("-1", "Invalid log parameters", null)
@@ -45,9 +45,5 @@ class FlutterLog(messenger: BinaryMessenger) {
 
     private fun loggerError(message: String) {
         Log.e("FlutterLog", message, null)
-    }
-
-    private fun log(level: Log.LogLevel, loggerName: String, message: String, error: String?) {
-        Log.log(level, loggerName, message, error)
     }
 }
