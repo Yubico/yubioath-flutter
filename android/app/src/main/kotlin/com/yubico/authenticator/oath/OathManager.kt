@@ -248,7 +248,7 @@ class OathManager(
                         val code =
                             if (credentialData.oathType == OathType.TOTP && !requireTouch) {
                                 // recalculate the code
-                                calculateCode(session, credential, System.currentTimeMillis())
+                                calculateCode(session, credential)
                             } else null
 
                         val addedCred = _model.add(
@@ -349,7 +349,7 @@ class OathManager(
                         val code = _model.updateCode(
                             session.deviceId,
                             credential.model(session.deviceId),
-                            calculateCode(session, credential, System.currentTimeMillis()).model()
+                            calculateCode(session, credential).model()
                         )
 
                         if (code != null) {
@@ -372,20 +372,21 @@ class OathManager(
      * Returns Steam code or standard TOTP code based on the credential.
      * @param session OathSession which calculates the TOTP code
      * @param credential
-     * @param timestamp time for TOTP calculation
      *
      * @return calculated Code
      */
     private fun calculateCode(
         session: OathSession,
-        credential: Credential,
-        timestamp: Long
-    ) =
-        if (credential.isSteamCredential()) {
+        credential: Credential
+    ): Code {
+        // Manual calculate, need to pad timer to avoid immediate expiration
+        val timestamp = System.currentTimeMillis() + 10000
+        return if (credential.isSteamCredential()) {
             session.calculateSteamCode(credential, timestamp)
         } else {
             session.calculateCode(credential, timestamp)
         }
+    }
 
     private suspend fun sendDeviceInfo(device: YubiKeyDevice) {
 
@@ -491,11 +492,15 @@ class OathManager(
     }
 
     private fun calculateOathCodes(session: OathSession): Map<Credential, Code> {
-        val timeStamp = System.currentTimeMillis()
-        return session.calculateCodes(timeStamp).map { (credential, code) ->
+        var timestamp = System.currentTimeMillis()
+        if (!_isUsbKey) {
+            // NFC, need to pad timer to avoid immediate expiration
+            timestamp += 10000
+        }
+        return session.calculateCodes(timestamp).map { (credential, code) ->
             Pair(
-                credential, if (credential.isSteamCredential()) {
-                    session.calculateSteamCode(credential, timeStamp)
+                credential, if (credential.isSteamCredential() && !credential.isTouchRequired) {
+                    session.calculateSteamCode(credential, timestamp)
                 } else {
                     code
                 }
