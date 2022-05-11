@@ -88,6 +88,9 @@ class OathManager(
         pendingYubiKeyAction.value?.let {
             _pendingYubiKeyAction.postValue(null)
             it.action.invoke(result)
+        } ?: run {
+            Log.e(TAG, "The pending action is not valid anymore")
+            throw IllegalStateException("The pending action is not valid anymore")
         }
 
     private var _isUsbKey = false
@@ -528,24 +531,29 @@ class OathManager(
                 }
             }
         }
-        _pendingYubiKeyAction.postValue(YubiKeyAction(title) { yubiKey ->
-            outer.resumeWith(runCatching {
-                suspendCoroutine { inner ->
-                    yubiKey.value.requestConnection(SmartCardConnection::class.java) {
-                        inner.resumeWith(runCatching {
-                            action.invoke(OathSession(it.value))
-                        })
-                    }
-                }
-            })
-        })
 
         if (_isUsbKey) {
-            appViewModel.yubiKeyDevice.value?.let {
-                coroutineScope.launch {
-                    provideYubiKey(com.yubico.yubikit.core.util.Result.success(it))
+            appViewModel.yubiKeyDevice.value?.let { yubiKey ->
+                Log.d(TAG, "Executing action on usb key: $title")
+                yubiKey.requestConnection(SmartCardConnection::class.java) {
+                    action.invoke(OathSession(it.value))
                 }
+            } ?: run {
+                Log.e(TAG, "USB Key not found for action: $title")
+                throw IllegalStateException("USB Key not found for action: $title")
             }
+        } else {
+            _pendingYubiKeyAction.postValue(YubiKeyAction(title) { yubiKey ->
+                outer.resumeWith(runCatching {
+                    suspendCoroutine { inner ->
+                        yubiKey.value.requestConnection(SmartCardConnection::class.java) {
+                            inner.resumeWith(runCatching {
+                                action.invoke(OathSession(it.value))
+                            })
+                        }
+                    }
+                })
+            })
         }
     }
 
