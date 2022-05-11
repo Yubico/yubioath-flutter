@@ -1,12 +1,17 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 final _log = Logger('android.logger');
 
-class AndroidLogger {
+final androidLogProvider =
+    StateNotifierProvider<LogLevelNotifier, Level>((ref) => AndroidLogger());
+
+class AndroidLogger extends LogLevelNotifier {
   final MethodChannel _channel = const MethodChannel('android.log.redirect');
 
-  AndroidLogger() {
+  AndroidLogger() : super() {
     Logger.root.onRecord.listen((record) {
       if (record.level >= Logger.root.level) {
         log(record);
@@ -15,10 +20,19 @@ class AndroidLogger {
     _log.info('Logging initialized, outputting to Android/logcat');
   }
 
+  @override
   void setLogLevel(Level level) {
+    super.setLogLevel(level);
     _channel.invokeMethod('setLevel', {
       'level': level.name,
     });
+  }
+
+  @override
+  Future<List<String>> getLogs() async {
+    _log.debug('Getting logs...');
+    var buffer = await _channel.invokeMethod('getLogs', {});
+    return List.unmodifiable(buffer);
   }
 
   void log(LogRecord record) {

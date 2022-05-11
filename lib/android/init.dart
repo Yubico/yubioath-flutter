@@ -23,8 +23,6 @@ import 'qr_scanner/qr_scanner_provider.dart';
 import 'state.dart';
 import 'views/tap_request_dialog.dart';
 
-final androidLogger = AndroidLogger();
-
 Future<Widget> initialize() async {
   if (kDebugMode) {
     Logger.root.level = Levels.DEBUG;
@@ -36,6 +34,7 @@ Future<Widget> initialize() async {
         Application.oath,
       ]),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
+      logLevelProvider.overrideWithProvider(androidLogProvider),
       attachedDevicesProvider
           .overrideWithProvider(androidAttachedDevicesProvider),
       currentDeviceDataProvider.overrideWithProvider(androidDeviceDataProvider),
@@ -55,14 +54,6 @@ Future<Widget> initialize() async {
 
         // activates window state provider
         ref.read(androidWindowStateProvider);
-
-        ref.listen(logLevelProvider, (oldLevel, newLevel) {
-          if (oldLevel != newLevel && newLevel is Level) {
-            androidLogger.setLogLevel(newLevel);
-          }
-        });
-
-        androidLogger.setLogLevel(Logger.root.level);
 
         /// initializes global handler for dialogs
         FDialogApi.setup(FDialogApiImpl(ref.watch(withContextProvider)));

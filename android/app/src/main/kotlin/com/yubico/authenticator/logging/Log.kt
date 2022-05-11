@@ -47,12 +47,16 @@ object Log {
     }
 
     @Suppress("unused")
-    fun log(level: LogLevel, loggerName: String, message: String, error: String?) {
+    fun log(level: LogLevel, loggerName: String, message: String, error: String?) : List<String> {
         if (level < this.level) {
-            return
+            return listOf()
         }
 
-        val logMessage = "[$loggerName] ${level.name}: $message"
+        val lines = mutableListOf<String>()
+
+        val logMessage = "[$loggerName] ${level.name}: $message".also {
+            lines.add(it)
+        }
 
         when (level) {
             LogLevel.TRAFFIC -> Log.v(TAG, logMessage)
@@ -63,8 +67,12 @@ object Log {
         }
 
         error?.let {
-            Log.e(TAG, "[$loggerName] ${level.name}: $error")
+            Log.e(TAG, "[$loggerName] ${level.name}: $error".also {
+                lines.add(it)
+            })
         }
+
+        return lines
     }
 
     @Suppress("unused")

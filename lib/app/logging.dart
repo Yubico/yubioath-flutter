@@ -60,7 +60,7 @@ class LogLevelNotifier extends StateNotifier<Level> {
     Logger.root.level = level;
   }
 
-  List<String> getLogs() {
+  Future<List<String>> getLogs() async {
     return List.unmodifiable(_buffer);
   }
 }

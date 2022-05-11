@@ -5,7 +5,12 @@ import io.flutter.plugin.common.MethodChannel
 
 class FlutterLog(messenger: BinaryMessenger) {
 
+    private val _buffer = arrayListOf<String>()
     private var _channel = MethodChannel(messenger, "android.log.redirect")
+
+    companion object {
+        const val MAX_BUFFER_SIZE = 1000
+    }
 
     init {
         _channel.setMethodCallHandler { call, result ->
@@ -21,7 +26,7 @@ class FlutterLog(messenger: BinaryMessenger) {
                     if (level == null) {
                         loggerError("Invalid level for message from [$loggerName]: $levelValue")
                     } else if (loggerName != null && message != null) {
-                        Log.log(level, loggerName, message, error)
+                        log(level, loggerName, message, error)
                         result.success(null)
                     } else {
                         result.error("-1", "Invalid log parameters", null)
@@ -35,6 +40,13 @@ class FlutterLog(messenger: BinaryMessenger) {
                     } else {
                         loggerError("Invalid log level requested: $levelArgValue")
                     }
+                    result.success(null)
+                }
+                "getLogs" -> {
+                    result.success(_buffer)
+                }
+                else -> {
+                    result.notImplemented()
                 }
             }
         }
@@ -44,6 +56,14 @@ class FlutterLog(messenger: BinaryMessenger) {
         Log.LogLevel.values().firstOrNull { it.name == argValue?.uppercase() }
 
     private fun loggerError(message: String) {
-        Log.e("FlutterLog", message, null)
+        log(Log.LogLevel.ERROR,"FlutterLog", message, null)
+    }
+
+    private fun log(level: Log.LogLevel, loggerName: String, message: String, error: String?) {
+        if (_buffer.size > MAX_BUFFER_SIZE) {
+            _buffer.removeAt(0)
+        }
+
+        _buffer.addAll(Log.log(level, loggerName, message, error))
     }
 }
