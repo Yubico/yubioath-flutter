@@ -4,13 +4,7 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 
 class FlutterLog(messenger: BinaryMessenger) {
-
-    private val _buffer = arrayListOf<String>()
     private var _channel = MethodChannel(messenger, "android.log.redirect")
-
-    companion object {
-        const val MAX_BUFFER_SIZE = 1000
-    }
 
     init {
         _channel.setMethodCallHandler { call, result ->
@@ -43,7 +37,7 @@ class FlutterLog(messenger: BinaryMessenger) {
                     result.success(null)
                 }
                 "getLogs" -> {
-                    result.success(_buffer)
+                    result.success(Log.getBuffer())
                 }
                 else -> {
                     result.notImplemented()
@@ -60,10 +54,6 @@ class FlutterLog(messenger: BinaryMessenger) {
     }
 
     private fun log(level: Log.LogLevel, loggerName: String, message: String, error: String?) {
-        if (_buffer.size > MAX_BUFFER_SIZE) {
-            _buffer.removeAt(0)
-        }
-
-        _buffer.addAll(Log.log(level, loggerName, message, error))
+        Log.log(level, loggerName, message, error)
     }
 }
