@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import com.yubico.authenticator.*
 import com.yubico.authenticator.api.Pigeon.*
 import com.yubico.authenticator.data.device.toJson
+import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
@@ -74,13 +75,13 @@ class OathManager(
         }
 
     private fun installObservers() {
-        FlutterLog.d(TAG, "Installed oath observers")
+        Log.d(TAG, "Installed oath observers")
         appViewModel.yubiKeyDevice.observe(lifecycleOwner, deviceObserver)
     }
 
     private fun uninstallObservers() {
         appViewModel.yubiKeyDevice.removeObserver(deviceObserver)
-        FlutterLog.d(TAG, "Uninstalled oath observers")
+        Log.d(TAG, "Uninstalled oath observers")
     }
 
     private suspend fun provideYubiKey(result: com.yubico.yubikit.core.util.Result<YubiKeyDevice, Exception>) =
@@ -91,7 +92,7 @@ class OathManager(
 
     private var _isUsbKey = false
     private fun yubikeyAttached(device: YubiKeyDevice) {
-        FlutterLog.d(TAG, "Device connected")
+        Log.d(TAG, "Device connected")
 
         _isUsbKey = device is UsbYubiKeyDevice
 
@@ -114,7 +115,7 @@ class OathManager(
 
     private fun yubikeyDetached() {
         if (_isUsbKey) {
-            FlutterLog.d(TAG, "Device disconnected")
+            Log.d(TAG, "Device disconnected")
             // clear keys from memory
             _memoryKeyProvider.clearAll()
             _pendingYubiKeyAction.postValue(null)
@@ -517,7 +518,7 @@ class OathManager(
         if (queryUserToTap && !_isUsbKey) {
             dialogManager.showDialog(title) {
                 coroutineScope.launch(Dispatchers.Main) {
-                    FlutterLog.d(TAG, "Cancelled Dialog $title")
+                    Log.d(TAG, "Cancelled Dialog $title")
                     provideYubiKey(com.yubico.yubikit.core.util.Result.failure(Exception("User canceled")))
                 }
             }

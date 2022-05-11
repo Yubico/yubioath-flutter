@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -24,6 +25,10 @@ import 'views/tap_request_dialog.dart';
 final androidLogger = AndroidLogger();
 
 Future<Widget> initialize() async {
+  if (kDebugMode) {
+    Logger.root.level = Levels.DEBUG;
+  }
+
   return ProviderScope(
     overrides: [
       supportedAppsProvider.overrideWithValue([
@@ -51,6 +56,8 @@ Future<Widget> initialize() async {
             androidLogger.setLogLevel(newLevel);
           }
         });
+
+        androidLogger.setLogLevel(Logger.root.level);
 
         /// initializes global handler for dialogs
         FDialogApi.setup(FDialogApiImpl(ref.watch(withContextProvider)));
