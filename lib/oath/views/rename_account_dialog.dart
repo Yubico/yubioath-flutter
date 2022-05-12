@@ -56,6 +56,22 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
 
     return ResponsiveDialog(
       title: const Text('Rename account'),
+      actions: [
+        TextButton(
+          onPressed: isValid
+              ? () async {
+                  final renamed = await ref
+                      .read(credentialListProvider(widget.device.path).notifier)
+                      .renameAccount(credential,
+                          _issuer.isNotEmpty ? _issuer : null, _account);
+                  if (!mounted) return;
+                  Navigator.of(context).pop(renamed);
+                  showMessage(context, 'Account renamed');
+                }
+              : null,
+          child: const Text('Save'),
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -94,26 +110,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
           ),
         ]
             .map((e) => Padding(
-                  child: e,
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: e,
                 ))
             .toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: isValid
-              ? () async {
-                  final renamed = await ref
-                      .read(credentialListProvider(widget.device.path).notifier)
-                      .renameAccount(credential,
-                          _issuer.isNotEmpty ? _issuer : null, _account);
-                  Navigator.of(context).pop(renamed);
-                  showMessage(context, 'Account renamed');
-                }
-              : null,
-          child: const Text('Save'),
-        ),
-      ],
     );
   }
 }

@@ -25,11 +25,11 @@ String randomPadded() {
 }
 
 String generateRandomIssuer() {
-  return 'i' + randomPadded();
+  return 'i${randomPadded()}';
 }
 
 String generateRandomName() {
-  return 'n' + randomPadded();
+  return 'n${randomPadded()}';
 }
 
 String generateRandomSecret() {

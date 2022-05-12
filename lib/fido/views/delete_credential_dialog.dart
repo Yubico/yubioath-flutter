@@ -1,3 +1,5 @@
+// ignore_for_file: sort_child_properties_last
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -43,8 +45,12 @@ class DeleteCredentialDialog extends ConsumerWidget {
             await ref
                 .read(credentialProvider(devicePath).notifier)
                 .deleteCredential(credential);
-            Navigator.of(context).pop(true);
-            showMessage(context, 'Credential deleted');
+            await ref.read(withContextProvider)(
+              (context) async {
+                Navigator.of(context).pop(true);
+                showMessage(context, 'Credential deleted');
+              },
+            );
           },
           child: const Text('Delete'),
         ),

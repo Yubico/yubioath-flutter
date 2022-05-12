@@ -27,11 +27,11 @@ class OverlayClipper extends CustomClipper<Path> {
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }
 
-class MobileScannerWrapper extends StatelessWidget {
+class _MobileScannerWrapper extends StatelessWidget {
   final Function(String) onDetect;
   final _ScanStatus status;
 
-  const MobileScannerWrapper({
+  const _MobileScannerWrapper({
     Key? key,
     required this.onDetect,
     required this.status,
@@ -93,7 +93,7 @@ class QrScannerView extends StatefulWidget {
   const QrScannerView({Key? key}) : super(key: key);
 
   @override
-  _QrScannerViewState createState() => _QrScannerViewState();
+  State<QrScannerView> createState() => _QrScannerViewState();
 }
 
 class _QrScannerViewState extends State<QrScannerView> {
@@ -166,7 +166,7 @@ class _QrScannerViewState extends State<QrScannerView> {
               ),
             ),
             body: Stack(children: [
-              MobileScannerWrapper(
+              _MobileScannerWrapper(
                 status: _status,
                 onDetect: (scannedData) => handleResult(scannedData),
               ),

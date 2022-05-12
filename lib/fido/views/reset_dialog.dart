@@ -55,26 +55,6 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
 
     return ResponsiveDialog(
       title: const Text('Factory reset'),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-              'Warning! This will irrevocably delete all U2F and FIDO2 accounts from your YubiKey.'),
-          Text(
-            'Your credentials, as well as any PIN set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.',
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-          Center(
-            child: Text(_getMessage(),
-                style: Theme.of(context).textTheme.headline6),
-          ),
-        ]
-            .map((e) => Padding(
-                  child: e,
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                ))
-            .toList(),
-      ),
       onCancel: () {
         _subscription?.cancel();
       },
@@ -103,6 +83,26 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
           child: const Text('Reset'),
         ),
       ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+              'Warning! This will irrevocably delete all U2F and FIDO2 accounts from your YubiKey.'),
+          Text(
+            'Your credentials, as well as any PIN set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.',
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
+          Center(
+            child: Text(_getMessage(),
+                style: Theme.of(context).textTheme.headline6),
+          ),
+        ]
+            .map((e) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: e,
+                ))
+            .toList(),
+      ),
     );
   }
 }

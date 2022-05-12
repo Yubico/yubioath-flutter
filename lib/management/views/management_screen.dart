@@ -129,6 +129,7 @@ class ManagementScreen extends ConsumerStatefulWidget {
 class _ManagementScreenState extends ConsumerState<ManagementScreen> {
   late Map<Transport, int> _enabled;
   late int _interfaces;
+  bool _canSave = false;
 
   @override
   void initState() {
@@ -182,6 +183,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                 .copyWith(enabledCapabilities: _enabled),
             reboot: reboot,
           );
+      if (!mounted) return;
       if (!reboot) Navigator.pop(context);
       showMessage(context, 'Configuration updated');
     } finally {
@@ -203,6 +205,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     await ref
         .read(managementStateProvider(widget.deviceData.node.path).notifier)
         .setMode(interfaces: _interfaces);
+    if (!mounted) return;
     showMessage(
         context,
         widget.deviceData.node.maybeMap(
@@ -227,32 +230,37 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       Navigator.of(context).popUntil((route) => route.isFirst);
     });
 
-    bool canSave = false;
-
     return ResponsiveDialog(
       title: const Text('Toggle applications'),
+      actions: [
+        TextButton(
+          onPressed: _canSave ? _submitForm : null,
+          child: const Text('Save'),
+        ),
+      ],
       child:
           ref.watch(managementStateProvider(widget.deviceData.node.path)).when(
                 loading: () => const AppLoadingScreen(),
                 error: (error, _) => AppFailureScreen('$error'),
                 data: (info) {
                   bool hasConfig = info.version.major > 4;
-                  // TODO: Check mode for < YK5 intead
-                  if (hasConfig) {
-                    canSave = !_mapEquals(
-                      _enabled,
-                      info.config.enabledCapabilities,
-                    );
-                  } else {
-                    canSave = _interfaces != 0 &&
-                        _interfaces !=
-                            UsbInterfaces.forCapabilites(widget
-                                    .deviceData
-                                    .info
-                                    .config
-                                    .enabledCapabilities[Transport.usb] ??
-                                0);
-                  }
+                  setState(() {
+                    if (hasConfig) {
+                      _canSave = !_mapEquals(
+                        _enabled,
+                        info.config.enabledCapabilities,
+                      );
+                    } else {
+                      _canSave = _interfaces != 0 &&
+                          _interfaces !=
+                              UsbInterfaces.forCapabilites(widget
+                                      .deviceData
+                                      .info
+                                      .config
+                                      .enabledCapabilities[Transport.usb] ??
+                                  0);
+                    }
+                  });
                   return Column(
                     children: [
                       hasConfig
@@ -262,12 +270,6 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                   );
                 },
               ),
-      actions: [
-        TextButton(
-          onPressed: canSave ? _submitForm : null,
-          child: const Text('Save'),
-        ),
-      ],
     );
   }
 }

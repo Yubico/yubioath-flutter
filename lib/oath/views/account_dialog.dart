@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/state.dart';
 import '../../core/state.dart';
 import '../../widgets/dialog_frame.dart';
 import '../models.dart';
@@ -19,13 +20,15 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
     final renamed = await super.renameCredential(context, ref);
     if (renamed != null) {
       // Replace this dialog with a new one, for the renamed credential.
-      Navigator.of(context).pop();
-      await showDialog(
-        context: context,
-        builder: (context) {
-          return AccountDialog(renamed);
-        },
-      );
+      await ref.read(withContextProvider)((context) async {
+        Navigator.of(context).pop();
+        await showDialog(
+          context: context,
+          builder: (context) {
+            return AccountDialog(renamed);
+          },
+        );
+      });
     }
     return renamed;
   }
@@ -34,7 +37,9 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
   Future<bool> deleteCredential(BuildContext context, WidgetRef ref) async {
     final deleted = await super.deleteCredential(context, ref);
     if (deleted) {
-      Navigator.of(context).pop();
+      await ref.read(withContextProvider)((context) async {
+        Navigator.of(context).pop();
+      });
     }
     return deleted;
   }

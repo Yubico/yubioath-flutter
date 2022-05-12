@@ -1,3 +1,5 @@
+// ignore_for_file: sort_child_properties_last
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -110,6 +112,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     await ref
         .read(fingerprintProvider(widget.devicePath).notifier)
         .renameFingerprint(_fingerprint!, _label);
+    if (!mounted) return;
     Navigator.of(context).pop(true);
     showMessage(context, 'Fingerprint added');
   }

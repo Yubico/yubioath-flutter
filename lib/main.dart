@@ -31,10 +31,10 @@ void main(List<String> argv) async {
     _log.warning('Platform initialization failed: $e');
     runApp(
       ProviderScope(
-        child: YubicoAuthenticatorApp(page: ErrorPage(error: e.toString())),
         overrides: [
           prefProvider.overrideWithValue(await SharedPreferences.getInstance())
         ],
+        child: YubicoAuthenticatorApp(page: ErrorPage(error: e.toString())),
       ),
     );
   }

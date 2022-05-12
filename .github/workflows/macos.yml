@@ -24,7 +24,7 @@ jobs:
 
     - uses: subosito/flutter-action@v2
       with:
-        channel: 'beta'
+        channel: 'stable'
         architecture: 'x64'
     - run: flutter config --enable-macos-desktop
     - run: flutter --version

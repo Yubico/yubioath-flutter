@@ -33,6 +33,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
     final renamed = await ref
         .read(fingerprintProvider(widget.devicePath).notifier)
         .renameFingerprint(widget.fingerprint, _label);
+    if (!mounted) return;
     Navigator.of(context).pop(renamed);
     showMessage(context, 'Fingerprint renamed');
   }
@@ -46,6 +47,12 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
 
     return ResponsiveDialog(
       title: const Text('Rename fingerprint'),
+      actions: [
+        TextButton(
+          onPressed: _label.isNotEmpty ? _submit : null,
+          child: const Text('Save'),
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -71,17 +78,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           ),
         ]
             .map((e) => Padding(
-                  child: e,
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: e,
                 ))
             .toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: _label.isNotEmpty ? _submit : null,
-          child: const Text('Save'),
-        ),
-      ],
     );
   }
 }

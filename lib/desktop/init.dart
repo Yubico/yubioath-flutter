@@ -64,7 +64,7 @@ Future<Widget> initialize(List<String> argv) async {
   if (exe?.isEmpty ?? true) {
     var relativePath = 'helper/authenticator-helper';
     if (Platform.isMacOS) {
-      relativePath = '../Resources/' + relativePath;
+      relativePath = '../Resources/$relativePath';
     } else if (Platform.isWindows) {
       relativePath += '.exe';
     }
