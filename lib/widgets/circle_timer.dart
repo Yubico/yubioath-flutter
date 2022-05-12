@@ -5,8 +5,7 @@ import 'progress_circle.dart';
 class CircleTimer extends StatefulWidget {
   final int validFromMs;
   final int validToMs;
-  const CircleTimer(this.validFromMs, this.validToMs, {Key? key})
-      : super(key: key);
+  const CircleTimer(this.validFromMs, this.validToMs, {super.key});
 
   @override
   State<StatefulWidget> createState() => _CircleTimerState();

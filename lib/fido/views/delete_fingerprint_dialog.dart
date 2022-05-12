@@ -11,8 +11,7 @@ import '../../app/state.dart';
 class DeleteFingerprintDialog extends ConsumerWidget {
   final DevicePath devicePath;
   final Fingerprint fingerprint;
-  const DeleteFingerprintDialog(this.devicePath, this.fingerprint, {Key? key})
-      : super(key: key);
+  const DeleteFingerprintDialog(this.devicePath, this.fingerprint, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

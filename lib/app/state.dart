@@ -53,7 +53,7 @@ final attachedDevicesProvider =
 );
 
 class AttachedDevicesNotifier extends StateNotifier<List<DeviceNode>> {
-  AttachedDevicesNotifier(List<DeviceNode> state) : super(state);
+  AttachedDevicesNotifier(super.state);
 
   /// Force a refresh of all device data.
   void refresh() {}
@@ -70,7 +70,7 @@ final currentDeviceProvider =
         (ref) => throw UnimplementedError());
 
 abstract class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
-  CurrentDeviceNotifier(DeviceNode? state) : super(state);
+  CurrentDeviceNotifier(super.state);
   setCurrentDevice(DeviceNode device);
 }
 

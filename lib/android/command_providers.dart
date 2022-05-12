@@ -18,7 +18,7 @@ final androidYubikeyProvider =
 
 class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
   final Ref _ref;
-  _YubikeyProvider(YubiKeyData? yubiKeyData, this._ref) : super(yubiKeyData);
+  _YubikeyProvider(super.yubiKeyData, this._ref);
 
   void setFromString(String input) {
     try {

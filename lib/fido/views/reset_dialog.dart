@@ -17,7 +17,7 @@ final _log = Logger('fido.views.reset_dialog');
 
 class ResetDialog extends ConsumerStatefulWidget {
   final DeviceNode node;
-  const ResetDialog(this.node, {Key? key}) : super(key: key);
+  const ResetDialog(this.node, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ResetDialogState();

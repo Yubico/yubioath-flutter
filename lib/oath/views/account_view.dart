@@ -13,7 +13,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
   @override
   final OathCredential credential;
   final FocusNode? focusNode;
-  AccountView(this.credential, {Key? key, this.focusNode}) : super(key: key);
+  AccountView(this.credential, {super.key, this.focusNode});
 
   Color _iconColor(int shade) {
     final colors = [

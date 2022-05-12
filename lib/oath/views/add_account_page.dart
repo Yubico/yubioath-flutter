@@ -27,8 +27,7 @@ class OathAddAccountPage extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final bool openQrScanner;
   const OathAddAccountPage(this.devicePath,
-      {Key? key, required this.openQrScanner})
-      : super(key: key);
+      {super.key, required this.openQrScanner});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

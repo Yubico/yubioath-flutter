@@ -12,8 +12,7 @@ import 'utils.dart';
 class RenameAccountDialog extends ConsumerStatefulWidget {
   final DeviceNode device;
   final OathCredential credential;
-  const RenameAccountDialog(this.device, this.credential, {Key? key})
-      : super(key: key);
+  const RenameAccountDialog(this.device, this.credential, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

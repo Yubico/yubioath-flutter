@@ -8,8 +8,7 @@ class DeviceAvatar extends StatelessWidget {
   final Widget child;
   final IconData? badge;
   const DeviceAvatar(
-      {Key? key, this.selected = false, required this.child, this.badge})
-      : super(key: key);
+      {super.key, this.selected = false, required this.child, this.badge});
 
   factory DeviceAvatar.yubiKeyData(YubiKeyData data, {bool selected = false}) =>
       DeviceAvatar(

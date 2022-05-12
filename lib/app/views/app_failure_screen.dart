@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppFailureScreen extends StatelessWidget {
   final String reason;
-  const AppFailureScreen(this.reason, {Key? key}) : super(key: key);
+  const AppFailureScreen(this.reason, {super.key}) : super();
 
   @override
   Widget build(BuildContext context) {

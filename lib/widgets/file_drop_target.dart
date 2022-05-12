@@ -7,11 +7,11 @@ class FileDropTarget extends StatefulWidget {
   final Widget? overlay;
 
   const FileDropTarget({
-    Key? key,
+    super.key,
     required this.child,
     required this.onFileDropped,
     this.overlay,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _FileDropTargetState();

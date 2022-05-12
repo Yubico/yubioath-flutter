@@ -19,7 +19,7 @@ import 'reset_dialog.dart';
 
 class OathScreen extends ConsumerWidget {
   final DevicePath devicePath;
-  const OathScreen(this.devicePath, {Key? key}) : super(key: key);
+  const OathScreen(this.devicePath, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,8 +45,7 @@ class _LockedView extends ConsumerWidget {
   final DevicePath devicePath;
   final OathState oathState;
 
-  const _LockedView(this.devicePath, this.oathState, {Key? key})
-      : super(key: key);
+  const _LockedView(this.devicePath, this.oathState);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => AppPage(
@@ -68,8 +67,7 @@ class _UnlockedView extends ConsumerWidget {
   final DevicePath devicePath;
   final OathState oathState;
 
-  const _UnlockedView(this.devicePath, this.oathState, {Key? key})
-      : super(key: key);
+  const _UnlockedView(this.devicePath, this.oathState);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -169,8 +167,7 @@ class _UnlockForm extends ConsumerStatefulWidget {
   final OathState _oathState;
   final KeystoreState keystore;
   const _UnlockForm(this._devicePath, this._oathState,
-      {Key? key, required this.keystore})
-      : super(key: key);
+      {required this.keystore});
 
   @override
   ConsumerState<_UnlockForm> createState() => _UnlockFormState();

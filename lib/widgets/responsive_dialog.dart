@@ -9,12 +9,11 @@ class ResponsiveDialog extends StatefulWidget {
   final Function()? onCancel;
 
   const ResponsiveDialog(
-      {Key? key,
+      {super.key,
       required this.child,
       this.title,
       this.actions = const [],
-      this.onCancel})
-      : super(key: key);
+      this.onCancel});
 
   @override
   State<ResponsiveDialog> createState() => _ResponsiveDialogState();

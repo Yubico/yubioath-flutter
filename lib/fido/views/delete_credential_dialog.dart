@@ -13,8 +13,7 @@ import '../../app/state.dart';
 class DeleteCredentialDialog extends ConsumerWidget {
   final DevicePath devicePath;
   final FidoCredential credential;
-  const DeleteCredentialDialog(this.devicePath, this.credential, {Key? key})
-      : super(key: key);
+  const DeleteCredentialDialog(this.devicePath, this.credential, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

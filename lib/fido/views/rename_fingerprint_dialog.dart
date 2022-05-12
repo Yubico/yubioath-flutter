@@ -11,8 +11,7 @@ import '../../app/state.dart';
 class RenameFingerprintDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final Fingerprint fingerprint;
-  const RenameFingerprintDialog(this.devicePath, this.fingerprint, {Key? key})
-      : super(key: key);
+  const RenameFingerprintDialog(this.devicePath, this.fingerprint, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

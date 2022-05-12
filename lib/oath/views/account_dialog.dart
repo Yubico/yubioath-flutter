@@ -12,7 +12,7 @@ import 'account_mixin.dart';
 class AccountDialog extends ConsumerWidget with AccountMixin {
   @override
   final OathCredential credential;
-  const AccountDialog(this.credential, {Key? key}) : super(key: key);
+  const AccountDialog(this.credential, {super.key});
 
   @override
   Future<OathCredential?> renameCredential(

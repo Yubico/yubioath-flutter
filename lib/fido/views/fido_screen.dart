@@ -18,7 +18,7 @@ import 'unlocked_page.dart';
 
 class FidoScreen extends ConsumerWidget {
   final YubiKeyData deviceData;
-  const FidoScreen(this.deviceData, {Key? key}) : super(key: key);
+  const FidoScreen(this.deviceData, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) =>

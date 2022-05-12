@@ -18,12 +18,11 @@ class _CapabilityForm extends StatelessWidget {
   final int capabilities;
   final int enabled;
   final Function(int) onChanged;
-  const _CapabilityForm(
-      {required this.capabilities,
-      required this.enabled,
-      required this.onChanged,
-      Key? key})
-      : super(key: key);
+  const _CapabilityForm({
+    required this.capabilities,
+    required this.enabled,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +47,7 @@ class _CapabilityForm extends StatelessWidget {
 class _ModeForm extends StatelessWidget {
   final int interfaces;
   final Function(int) onChanged;
-  const _ModeForm(this.interfaces, {required this.onChanged, Key? key})
-      : super(key: key);
+  const _ModeForm(this.interfaces, {required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +75,7 @@ class _CapabilitiesForm extends StatelessWidget {
     required this.onChanged,
     required this.supported,
     required this.enabled,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +116,7 @@ class _CapabilitiesForm extends StatelessWidget {
 
 class ManagementScreen extends ConsumerStatefulWidget {
   final YubiKeyData deviceData;
-  const ManagementScreen(this.deviceData, {Key? key}) : super(key: key);
+  const ManagementScreen(this.deviceData, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
