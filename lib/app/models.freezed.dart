@@ -1,5 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'models.dart';
@@ -11,23 +12,7 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
-
-/// @nodoc
-class _$YubiKeyDataTearOff {
-  const _$YubiKeyDataTearOff();
-
-  _YubiKeyData call(DeviceNode node, String name, DeviceInfo info) {
-    return _YubiKeyData(
-      node,
-      name,
-      info,
-    );
-  }
-}
-
-/// @nodoc
-const $YubiKeyData = _$YubiKeyDataTearOff();
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
 mixin _$YubiKeyData {
@@ -97,11 +82,11 @@ class _$YubiKeyDataCopyWithImpl<$Res> implements $YubiKeyDataCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$YubiKeyDataCopyWith<$Res>
+abstract class _$$_YubiKeyDataCopyWith<$Res>
     implements $YubiKeyDataCopyWith<$Res> {
-  factory _$YubiKeyDataCopyWith(
-          _YubiKeyData value, $Res Function(_YubiKeyData) then) =
-      __$YubiKeyDataCopyWithImpl<$Res>;
+  factory _$$_YubiKeyDataCopyWith(
+          _$_YubiKeyData value, $Res Function(_$_YubiKeyData) then) =
+      __$$_YubiKeyDataCopyWithImpl<$Res>;
   @override
   $Res call({DeviceNode node, String name, DeviceInfo info});
 
@@ -112,14 +97,14 @@ abstract class _$YubiKeyDataCopyWith<$Res>
 }
 
 /// @nodoc
-class __$YubiKeyDataCopyWithImpl<$Res> extends _$YubiKeyDataCopyWithImpl<$Res>
-    implements _$YubiKeyDataCopyWith<$Res> {
-  __$YubiKeyDataCopyWithImpl(
-      _YubiKeyData _value, $Res Function(_YubiKeyData) _then)
-      : super(_value, (v) => _then(v as _YubiKeyData));
+class __$$_YubiKeyDataCopyWithImpl<$Res> extends _$YubiKeyDataCopyWithImpl<$Res>
+    implements _$$_YubiKeyDataCopyWith<$Res> {
+  __$$_YubiKeyDataCopyWithImpl(
+      _$_YubiKeyData _value, $Res Function(_$_YubiKeyData) _then)
+      : super(_value, (v) => _then(v as _$_YubiKeyData));
 
   @override
-  _YubiKeyData get _value => super._value as _YubiKeyData;
+  _$_YubiKeyData get _value => super._value as _$_YubiKeyData;
 
   @override
   $Res call({
@@ -127,7 +112,7 @@ class __$YubiKeyDataCopyWithImpl<$Res> extends _$YubiKeyDataCopyWithImpl<$Res>
     Object? name = freezed,
     Object? info = freezed,
   }) {
-    return _then(_YubiKeyData(
+    return _then(_$_YubiKeyData(
       node == freezed
           ? _value.node
           : node // ignore: cast_nullable_to_non_nullable
@@ -165,7 +150,7 @@ class _$_YubiKeyData implements _YubiKeyData {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _YubiKeyData &&
+            other is _$_YubiKeyData &&
             const DeepCollectionEquality().equals(other.node, node) &&
             const DeepCollectionEquality().equals(other.name, name) &&
             const DeepCollectionEquality().equals(other.info, info));
@@ -180,56 +165,31 @@ class _$_YubiKeyData implements _YubiKeyData {
 
   @JsonKey(ignore: true)
   @override
-  _$YubiKeyDataCopyWith<_YubiKeyData> get copyWith =>
-      __$YubiKeyDataCopyWithImpl<_YubiKeyData>(this, _$identity);
+  _$$_YubiKeyDataCopyWith<_$_YubiKeyData> get copyWith =>
+      __$$_YubiKeyDataCopyWithImpl<_$_YubiKeyData>(this, _$identity);
 }
 
 abstract class _YubiKeyData implements YubiKeyData {
-  factory _YubiKeyData(DeviceNode node, String name, DeviceInfo info) =
+  factory _YubiKeyData(
+          final DeviceNode node, final String name, final DeviceInfo info) =
       _$_YubiKeyData;
 
   @override
-  DeviceNode get node;
+  DeviceNode get node => throw _privateConstructorUsedError;
   @override
-  String get name;
+  String get name => throw _privateConstructorUsedError;
   @override
-  DeviceInfo get info;
+  DeviceInfo get info => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$YubiKeyDataCopyWith<_YubiKeyData> get copyWith =>
+  _$$_YubiKeyDataCopyWith<_$_YubiKeyData> get copyWith =>
       throw _privateConstructorUsedError;
 }
-
-/// @nodoc
-class _$DeviceNodeTearOff {
-  const _$DeviceNodeTearOff();
-
-  UsbYubiKeyNode usbYubiKey(
-      DevicePath path, String name, UsbPid pid, DeviceInfo? info) {
-    return UsbYubiKeyNode(
-      path,
-      name,
-      pid,
-      info,
-    );
-  }
-
-  NfcReaderNode nfcReader(DevicePath path, String name) {
-    return NfcReaderNode(
-      path,
-      name,
-    );
-  }
-}
-
-/// @nodoc
-const $DeviceNode = _$DeviceNodeTearOff();
 
 /// @nodoc
 mixin _$DeviceNode {
   DevicePath get path => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
@@ -315,11 +275,11 @@ class _$DeviceNodeCopyWithImpl<$Res> implements $DeviceNodeCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class $UsbYubiKeyNodeCopyWith<$Res>
+abstract class _$$UsbYubiKeyNodeCopyWith<$Res>
     implements $DeviceNodeCopyWith<$Res> {
-  factory $UsbYubiKeyNodeCopyWith(
-          UsbYubiKeyNode value, $Res Function(UsbYubiKeyNode) then) =
-      _$UsbYubiKeyNodeCopyWithImpl<$Res>;
+  factory _$$UsbYubiKeyNodeCopyWith(
+          _$UsbYubiKeyNode value, $Res Function(_$UsbYubiKeyNode) then) =
+      __$$UsbYubiKeyNodeCopyWithImpl<$Res>;
   @override
   $Res call({DevicePath path, String name, UsbPid pid, DeviceInfo? info});
 
@@ -327,14 +287,15 @@ abstract class $UsbYubiKeyNodeCopyWith<$Res>
 }
 
 /// @nodoc
-class _$UsbYubiKeyNodeCopyWithImpl<$Res> extends _$DeviceNodeCopyWithImpl<$Res>
-    implements $UsbYubiKeyNodeCopyWith<$Res> {
-  _$UsbYubiKeyNodeCopyWithImpl(
-      UsbYubiKeyNode _value, $Res Function(UsbYubiKeyNode) _then)
-      : super(_value, (v) => _then(v as UsbYubiKeyNode));
+class __$$UsbYubiKeyNodeCopyWithImpl<$Res>
+    extends _$DeviceNodeCopyWithImpl<$Res>
+    implements _$$UsbYubiKeyNodeCopyWith<$Res> {
+  __$$UsbYubiKeyNodeCopyWithImpl(
+      _$UsbYubiKeyNode _value, $Res Function(_$UsbYubiKeyNode) _then)
+      : super(_value, (v) => _then(v as _$UsbYubiKeyNode));
 
   @override
-  UsbYubiKeyNode get _value => super._value as UsbYubiKeyNode;
+  _$UsbYubiKeyNode get _value => super._value as _$UsbYubiKeyNode;
 
   @override
   $Res call({
@@ -343,7 +304,7 @@ class _$UsbYubiKeyNodeCopyWithImpl<$Res> extends _$DeviceNodeCopyWithImpl<$Res>
     Object? pid = freezed,
     Object? info = freezed,
   }) {
-    return _then(UsbYubiKeyNode(
+    return _then(_$UsbYubiKeyNode(
       path == freezed
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
@@ -398,7 +359,7 @@ class _$UsbYubiKeyNode extends UsbYubiKeyNode {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is UsbYubiKeyNode &&
+            other is _$UsbYubiKeyNode &&
             const DeepCollectionEquality().equals(other.path, path) &&
             const DeepCollectionEquality().equals(other.name, name) &&
             const DeepCollectionEquality().equals(other.pid, pid) &&
@@ -415,8 +376,8 @@ class _$UsbYubiKeyNode extends UsbYubiKeyNode {
 
   @JsonKey(ignore: true)
   @override
-  $UsbYubiKeyNodeCopyWith<UsbYubiKeyNode> get copyWith =>
-      _$UsbYubiKeyNodeCopyWithImpl<UsbYubiKeyNode>(this, _$identity);
+  _$$UsbYubiKeyNodeCopyWith<_$UsbYubiKeyNode> get copyWith =>
+      __$$UsbYubiKeyNodeCopyWithImpl<_$UsbYubiKeyNode>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -488,49 +449,48 @@ class _$UsbYubiKeyNode extends UsbYubiKeyNode {
 }
 
 abstract class UsbYubiKeyNode extends DeviceNode {
-  factory UsbYubiKeyNode(
-          DevicePath path, String name, UsbPid pid, DeviceInfo? info) =
-      _$UsbYubiKeyNode;
+  factory UsbYubiKeyNode(final DevicePath path, final String name,
+      final UsbPid pid, final DeviceInfo? info) = _$UsbYubiKeyNode;
   UsbYubiKeyNode._() : super._();
 
   @override
-  DevicePath get path;
+  DevicePath get path => throw _privateConstructorUsedError;
   @override
-  String get name;
-  UsbPid get pid;
-  DeviceInfo? get info;
+  String get name => throw _privateConstructorUsedError;
+  UsbPid get pid => throw _privateConstructorUsedError;
+  DeviceInfo? get info => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  $UsbYubiKeyNodeCopyWith<UsbYubiKeyNode> get copyWith =>
+  _$$UsbYubiKeyNodeCopyWith<_$UsbYubiKeyNode> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $NfcReaderNodeCopyWith<$Res>
+abstract class _$$NfcReaderNodeCopyWith<$Res>
     implements $DeviceNodeCopyWith<$Res> {
-  factory $NfcReaderNodeCopyWith(
-          NfcReaderNode value, $Res Function(NfcReaderNode) then) =
-      _$NfcReaderNodeCopyWithImpl<$Res>;
+  factory _$$NfcReaderNodeCopyWith(
+          _$NfcReaderNode value, $Res Function(_$NfcReaderNode) then) =
+      __$$NfcReaderNodeCopyWithImpl<$Res>;
   @override
   $Res call({DevicePath path, String name});
 }
 
 /// @nodoc
-class _$NfcReaderNodeCopyWithImpl<$Res> extends _$DeviceNodeCopyWithImpl<$Res>
-    implements $NfcReaderNodeCopyWith<$Res> {
-  _$NfcReaderNodeCopyWithImpl(
-      NfcReaderNode _value, $Res Function(NfcReaderNode) _then)
-      : super(_value, (v) => _then(v as NfcReaderNode));
+class __$$NfcReaderNodeCopyWithImpl<$Res> extends _$DeviceNodeCopyWithImpl<$Res>
+    implements _$$NfcReaderNodeCopyWith<$Res> {
+  __$$NfcReaderNodeCopyWithImpl(
+      _$NfcReaderNode _value, $Res Function(_$NfcReaderNode) _then)
+      : super(_value, (v) => _then(v as _$NfcReaderNode));
 
   @override
-  NfcReaderNode get _value => super._value as NfcReaderNode;
+  _$NfcReaderNode get _value => super._value as _$NfcReaderNode;
 
   @override
   $Res call({
     Object? path = freezed,
     Object? name = freezed,
   }) {
-    return _then(NfcReaderNode(
+    return _then(_$NfcReaderNode(
       path == freezed
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
@@ -562,7 +522,7 @@ class _$NfcReaderNode extends NfcReaderNode {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is NfcReaderNode &&
+            other is _$NfcReaderNode &&
             const DeepCollectionEquality().equals(other.path, path) &&
             const DeepCollectionEquality().equals(other.name, name));
   }
@@ -575,8 +535,8 @@ class _$NfcReaderNode extends NfcReaderNode {
 
   @JsonKey(ignore: true)
   @override
-  $NfcReaderNodeCopyWith<NfcReaderNode> get copyWith =>
-      _$NfcReaderNodeCopyWithImpl<NfcReaderNode>(this, _$identity);
+  _$$NfcReaderNodeCopyWith<_$NfcReaderNode> get copyWith =>
+      __$$NfcReaderNodeCopyWithImpl<_$NfcReaderNode>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -648,37 +608,19 @@ class _$NfcReaderNode extends NfcReaderNode {
 }
 
 abstract class NfcReaderNode extends DeviceNode {
-  factory NfcReaderNode(DevicePath path, String name) = _$NfcReaderNode;
+  factory NfcReaderNode(final DevicePath path, final String name) =
+      _$NfcReaderNode;
   NfcReaderNode._() : super._();
 
   @override
-  DevicePath get path;
+  DevicePath get path => throw _privateConstructorUsedError;
   @override
-  String get name;
+  String get name => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  $NfcReaderNodeCopyWith<NfcReaderNode> get copyWith =>
+  _$$NfcReaderNodeCopyWith<_$NfcReaderNode> get copyWith =>
       throw _privateConstructorUsedError;
 }
-
-/// @nodoc
-class _$MenuActionTearOff {
-  const _$MenuActionTearOff();
-
-  _MenuAction call(
-      {required String text,
-      required Widget icon,
-      void Function(BuildContext)? action}) {
-    return _MenuAction(
-      text: text,
-      icon: icon,
-      action: action,
-    );
-  }
-}
-
-/// @nodoc
-const $MenuAction = _$MenuActionTearOff();
 
 /// @nodoc
 mixin _$MenuAction {
@@ -731,23 +673,24 @@ class _$MenuActionCopyWithImpl<$Res> implements $MenuActionCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$MenuActionCopyWith<$Res> implements $MenuActionCopyWith<$Res> {
-  factory _$MenuActionCopyWith(
-          _MenuAction value, $Res Function(_MenuAction) then) =
-      __$MenuActionCopyWithImpl<$Res>;
+abstract class _$$_MenuActionCopyWith<$Res>
+    implements $MenuActionCopyWith<$Res> {
+  factory _$$_MenuActionCopyWith(
+          _$_MenuAction value, $Res Function(_$_MenuAction) then) =
+      __$$_MenuActionCopyWithImpl<$Res>;
   @override
   $Res call({String text, Widget icon, void Function(BuildContext)? action});
 }
 
 /// @nodoc
-class __$MenuActionCopyWithImpl<$Res> extends _$MenuActionCopyWithImpl<$Res>
-    implements _$MenuActionCopyWith<$Res> {
-  __$MenuActionCopyWithImpl(
-      _MenuAction _value, $Res Function(_MenuAction) _then)
-      : super(_value, (v) => _then(v as _MenuAction));
+class __$$_MenuActionCopyWithImpl<$Res> extends _$MenuActionCopyWithImpl<$Res>
+    implements _$$_MenuActionCopyWith<$Res> {
+  __$$_MenuActionCopyWithImpl(
+      _$_MenuAction _value, $Res Function(_$_MenuAction) _then)
+      : super(_value, (v) => _then(v as _$_MenuAction));
 
   @override
-  _MenuAction get _value => super._value as _MenuAction;
+  _$_MenuAction get _value => super._value as _$_MenuAction;
 
   @override
   $Res call({
@@ -755,7 +698,7 @@ class __$MenuActionCopyWithImpl<$Res> extends _$MenuActionCopyWithImpl<$Res>
     Object? icon = freezed,
     Object? action = freezed,
   }) {
-    return _then(_MenuAction(
+    return _then(_$_MenuAction(
       text: text == freezed
           ? _value.text
           : text // ignore: cast_nullable_to_non_nullable
@@ -793,7 +736,7 @@ class _$_MenuAction implements _MenuAction {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _MenuAction &&
+            other is _$_MenuAction &&
             const DeepCollectionEquality().equals(other.text, text) &&
             const DeepCollectionEquality().equals(other.icon, icon) &&
             (identical(other.action, action) || other.action == action));
@@ -808,44 +751,27 @@ class _$_MenuAction implements _MenuAction {
 
   @JsonKey(ignore: true)
   @override
-  _$MenuActionCopyWith<_MenuAction> get copyWith =>
-      __$MenuActionCopyWithImpl<_MenuAction>(this, _$identity);
+  _$$_MenuActionCopyWith<_$_MenuAction> get copyWith =>
+      __$$_MenuActionCopyWithImpl<_$_MenuAction>(this, _$identity);
 }
 
 abstract class _MenuAction implements MenuAction {
   factory _MenuAction(
-      {required String text,
-      required Widget icon,
-      void Function(BuildContext)? action}) = _$_MenuAction;
+      {required final String text,
+      required final Widget icon,
+      final void Function(BuildContext)? action}) = _$_MenuAction;
 
   @override
-  String get text;
+  String get text => throw _privateConstructorUsedError;
   @override
-  Widget get icon;
+  Widget get icon => throw _privateConstructorUsedError;
   @override
-  void Function(BuildContext)? get action;
+  void Function(BuildContext)? get action => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$MenuActionCopyWith<_MenuAction> get copyWith =>
+  _$$_MenuActionCopyWith<_$_MenuAction> get copyWith =>
       throw _privateConstructorUsedError;
 }
-
-/// @nodoc
-class _$WindowStateTearOff {
-  const _$WindowStateTearOff();
-
-  _WindowState call(
-      {required bool focused, required bool visible, required bool active}) {
-    return _WindowState(
-      focused: focused,
-      visible: visible,
-      active: active,
-    );
-  }
-}
-
-/// @nodoc
-const $WindowState = _$WindowStateTearOff();
 
 /// @nodoc
 mixin _$WindowState {
@@ -898,24 +824,24 @@ class _$WindowStateCopyWithImpl<$Res> implements $WindowStateCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$WindowStateCopyWith<$Res>
+abstract class _$$_WindowStateCopyWith<$Res>
     implements $WindowStateCopyWith<$Res> {
-  factory _$WindowStateCopyWith(
-          _WindowState value, $Res Function(_WindowState) then) =
-      __$WindowStateCopyWithImpl<$Res>;
+  factory _$$_WindowStateCopyWith(
+          _$_WindowState value, $Res Function(_$_WindowState) then) =
+      __$$_WindowStateCopyWithImpl<$Res>;
   @override
   $Res call({bool focused, bool visible, bool active});
 }
 
 /// @nodoc
-class __$WindowStateCopyWithImpl<$Res> extends _$WindowStateCopyWithImpl<$Res>
-    implements _$WindowStateCopyWith<$Res> {
-  __$WindowStateCopyWithImpl(
-      _WindowState _value, $Res Function(_WindowState) _then)
-      : super(_value, (v) => _then(v as _WindowState));
+class __$$_WindowStateCopyWithImpl<$Res> extends _$WindowStateCopyWithImpl<$Res>
+    implements _$$_WindowStateCopyWith<$Res> {
+  __$$_WindowStateCopyWithImpl(
+      _$_WindowState _value, $Res Function(_$_WindowState) _then)
+      : super(_value, (v) => _then(v as _$_WindowState));
 
   @override
-  _WindowState get _value => super._value as _WindowState;
+  _$_WindowState get _value => super._value as _$_WindowState;
 
   @override
   $Res call({
@@ -923,7 +849,7 @@ class __$WindowStateCopyWithImpl<$Res> extends _$WindowStateCopyWithImpl<$Res>
     Object? visible = freezed,
     Object? active = freezed,
   }) {
-    return _then(_WindowState(
+    return _then(_$_WindowState(
       focused: focused == freezed
           ? _value.focused
           : focused // ignore: cast_nullable_to_non_nullable
@@ -962,7 +888,7 @@ class _$_WindowState implements _WindowState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _WindowState &&
+            other is _$_WindowState &&
             const DeepCollectionEquality().equals(other.focused, focused) &&
             const DeepCollectionEquality().equals(other.visible, visible) &&
             const DeepCollectionEquality().equals(other.active, active));
@@ -977,24 +903,24 @@ class _$_WindowState implements _WindowState {
 
   @JsonKey(ignore: true)
   @override
-  _$WindowStateCopyWith<_WindowState> get copyWith =>
-      __$WindowStateCopyWithImpl<_WindowState>(this, _$identity);
+  _$$_WindowStateCopyWith<_$_WindowState> get copyWith =>
+      __$$_WindowStateCopyWithImpl<_$_WindowState>(this, _$identity);
 }
 
 abstract class _WindowState implements WindowState {
   factory _WindowState(
-      {required bool focused,
-      required bool visible,
-      required bool active}) = _$_WindowState;
+      {required final bool focused,
+      required final bool visible,
+      required final bool active}) = _$_WindowState;
 
   @override
-  bool get focused;
+  bool get focused => throw _privateConstructorUsedError;
   @override
-  bool get visible;
+  bool get visible => throw _privateConstructorUsedError;
   @override
-  bool get active;
+  bool get active => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$WindowStateCopyWith<_WindowState> get copyWith =>
+  _$$_WindowStateCopyWith<_$_WindowState> get copyWith =>
       throw _privateConstructorUsedError;
 }

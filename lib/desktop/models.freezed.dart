@@ -1,5 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'models.dart';
@@ -11,7 +12,7 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 RpcResponse _$RpcResponseFromJson(Map<String, dynamic> json) {
   switch (json['kind']) {
@@ -29,42 +30,8 @@ RpcResponse _$RpcResponseFromJson(Map<String, dynamic> json) {
 }
 
 /// @nodoc
-class _$RpcResponseTearOff {
-  const _$RpcResponseTearOff();
-
-  Success success(Map<String, dynamic> body) {
-    return Success(
-      body,
-    );
-  }
-
-  Signal signal(String status, Map<String, dynamic> body) {
-    return Signal(
-      status,
-      body,
-    );
-  }
-
-  RpcError error(String status, String message, Map<String, dynamic> body) {
-    return RpcError(
-      status,
-      message,
-      body,
-    );
-  }
-
-  RpcResponse fromJson(Map<String, Object?> json) {
-    return RpcResponse.fromJson(json);
-  }
-}
-
-/// @nodoc
-const $RpcResponse = _$RpcResponseTearOff();
-
-/// @nodoc
 mixin _$RpcResponse {
   Map<String, dynamic> get body => throw _privateConstructorUsedError;
-
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(Map<String, dynamic> body) success,
@@ -149,29 +116,29 @@ class _$RpcResponseCopyWithImpl<$Res> implements $RpcResponseCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class $SuccessCopyWith<$Res> implements $RpcResponseCopyWith<$Res> {
-  factory $SuccessCopyWith(Success value, $Res Function(Success) then) =
-      _$SuccessCopyWithImpl<$Res>;
+abstract class _$$SuccessCopyWith<$Res> implements $RpcResponseCopyWith<$Res> {
+  factory _$$SuccessCopyWith(_$Success value, $Res Function(_$Success) then) =
+      __$$SuccessCopyWithImpl<$Res>;
   @override
   $Res call({Map<String, dynamic> body});
 }
 
 /// @nodoc
-class _$SuccessCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
-    implements $SuccessCopyWith<$Res> {
-  _$SuccessCopyWithImpl(Success _value, $Res Function(Success) _then)
-      : super(_value, (v) => _then(v as Success));
+class __$$SuccessCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
+    implements _$$SuccessCopyWith<$Res> {
+  __$$SuccessCopyWithImpl(_$Success _value, $Res Function(_$Success) _then)
+      : super(_value, (v) => _then(v as _$Success));
 
   @override
-  Success get _value => super._value as Success;
+  _$Success get _value => super._value as _$Success;
 
   @override
   $Res call({
     Object? body = freezed,
   }) {
-    return _then(Success(
+    return _then(_$Success(
       body == freezed
-          ? _value.body
+          ? _value._body
           : body // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
     ));
@@ -181,13 +148,19 @@ class _$SuccessCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$Success implements Success {
-  _$Success(this.body, {String? $type}) : $type = $type ?? 'success';
+  _$Success(final Map<String, dynamic> body, {final String? $type})
+      : _body = body,
+        $type = $type ?? 'success';
 
   factory _$Success.fromJson(Map<String, dynamic> json) =>
       _$$SuccessFromJson(json);
 
+  final Map<String, dynamic> _body;
   @override
-  final Map<String, dynamic> body;
+  Map<String, dynamic> get body {
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_body);
+  }
 
   @JsonKey(name: 'kind')
   final String $type;
@@ -201,18 +174,19 @@ class _$Success implements Success {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is Success &&
-            const DeepCollectionEquality().equals(other.body, body));
+            other is _$Success &&
+            const DeepCollectionEquality().equals(other._body, _body));
   }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(body));
 
   @JsonKey(ignore: true)
   @override
-  $SuccessCopyWith<Success> get copyWith =>
-      _$SuccessCopyWithImpl<Success>(this, _$identity);
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_body));
+
+  @JsonKey(ignore: true)
+  @override
+  _$$SuccessCopyWith<_$Success> get copyWith =>
+      __$$SuccessCopyWithImpl<_$Success>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -293,46 +267,47 @@ class _$Success implements Success {
 }
 
 abstract class Success implements RpcResponse {
-  factory Success(Map<String, dynamic> body) = _$Success;
+  factory Success(final Map<String, dynamic> body) = _$Success;
 
   factory Success.fromJson(Map<String, dynamic> json) = _$Success.fromJson;
 
   @override
-  Map<String, dynamic> get body;
+  Map<String, dynamic> get body => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  $SuccessCopyWith<Success> get copyWith => throw _privateConstructorUsedError;
+  _$$SuccessCopyWith<_$Success> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $SignalCopyWith<$Res> implements $RpcResponseCopyWith<$Res> {
-  factory $SignalCopyWith(Signal value, $Res Function(Signal) then) =
-      _$SignalCopyWithImpl<$Res>;
+abstract class _$$SignalCopyWith<$Res> implements $RpcResponseCopyWith<$Res> {
+  factory _$$SignalCopyWith(_$Signal value, $Res Function(_$Signal) then) =
+      __$$SignalCopyWithImpl<$Res>;
   @override
   $Res call({String status, Map<String, dynamic> body});
 }
 
 /// @nodoc
-class _$SignalCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
-    implements $SignalCopyWith<$Res> {
-  _$SignalCopyWithImpl(Signal _value, $Res Function(Signal) _then)
-      : super(_value, (v) => _then(v as Signal));
+class __$$SignalCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
+    implements _$$SignalCopyWith<$Res> {
+  __$$SignalCopyWithImpl(_$Signal _value, $Res Function(_$Signal) _then)
+      : super(_value, (v) => _then(v as _$Signal));
 
   @override
-  Signal get _value => super._value as Signal;
+  _$Signal get _value => super._value as _$Signal;
 
   @override
   $Res call({
     Object? status = freezed,
     Object? body = freezed,
   }) {
-    return _then(Signal(
+    return _then(_$Signal(
       status == freezed
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String,
       body == freezed
-          ? _value.body
+          ? _value._body
           : body // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
     ));
@@ -342,15 +317,21 @@ class _$SignalCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$Signal implements Signal {
-  _$Signal(this.status, this.body, {String? $type}) : $type = $type ?? 'signal';
+  _$Signal(this.status, final Map<String, dynamic> body, {final String? $type})
+      : _body = body,
+        $type = $type ?? 'signal';
 
   factory _$Signal.fromJson(Map<String, dynamic> json) =>
       _$$SignalFromJson(json);
 
   @override
   final String status;
+  final Map<String, dynamic> _body;
   @override
-  final Map<String, dynamic> body;
+  Map<String, dynamic> get body {
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_body);
+  }
 
   @JsonKey(name: 'kind')
   final String $type;
@@ -364,21 +345,22 @@ class _$Signal implements Signal {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is Signal &&
+            other is _$Signal &&
             const DeepCollectionEquality().equals(other.status, status) &&
-            const DeepCollectionEquality().equals(other.body, body));
+            const DeepCollectionEquality().equals(other._body, _body));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(status),
-      const DeepCollectionEquality().hash(body));
+      const DeepCollectionEquality().hash(_body));
 
   @JsonKey(ignore: true)
   @override
-  $SignalCopyWith<Signal> get copyWith =>
-      _$SignalCopyWithImpl<Signal>(this, _$identity);
+  _$$SignalCopyWith<_$Signal> get copyWith =>
+      __$$SignalCopyWithImpl<_$Signal>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -459,34 +441,37 @@ class _$Signal implements Signal {
 }
 
 abstract class Signal implements RpcResponse {
-  factory Signal(String status, Map<String, dynamic> body) = _$Signal;
+  factory Signal(final String status, final Map<String, dynamic> body) =
+      _$Signal;
 
   factory Signal.fromJson(Map<String, dynamic> json) = _$Signal.fromJson;
 
-  String get status;
+  String get status => throw _privateConstructorUsedError;
   @override
-  Map<String, dynamic> get body;
+  Map<String, dynamic> get body => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  $SignalCopyWith<Signal> get copyWith => throw _privateConstructorUsedError;
+  _$$SignalCopyWith<_$Signal> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $RpcErrorCopyWith<$Res> implements $RpcResponseCopyWith<$Res> {
-  factory $RpcErrorCopyWith(RpcError value, $Res Function(RpcError) then) =
-      _$RpcErrorCopyWithImpl<$Res>;
+abstract class _$$RpcErrorCopyWith<$Res> implements $RpcResponseCopyWith<$Res> {
+  factory _$$RpcErrorCopyWith(
+          _$RpcError value, $Res Function(_$RpcError) then) =
+      __$$RpcErrorCopyWithImpl<$Res>;
   @override
   $Res call({String status, String message, Map<String, dynamic> body});
 }
 
 /// @nodoc
-class _$RpcErrorCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
-    implements $RpcErrorCopyWith<$Res> {
-  _$RpcErrorCopyWithImpl(RpcError _value, $Res Function(RpcError) _then)
-      : super(_value, (v) => _then(v as RpcError));
+class __$$RpcErrorCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
+    implements _$$RpcErrorCopyWith<$Res> {
+  __$$RpcErrorCopyWithImpl(_$RpcError _value, $Res Function(_$RpcError) _then)
+      : super(_value, (v) => _then(v as _$RpcError));
 
   @override
-  RpcError get _value => super._value as RpcError;
+  _$RpcError get _value => super._value as _$RpcError;
 
   @override
   $Res call({
@@ -494,7 +479,7 @@ class _$RpcErrorCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
     Object? message = freezed,
     Object? body = freezed,
   }) {
-    return _then(RpcError(
+    return _then(_$RpcError(
       status == freezed
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -504,7 +489,7 @@ class _$RpcErrorCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
           : message // ignore: cast_nullable_to_non_nullable
               as String,
       body == freezed
-          ? _value.body
+          ? _value._body
           : body // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
     ));
@@ -514,8 +499,10 @@ class _$RpcErrorCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$RpcError implements RpcError {
-  _$RpcError(this.status, this.message, this.body, {String? $type})
-      : $type = $type ?? 'error';
+  _$RpcError(this.status, this.message, final Map<String, dynamic> body,
+      {final String? $type})
+      : _body = body,
+        $type = $type ?? 'error';
 
   factory _$RpcError.fromJson(Map<String, dynamic> json) =>
       _$$RpcErrorFromJson(json);
@@ -524,8 +511,12 @@ class _$RpcError implements RpcError {
   final String status;
   @override
   final String message;
+  final Map<String, dynamic> _body;
   @override
-  final Map<String, dynamic> body;
+  Map<String, dynamic> get body {
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_body);
+  }
 
   @JsonKey(name: 'kind')
   final String $type;
@@ -539,23 +530,24 @@ class _$RpcError implements RpcError {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is RpcError &&
+            other is _$RpcError &&
             const DeepCollectionEquality().equals(other.status, status) &&
             const DeepCollectionEquality().equals(other.message, message) &&
-            const DeepCollectionEquality().equals(other.body, body));
+            const DeepCollectionEquality().equals(other._body, _body));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(status),
       const DeepCollectionEquality().hash(message),
-      const DeepCollectionEquality().hash(body));
+      const DeepCollectionEquality().hash(_body));
 
   @JsonKey(ignore: true)
   @override
-  $RpcErrorCopyWith<RpcError> get copyWith =>
-      _$RpcErrorCopyWithImpl<RpcError>(this, _$identity);
+  _$$RpcErrorCopyWith<_$RpcError> get copyWith =>
+      __$$RpcErrorCopyWithImpl<_$RpcError>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -636,43 +628,24 @@ class _$RpcError implements RpcError {
 }
 
 abstract class RpcError implements RpcResponse {
-  factory RpcError(String status, String message, Map<String, dynamic> body) =
-      _$RpcError;
+  factory RpcError(final String status, final String message,
+      final Map<String, dynamic> body) = _$RpcError;
 
   factory RpcError.fromJson(Map<String, dynamic> json) = _$RpcError.fromJson;
 
-  String get status;
-  String get message;
+  String get status => throw _privateConstructorUsedError;
+  String get message => throw _privateConstructorUsedError;
   @override
-  Map<String, dynamic> get body;
+  Map<String, dynamic> get body => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  $RpcErrorCopyWith<RpcError> get copyWith =>
+  _$$RpcErrorCopyWith<_$RpcError> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 RpcState _$RpcStateFromJson(Map<String, dynamic> json) {
   return _RpcState.fromJson(json);
 }
-
-/// @nodoc
-class _$RpcStateTearOff {
-  const _$RpcStateTearOff();
-
-  _RpcState call(String version, bool isAdmin) {
-    return _RpcState(
-      version,
-      isAdmin,
-    );
-  }
-
-  RpcState fromJson(Map<String, Object?> json) {
-    return RpcState.fromJson(json);
-  }
-}
-
-/// @nodoc
-const $RpcState = _$RpcStateTearOff();
 
 /// @nodoc
 mixin _$RpcState {
@@ -719,28 +692,30 @@ class _$RpcStateCopyWithImpl<$Res> implements $RpcStateCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$RpcStateCopyWith<$Res> implements $RpcStateCopyWith<$Res> {
-  factory _$RpcStateCopyWith(_RpcState value, $Res Function(_RpcState) then) =
-      __$RpcStateCopyWithImpl<$Res>;
+abstract class _$$_RpcStateCopyWith<$Res> implements $RpcStateCopyWith<$Res> {
+  factory _$$_RpcStateCopyWith(
+          _$_RpcState value, $Res Function(_$_RpcState) then) =
+      __$$_RpcStateCopyWithImpl<$Res>;
   @override
   $Res call({String version, bool isAdmin});
 }
 
 /// @nodoc
-class __$RpcStateCopyWithImpl<$Res> extends _$RpcStateCopyWithImpl<$Res>
-    implements _$RpcStateCopyWith<$Res> {
-  __$RpcStateCopyWithImpl(_RpcState _value, $Res Function(_RpcState) _then)
-      : super(_value, (v) => _then(v as _RpcState));
+class __$$_RpcStateCopyWithImpl<$Res> extends _$RpcStateCopyWithImpl<$Res>
+    implements _$$_RpcStateCopyWith<$Res> {
+  __$$_RpcStateCopyWithImpl(
+      _$_RpcState _value, $Res Function(_$_RpcState) _then)
+      : super(_value, (v) => _then(v as _$_RpcState));
 
   @override
-  _RpcState get _value => super._value as _RpcState;
+  _$_RpcState get _value => super._value as _$_RpcState;
 
   @override
   $Res call({
     Object? version = freezed,
     Object? isAdmin = freezed,
   }) {
-    return _then(_RpcState(
+    return _then(_$_RpcState(
       version == freezed
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
@@ -775,11 +750,12 @@ class _$_RpcState implements _RpcState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _RpcState &&
+            other is _$_RpcState &&
             const DeepCollectionEquality().equals(other.version, version) &&
             const DeepCollectionEquality().equals(other.isAdmin, isAdmin));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -788,8 +764,8 @@ class _$_RpcState implements _RpcState {
 
   @JsonKey(ignore: true)
   @override
-  _$RpcStateCopyWith<_RpcState> get copyWith =>
-      __$RpcStateCopyWithImpl<_RpcState>(this, _$identity);
+  _$$_RpcStateCopyWith<_$_RpcState> get copyWith =>
+      __$$_RpcStateCopyWithImpl<_$_RpcState>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
@@ -798,16 +774,17 @@ class _$_RpcState implements _RpcState {
 }
 
 abstract class _RpcState implements RpcState {
-  const factory _RpcState(String version, bool isAdmin) = _$_RpcState;
+  const factory _RpcState(final String version, final bool isAdmin) =
+      _$_RpcState;
 
   factory _RpcState.fromJson(Map<String, dynamic> json) = _$_RpcState.fromJson;
 
   @override
-  String get version;
+  String get version => throw _privateConstructorUsedError;
   @override
-  bool get isAdmin;
+  bool get isAdmin => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$RpcStateCopyWith<_RpcState> get copyWith =>
+  _$$_RpcStateCopyWith<_$_RpcState> get copyWith =>
       throw _privateConstructorUsedError;
 }
