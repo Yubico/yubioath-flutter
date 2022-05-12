@@ -18,7 +18,7 @@ final _log = Logger('fido.views.add_fingerprint_dialog');
 
 class AddFingerprintDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
-  const AddFingerprintDialog(this.devicePath, {Key? key}) : super(key: key);
+  const AddFingerprintDialog(this.devicePath, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

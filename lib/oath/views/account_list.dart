@@ -10,8 +10,7 @@ import 'account_view.dart';
 class AccountList extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OathState oathState;
-  const AccountList(this.devicePath, this.oathState, {Key? key})
-      : super(key: key);
+  const AccountList(this.devicePath, this.oathState, {super.key});
 
   @override
   ConsumerState<AccountList> createState() => _AccountListState();

@@ -65,7 +65,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
       var scan = await _rpc.command('scan', ['usb']);
       final pids = {
         for (var e in (scan['pids'] as Map).entries)
-          UsbPids.fromValue(int.parse(e.key)): e.value as int
+          UsbPid.fromValue(int.parse(e.key)): e.value as int
       };
       final numDevices = pids.values.fold<int>(0, (a, b) => a + b);
       if (_usbState != scan['state'] || state.length != numDevices) {
@@ -78,7 +78,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
           final path = ['usb', id];
           final deviceResult = await _rpc.command('get', path);
           final deviceData = deviceResult['data'];
-          final pid = UsbPids.fromValue(deviceData['pid'] as int);
+          final pid = UsbPid.fromValue(deviceData['pid'] as int);
           usbDevices.add(DeviceNode.usbYubiKey(
             DevicePath(path),
             deviceData['name'],

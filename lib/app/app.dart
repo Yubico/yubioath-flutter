@@ -7,8 +7,7 @@ import 'state.dart';
 
 class YubicoAuthenticatorApp extends ConsumerWidget {
   final Widget page;
-  const YubicoAuthenticatorApp({required this.page, Key? key})
-      : super(key: key);
+  const YubicoAuthenticatorApp({required this.page, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

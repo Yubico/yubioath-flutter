@@ -9,7 +9,7 @@ import '../state.dart';
 import 'device_avatar.dart';
 
 class DevicePickerDialog extends ConsumerWidget {
-  const DevicePickerDialog({Key? key}) : super(key: key);
+  const DevicePickerDialog({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -68,8 +68,7 @@ class _CurrentDeviceRow extends StatelessWidget {
     this.node, {
     this.data,
     required this.onTap,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -134,8 +133,7 @@ class _DeviceRow extends StatelessWidget {
     this.node, {
     required this.info,
     required this.onTap,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

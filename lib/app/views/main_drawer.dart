@@ -30,7 +30,7 @@ extension on Application {
 
 class MainPageDrawer extends ConsumerWidget {
   final bool shouldPop;
-  const MainPageDrawer({this.shouldPop = true, Key? key}) : super(key: key);
+  const MainPageDrawer({this.shouldPop = true, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -134,8 +134,8 @@ class ApplicationItem extends ConsumerWidget {
     required this.available,
     required this.selected,
     required this.onSelect,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -167,8 +167,8 @@ class DrawerItem extends StatelessWidget {
     this.onTap,
     this.selected = false,
     this.enabled = true,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -40,8 +40,7 @@ class _UserInteractionController extends UserInteractionController
 
 class _UserInteractionDialog extends StatefulWidget {
   final _UserInteractionController controller;
-  const _UserInteractionDialog({Key? key, required this.controller})
-      : super(key: key);
+  const _UserInteractionDialog({required this.controller});
 
   @override
   State<_UserInteractionDialog> createState() => _UserInteractionDialogState();

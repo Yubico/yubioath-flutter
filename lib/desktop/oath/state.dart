@@ -29,7 +29,7 @@ final _oathLockKeyProvider =
         (ref, devicePath) => _LockKeyNotifier(null));
 
 class _LockKeyNotifier extends StateNotifier<String?> {
-  _LockKeyNotifier(String? state) : super(state);
+  _LockKeyNotifier(super.state);
 
   setKey(String key) {
     state = key;

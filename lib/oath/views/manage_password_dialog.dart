@@ -11,8 +11,7 @@ import '../state.dart';
 class ManagePasswordDialog extends ConsumerStatefulWidget {
   final DevicePath path;
   final OathState state;
-  const ManagePasswordDialog(this.path, this.state, {Key? key})
-      : super(key: key);
+  const ManagePasswordDialog(this.path, this.state, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

@@ -11,8 +11,7 @@ import '../state.dart';
 class FidoPinDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final FidoState state;
-  const FidoPinDialog(this.devicePath, this.state, {Key? key})
-      : super(key: key);
+  const FidoPinDialog(this.devicePath, this.state, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _FidoPinDialogState();
