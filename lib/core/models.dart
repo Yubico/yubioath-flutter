@@ -8,7 +8,33 @@ part 'models.g.dart';
 
 enum Transport { usb, nfc }
 
-enum UsbInterface { otp, fido, ccid }
+enum UsbInterface {
+  otp(0x01),
+  fido(0x02),
+  ccid(0x04);
+
+  final int value;
+  const UsbInterface(this.value);
+
+  static int forCapabilites(int capabilities) {
+    var interfaces = 0;
+    if (capabilities & Capability.otp.value != 0) {
+      interfaces |= UsbInterface.otp.value;
+    }
+    if (capabilities & (Capability.u2f.value | Capability.fido2.value) != 0) {
+      interfaces |= UsbInterface.fido.value;
+    }
+    if (capabilities &
+            (Capability.openpgp.value |
+                Capability.piv.value |
+                Capability.oath.value |
+                Capability.hsmauth.value) !=
+        0) {
+      interfaces |= UsbInterface.ccid.value;
+    }
+    return interfaces;
+  }
+}
 
 @JsonEnum(alwaysCreate: true)
 enum UsbPid {
@@ -45,10 +71,8 @@ enum UsbPid {
   @JsonValue(0x0407)
   yk4OtpFidoCcid,
   @JsonValue(0x0410)
-  ykpOtpFido,
-}
+  ykpOtpFido;
 
-extension UsbPids on UsbPid {
   int get value => _$UsbPidEnumMap[this]!;
 
   String get displayName {
@@ -77,38 +101,6 @@ extension UsbPids on UsbPid {
 
   static UsbPid fromValue(int value) {
     return UsbPid.values.firstWhere((pid) => pid.value == value);
-  }
-}
-
-extension UsbInterfaces on UsbInterface {
-  int get value {
-    switch (this) {
-      case UsbInterface.otp:
-        return 0x01;
-      case UsbInterface.fido:
-        return 0x02;
-      case UsbInterface.ccid:
-        return 0x04;
-    }
-  }
-
-  static int forCapabilites(int capabilities) {
-    var interfaces = 0;
-    if (capabilities & Capability.otp.value != 0) {
-      interfaces |= UsbInterface.otp.value;
-    }
-    if (capabilities & (Capability.u2f.value | Capability.fido2.value) != 0) {
-      interfaces |= UsbInterface.fido.value;
-    }
-    if (capabilities &
-            (Capability.openpgp.value |
-                Capability.piv.value |
-                Capability.oath.value |
-                Capability.hsmauth.value) !=
-        0) {
-      interfaces |= UsbInterface.ccid.value;
-    }
-    return interfaces;
   }
 }
 
