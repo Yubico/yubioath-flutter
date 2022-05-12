@@ -1,5 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'models.dart';
@@ -11,23 +12,7 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
-
-/// @nodoc
-class _$VersionTearOff {
-  const _$VersionTearOff();
-
-  _Version call(int major, int minor, int patch) {
-    return _Version(
-      major,
-      minor,
-      patch,
-    );
-  }
-}
-
-/// @nodoc
-const $Version = _$VersionTearOff();
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
 mixin _$Version {
@@ -78,21 +63,22 @@ class _$VersionCopyWithImpl<$Res> implements $VersionCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$VersionCopyWith<$Res> implements $VersionCopyWith<$Res> {
-  factory _$VersionCopyWith(_Version value, $Res Function(_Version) then) =
-      __$VersionCopyWithImpl<$Res>;
+abstract class _$$_VersionCopyWith<$Res> implements $VersionCopyWith<$Res> {
+  factory _$$_VersionCopyWith(
+          _$_Version value, $Res Function(_$_Version) then) =
+      __$$_VersionCopyWithImpl<$Res>;
   @override
   $Res call({int major, int minor, int patch});
 }
 
 /// @nodoc
-class __$VersionCopyWithImpl<$Res> extends _$VersionCopyWithImpl<$Res>
-    implements _$VersionCopyWith<$Res> {
-  __$VersionCopyWithImpl(_Version _value, $Res Function(_Version) _then)
-      : super(_value, (v) => _then(v as _Version));
+class __$$_VersionCopyWithImpl<$Res> extends _$VersionCopyWithImpl<$Res>
+    implements _$$_VersionCopyWith<$Res> {
+  __$$_VersionCopyWithImpl(_$_Version _value, $Res Function(_$_Version) _then)
+      : super(_value, (v) => _then(v as _$_Version));
 
   @override
-  _Version get _value => super._value as _Version;
+  _$_Version get _value => super._value as _$_Version;
 
   @override
   $Res call({
@@ -100,7 +86,7 @@ class __$VersionCopyWithImpl<$Res> extends _$VersionCopyWithImpl<$Res>
     Object? minor = freezed,
     Object? patch = freezed,
   }) {
-    return _then(_Version(
+    return _then(_$_Version(
       major == freezed
           ? _value.major
           : major // ignore: cast_nullable_to_non_nullable
@@ -133,7 +119,7 @@ class _$_Version extends _Version {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _Version &&
+            other is _$_Version &&
             const DeepCollectionEquality().equals(other.major, major) &&
             const DeepCollectionEquality().equals(other.minor, minor) &&
             const DeepCollectionEquality().equals(other.patch, patch));
@@ -148,40 +134,26 @@ class _$_Version extends _Version {
 
   @JsonKey(ignore: true)
   @override
-  _$VersionCopyWith<_Version> get copyWith =>
-      __$VersionCopyWithImpl<_Version>(this, _$identity);
+  _$$_VersionCopyWith<_$_Version> get copyWith =>
+      __$$_VersionCopyWithImpl<_$_Version>(this, _$identity);
 }
 
 abstract class _Version extends Version {
-  const factory _Version(int major, int minor, int patch) = _$_Version;
+  const factory _Version(final int major, final int minor, final int patch) =
+      _$_Version;
   const _Version._() : super._();
 
   @override
-  int get major;
+  int get major => throw _privateConstructorUsedError;
   @override
-  int get minor;
+  int get minor => throw _privateConstructorUsedError;
   @override
-  int get patch;
+  int get patch => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$VersionCopyWith<_Version> get copyWith =>
+  _$$_VersionCopyWith<_$_Version> get copyWith =>
       throw _privateConstructorUsedError;
 }
-
-/// @nodoc
-class _$PairTearOff {
-  const _$PairTearOff();
-
-  _Pair<T1, T2> call<T1, T2>(T1 first, T2 second) {
-    return _Pair<T1, T2>(
-      first,
-      second,
-    );
-  }
-}
-
-/// @nodoc
-const $Pair = _$PairTearOff();
 
 /// @nodoc
 mixin _$Pair<T1, T2> {
@@ -227,30 +199,32 @@ class _$PairCopyWithImpl<T1, T2, $Res> implements $PairCopyWith<T1, T2, $Res> {
 }
 
 /// @nodoc
-abstract class _$PairCopyWith<T1, T2, $Res>
+abstract class _$$_PairCopyWith<T1, T2, $Res>
     implements $PairCopyWith<T1, T2, $Res> {
-  factory _$PairCopyWith(
-          _Pair<T1, T2> value, $Res Function(_Pair<T1, T2>) then) =
-      __$PairCopyWithImpl<T1, T2, $Res>;
+  factory _$$_PairCopyWith(
+          _$_Pair<T1, T2> value, $Res Function(_$_Pair<T1, T2>) then) =
+      __$$_PairCopyWithImpl<T1, T2, $Res>;
   @override
   $Res call({T1 first, T2 second});
 }
 
 /// @nodoc
-class __$PairCopyWithImpl<T1, T2, $Res> extends _$PairCopyWithImpl<T1, T2, $Res>
-    implements _$PairCopyWith<T1, T2, $Res> {
-  __$PairCopyWithImpl(_Pair<T1, T2> _value, $Res Function(_Pair<T1, T2>) _then)
-      : super(_value, (v) => _then(v as _Pair<T1, T2>));
+class __$$_PairCopyWithImpl<T1, T2, $Res>
+    extends _$PairCopyWithImpl<T1, T2, $Res>
+    implements _$$_PairCopyWith<T1, T2, $Res> {
+  __$$_PairCopyWithImpl(
+      _$_Pair<T1, T2> _value, $Res Function(_$_Pair<T1, T2>) _then)
+      : super(_value, (v) => _then(v as _$_Pair<T1, T2>));
 
   @override
-  _Pair<T1, T2> get _value => super._value as _Pair<T1, T2>;
+  _$_Pair<T1, T2> get _value => super._value as _$_Pair<T1, T2>;
 
   @override
   $Res call({
     Object? first = freezed,
     Object? second = freezed,
   }) {
-    return _then(_Pair<T1, T2>(
+    return _then(_$_Pair<T1, T2>(
       first == freezed
           ? _value.first
           : first // ignore: cast_nullable_to_non_nullable
@@ -282,7 +256,7 @@ class _$_Pair<T1, T2> implements _Pair<T1, T2> {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _Pair<T1, T2> &&
+            other is _$_Pair<T1, T2> &&
             const DeepCollectionEquality().equals(other.first, first) &&
             const DeepCollectionEquality().equals(other.second, second));
   }
@@ -295,19 +269,19 @@ class _$_Pair<T1, T2> implements _Pair<T1, T2> {
 
   @JsonKey(ignore: true)
   @override
-  _$PairCopyWith<T1, T2, _Pair<T1, T2>> get copyWith =>
-      __$PairCopyWithImpl<T1, T2, _Pair<T1, T2>>(this, _$identity);
+  _$$_PairCopyWith<T1, T2, _$_Pair<T1, T2>> get copyWith =>
+      __$$_PairCopyWithImpl<T1, T2, _$_Pair<T1, T2>>(this, _$identity);
 }
 
 abstract class _Pair<T1, T2> implements Pair<T1, T2> {
-  factory _Pair(T1 first, T2 second) = _$_Pair<T1, T2>;
+  factory _Pair(final T1 first, final T2 second) = _$_Pair<T1, T2>;
 
   @override
-  T1 get first;
+  T1 get first => throw _privateConstructorUsedError;
   @override
-  T2 get second;
+  T2 get second => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$PairCopyWith<T1, T2, _Pair<T1, T2>> get copyWith =>
+  _$$_PairCopyWith<T1, T2, _$_Pair<T1, T2>> get copyWith =>
       throw _privateConstructorUsedError;
 }

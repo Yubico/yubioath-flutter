@@ -1,5 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'models.dart';
@@ -11,33 +12,11 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 DeviceConfig _$DeviceConfigFromJson(Map<String, dynamic> json) {
   return _DeviceConfig.fromJson(json);
 }
-
-/// @nodoc
-class _$DeviceConfigTearOff {
-  const _$DeviceConfigTearOff();
-
-  _DeviceConfig call(Map<Transport, int> enabledCapabilities,
-      int? autoEjectTimeout, int? challengeResponseTimeout, int? deviceFlags) {
-    return _DeviceConfig(
-      enabledCapabilities,
-      autoEjectTimeout,
-      challengeResponseTimeout,
-      deviceFlags,
-    );
-  }
-
-  DeviceConfig fromJson(Map<String, Object?> json) {
-    return DeviceConfig.fromJson(json);
-  }
-}
-
-/// @nodoc
-const $DeviceConfig = _$DeviceConfigTearOff();
 
 /// @nodoc
 mixin _$DeviceConfig {
@@ -102,11 +81,11 @@ class _$DeviceConfigCopyWithImpl<$Res> implements $DeviceConfigCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$DeviceConfigCopyWith<$Res>
+abstract class _$$_DeviceConfigCopyWith<$Res>
     implements $DeviceConfigCopyWith<$Res> {
-  factory _$DeviceConfigCopyWith(
-          _DeviceConfig value, $Res Function(_DeviceConfig) then) =
-      __$DeviceConfigCopyWithImpl<$Res>;
+  factory _$$_DeviceConfigCopyWith(
+          _$_DeviceConfig value, $Res Function(_$_DeviceConfig) then) =
+      __$$_DeviceConfigCopyWithImpl<$Res>;
   @override
   $Res call(
       {Map<Transport, int> enabledCapabilities,
@@ -116,14 +95,15 @@ abstract class _$DeviceConfigCopyWith<$Res>
 }
 
 /// @nodoc
-class __$DeviceConfigCopyWithImpl<$Res> extends _$DeviceConfigCopyWithImpl<$Res>
-    implements _$DeviceConfigCopyWith<$Res> {
-  __$DeviceConfigCopyWithImpl(
-      _DeviceConfig _value, $Res Function(_DeviceConfig) _then)
-      : super(_value, (v) => _then(v as _DeviceConfig));
+class __$$_DeviceConfigCopyWithImpl<$Res>
+    extends _$DeviceConfigCopyWithImpl<$Res>
+    implements _$$_DeviceConfigCopyWith<$Res> {
+  __$$_DeviceConfigCopyWithImpl(
+      _$_DeviceConfig _value, $Res Function(_$_DeviceConfig) _then)
+      : super(_value, (v) => _then(v as _$_DeviceConfig));
 
   @override
-  _DeviceConfig get _value => super._value as _DeviceConfig;
+  _$_DeviceConfig get _value => super._value as _$_DeviceConfig;
 
   @override
   $Res call({
@@ -132,9 +112,9 @@ class __$DeviceConfigCopyWithImpl<$Res> extends _$DeviceConfigCopyWithImpl<$Res>
     Object? challengeResponseTimeout = freezed,
     Object? deviceFlags = freezed,
   }) {
-    return _then(_DeviceConfig(
+    return _then(_$_DeviceConfig(
       enabledCapabilities == freezed
-          ? _value.enabledCapabilities
+          ? _value._enabledCapabilities
           : enabledCapabilities // ignore: cast_nullable_to_non_nullable
               as Map<Transport, int>,
       autoEjectTimeout == freezed
@@ -156,14 +136,20 @@ class __$DeviceConfigCopyWithImpl<$Res> extends _$DeviceConfigCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$_DeviceConfig implements _DeviceConfig {
-  _$_DeviceConfig(this.enabledCapabilities, this.autoEjectTimeout,
-      this.challengeResponseTimeout, this.deviceFlags);
+  _$_DeviceConfig(final Map<Transport, int> enabledCapabilities,
+      this.autoEjectTimeout, this.challengeResponseTimeout, this.deviceFlags)
+      : _enabledCapabilities = enabledCapabilities;
 
   factory _$_DeviceConfig.fromJson(Map<String, dynamic> json) =>
       _$$_DeviceConfigFromJson(json);
 
+  final Map<Transport, int> _enabledCapabilities;
   @override
-  final Map<Transport, int> enabledCapabilities;
+  Map<Transport, int> get enabledCapabilities {
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_enabledCapabilities);
+  }
+
   @override
   final int? autoEjectTimeout;
   @override
@@ -180,9 +166,9 @@ class _$_DeviceConfig implements _DeviceConfig {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _DeviceConfig &&
+            other is _$_DeviceConfig &&
             const DeepCollectionEquality()
-                .equals(other.enabledCapabilities, enabledCapabilities) &&
+                .equals(other._enabledCapabilities, _enabledCapabilities) &&
             const DeepCollectionEquality()
                 .equals(other.autoEjectTimeout, autoEjectTimeout) &&
             const DeepCollectionEquality().equals(
@@ -191,18 +177,19 @@ class _$_DeviceConfig implements _DeviceConfig {
                 .equals(other.deviceFlags, deviceFlags));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(enabledCapabilities),
+      const DeepCollectionEquality().hash(_enabledCapabilities),
       const DeepCollectionEquality().hash(autoEjectTimeout),
       const DeepCollectionEquality().hash(challengeResponseTimeout),
       const DeepCollectionEquality().hash(deviceFlags));
 
   @JsonKey(ignore: true)
   @override
-  _$DeviceConfigCopyWith<_DeviceConfig> get copyWith =>
-      __$DeviceConfigCopyWithImpl<_DeviceConfig>(this, _$identity);
+  _$$_DeviceConfigCopyWith<_$_DeviceConfig> get copyWith =>
+      __$$_DeviceConfigCopyWithImpl<_$_DeviceConfig>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
@@ -212,64 +199,32 @@ class _$_DeviceConfig implements _DeviceConfig {
 
 abstract class _DeviceConfig implements DeviceConfig {
   factory _DeviceConfig(
-      Map<Transport, int> enabledCapabilities,
-      int? autoEjectTimeout,
-      int? challengeResponseTimeout,
-      int? deviceFlags) = _$_DeviceConfig;
+      final Map<Transport, int> enabledCapabilities,
+      final int? autoEjectTimeout,
+      final int? challengeResponseTimeout,
+      final int? deviceFlags) = _$_DeviceConfig;
 
   factory _DeviceConfig.fromJson(Map<String, dynamic> json) =
       _$_DeviceConfig.fromJson;
 
   @override
-  Map<Transport, int> get enabledCapabilities;
+  Map<Transport, int> get enabledCapabilities =>
+      throw _privateConstructorUsedError;
   @override
-  int? get autoEjectTimeout;
+  int? get autoEjectTimeout => throw _privateConstructorUsedError;
   @override
-  int? get challengeResponseTimeout;
+  int? get challengeResponseTimeout => throw _privateConstructorUsedError;
   @override
-  int? get deviceFlags;
+  int? get deviceFlags => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$DeviceConfigCopyWith<_DeviceConfig> get copyWith =>
+  _$$_DeviceConfigCopyWith<_$_DeviceConfig> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 DeviceInfo _$DeviceInfoFromJson(Map<String, dynamic> json) {
   return _DeviceInfo.fromJson(json);
 }
-
-/// @nodoc
-class _$DeviceInfoTearOff {
-  const _$DeviceInfoTearOff();
-
-  _DeviceInfo call(
-      DeviceConfig config,
-      int? serial,
-      Version version,
-      FormFactor formFactor,
-      Map<Transport, int> supportedCapabilities,
-      bool isLocked,
-      bool isFips,
-      bool isSky) {
-    return _DeviceInfo(
-      config,
-      serial,
-      version,
-      formFactor,
-      supportedCapabilities,
-      isLocked,
-      isFips,
-      isSky,
-    );
-  }
-
-  DeviceInfo fromJson(Map<String, Object?> json) {
-    return DeviceInfo.fromJson(json);
-  }
-}
-
-/// @nodoc
-const $DeviceInfo = _$DeviceInfoTearOff();
 
 /// @nodoc
 mixin _$DeviceInfo {
@@ -379,10 +334,11 @@ class _$DeviceInfoCopyWithImpl<$Res> implements $DeviceInfoCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$DeviceInfoCopyWith<$Res> implements $DeviceInfoCopyWith<$Res> {
-  factory _$DeviceInfoCopyWith(
-          _DeviceInfo value, $Res Function(_DeviceInfo) then) =
-      __$DeviceInfoCopyWithImpl<$Res>;
+abstract class _$$_DeviceInfoCopyWith<$Res>
+    implements $DeviceInfoCopyWith<$Res> {
+  factory _$$_DeviceInfoCopyWith(
+          _$_DeviceInfo value, $Res Function(_$_DeviceInfo) then) =
+      __$$_DeviceInfoCopyWithImpl<$Res>;
   @override
   $Res call(
       {DeviceConfig config,
@@ -401,14 +357,14 @@ abstract class _$DeviceInfoCopyWith<$Res> implements $DeviceInfoCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$DeviceInfoCopyWithImpl<$Res> extends _$DeviceInfoCopyWithImpl<$Res>
-    implements _$DeviceInfoCopyWith<$Res> {
-  __$DeviceInfoCopyWithImpl(
-      _DeviceInfo _value, $Res Function(_DeviceInfo) _then)
-      : super(_value, (v) => _then(v as _DeviceInfo));
+class __$$_DeviceInfoCopyWithImpl<$Res> extends _$DeviceInfoCopyWithImpl<$Res>
+    implements _$$_DeviceInfoCopyWith<$Res> {
+  __$$_DeviceInfoCopyWithImpl(
+      _$_DeviceInfo _value, $Res Function(_$_DeviceInfo) _then)
+      : super(_value, (v) => _then(v as _$_DeviceInfo));
 
   @override
-  _DeviceInfo get _value => super._value as _DeviceInfo;
+  _$_DeviceInfo get _value => super._value as _$_DeviceInfo;
 
   @override
   $Res call({
@@ -421,7 +377,7 @@ class __$DeviceInfoCopyWithImpl<$Res> extends _$DeviceInfoCopyWithImpl<$Res>
     Object? isFips = freezed,
     Object? isSky = freezed,
   }) {
-    return _then(_DeviceInfo(
+    return _then(_$_DeviceInfo(
       config == freezed
           ? _value.config
           : config // ignore: cast_nullable_to_non_nullable
@@ -439,7 +395,7 @@ class __$DeviceInfoCopyWithImpl<$Res> extends _$DeviceInfoCopyWithImpl<$Res>
           : formFactor // ignore: cast_nullable_to_non_nullable
               as FormFactor,
       supportedCapabilities == freezed
-          ? _value.supportedCapabilities
+          ? _value._supportedCapabilities
           : supportedCapabilities // ignore: cast_nullable_to_non_nullable
               as Map<Transport, int>,
       isLocked == freezed
@@ -461,8 +417,16 @@ class __$DeviceInfoCopyWithImpl<$Res> extends _$DeviceInfoCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$_DeviceInfo implements _DeviceInfo {
-  _$_DeviceInfo(this.config, this.serial, this.version, this.formFactor,
-      this.supportedCapabilities, this.isLocked, this.isFips, this.isSky);
+  _$_DeviceInfo(
+      this.config,
+      this.serial,
+      this.version,
+      this.formFactor,
+      final Map<Transport, int> supportedCapabilities,
+      this.isLocked,
+      this.isFips,
+      this.isSky)
+      : _supportedCapabilities = supportedCapabilities;
 
   factory _$_DeviceInfo.fromJson(Map<String, dynamic> json) =>
       _$$_DeviceInfoFromJson(json);
@@ -475,8 +439,13 @@ class _$_DeviceInfo implements _DeviceInfo {
   final Version version;
   @override
   final FormFactor formFactor;
+  final Map<Transport, int> _supportedCapabilities;
   @override
-  final Map<Transport, int> supportedCapabilities;
+  Map<Transport, int> get supportedCapabilities {
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_supportedCapabilities);
+  }
+
   @override
   final bool isLocked;
   @override
@@ -493,19 +462,20 @@ class _$_DeviceInfo implements _DeviceInfo {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _DeviceInfo &&
+            other is _$_DeviceInfo &&
             const DeepCollectionEquality().equals(other.config, config) &&
             const DeepCollectionEquality().equals(other.serial, serial) &&
             const DeepCollectionEquality().equals(other.version, version) &&
             const DeepCollectionEquality()
                 .equals(other.formFactor, formFactor) &&
             const DeepCollectionEquality()
-                .equals(other.supportedCapabilities, supportedCapabilities) &&
+                .equals(other._supportedCapabilities, _supportedCapabilities) &&
             const DeepCollectionEquality().equals(other.isLocked, isLocked) &&
             const DeepCollectionEquality().equals(other.isFips, isFips) &&
             const DeepCollectionEquality().equals(other.isSky, isSky));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -513,15 +483,15 @@ class _$_DeviceInfo implements _DeviceInfo {
       const DeepCollectionEquality().hash(serial),
       const DeepCollectionEquality().hash(version),
       const DeepCollectionEquality().hash(formFactor),
-      const DeepCollectionEquality().hash(supportedCapabilities),
+      const DeepCollectionEquality().hash(_supportedCapabilities),
       const DeepCollectionEquality().hash(isLocked),
       const DeepCollectionEquality().hash(isFips),
       const DeepCollectionEquality().hash(isSky));
 
   @JsonKey(ignore: true)
   @override
-  _$DeviceInfoCopyWith<_DeviceInfo> get copyWith =>
-      __$DeviceInfoCopyWithImpl<_DeviceInfo>(this, _$identity);
+  _$$_DeviceInfoCopyWith<_$_DeviceInfo> get copyWith =>
+      __$$_DeviceInfoCopyWithImpl<_$_DeviceInfo>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
@@ -531,36 +501,37 @@ class _$_DeviceInfo implements _DeviceInfo {
 
 abstract class _DeviceInfo implements DeviceInfo {
   factory _DeviceInfo(
-      DeviceConfig config,
-      int? serial,
-      Version version,
-      FormFactor formFactor,
-      Map<Transport, int> supportedCapabilities,
-      bool isLocked,
-      bool isFips,
-      bool isSky) = _$_DeviceInfo;
+      final DeviceConfig config,
+      final int? serial,
+      final Version version,
+      final FormFactor formFactor,
+      final Map<Transport, int> supportedCapabilities,
+      final bool isLocked,
+      final bool isFips,
+      final bool isSky) = _$_DeviceInfo;
 
   factory _DeviceInfo.fromJson(Map<String, dynamic> json) =
       _$_DeviceInfo.fromJson;
 
   @override
-  DeviceConfig get config;
+  DeviceConfig get config => throw _privateConstructorUsedError;
   @override
-  int? get serial;
+  int? get serial => throw _privateConstructorUsedError;
   @override
-  Version get version;
+  Version get version => throw _privateConstructorUsedError;
   @override
-  FormFactor get formFactor;
+  FormFactor get formFactor => throw _privateConstructorUsedError;
   @override
-  Map<Transport, int> get supportedCapabilities;
+  Map<Transport, int> get supportedCapabilities =>
+      throw _privateConstructorUsedError;
   @override
-  bool get isLocked;
+  bool get isLocked => throw _privateConstructorUsedError;
   @override
-  bool get isFips;
+  bool get isFips => throw _privateConstructorUsedError;
   @override
-  bool get isSky;
+  bool get isSky => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$DeviceInfoCopyWith<_DeviceInfo> get copyWith =>
+  _$$_DeviceInfoCopyWith<_$_DeviceInfo> get copyWith =>
       throw _privateConstructorUsedError;
 }
