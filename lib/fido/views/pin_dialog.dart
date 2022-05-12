@@ -39,6 +39,12 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
 
     return ResponsiveDialog(
       title: Text(hasPin ? 'Change PIN' : 'Set PIN'),
+      actions: [
+        TextButton(
+          onPressed: isValid ? _submit : null,
+          child: const Text('Save'),
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -109,12 +115,6 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 ))
             .toList(),
       ),
-      actions: [
-        TextButton(
-          child: const Text('Save'),
-          onPressed: isValid ? _submit : null,
-        ),
-      ],
     );
   }
 

@@ -27,6 +27,22 @@ class DeleteAccountDialog extends ConsumerWidget {
 
     return ResponsiveDialog(
       title: const Text('Delete account'),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            await ref
+                .read(credentialListProvider(device.path).notifier)
+                .deleteAccount(credential);
+            await ref.read(withContextProvider)(
+              (context) async {
+                Navigator.of(context).pop();
+                showMessage(context, 'Account deleted');
+              },
+            );
+          },
+          child: const Text('Delete'),
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -39,23 +55,11 @@ class DeleteAccountDialog extends ConsumerWidget {
           Text('Account: $label'),
         ]
             .map((e) => Padding(
-                  child: e,
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: e,
                 ))
             .toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            await ref
-                .read(credentialListProvider(device.path).notifier)
-                .deleteAccount(credential);
-            Navigator.of(context).pop(true);
-            showMessage(context, 'Account deleted');
-          },
-          child: const Text('Delete'),
-        ),
-      ],
     );
   }
 }

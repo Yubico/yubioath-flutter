@@ -81,7 +81,7 @@ mixin AccountMixin {
       return value;
     } else {
       var i = value.length ~/ 2;
-      return value.substring(0, i) + ' ' + value.substring(i);
+      return '${value.substring(0, i)} ${value.substring(i)}';
     }
   }
 

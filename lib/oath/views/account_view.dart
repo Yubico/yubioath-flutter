@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/app/state.dart';
 
 import '../models.dart';
 import '../state.dart';
@@ -43,12 +44,6 @@ class AccountView extends ConsumerWidget with AccountMixin {
     return buildActions(context, ref).map((e) {
       final action = e.action;
       return PopupMenuItem(
-        child: ListTile(
-          leading: e.icon,
-          title: Text(e.text),
-          dense: true,
-          contentPadding: EdgeInsets.zero,
-        ),
         enabled: action != null,
         onTap: () {
           // As soon as onTap returns, the Navigator is popped,
@@ -58,6 +53,12 @@ class AccountView extends ConsumerWidget with AccountMixin {
             action?.call(context);
           });
         },
+        child: ListTile(
+          leading: e.icon,
+          title: Text(e.text),
+          dense: true,
+          contentPadding: EdgeInsets.zero,
+        ),
       );
     }).toList();
   }
@@ -104,7 +105,11 @@ class AccountView extends ConsumerWidget with AccountMixin {
               ref,
             );
           }
-          copyToClipboard(context, ref);
+          await ref.read(withContextProvider)(
+            (context) async {
+              copyToClipboard(context, ref);
+            },
+          );
         },
         leading: CircleAvatar(
           foregroundColor: darkMode ? Colors.black : Colors.white,

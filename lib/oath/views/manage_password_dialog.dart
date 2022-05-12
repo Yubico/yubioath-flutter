@@ -30,6 +30,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         .read(oathStateProvider(widget.path).notifier)
         .setPassword(_currentPassword, _newPassword);
     if (result) {
+      if (!mounted) return;
       Navigator.of(context).pop();
       showMessage(context, 'Password set');
     } else {
@@ -52,6 +53,12 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
 
     return ResponsiveDialog(
       title: const Text('Manage password'),
+      actions: [
+        TextButton(
+          onPressed: isValid ? _submit : null,
+          child: const Text('Save'),
+        )
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -78,13 +85,13 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               runSpacing: 8.0,
               children: [
                 OutlinedButton(
-                  child: const Text('Remove password'),
                   onPressed: _currentPassword.isNotEmpty
                       ? () async {
                           final result = await ref
                               .read(oathStateProvider(widget.path).notifier)
                               .unsetPassword(_currentPassword);
                           if (result) {
+                            if (!mounted) return;
                             Navigator.of(context).pop();
                             showMessage(context, 'Password removed');
                           } else {
@@ -94,6 +101,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                           }
                         }
                       : null,
+                  child: const Text('Remove password'),
                 ),
                 if (widget.state.remembered)
                   OutlinedButton(
@@ -102,6 +110,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                       await ref
                           .read(oathStateProvider(widget.path).notifier)
                           .forgetPassword();
+                      if (!mounted) return;
                       Navigator.of(context).pop();
                       showMessage(context, 'Password forgotten');
                     },
@@ -153,12 +162,6 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 ))
             .toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: isValid ? _submit : null,
-          child: const Text('Save'),
-        )
-      ],
     );
   }
 }

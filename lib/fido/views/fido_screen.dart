@@ -85,9 +85,9 @@ class FidoScreen extends ConsumerWidget {
                             }),
                       ]
                           .map((e) => Padding(
-                                child: e,
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8.0),
+                                child: e,
                               ))
                           .toList(),
                     ));

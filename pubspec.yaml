@@ -37,6 +37,7 @@ dependencies:
 
   async: ^2.8.2
   logging: ^1.0.2
+  collection: ^1.16.0
   shared_preferences: ^2.0.12
   flutter_riverpod: ^1.0.0
   json_annotation: ^4.4.0

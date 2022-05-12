@@ -112,8 +112,8 @@ class _UnlockedView extends ConsumerWidget {
           );
         }),
       ),
-      child: AccountList(devicePath, oathState),
       floatingActionButton: _buildFab(context),
+      child: AccountList(devicePath, oathState),
     );
   }
 
@@ -188,6 +188,7 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
     final result = await ref
         .read(oathStateProvider(widget._devicePath).notifier)
         .unlock(_passwordController.text, remember: _remember);
+    if (!mounted) return;
     if (!result.first) {
       setState(() {
         _wrong = true;
@@ -283,8 +284,8 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ElevatedButton(
-                child: const Text('Unlock'),
                 onPressed: _passwordController.text.isNotEmpty ? _submit : null,
+                child: const Text('Unlock'),
               ),
             )
           ],
