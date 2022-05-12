@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/state.dart';
 
 import 'app/logging.dart';
 import 'app/message.dart';
@@ -43,7 +44,11 @@ class AboutPage extends ConsumerWidget {
                 final data = response['diagnostics'];
                 final text = const JsonEncoder.withIndent('  ').convert(data);
                 await Clipboard.setData(ClipboardData(text: text));
-                showMessage(context, 'Diagnostic data copied to clipboard');
+                await ref.read(withContextProvider)(
+                  (context) async {
+                    showMessage(context, 'Diagnostic data copied to clipboard');
+                  },
+                );
               },
               child: const Text('Run diagnostics...'),
             ),
@@ -86,7 +91,11 @@ class LoggingPanel extends ConsumerWidget {
             final logs =
                 ref.read(logLevelProvider.notifier).getLogs().join('\n');
             await Clipboard.setData(ClipboardData(text: logs));
-            showMessage(context, 'Log copied to clipboard');
+            await ref.read(withContextProvider)(
+              (context) async {
+                showMessage(context, 'Log copied to clipboard');
+              },
+            );
           },
         ),
       ],

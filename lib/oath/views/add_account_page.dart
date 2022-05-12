@@ -144,6 +144,45 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     return ResponsiveDialog(
       title: const Text('Add account'),
+      actions: [
+        TextButton(
+          onPressed: isValid
+              ? () async {
+                  if (secretLengthValid) {
+                    final issuer = _issuerController.text;
+
+                    final cred = CredentialData(
+                      issuer: issuer.isEmpty ? null : issuer,
+                      name: _accountController.text,
+                      secret: secret,
+                      oathType: _oathType,
+                      hashAlgorithm: _hashAlgorithm,
+                      digits: _digits,
+                      period: period,
+                    );
+
+                    try {
+                      await ref
+                          .read(credentialListProvider(widget.devicePath)
+                              .notifier)
+                          .addAccount(cred.toUri(), requireTouch: _touch);
+                      if (!mounted) return;
+                      Navigator.of(context).pop();
+                      showMessage(context, 'Account added');
+                    } catch (e) {
+                      _log.error('Failed to add account', e);
+                      showMessage(context, 'Failed adding account');
+                    }
+                  } else {
+                    setState(() {
+                      _validateSecretLength = true;
+                    });
+                  }
+                }
+              : null,
+          child: const Text('Save', key: Key('save_btn')),
+        ),
+      ],
       child: FileDropTarget(
         onFileDropped: (fileData) async {
           if (qrScanner != null) {
@@ -359,44 +398,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               .toList(),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: isValid
-              ? () async {
-                  if (secretLengthValid) {
-                    final issuer = _issuerController.text;
-
-                    final cred = CredentialData(
-                      issuer: issuer.isEmpty ? null : issuer,
-                      name: _accountController.text,
-                      secret: secret,
-                      oathType: _oathType,
-                      hashAlgorithm: _hashAlgorithm,
-                      digits: _digits,
-                      period: period,
-                    );
-
-                    try {
-                      await ref
-                          .read(credentialListProvider(widget.devicePath)
-                              .notifier)
-                          .addAccount(cred.toUri(), requireTouch: _touch);
-                      Navigator.of(context).pop();
-                      showMessage(context, 'Account added');
-                    } catch (e) {
-                      _log.error('Failed to add account', e);
-                      showMessage(context, 'Failed adding account');
-                    }
-                  } else {
-                    setState(() {
-                      _validateSecretLength = true;
-                    });
-                  }
-                }
-              : null,
-          child: const Text('Save', key: Key('save_btn')),
-        ),
-      ],
     );
   }
 }

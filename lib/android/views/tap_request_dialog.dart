@@ -39,8 +39,8 @@ class FDialogApiImpl extends FDialogApi {
             size: 64,
           ),
           onCancel: () {
-            HDialogApi _api = HDialogApi();
-            _api.dialogClosed();
+            HDialogApi api = HDialogApi();
+            api.dialogClosed();
           },
         ));
   }

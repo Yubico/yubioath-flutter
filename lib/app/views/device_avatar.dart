@@ -13,9 +13,9 @@ class DeviceAvatar extends StatelessWidget {
 
   factory DeviceAvatar.yubiKeyData(YubiKeyData data, {bool selected = false}) =>
       DeviceAvatar(
-        child: getProductImage(data.info, data.name),
         badge: data.node is NfcReaderNode ? Icons.wifi : null,
         selected: selected,
+        child: getProductImage(data.info, data.name),
       );
 
   factory DeviceAvatar.deviceNode(DeviceNode node, {bool selected = false}) =>
@@ -29,13 +29,13 @@ class DeviceAvatar extends StatelessWidget {
             );
           }
           return DeviceAvatar(
-            child: const Icon(Icons.device_unknown),
             selected: selected,
+            child: const Icon(Icons.device_unknown),
           );
         },
         nfcReader: (_) => DeviceAvatar(
-          child: const Icon(Icons.wifi),
           selected: selected,
+          child: const Icon(Icons.wifi),
         ),
       );
 

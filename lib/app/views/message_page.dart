@@ -20,6 +20,7 @@ class MessagePage extends StatelessWidget {
   Widget build(BuildContext context) => AppPage(
         title: title,
         centered: true,
+        floatingActionButton: floatingActionButton,
         child: Column(
           children: [
             Text(header, style: Theme.of(context).textTheme.headline6),
@@ -27,6 +28,5 @@ class MessagePage extends StatelessWidget {
             Text(message, textAlign: TextAlign.center),
           ],
         ),
-        floatingActionButton: floatingActionButton,
       );
 }

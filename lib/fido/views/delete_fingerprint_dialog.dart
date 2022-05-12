@@ -25,6 +25,20 @@ class DeleteFingerprintDialog extends ConsumerWidget {
 
     return ResponsiveDialog(
       title: const Text('Delete fingerprint'),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            await ref
+                .read(fingerprintProvider(devicePath).notifier)
+                .deleteFingerprint(fingerprint);
+            await ref.read(withContextProvider)((context) async {
+              Navigator.of(context).pop(true);
+              showMessage(context, 'Fingerprint deleted');
+            });
+          },
+          child: const Text('Delete'),
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -32,23 +46,11 @@ class DeleteFingerprintDialog extends ConsumerWidget {
           Text('Fingerprint: $label'),
         ]
             .map((e) => Padding(
-                  child: e,
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: e,
                 ))
             .toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            await ref
-                .read(fingerprintProvider(devicePath).notifier)
-                .deleteFingerprint(fingerprint);
-            Navigator.of(context).pop(true);
-            showMessage(context, 'Fingerprint deleted');
-          },
-          child: const Text('Delete'),
-        ),
-      ],
     );
   }
 }

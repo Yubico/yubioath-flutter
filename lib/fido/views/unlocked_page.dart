@@ -97,10 +97,10 @@ class FidoUnlockedPage extends ConsumerWidget {
     if (children.isNotEmpty) {
       return AppPage(
         title: const Text('WebAuthn'),
+        floatingActionButton: _buildFab(context),
         child: Column(
           children: children,
         ),
-        floatingActionButton: _buildFab(context),
       );
     }
 
