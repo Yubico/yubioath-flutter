@@ -4,11 +4,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:yubico_authenticator/android/init.dart' as android;
 import 'package:yubico_authenticator/app/views/no_device_screen.dart';
-import 'package:yubico_authenticator/core/state.dart';
-import 'package:yubico_authenticator/desktop/init.dart' as desktop;
 import 'package:yubico_authenticator/oath/views/oath_screen.dart';
+
+import 'test_util.dart';
 
 Future<void> addDelay(int ms) async {
   await Future<void>.delayed(Duration(milliseconds: ms));
@@ -44,16 +43,7 @@ void main() {
     testWidgets('Reset OATH', (WidgetTester tester) async {
       /// this test works if there is an oath credential on the key
       /// else it will fail on tap 'Authenticator' widget
-      final Widget initializedApp;
-      if (isDesktop) {
-        initializedApp = await desktop.initialize([]);
-      } else if (isAndroid) {
-        initializedApp = await android.initialize();
-      } else {
-        throw UnimplementedError('Platform not supported');
-      }
-
-      await tester.pumpWidget(initializedApp);
+      await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.byType(NoDeviceScreen), findsNothing,
@@ -97,16 +87,7 @@ void main() {
     testWidgets('Reset FIDO', (WidgetTester tester) async {
       /// this test works if there is an oath credential on the key
       /// else it will fail on tap 'Authenticator' widget
-      final Widget initializedApp;
-      if (isDesktop) {
-        initializedApp = await desktop.initialize([]);
-      } else if (isAndroid) {
-        initializedApp = await android.initialize();
-      } else {
-        throw UnimplementedError('Platform not supported');
-      }
-
-      await tester.pumpWidget(initializedApp);
+      await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.byType(NoDeviceScreen), findsNothing,
