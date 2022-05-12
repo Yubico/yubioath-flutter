@@ -32,10 +32,9 @@ class _MobileScannerWrapper extends StatelessWidget {
   final _ScanStatus status;
 
   const _MobileScannerWrapper({
-    Key? key,
     required this.onDetect,
     required this.status,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +89,7 @@ class _MobileScannerWrapper extends StatelessWidget {
 }
 
 class QrScannerView extends StatefulWidget {
-  const QrScannerView({Key? key}) : super(key: key);
+  const QrScannerView({super.key});
 
   @override
   State<QrScannerView> createState() => _QrScannerViewState();

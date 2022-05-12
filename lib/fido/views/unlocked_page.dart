@@ -18,7 +18,7 @@ class FidoUnlockedPage extends ConsumerWidget {
   final DeviceNode node;
   final FidoState state;
 
-  const FidoUnlockedPage(this.node, this.state, {Key? key}) : super(key: key);
+  const FidoUnlockedPage(this.node, this.state, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

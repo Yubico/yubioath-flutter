@@ -10,7 +10,7 @@ import '../../oath/views/oath_screen.dart';
 import '../../management/views/management_screen.dart';
 
 class MainPage extends ConsumerWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

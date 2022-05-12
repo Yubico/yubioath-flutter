@@ -14,7 +14,7 @@ class FidoLockedPage extends ConsumerWidget {
   final DeviceNode node;
   final FidoState state;
 
-  const FidoLockedPage(this.node, this.state, {Key? key}) : super(key: key);
+  const FidoLockedPage(this.node, this.state, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -88,8 +88,7 @@ class FidoLockedPage extends ConsumerWidget {
 class _PinEntryForm extends ConsumerStatefulWidget {
   final FidoState _state;
   final DeviceNode _deviceNode;
-  const _PinEntryForm(this._state, this._deviceNode, {Key? key})
-      : super(key: key);
+  const _PinEntryForm(this._state, this._deviceNode);
 
   @override
   ConsumerState<_PinEntryForm> createState() => _PinEntryFormState();

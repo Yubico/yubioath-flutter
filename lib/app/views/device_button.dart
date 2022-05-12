@@ -6,7 +6,7 @@ import 'device_avatar.dart';
 import 'device_picker_dialog.dart';
 
 class DeviceButton extends ConsumerWidget {
-  const DeviceButton({Key? key}) : super(key: key);
+  const DeviceButton({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

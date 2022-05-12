@@ -11,12 +11,11 @@ class AppPage extends ConsumerWidget {
   final Widget? floatingActionButton;
   final bool centered;
   AppPage(
-      {Key? key,
+      {super.key,
       this.title,
       required this.child,
       this.floatingActionButton,
-      this.centered = false})
-      : super(key: key);
+      this.centered = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => LayoutBuilder(

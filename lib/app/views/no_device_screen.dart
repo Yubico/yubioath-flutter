@@ -12,7 +12,7 @@ import 'device_avatar.dart';
 
 class NoDeviceScreen extends ConsumerWidget {
   final DeviceNode? node;
-  const NoDeviceScreen(this.node, {Key? key}) : super(key: key);
+  const NoDeviceScreen(this.node, {super.key});
 
   List<Widget> _buildUsbPid(BuildContext context, WidgetRef ref, UsbPid pid) {
     if (pid.usbInterfaces == UsbInterface.fido.value) {

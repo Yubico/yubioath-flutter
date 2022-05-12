@@ -17,8 +17,7 @@ final androidSubPageProvider =
 class _AndroidSubPageNotifier extends CurrentAppNotifier {
   final AppApi _api = AppApi();
 
-  _AndroidSubPageNotifier(List<Application> supportedApps)
-      : super(supportedApps) {
+  _AndroidSubPageNotifier(super.supportedApps) {
     _handleSubPage(state);
   }
 
@@ -43,7 +42,7 @@ final androidAttachedDevicesProvider =
 });
 
 class _AndroidAttachedDevicesNotifier extends AttachedDevicesNotifier {
-  _AndroidAttachedDevicesNotifier(List<DeviceNode> state) : super(state);
+  _AndroidAttachedDevicesNotifier(super.state);
 }
 
 final androidDeviceDataProvider =

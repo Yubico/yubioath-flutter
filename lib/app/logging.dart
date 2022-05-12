@@ -68,7 +68,7 @@ class LogLevelNotifier extends StateNotifier<Level> {
 class LogWarningOverlay extends StatelessWidget {
   final Widget child;
 
-  const LogWarningOverlay({Key? key, required this.child}) : super(key: key);
+  const LogWarningOverlay({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

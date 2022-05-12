@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class ProgressCircle extends StatelessWidget {
   final Color color;
   final double progress;
-  const ProgressCircle(this.color, this.progress, {Key? key}) : super(key: key);
+  const ProgressCircle(this.color, this.progress, {super.key});
 
   @override
   Widget build(BuildContext context) {

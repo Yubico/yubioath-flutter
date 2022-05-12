@@ -16,7 +16,7 @@ import 'widgets/responsive_dialog.dart';
 final _log = Logger('about');
 
 class AboutPage extends ConsumerWidget {
-  const AboutPage({Key? key}) : super(key: key);
+  const AboutPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,7 +60,7 @@ class AboutPage extends ConsumerWidget {
 }
 
 class LoggingPanel extends ConsumerWidget {
-  const LoggingPanel({Key? key}) : super(key: key);
+  const LoggingPanel({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
