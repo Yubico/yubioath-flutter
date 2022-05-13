@@ -271,7 +271,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "pyparsing"
-version = "3.0.8"
+version = "3.0.9"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
 category = "dev"
 optional = false
@@ -370,7 +370,7 @@ pywin32 = {version = ">=223", markers = "sys_platform == \"win32\""}
 type = "git"
 url = "https://github.com/Yubico/yubikey-manager.git"
 reference = "next"
-resolved_reference = "61b902b5f61024b27f32ef88b2f95bb7630afdfb"
+resolved_reference = "b1d05ea89f8988bf717e5e9073a4c3a3e7ec1bc2"
 
 [[package]]
 name = "zipp"
@@ -626,8 +626,8 @@ pyinstaller-hooks-contrib = [
     {file = "pyinstaller_hooks_contrib-2022.4-py2.py3-none-any.whl", hash = "sha256:b57a90bb8520d6e1dbbaaae416875e28fa5a3b74d2e40e330d02d1ccadacc38c"},
 ]
 pyparsing = [
-    {file = "pyparsing-3.0.8-py3-none-any.whl", hash = "sha256:ef7b523f6356f763771559412c0d7134753f037822dad1b16945b7b846f7ad06"},
-    {file = "pyparsing-3.0.8.tar.gz", hash = "sha256:7bf433498c016c4314268d95df76c81b842a4cb2b276fa3312cfb1e1d85f6954"},
+    {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
+    {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
 ]
 pyscard = [
     {file = "pyscard-2.0.3-cp310-cp310-win_amd64.whl", hash = "sha256:f7748157d293f57688307f94d780c93bd3ceaf309b39b92a0af792bf1ddb82e7"},
