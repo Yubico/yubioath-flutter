@@ -6,20 +6,25 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.*
 import com.yubico.authenticator.api.Pigeon.*
-import com.yubico.authenticator.data.device.toJson
 import com.yubico.authenticator.logging.Log
+import com.yubico.authenticator.management.model
+import com.yubico.authenticator.management.Model.AppDeviceInfo
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Logger
 import com.yubico.yubikit.core.YubiKeyDevice
+import com.yubico.yubikit.core.fido.FidoConnection
+import com.yubico.yubikit.core.otp.OtpConnection
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.oath.*
 import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
 import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.IOException
 import java.net.URI
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
@@ -99,20 +104,18 @@ class OathManager(
 
         _isUsbKey = device is UsbYubiKeyDevice
 
-        try {
-            coroutineScope.launch {
-                if (pendingYubiKeyAction.value != null) {
-                    provideYubiKey(com.yubico.yubikit.core.util.Result.success(device))
-                } else {
-                    withContext(Dispatchers.Main) {
-                        sendDeviceInfo(device)
-                        sendOathInfo(device)
-                        sendOathCodes(device)
-                    }
-                }
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            Log.e(TAG, "Exception caught: ${throwable.message}")
+        }
+
+        coroutineScope.launch(handler) {
+            if (pendingYubiKeyAction.value != null) {
+                provideYubiKey(com.yubico.yubikit.core.util.Result.success(device))
+            } else {
+                sendDeviceInfo(device)
+                sendOathInfo(device)
+                sendOathCodes(device)
             }
-        } catch (illegalStateException: IllegalStateException) {
-            // ignored
         }
     }
 
@@ -391,27 +394,84 @@ class OathManager(
         }
     }
 
-    private suspend fun sendDeviceInfo(device: YubiKeyDevice) {
-
-        val deviceInfoData = suspendCoroutine<String> {
-            device.requestConnection(SmartCardConnection::class.java) { result ->
-                try {
-                    val pid = (device as? UsbYubiKeyDevice)?.pid
-                    val deviceInfo = DeviceUtil.readInfo(result.value, pid)
-                    val name = DeviceUtil.getName(deviceInfo, pid?.type)
-
-                    val deviceInfoData = deviceInfo
-                        .toJson(name, device is NfcYubiKeyDevice)
-                        .toString()
-                    it.resume(deviceInfoData)
-                } catch (cause: Throwable) {
-                    Logger.e("Failed to get device info", cause)
-                    it.resumeWithException(cause)
+    private suspend fun <T> withSmartCardConnection(
+        device: YubiKeyDevice,
+        block: (SmartCardConnection) -> T
+    ) =
+        suspendCoroutine<T> { continuation ->
+            device.requestConnection(SmartCardConnection::class.java) {
+                if (it.isError) {
+                    continuation.resumeWithException(IllegalStateException("Failed to get SmartCardConnection"))
+                } else {
+                    continuation.resume(block(it.value))
                 }
             }
         }
 
-        _fManagementApi.updateDeviceInfo(deviceInfoData) {}
+    private suspend fun <T> withOTPConnection(device: YubiKeyDevice, block: (OtpConnection) -> T) =
+        suspendCoroutine<T> { continuation ->
+            device.requestConnection(OtpConnection::class.java) {
+                if (it.isError) {
+                    continuation.resumeWithException(IllegalStateException("Failed to get OtpConnection"))
+                } else {
+                    continuation.resume(block(it.value))
+                }
+            }
+        }
+
+    private suspend fun <T> withFidoConnection(
+        device: YubiKeyDevice,
+        block: (FidoConnection) -> T
+    ) =
+        suspendCoroutine<T> { continuation ->
+            device.requestConnection(FidoConnection::class.java) {
+                if (it.isError) {
+                    continuation.resumeWithException(IllegalStateException("Failed to get FidoConnection"))
+                } else {
+                    continuation.resume(block(it.value))
+                }
+            }
+        }
+
+    private suspend fun getDeviceInfo(device: YubiKeyDevice): AppDeviceInfo =
+        try {
+            withSmartCardConnection(device) {
+                val pid = (device as? UsbYubiKeyDevice)?.pid
+                val deviceInfo = DeviceUtil.readInfo(it, pid)
+                val name = DeviceUtil.getName(deviceInfo, pid?.type)
+                deviceInfo.model(name, device is NfcYubiKeyDevice, pid?.value)
+            }
+        } catch (exception: Exception) {
+            Log.d(TAG, "Smart card connection not available")
+            try {
+                withOTPConnection(device) {
+                    val pid = (device as? UsbYubiKeyDevice)?.pid
+                    val deviceInfo = DeviceUtil.readInfo(it, pid)
+                    val name = DeviceUtil.getName(deviceInfo, pid?.type)
+                    deviceInfo.model(name, device is NfcYubiKeyDevice, pid?.value)
+                }
+            } catch (exception: Exception) {
+                Log.d(TAG, "OTP connection not available")
+                try {
+                    withFidoConnection(device) {
+                        val pid = (device as? UsbYubiKeyDevice)?.pid
+                        val deviceInfo = DeviceUtil.readInfo(it, pid)
+                        val name = DeviceUtil.getName(deviceInfo, pid?.type)
+                        deviceInfo.model(name, device is NfcYubiKeyDevice, pid?.value)
+                    }
+                } catch (exception: Exception) {
+                    Log.e(TAG, "No connection available for getting device info")
+                    throw exception
+                }
+            }
+        }
+
+    private suspend fun sendDeviceInfo(device: YubiKeyDevice) {
+        val deviceInfoData = getDeviceInfo(device)
+        withContext(Dispatchers.Main) {
+            Log.d(TAG, "Sending device info: $deviceInfoData")
+            _fManagementApi.updateDeviceInfo(Json.encodeToString(deviceInfoData)) {}
+        }
     }
 
     private suspend fun sendOathInfo(device: YubiKeyDevice) {
@@ -448,7 +508,9 @@ class OathManager(
             }
         }
 
-        _fOathApi.updateSession(oathSessionData) {}
+        withContext(Dispatchers.Main) {
+            _fOathApi.updateSession(oathSessionData) {}
+        }
     }
 
     private suspend fun sendOathCodes(device: YubiKeyDevice) {
@@ -466,7 +528,9 @@ class OathManager(
             }
         }
 
-        _fOathApi.updateOathCredentials(sendOathCodes) {}
+        withContext(Dispatchers.Main) {
+            _fOathApi.updateOathCredentials(sendOathCodes) {}
+        }
     }
 
     /**
