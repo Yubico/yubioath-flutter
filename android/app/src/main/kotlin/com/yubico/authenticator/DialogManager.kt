@@ -1,6 +1,7 @@
 package com.yubico.authenticator
 
 import com.yubico.authenticator.api.Pigeon.*
+import com.yubico.authenticator.logging.Log
 import io.flutter.plugin.common.BinaryMessenger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +42,7 @@ class DialogManager(messenger: BinaryMessenger, private var coroutineScope: Coro
                 onCancelled?.invoke()
                 result.success(null)
             } catch (cause: Throwable) {
-                FlutterLog.d(TAG, "Failed to close dialog during User cancel action")
+                Log.d(TAG, "Failed to close dialog during User cancel action")
                 result.error(Exception("Failed to close dialog during User cancel action"))
             }
         }

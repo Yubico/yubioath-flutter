@@ -3,6 +3,8 @@ package com.yubico.authenticator
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.yubico.authenticator.logging.FlutterLog
+import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
@@ -11,7 +13,6 @@ import com.yubico.yubikit.android.transport.usb.UsbConfiguration
 import com.yubico.yubikit.core.Logger
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.BinaryMessenger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
@@ -53,23 +54,21 @@ class MainActivity : FlutterFragmentActivity() {
                 yubikit.stopUsbDiscovery()
             }
         }
+
+        setupYubiKitLogger()
     }
 
-    private fun initializeLogger(messenger: BinaryMessenger) {
+    private fun setupYubiKitLogger() {
         Logger.setLogger(object : Logger() {
             private val TAG = "yubikit"
 
-            init {
-                FlutterLog.create(messenger)
-            }
-
             override fun logDebug(message: String) {
-                // redirect yubikit debug logs to flutter traffic
-                FlutterLog.t(TAG, message)
+                // redirect yubikit debug logs to traffic
+                Log.t(TAG, message)
             }
 
             override fun logError(message: String, throwable: Throwable) {
-                FlutterLog.e(TAG, message, throwable.message ?: throwable.toString())
+                Log.e(TAG, message, throwable.message ?: throwable.toString())
             }
         })
     }
@@ -77,19 +76,18 @@ class MainActivity : FlutterFragmentActivity() {
     private lateinit var appContext: AppContext
     private lateinit var oathManager: OathManager
     private lateinit var dialogManager: DialogManager
+    private lateinit var flutterLog: FlutterLog
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
         val messenger = flutterEngine.dartExecutor.binaryMessenger
 
+        flutterLog = FlutterLog(messenger)
         appContext = AppContext(messenger)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
 
         oathManager = OathManager(this, messenger, appContext, viewModel, dialogManager)
-
-        initializeLogger(messenger)
-
     }
 
 }

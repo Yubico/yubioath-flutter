@@ -179,21 +179,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         await _api.addAccount(credentialUri.toString(), requireTouch);
 
     var result = jsonDecode(resultString);
-    final newCredential = OathCredential.fromJson(result['credential']);
-    final newCode =
-        result['code'] != null ? OathCode.fromJson(result['code']) : null;
-    final pair = OathPair(newCredential, newCode);
-
-    if (mounted) {
-      final newState = state!.toList();
-
-      /// remove any duplicates to our new credential
-      newState.removeWhere((e) => e.credential == newCredential);
-      newState.add(pair);
-      state = newState;
-    }
-
-    return pair.credential;
+    refresh();
+    return OathCredential.fromJson(result['credential']);
   }
 
   @override
@@ -272,6 +259,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     _timer?.cancel();
     if (_currentDevice == null) return;
     if (state == null) {
+      _log.debug('No OATH state, refresh immediately');
       refresh();
     } else if (mounted) {
       final expirations = (state ?? [])
@@ -282,13 +270,16 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
           .whereType<OathCode>()
           .map((e) => e.validTo);
       if (expirations.isEmpty) {
+        _log.debug('No expirations, no refresh');
         _timer = null;
       } else {
         final earliest = expirations.reduce(min) * 1000;
         final now = DateTime.now().millisecondsSinceEpoch;
         if (earliest < now) {
+          _log.debug('Already expired, refresh immediately');
           refresh();
         } else {
+          _log.debug('Schedule refresh in ${earliest - now}ms');
           _timer = Timer(Duration(milliseconds: earliest - now), refresh);
         }
       }
