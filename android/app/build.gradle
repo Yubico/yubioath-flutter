@@ -23,9 +23,6 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-def authenticatorVersionCode = 59900
-def authenticatorVersionName = '6.0.0-alpha.2'
-
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
@@ -52,8 +49,8 @@ android {
         applicationId "com.yubico.yubioath"
         minSdkVersion project.minSdkVersion
         targetSdkVersion project.targetSdkVersion
-        versionCode authenticatorVersionCode
-        versionName authenticatorVersionName
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
     }
 
 

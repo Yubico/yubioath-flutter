@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/app/state.dart';
 
+import 'version.dart';
 import 'app/logging.dart';
 import 'app/message.dart';
 import 'core/state.dart';
@@ -26,8 +27,7 @@ class AboutPage extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // TODO: Store the version number elsewhere
-          const Text('Yubico Authenticator: 6.0.0-alpha.2'),
+          const Text('Yubico Authenticator: $version'),
           if (isDesktop)
             Text('ykman version: ${ref.watch(rpcStateProvider).version}'),
           Text('Dart version: ${Platform.version}'),
