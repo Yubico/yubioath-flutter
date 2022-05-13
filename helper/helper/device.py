@@ -225,8 +225,8 @@ class AbstractDeviceNode(RpcNode):
     def __call__(self, *args, **kwargs):
         try:
             return super().__call__(*args, **kwargs)
-        except (SmartcardException, OSError) as e:
-            logger.error("Device error", exc_info=e)
+        except (SmartcardException, OSError):
+            logger.exception("Device error")
             self._child = None
             name = self._child_name
             self._child_name = None
@@ -236,7 +236,7 @@ class AbstractDeviceNode(RpcNode):
         try:
             return super().create_child(name)
         except (SmartcardException, OSError):
-            logger.error(f"Unable to create child {name}", exc_info=True)
+            logger.exception(f"Unable to create child {name}")
             raise NoSuchNodeException(name)
 
     def get_data(self):
@@ -285,8 +285,9 @@ class UsbDeviceNode(AbstractDeviceNode):
 class ReaderDeviceNode(AbstractDeviceNode):
     def get_data(self):
         try:
-            return super().get_data() | dict(present=True)
+            return {**super().get_data(), "present": True}
         except Exception:
+            logger.debug("Couldn't get NFC device info, present=False", exc_info=True)
             return dict(present=False)
 
     @child
@@ -315,7 +316,7 @@ class ConnectionNode(RpcNode):
         try:
             return super().__call__(*args, **kwargs)
         except (SmartcardException, OSError) as e:
-            logger.error("Connection error", exc_info=e)
+            logger.exception("Connection error")
             raise ChildResetException(f"{e}")
         except ApduError as e:
             if e.sw == SW.INVALID_INSTRUCTION:
@@ -330,8 +331,8 @@ class ConnectionNode(RpcNode):
         super().close()
         try:
             self._connection.close()
-        except Exception as e:
-            logger.warning("Error closing connection", exc_info=e)
+        except Exception:
+            logger.warning("Error closing connection", exc_info=True)
 
     def get_data(self):
         if (
