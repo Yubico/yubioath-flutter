@@ -285,8 +285,9 @@ class UsbDeviceNode(AbstractDeviceNode):
 class ReaderDeviceNode(AbstractDeviceNode):
     def get_data(self):
         try:
-            return super().get_data() | dict(present=True)
+            return {**super().get_data(), "present": True}
         except Exception:
+            logger.debug("Couldn't get NFC device info, present=False", exc_info=True)
             return dict(present=False)
 
     @child
