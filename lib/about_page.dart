@@ -41,7 +41,8 @@ class AboutPage extends ConsumerWidget {
                 _log.info('Running diagnostics...');
                 final response =
                     await ref.read(rpcProvider).command('diagnose', []);
-                final data = response['diagnostics'];
+                final data = response['diagnostics'] as List;
+                data.insert(0, {'app_version': version});
                 final text = const JsonEncoder.withIndent('  ').convert(data);
                 await Clipboard.setData(ClipboardData(text: text));
                 await ref.read(withContextProvider)(
@@ -87,7 +88,7 @@ class LoggingPanel extends ConsumerWidget {
         OutlinedButton(
           child: const Text('Copy log'),
           onPressed: () async {
-            _log.info('Copying log to clipboard...');
+            _log.info('Copying log to clipboard ($version)...');
             final logs = await ref.read(logLevelProvider.notifier).getLogs();
             await Clipboard.setData(ClipboardData(text: logs.join('\n')));
             await ref.read(withContextProvider)(
