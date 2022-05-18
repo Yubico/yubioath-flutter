@@ -46,7 +46,7 @@ class MainPageDrawer extends ConsumerWidget {
             padding: const EdgeInsets.all(12.0),
             child: Text(
               'Yubico Authenticator',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
           if (data != null) ...[
@@ -73,7 +73,7 @@ class MainPageDrawer extends ConsumerWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
                   'Configuration',
-                  style: Theme.of(context).textTheme.bodyText2,
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
               DrawerItem(
@@ -95,7 +95,7 @@ class MainPageDrawer extends ConsumerWidget {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               'Application',
-              style: Theme.of(context).textTheme.bodyText2,
+              style: Theme.of(context).textTheme.titleSmall,
             ),
           ),
           DrawerItem(

@@ -23,7 +23,7 @@ class MessagePage extends StatelessWidget {
         floatingActionButton: floatingActionButton,
         child: Column(
           children: [
-            Text(header, style: Theme.of(context).textTheme.headline6),
+            Text(header, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12.0),
             Text(message, textAlign: TextAlign.center),
           ],

@@ -196,7 +196,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           children: [
             Text(
               'Account details',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             TextField(
               key: const Key('issuer'),
@@ -280,7 +280,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             const Divider(),
             Text(
               'Options',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
