@@ -145,7 +145,14 @@ class AccountView extends ConsumerWidget with AccountMixin {
                   softWrap: false,
                 )
               : null,
-          trailing: buildCodeView(ref),
+          trailing: DecoratedBox(
+            decoration: const BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: Color(0xff3d3d3d),
+              borderRadius: BorderRadius.all(Radius.circular(30.0)),
+            ),
+            child: buildCodeView(ref),
+          ),
         );
       }),
     );

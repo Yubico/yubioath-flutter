@@ -147,16 +147,6 @@ mixin AccountMixin {
     final pinned = isPinned(ref);
 
     return [
-      if (manual)
-        MenuAction(
-          text: 'Calculate',
-          icon: const Icon(Icons.refresh),
-          action: ready
-              ? (context) {
-                  calculateCode(context, ref);
-                }
-              : null,
-        ),
       MenuAction(
         text: 'Copy to clipboard',
         icon: const Icon(Icons.copy),
@@ -167,6 +157,16 @@ mixin AccountMixin {
                 showMessage(context, 'Code copied to clipboard');
               },
       ),
+      if (manual)
+        MenuAction(
+          text: 'Calculate',
+          icon: const Icon(Icons.refresh),
+          action: ready
+              ? (context) {
+                  calculateCode(context, ref);
+                }
+              : null,
+        ),
       MenuAction(
         text: pinned ? 'Unpin account' : 'Pin account',
         //TODO: Replace this with a custom icon.
@@ -206,64 +206,62 @@ mixin AccountMixin {
   Widget buildCodeView(WidgetRef ref, {bool big = false}) {
     final code = getCode(ref);
     final expired = isExpired(code, ref);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
-        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-        border: Border.all(width: 1.0, color: Colors.grey.shade500),
-      ),
-      child: AnimatedSize(
-        alignment: Alignment.centerRight,
-        duration: const Duration(milliseconds: 100),
-        child: Padding(
-          padding: big
-              ? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0)
-              : const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: code == null
-                ? [
-                    Icon(
-                      credential.oathType == OathType.hotp
-                          ? Icons.refresh
-                          : Icons.touch_app,
-                      size: big ? 36 : 18,
-                    ),
-                    Text('', style: TextStyle(fontSize: big ? 32.0 : 22.0)),
-                  ]
-                : [
-                    if (credential.oathType == OathType.totp) ...[
-                      ...expired
-                          ? [
-                              if (credential.touchRequired) ...[
-                                const Icon(Icons.touch_app),
-                                const SizedBox(width: 8.0),
-                              ]
-                            ]
-                          : [
-                              SizedBox.square(
-                                dimension: big ? 32 : 16,
-                                child: CircleTimer(
-                                  code.validFrom * 1000,
-                                  code.validTo * 1000,
-                                ),
+    return AnimatedSize(
+      alignment: Alignment.centerRight,
+      duration: const Duration(milliseconds: 100),
+      child: Padding(
+        padding: big
+            ? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0)
+            : const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: code == null
+              ? [
+                  Icon(
+                    credential.oathType == OathType.hotp
+                        ? Icons.refresh
+                        : Icons.touch_app,
+                    size: big ? 24 : 18,
+                  ),
+                  Text('', style: TextStyle(fontSize: big ? 24.0 : 16.0)),
+                ]
+              : [
+                  if (credential.oathType == OathType.totp) ...[
+                    ...expired
+                        ? [
+                            if (credential.touchRequired) ...[
+                              Icon(
+                                Icons.touch_app,
+                                size: big ? 24 : 18,
                               ),
                               const SizedBox(width: 8.0),
-                            ],
-                    ],
-                    Opacity(
-                      opacity: expired ? 0.4 : 1.0,
-                      child: Text(
-                        formatCode(code),
-                        style: TextStyle(
-                          fontSize: big ? 32.0 : 22.0,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                            ]
+                          ]
+                        : [
+                            SizedBox.square(
+                              dimension: big ? 18.0 : 14.0,
+                              child: CircleTimer(
+                                code.validFrom * 1000,
+                                code.validTo * 1000,
+                              ),
+                            ),
+                            const SizedBox(width: 8.0),
+                          ],
+                  ],
+                  Opacity(
+                    opacity: expired ? 0.4 : 1.0,
+                    child: Text(
+                      formatCode(code),
+                      style: TextStyle(
+                        fontSize: big ? 24 : 20,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                        fontWeight: FontWeight.w300,
+                        color: Colors.grey.shade200,
                       ),
                     ),
-                  ],
-          ),
+                  ),
+                ],
         ),
       ),
     );

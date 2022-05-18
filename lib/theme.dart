@@ -53,6 +53,9 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.grey.shade400,
       ),
+      dialogTheme: const DialogTheme(
+        backgroundColor: Color(0xff323232),
+      ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         foregroundColor: Colors.grey.shade900,
         backgroundColor: primaryGreen,

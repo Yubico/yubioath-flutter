@@ -88,19 +88,42 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
     }
     return DialogFrame(
       child: AlertDialog(
-        title: Text(title),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
-        actionsAlignment: MainAxisAlignment.center,
-        actionsPadding: EdgeInsets.zero,
+        title: Center(
+          child: Text(
+            title,
+            overflow: TextOverflow.fade,
+            style: Theme.of(context).textTheme.headlineSmall,
+            maxLines: 1,
+            softWrap: false,
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
         content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(subtitle ?? ''),
-            const SizedBox(height: 8.0),
-            Center(child: FittedBox(child: buildCodeView(ref, big: true))),
+            if (subtitle != null)
+              Text(
+                subtitle!,
+                overflow: TextOverflow.fade,
+                style: Theme.of(context).textTheme.bodySmall,
+                maxLines: 1,
+                softWrap: false,
+              ),
+            const SizedBox(height: 12.0),
+            DecoratedBox(
+              decoration: const BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: Color(0xff3d3d3d),
+                borderRadius: BorderRadius.all(Radius.circular(30.0)),
+              ),
+              child: Center(
+                child: FittedBox(child: buildCodeView(ref, big: true)),
+              ),
+            ),
           ],
         ),
+        actionsPadding: const EdgeInsets.only(top: 10.0, right: -16.0),
         actions: [
           Center(
             child: FittedBox(
