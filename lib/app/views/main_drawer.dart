@@ -38,87 +38,74 @@ class MainPageDrawer extends ConsumerWidget {
     final data = ref.watch(currentDeviceDataProvider);
     final currentApp = ref.watch(currentAppProvider);
 
-    return Drawer(
-      child: ListView(
-        primary: false, //Prevents conflict with the MainPage scroll view.
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text(
-              'Yubico Authenticator',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-          if (data != null) ...[
-            // Normal YubiKey Applications
-            ...supportedApps
-                .where((app) =>
-                    app != Application.management &&
-                    app.getAvailability(data) != Availability.unsupported)
-                .map((app) => ApplicationItem(
-                      app: app,
-                      available:
-                          app.getAvailability(data) == Availability.enabled,
-                      selected: app == currentApp,
-                      onSelect: () {
-                        if (shouldPop) Navigator.of(context).pop();
-                      },
-                    )),
-            // Management app
-            if (supportedApps.contains(Application.management) &&
-                Application.management.getAvailability(data) ==
-                    Availability.enabled) ...[
-              const Divider(),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'Configuration',
-                  style: Theme.of(context).textTheme.titleSmall,
+    return LayoutBuilder(
+      builder: (context, constraints) => Drawer(
+        width: constraints.maxWidth < 357 ? 0.85 * constraints.maxWidth : null,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(20.0),
+                bottomRight: Radius.circular(20.0))),
+        child: ListView(
+          primary: false, //Prevents conflict with the MainPage scroll view.
+          children: [
+            const SizedBox(height: 24.0),
+            if (data != null) ...[
+              // Normal YubiKey Applications
+              ...supportedApps
+                  .where((app) =>
+                      app != Application.management &&
+                      app.getAvailability(data) != Availability.unsupported)
+                  .map((app) => ApplicationItem(
+                        app: app,
+                        available:
+                            app.getAvailability(data) == Availability.enabled,
+                        selected: app == currentApp,
+                        onSelect: () {
+                          if (shouldPop) Navigator.of(context).pop();
+                        },
+                      )),
+              // Management app
+              if (supportedApps.contains(Application.management) &&
+                  Application.management.getAvailability(data) ==
+                      Availability.enabled) ...[
+                DrawerItem(
+                  titleText: 'Toggle applications',
+                  icon: Icon(Application.management._icon),
+                  onTap: () {
+                    if (shouldPop) Navigator.of(context).pop();
+                    showDialog(
+                      context: context,
+                      builder: (context) => ManagementScreen(data),
+                    );
+                  },
                 ),
-              ),
-              DrawerItem(
-                titleText: 'Toggle applications',
-                icon: Icon(Application.management._icon),
-                onTap: () {
-                  if (shouldPop) Navigator.of(context).pop();
-                  showDialog(
-                    context: context,
-                    builder: (context) => ManagementScreen(data),
-                  );
-                },
-              ),
-              const Divider(),
+                const Divider(indent: 16.0, endIndent: 28.0),
+              ],
             ],
-          ],
-          // Non-YubiKey pages
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Application',
-              style: Theme.of(context).textTheme.titleSmall,
+            // Non-YubiKey pages
+            DrawerItem(
+              titleText: 'Settings',
+              icon: const Icon(Icons.settings),
+              onTap: () {
+                final nav = Navigator.of(context);
+                if (shouldPop) nav.pop();
+                showDialog(
+                    context: context,
+                    builder: (context) => const SettingsPage());
+              },
             ),
-          ),
-          DrawerItem(
-            titleText: 'Settings',
-            icon: const Icon(Icons.settings),
-            onTap: () {
-              final nav = Navigator.of(context);
-              if (shouldPop) nav.pop();
-              showDialog(
-                  context: context, builder: (context) => const SettingsPage());
-            },
-          ),
-          DrawerItem(
-            titleText: 'Help and feedback',
-            icon: const Icon(Icons.help),
-            onTap: () {
-              final nav = Navigator.of(context);
-              if (shouldPop) nav.pop();
-              showDialog(
-                  context: context, builder: (context) => const AboutPage());
-            },
-          ),
-        ],
+            DrawerItem(
+              titleText: 'Help and feedback',
+              icon: const Icon(Icons.help),
+              onTap: () {
+                final nav = Navigator.of(context);
+                if (shouldPop) nav.pop();
+                showDialog(
+                    context: context, builder: (context) => const AboutPage());
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -173,15 +160,20 @@ class DrawerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(left: 12.0, right: 12.0),
       child: ListTile(
         enabled: enabled,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.horizontal(right: Radius.circular(20)),
+          borderRadius: BorderRadius.all(Radius.circular(30)),
         ),
         dense: true,
+        minLeadingWidth: 24,
+        minVerticalPadding: 18,
+        //TODO: Avoid hardcoding colors to allow theming.
+        iconColor: Colors.white70,
+        textColor: Colors.white70,
         selected: selected,
-        selectedColor: Theme.of(context).backgroundColor,
+        selectedColor: Colors.black,
         selectedTileColor: Theme.of(context).colorScheme.secondary,
         leading: icon,
         title: Text(titleText),
