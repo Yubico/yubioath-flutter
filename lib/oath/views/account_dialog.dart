@@ -3,11 +3,23 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/state.dart';
+import '../../theme.dart';
 import '../../widgets/dialog_frame.dart';
 import '../models.dart';
 import 'account_mixin.dart';
+
+extension on MenuAction {
+  Color? get iconColor => text.startsWith('Copy') ? Colors.black : Colors.white;
+
+  Color get backgroundColor => text.startsWith('Copy')
+      ? primaryGreen
+      : (text.startsWith('Delete')
+          ? const Color(0xffea4335)
+          : const Color(0xff3d3d3d));
+}
 
 class AccountDialog extends ConsumerWidget with AccountMixin {
   @override
@@ -47,14 +59,21 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
   List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
     return buildActions(context, ref).map((e) {
       final action = e.action;
-      return IconButton(
-        icon: e.icon,
-        tooltip: e.text,
-        onPressed: action != null
-            ? () {
-                action(context);
-              }
-            : null,
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: CircleAvatar(
+          backgroundColor: e.backgroundColor,
+          child: IconButton(
+            color: e.iconColor,
+            icon: e.icon,
+            tooltip: e.text,
+            onPressed: action != null
+                ? () {
+                    action(context);
+                  }
+                : null,
+          ),
+        ),
       );
     }).toList();
   }
@@ -82,7 +101,14 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
             Center(child: FittedBox(child: buildCodeView(ref, big: true))),
           ],
         ),
-        actions: [FittedBox(child: Row(children: _buildActions(context, ref)))],
+        actions: [
+          Center(
+            child: FittedBox(
+              alignment: Alignment.center,
+              child: Row(children: _buildActions(context, ref)),
+            ),
+          )
+        ],
       ),
     );
   }
