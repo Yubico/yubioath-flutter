@@ -9,6 +9,7 @@ import '../../app/models.dart';
 import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../models.dart';
 import '../state.dart';
@@ -76,6 +77,7 @@ class _UnlockedView extends ConsumerWidget {
     if (isEmpty) {
       return MessagePage(
         title: const Text('Authenticator'),
+        graphics: noAccounts,
         header: 'No accounts',
         message: 'Follow the instructions on a website to add an account',
         floatingActionButton: _buildFab(context),

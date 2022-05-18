@@ -4,15 +4,17 @@ import 'app_page.dart';
 
 class MessagePage extends StatelessWidget {
   final Widget? title;
+  final Widget? graphics;
   final String header;
-  final String message;
+  final String? message;
   final Widget? floatingActionButton;
 
   const MessagePage({
     super.key,
     this.title,
+    this.graphics,
     required this.header,
-    required this.message,
+    this.message,
     this.floatingActionButton,
   });
 
@@ -23,9 +25,12 @@ class MessagePage extends StatelessWidget {
         floatingActionButton: floatingActionButton,
         child: Column(
           children: [
+            if (graphics != null) graphics!,
             Text(header, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12.0),
-            Text(message, textAlign: TextAlign.center),
+            if (message != null) ...[
+              Text(message!, textAlign: TextAlign.center),
+            ],
           ],
         ),
       );

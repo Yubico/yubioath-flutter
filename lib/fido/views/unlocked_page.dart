@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../models.dart';
 import '../state.dart';
@@ -107,6 +108,7 @@ class FidoUnlockedPage extends ConsumerWidget {
     if (state.bioEnroll == false) {
       return MessagePage(
         title: const Text('WebAuthn'),
+        graphics: noFingerprints,
         header: 'No fingerprints',
         message: 'Add one or more (up to five) fingerprints',
         floatingActionButton: _buildFab(context),
@@ -115,6 +117,7 @@ class FidoUnlockedPage extends ConsumerWidget {
 
     return MessagePage(
       title: const Text('WebAuthn'),
+      graphics: noDiscoverable,
       header: 'No discoverable accounts',
       message: 'Register as a Security Key on websites',
       floatingActionButton: _buildFab(context),

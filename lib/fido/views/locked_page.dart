@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../models.dart';
 import '../state.dart';
@@ -22,6 +23,7 @@ class FidoLockedPage extends ConsumerWidget {
       if (state.bioEnroll != null) {
         return MessagePage(
           title: const Text('WebAuthn'),
+          graphics: noFingerprints,
           header: 'No fingerprints',
           message: 'Set a PIN to register fingerprints',
           floatingActionButton: _buildFab(context),
@@ -29,6 +31,7 @@ class FidoLockedPage extends ConsumerWidget {
       } else {
         return MessagePage(
           title: const Text('WebAuthn'),
+          graphics: noDiscoverable,
           header: 'No discoverable accounts',
           message:
               'Optionally set a PIN to protect access to your YubiKey\nRegister as a Security Key on websites',
