@@ -88,58 +88,66 @@ class AccountView extends ConsumerWidget with AccountMixin {
           items: _buildPopupMenu(context, ref),
         );
       },
-      child: ListTile(
-        focusNode: focusNode,
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AccountDialog(credential);
-            },
-          );
-        },
-        onLongPress: () async {
-          if (calculateReady) {
-            await calculateCode(
-              context,
-              ref,
+      child: LayoutBuilder(builder: (context, constraints) {
+        final showAvatar = constraints.maxWidth >= 315;
+        return ListTile(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          focusNode: focusNode,
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AccountDialog(credential);
+              },
             );
-          }
-          await ref.read(withContextProvider)(
-            (context) async {
-              copyToClipboard(context, ref);
-            },
-          );
-        },
-        leading: CircleAvatar(
-          foregroundColor: darkMode ? Colors.black : Colors.white,
-          backgroundColor: _iconColor(darkMode ? 300 : 400),
-          child: Text(
-            (credential.issuer ?? credential.name)
-                .characters
-                .first
-                .toUpperCase(),
-            style: const TextStyle(fontSize: 18),
+          },
+          onLongPress: () async {
+            if (calculateReady) {
+              await calculateCode(
+                context,
+                ref,
+              );
+            }
+            await ref.read(withContextProvider)(
+              (context) async {
+                copyToClipboard(context, ref);
+              },
+            );
+          },
+          leading: showAvatar
+              ? CircleAvatar(
+                  foregroundColor: darkMode ? Colors.black : Colors.white,
+                  backgroundColor: _iconColor(darkMode ? 300 : 400),
+                  child: Text(
+                    (credential.issuer ?? credential.name)
+                        .characters
+                        .first
+                        .toUpperCase(),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w300),
+                  ),
+                )
+              : null,
+          title: Text(
+            title,
+            overflow: TextOverflow.fade,
+            style: Theme.of(context).textTheme.headlineSmall,
+            maxLines: 1,
+            softWrap: false,
           ),
-        ),
-        title: Text(
-          title,
-          overflow: TextOverflow.fade,
-          style: Theme.of(context).textTheme.headlineSmall,
-          maxLines: 1,
-          softWrap: false,
-        ),
-        subtitle: subtitle != null
-            ? Text(
-                subtitle!,
-                overflow: TextOverflow.fade,
-                style: Theme.of(context).textTheme.bodySmall,
-                maxLines: 1,
-                softWrap: false,
-              )
-            : null,
-        trailing: buildCodeView(ref),
-      ),
+          subtitle: subtitle != null
+              ? Text(
+                  subtitle!,
+                  overflow: TextOverflow.fade,
+                  style: Theme.of(context).textTheme.bodySmall,
+                  maxLines: 1,
+                  softWrap: false,
+                )
+              : null,
+          trailing: buildCodeView(ref),
+        );
+      }),
     );
   }
 }
