@@ -96,6 +96,7 @@ class _UnlockedView extends ConsumerWidget {
           return TextFormField(
             key: const Key('search_accounts'),
             initialValue: ref.read(searchProvider),
+            style: Theme.of(context).textTheme.titleSmall,
             decoration: const InputDecoration(
               hintText: 'Search accounts',
               border: InputBorder.none,
@@ -118,12 +119,12 @@ class _UnlockedView extends ConsumerWidget {
   FloatingActionButton _buildFab(BuildContext context) {
     final fab = FloatingActionButton.extended(
       icon: const Icon(Icons.person_add_alt_1),
-      label: const Text('Setup'),
+      label: const Text('Manage'),
       onPressed: () {
         showBottomMenu(context, [
           MenuAction(
             text: 'Add account',
-            icon: const Icon(Icons.person_add_alt),
+            icon: const Icon(Icons.person_add_alt_1),
             action: (context) {
               showDialog(
                 context: context,
@@ -147,7 +148,7 @@ class _UnlockedView extends ConsumerWidget {
           ),
           MenuAction(
             text: 'Reset OATH',
-            icon: const Icon(Icons.delete_outline),
+            icon: const Icon(Icons.delete),
             action: (context) {
               showDialog(
                 context: context,
@@ -240,7 +241,7 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
                     },
                   ),
                   OutlinedButton.icon(
-                    icon: const Icon(Icons.delete_outlined),
+                    icon: const Icon(Icons.delete),
                     label: const Text('Reset OATH'),
                     onPressed: () {
                       showDialog(

@@ -33,6 +33,7 @@ class DeviceButton extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: IconButton(
+        tooltip: 'Select YubiKey or device',
         icon: OverflowBox(
           maxHeight: 44,
           maxWidth: 44,

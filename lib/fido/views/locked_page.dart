@@ -51,7 +51,7 @@ class FidoLockedPage extends ConsumerWidget {
   FloatingActionButton _buildFab(BuildContext context) {
     return FloatingActionButton.extended(
       icon: Icon(state.bioEnroll != null ? Icons.fingerprint : Icons.pin),
-      label: const Text('Setup'),
+      label: const Text('Manage'),
       onPressed: () {
         showBottomMenu(context, [
           if (state.bioEnroll != null)
@@ -61,7 +61,7 @@ class FidoLockedPage extends ConsumerWidget {
             ),
           MenuAction(
             text: 'Set PIN',
-            icon: const Icon(Icons.pin_outlined),
+            icon: const Icon(Icons.pin),
             action: (context) {
               showDialog(
                 context: context,
@@ -71,7 +71,7 @@ class FidoLockedPage extends ConsumerWidget {
           ),
           MenuAction(
             text: 'Reset FIDO',
-            icon: const Icon(Icons.delete_outline),
+            icon: const Icon(Icons.delete),
             action: (context) {
               showDialog(
                 context: context,
@@ -154,7 +154,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
             runSpacing: 8.0,
             children: [
               OutlinedButton.icon(
-                icon: const Icon(Icons.pin_outlined),
+                icon: const Icon(Icons.pin),
                 label: const Text('Change PIN'),
                 onPressed: () {
                   showDialog(
@@ -165,7 +165,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
                 },
               ),
               OutlinedButton.icon(
-                icon: const Icon(Icons.delete_outlined),
+                icon: const Icon(Icons.delete),
                 label: const Text('Reset FIDO'),
                 onPressed: () {
                   showDialog(

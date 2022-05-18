@@ -45,7 +45,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                                                 node.path, cred),
                                       );
                                     },
-                                    icon: const Icon(Icons.delete_outlined)),
+                                    icon: const Icon(Icons.delete)),
                               ],
                             ),
                           )),
@@ -84,7 +84,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                                                 node.path, fp),
                                       );
                                     },
-                                    icon: const Icon(Icons.delete_outlined)),
+                                    icon: const Icon(Icons.delete)),
                               ],
                             ),
                           ))
@@ -124,7 +124,7 @@ class FidoUnlockedPage extends ConsumerWidget {
   FloatingActionButton _buildFab(BuildContext context) {
     return FloatingActionButton.extended(
       icon: Icon(state.bioEnroll != null ? Icons.fingerprint : Icons.pin),
-      label: const Text('Setup'),
+      label: const Text('Manage'),
       onPressed: () {
         showBottomMenu(context, [
           if (state.bioEnroll != null)
@@ -140,7 +140,7 @@ class FidoUnlockedPage extends ConsumerWidget {
             ),
           MenuAction(
             text: 'Change PIN',
-            icon: const Icon(Icons.pin_outlined),
+            icon: const Icon(Icons.pin),
             action: (context) {
               showDialog(
                 context: context,
@@ -150,7 +150,7 @@ class FidoUnlockedPage extends ConsumerWidget {
           ),
           MenuAction(
             text: 'Delete all data',
-            icon: const Icon(Icons.delete_outline),
+            icon: const Icon(Icons.delete),
             action: (context) {
               showDialog(
                 context: context,

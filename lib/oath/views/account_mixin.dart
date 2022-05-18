@@ -176,7 +176,7 @@ mixin AccountMixin {
                     Theme.of(context).iconTheme.color ?? Colors.black),
                 child: ClipPath(
                     clipper: _StrikethroughClipper(),
-                    child: const Icon(Icons.push_pin_outlined)),
+                    child: const Icon(Icons.push_pin)),
               )
             : const Icon(Icons.push_pin_outlined),
         action: (context) {
@@ -194,7 +194,7 @@ mixin AccountMixin {
         ),
       MenuAction(
         text: 'Delete account',
-        icon: const Icon(Icons.delete_outlined),
+        icon: const Icon(Icons.delete_outline),
         action: (context) async {
           await deleteCredential(context, ref);
         },
