@@ -29,7 +29,7 @@ class AppPage extends ConsumerWidget {
               body: Row(
                 children: [
                   const SizedBox(
-                    width: 240,
+                    width: 280,
                     child: ListTileTheme(
                         style: ListTileStyle.drawer,
                         child: MainPageDrawer(shouldPop: false)),
@@ -58,8 +58,10 @@ class AppPage extends ConsumerWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        titleSpacing: 8,
         title: title,
         centerTitle: true,
+        titleTextStyle: Theme.of(context).textTheme.titleLarge,
         actions: const [DeviceButton()],
       ),
       drawer: hasDrawer ? const MainPageDrawer() : null,
