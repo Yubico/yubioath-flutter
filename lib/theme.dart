@@ -27,12 +27,12 @@ class AppTheme {
         // Mainly used for the OATH dialog view at the moment
         buttonTheme: ButtonThemeData(
           colorScheme: ColorScheme.light(
-            background: Colors.grey.shade300,
-            onBackground: Colors.black,
+            secondary: Colors.grey.shade300,
+            onSecondary: Colors.black,
             primary: primaryGreen,
             onPrimary: Colors.black,
-            secondary: const Color(0xffea4335),
-            onSecondary: Colors.white,
+            error: const Color(0xffea4335),
+            onError: Colors.white,
           ),
         ),
         cardTheme: CardTheme(
@@ -79,14 +79,15 @@ class AppTheme {
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.grey.shade400,
         ),
+        // Mainly used for the OATH dialog view at the moment
         buttonTheme: ButtonThemeData(
           colorScheme: ColorScheme.dark(
-            background: Colors.grey.shade800,
-            onBackground: Colors.white,
+            secondary: Colors.grey.shade800,
+            onSecondary: Colors.white,
             primary: primaryGreen,
             onPrimary: Colors.black,
-            secondary: const Color(0xffea4335),
-            onSecondary: Colors.white,
+            error: const Color(0xffea4335),
+            onError: Colors.white,
           ),
         ),
         cardTheme: CardTheme(

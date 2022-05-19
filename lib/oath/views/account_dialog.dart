@@ -48,12 +48,12 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
 
   Pair<Color?, Color?> _getColors(BuildContext context, MenuAction action) {
     final theme =
-        ButtonTheme.of(context).colorScheme ?? const ColorScheme.dark();
+        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
     return action.text.startsWith('Copy')
         ? Pair(theme.primary, theme.onPrimary)
         : (action.text.startsWith('Delete')
-            ? Pair(theme.secondary, theme.onSecondary)
-            : Pair(theme.background, theme.onBackground));
+            ? Pair(theme.error, theme.onError)
+            : Pair(theme.secondary, theme.onSecondary));
   }
 
   List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
