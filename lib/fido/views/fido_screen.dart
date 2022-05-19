@@ -8,7 +8,7 @@ import '../../app/models.dart';
 import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
-import '../../app/views/device_avatar.dart';
+import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../desktop/state.dart';
 import '../../management/models.dart';
@@ -61,7 +61,7 @@ class FidoScreen extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const DeviceAvatar(child: Icon(Icons.lock)),
+                        noPermission,
                         const Text(
                           'WebAuthn management requires elevated privileges.',
                           textAlign: TextAlign.center,

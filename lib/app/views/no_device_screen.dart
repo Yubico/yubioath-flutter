@@ -9,6 +9,7 @@ import '../message.dart';
 import '../models.dart';
 import 'app_page.dart';
 import 'device_avatar.dart';
+import 'graphics.dart';
 
 class NoDeviceScreen extends ConsumerWidget {
   final DeviceNode? node;
@@ -19,7 +20,7 @@ class NoDeviceScreen extends ConsumerWidget {
       if (Platform.isWindows &&
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
         return [
-          const DeviceAvatar(child: Icon(Icons.lock)),
+          noPermission,
           const Text('WebAuthn management requires elevated privileges.'),
           OutlinedButton.icon(
               icon: const Icon(Icons.lock_open),
