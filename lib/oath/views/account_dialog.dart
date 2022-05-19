@@ -5,21 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
-import '../../theme.dart';
 import '../../widgets/dialog_frame.dart';
 import '../models.dart';
 import 'account_mixin.dart';
-
-extension on MenuAction {
-  Color? get iconColor => text.startsWith('Copy') ? Colors.black : Colors.white;
-
-  Color get backgroundColor => text.startsWith('Copy')
-      ? primaryGreen
-      : (text.startsWith('Delete')
-          ? const Color(0xffea4335)
-          : const Color(0xff3d3d3d));
-}
 
 class AccountDialog extends ConsumerWidget with AccountMixin {
   @override
@@ -56,15 +46,26 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
     return deleted;
   }
 
+  Pair<Color?, Color?> _getColors(BuildContext context, MenuAction action) {
+    final theme =
+        ButtonTheme.of(context).colorScheme ?? const ColorScheme.dark();
+    return action.text.startsWith('Copy')
+        ? Pair(theme.primary, theme.onPrimary)
+        : (action.text.startsWith('Delete')
+            ? Pair(theme.secondary, theme.onSecondary)
+            : Pair(theme.background, theme.onBackground));
+  }
+
   List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
     return buildActions(context, ref).map((e) {
       final action = e.action;
+      final colors = _getColors(context, e);
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: CircleAvatar(
-          backgroundColor: e.backgroundColor,
+          backgroundColor: colors.first,
+          foregroundColor: colors.second,
           child: IconButton(
-            color: e.iconColor,
             icon: e.icon,
             tooltip: e.text,
             onPressed: action != null
@@ -112,10 +113,10 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
               ),
             const SizedBox(height: 12.0),
             DecoratedBox(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.rectangle,
-                color: Color(0xff3d3d3d),
-                borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                color: CardTheme.of(context).color,
+                borderRadius: const BorderRadius.all(Radius.circular(30.0)),
               ),
               child: Center(
                 child: FittedBox(child: buildCodeView(ref, big: true)),

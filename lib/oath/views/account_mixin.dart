@@ -171,13 +171,15 @@ mixin AccountMixin {
         text: pinned ? 'Unpin account' : 'Pin account',
         //TODO: Replace this with a custom icon.
         icon: pinned
-            ? CustomPaint(
-                painter: _StrikethroughPainter(
-                    Theme.of(context).iconTheme.color ?? Colors.black),
-                child: ClipPath(
-                    clipper: _StrikethroughClipper(),
-                    child: const Icon(Icons.push_pin)),
-              )
+            ? Builder(builder: (context) {
+                return CustomPaint(
+                  painter: _StrikethroughPainter(
+                      IconTheme.of(context).color ?? Colors.black),
+                  child: ClipPath(
+                      clipper: _StrikethroughClipper(),
+                      child: const Icon(Icons.push_pin)),
+                );
+              })
             : const Icon(Icons.push_pin_outlined),
         action: (context) {
           ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
@@ -257,7 +259,6 @@ mixin AccountMixin {
                         fontSize: big ? 24 : 20,
                         fontFeatures: const [FontFeature.tabularFigures()],
                         fontWeight: FontWeight.w300,
-                        color: Colors.grey.shade200,
                       ),
                     ),
                   ),

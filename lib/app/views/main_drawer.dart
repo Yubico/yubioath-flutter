@@ -169,9 +169,6 @@ class DrawerItem extends StatelessWidget {
         dense: true,
         minLeadingWidth: 24,
         minVerticalPadding: 18,
-        //TODO: Avoid hardcoding colors to allow theming.
-        iconColor: Colors.white70,
-        textColor: Colors.white70,
         selected: selected,
         selectedColor: Colors.black,
         selectedTileColor: Theme.of(context).colorScheme.secondary,
