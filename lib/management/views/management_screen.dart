@@ -126,7 +126,6 @@ class ManagementScreen extends ConsumerStatefulWidget {
 class _ManagementScreenState extends ConsumerState<ManagementScreen> {
   late Map<Transport, int> _enabled;
   late int _interfaces;
-  bool _canSave = false;
 
   @override
   void initState() {
@@ -227,46 +226,44 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       Navigator.of(context).popUntil((route) => route.isFirst);
     });
 
+    var canSave = false;
+    final child =
+        ref.watch(managementStateProvider(widget.deviceData.node.path)).when(
+              loading: () => const AppLoadingScreen(),
+              error: (error, _) => AppFailureScreen('$error'),
+              data: (info) {
+                bool hasConfig = info.version.major > 4;
+                if (hasConfig) {
+                  canSave = !_mapEquals(
+                    _enabled,
+                    info.config.enabledCapabilities,
+                  );
+                } else {
+                  canSave = _interfaces != 0 &&
+                      _interfaces !=
+                          UsbInterface.forCapabilites(widget.deviceData.info
+                                  .config.enabledCapabilities[Transport.usb] ??
+                              0);
+                }
+                return Column(
+                  children: [
+                    hasConfig
+                        ? _buildCapabilitiesForm(context, ref, info)
+                        : _buildModeForm(context, ref, info),
+                  ],
+                );
+              },
+            );
+
     return ResponsiveDialog(
       title: const Text('Toggle applications'),
       actions: [
         TextButton(
-          onPressed: _canSave ? _submitForm : null,
+          onPressed: canSave ? _submitForm : null,
           child: const Text('Save'),
         ),
       ],
-      child:
-          ref.watch(managementStateProvider(widget.deviceData.node.path)).when(
-                loading: () => const AppLoadingScreen(),
-                error: (error, _) => AppFailureScreen('$error'),
-                data: (info) {
-                  bool hasConfig = info.version.major > 4;
-                  setState(() {
-                    if (hasConfig) {
-                      _canSave = !_mapEquals(
-                        _enabled,
-                        info.config.enabledCapabilities,
-                      );
-                    } else {
-                      _canSave = _interfaces != 0 &&
-                          _interfaces !=
-                              UsbInterface.forCapabilites(widget
-                                      .deviceData
-                                      .info
-                                      .config
-                                      .enabledCapabilities[Transport.usb] ??
-                                  0);
-                    }
-                  });
-                  return Column(
-                    children: [
-                      hasConfig
-                          ? _buildCapabilitiesForm(context, ref, info)
-                          : _buildModeForm(context, ref, info),
-                    ],
-                  );
-                },
-              ),
+      child: child,
     );
   }
 }
