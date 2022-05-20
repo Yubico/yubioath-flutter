@@ -38,74 +38,75 @@ class MainPageDrawer extends ConsumerWidget {
     final data = ref.watch(currentDeviceDataProvider);
     final currentApp = ref.watch(currentAppProvider);
 
-    return LayoutBuilder(
-      builder: (context, constraints) => Drawer(
-        width: constraints.maxWidth < 357 ? 0.85 * constraints.maxWidth : null,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(20.0),
-                bottomRight: Radius.circular(20.0))),
-        child: ListView(
-          primary: false, //Prevents conflict with the MainPage scroll view.
-          children: [
-            const SizedBox(height: 24.0),
-            if (data != null) ...[
-              // Normal YubiKey Applications
-              ...supportedApps
-                  .where((app) =>
-                      app != Application.management &&
-                      app.getAvailability(data) != Availability.unsupported)
-                  .map((app) => ApplicationItem(
-                        app: app,
-                        available:
-                            app.getAvailability(data) == Availability.enabled,
-                        selected: app == currentApp,
-                        onSelect: () {
-                          if (shouldPop) Navigator.of(context).pop();
-                        },
-                      )),
-              // Management app
-              if (supportedApps.contains(Application.management) &&
-                  Application.management.getAvailability(data) ==
-                      Availability.enabled) ...[
-                DrawerItem(
-                  titleText: 'Toggle applications',
-                  icon: Icon(Application.management._icon),
-                  onTap: () {
-                    if (shouldPop) Navigator.of(context).pop();
-                    showDialog(
-                      context: context,
-                      builder: (context) => ManagementScreen(data),
-                    );
-                  },
-                ),
-                const Divider(indent: 16.0, endIndent: 28.0),
-              ],
-            ],
-            // Non-YubiKey pages
-            DrawerItem(
-              titleText: 'Settings',
-              icon: const Icon(Icons.settings),
-              onTap: () {
-                final nav = Navigator.of(context);
-                if (shouldPop) nav.pop();
-                showDialog(
+    MediaQuery? mediaQuery =
+        context.findAncestorWidgetOfExactType<MediaQuery>();
+    final width = mediaQuery?.data.size.width ?? 400;
+
+    return Drawer(
+      width: width < 357 ? 0.85 * width : null,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topRight: Radius.circular(20.0),
+              bottomRight: Radius.circular(20.0))),
+      child: ListView(
+        primary: false, //Prevents conflict with the MainPage scroll view.
+        children: [
+          const SizedBox(height: 24.0),
+          if (data != null) ...[
+            // Normal YubiKey Applications
+            ...supportedApps
+                .where((app) =>
+                    app != Application.management &&
+                    app.getAvailability(data) != Availability.unsupported)
+                .map((app) => ApplicationItem(
+                      app: app,
+                      available:
+                          app.getAvailability(data) == Availability.enabled,
+                      selected: app == currentApp,
+                      onSelect: () {
+                        if (shouldPop) Navigator.of(context).pop();
+                      },
+                    )),
+            // Management app
+            if (supportedApps.contains(Application.management) &&
+                Application.management.getAvailability(data) ==
+                    Availability.enabled) ...[
+              DrawerItem(
+                titleText: 'Toggle applications',
+                icon: Icon(Application.management._icon),
+                onTap: () {
+                  if (shouldPop) Navigator.of(context).pop();
+                  showDialog(
                     context: context,
-                    builder: (context) => const SettingsPage());
-              },
-            ),
-            DrawerItem(
-              titleText: 'Help and feedback',
-              icon: const Icon(Icons.help),
-              onTap: () {
-                final nav = Navigator.of(context);
-                if (shouldPop) nav.pop();
-                showDialog(
-                    context: context, builder: (context) => const AboutPage());
-              },
-            ),
+                    builder: (context) => ManagementScreen(data),
+                  );
+                },
+              ),
+              const Divider(indent: 16.0, endIndent: 28.0),
+            ],
           ],
-        ),
+          // Non-YubiKey pages
+          DrawerItem(
+            titleText: 'Settings',
+            icon: const Icon(Icons.settings),
+            onTap: () {
+              final nav = Navigator.of(context);
+              if (shouldPop) nav.pop();
+              showDialog(
+                  context: context, builder: (context) => const SettingsPage());
+            },
+          ),
+          DrawerItem(
+            titleText: 'Help and feedback',
+            icon: const Icon(Icons.help),
+            onTap: () {
+              final nav = Navigator.of(context);
+              if (shouldPop) nav.pop();
+              showDialog(
+                  context: context, builder: (context) => const AboutPage());
+            },
+          ),
+        ],
       ),
     );
   }
