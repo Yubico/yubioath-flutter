@@ -7,25 +7,26 @@ import '../../core/models.dart';
 import '../../desktop/state.dart';
 import '../message.dart';
 import '../models.dart';
-import 'app_page.dart';
 import 'device_avatar.dart';
 import 'graphics.dart';
+import 'message_page.dart';
 
 class NoDeviceScreen extends ConsumerWidget {
   final DeviceNode? node;
   const NoDeviceScreen(this.node, {super.key});
 
-  List<Widget> _buildUsbPid(BuildContext context, WidgetRef ref, UsbPid pid) {
+  Widget _buildUsbPid(BuildContext context, WidgetRef ref, UsbPid pid) {
     if (pid.usbInterfaces == UsbInterface.fido.value) {
       if (Platform.isWindows &&
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
-        return [
-          noPermission,
-          const Text('WebAuthn management requires elevated privileges.'),
-          OutlinedButton.icon(
+        return MessagePage(
+          graphic: noPermission,
+          message: 'Managing this device requires elevated privileges.',
+          actions: [
+            MenuAction(
+              text: 'Unlock',
               icon: const Icon(Icons.lock_open),
-              label: const Text('Unlock'),
-              onPressed: () async {
+              action: (context) async {
                 final controller = showMessage(
                     context, 'Elevating permissions...',
                     duration: const Duration(seconds: 30));
@@ -38,43 +39,31 @@ class NoDeviceScreen extends ConsumerWidget {
                 } finally {
                   controller.close();
                 }
-              }),
-        ]
-            .map((e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: e,
-                ))
-            .toList();
+              },
+            ),
+          ],
+        );
       }
     }
-    return [
-      const DeviceAvatar(child: Icon(Icons.usb_off)),
-      const Text(
-        'This YubiKey cannot be accessed',
-        textAlign: TextAlign.center,
-      ),
-    ];
+    return const MessagePage(
+      graphic: DeviceAvatar(child: Icon(Icons.usb_off)),
+      message: 'This YubiKey cannot be accessed',
+    );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return AppPage(
-      centered: true,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: node?.map(usbYubiKey: (node) {
-              return _buildUsbPid(context, ref, node.pid);
-            }, nfcReader: (node) {
-              return const [
-                DeviceAvatar(child: Icon(Icons.wifi)),
-                Text('Place your YubiKey on the NFC reader'),
-              ];
-            }) ??
-            const [
-              DeviceAvatar(child: Icon(Icons.usb)),
-              Text('Insert your YubiKey'),
-            ],
-      ),
-    );
+    return node?.map(usbYubiKey: (node) {
+          return _buildUsbPid(context, ref, node.pid);
+        }, nfcReader: (node) {
+          return const MessagePage(
+            graphic: DeviceAvatar(child: Icon(Icons.wifi)),
+            message: 'Place your YubiKey on the NFC reader',
+          );
+        }) ??
+        const MessagePage(
+          graphic: DeviceAvatar(child: Icon(Icons.usb)),
+          message: 'Insert your YubiKey',
+        );
   }
 }

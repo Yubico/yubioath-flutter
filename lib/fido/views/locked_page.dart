@@ -23,25 +23,26 @@ class FidoLockedPage extends ConsumerWidget {
       if (state.bioEnroll != null) {
         return MessagePage(
           title: const Text('WebAuthn'),
-          graphics: noFingerprints,
+          graphic: noFingerprints,
           header: 'No fingerprints',
-          message: 'Set a PIN to register fingerprints',
-          floatingActionButton: _buildFab(context),
+          message: 'Set a PIN to register fingerprints.',
+          actions: _buildActions(),
         );
       } else {
         return MessagePage(
           title: const Text('WebAuthn'),
-          graphics: noDiscoverable,
+          graphic: noDiscoverable,
           header: 'No discoverable accounts',
           message:
               'Optionally set a PIN to protect access to your YubiKey\nRegister as a Security Key on websites',
-          floatingActionButton: _buildFab(context),
+          actions: _buildActions(),
         );
       }
     }
 
     return AppPage(
       title: const Text('WebAuthn'),
+      actions: _buildActions(),
       child: Column(
         children: [
           const ListTile(title: Text('Unlock')),
@@ -51,17 +52,8 @@ class FidoLockedPage extends ConsumerWidget {
     );
   }
 
-  FloatingActionButton _buildFab(BuildContext context) {
-    return FloatingActionButton.extended(
-      icon: Icon(state.bioEnroll != null ? Icons.fingerprint : Icons.pin),
-      label: const Text('Manage'),
-      onPressed: () {
-        showBottomMenu(context, [
-          if (state.bioEnroll != null)
-            MenuAction(
-              text: 'Add fingerprint',
-              icon: const Icon(Icons.fingerprint),
-            ),
+  List<MenuAction> _buildActions() => [
+        if (!state.hasPin)
           MenuAction(
             text: 'Set PIN',
             icon: const Icon(Icons.pin),
@@ -72,20 +64,36 @@ class FidoLockedPage extends ConsumerWidget {
               );
             },
           ),
-          MenuAction(
-            text: 'Reset FIDO',
-            icon: const Icon(Icons.delete),
-            action: (context) {
-              showDialog(
-                context: context,
-                builder: (context) => ResetDialog(node),
-              );
-            },
-          ),
-        ]);
-      },
-    );
-  }
+        MenuAction(
+          text: 'Options',
+          icon: const Icon(Icons.tune),
+          action: (context) {
+            showBottomMenu(context, [
+              if (state.hasPin)
+                MenuAction(
+                  text: 'Change PIN',
+                  icon: const Icon(Icons.pin),
+                  action: (context) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => FidoPinDialog(node.path, state),
+                    );
+                  },
+                ),
+              MenuAction(
+                text: 'Reset FIDO',
+                icon: const Icon(Icons.delete),
+                action: (context) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => ResetDialog(node),
+                  );
+                },
+              ),
+            ]);
+          },
+        ),
+      ];
 }
 
 class _PinEntryForm extends ConsumerStatefulWidget {
@@ -152,34 +160,6 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
               onSubmitted: (_) => _submit(),
             ),
           ),
-          Wrap(
-            spacing: 4.0,
-            runSpacing: 8.0,
-            children: [
-              OutlinedButton.icon(
-                icon: const Icon(Icons.pin),
-                label: const Text('Change PIN'),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) =>
-                        FidoPinDialog(widget._deviceNode.path, widget._state),
-                  );
-                },
-              ),
-              OutlinedButton.icon(
-                icon: const Icon(Icons.delete),
-                label: const Text('Reset FIDO'),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => ResetDialog(widget._deviceNode),
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 16.0),
           ListTile(
             leading:
                 noFingerprints ? const Icon(Icons.warning_amber_rounded) : null,

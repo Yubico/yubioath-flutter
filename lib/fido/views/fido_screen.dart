@@ -54,43 +54,30 @@ class FidoScreen extends ConsumerWidget {
             if (Platform.isWindows) {
               if (!ref
                   .watch(rpcStateProvider.select((state) => state.isAdmin))) {
-                return AppPage(
-                    title: const Text('WebAuthn'),
-                    centered: true,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        noPermission,
-                        const Text(
-                          'WebAuthn management requires elevated privileges.',
-                          textAlign: TextAlign.center,
-                        ),
-                        OutlinedButton.icon(
-                            icon: const Icon(Icons.lock_open),
-                            label: const Text('Unlock'),
-                            onPressed: () async {
-                              final controller = showMessage(
-                                  context, 'Elevating permissions...',
-                                  duration: const Duration(seconds: 30));
-                              try {
-                                if (await ref.read(rpcProvider).elevate()) {
-                                  ref.refresh(rpcProvider);
-                                } else {
-                                  showMessage(context, 'Permission denied');
-                                }
-                              } finally {
-                                controller.close();
-                              }
-                            }),
-                      ]
-                          .map((e) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: e,
-                              ))
-                          .toList(),
-                    ));
+                return MessagePage(
+                  title: const Text('WebAuthn'),
+                  graphic: noPermission,
+                  message: 'WebAuthn management requires elevated privileges.',
+                  actions: [
+                    MenuAction(
+                        text: 'Unlock',
+                        icon: const Icon(Icons.lock_open),
+                        action: (context) async {
+                          final controller = showMessage(
+                              context, 'Elevating permissions...',
+                              duration: const Duration(seconds: 30));
+                          try {
+                            if (await ref.read(rpcProvider).elevate()) {
+                              ref.refresh(rpcProvider);
+                            } else {
+                              showMessage(context, 'Permission denied');
+                            }
+                          } finally {
+                            controller.close();
+                          }
+                        }),
+                  ],
+                );
               }
             }
             return AppPage(

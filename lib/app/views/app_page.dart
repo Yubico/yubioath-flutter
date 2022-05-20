@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models.dart';
 import 'device_button.dart';
 import 'main_drawer.dart';
 
@@ -8,14 +9,15 @@ class AppPage extends ConsumerWidget {
   final Key _scaffoldKey = GlobalKey();
   final Widget? title;
   final Widget child;
-  final Widget? floatingActionButton;
+  final List<MenuAction> actions;
   final bool centered;
-  AppPage(
-      {super.key,
-      this.title,
-      required this.child,
-      this.floatingActionButton,
-      this.centered = false});
+  AppPage({
+    super.key,
+    this.title,
+    required this.child,
+    this.actions = const [],
+    this.centered = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => LayoutBuilder(
@@ -46,11 +48,36 @@ class AppPage extends ConsumerWidget {
 
   Widget _buildScrollView() => SafeArea(
         child: SingleChildScrollView(
-          // Make sure FAB doesn't block content
-          padding: floatingActionButton != null
-              ? const EdgeInsets.only(bottom: 72)
-              : null,
-          child: child,
+          child: Builder(builder: (context) {
+            return Column(
+              children: [
+                child,
+                if (actions.isNotEmpty)
+                  Align(
+                    alignment:
+                        centered ? Alignment.center : Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: actions
+                            .map((e) => OutlinedButton.icon(
+                                  icon: e.icon,
+                                  label: Text(e.text),
+                                  onPressed: e.action != null
+                                      ? () {
+                                          e.action?.call(context);
+                                        }
+                                      : null,
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          }),
         ),
       );
 
@@ -66,7 +93,6 @@ class AppPage extends ConsumerWidget {
       ),
       drawer: hasDrawer ? const MainPageDrawer() : null,
       body: centered ? Center(child: _buildScrollView()) : _buildScrollView(),
-      floatingActionButton: floatingActionButton,
     );
   }
 }
