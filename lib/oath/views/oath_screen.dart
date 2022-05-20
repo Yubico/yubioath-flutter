@@ -79,7 +79,7 @@ class _UnlockedView extends ConsumerWidget {
         title: const Text('Authenticator'),
         graphic: noAccounts,
         header: 'No accounts',
-        actions: _buildActions(context),
+        actions: _buildActions(context, true),
       );
     }
 
@@ -112,15 +112,15 @@ class _UnlockedView extends ConsumerWidget {
           );
         }),
       ),
-      actions: _buildActions(context),
+      actions: _buildActions(context, false),
       child: AccountList(devicePath, oathState),
     );
   }
 
-  List<Widget> _buildActions(BuildContext context) {
+  List<Widget> _buildActions(BuildContext context, bool isEmpty) {
     return [
       OutlinedButton.icon(
-        style: AppTheme.primaryOutlinedButtonStyle(context),
+        style: isEmpty ? AppTheme.primaryOutlinedButtonStyle(context) : null,
         label: const Text('Add account'),
         icon: const Icon(Icons.person_add_alt_1),
         onPressed: () {

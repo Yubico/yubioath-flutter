@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 const primaryGreen = Color(0xffaed581);
 const accentGreen = Color(0xff9aca3c);
 const primaryBlue = Color(0xff325f74);
+const primaryRed = Color(0xffea4335);
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
@@ -24,18 +25,18 @@ class AppTheme {
           elevation: 0,
           toolbarHeight: 48,
           //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
           foregroundColor: Colors.grey.shade800,
         ),
         // Mainly used for the OATH dialog view at the moment
         buttonTheme: ButtonThemeData(
           colorScheme: ColorScheme.light(
             secondary: Colors.grey.shade300,
-            onSecondary: Colors.black,
+            onSecondary: Colors.grey.shade900,
             primary: primaryGreen,
-            onPrimary: Colors.black,
-            error: const Color(0xffea4335),
-            onError: Colors.white,
+            onPrimary: Colors.grey.shade900,
+            error: primaryRed,
+            onError: Colors.grey.shade100,
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
@@ -52,7 +53,7 @@ class AppTheme {
         ),
         chipTheme: ChipThemeData(
           backgroundColor: Colors.transparent,
-          selectedColor: const Color(0xffc2e7ff),
+          selectedColor: const Color(0xffd2dbdf),
           side: BorderSide(width: 1, color: Colors.grey.shade400),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -88,7 +89,8 @@ class AppTheme {
         colorScheme:
             ColorScheme.fromSwatch(brightness: Brightness.dark).copyWith(
           primary: primaryGreen,
-          secondary: primaryGreen,
+          onPrimary: Colors.black,
+          secondary: const Color(0xff5d7d90),
         ),
         iconTheme: const IconThemeData(
           color: Colors.white70,
@@ -108,14 +110,14 @@ class AppTheme {
             secondary: Colors.grey.shade800,
             onSecondary: Colors.white70,
             primary: primaryGreen,
-            onPrimary: Colors.black,
-            error: const Color(0xffea4335),
-            onError: Colors.white,
+            onPrimary: Colors.grey.shade900,
+            error: primaryRed,
+            onError: Colors.grey.shade100,
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
-          primary: Colors.white,
+          primary: Colors.white70,
           side: const BorderSide(width: 1, color: Colors.white12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -163,9 +165,9 @@ class AppTheme {
 
   static ButtonStyle primaryOutlinedButtonStyle(BuildContext context) =>
       OutlinedButton.styleFrom(
-        primary: Theme.of(context).colorScheme.onSecondary,
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        side: BorderSide(
-            width: 1, color: Theme.of(context).colorScheme.secondary),
+        primary: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        side:
+            BorderSide(width: 1, color: Theme.of(context).colorScheme.primary),
       );
 }

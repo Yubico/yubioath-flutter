@@ -31,10 +31,23 @@ class FidoUnlockedPage extends ConsumerWidget {
                   ? [
                       const ListTile(title: Text('Credentials')),
                       ...creds.map((cred) => ListTile(
-                            leading:
-                                const CircleAvatar(child: Icon(Icons.link)),
-                            title: Text(cred.userName),
-                            subtitle: Text(cred.rpId),
+                            leading: CircleAvatar(
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.onPrimary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                              child: const Icon(Icons.person),
+                            ),
+                            title: Text(
+                              cred.userName,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                            ),
+                            subtitle: Text(
+                              cred.rpId,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                            ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -47,7 +60,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                                                 node.path, cred),
                                       );
                                     },
-                                    icon: const Icon(Icons.delete)),
+                                    icon: const Icon(Icons.delete_outline)),
                               ],
                             ),
                           )),
@@ -61,10 +74,18 @@ class FidoUnlockedPage extends ConsumerWidget {
                   ? [
                       const ListTile(title: Text('Fingerprints')),
                       ...fingerprints.map((fp) => ListTile(
-                            leading: const CircleAvatar(
-                              child: Icon(Icons.fingerprint),
+                            leading: CircleAvatar(
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.onSecondary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              child: const Icon(Icons.fingerprint),
                             ),
-                            title: Text(fp.label),
+                            title: Text(
+                              fp.label,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                            ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -77,7 +98,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                                                 node.path, fp),
                                       );
                                     },
-                                    icon: const Icon(Icons.edit)),
+                                    icon: const Icon(Icons.edit_outlined)),
                                 IconButton(
                                     onPressed: () {
                                       showDialog(
@@ -87,7 +108,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                                                 node.path, fp),
                                       );
                                     },
-                                    icon: const Icon(Icons.delete)),
+                                    icon: const Icon(Icons.delete_outline)),
                               ],
                             ),
                           ))
@@ -129,7 +150,9 @@ class FidoUnlockedPage extends ConsumerWidget {
   List<Widget> _buildActions(BuildContext context) => [
         if (state.bioEnroll != null)
           OutlinedButton.icon(
-            style: AppTheme.primaryOutlinedButtonStyle(context),
+            style: state.bioEnroll == true
+                ? null
+                : AppTheme.primaryOutlinedButtonStyle(context),
             label: const Text('Add fingerprint'),
             icon: const Icon(Icons.fingerprint),
             onPressed: () {

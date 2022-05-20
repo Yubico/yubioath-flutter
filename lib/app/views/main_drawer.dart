@@ -170,8 +170,8 @@ class DrawerItem extends StatelessWidget {
         minLeadingWidth: 24,
         minVerticalPadding: 18,
         selected: selected,
-        selectedColor: Colors.black,
-        selectedTileColor: Theme.of(context).colorScheme.secondary,
+        selectedColor: Theme.of(context).colorScheme.onPrimary,
+        selectedTileColor: Theme.of(context).colorScheme.primary,
         leading: IconTheme.merge(
           data: const IconThemeData(size: 24),
           child: icon,
