@@ -54,6 +54,7 @@ from yubikit.logging import LOG_LEVEL
 
 from ykman.pcsc import list_devices, YK_READER_NAME
 from smartcard.Exceptions import SmartcardException
+from smartcard.pcsc.PCSCExceptions import EstablishContextException
 from hashlib import sha256
 from dataclasses import asdict
 from typing import Mapping, Tuple
@@ -143,9 +144,16 @@ class ReadersNode(RpcNode):
         return self.list_children()
 
     def list_children(self):
-        devices = [
-            d for d in list_devices("") if YK_READER_NAME not in d.reader.name.lower()
-        ]
+        try:
+            devices = [
+                d
+                for d in list_devices("")
+                if YK_READER_NAME not in d.reader.name.lower()
+            ]
+        except EstablishContextException:
+            logger.warning("Unable to list readers", exc_info=True)
+            return {}
+
         state = {d.reader.name for d in devices}
         if self._state != state:
             self._readers = {}
@@ -289,7 +297,7 @@ class UsbDeviceNode(AbstractDeviceNode):
     def ccid(self):
         try:
             return self._create_connection(SmartCardConnection)
-        except SmartcardException as e:
+        except (ValueError, SmartcardException) as e:
             logger.warning("Error opening connection", exc_info=True)
             raise ConnectionException("ccid", e)
 
