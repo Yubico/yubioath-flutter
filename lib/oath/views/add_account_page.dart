@@ -297,6 +297,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   },
                 ),
                 Chip(
+                  backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
                     child: DropdownButton<OathType>(
                       value: _oathType,
@@ -319,6 +320,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   ),
                 ),
                 Chip(
+                  backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
                     child: DropdownButton<HashAlgorithm>(
                       value: _hashAlgorithm,
@@ -342,6 +344,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 ),
                 if (_oathType == OathType.totp)
                   Chip(
+                    backgroundColor: ChipTheme.of(context).selectedColor,
                     label: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
                         value: int.tryParse(_periodController.text) ??
@@ -366,6 +369,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     ),
                   ),
                 Chip(
+                  backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
                     child: DropdownButton<int>(
                       value: _digits,

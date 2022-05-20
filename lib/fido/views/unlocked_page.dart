@@ -61,7 +61,8 @@ class FidoUnlockedPage extends ConsumerWidget {
                       const ListTile(title: Text('Fingerprints')),
                       ...fingerprints.map((fp) => ListTile(
                             leading: const CircleAvatar(
-                                child: Icon(Icons.fingerprint)),
+                              child: Icon(Icons.fingerprint),
+                            ),
                             title: Text(fp.label),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,

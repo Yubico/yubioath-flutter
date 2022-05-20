@@ -63,11 +63,14 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: CircleAvatar(
-          backgroundColor: colors.first,
+          // TODO: Hardcoded color
+          backgroundColor: action != null ? colors.first : Colors.grey.shade900,
           foregroundColor: colors.second,
           child: IconButton(
             icon: e.icon,
+            iconSize: 22,
             tooltip: e.text,
+            disabledColor: Colors.white70,
             onPressed: action != null
                 ? () {
                     action(context);
@@ -119,7 +122,19 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
                 borderRadius: const BorderRadius.all(Radius.circular(30.0)),
               ),
               child: Center(
-                child: FittedBox(child: buildCodeView(ref, big: true)),
+                child: FittedBox(
+                  child: DefaultTextStyle.merge(
+                    style: const TextStyle(fontSize: 28),
+                    child: IconTheme(
+                      data: IconTheme.of(context).copyWith(size: 24),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: buildCodeView(ref),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

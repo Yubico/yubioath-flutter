@@ -172,7 +172,10 @@ class DrawerItem extends StatelessWidget {
         selected: selected,
         selectedColor: Colors.black,
         selectedTileColor: Theme.of(context).colorScheme.secondary,
-        leading: icon,
+        leading: IconTheme.merge(
+          data: const IconThemeData(size: 24),
+          child: icon,
+        ),
         title: Text(titleText),
         onTap: onTap,
       ),

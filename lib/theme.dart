@@ -14,13 +14,16 @@ class AppTheme {
           secondary: accentGreen,
           background: Colors.grey.shade200,
         ),
+        iconTheme: IconThemeData(
+          color: Colors.grey.shade400,
+          size: 18.0,
+        ),
         //backgroundColor: Colors.white,
         toggleableActiveColor: accentGreen,
         appBarTheme: AppBarTheme(
           elevation: 0,
           toolbarHeight: 48,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           backgroundColor: Colors.white,
           foregroundColor: Colors.grey.shade800,
         ),
@@ -35,8 +38,25 @@ class AppTheme {
             onError: Colors.white,
           ),
         ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+            style: OutlinedButton.styleFrom(
+          primary: Colors.grey.shade800,
+          side: BorderSide(width: 1, color: Colors.grey.shade400),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+        )),
         cardTheme: CardTheme(
           color: Colors.grey.shade300,
+        ),
+        chipTheme: ChipThemeData(
+          backgroundColor: Colors.transparent,
+          selectedColor: const Color(0xffc2e7ff),
+          side: BorderSide(width: 1, color: Colors.grey.shade400),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: primaryBlue,
@@ -70,12 +90,15 @@ class AppTheme {
           primary: primaryGreen,
           secondary: primaryGreen,
         ),
+        iconTheme: const IconThemeData(
+          color: Colors.white70,
+          size: 18.0,
+        ),
         toggleableActiveColor: primaryGreen,
         appBarTheme: AppBarTheme(
           elevation: 0,
           toolbarHeight: 48,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.grey.shade400,
         ),
@@ -83,15 +106,32 @@ class AppTheme {
         buttonTheme: ButtonThemeData(
           colorScheme: ColorScheme.dark(
             secondary: Colors.grey.shade800,
-            onSecondary: Colors.white,
+            onSecondary: Colors.white70,
             primary: primaryGreen,
             onPrimary: Colors.black,
             error: const Color(0xffea4335),
             onError: Colors.white,
           ),
         ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+            style: OutlinedButton.styleFrom(
+          primary: Colors.white,
+          side: const BorderSide(width: 1, color: Colors.white12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+        )),
         cardTheme: CardTheme(
           color: Colors.grey.shade800,
+        ),
+        chipTheme: ChipThemeData(
+          backgroundColor: Colors.transparent,
+          selectedColor: Colors.white12,
+          side: const BorderSide(width: 1, color: Colors.white12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
         ),
         dialogTheme: const DialogTheme(
           backgroundColor: Color(0xff323232),

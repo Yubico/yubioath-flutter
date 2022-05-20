@@ -205,17 +205,14 @@ mixin AccountMixin {
   }
 
   @protected
-  Widget buildCodeView(WidgetRef ref, {bool big = false}) {
+  Widget buildCodeView(WidgetRef ref) {
     final code = getCode(ref);
     final expired = isExpired(code, ref);
     return AnimatedSize(
       alignment: Alignment.centerRight,
       duration: const Duration(milliseconds: 100),
-      child: Padding(
-        padding: big
-            ? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0)
-            : const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-        child: Row(
+      child: Builder(builder: (context) {
+        return Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: code == null
@@ -224,25 +221,22 @@ mixin AccountMixin {
                     credential.oathType == OathType.hotp
                         ? Icons.refresh
                         : Icons.touch_app,
-                    size: big ? 24 : 18,
                   ),
-                  Text('', style: TextStyle(fontSize: big ? 24.0 : 16.0)),
+                  const Text(''),
                 ]
               : [
                   if (credential.oathType == OathType.totp) ...[
                     ...expired
                         ? [
                             if (credential.touchRequired) ...[
-                              Icon(
-                                Icons.touch_app,
-                                size: big ? 24 : 18,
-                              ),
+                              const Icon(Icons.touch_app),
                               const SizedBox(width: 8.0),
                             ]
                           ]
                         : [
                             SizedBox.square(
-                              dimension: big ? 18.0 : 14.0,
+                              dimension:
+                                  (IconTheme.of(context).size ?? 18) * 0.8,
                               child: CircleTimer(
                                 code.validFrom * 1000,
                                 code.validTo * 1000,
@@ -255,16 +249,15 @@ mixin AccountMixin {
                     opacity: expired ? 0.4 : 1.0,
                     child: Text(
                       formatCode(code),
-                      style: TextStyle(
-                        fontSize: big ? 24 : 20,
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                        fontWeight: FontWeight.w300,
+                      style: const TextStyle(
+                        fontFeatures: [FontFeature.tabularFigures()],
+                        //fontWeight: FontWeight.w400,
                       ),
                     ),
                   ),
                 ],
-        ),
-      ),
+        );
+      }),
     );
   }
 }
