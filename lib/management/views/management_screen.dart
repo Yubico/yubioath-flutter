@@ -241,7 +241,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     final child =
         ref.watch(managementStateProvider(widget.deviceData.node.path)).when(
               loading: () => const AppLoadingScreen(),
-              error: (error, _) => AppFailureScreen('$error'),
+              error: (error, _) => AppFailureScreen(error),
               data: (info) {
                 bool hasConfig = info.version.major > 4;
                 if (hasConfig) {

@@ -10,6 +10,7 @@ import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
+import '../../desktop/models.dart';
 import '../../desktop/state.dart';
 import '../../management/models.dart';
 import '../../theme.dart';
@@ -52,9 +53,10 @@ class FidoScreen extends ConsumerWidget {
                     'WebAuthn requires the FIDO2 application to be enabled on your YubiKey',
               );
             }
-            if (Platform.isWindows) {
-              if (!ref
-                  .watch(rpcStateProvider.select((state) => state.isAdmin))) {
+            if (Platform.isWindows && error is RpcError) {
+              if (error.status == 'connection-error' &&
+                  !ref.watch(
+                      rpcStateProvider.select((state) => state.isAdmin))) {
                 return MessagePage(
                   title: const Text('WebAuthn'),
                   graphic: noPermission,
@@ -85,7 +87,7 @@ class FidoScreen extends ConsumerWidget {
             return AppPage(
               title: const Text('WebAuthn'),
               centered: true,
-              child: AppFailureScreen('$error'),
+              child: AppFailureScreen(error),
             );
           },
           data: (fidoState) {

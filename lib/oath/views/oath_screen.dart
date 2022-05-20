@@ -34,7 +34,7 @@ class OathScreen extends ConsumerWidget {
           error: (error, _) => AppPage(
             title: const Text('Authenticator'),
             centered: true,
-            child: AppFailureScreen('$error'),
+            child: AppFailureScreen(error),
           ),
           data: (oathState) => oathState.locked
               ? _LockedView(devicePath, oathState)
