@@ -26,7 +26,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-from .base import RpcNode, child, action, NoSuchNodeException, ChildResetException
+from .base import (
+    RpcNode,
+    child,
+    action,
+    RpcException,
+    NoSuchNodeException,
+    ChildResetException,
+)
 from .oath import OathNode
 from .fido import Ctap2Node
 from .yubiotp import YubiOtpNode
@@ -63,6 +70,15 @@ def _is_admin():
     if sys.platform == "win32":
         return bool(ctypes.windll.shell32.IsUserAnAdmin())
     return os.getuid() == 0
+
+
+class ConnectionException(RpcException):
+    def __init__(self, connection, exc_type):
+        super().__init__(
+            "connection-error",
+            f"Error connecting to {connection} interface",
+            dict(connection=connection, exc_type=type(exc_type).__name__),
+        )
 
 
 class RootNode(RpcNode):
@@ -271,15 +287,27 @@ class UsbDeviceNode(AbstractDeviceNode):
 
     @child(condition=lambda self: self._supports_connection(SmartCardConnection))
     def ccid(self):
-        return self._create_connection(SmartCardConnection)
+        try:
+            return self._create_connection(SmartCardConnection)
+        except SmartcardException as e:
+            logger.warning("Error opening connection", exc_info=True)
+            raise ConnectionException("ccid", e)
 
     @child(condition=lambda self: self._supports_connection(OtpConnection))
     def otp(self):
-        return self._create_connection(OtpConnection)
+        try:
+            return self._create_connection(OtpConnection)
+        except (ValueError, OSError) as e:
+            logger.warning("Error opening connection", exc_info=True)
+            raise ConnectionException("otp", e)
 
     @child(condition=lambda self: self._supports_connection(FidoConnection))
     def fido(self):
-        return self._create_connection(FidoConnection)
+        try:
+            return self._create_connection(FidoConnection)
+        except (ValueError, OSError) as e:
+            logger.warning("Error opening connection", exc_info=True)
+            raise ConnectionException("fido", e)
 
 
 class ReaderDeviceNode(AbstractDeviceNode):
