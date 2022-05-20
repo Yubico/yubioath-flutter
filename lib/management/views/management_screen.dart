@@ -5,7 +5,6 @@ import 'package:collection/collection.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../core/models.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -241,7 +240,18 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     final child =
         ref.watch(managementStateProvider(widget.deviceData.node.path)).when(
               loading: () => const AppLoadingScreen(),
-              error: (error, _) => AppFailureScreen(error),
+              error: (error, _) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      error.toString(),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
               data: (info) {
                 bool hasConfig = info.version.major > 4;
                 if (hasConfig) {

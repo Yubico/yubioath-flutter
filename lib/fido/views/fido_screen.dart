@@ -1,19 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../app/views/app_failure_screen.dart';
+import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
-import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
-import '../../desktop/models.dart';
-import '../../desktop/state.dart';
 import '../../management/models.dart';
-import '../../theme.dart';
 import '../state.dart';
 import 'locked_page.dart';
 import 'unlocked_page.dart';
@@ -53,41 +46,10 @@ class FidoScreen extends ConsumerWidget {
                     'WebAuthn requires the FIDO2 application to be enabled on your YubiKey',
               );
             }
-            if (Platform.isWindows && error is RpcError) {
-              if (error.status == 'connection-error' &&
-                  !ref.watch(
-                      rpcStateProvider.select((state) => state.isAdmin))) {
-                return MessagePage(
-                  title: const Text('WebAuthn'),
-                  graphic: noPermission,
-                  message: 'WebAuthn management requires elevated privileges.',
-                  actions: [
-                    OutlinedButton.icon(
-                        label: const Text('Unlock'),
-                        icon: const Icon(Icons.lock_open),
-                        style: AppTheme.primaryOutlinedButtonStyle(context),
-                        onPressed: () async {
-                          final controller = showMessage(
-                              context, 'Elevating permissions...',
-                              duration: const Duration(seconds: 30));
-                          try {
-                            if (await ref.read(rpcProvider).elevate()) {
-                              ref.refresh(rpcProvider);
-                            } else {
-                              showMessage(context, 'Permission denied');
-                            }
-                          } finally {
-                            controller.close();
-                          }
-                        }),
-                  ],
-                );
-              }
-            }
-            return AppPage(
+
+            return AppFailurePage(
               title: const Text('WebAuthn'),
-              centered: true,
-              child: AppFailureScreen(error),
+              cause: error,
             );
           },
           data: (fidoState) {

@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../app/views/app_failure_screen.dart';
+import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
@@ -31,10 +31,9 @@ class OathScreen extends ConsumerWidget {
             centered: true,
             child: const AppLoadingScreen(),
           ),
-          error: (error, _) => AppPage(
+          error: (error, _) => AppFailurePage(
             title: const Text('Authenticator'),
-            centered: true,
-            child: AppFailureScreen(error),
+            cause: error,
           ),
           data: (oathState) => oathState.locked
               ? _LockedView(devicePath, oathState)
