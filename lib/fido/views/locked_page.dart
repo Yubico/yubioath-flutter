@@ -6,6 +6,7 @@ import '../../app/models.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
+import '../../theme.dart';
 import '../models.dart';
 import '../state.dart';
 import 'pin_dialog.dart';
@@ -26,7 +27,7 @@ class FidoLockedPage extends ConsumerWidget {
           graphic: noFingerprints,
           header: 'No fingerprints',
           message: 'Set a PIN to register fingerprints.',
-          actions: _buildActions(),
+          actions: _buildActions(context),
         );
       } else {
         return MessagePage(
@@ -35,14 +36,14 @@ class FidoLockedPage extends ConsumerWidget {
           header: 'No discoverable accounts',
           message:
               'Optionally set a PIN to protect access to your YubiKey\nRegister as a Security Key on websites',
-          actions: _buildActions(),
+          actions: _buildActions(context),
         );
       }
     }
 
     return AppPage(
       title: const Text('WebAuthn'),
-      actions: _buildActions(),
+      actions: _buildActions(context),
       child: Column(
         children: [
           const ListTile(title: Text('Unlock')),
@@ -52,22 +53,23 @@ class FidoLockedPage extends ConsumerWidget {
     );
   }
 
-  List<MenuAction> _buildActions() => [
+  List<Widget> _buildActions(BuildContext context) => [
         if (!state.hasPin)
-          MenuAction(
-            text: 'Set PIN',
+          OutlinedButton.icon(
+            style: AppTheme.primaryOutlinedButtonStyle(context),
+            label: const Text('Set PIN'),
             icon: const Icon(Icons.pin),
-            action: (context) {
+            onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) => FidoPinDialog(node.path, state),
               );
             },
           ),
-        MenuAction(
-          text: 'Options',
+        OutlinedButton.icon(
+          label: const Text('Options'),
           icon: const Icon(Icons.tune),
-          action: (context) {
+          onPressed: () {
             showBottomMenu(context, [
               if (state.hasPin)
                 MenuAction(

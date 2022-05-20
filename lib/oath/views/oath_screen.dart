@@ -11,6 +11,7 @@ import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
+import '../../theme.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_list.dart';
@@ -78,7 +79,7 @@ class _UnlockedView extends ConsumerWidget {
         title: const Text('Authenticator'),
         graphic: noAccounts,
         header: 'No accounts',
-        actions: _buildActions(),
+        actions: _buildActions(context),
       );
     }
 
@@ -111,17 +112,18 @@ class _UnlockedView extends ConsumerWidget {
           );
         }),
       ),
-      actions: _buildActions(),
+      actions: _buildActions(context),
       child: AccountList(devicePath, oathState),
     );
   }
 
-  List<MenuAction> _buildActions() {
+  List<Widget> _buildActions(BuildContext context) {
     return [
-      MenuAction(
-        text: 'Add account',
+      OutlinedButton.icon(
+        style: AppTheme.primaryOutlinedButtonStyle(context),
+        label: const Text('Add account'),
         icon: const Icon(Icons.person_add_alt_1),
-        action: (context) {
+        onPressed: () {
           showDialog(
             context: context,
             builder: (context) => OathAddAccountPage(
@@ -131,10 +133,10 @@ class _UnlockedView extends ConsumerWidget {
           );
         },
       ),
-      MenuAction(
-        text: 'Options',
+      OutlinedButton.icon(
+        label: const Text('Options'),
         icon: const Icon(Icons.tune),
-        action: (context) {
+        onPressed: () {
           showBottomMenu(context, [
             MenuAction(
               text: oathState.hasKey ? 'Manage password' : 'Set password',

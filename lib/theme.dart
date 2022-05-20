@@ -160,4 +160,12 @@ class AppTheme {
               fontSize: 16),
         ),
       );
+
+  static ButtonStyle primaryOutlinedButtonStyle(BuildContext context) =>
+      OutlinedButton.styleFrom(
+        primary: Theme.of(context).colorScheme.onSecondary,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        side: BorderSide(
+            width: 1, color: Theme.of(context).colorScheme.secondary),
+      );
 }

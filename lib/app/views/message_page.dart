@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../models.dart';
 import 'app_page.dart';
 
 class MessagePage extends StatelessWidget {
@@ -8,7 +7,7 @@ class MessagePage extends StatelessWidget {
   final Widget? graphic;
   final String? header;
   final String? message;
-  final List<MenuAction> actions;
+  final List<Widget> actions;
 
   const MessagePage({
     super.key,

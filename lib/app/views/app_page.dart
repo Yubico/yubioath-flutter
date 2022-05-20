@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models.dart';
 import 'device_button.dart';
 import 'main_drawer.dart';
 
@@ -9,7 +8,7 @@ class AppPage extends ConsumerWidget {
   final Key _scaffoldKey = GlobalKey();
   final Widget? title;
   final Widget child;
-  final List<MenuAction> actions;
+  final List<Widget> actions;
   final bool centered;
   AppPage({
     super.key,
@@ -61,17 +60,7 @@ class AppPage extends ConsumerWidget {
                       child: Wrap(
                         spacing: 4,
                         runSpacing: 4,
-                        children: actions
-                            .map((e) => OutlinedButton.icon(
-                                  icon: e.icon,
-                                  label: Text(e.text),
-                                  onPressed: e.action != null
-                                      ? () {
-                                          e.action?.call(context);
-                                        }
-                                      : null,
-                                ))
-                            .toList(),
+                        children: actions,
                       ),
                     ),
                   ),

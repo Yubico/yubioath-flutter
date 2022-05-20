@@ -6,6 +6,7 @@ import '../../app/models.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
+import '../../theme.dart';
 import '../models.dart';
 import '../state.dart';
 import 'add_fingerprint_dialog.dart';
@@ -99,7 +100,7 @@ class FidoUnlockedPage extends ConsumerWidget {
     if (children.isNotEmpty) {
       return AppPage(
         title: const Text('WebAuthn'),
-        actions: _buildActions(),
+        actions: _buildActions(context),
         child: Column(
           children: children,
         ),
@@ -112,7 +113,7 @@ class FidoUnlockedPage extends ConsumerWidget {
         graphic: noFingerprints,
         header: 'No fingerprints',
         message: 'Add one or more (up to five) fingerprints',
-        actions: _buildActions(),
+        actions: _buildActions(context),
       );
     }
 
@@ -121,26 +122,27 @@ class FidoUnlockedPage extends ConsumerWidget {
       graphic: noDiscoverable,
       header: 'No discoverable accounts',
       message: 'Register as a Security Key on websites',
-      actions: _buildActions(),
+      actions: _buildActions(context),
     );
   }
 
-  List<MenuAction> _buildActions() => [
+  List<Widget> _buildActions(BuildContext context) => [
         if (state.bioEnroll != null)
-          MenuAction(
-            text: 'Add fingerprint',
+          OutlinedButton.icon(
+            style: AppTheme.primaryOutlinedButtonStyle(context),
+            label: const Text('Add fingerprint'),
             icon: const Icon(Icons.fingerprint),
-            action: (context) {
+            onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) => AddFingerprintDialog(node.path),
               );
             },
           ),
-        MenuAction(
-          text: 'Options',
+        OutlinedButton.icon(
+          label: const Text('Options'),
           icon: const Icon(Icons.tune),
-          action: (context) {
+          onPressed: () {
             showBottomMenu(context, [
               MenuAction(
                 text: 'Change PIN',

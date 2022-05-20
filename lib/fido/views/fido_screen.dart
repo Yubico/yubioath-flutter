@@ -12,6 +12,7 @@ import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../desktop/state.dart';
 import '../../management/models.dart';
+import '../../theme.dart';
 import '../state.dart';
 import 'locked_page.dart';
 import 'unlocked_page.dart';
@@ -59,10 +60,11 @@ class FidoScreen extends ConsumerWidget {
                   graphic: noPermission,
                   message: 'WebAuthn management requires elevated privileges.',
                   actions: [
-                    MenuAction(
-                        text: 'Unlock',
+                    OutlinedButton.icon(
+                        label: const Text('Unlock'),
                         icon: const Icon(Icons.lock_open),
-                        action: (context) async {
+                        style: AppTheme.primaryOutlinedButtonStyle(context),
+                        onPressed: () async {
                           final controller = showMessage(
                               context, 'Elevating permissions...',
                               duration: const Duration(seconds: 30));
