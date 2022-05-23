@@ -128,13 +128,13 @@ class FidoUnlockedPage extends ConsumerWidget {
       );
     }
 
-    if (state.bioEnroll == false) {
+    if (state.bioEnroll != null) {
       return MessagePage(
         title: const Text('WebAuthn'),
         graphic: noFingerprints,
         header: 'No fingerprints',
         message: 'Add one or more (up to five) fingerprints',
-        actions: _buildActions(context),
+        actions: _buildActions(context, fingerprintPrimary: true),
       );
     }
 
@@ -147,12 +147,14 @@ class FidoUnlockedPage extends ConsumerWidget {
     );
   }
 
-  List<Widget> _buildActions(BuildContext context) => [
+  List<Widget> _buildActions(BuildContext context,
+          {bool fingerprintPrimary = false}) =>
+      [
         if (state.bioEnroll != null)
           OutlinedButton.icon(
-            style: state.bioEnroll == true
-                ? null
-                : AppTheme.primaryOutlinedButtonStyle(context),
+            style: fingerprintPrimary
+                ? AppTheme.primaryOutlinedButtonStyle(context)
+                : null,
             label: const Text('Add fingerprint'),
             icon: const Icon(Icons.fingerprint),
             onPressed: () {
