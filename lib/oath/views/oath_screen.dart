@@ -51,6 +51,37 @@ class _LockedView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => AppPage(
         title: const Text('Authenticator'),
+        actions: [
+          OutlinedButton.icon(
+            label: const Text('Options'),
+            icon: const Icon(Icons.tune),
+            onPressed: () {
+              showBottomMenu(context, [
+                MenuAction(
+                  text: 'Manage password',
+                  icon: const Icon(Icons.password),
+                  action: (context) {
+                    showDialog(
+                      context: context,
+                      builder: (context) =>
+                          ManagePasswordDialog(devicePath, oathState),
+                    );
+                  },
+                ),
+                MenuAction(
+                  text: 'Reset OATH',
+                  icon: const Icon(Icons.delete),
+                  action: (context) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => ResetDialog(devicePath),
+                    );
+                  },
+                ),
+              ]);
+            },
+          ),
+        ],
         child: Column(
           children: [
             const ListTile(title: Text('Unlock')),
