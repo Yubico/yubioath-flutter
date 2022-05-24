@@ -82,8 +82,8 @@ class MainPageDrawer extends ConsumerWidget {
                   );
                 },
               ),
-              const Divider(indent: 16.0, endIndent: 28.0),
             ],
+            const Divider(indent: 16.0, endIndent: 28.0),
           ],
           // Non-YubiKey pages
           DrawerItem(
