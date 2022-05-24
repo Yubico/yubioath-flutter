@@ -196,7 +196,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           children: [
             Text(
               'Account details',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             TextField(
               key: const Key('issuer'),
@@ -280,7 +280,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             const Divider(),
             Text(
               'Options',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
@@ -297,6 +297,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   },
                 ),
                 Chip(
+                  backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
                     child: DropdownButton<OathType>(
                       value: _oathType,
@@ -319,6 +320,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   ),
                 ),
                 Chip(
+                  backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
                     child: DropdownButton<HashAlgorithm>(
                       value: _hashAlgorithm,
@@ -342,6 +344,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 ),
                 if (_oathType == OathType.totp)
                   Chip(
+                    backgroundColor: ChipTheme.of(context).selectedColor,
                     label: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
                         value: int.tryParse(_periodController.text) ??
@@ -366,6 +369,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     ),
                   ),
                 Chip(
+                  backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
                     child: DropdownButton<int>(
                       value: _digits,

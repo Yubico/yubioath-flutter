@@ -50,7 +50,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           if (hasPin) ...[
             Text(
               'Current PIN',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             TextFormField(
               initialValue: _currentPin,
@@ -70,7 +70,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           ],
           Text(
             'New PIN',
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           TextFormField(
             initialValue: _newPin,

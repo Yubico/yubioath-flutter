@@ -8,14 +8,15 @@ class AppPage extends ConsumerWidget {
   final Key _scaffoldKey = GlobalKey();
   final Widget? title;
   final Widget child;
-  final Widget? floatingActionButton;
+  final List<Widget> actions;
   final bool centered;
-  AppPage(
-      {super.key,
-      this.title,
-      required this.child,
-      this.floatingActionButton,
-      this.centered = false});
+  AppPage({
+    super.key,
+    this.title,
+    required this.child,
+    this.actions = const [],
+    this.centered = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => LayoutBuilder(
@@ -29,7 +30,7 @@ class AppPage extends ConsumerWidget {
               body: Row(
                 children: [
                   const SizedBox(
-                    width: 240,
+                    width: 280,
                     child: ListTileTheme(
                         style: ListTileStyle.drawer,
                         child: MainPageDrawer(shouldPop: false)),
@@ -46,11 +47,26 @@ class AppPage extends ConsumerWidget {
 
   Widget _buildScrollView() => SafeArea(
         child: SingleChildScrollView(
-          // Make sure FAB doesn't block content
-          padding: floatingActionButton != null
-              ? const EdgeInsets.only(bottom: 72)
-              : null,
-          child: child,
+          child: Builder(builder: (context) {
+            return Column(
+              children: [
+                child,
+                if (actions.isNotEmpty)
+                  Align(
+                    alignment:
+                        centered ? Alignment.center : Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: actions,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          }),
         ),
       );
 
@@ -58,13 +74,14 @@ class AppPage extends ConsumerWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        titleSpacing: 8,
         title: title,
         centerTitle: true,
+        titleTextStyle: Theme.of(context).textTheme.titleLarge,
         actions: const [DeviceButton()],
       ),
       drawer: hasDrawer ? const MainPageDrawer() : null,
       body: centered ? Center(child: _buildScrollView()) : _buildScrollView(),
-      floatingActionButton: floatingActionButton,
     );
   }
 }

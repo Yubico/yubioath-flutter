@@ -5,7 +5,6 @@ import 'package:collection/collection.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../app/views/app_failure_screen.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../core/models.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -27,8 +26,8 @@ class _CapabilityForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 4.0,
-      runSpacing: 8.0,
+      spacing: 8,
+      runSpacing: 16,
       children: Capability.values
           .where((c) => capabilities & c.value != 0)
           .map((c) => FilterChip(
@@ -85,30 +84,41 @@ class _CapabilitiesForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (usbCapabilities != 0)
+        if (usbCapabilities != 0) ...[
           const ListTile(
             leading: Icon(Icons.usb),
-            title: Text('USB applications'),
+            title: Text('USB'),
+            contentPadding: EdgeInsets.only(bottom: 8),
+            horizontalTitleGap: 0,
           ),
-        _CapabilityForm(
-          capabilities: usbCapabilities,
-          enabled: enabled[Transport.usb] ?? 0,
-          onChanged: (value) {
-            onChanged({...enabled, Transport.usb: value});
-          },
-        ),
-        if (nfcCapabilities != 0)
+          _CapabilityForm(
+            capabilities: usbCapabilities,
+            enabled: enabled[Transport.usb] ?? 0,
+            onChanged: (value) {
+              onChanged({...enabled, Transport.usb: value});
+            },
+          ),
+        ],
+        if (nfcCapabilities != 0) ...[
+          if (usbCapabilities != 0)
+            const Padding(
+              padding: EdgeInsets.only(top: 24, bottom: 12),
+              child: Divider(),
+            ),
           const ListTile(
             leading: Icon(Icons.wifi),
-            title: Text('NFC applications'),
+            title: Text('NFC'),
+            contentPadding: EdgeInsets.only(bottom: 8),
+            horizontalTitleGap: 0,
           ),
-        _CapabilityForm(
-          capabilities: nfcCapabilities,
-          enabled: enabled[Transport.nfc] ?? 0,
-          onChanged: (value) {
-            onChanged({...enabled, Transport.nfc: value});
-          },
-        ),
+          _CapabilityForm(
+            capabilities: nfcCapabilities,
+            enabled: enabled[Transport.nfc] ?? 0,
+            onChanged: (value) {
+              onChanged({...enabled, Transport.nfc: value});
+            },
+          ),
+        ]
       ],
     );
   }
@@ -230,7 +240,18 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     final child =
         ref.watch(managementStateProvider(widget.deviceData.node.path)).when(
               loading: () => const AppLoadingScreen(),
-              error: (error, _) => AppFailureScreen('$error'),
+              error: (error, _) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      error.toString(),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
               data: (info) {
                 bool hasConfig = info.version.major > 4;
                 if (hasConfig) {

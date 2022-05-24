@@ -94,9 +94,11 @@ class _AccountListState extends ConsumerState<AccountList> {
     return Column(
       children: [
         if (pinnedCreds.isNotEmpty)
-          const ListTile(
+          ListTile(
+            minVerticalPadding: 16,
             title: Text(
-              'Pinned',
+              'PINNED',
+              style: Theme.of(context).textTheme.labelSmall,
             ),
           ),
         ...pinnedCreds.map(
@@ -106,9 +108,11 @@ class _AccountListState extends ConsumerState<AccountList> {
           ),
         ),
         if (creds.isNotEmpty)
-          const ListTile(
+          ListTile(
+            minVerticalPadding: 16,
             title: Text(
-              'Accounts',
+              'ACCOUNTS',
+              style: Theme.of(context).textTheme.labelSmall,
             ),
           ),
         ...creds.map(

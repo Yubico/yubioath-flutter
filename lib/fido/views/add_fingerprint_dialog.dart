@@ -133,26 +133,27 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Step 1/2: Capture fingerprint'),
-          Card(
-            child: Column(
-              children: [
-                AnimatedBuilder(
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(36.0),
+                child: AnimatedBuilder(
                   animation: _color,
                   builder: (context, _) {
                     return Icon(
                       _fingerprint == null ? Icons.fingerprint : Icons.check,
-                      size: 200.0,
+                      size: 128.0,
                       color: _color.value,
                     );
                   },
                 ),
-                LinearProgressIndicator(value: progress),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(_getMessage()),
-                ),
-              ],
-            ),
+              ),
+              LinearProgressIndicator(value: progress),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(_getMessage()),
+              ),
+            ],
           ),
           const Text('Step 2/2: Name fingerprint'),
           TextFormField(
