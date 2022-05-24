@@ -77,7 +77,7 @@ Future<Widget> initialize(List<String> argv) async {
       final arm64exe = Uri.file(exe)
           .resolve('../helper-arm64/authenticator-helper')
           .toFilePath();
-      if (await Directory(arm64exe).exists()) {
+      if (await File(arm64exe).exists()) {
         exe = arm64exe;
       }
     }
