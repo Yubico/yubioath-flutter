@@ -11,6 +11,12 @@ lib_version_pattern = rf"const\s+String\s+version\s+=\s+'({version_pattern})';"
 lib_build_pattern = rf"const\s+int\s+build\s+=\s+(\d+);"
 
 
+def sub1(pattern, repl, string):
+    buf, n = re.subn(pattern, repl, string)
+    if n != 1:
+        raise ValueError(f"Did not find string matching {pattern} to replace")
+    return buf
+
 def update_file(fname, func):
     with open(fname) as f:
         orig = f.read()
@@ -42,13 +48,13 @@ def read_lib_version():
 
 
 def update_lib(buf):
-    buf = re.sub(
+    buf = sub1(
         lib_version_pattern,
         f"const String version = '{version}';",
         buf,
     )
 
-    buf = re.sub(
+    buf = sub1(
         lib_build_pattern,
         f"const int build = {build};",
         buf,
@@ -78,7 +84,7 @@ short_version = re.search("(\d+\.\d+\.\d+)", version).group()
 
 # pubspec.yaml
 def update_pubspec(buf):
-    return re.sub(
+    return sub1(
         r'version:\s+\d+\.\d+\.\d+\+\d+',
         f'version: {short_version}+{build}',
         buf,
@@ -86,14 +92,14 @@ def update_pubspec(buf):
 
 # Windows Runner.rc
 def update_runner_rc(buf):
-    buf = re.sub(
+    buf = sub1(
         rf'#define VERSION_AS_STRING "{version_pattern}"',
         f'#define VERSION_AS_STRING "{version}"',
         buf,
     )
 
     version_as_number = short_version.replace(".", ",")
-    buf = re.sub(
+    buf = sub1(
         r"#define VERSION_AS_NUMBER \d+,\d+,\d+",
         f"#define VERSION_AS_NUMBER {version_as_number}",
         buf,
@@ -103,22 +109,22 @@ def update_runner_rc(buf):
 # Helper version_info
 def update_helper_version(buf):
     version_tuple = repr(tuple(int(d) for d in short_version.split(".")) + (0,))
-    buf = re.sub(
+    buf = sub1(
         rf'filevers=\(\d+, \d+, \d+, \d+\)',
         f'filevers={version_tuple}',
         buf,
     )
-    buf = re.sub(
+    buf = sub1(
         rf'prodvers=\(\d+, \d+, \d+, \d+\)',
         f'prodvers={version_tuple}',
         buf,
     )
-    buf = re.sub(
+    buf = sub1(
         rf"'FileVersion', '{version_pattern}'",
         f"'FileVersion', '{version}'",
         buf,
     )
-    buf = re.sub(
+    buf = sub1(
         rf"'ProductVersion', '{version_pattern}'",
         f"'ProductVersion', '{version}'",
         buf,
