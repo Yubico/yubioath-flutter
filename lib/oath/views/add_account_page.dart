@@ -25,8 +25,9 @@ enum _QrScanState { none, scanning, success, failed }
 
 class OathAddAccountPage extends ConsumerStatefulWidget {
   final DevicePath devicePath;
+  final OathState state;
   final bool openQrScanner;
-  const OathAddAccountPage(this.devicePath,
+  const OathAddAccountPage(this.devicePath, this.state,
       {super.key, required this.openQrScanner});
 
   @override
@@ -287,15 +288,16 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               spacing: 4.0,
               runSpacing: 8.0,
               children: [
-                FilterChip(
-                  label: const Text('Require touch'),
-                  selected: _touch,
-                  onSelected: (value) {
-                    setState(() {
-                      _touch = value;
-                    });
-                  },
-                ),
+                if (widget.state.version.isAtLeast(4, 2))
+                  FilterChip(
+                    label: const Text('Require touch'),
+                    selected: _touch,
+                    onSelected: (value) {
+                      setState(() {
+                        _touch = value;
+                      });
+                    },
+                  ),
                 Chip(
                   backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
@@ -327,6 +329,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       isDense: true,
                       underline: null,
                       items: HashAlgorithm.values
+                          .where((alg) =>
+                              alg != HashAlgorithm.sha512 ||
+                              widget.state.version.isAtLeast(4, 3, 1))
                           .map((e) => DropdownMenuItem(
                                 value: e,
                                 child: Text(e.name.toUpperCase()),

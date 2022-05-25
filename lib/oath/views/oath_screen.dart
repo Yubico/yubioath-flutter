@@ -158,6 +158,7 @@ class _UnlockedView extends ConsumerWidget {
             context: context,
             builder: (context) => OathAddAccountPage(
               devicePath,
+              oathState,
               openQrScanner: Platform.isAndroid,
             ),
           );
