@@ -131,7 +131,8 @@ Future<Widget> initialize(List<String> argv) async {
 
 void _initLogging(List<String> argv) {
   Logger.root.onRecord.listen((record) {
-    stderr.writeln('[${record.loggerName}] ${record.level}: ${record.message}');
+    stderr.writeln(
+        '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}');
     if (record.error != null) {
       stderr.writeln(record.error);
     }
