@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../widgets/dialog_frame.dart';
 import '../models.dart';
@@ -44,17 +46,38 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
     return deleted;
   }
 
+  Pair<Color?, Color?> _getColors(BuildContext context, MenuAction action) {
+    final theme =
+        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
+    return action.text.startsWith('Copy')
+        ? Pair(theme.primary, theme.onPrimary)
+        : (action.text.startsWith('Delete')
+            ? Pair(theme.error, theme.onError)
+            : Pair(theme.secondary, theme.onSecondary));
+  }
+
   List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
     return buildActions(context, ref).map((e) {
       final action = e.action;
-      return IconButton(
-        icon: e.icon,
-        tooltip: e.text,
-        onPressed: action != null
-            ? () {
-                action(context);
-              }
-            : null,
+      final colors = _getColors(context, e);
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: CircleAvatar(
+          // TODO: Hardcoded color
+          backgroundColor: action != null ? colors.first : Colors.grey.shade900,
+          foregroundColor: colors.second,
+          child: IconButton(
+            icon: e.icon,
+            iconSize: 22,
+            tooltip: e.text,
+            disabledColor: Colors.white70,
+            onPressed: action != null
+                ? () {
+                    action(context);
+                  }
+                : null,
+          ),
+        ),
       );
     }).toList();
   }
@@ -69,20 +92,62 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
     }
     return DialogFrame(
       child: AlertDialog(
-        title: Text(title),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
-        actionsAlignment: MainAxisAlignment.center,
-        actionsPadding: EdgeInsets.zero,
+        title: Center(
+          child: Text(
+            title,
+            overflow: TextOverflow.fade,
+            style: Theme.of(context).textTheme.headlineSmall,
+            maxLines: 1,
+            softWrap: false,
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
         content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(subtitle ?? ''),
-            const SizedBox(height: 8.0),
-            Center(child: FittedBox(child: buildCodeView(ref, big: true))),
+            if (subtitle != null)
+              Text(
+                subtitle!,
+                overflow: TextOverflow.fade,
+                style: Theme.of(context).textTheme.bodySmall,
+                maxLines: 1,
+                softWrap: false,
+              ),
+            const SizedBox(height: 12.0),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: CardTheme.of(context).color,
+                borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+              ),
+              child: Center(
+                child: FittedBox(
+                  child: DefaultTextStyle.merge(
+                    style: const TextStyle(fontSize: 28),
+                    child: IconTheme(
+                      data: IconTheme.of(context).copyWith(size: 24),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: buildCodeView(ref),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
-        actions: [FittedBox(child: Row(children: _buildActions(context, ref)))],
+        actionsPadding: const EdgeInsets.only(top: 10.0, right: -16.0),
+        actions: [
+          Center(
+            child: FittedBox(
+              alignment: Alignment.center,
+              child: Row(children: _buildActions(context, ref)),
+            ),
+          )
+        ],
       ),
     );
   }

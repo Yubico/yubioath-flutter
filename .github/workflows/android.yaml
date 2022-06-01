@@ -35,6 +35,12 @@ jobs:
         with:
           path: 'app'
 
+      - name: Check app versions
+        run: |
+          python set-version.py
+          git diff --exit-code
+        working-directory: ./app
+
       - name: Run flutter tests
         run: |
           flutter test
@@ -48,6 +54,10 @@ jobs:
           YUBIOATH_KEY_ALIAS: ${{ secrets.YUBIOATH_KEY_ALIAS }}
           YUBIOATH_KEY_PASSWORD: ${{ secrets.YUBIOATH_KEY_PASSWORD }}
           YUBIOATH_STORE_PASSWORD: ${{ secrets.YUBIOATH_STORE_PASSWORD }}
+        working-directory: ./app
+
+      - name: Check generated files
+        run: git diff --exit-code
         working-directory: ./app
 
       - name: Run android tests

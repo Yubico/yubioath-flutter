@@ -185,19 +185,19 @@ class _QrScannerViewState extends State<QrScannerView> {
                           Text('Looking for a code...',
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline6
+                                  .titleLarge
                                   ?.copyWith(color: Colors.black)),
                         if (_status == _ScanStatus.success)
                           Text('Found a valid code',
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline6
+                                  .titleLarge
                                   ?.copyWith(color: Colors.white)),
                         if (_status == _ScanStatus.error)
                           Text('This code is not valid, try again.',
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline6
+                                  .titleLarge
                                   ?.copyWith(color: Colors.white)),
                       ]),
                       Row(
