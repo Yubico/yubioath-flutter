@@ -1,12 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/app/state.dart';
 
+import 'app/state.dart';
 import 'version.dart';
 import 'app/logging.dart';
 import 'app/message.dart';
@@ -22,23 +22,69 @@ class AboutPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ResponsiveDialog(
-      title: const Text('Yubico Authenticator'),
+      title: const Text('About'),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        //crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Image.asset('assets/graphics/app-icon.png', scale: 1 / 0.75),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24.0),
+            child: Text(
+              'Yubico Authenticator',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
           const Text('Yubico Authenticator: $version'),
-          if (isDesktop)
-            Text('ykman version: ${ref.watch(rpcStateProvider).version}'),
-          Text('Dart version: ${Platform.version}'),
-          const SizedBox(height: 8.0),
-          const Divider(),
+          if (isDesktop) Text('ykman: ${ref.watch(rpcStateProvider).version}'),
+          //Text('Dart version: ${Platform.version}'),
+          const Text('Copyright © 2022 Yubico'),
+          const Text('All rights reserved'),
+          const Text(''),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              UrlLink(text: 'Terms of use', url: 'https://example.com'),
+              SizedBox(width: 8.0),
+              UrlLink(text: 'Privacy policy', url: 'https://example.com'),
+            ],
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
+            child: Divider(),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Text(
+              'Help and feedback',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              UrlLink(text: 'Send us feedback', url: 'https://example.com'),
+              SizedBox(width: 8.0),
+              UrlLink(text: 'I need help', url: 'https://example.com'),
+            ],
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
+            child: Divider(),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Text(
+              'Troubleshooting',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
           const LoggingPanel(),
           if (isDesktop) ...[
-            const Divider(),
+            const SizedBox(height: 12.0),
             OutlinedButton.icon(
-              icon: const Icon(Icons.healing),
-              label: const Text('Run diagnostics...'),
+              icon: const Icon(Icons.bug_report_outlined),
+              label: const Text('Run diagnostics'),
               onPressed: () async {
                 _log.info('Running diagnostics...');
                 final response =
@@ -66,13 +112,16 @@ class LoggingPanel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Row(
+    return Column(
+      //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Log level:'),
-        const SizedBox(width: 8.0),
-        DropdownButton<Level>(
+        const SizedBox(height: 12.0),
+        DropdownButtonFormField<Level>(
+          decoration: const InputDecoration(
+            labelText: 'Log level',
+            border: OutlineInputBorder(),
+          ),
           value: ref.watch(logLevelProvider),
-          isDense: true,
           items: Levels.LEVELS
               .map((e) => DropdownMenuItem(
                     value: e,
@@ -85,10 +134,10 @@ class LoggingPanel extends ConsumerWidget {
             showMessage(context, 'Log level set to $level');
           },
         ),
-        const SizedBox(width: 8.0),
+        const SizedBox(height: 12.0),
         OutlinedButton.icon(
           icon: const Icon(Icons.copy),
-          label: const Text('Copy log'),
+          label: const Text('Copy log to clipboard'),
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');
             final logs = await ref.read(logLevelProvider.notifier).getLogs();
@@ -102,5 +151,47 @@ class LoggingPanel extends ConsumerWidget {
         ),
       ],
     );
+  }
+}
+
+class UrlLink extends StatefulWidget {
+  final String text;
+  final String url;
+
+  const UrlLink({super.key, required this.text, required this.url});
+
+  @override
+  State<StatefulWidget> createState() => _UrlLinkState();
+}
+
+class _UrlLinkState extends State<UrlLink> {
+  late TapGestureRecognizer _tapRecognizer;
+
+  @override
+  void initState() {
+    super.initState();
+    _tapRecognizer = TapGestureRecognizer();
+    _tapRecognizer.onTap = () {
+      print("TODO: Go to ${widget.url}");
+    };
+  }
+
+  @override
+  void dispose() {
+    _tapRecognizer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+        text: TextSpan(
+      text: widget.text,
+      style: TextStyle(
+        color: Theme.of(context).colorScheme.primary,
+        decoration: TextDecoration.underline,
+      ),
+      recognizer: _tapRecognizer,
+    ));
   }
 }
