@@ -106,7 +106,14 @@ class __$$_VersionCopyWithImpl<$Res> extends _$VersionCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_Version extends _Version {
-  const _$_Version(this.major, this.minor, this.patch) : super._();
+  const _$_Version(this.major, this.minor, this.patch)
+      : assert(major >= 0),
+        assert(major < 256),
+        assert(minor >= 0),
+        assert(minor < 256),
+        assert(patch >= 0),
+        assert(patch < 256),
+        super._();
 
   @override
   final int major;

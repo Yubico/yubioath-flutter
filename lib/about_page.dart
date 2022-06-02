@@ -36,7 +36,9 @@ class AboutPage extends ConsumerWidget {
           const LoggingPanel(),
           if (isDesktop) ...[
             const Divider(),
-            OutlinedButton(
+            OutlinedButton.icon(
+              icon: const Icon(Icons.healing),
+              label: const Text('Run diagnostics...'),
               onPressed: () async {
                 _log.info('Running diagnostics...');
                 final response =
@@ -51,7 +53,6 @@ class AboutPage extends ConsumerWidget {
                   },
                 );
               },
-              child: const Text('Run diagnostics...'),
             ),
           ]
         ],
@@ -85,8 +86,9 @@ class LoggingPanel extends ConsumerWidget {
           },
         ),
         const SizedBox(width: 8.0),
-        OutlinedButton(
-          child: const Text('Copy log'),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.copy),
+          label: const Text('Copy log'),
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');
             final logs = await ref.read(logLevelProvider.notifier).getLogs();

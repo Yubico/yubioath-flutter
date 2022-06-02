@@ -105,8 +105,14 @@ enum UsbPid {
 }
 
 @freezed
-class Version with _$Version {
+class Version with _$Version implements Comparable<Version> {
   const Version._();
+  @Assert('major >= 0')
+  @Assert('major < 256')
+  @Assert('minor >= 0')
+  @Assert('minor < 256')
+  @Assert('patch >= 0')
+  @Assert('patch < 256')
   const factory Version(int major, int minor, int patch) = _Version;
 
   factory Version.fromJson(List<dynamic> values) {
@@ -118,6 +124,16 @@ class Version with _$Version {
   @override
   String toString() {
     return '$major.$minor.$patch';
+  }
+
+  bool isAtLeast(int major, [int minor = 0, int patch = 0]) =>
+      compareTo(Version(major, minor, patch)) >= 0;
+
+  @override
+  int compareTo(Version other) {
+    final a = major << 16 | minor << 8 | patch;
+    final b = other.major << 16 | other.minor << 8 | other.patch;
+    return a - b;
   }
 }
 

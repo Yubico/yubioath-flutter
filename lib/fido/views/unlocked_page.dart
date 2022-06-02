@@ -24,107 +24,104 @@ class FidoUnlockedPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<Widget> children = [
-      if (state.credMgmt)
-        ...ref.watch(credentialProvider(node.path)).maybeWhen(
-              data: (creds) => creds.isNotEmpty
-                  ? [
-                      const ListTile(title: Text('Credentials')),
-                      ...creds.map((cred) => ListTile(
-                            leading: CircleAvatar(
-                              foregroundColor:
-                                  Theme.of(context).colorScheme.onPrimary,
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
-                              child: const Icon(Icons.person),
-                            ),
-                            title: Text(
-                              cred.userName,
-                              softWrap: false,
-                              overflow: TextOverflow.fade,
-                            ),
-                            subtitle: Text(
-                              cred.rpId,
-                              softWrap: false,
-                              overflow: TextOverflow.fade,
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            DeleteCredentialDialog(
-                                                node.path, cred),
-                                      );
-                                    },
-                                    icon: const Icon(Icons.delete_outline)),
-                              ],
-                            ),
-                          )),
-                    ]
-                  : [],
-              orElse: () => [],
+    List<Widget> children = [];
+    if (state.credMgmt) {
+      final data = ref.watch(credentialProvider(node.path)).asData;
+      if (data == null) {
+        return _buildLoadingPage();
+      }
+      final creds = data.value;
+      if (creds.isNotEmpty) {
+        children.add(const ListTile(title: Text('Credentials')));
+        children.addAll(
+          creds.map(
+            (cred) => ListTile(
+              leading: CircleAvatar(
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                child: const Icon(Icons.person),
+              ),
+              title: Text(
+                cred.userName,
+                softWrap: false,
+                overflow: TextOverflow.fade,
+              ),
+              subtitle: Text(
+                cred.rpId,
+                softWrap: false,
+                overflow: TextOverflow.fade,
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) =>
+                              DeleteCredentialDialog(node.path, cred),
+                        );
+                      },
+                      icon: const Icon(Icons.delete_outline)),
+                ],
+              ),
             ),
-      if (state.bioEnroll != null)
-        ...ref.watch(fingerprintProvider(node.path)).maybeWhen(
-              data: (fingerprints) => fingerprints.isNotEmpty
-                  ? [
-                      const ListTile(title: Text('Fingerprints')),
-                      ...fingerprints.map((fp) => ListTile(
-                            leading: CircleAvatar(
-                              foregroundColor:
-                                  Theme.of(context).colorScheme.onSecondary,
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.secondary,
-                              child: const Icon(Icons.fingerprint),
-                            ),
-                            title: Text(
-                              fp.label,
-                              softWrap: false,
-                              overflow: TextOverflow.fade,
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            RenameFingerprintDialog(
-                                                node.path, fp),
-                                      );
-                                    },
-                                    icon: const Icon(Icons.edit_outlined)),
-                                IconButton(
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            DeleteFingerprintDialog(
-                                                node.path, fp),
-                                      );
-                                    },
-                                    icon: const Icon(Icons.delete_outline)),
-                              ],
-                            ),
-                          ))
-                    ]
-                  : [],
-              orElse: () => [],
-            ),
-    ];
+          ),
+        );
+      }
+    }
+
+    if (state.bioEnroll != null) {
+      final data = ref.watch(fingerprintProvider(node.path)).asData;
+      if (data == null) {
+        return _buildLoadingPage();
+      }
+      final fingerprints = data.value;
+      if (fingerprints.isNotEmpty) {
+        children.add(const ListTile(title: Text('Fingerprints')));
+        children.addAll(fingerprints.map((fp) => ListTile(
+              leading: CircleAvatar(
+                foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                child: const Icon(Icons.fingerprint),
+              ),
+              title: Text(
+                fp.label,
+                softWrap: false,
+                overflow: TextOverflow.fade,
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) =>
+                              RenameFingerprintDialog(node.path, fp),
+                        );
+                      },
+                      icon: const Icon(Icons.edit_outlined)),
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) =>
+                              DeleteFingerprintDialog(node.path, fp),
+                        );
+                      },
+                      icon: const Icon(Icons.delete_outline)),
+                ],
+              ),
+            )));
+      }
+    }
 
     if (children.isNotEmpty) {
       return AppPage(
         title: const Text('WebAuthn'),
         actions: _buildActions(context),
-        child: Column(
-          children: children,
-        ),
+        child: Column(children: children),
       );
     }
 
@@ -146,6 +143,12 @@ class FidoUnlockedPage extends ConsumerWidget {
       actions: _buildActions(context),
     );
   }
+
+  Widget _buildLoadingPage() => AppPage(
+        title: const Text('WebAuthn'),
+        centered: true,
+        child: const CircularProgressIndicator(),
+      );
 
   List<Widget> _buildActions(BuildContext context,
           {bool fingerprintPrimary = false}) =>

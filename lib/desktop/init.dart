@@ -77,7 +77,7 @@ Future<Widget> initialize(List<String> argv) async {
       final arm64exe = Uri.file(exe)
           .resolve('../helper-arm64/authenticator-helper')
           .toFilePath();
-      if (await Directory(arm64exe).exists()) {
+      if (await File(arm64exe).exists()) {
         exe = arm64exe;
       }
     }
@@ -114,13 +114,25 @@ Future<Widget> initialize(List<String> argv) async {
       fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
       credentialProvider.overrideWithProvider(desktopCredentialProvider),
     ],
-    child: const YubicoAuthenticatorApp(page: MainPage()),
+    child: YubicoAuthenticatorApp(
+      page: Consumer(
+        builder: ((_, ref, child) {
+          // keep RPC log level in sync with app
+          ref.listen<Level>(logLevelProvider, (_, level) {
+            rpc.setLogLevel(level);
+          });
+
+          return const MainPage();
+        }),
+      ),
+    ),
   );
 }
 
 void _initLogging(List<String> argv) {
   Logger.root.onRecord.listen((record) {
-    stderr.writeln('[${record.loggerName}] ${record.level}: ${record.message}');
+    stderr.writeln(
+        '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}');
     if (record.error != null) {
       stderr.writeln(record.error);
     }

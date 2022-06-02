@@ -185,8 +185,7 @@ mixin AccountMixin {
           ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
         },
       ),
-      if (deviceData.info.version.major >= 5 &&
-          deviceData.info.version.minor >= 3)
+      if (deviceData.info.version.isAtLeast(5, 3))
         MenuAction(
           icon: const Icon(Icons.edit_outlined),
           text: 'Rename account',
