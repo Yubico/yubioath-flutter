@@ -94,7 +94,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
           ),
           Center(
             child: Text(_getMessage(),
-                style: Theme.of(context).textTheme.headline6),
+                style: Theme.of(context).textTheme.titleLarge),
           ),
         ]
             .map((e) => Padding(

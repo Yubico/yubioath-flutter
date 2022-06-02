@@ -6,10 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../app/views/app_failure_screen.dart';
+import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
+import '../../theme.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_list.dart';
@@ -29,10 +31,9 @@ class OathScreen extends ConsumerWidget {
             centered: true,
             child: const AppLoadingScreen(),
           ),
-          error: (error, _) => AppPage(
+          error: (error, _) => AppFailurePage(
             title: const Text('Authenticator'),
-            centered: true,
-            child: AppFailureScreen('$error'),
+            cause: error,
           ),
           data: (oathState) => oathState.locked
               ? _LockedView(devicePath, oathState)
@@ -50,12 +51,42 @@ class _LockedView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => AppPage(
         title: const Text('Authenticator'),
+        actions: [
+          OutlinedButton.icon(
+            label: const Text('Options'),
+            icon: const Icon(Icons.tune),
+            onPressed: () {
+              showBottomMenu(context, [
+                MenuAction(
+                  text: 'Manage password',
+                  icon: const Icon(Icons.password),
+                  action: (context) {
+                    showDialog(
+                      context: context,
+                      builder: (context) =>
+                          ManagePasswordDialog(devicePath, oathState),
+                    );
+                  },
+                ),
+                MenuAction(
+                  text: 'Reset OATH',
+                  icon: const Icon(Icons.delete),
+                  action: (context) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => ResetDialog(devicePath),
+                    );
+                  },
+                ),
+              ]);
+            },
+          ),
+        ],
         child: Column(
           children: [
             const ListTile(title: Text('Unlock')),
             _UnlockForm(
               devicePath,
-              oathState,
               keystore: oathState.keystore,
             ),
           ],
@@ -76,9 +107,9 @@ class _UnlockedView extends ConsumerWidget {
     if (isEmpty) {
       return MessagePage(
         title: const Text('Authenticator'),
+        graphic: noAccounts,
         header: 'No accounts',
-        message: 'Follow the instructions on a website to add an account',
-        floatingActionButton: _buildFab(context),
+        actions: _buildActions(context, true),
       );
     }
 
@@ -96,6 +127,7 @@ class _UnlockedView extends ConsumerWidget {
           return TextFormField(
             key: const Key('search_accounts'),
             initialValue: ref.read(searchProvider),
+            style: Theme.of(context).textTheme.titleSmall,
             decoration: const InputDecoration(
               hintText: 'Search accounts',
               border: InputBorder.none,
@@ -110,64 +142,65 @@ class _UnlockedView extends ConsumerWidget {
           );
         }),
       ),
-      floatingActionButton: _buildFab(context),
+      actions: _buildActions(context, false),
       child: AccountList(devicePath, oathState),
     );
   }
 
-  FloatingActionButton _buildFab(BuildContext context) {
-    final fab = FloatingActionButton.extended(
-      icon: const Icon(Icons.person_add_alt_1),
-      label: const Text('Setup'),
-      onPressed: () {
-        showBottomMenu(context, [
-          MenuAction(
-            text: 'Add account',
-            icon: const Icon(Icons.person_add_alt),
-            action: (context) {
-              showDialog(
-                context: context,
-                builder: (context) => OathAddAccountPage(
-                  devicePath,
-                  openQrScanner: Platform.isAndroid,
-                ),
-              );
-            },
-          ),
-          MenuAction(
-            text: oathState.hasKey ? 'Manage password' : 'Set password',
-            icon: const Icon(Icons.password),
-            action: (context) {
-              showDialog(
-                context: context,
-                builder: (context) =>
-                    ManagePasswordDialog(devicePath, oathState),
-              );
-            },
-          ),
-          MenuAction(
-            text: 'Reset OATH',
-            icon: const Icon(Icons.delete_outline),
-            action: (context) {
-              showDialog(
-                context: context,
-                builder: (context) => ResetDialog(devicePath),
-              );
-            },
-          ),
-        ]);
-      },
-    );
-    return fab;
+  List<Widget> _buildActions(BuildContext context, bool isEmpty) {
+    return [
+      OutlinedButton.icon(
+        style: isEmpty ? AppTheme.primaryOutlinedButtonStyle(context) : null,
+        label: const Text('Add account'),
+        icon: const Icon(Icons.person_add_alt_1),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => OathAddAccountPage(
+              devicePath,
+              oathState,
+              openQrScanner: Platform.isAndroid,
+            ),
+          );
+        },
+      ),
+      OutlinedButton.icon(
+        label: const Text('Options'),
+        icon: const Icon(Icons.tune),
+        onPressed: () {
+          showBottomMenu(context, [
+            MenuAction(
+              text: oathState.hasKey ? 'Manage password' : 'Set password',
+              icon: const Icon(Icons.password),
+              action: (context) {
+                showDialog(
+                  context: context,
+                  builder: (context) =>
+                      ManagePasswordDialog(devicePath, oathState),
+                );
+              },
+            ),
+            MenuAction(
+              text: 'Reset OATH',
+              icon: const Icon(Icons.delete),
+              action: (context) {
+                showDialog(
+                  context: context,
+                  builder: (context) => ResetDialog(devicePath),
+                );
+              },
+            ),
+          ]);
+        },
+      ),
+    ];
   }
 }
 
 class _UnlockForm extends ConsumerStatefulWidget {
   final DevicePath _devicePath;
-  final OathState _oathState;
   final KeystoreState keystore;
-  const _UnlockForm(this._devicePath, this._oathState,
-      {required this.keystore});
+  const _UnlockForm(this._devicePath, {required this.keystore});
 
   @override
   ConsumerState<_UnlockForm> createState() => _UnlockFormState();
@@ -223,33 +256,6 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
                 ),
                 onChanged: (_) => setState(() {}), // Update state on change
                 onSubmitted: (_) => _submit(),
-              ),
-              Wrap(
-                spacing: 4.0,
-                runSpacing: 8.0,
-                children: [
-                  OutlinedButton.icon(
-                    icon: const Icon(Icons.password),
-                    label: const Text('Manage password'),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => ManagePasswordDialog(
-                            widget._devicePath, widget._oathState),
-                      );
-                    },
-                  ),
-                  OutlinedButton.icon(
-                    icon: const Icon(Icons.delete_outlined),
-                    label: const Text('Reset OATH'),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => ResetDialog(widget._devicePath),
-                      );
-                    },
-                  ),
-                ],
               ),
             ],
           ),

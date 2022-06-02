@@ -71,6 +71,16 @@ Future<Widget> initialize(List<String> argv) async {
     exe = Uri.file(Platform.resolvedExecutable)
         .resolve(relativePath)
         .toFilePath();
+
+    if (Platform.isMacOS && Platform.version.contains('arm64')) {
+      // See if there is an arm64 specific helper on arm64 Mac.
+      final arm64exe = Uri.file(exe)
+          .resolve('../helper-arm64/authenticator-helper')
+          .toFilePath();
+      if (await File(arm64exe).exists()) {
+        exe = arm64exe;
+      }
+    }
   }
 
   _log.info('Starting Helper subprocess: $exe');
@@ -104,13 +114,25 @@ Future<Widget> initialize(List<String> argv) async {
       fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
       credentialProvider.overrideWithProvider(desktopCredentialProvider),
     ],
-    child: const YubicoAuthenticatorApp(page: MainPage()),
+    child: YubicoAuthenticatorApp(
+      page: Consumer(
+        builder: ((_, ref, child) {
+          // keep RPC log level in sync with app
+          ref.listen<Level>(logLevelProvider, (_, level) {
+            rpc.setLogLevel(level);
+          });
+
+          return const MainPage();
+        }),
+      ),
+    ),
   );
 }
 
 void _initLogging(List<String> argv) {
   Logger.root.onRecord.listen((record) {
-    stderr.writeln('[${record.loggerName}] ${record.level}: ${record.message}');
+    stderr.writeln(
+        '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}');
     if (record.error != null) {
       stderr.writeln(record.error);
     }

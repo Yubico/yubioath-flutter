@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../core/models.dart';
+
 part 'models.freezed.dart';
 part 'models.g.dart';
 
@@ -61,7 +63,8 @@ class OathPair with _$OathPair {
 @freezed
 class OathState with _$OathState {
   factory OathState(
-    String deviceId, {
+    String deviceId,
+    Version version, {
     required bool hasKey,
     required bool remembered,
     required bool locked,

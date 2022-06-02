@@ -7,21 +7,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Yubikit Next
-        uses: actions/checkout@v2
-        with:
-          repository: Yubico/yubikit-android
-          ref: next
-          path: kit
-
       - name: set up JDK 11
         uses: actions/setup-java@v1
         with:
           java-version: '11'
-
-      - name: Build Yubikit-android
-        run: ./gradlew --stacktrace check test build javadocJar publishToMavenLocal
-        working-directory: ./kit
 
       - name: Install Flutter
         uses: subosito/flutter-action@v2
@@ -34,6 +23,12 @@ jobs:
       - uses: actions/checkout@v2
         with:
           path: 'app'
+
+      - name: Check app versions
+        run: |
+          python set-version.py
+          git diff --exit-code
+        working-directory: ./app
 
       - name: Run flutter tests
         run: |
@@ -48,6 +43,10 @@ jobs:
           YUBIOATH_KEY_ALIAS: ${{ secrets.YUBIOATH_KEY_ALIAS }}
           YUBIOATH_KEY_PASSWORD: ${{ secrets.YUBIOATH_KEY_PASSWORD }}
           YUBIOATH_STORE_PASSWORD: ${{ secrets.YUBIOATH_STORE_PASSWORD }}
+        working-directory: ./app
+
+      - name: Check generated files
+        run: git diff --exit-code
         working-directory: ./app
 
       - name: Run android tests

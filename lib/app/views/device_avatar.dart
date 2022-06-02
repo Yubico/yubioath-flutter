@@ -46,7 +46,7 @@ class DeviceAvatar extends StatelessWidget {
         CircleAvatar(
           radius: 22,
           backgroundColor: selected
-              ? Theme.of(context).colorScheme.secondary
+              ? Theme.of(context).colorScheme.primary
               : Colors.transparent,
           child: CircleAvatar(
             backgroundColor: Theme.of(context).colorScheme.background,

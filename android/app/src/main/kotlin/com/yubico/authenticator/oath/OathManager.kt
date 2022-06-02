@@ -498,6 +498,11 @@ class OathManager(
 
                 _model.session = Model.Session(
                     oathSession.deviceId,
+                    Model.Version(
+                        oathSession.version.major,
+                        oathSession.version.minor,
+                        oathSession.version.micro
+                    ),
                     oathSession.isAccessKeySet,
                     isRemembered,
                     oathSession.isLocked

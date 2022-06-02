@@ -147,6 +147,16 @@ mixin AccountMixin {
     final pinned = isPinned(ref);
 
     return [
+      MenuAction(
+        text: 'Copy to clipboard',
+        icon: const Icon(Icons.copy),
+        action: code == null || expired
+            ? null
+            : (context) {
+                Clipboard.setData(ClipboardData(text: code.value));
+                showMessage(context, 'Code copied to clipboard');
+              },
+      ),
       if (manual)
         MenuAction(
           text: 'Calculate',
@@ -158,33 +168,24 @@ mixin AccountMixin {
               : null,
         ),
       MenuAction(
-        text: 'Copy to clipboard',
-        icon: const Icon(Icons.copy),
-        action: code == null || expired
-            ? null
-            : (context) {
-                Clipboard.setData(ClipboardData(text: code.value));
-                showMessage(context, 'Code copied to clipboard');
-              },
-      ),
-      MenuAction(
         text: pinned ? 'Unpin account' : 'Pin account',
         //TODO: Replace this with a custom icon.
         icon: pinned
-            ? CustomPaint(
-                painter: _StrikethroughPainter(
-                    Theme.of(context).iconTheme.color ?? Colors.black),
-                child: ClipPath(
-                    clipper: _StrikethroughClipper(),
-                    child: const Icon(Icons.push_pin_outlined)),
-              )
+            ? Builder(builder: (context) {
+                return CustomPaint(
+                  painter: _StrikethroughPainter(
+                      IconTheme.of(context).color ?? Colors.black),
+                  child: ClipPath(
+                      clipper: _StrikethroughClipper(),
+                      child: const Icon(Icons.push_pin)),
+                );
+              })
             : const Icon(Icons.push_pin_outlined),
         action: (context) {
           ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
         },
       ),
-      if (deviceData.info.version.major >= 5 &&
-          deviceData.info.version.minor >= 3)
+      if (deviceData.info.version.isAtLeast(5, 3))
         MenuAction(
           icon: const Icon(Icons.edit_outlined),
           text: 'Rename account',
@@ -194,7 +195,7 @@ mixin AccountMixin {
         ),
       MenuAction(
         text: 'Delete account',
-        icon: const Icon(Icons.delete_outlined),
+        icon: const Icon(Icons.delete_outline),
         action: (context) async {
           await deleteCredential(context, ref);
         },
@@ -203,69 +204,59 @@ mixin AccountMixin {
   }
 
   @protected
-  Widget buildCodeView(WidgetRef ref, {bool big = false}) {
+  Widget buildCodeView(WidgetRef ref) {
     final code = getCode(ref);
     final expired = isExpired(code, ref);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
-        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-        border: Border.all(width: 1.0, color: Colors.grey.shade500),
-      ),
-      child: AnimatedSize(
-        alignment: Alignment.centerRight,
-        duration: const Duration(milliseconds: 100),
-        child: Padding(
-          padding: big
-              ? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0)
-              : const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: code == null
-                ? [
-                    Icon(
-                      credential.oathType == OathType.hotp
-                          ? Icons.refresh
-                          : Icons.touch_app,
-                      size: big ? 36 : 18,
-                    ),
-                    Text('', style: TextStyle(fontSize: big ? 32.0 : 22.0)),
-                  ]
-                : [
-                    if (credential.oathType == OathType.totp) ...[
-                      ...expired
-                          ? [
-                              if (credential.touchRequired) ...[
-                                const Icon(Icons.touch_app),
-                                const SizedBox(width: 8.0),
-                              ]
-                            ]
-                          : [
-                              SizedBox.square(
-                                dimension: big ? 32 : 16,
-                                child: CircleTimer(
-                                  code.validFrom * 1000,
-                                  code.validTo * 1000,
-                                ),
-                              ),
+    return AnimatedSize(
+      alignment: Alignment.centerRight,
+      duration: const Duration(milliseconds: 100),
+      child: Builder(builder: (context) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: code == null
+              ? [
+                  Icon(
+                    credential.oathType == OathType.hotp
+                        ? Icons.refresh
+                        : Icons.touch_app,
+                  ),
+                  const Text(''),
+                ]
+              : [
+                  if (credential.oathType == OathType.totp) ...[
+                    ...expired
+                        ? [
+                            if (credential.touchRequired) ...[
+                              const Icon(Icons.touch_app),
                               const SizedBox(width: 8.0),
-                            ],
-                    ],
-                    Opacity(
-                      opacity: expired ? 0.4 : 1.0,
-                      child: Text(
-                        formatCode(code),
-                        style: TextStyle(
-                          fontSize: big ? 32.0 : 22.0,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                            ]
+                          ]
+                        : [
+                            SizedBox.square(
+                              dimension:
+                                  (IconTheme.of(context).size ?? 18) * 0.8,
+                              child: CircleTimer(
+                                code.validFrom * 1000,
+                                code.validTo * 1000,
+                              ),
+                            ),
+                            const SizedBox(width: 8.0),
+                          ],
+                  ],
+                  Opacity(
+                    opacity: expired ? 0.4 : 1.0,
+                    child: Text(
+                      formatCode(code),
+                      style: const TextStyle(
+                        fontFeatures: [FontFeature.tabularFigures()],
+                        //fontWeight: FontWeight.w400,
                       ),
                     ),
-                  ],
-          ),
-        ),
-      ),
+                  ),
+                ],
+        );
+      }),
     );
   }
 }

@@ -64,7 +64,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
           if (widget.state.hasKey) ...[
             Text(
               'Current password',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             TextField(
               autofocus: true,
@@ -120,7 +120,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
           ],
           Text(
             'New password',
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           TextField(
             autofocus: !widget.state.hasKey,

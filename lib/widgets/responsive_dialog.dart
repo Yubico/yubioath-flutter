@@ -51,7 +51,6 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               : 'Cancel';
           return DialogFrame(
             child: AlertDialog(
-              insetPadding: EdgeInsets.zero,
               title: widget.title,
               scrollable: true,
               content: SizedBox(

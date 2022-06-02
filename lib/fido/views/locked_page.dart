@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
+import '../../theme.dart';
 import '../models.dart';
 import '../state.dart';
 import 'pin_dialog.dart';
@@ -22,23 +24,26 @@ class FidoLockedPage extends ConsumerWidget {
       if (state.bioEnroll != null) {
         return MessagePage(
           title: const Text('WebAuthn'),
+          graphic: noFingerprints,
           header: 'No fingerprints',
-          message: 'Set a PIN to register fingerprints',
-          floatingActionButton: _buildFab(context),
+          message: 'Set a PIN to register fingerprints.',
+          actions: _buildActions(context),
         );
       } else {
         return MessagePage(
           title: const Text('WebAuthn'),
+          graphic: noDiscoverable,
           header: 'No discoverable accounts',
           message:
               'Optionally set a PIN to protect access to your YubiKey\nRegister as a Security Key on websites',
-          floatingActionButton: _buildFab(context),
+          actions: _buildActions(context),
         );
       }
     }
 
     return AppPage(
       title: const Text('WebAuthn'),
+      actions: _buildActions(context),
       child: Column(
         children: [
           const ListTile(title: Text('Unlock')),
@@ -48,41 +53,49 @@ class FidoLockedPage extends ConsumerWidget {
     );
   }
 
-  FloatingActionButton _buildFab(BuildContext context) {
-    return FloatingActionButton.extended(
-      icon: Icon(state.bioEnroll != null ? Icons.fingerprint : Icons.pin),
-      label: const Text('Setup'),
-      onPressed: () {
-        showBottomMenu(context, [
-          if (state.bioEnroll != null)
-            MenuAction(
-              text: 'Add fingerprint',
-              icon: const Icon(Icons.fingerprint),
-            ),
-          MenuAction(
-            text: 'Set PIN',
-            icon: const Icon(Icons.pin_outlined),
-            action: (context) {
+  List<Widget> _buildActions(BuildContext context) => [
+        if (!state.hasPin)
+          OutlinedButton.icon(
+            style: AppTheme.primaryOutlinedButtonStyle(context),
+            label: const Text('Set PIN'),
+            icon: const Icon(Icons.pin),
+            onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) => FidoPinDialog(node.path, state),
               );
             },
           ),
-          MenuAction(
-            text: 'Reset FIDO',
-            icon: const Icon(Icons.delete_outline),
-            action: (context) {
-              showDialog(
-                context: context,
-                builder: (context) => ResetDialog(node),
-              );
-            },
-          ),
-        ]);
-      },
-    );
-  }
+        OutlinedButton.icon(
+          label: const Text('Options'),
+          icon: const Icon(Icons.tune),
+          onPressed: () {
+            showBottomMenu(context, [
+              if (state.hasPin)
+                MenuAction(
+                  text: 'Change PIN',
+                  icon: const Icon(Icons.pin),
+                  action: (context) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => FidoPinDialog(node.path, state),
+                    );
+                  },
+                ),
+              MenuAction(
+                text: 'Reset FIDO',
+                icon: const Icon(Icons.delete),
+                action: (context) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => ResetDialog(node),
+                  );
+                },
+              ),
+            ]);
+          },
+        ),
+      ];
 }
 
 class _PinEntryForm extends ConsumerStatefulWidget {
@@ -149,34 +162,6 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
               onSubmitted: (_) => _submit(),
             ),
           ),
-          Wrap(
-            spacing: 4.0,
-            runSpacing: 8.0,
-            children: [
-              OutlinedButton.icon(
-                icon: const Icon(Icons.pin_outlined),
-                label: const Text('Change PIN'),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) =>
-                        FidoPinDialog(widget._deviceNode.path, widget._state),
-                  );
-                },
-              ),
-              OutlinedButton.icon(
-                icon: const Icon(Icons.delete_outlined),
-                label: const Text('Reset FIDO'),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => ResetDialog(widget._deviceNode),
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 16.0),
           ListTile(
             leading:
                 noFingerprints ? const Icon(Icons.warning_amber_rounded) : null,

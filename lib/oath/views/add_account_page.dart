@@ -25,8 +25,9 @@ enum _QrScanState { none, scanning, success, failed }
 
 class OathAddAccountPage extends ConsumerStatefulWidget {
   final DevicePath devicePath;
+  final OathState state;
   final bool openQrScanner;
-  const OathAddAccountPage(this.devicePath,
+  const OathAddAccountPage(this.devicePath, this.state,
       {super.key, required this.openQrScanner});
 
   @override
@@ -196,7 +197,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           children: [
             Text(
               'Account details',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             TextField(
               key: const Key('issuer'),
@@ -280,23 +281,25 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             const Divider(),
             Text(
               'Options',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 4.0,
               runSpacing: 8.0,
               children: [
-                FilterChip(
-                  label: const Text('Require touch'),
-                  selected: _touch,
-                  onSelected: (value) {
-                    setState(() {
-                      _touch = value;
-                    });
-                  },
-                ),
+                if (widget.state.version.isAtLeast(4, 2))
+                  FilterChip(
+                    label: const Text('Require touch'),
+                    selected: _touch,
+                    onSelected: (value) {
+                      setState(() {
+                        _touch = value;
+                      });
+                    },
+                  ),
                 Chip(
+                  backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
                     child: DropdownButton<OathType>(
                       value: _oathType,
@@ -319,12 +322,16 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   ),
                 ),
                 Chip(
+                  backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
                     child: DropdownButton<HashAlgorithm>(
                       value: _hashAlgorithm,
                       isDense: true,
                       underline: null,
                       items: HashAlgorithm.values
+                          .where((alg) =>
+                              alg != HashAlgorithm.sha512 ||
+                              widget.state.version.isAtLeast(4, 3, 1))
                           .map((e) => DropdownMenuItem(
                                 value: e,
                                 child: Text(e.name.toUpperCase()),
@@ -342,6 +349,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 ),
                 if (_oathType == OathType.totp)
                   Chip(
+                    backgroundColor: ChipTheme.of(context).selectedColor,
                     label: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
                         value: int.tryParse(_periodController.text) ??
@@ -366,6 +374,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     ),
                   ),
                 Chip(
+                  backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
                     child: DropdownButton<int>(
                       value: _digits,
