@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
@@ -46,31 +45,40 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
     return deleted;
   }
 
-  Pair<Color?, Color?> _getColors(BuildContext context, MenuAction action) {
+  List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
+    final actions = buildActions(context, ref);
+
     final theme =
         ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
-    return action.text.startsWith('Copy')
-        ? Pair(theme.primary, theme.onPrimary)
-        : (action.text.startsWith('Delete')
-            ? Pair(theme.error, theme.onError)
-            : Pair(theme.secondary, theme.onSecondary));
-  }
 
-  List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
-    return buildActions(context, ref).map((e) {
+    final copy = actions.firstWhere(((e) => e.text.startsWith('Copy')));
+    final delete = actions.firstWhere(((e) => e.text.startsWith('Delete')));
+    final colors = {
+      copy: Pair(theme.primary, theme.onPrimary),
+      delete: Pair(theme.error, theme.onError),
+    };
+
+    // If we can't copy, but can calculate, highlight that button instead
+    if (copy.action == null) {
+      final calculates = actions.where(((e) => e.text.startsWith('Calculate')));
+      if (calculates.isNotEmpty) {
+        colors[calculates.first] = Pair(theme.primary, theme.onPrimary);
+      }
+    }
+
+    return actions.map((e) {
       final action = e.action;
-      final colors = _getColors(context, e);
+      final color = colors[e] ?? Pair(theme.secondary, theme.onSecondary);
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: CircleAvatar(
-          // TODO: Hardcoded color
-          backgroundColor: action != null ? colors.first : Colors.grey.shade900,
-          foregroundColor: colors.second,
+          backgroundColor: action != null ? color.first : theme.secondary,
+          foregroundColor: color.second,
           child: IconButton(
             icon: e.icon,
             iconSize: 22,
             tooltip: e.text,
-            disabledColor: Colors.white70,
+            disabledColor: theme.onSecondary.withOpacity(0.2),
             onPressed: action != null
                 ? () {
                     action(context);
@@ -110,9 +118,12 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
               Text(
                 subtitle!,
                 overflow: TextOverflow.fade,
-                style: Theme.of(context).textTheme.bodySmall,
                 maxLines: 1,
                 softWrap: false,
+                // This is what ListTile uses for subtitle
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).textTheme.caption!.color,
+                    ),
               ),
             const SizedBox(height: 12.0),
             DecoratedBox(

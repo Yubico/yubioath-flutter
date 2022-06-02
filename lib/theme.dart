@@ -113,7 +113,7 @@ class AppTheme {
         buttonTheme: ButtonThemeData(
           colorScheme: ColorScheme.dark(
             secondary: Colors.grey.shade800,
-            onSecondary: Colors.white70,
+            onSecondary: Colors.white,
             primary: primaryGreen,
             onPrimary: Colors.grey.shade900,
             error: primaryRed,
