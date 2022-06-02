@@ -107,6 +107,12 @@ enum UsbPid {
 @freezed
 class Version with _$Version implements Comparable<Version> {
   const Version._();
+  @Assert('major >= 0')
+  @Assert('major < 256')
+  @Assert('minor >= 0')
+  @Assert('minor < 256')
+  @Assert('patch >= 0')
+  @Assert('patch < 256')
   const factory Version(int major, int minor, int patch) = _Version;
 
   factory Version.fromJson(List<dynamic> values) {
