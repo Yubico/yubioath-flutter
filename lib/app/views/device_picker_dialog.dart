@@ -25,7 +25,9 @@ class DevicePickerDialog extends ConsumerWidget {
       children: [
         currentNode == null
             ? ListTile(
-                leading: const DeviceAvatar(child: Icon(Icons.no_cell)),
+                leading: const DeviceAvatar(
+                  child: Icon(Icons.no_cell),
+                ),
                 title: const Text('No YubiKey'),
                 subtitle: Text(Platform.isAndroid
                     ? 'Insert or tap a YubiKey'
@@ -138,7 +140,13 @@ class _DeviceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: DeviceAvatar.deviceNode(node),
+      leading: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: DeviceAvatar.deviceNode(
+          node,
+          radius: 20,
+        ),
+      ),
       title: Text(node.name),
       subtitle: Text(
         node.when(
