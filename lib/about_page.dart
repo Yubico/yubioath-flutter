@@ -172,7 +172,9 @@ class _UrlLinkState extends State<UrlLink> {
     super.initState();
     _tapRecognizer = TapGestureRecognizer();
     _tapRecognizer.onTap = () {
-      print("TODO: Go to ${widget.url}");
+      //TODO: use url_launcher
+      // ignore: avoid_print
+      print('TODO: Go to ${widget.url}');
     };
   }
 
