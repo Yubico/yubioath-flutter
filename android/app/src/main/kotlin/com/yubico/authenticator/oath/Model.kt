@@ -1,9 +1,9 @@
 package com.yubico.authenticator.oath
 
+import com.yubico.authenticator.device.Version
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.ByteArraySerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -16,19 +16,12 @@ fun Model.Credential.isInteractive(): Boolean {
 
 class Model {
 
-    @Serializable(with = VersionSerializer::class)
-    data class Version(
-        val major: Byte,
-        val minor: Byte,
-        val micro: Byte
-    )
-
     @Serializable
     data class Session(
         @SerialName("device_id")
         val deviceId: String = "",
         @SerialName("version")
-        val version: Version = Version(0, 0, 0),
+        val version: Version = Version(),
         @SerialName("has_key")
         val isAccessKeySet: Boolean = false,
         @SerialName("remembered")
@@ -102,25 +95,6 @@ class Model {
             encoder.encodeByte(value = value.value)
         }
 
-    }
-
-    object VersionSerializer : KSerializer<Version> {
-        override val descriptor: SerialDescriptor = ByteArraySerializer().descriptor
-
-        override fun serialize(encoder: Encoder, value: Version) {
-            encoder.encodeSerializableValue(
-                ByteArraySerializer(),
-                byteArrayOf(value.major, value.minor, value.micro)
-            )
-        }
-
-        override fun deserialize(decoder: Decoder): Version {
-            val byteArray = decoder.decodeSerializableValue(ByteArraySerializer())
-            val major = if (byteArray.isNotEmpty()) byteArray[0] else 0
-            val minor = if (byteArray.size > 1) byteArray[1] else 0
-            val micro = if (byteArray.size > 2) byteArray[2] else 0
-            return Version(major, minor, micro)
-        }
     }
 
     private var _credentials = mutableMapOf<Credential, Code?>()

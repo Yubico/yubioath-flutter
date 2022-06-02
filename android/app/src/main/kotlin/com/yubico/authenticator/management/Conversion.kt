@@ -1,12 +1,13 @@
 package com.yubico.authenticator.management
 
+import com.yubico.authenticator.device.Config
+import com.yubico.authenticator.device.Info
+import com.yubico.authenticator.device.Version
 import com.yubico.yubikit.core.Transport
-import com.yubico.yubikit.core.Version
 import com.yubico.yubikit.management.DeviceConfig
 import com.yubico.yubikit.management.DeviceInfo
 
-
-fun DeviceConfig.model() = Model.DeviceConfig(
+fun DeviceConfig.model() = Config(
     deviceFlags = deviceFlags,
     challengeResponseTimeout = challengeResponseTimeout,
     autoEjectTimeout = autoEjectTimeout,
@@ -16,10 +17,10 @@ fun DeviceConfig.model() = Model.DeviceConfig(
     )
 )
 
-fun DeviceInfo.model(name: String, isNfc: Boolean, usbPid: Int?) = Model.AppDeviceInfo(
+fun DeviceInfo.model(name: String, isNfc: Boolean, usbPid: Int?) = Info(
     config = config.model(),
     serialNumber = serialNumber,
-    version = listOf(version.major, version.minor, version.micro),
+    version = Version(version.major, version.minor, version.micro),
     formFactor = formFactor.value,
     isLocked = isLocked,
     isSky = isSky,

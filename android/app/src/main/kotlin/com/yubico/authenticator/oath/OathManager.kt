@@ -6,29 +6,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.*
 import com.yubico.authenticator.api.Pigeon.*
+import com.yubico.authenticator.device.Version
 import com.yubico.authenticator.logging.Log
-import com.yubico.authenticator.management.model
-import com.yubico.authenticator.management.Model.AppDeviceInfo
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
+import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
-import com.yubico.yubikit.core.Logger
 import com.yubico.yubikit.core.YubiKeyDevice
-import com.yubico.yubikit.core.fido.FidoConnection
-import com.yubico.yubikit.core.otp.OtpConnection
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.oath.*
-import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
 import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.io.IOException
 import java.net.URI
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class OathManager(
@@ -200,7 +194,7 @@ class OathManager(
                     val accessKey = session.deriveAccessKey(newPassword.toCharArray())
                     session.setAccessKey(accessKey)
                     _keyManager.addKey(session.deviceId, accessKey, false)
-                    Logger.d("Successfully set password")
+                    Log.d(TAG, "Successfully set password")
                     returnSuccess(result)
                 }
             } catch (cause: Throwable) {
@@ -218,7 +212,7 @@ class OathManager(
                         if (session.unlock(currentPassword.toCharArray())) {
                             session.deleteAccessKey()
                             _keyManager.removeKey(session.deviceId)
-                            Logger.d("Successfully unset password")
+                            Log.d(TAG, "Successfully unset password")
                             returnSuccess(result)
                             return@useOathSession
                         }
@@ -233,7 +227,7 @@ class OathManager(
 
     override fun forgetPassword(result: Result<Void>) {
         _keyManager.clearAll()
-        Logger.d("Cleared all keys.")
+        Log.d(TAG, "Cleared all keys.")
         returnSuccess(result)
     }
 
@@ -394,83 +388,13 @@ class OathManager(
         }
     }
 
-    private suspend fun <T> withSmartCardConnection(
-        device: YubiKeyDevice,
-        block: (SmartCardConnection) -> T
-    ) =
-        suspendCoroutine<T> { continuation ->
-            device.requestConnection(SmartCardConnection::class.java) {
-                if (it.isError) {
-                    continuation.resumeWithException(IllegalStateException("Failed to get SmartCardConnection"))
-                } else {
-                    continuation.resume(block(it.value))
-                }
-            }
-        }
-
-    private suspend fun <T> withOTPConnection(device: YubiKeyDevice, block: (OtpConnection) -> T) =
-        suspendCoroutine<T> { continuation ->
-            device.requestConnection(OtpConnection::class.java) {
-                if (it.isError) {
-                    continuation.resumeWithException(IllegalStateException("Failed to get OtpConnection"))
-                } else {
-                    continuation.resume(block(it.value))
-                }
-            }
-        }
-
-    private suspend fun <T> withFidoConnection(
-        device: YubiKeyDevice,
-        block: (FidoConnection) -> T
-    ) =
-        suspendCoroutine<T> { continuation ->
-            device.requestConnection(FidoConnection::class.java) {
-                if (it.isError) {
-                    continuation.resumeWithException(IllegalStateException("Failed to get FidoConnection"))
-                } else {
-                    continuation.resume(block(it.value))
-                }
-            }
-        }
-
-    private suspend fun getDeviceInfo(device: YubiKeyDevice): AppDeviceInfo =
-        try {
-            withSmartCardConnection(device) {
-                val pid = (device as? UsbYubiKeyDevice)?.pid
-                val deviceInfo = DeviceUtil.readInfo(it, pid)
-                val name = DeviceUtil.getName(deviceInfo, pid?.type)
-                deviceInfo.model(name, device is NfcYubiKeyDevice, pid?.value)
-            }
-        } catch (exception: Exception) {
-            Log.d(TAG, "Smart card connection not available")
-            try {
-                withOTPConnection(device) {
-                    val pid = (device as? UsbYubiKeyDevice)?.pid
-                    val deviceInfo = DeviceUtil.readInfo(it, pid)
-                    val name = DeviceUtil.getName(deviceInfo, pid?.type)
-                    deviceInfo.model(name, device is NfcYubiKeyDevice, pid?.value)
-                }
-            } catch (exception: Exception) {
-                Log.d(TAG, "OTP connection not available")
-                try {
-                    withFidoConnection(device) {
-                        val pid = (device as? UsbYubiKeyDevice)?.pid
-                        val deviceInfo = DeviceUtil.readInfo(it, pid)
-                        val name = DeviceUtil.getName(deviceInfo, pid?.type)
-                        deviceInfo.model(name, device is NfcYubiKeyDevice, pid?.value)
-                    }
-                } catch (exception: Exception) {
-                    Log.e(TAG, "No connection available for getting device info")
-                    throw exception
-                }
-            }
-        }
-
     private suspend fun sendDeviceInfo(device: YubiKeyDevice) {
         val deviceInfoData = getDeviceInfo(device)
         withContext(Dispatchers.Main) {
             Log.d(TAG, "Sending device info: $deviceInfoData")
-            _fManagementApi.updateDeviceInfo(Json.encodeToString(deviceInfoData)) {}
+            _fManagementApi.updateDeviceInfo(Json.encodeToString(deviceInfoData)) {
+                Log.d(TAG, "Device info sent successfully")
+            }
         }
     }
 
@@ -498,7 +422,7 @@ class OathManager(
 
                 _model.session = Model.Session(
                     oathSession.deviceId,
-                    Model.Version(
+                    Version(
                         oathSession.version.major,
                         oathSession.version.minor,
                         oathSession.version.micro
@@ -514,7 +438,10 @@ class OathManager(
         }
 
         withContext(Dispatchers.Main) {
-            _fOathApi.updateSession(oathSessionData) {}
+            Log.d(TAG, "Sending OathSessionData")
+            _fOathApi.updateSession(oathSessionData) {
+                Log.d(TAG, "OathSessionData sent successfully")
+            }
         }
     }
 
@@ -534,7 +461,10 @@ class OathManager(
         }
 
         withContext(Dispatchers.Main) {
-            _fOathApi.updateOathCredentials(sendOathCodes) {}
+            Log.d(TAG, "Sending OathCredentials")
+            _fOathApi.updateOathCredentials(sendOathCodes) {
+                Log.d(TAG, "OathCredentials sent successfully")
+            }
         }
     }
 
