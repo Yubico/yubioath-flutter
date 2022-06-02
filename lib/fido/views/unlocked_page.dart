@@ -7,6 +7,7 @@ import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../theme.dart';
+import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
 import 'add_fingerprint_dialog.dart';
@@ -32,7 +33,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       }
       final creds = data.value;
       if (creds.isNotEmpty) {
-        children.add(const ListTile(title: Text('Credentials')));
+        children.add(const ListTitle('Credentials'));
         children.addAll(
           creds.map(
             (cred) => ListTile(
@@ -78,7 +79,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       }
       final fingerprints = data.value;
       if (fingerprints.isNotEmpty) {
-        children.add(const ListTile(title: Text('Fingerprints')));
+        children.add(const ListTitle('Fingerprints'));
         children.addAll(fingerprints.map((fp) => ListTile(
               leading: CircleAvatar(
                 foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -121,7 +122,8 @@ class FidoUnlockedPage extends ConsumerWidget {
       return AppPage(
         title: const Text('WebAuthn'),
         actions: _buildActions(context),
-        child: Column(children: children),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start, children: children),
       );
     }
 

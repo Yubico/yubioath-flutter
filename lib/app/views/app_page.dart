@@ -56,7 +56,8 @@ class AppPage extends ConsumerWidget {
                     alignment:
                         centered ? Alignment.center : Alignment.centerLeft,
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 16.0, horizontal: 18.0),
                       child: Wrap(
                         spacing: 4,
                         runSpacing: 4,
@@ -78,7 +79,12 @@ class AppPage extends ConsumerWidget {
         title: title,
         centerTitle: true,
         titleTextStyle: Theme.of(context).textTheme.titleLarge,
-        actions: const [DeviceButton()],
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 6),
+            child: DeviceButton(),
+          ),
+        ],
       ),
       drawer: hasDrawer ? const MainPageDrawer() : null,
       body: centered ? Center(child: _buildScrollView()) : _buildScrollView(),

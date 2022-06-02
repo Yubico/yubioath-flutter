@@ -142,7 +142,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
   Widget build(BuildContext context) {
     final noFingerprints = widget._state.bioEnroll == false;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 18.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
