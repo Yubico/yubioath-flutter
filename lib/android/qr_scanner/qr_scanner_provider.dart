@@ -14,7 +14,7 @@ class AndroidQrScanner implements QrScanner {
           pageBuilder: (_, __, ___) => const QrScannerView(),
           transitionDuration: const Duration(seconds: 0),
           reverseTransitionDuration: const Duration(seconds: 0),
-        ));
+        )) ?? '';
       });
 }
 
