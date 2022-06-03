@@ -9,9 +9,9 @@ import kotlinx.serialization.encoding.Encoder
 
 @Serializable(with = VersionSerializer::class)
 data class Version(
-    val major: Byte = 0,
-    val minor: Byte = 0,
-    val micro: Byte = 0
+    val major: Byte,
+    val minor: Byte,
+    val micro: Byte
 )
 
 object VersionSerializer : KSerializer<Version> {

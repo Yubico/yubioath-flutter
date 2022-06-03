@@ -1,9 +1,7 @@
 package com.yubico.authenticator.oath
 
 import com.yubico.authenticator.device.Version
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -19,18 +17,19 @@ class Model {
     @Serializable
     data class Session(
         @SerialName("device_id")
-        val deviceId: String = "",
+        val deviceId: String,
         @SerialName("version")
-        val version: Version = Version(),
+        val version: Version,
         @SerialName("has_key")
-        val isAccessKeySet: Boolean = false,
+        val isAccessKeySet: Boolean,
         @SerialName("remembered")
-        val isRemembered: Boolean = false,
+        val isRemembered: Boolean,
         @SerialName("locked")
-        val isLocked: Boolean = false,
+        val isLocked: Boolean
+    ) {
         @SerialName("keystore")
         val keystoreState: String = "unknown"
-    )
+    }
 
     @Serializable(with = OathTypeSerializer::class)
     enum class OathType(val value: Byte) {
@@ -99,7 +98,7 @@ class Model {
 
     private var _credentials = mutableMapOf<Credential, Code?>()
 
-    var session = Session()
+    var session : Session? = null
     val credentials: List<CredentialWithCode>
         get() = _credentials.map {
             CredentialWithCode(it.key, it.value)
@@ -109,7 +108,7 @@ class Model {
     // used when a usb key has been disconnected
     fun reset() {
         this._credentials.clear()
-        this.session = Session()
+        this.session = null
     }
 
     fun update(deviceId: String, credentials: Map<Credential, Code?>) {
@@ -121,7 +120,6 @@ class Model {
             // device was changed, we use the new list
             this._credentials.clear()
             this._credentials.putAll(from = credentials)
-            this.session = Session(deviceId)
         } else {
 
             // update codes for non interactive keys
@@ -141,7 +139,7 @@ class Model {
     }
 
     fun add(deviceId: String, credential: Credential, code: Code?): CredentialWithCode? {
-        if (this.session.deviceId != deviceId) {
+        if (this.session?.deviceId != deviceId) {
             return null
         }
 
@@ -155,7 +153,7 @@ class Model {
         oldCredential: Credential,
         newCredential: Credential
     ): Credential? {
-        if (this.session.deviceId != deviceId) {
+        if (this.session?.deviceId != deviceId) {
             return null
         }
 
@@ -177,7 +175,7 @@ class Model {
     }
 
     fun updateCode(deviceId: String, credential: Credential, code: Code?): Code? {
-        if (this.session.deviceId != deviceId) {
+        if (this.session?.deviceId != deviceId) {
             return null
         }
 

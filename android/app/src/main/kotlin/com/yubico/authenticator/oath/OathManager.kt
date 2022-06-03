@@ -11,6 +11,7 @@ import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.yubikit.getDeviceInfo
+import com.yubico.authenticator.yubikit.withSmartCardConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
@@ -22,7 +23,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.net.URI
 import java.util.concurrent.Executors
-import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class OathManager(
@@ -103,12 +103,13 @@ class OathManager(
         }
 
         coroutineScope.launch(handler) {
+            sendDeviceInfo(device)
+            readOathData(device)
             if (pendingYubiKeyAction.value != null) {
                 provideYubiKey(com.yubico.yubikit.core.util.Result.success(device))
             } else {
-                sendDeviceInfo(device)
-                sendOathInfo(device)
-                sendOathCodes(device)
+                sendOathInfo()
+                sendOathCodes()
             }
         }
     }
@@ -146,7 +147,6 @@ class OathManager(
     ) {
         coroutineScope.launch {
             try {
-                var codes: String? = null
                 useOathSession("Unlocking", true) {
                     val accessKey = it.deriveAccessKey(password.toCharArray())
                     _keyManager.addKey(it.deviceId, accessKey, remember)
@@ -157,15 +157,11 @@ class OathManager(
                     }
                     if (response.isUnlocked == true) {
                         _model.update(it.deviceId, calculateOathCodes(it).model(it.deviceId))
-                        codes = jsonSerializer.encodeToString(_model.credentials)
+                        coroutineScope.launch {
+                            sendOathCodes()
+                        }
                     }
                     returnSuccess(result, response)
-                }
-
-                codes?.let {
-                    coroutineScope.launch(Dispatchers.Main) {
-                        _fOathApi.updateOathCredentials(it) {}
-                    }
                 }
 
             } catch (cause: Throwable) {
@@ -398,45 +394,52 @@ class OathManager(
         }
     }
 
-    private suspend fun sendOathInfo(device: YubiKeyDevice) {
 
-        val oathSessionData = suspendCoroutine<String> {
-            device.requestConnection(SmartCardConnection::class.java) { result ->
-                val oathSession = OathSession(result.value)
+    private suspend fun readOathData(device: YubiKeyDevice) {
+        withSmartCardConnection(device) { smartCardConnection ->
+            val oathSession = OathSession(smartCardConnection)
 
-                val deviceId = oathSession.deviceId
+            val deviceId = oathSession.deviceId
 
-                _previousNfcDeviceId = if (device is NfcYubiKeyDevice) {
-                    if (deviceId != _previousNfcDeviceId) {
-                        // devices are different, clear access key for previous device
-                        _memoryKeyProvider.removeKey(_previousNfcDeviceId)
-                    }
-                    deviceId
-                } else {
-                    ""
+            _previousNfcDeviceId = if (device is NfcYubiKeyDevice) {
+                if (deviceId != _previousNfcDeviceId) {
+                    // devices are different, clear access key for previous device
+                    _memoryKeyProvider.removeKey(_previousNfcDeviceId)
                 }
-
-                // calling unlock session will remove invalid access keys
-                tryToUnlockOathSession(oathSession)
-                val isRemembered = _keyManager.isRemembered(oathSession.deviceId)
-
-                _model.session = Model.Session(
-                    oathSession.deviceId,
-                    Version(
-                        oathSession.version.major,
-                        oathSession.version.minor,
-                        oathSession.version.micro
-                    ),
-                    oathSession.isAccessKeySet,
-                    isRemembered,
-                    oathSession.isLocked
-                )
-
-                val oathSessionData = jsonSerializer.encodeToString(_model.session)
-                it.resume(oathSessionData)
+                deviceId
+            } else {
+                ""
             }
-        }
 
+            // calling unlock session will remove invalid access keys
+            val isUnlocked = tryToUnlockOathSession(oathSession)
+            val isRemembered = _keyManager.isRemembered(deviceId)
+
+            _model.session = Model.Session(
+                deviceId,
+                Version(
+                    oathSession.version.major,
+                    oathSession.version.minor,
+                    oathSession.version.micro
+                ),
+                oathSession.isAccessKeySet,
+                isRemembered,
+                oathSession.isLocked
+            )
+
+            if (isUnlocked) {
+                _model.update(
+                    deviceId,
+                    calculateOathCodes(oathSession).model(deviceId)
+                )
+            }
+
+            Log.d(TAG, "Successfully read Oath session info (and credentials if unlocked) from connected key")
+        }
+    }
+
+    private suspend fun sendOathInfo() {
+        val oathSessionData = jsonSerializer.encodeToString(_model.session)
         withContext(Dispatchers.Main) {
             Log.d(TAG, "Sending OathSessionData")
             _fOathApi.updateSession(oathSessionData) {
@@ -445,21 +448,8 @@ class OathManager(
         }
     }
 
-    private suspend fun sendOathCodes(device: YubiKeyDevice) {
-        val sendOathCodes = suspendCoroutine<String> {
-            device.requestConnection(SmartCardConnection::class.java) { result ->
-                val session = OathSession(result.value)
-                if (tryToUnlockOathSession(session)) {
-                    _model.update(
-                        session.deviceId,
-                        calculateOathCodes(session).model(session.deviceId)
-                    )
-                    val resultJson = jsonSerializer.encodeToString(_model.credentials)
-                    it.resume(resultJson)
-                }
-            }
-        }
-
+    private suspend fun sendOathCodes() {
+        val sendOathCodes = jsonSerializer.encodeToString(_model.credentials)
         withContext(Dispatchers.Main) {
             Log.d(TAG, "Sending OathCredentials")
             _fOathApi.updateOathCredentials(sendOathCodes) {
