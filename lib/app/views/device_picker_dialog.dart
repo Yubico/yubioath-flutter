@@ -8,6 +8,16 @@ import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 
+String _getSubtitle(DeviceInfo info) {
+  final serial = info.serial;
+  var subtitle = '';
+  if (serial != null) {
+    subtitle += 'S/N: $serial ';
+  }
+  subtitle += 'F/W: ${info.version}';
+  return subtitle;
+}
+
 class DevicePickerDialog extends ConsumerWidget {
   const DevicePickerDialog({super.key});
 
@@ -82,7 +92,7 @@ class _CurrentDeviceRow extends StatelessWidget {
             selected: true,
           ),
           title: Text(name),
-          subtitle: Text('S/N: ${info.serial} F/W: ${info.version}'),
+          subtitle: Text(_getSubtitle(info)),
           onTap: onTap,
         );
       } else {
@@ -108,7 +118,7 @@ class _CurrentDeviceRow extends StatelessWidget {
           ),
           title: Text(data!.name),
           isThreeLine: true,
-          subtitle: Text('$name\nS/N: ${info.serial} F/W: ${info.version}'),
+          subtitle: Text('$name\n${_getSubtitle(info)}'),
           onTap: onTap,
         );
       } else {
@@ -150,9 +160,8 @@ class _DeviceRow extends StatelessWidget {
       title: Text(node.name),
       subtitle: Text(
         node.when(
-          usbYubiKey: (_, __, ___, info) => info == null
-              ? 'Device inaccessible'
-              : 'S/N: ${info.serial} F/W: ${info.version}',
+          usbYubiKey: (_, __, ___, info) =>
+              info == null ? 'Device inaccessible' : _getSubtitle(info),
           nfcReader: (_, __) => 'Select to scan',
         ),
       ),
