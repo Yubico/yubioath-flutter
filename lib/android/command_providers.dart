@@ -37,13 +37,14 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
       DeviceInfo deviceInfo = DeviceInfo.fromJson(args);
       String name = args['name'];
       bool isNfc = args['is_nfc'];
+      int? usbPid = args['usb_pid'];
 
       DeviceNode deviceNode = isNfc
           ? DeviceNode.nfcReader(DevicePath([]), name)
           : DeviceNode.usbYubiKey(
               DevicePath([]),
               name,
-              /*TODO: replace with correct PID*/ UsbPid.yk4OtpFidoCcid,
+              usbPid != null ? UsbPid.fromValue(usbPid) : UsbPid.yk4OtpFidoCcid,
               deviceInfo);
 
       // reset oath providers on key change

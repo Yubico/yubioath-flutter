@@ -1,9 +1,7 @@
 package com.yubico.authenticator.oath
 
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.ByteArraySerializer
+import com.yubico.authenticator.device.Version
+import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -16,28 +14,22 @@ fun Model.Credential.isInteractive(): Boolean {
 
 class Model {
 
-    @Serializable(with = VersionSerializer::class)
-    data class Version(
-        val major: Byte,
-        val minor: Byte,
-        val micro: Byte
-    )
-
     @Serializable
     data class Session(
         @SerialName("device_id")
-        val deviceId: String = "",
+        val deviceId: String,
         @SerialName("version")
-        val version: Version = Version(0, 0, 0),
+        val version: Version,
         @SerialName("has_key")
-        val isAccessKeySet: Boolean = false,
+        val isAccessKeySet: Boolean,
         @SerialName("remembered")
-        val isRemembered: Boolean = false,
+        val isRemembered: Boolean,
         @SerialName("locked")
-        val isLocked: Boolean = false,
+        val isLocked: Boolean
+    ) {
         @SerialName("keystore")
         val keystoreState: String = "unknown"
-    )
+    }
 
     @Serializable(with = OathTypeSerializer::class)
     enum class OathType(val value: Byte) {
@@ -104,28 +96,9 @@ class Model {
 
     }
 
-    object VersionSerializer : KSerializer<Version> {
-        override val descriptor: SerialDescriptor = ByteArraySerializer().descriptor
-
-        override fun serialize(encoder: Encoder, value: Version) {
-            encoder.encodeSerializableValue(
-                ByteArraySerializer(),
-                byteArrayOf(value.major, value.minor, value.micro)
-            )
-        }
-
-        override fun deserialize(decoder: Decoder): Version {
-            val byteArray = decoder.decodeSerializableValue(ByteArraySerializer())
-            val major = if (byteArray.isNotEmpty()) byteArray[0] else 0
-            val minor = if (byteArray.size > 1) byteArray[1] else 0
-            val micro = if (byteArray.size > 2) byteArray[2] else 0
-            return Version(major, minor, micro)
-        }
-    }
-
     private var _credentials = mutableMapOf<Credential, Code?>()
 
-    var session = Session()
+    var session : Session? = null
     val credentials: List<CredentialWithCode>
         get() = _credentials.map {
             CredentialWithCode(it.key, it.value)
@@ -135,7 +108,7 @@ class Model {
     // used when a usb key has been disconnected
     fun reset() {
         this._credentials.clear()
-        this.session = Session()
+        this.session = null
     }
 
     fun update(deviceId: String, credentials: Map<Credential, Code?>) {
@@ -147,7 +120,6 @@ class Model {
             // device was changed, we use the new list
             this._credentials.clear()
             this._credentials.putAll(from = credentials)
-            this.session = Session(deviceId)
         } else {
 
             // update codes for non interactive keys
@@ -167,7 +139,7 @@ class Model {
     }
 
     fun add(deviceId: String, credential: Credential, code: Code?): CredentialWithCode? {
-        if (this.session.deviceId != deviceId) {
+        if (this.session?.deviceId != deviceId) {
             return null
         }
 
@@ -181,7 +153,7 @@ class Model {
         oldCredential: Credential,
         newCredential: Credential
     ): Credential? {
-        if (this.session.deviceId != deviceId) {
+        if (this.session?.deviceId != deviceId) {
             return null
         }
 
@@ -203,7 +175,7 @@ class Model {
     }
 
     fun updateCode(deviceId: String, credential: Credential, code: Code?): Code? {
-        if (this.session.deviceId != deviceId) {
+        if (this.session?.deviceId != deviceId) {
             return null
         }
 

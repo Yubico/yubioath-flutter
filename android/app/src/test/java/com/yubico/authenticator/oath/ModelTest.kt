@@ -1,5 +1,6 @@
 package com.yubico.authenticator.oath
 
+import com.yubico.authenticator.device.Version
 import com.yubico.authenticator.oath.OathTestHelper.code
 import com.yubico.authenticator.oath.OathTestHelper.emptyCredentials
 import com.yubico.authenticator.oath.OathTestHelper.hotp
@@ -11,6 +12,16 @@ import org.junit.Test
 class ModelTest {
 
     private val model = Model()
+
+    private fun connectDevice(deviceId: String) {
+        model.session = Model.Session(
+            deviceId,
+            Version(1, 2, 3),
+            isAccessKeySet = false,
+            isRemembered = false,
+            isLocked = false
+        )
+    }
 
     @Test
     fun `uses RFC 6238 values`() {
@@ -49,18 +60,6 @@ class ModelTest {
     }
 
     @Test
-    fun `tracks deviceId`() {
-        val noDevice = ""
-        val device1 = "d1"
-        val device2 = "d2"
-        assertEquals(noDevice, model.session.deviceId)
-        model.update(device1, emptyCredentials())
-        assertEquals(device1, model.session.deviceId)
-        model.update(device2, emptyCredentials())
-        assertEquals(device2, model.session.deviceId)
-    }
-
-    @Test
     fun `replaces credentials on device change`() {
         val d1 = "device1"
         val m1 = mapOf(
@@ -92,6 +91,7 @@ class ModelTest {
             cred1 to code(),
             cred2 to code()
         )
+        connectDevice(d1)
         model.update(d1, m1)
 
         // one more credential was added
@@ -103,7 +103,7 @@ class ModelTest {
 
         model.update(d1, m2)
 
-        assertEquals("device1", model.session.deviceId)
+        assertEquals("device1", model.session?.deviceId)
         assertEquals(3, model.credentials.size)
         assertTrue(model.credentials.find { it.credential == cred1 } != null)
         assertTrue(model.credentials.find { it.credential == cred2 } != null)
@@ -193,6 +193,7 @@ class ModelTest {
         val totp = totp(d, name = "totpCred", touchRequired = true)
         val totpCode: Model.Code? = null
 
+        connectDevice(d)
         model.update(d, mapOf(totp to totpCode))
 
         // simulate touch
@@ -263,6 +264,7 @@ class ModelTest {
     fun `adds credential only to correct device`() {
         val d1 = "device1"
         val d2 = "device2"
+        connectDevice(d1)
         model.update(d1, mapOf(totp() to code()))
 
         // cannot add to this model
@@ -281,6 +283,7 @@ class ModelTest {
         val toRename = totp(d1, name = "oldName", issuer = "oldIssuer")
         val code1 = code()
 
+        connectDevice(d1)
         model.update(d1, mapOf(toRename to code1))
 
         val renamedForD2 = totp(d2, name = "newName", issuer = "newIssuer")
@@ -306,6 +309,7 @@ class ModelTest {
         val toRename = totp(d, name = "oldName", issuer = "oldIssuer")
         val code1 = code()
 
+        connectDevice(d)
         model.update(d, mapOf(toRename to code1))
 
         val nullIssuer = totp(d, name = "newName", issuer = null)
@@ -328,6 +332,7 @@ class ModelTest {
         val code1 = code(value = "12345")
         val code2 = code(value = "00000")
 
+        connectDevice(d1)
         model.update(d1, mapOf(totpD1 to code1))
 
         // cant update on different device
@@ -344,10 +349,12 @@ class ModelTest {
 
     @Test
     fun `removes data on reset`() {
-        model.update("device", mapOf(totp() to code()))
+        val deviceId = "device"
+        connectDevice(deviceId)
+        model.update(deviceId, mapOf(totp() to code()))
         model.reset()
 
-        assertEquals("", model.session.deviceId)
+        assertNull(model.session)
         assertTrue(model.credentials.isEmpty())
     }
 }
