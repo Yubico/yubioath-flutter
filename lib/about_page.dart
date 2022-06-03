@@ -44,9 +44,17 @@ class AboutPage extends ConsumerWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: const [
-              UrlLink(text: 'Terms of use', url: 'https://example.com'),
+              UrlLink(
+                text: 'Terms of use',
+                url:
+                    'https://www.yubico.com/support/terms-conditions/yubico-license-agreement/',
+              ),
               SizedBox(width: 8.0),
-              UrlLink(text: 'Privacy policy', url: 'https://example.com'),
+              UrlLink(
+                text: 'Privacy policy',
+                url:
+                    'https://www.yubico.com/support/terms-conditions/privacy-notice/',
+              ),
             ],
           ),
           const Padding(
@@ -63,9 +71,14 @@ class AboutPage extends ConsumerWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: const [
-              UrlLink(text: 'Send us feedback', url: 'https://example.com'),
+              UrlLink(
+                text: 'Send us feedback',
+                url: 'https://example.com',
+              ),
               SizedBox(width: 8.0),
-              UrlLink(text: 'I need help', url: 'https://example.com'),
+              UrlLink(
+                  text: 'I need help',
+                  url: 'https://support.yubico.com/support/home'),
             ],
           ),
           const Padding(
