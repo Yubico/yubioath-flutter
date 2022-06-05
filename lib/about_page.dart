@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,33 +29,59 @@ class AboutPage extends ConsumerWidget {
         children: [
           Image.asset('assets/graphics/app-icon.png', scale: 1 / 0.75),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0),
+            padding: const EdgeInsets.only(top: 24.0),
             child: Text(
               'Yubico Authenticator',
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
-          const Text('Yubico Authenticator: $version'),
-          if (isDesktop) Text('ykman: ${ref.watch(rpcStateProvider).version}'),
-          //Text('Dart version: ${Platform.version}'),
+          const Text(version),
+          const Text(''),
           const Text('Copyright © 2022 Yubico'),
           const Text('All rights reserved'),
           const Text(''),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              UrlLink(
-                text: 'Terms of use',
-                target: Uri.parse(
-                    'https://www.yubico.com/support/terms-conditions/yubico-license-agreement/'),
+              TextButton(
+                child: const Text(
+                  'Terms of use',
+                  style: TextStyle(decoration: TextDecoration.underline),
+                ),
+                onPressed: () {
+                  launchUrl(
+                    Uri.parse(
+                        'https://www.yubico.com/support/terms-conditions/yubico-license-agreement/'),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
               ),
-              const SizedBox(width: 8.0),
-              UrlLink(
-                text: 'Privacy policy',
-                target: Uri.parse(
-                    'https://www.yubico.com/support/terms-conditions/privacy-notice/'),
+              TextButton(
+                child: const Text(
+                  'Privacy policy',
+                  style: TextStyle(decoration: TextDecoration.underline),
+                ),
+                onPressed: () {
+                  launchUrl(
+                    Uri.parse(
+                        'https://www.yubico.com/support/terms-conditions/privacy-notice/'),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
               ),
             ],
+          ),
+          TextButton(
+            child: const Text(
+              'Open source licenses',
+              style: TextStyle(decoration: TextDecoration.underline),
+            ),
+            onPressed: () {
+              showLicensePage(
+                context: context,
+                applicationVersion: version,
+              );
+            },
           ),
           const Padding(
             padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
@@ -71,14 +97,29 @@ class AboutPage extends ConsumerWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              UrlLink(
-                text: 'Send us feedback',
-                target: Uri.parse('https://example.com'),
+              TextButton(
+                child: const Text(
+                  'Send us feedback',
+                  style: TextStyle(decoration: TextDecoration.underline),
+                ),
+                onPressed: () {
+                  launchUrl(
+                    Uri.parse('https://example.com'),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
               ),
-              const SizedBox(width: 8.0),
-              UrlLink(
-                text: 'I need help',
-                target: Uri.parse('https://support.yubico.com/support/home'),
+              TextButton(
+                child: const Text(
+                  'I need help',
+                  style: TextStyle(decoration: TextDecoration.underline),
+                ),
+                onPressed: () {
+                  launchUrl(
+                    Uri.parse('https://support.yubico.com/support/home'),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
               ),
             ],
           ),
@@ -104,7 +145,10 @@ class AboutPage extends ConsumerWidget {
                 final response =
                     await ref.read(rpcProvider).command('diagnose', []);
                 final data = response['diagnostics'] as List;
-                data.insert(0, {'app_version': version});
+                data.insert(0, {
+                  'app_version': version,
+                  'dart': Platform.version,
+                });
                 final text = const JsonEncoder.withIndent('  ').convert(data);
                 await Clipboard.setData(ClipboardData(text: text));
                 await ref.read(withContextProvider)(
@@ -127,7 +171,6 @@ class LoggingPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
-      //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 12.0),
         DropdownButtonFormField<Level>(
@@ -165,48 +208,5 @@ class LoggingPanel extends ConsumerWidget {
         ),
       ],
     );
-  }
-}
-
-class UrlLink extends StatefulWidget {
-  final String text;
-  final Uri target;
-
-  const UrlLink({super.key, required this.text, required this.target});
-
-  @override
-  State<StatefulWidget> createState() => _UrlLinkState();
-}
-
-class _UrlLinkState extends State<UrlLink> {
-  late TapGestureRecognizer _tapRecognizer;
-
-  @override
-  void initState() {
-    super.initState();
-    _tapRecognizer = TapGestureRecognizer();
-    _tapRecognizer.onTap = () {
-      _log.debug('Opening browser to ${widget.target}');
-      launchUrl(widget.target, mode: LaunchMode.externalApplication);
-    };
-  }
-
-  @override
-  void dispose() {
-    _tapRecognizer.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return RichText(
-        text: TextSpan(
-      text: widget.text,
-      style: TextStyle(
-        color: Theme.of(context).colorScheme.primary,
-        decoration: TextDecoration.underline,
-      ),
-      recognizer: _tapRecognizer,
-    ));
   }
 }
