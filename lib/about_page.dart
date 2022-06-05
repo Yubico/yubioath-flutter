@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'app/state.dart';
 import 'version.dart';
@@ -25,7 +26,6 @@ class AboutPage extends ConsumerWidget {
       title: const Text('About'),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        //crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Image.asset('assets/graphics/app-icon.png', scale: 1 / 0.75),
           Padding(
@@ -43,17 +43,17 @@ class AboutPage extends ConsumerWidget {
           const Text(''),
           Row(
             mainAxisSize: MainAxisSize.min,
-            children: const [
+            children: [
               UrlLink(
                 text: 'Terms of use',
-                url:
-                    'https://www.yubico.com/support/terms-conditions/yubico-license-agreement/',
+                target: Uri.parse(
+                    'https://www.yubico.com/support/terms-conditions/yubico-license-agreement/'),
               ),
-              SizedBox(width: 8.0),
+              const SizedBox(width: 8.0),
               UrlLink(
                 text: 'Privacy policy',
-                url:
-                    'https://www.yubico.com/support/terms-conditions/privacy-notice/',
+                target: Uri.parse(
+                    'https://www.yubico.com/support/terms-conditions/privacy-notice/'),
               ),
             ],
           ),
@@ -70,15 +70,16 @@ class AboutPage extends ConsumerWidget {
           ),
           Row(
             mainAxisSize: MainAxisSize.min,
-            children: const [
+            children: [
               UrlLink(
                 text: 'Send us feedback',
-                url: 'https://example.com',
+                target: Uri.parse('https://example.com'),
               ),
-              SizedBox(width: 8.0),
+              const SizedBox(width: 8.0),
               UrlLink(
-                  text: 'I need help',
-                  url: 'https://support.yubico.com/support/home'),
+                text: 'I need help',
+                target: Uri.parse('https://support.yubico.com/support/home'),
+              ),
             ],
           ),
           const Padding(
@@ -169,9 +170,9 @@ class LoggingPanel extends ConsumerWidget {
 
 class UrlLink extends StatefulWidget {
   final String text;
-  final String url;
+  final Uri target;
 
-  const UrlLink({super.key, required this.text, required this.url});
+  const UrlLink({super.key, required this.text, required this.target});
 
   @override
   State<StatefulWidget> createState() => _UrlLinkState();
@@ -185,9 +186,8 @@ class _UrlLinkState extends State<UrlLink> {
     super.initState();
     _tapRecognizer = TapGestureRecognizer();
     _tapRecognizer.onTap = () {
-      //TODO: use url_launcher
-      // ignore: avoid_print
-      print('TODO: Go to ${widget.url}');
+      _log.debug('Opening browser to ${widget.target}');
+      launchUrl(widget.target, mode: LaunchMode.externalApplication);
     };
   }
 
