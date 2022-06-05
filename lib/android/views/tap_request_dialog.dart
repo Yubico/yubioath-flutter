@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/views/user_interaction.dart';
 import '../../app/state.dart';
+import '../../widgets/custom_icons.dart';
 import '../api/impl.dart';
 
 class FDialogApiImpl extends FDialogApi {
@@ -34,9 +35,9 @@ class FDialogApiImpl extends FDialogApi {
           context,
           title: 'Tap your key',
           description: dialogMessage,
-          icon: const Icon(
-            Icons.wifi,
-            size: 64,
+          icon: IconTheme(
+            data: IconTheme.of(context).copyWith(size: 64),
+            child: nfcIcon,
           ),
           onCancel: () {
             HDialogApi api = HDialogApi();

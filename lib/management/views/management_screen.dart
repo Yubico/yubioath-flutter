@@ -7,6 +7,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../core/models.dart';
+import '../../widgets/custom_icons.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
@@ -105,10 +106,10 @@ class _CapabilitiesForm extends StatelessWidget {
               padding: EdgeInsets.only(top: 24, bottom: 12),
               child: Divider(),
             ),
-          const ListTile(
-            leading: Icon(Icons.wifi),
-            title: Text('NFC'),
-            contentPadding: EdgeInsets.only(bottom: 8),
+          ListTile(
+            leading: nfcIcon,
+            title: const Text('NFC'),
+            contentPadding: const EdgeInsets.only(bottom: 8),
             horizontalTitleGap: 0,
           ),
           _CapabilityForm(

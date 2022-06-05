@@ -9,51 +9,11 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../widgets/circle_timer.dart';
+import '../../widgets/custom_icons.dart';
 import '../models.dart';
 import '../state.dart';
 import 'delete_account_dialog.dart';
 import 'rename_account_dialog.dart';
-
-class _StrikethroughClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path()
-      ..moveTo(0, 2)
-      ..lineTo(0, size.height)
-      ..lineTo(size.width - 2, size.height)
-      ..lineTo(0, 2)
-      ..moveTo(2, 0)
-      ..lineTo(size.width, size.height - 2)
-      ..lineTo(size.width, 0)
-      ..lineTo(2, 0)
-      ..close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    return false;
-  }
-}
-
-class _StrikethroughPainter extends CustomPainter {
-  final Color color;
-  _StrikethroughPainter(this.color);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint();
-    paint.color = color;
-    paint.strokeWidth = 1.3;
-    canvas.drawLine(Offset(size.width * 0.15, size.height * 0.15),
-        Offset(size.width * 0.8, size.height * 0.8), paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
-}
 
 mixin AccountMixin {
   OathCredential get credential;
@@ -169,18 +129,7 @@ mixin AccountMixin {
         ),
       MenuAction(
         text: pinned ? 'Unpin account' : 'Pin account',
-        //TODO: Replace this with a custom icon.
-        icon: pinned
-            ? Builder(builder: (context) {
-                return CustomPaint(
-                  painter: _StrikethroughPainter(
-                      IconTheme.of(context).color ?? Colors.black),
-                  child: ClipPath(
-                      clipper: _StrikethroughClipper(),
-                      child: const Icon(Icons.push_pin)),
-                );
-              })
-            : const Icon(Icons.push_pin_outlined),
+        icon: pinned ? pushPinStrokeIcon : const Icon(Icons.push_pin_outlined),
         action: (context) {
           ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
         },
