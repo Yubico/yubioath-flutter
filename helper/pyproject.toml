@@ -13,11 +13,11 @@ python = "^3.8"
 yubikey-manager = { git = "https://github.com/Yubico/yubikey-manager.git", branch = "next" }
 fido2 = {version = "1.0.0rc1", allow-prereleases = true}
 mss = "^6.1.0"
-zxing-cpp = "^1.2.0"
-Pillow = "^8|^9"
+zxing-cpp = "^1.3.0"
+Pillow = "^9.1.1"
 
 [tool.poetry.dev-dependencies]
-pyinstaller = {version = "^4.9", python = "<3.11"}
+pyinstaller = {version = "^5.1", python = "<3.11"}
 pytest = "^7.0.0"
 
 [build-system]
