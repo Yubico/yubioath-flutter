@@ -34,7 +34,7 @@ class DeleteAccountDialog extends ConsumerWidget {
                 .deleteAccount(credential);
             await ref.read(withContextProvider)(
               (context) async {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(true);
                 showMessage(context, 'Account deleted');
               },
             );
