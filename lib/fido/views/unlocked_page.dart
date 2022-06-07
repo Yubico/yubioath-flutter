@@ -139,7 +139,7 @@ class FidoUnlockedPage extends ConsumerWidget {
 
     return MessagePage(
       title: const Text('WebAuthn'),
-      graphic: noDiscoverable,
+      graphic: manageAccounts,
       header: 'No discoverable accounts',
       message: 'Register as a Security Key on websites',
       actions: _buildActions(context),

@@ -5,6 +5,7 @@ import '../../app/models.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../management/models.dart';
 import '../state.dart';
@@ -28,11 +29,11 @@ class FidoScreen extends ConsumerWidget {
                     .info.supportedCapabilities[deviceData.node.transport] ??
                 0;
             if (Capability.fido2.value & supported == 0) {
-              return const MessagePage(
-                title: Text('WebAuthn'),
-                header: 'No management options',
-                message:
-                    'WebAuthn is supported by this device, but there are no management options available.',
+              return MessagePage(
+                title: const Text('WebAuthn'),
+                graphic: manageAccounts,
+                header: 'Ready to use',
+                message: 'Register as a Security Key on websites',
               );
             }
             final enabled = deviceData.info.config
