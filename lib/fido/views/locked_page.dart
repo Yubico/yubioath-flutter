@@ -26,7 +26,7 @@ class FidoLockedPage extends ConsumerWidget {
           title: const Text('WebAuthn'),
           graphic: noFingerprints,
           header: 'No fingerprints',
-          message: 'Set a PIN to register fingerprints.',
+          message: 'Set a PIN to register fingerprints',
           actions: _buildActions(context),
         );
       } else {
@@ -66,7 +66,9 @@ class FidoLockedPage extends ConsumerWidget {
   List<Widget> _buildActions(BuildContext context) => [
         if (!state.hasPin)
           OutlinedButton.icon(
-            style: AppTheme.primaryOutlinedButtonStyle(context),
+            style: state.bioEnroll != null
+                ? AppTheme.primaryOutlinedButtonStyle(context)
+                : null,
             label: const Text('Set PIN'),
             icon: const Icon(Icons.pin),
             onPressed: () {
