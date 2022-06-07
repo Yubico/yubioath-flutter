@@ -9,13 +9,18 @@ class AndroidQrScanner implements QrScanner {
   AndroidQrScanner(this._withContext);
 
   @override
-  Future<String> scanQr([String? _]) async => _withContext((context) async {
-        return await Navigator.of(context).push(PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const QrScannerView(),
-          transitionDuration: const Duration(seconds: 0),
-          reverseTransitionDuration: const Duration(seconds: 0),
-        )) ?? '';
-      });
+  Future<String> scanQr([String? _]) async {
+    var scannedCode = await _withContext((context) async =>
+      await Navigator.of(context).push(PageRouteBuilder(
+        pageBuilder: (_, __, ___) => const QrScannerView(),
+        transitionDuration: const Duration(seconds: 0),
+        reverseTransitionDuration: const Duration(seconds: 0),
+      )));
+    if (scannedCode == null) {
+      throw Exception('Null value from QR scanner');
+    }
+    return scannedCode;
+  }
 }
 
 final androidQrScannerProvider = Provider<QrScanner?>(

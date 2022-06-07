@@ -206,7 +206,7 @@ class _QrScannerViewState extends State<QrScannerView> {
                           MaterialButton(
                             color: Colors.white38,
                             onPressed: () {
-                              Navigator.of(context).pop('');
+                              Navigator.of(context).pop();
                             },
                             child: const Text('Add manually'),
                           )
