@@ -32,13 +32,23 @@ class FidoLockedPage extends ConsumerWidget {
       } else {
         return MessagePage(
           title: const Text('WebAuthn'),
-          graphic: noDiscoverable,
-          header: 'No discoverable accounts',
+          graphic: manageAccounts,
+          header: state.credMgmt ? 'No discoverable accounts' : 'Ready to use',
           message:
               'Optionally set a PIN to protect access to your YubiKey\nRegister as a Security Key on websites',
           actions: _buildActions(context),
         );
       }
+    }
+
+    if (!state.credMgmt && state.bioEnroll == null) {
+      return MessagePage(
+        title: const Text('WebAuthn'),
+        graphic: manageAccounts,
+        header: 'Ready to use',
+        message: 'Register as a Security Key on websites',
+        actions: _buildActions(context),
+      );
     }
 
     return AppPage(
