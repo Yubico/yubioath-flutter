@@ -38,5 +38,9 @@ Image getProductImage(DeviceInfo info, String name) {
       : _imagesForFormFactor[info.formFactor];
   image ??= 'yk5series';
 
-  return Image.asset('assets/product-images/$image.png');
+  return Image.asset(
+    'assets/product-images/$image.png',
+    // Medium provides the best results when scaling down
+    filterQuality: FilterQuality.medium,
+  );
 }

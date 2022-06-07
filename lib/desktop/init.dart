@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -89,6 +92,8 @@ Future<Widget> initialize(List<String> argv) async {
   _log.info('Helper process started', exe);
   rpc.setLogLevel(Logger.root.level);
 
+  _initLicenses();
+
   return ProviderScope(
     overrides: [
       supportedAppsProvider.overrideWithValue([
@@ -152,4 +157,20 @@ void _initLogging(List<String> argv) {
   }
 
   _log.info('Logging initialized, outputting to stderr');
+}
+
+void _initLicenses() async {
+  LicenseRegistry.addLicense(() async* {
+    final python = await rootBundle.loadString('assets/licenses/python.txt');
+    yield LicenseEntryWithLineBreaks(['Python'], python);
+
+    final helper = await rootBundle.loadStructuredData<List>(
+      'assets/licenses/helper.json',
+      (value) async => jsonDecode(value),
+    );
+
+    for (final e in helper) {
+      yield LicenseEntryWithLineBreaks([e['Name']], e['LicenseText']);
+    }
+  });
 }

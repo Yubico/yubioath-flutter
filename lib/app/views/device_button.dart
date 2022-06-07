@@ -6,7 +6,8 @@ import 'device_avatar.dart';
 import 'device_picker_dialog.dart';
 
 class DeviceButton extends ConsumerWidget {
-  const DeviceButton({super.key});
+  final double radius;
+  const DeviceButton({super.key, this.radius = 16});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,16 +19,19 @@ class DeviceButton extends ConsumerWidget {
         deviceWidget = DeviceAvatar.yubiKeyData(
           deviceData,
           selected: true,
+          radius: radius,
         );
       } else {
         deviceWidget = DeviceAvatar.deviceNode(
           deviceNode,
           selected: true,
+          radius: radius,
         );
       }
     } else {
-      deviceWidget = const DeviceAvatar(
-        child: Icon(Icons.more_horiz),
+      deviceWidget = DeviceAvatar(
+        radius: radius,
+        child: const Icon(Icons.more_horiz),
       );
     }
     return Padding(

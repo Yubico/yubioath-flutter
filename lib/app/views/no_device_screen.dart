@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/models.dart';
 import '../../desktop/state.dart';
 import '../../theme.dart';
+import '../../widgets/custom_icons.dart';
 import '../message.dart';
 import '../models.dart';
 import 'device_avatar.dart';
@@ -58,8 +59,8 @@ class NoDeviceScreen extends ConsumerWidget {
     return node?.map(usbYubiKey: (node) {
           return _buildUsbPid(context, ref, node.pid);
         }, nfcReader: (node) {
-          return const MessagePage(
-            graphic: DeviceAvatar(child: Icon(Icons.wifi)),
+          return MessagePage(
+            graphic: DeviceAvatar(child: nfcIcon),
             message: 'Place your YubiKey on the NFC reader',
           );
         }) ??

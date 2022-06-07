@@ -53,7 +53,7 @@ from yubikit.management import CAPABILITY
 from yubikit.logging import LOG_LEVEL
 
 from ykman.pcsc import list_devices, YK_READER_NAME
-from smartcard.Exceptions import SmartcardException
+from smartcard.Exceptions import SmartcardException, NoCardException
 from smartcard.pcsc.PCSCExceptions import EstablishContextException
 from hashlib import sha256
 from dataclasses import asdict
@@ -263,23 +263,16 @@ class AbstractDeviceNode(RpcNode):
             logger.exception(f"Unable to create child {name}")
             raise NoSuchNodeException(name)
 
-    def get_data(self):
-        for conn_type in (SmartCardConnection, OtpConnection, FidoConnection):
-            if self._device.supports_connection(conn_type):
-                try:
-                    with self._device.open_connection(conn_type) as conn:
-                        pid = self._device.pid
-                        self._info = read_info(conn, pid)
-                        name = get_name(self._info, pid.yubikey_type if pid else None)
-                        return dict(
-                            pid=pid,
-                            name=name,
-                            transport=self._device.transport,
-                            info=asdict(self._info),
-                        )
-                except Exception:
-                    logger.warning(f"Unable to connect via {conn_type}", exc_info=True)
-        raise ValueError("No supported connections")
+    def _read_data(self, conn):
+        pid = self._device.pid
+        self._info = read_info(conn, pid)
+        name = get_name(self._info, pid.yubikey_type if pid else None)
+        return dict(
+            pid=pid,
+            name=name,
+            transport=self._device.transport,
+            info=asdict(self._info),
+        )
 
 
 class UsbDeviceNode(AbstractDeviceNode):
@@ -292,6 +285,16 @@ class UsbDeviceNode(AbstractDeviceNode):
     def _create_connection(self, conn_type):
         connection = self._device.open_connection(conn_type)
         return ConnectionNode(self._device, connection, self._info)
+
+    def get_data(self):
+        for conn_type in (SmartCardConnection, OtpConnection, FidoConnection):
+            if self._supports_connection(conn_type):
+                try:
+                    with self._device.open_connection(conn_type) as conn:
+                        return self._read_data(conn)
+                except Exception:
+                    logger.warning(f"Unable to connect via {conn_type}", exc_info=True)
+        raise ValueError("No supported connections")
 
     @child(condition=lambda self: self._supports_connection(SmartCardConnection))
     def ccid(self):
@@ -321,23 +324,31 @@ class UsbDeviceNode(AbstractDeviceNode):
 class ReaderDeviceNode(AbstractDeviceNode):
     def get_data(self):
         try:
-            return {**super().get_data(), "present": True}
-        except Exception:
-            logger.debug("Couldn't get NFC device info, present=False", exc_info=True)
+            with self._device.open_connection(SmartCardConnection) as conn:
+                return dict(self._read_data(conn), present=True)
+        except NoCardException:
             return dict(present=False)
 
     @child
     def ccid(self):
-        connection = self._device.open_connection(SmartCardConnection)
-        info = read_info(connection)
-        return ConnectionNode(self._device, connection, info)
+        try:
+            connection = self._device.open_connection(SmartCardConnection)
+            info = read_info(connection)
+            return ConnectionNode(self._device, connection, info)
+        except (ValueError, SmartcardException) as e:
+            logger.warning("Error opening connection", exc_info=True)
+            raise ConnectionException("ccid", e)
 
     @child
     def fido(self):
-        with self._device.open_connection(SmartCardConnection) as conn:
-            info = read_info(conn)
-        connection = self._device.open_connection(FidoConnection)
-        return ConnectionNode(self._device, connection, info)
+        try:
+            with self._device.open_connection(SmartCardConnection) as conn:
+                info = read_info(conn)
+            connection = self._device.open_connection(FidoConnection)
+            return ConnectionNode(self._device, connection, info)
+        except (ValueError, SmartcardException) as e:
+            logger.warning("Error opening connection", exc_info=True)
+            raise ConnectionException("fido", e)
 
 
 class ConnectionNode(RpcNode):

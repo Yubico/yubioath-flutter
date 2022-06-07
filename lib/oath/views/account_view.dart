@@ -132,7 +132,6 @@ class AccountView extends ConsumerWidget with AccountMixin {
           title: Text(
             title,
             overflow: TextOverflow.fade,
-            style: Theme.of(context).textTheme.headlineSmall,
             maxLines: 1,
             softWrap: false,
           ),
@@ -140,7 +139,6 @@ class AccountView extends ConsumerWidget with AccountMixin {
               ? Text(
                   subtitle!,
                   overflow: TextOverflow.fade,
-                  style: Theme.of(context).textTheme.bodySmall,
                   maxLines: 1,
                   softWrap: false,
                 )

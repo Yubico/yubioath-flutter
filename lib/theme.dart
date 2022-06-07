@@ -62,6 +62,11 @@ class AppTheme {
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: primaryBlue,
         ),
+        listTileTheme: const ListTileThemeData(
+          // For alignment under menu button
+          contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
+          visualDensity: VisualDensity.compact,
+        ),
         fontFamily: 'Roboto',
         textTheme: const TextTheme(
           //bodySmall: TextStyle(color: Colors.grey.shade500),
@@ -108,7 +113,7 @@ class AppTheme {
         buttonTheme: ButtonThemeData(
           colorScheme: ColorScheme.dark(
             secondary: Colors.grey.shade800,
-            onSecondary: Colors.white70,
+            onSecondary: Colors.white,
             primary: primaryGreen,
             onPrimary: Colors.grey.shade900,
             error: primaryRed,
@@ -134,6 +139,11 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
+          labelStyle: TextStyle(
+              // Should match titleMedium
+              color: Colors.grey.shade200,
+              fontWeight: FontWeight.w300,
+              fontSize: 16),
         ),
         dialogTheme: const DialogTheme(
           backgroundColor: Color(0xff323232),
@@ -141,6 +151,11 @@ class AppTheme {
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           foregroundColor: Colors.grey.shade900,
           backgroundColor: primaryGreen,
+        ),
+        listTileTheme: const ListTileThemeData(
+          // For alignment under menu button
+          contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
+          visualDensity: VisualDensity.compact,
         ),
         fontFamily: 'Roboto',
         textTheme: TextTheme(
@@ -151,7 +166,10 @@ class AppTheme {
           labelMedium: TextStyle(color: Colors.cyan.shade200),
           labelLarge: TextStyle(color: Colors.cyan.shade500),
           titleSmall: TextStyle(color: Colors.grey.shade600),
-          titleMedium: const TextStyle(),
+          titleMedium: TextStyle(
+              color: Colors.grey.shade200,
+              fontWeight: FontWeight.w300,
+              fontSize: 16),
           titleLarge: TextStyle(
               color: Colors.grey.shade500,
               fontWeight: FontWeight.w400,

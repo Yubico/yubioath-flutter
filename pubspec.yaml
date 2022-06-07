@@ -49,6 +49,7 @@ dependencies:
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
   desktop_drop: ^0.3.3
+  url_launcher: ^6.1.2
 
 dependency_overrides:
   analyzer: ^3.4.1
@@ -89,6 +90,7 @@ flutter:
   assets:
     - assets/product-images/
     - assets/graphics/
+    - assets/licenses/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
