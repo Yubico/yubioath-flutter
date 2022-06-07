@@ -71,7 +71,7 @@ final currentDeviceProvider =
 
 abstract class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
   CurrentDeviceNotifier(super.state);
-  setCurrentDevice(DeviceNode device);
+  setCurrentDevice(DeviceNode? device);
 }
 
 final currentAppProvider =
