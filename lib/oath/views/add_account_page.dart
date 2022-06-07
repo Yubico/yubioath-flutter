@@ -294,7 +294,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       items: OathType.values
                           .map((e) => DropdownMenuItem(
                                 value: e,
-                                child: Text(e.name.toUpperCase()),
+                                child: Text(e.displayName),
                               ))
                           .toList(),
                       onChanged: _qrState != _QrScanState.success
@@ -320,7 +320,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                               widget.state.version.isAtLeast(4, 3, 1))
                           .map((e) => DropdownMenuItem(
                                 value: e,
-                                child: Text(e.name.toUpperCase()),
+                                child: Text(e.displayName),
                               ))
                           .toList(),
                       onChanged: _qrState != _QrScanState.success
