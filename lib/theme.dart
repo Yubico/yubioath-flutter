@@ -39,6 +39,11 @@ class AppTheme {
             onError: Colors.grey.shade100,
           ),
         ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+          onPrimary: Colors.white,
+          primary: primaryBlue,
+        )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
           primary: Colors.grey.shade800,
@@ -120,6 +125,11 @@ class AppTheme {
             onError: Colors.grey.shade100,
           ),
         ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+          onPrimary: Colors.black,
+          primary: primaryGreen,
+        )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
           primary: Colors.white70,
