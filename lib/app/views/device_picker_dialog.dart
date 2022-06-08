@@ -25,68 +25,73 @@ class DevicePickerDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final devices = ref.watch(attachedDevicesProvider).toList();
     final currentNode = ref.watch(currentDeviceProvider);
-    final data = ref.watch(currentDeviceDataProvider);
-    final noUsb = devices.whereType<UsbYubiKeyNode>().isEmpty;
 
+    final Widget hero;
+    final bool showUsb;
     if (currentNode != null) {
+      showUsb = devices.whereType<UsbYubiKeyNode>().isEmpty;
       devices.removeWhere((e) => e.path == currentNode.path);
+      hero = _CurrentDeviceRow(
+        currentNode,
+        data: ref.watch(currentDeviceDataProvider),
+        onTap: () {
+          Navigator.of(context).pop();
+        },
+      );
+    } else {
+      hero = ListTile(
+        leading: DeviceAvatar(
+          selected: true,
+          child: Icon(Platform.isAndroid ? Icons.no_cell : Icons.usb),
+        ),
+        title: Text(Platform.isAndroid ? 'No YubiKey' : 'USB'),
+        subtitle: Text(Platform.isAndroid
+            ? 'Insert or tap a YubiKey'
+            : 'Insert a YubiKey'),
+        onTap: () {
+          Navigator.of(context).pop();
+        },
+      );
+      showUsb = false;
     }
+
+    List<Widget> others = [
+      if (showUsb)
+        ListTile(
+          leading: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4),
+            child: DeviceAvatar(
+              radius: 20,
+              child: Icon(Icons.usb),
+            ),
+          ),
+          title: const Text('USB'),
+          subtitle: const Text('No YubiKey present'),
+          onTap: () {
+            Navigator.of(context).pop();
+            ref.read(currentDeviceProvider.notifier).setCurrentDevice(null);
+          },
+        ),
+      ...devices.map(
+        (e) => _DeviceRow(
+          e,
+          info: e.map(
+            usbYubiKey: (node) => node.info,
+            nfcReader: (_) => null,
+          ),
+          onTap: () {
+            Navigator.of(context).pop();
+            ref.read(currentDeviceProvider.notifier).setCurrentDevice(e);
+          },
+        ),
+      ),
+    ];
 
     return SimpleDialog(
       children: [
-        (currentNode != null)
-            ? _CurrentDeviceRow(
-                currentNode,
-                data: data,
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            : ListTile(
-                leading: DeviceAvatar(
-                  selected: true,
-                  child: Icon(Platform.isAndroid ? Icons.no_cell : Icons.usb),
-                ),
-                title: Text(Platform.isAndroid ? 'No YubiKey' : 'USB'),
-                subtitle: Text(Platform.isAndroid
-                    ? 'Insert or tap a YubiKey'
-                    : 'Insert a YubiKey'),
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-        if (devices.isNotEmpty) ...[
-          const Divider(),
-          if (noUsb && currentNode != null)
-            ListTile(
-              leading: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
-                child: DeviceAvatar(
-                  radius: 20,
-                  child: Icon(Icons.usb),
-                ),
-              ),
-              title: const Text('USB'),
-              subtitle: const Text('No YubiKey present'),
-              onTap: () {
-                Navigator.of(context).pop();
-                ref.read(currentDeviceProvider.notifier).setCurrentDevice(null);
-              },
-            )
-        ],
-        ...devices.map(
-          (e) => _DeviceRow(
-            e,
-            info: e.map(
-              usbYubiKey: (node) => node.info,
-              nfcReader: (_) => null,
-            ),
-            onTap: () {
-              Navigator.of(context).pop();
-              ref.read(currentDeviceProvider.notifier).setCurrentDevice(e);
-            },
-          ),
-        ),
+        hero,
+        if (others.isNotEmpty) const Divider(),
+        ...others,
       ],
     );
   }
