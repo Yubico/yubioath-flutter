@@ -62,19 +62,19 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (widget.state.hasKey) ...[
-            Text(
-              'Current password',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            const Text(
+                "Enter your current password. If you don't know your password, you'll need to reset the YubiKey."),
             TextField(
               autofocus: true,
               obscureText: true,
               decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: 'Current password',
-                  errorText: _currentIsWrong ? 'Wrong password' : null),
+                  errorText: _currentIsWrong ? 'Wrong password' : null,
+                  errorMaxLines: 3),
               onChanged: (value) {
                 setState(() {
+                  _currentIsWrong = false;
                   _currentPassword = value;
                 });
               },
@@ -116,12 +116,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                   ),
               ],
             ),
-            const Divider(),
           ],
-          Text(
-            'New password',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+          const Text(
+              'Enter your new password. A password may contain letters, numbers and special characters.'),
           TextField(
             autofocus: !widget.state.hasKey,
             obscureText: true,
@@ -141,7 +138,8 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               labelText: 'Confirm password',
-              enabled: _newPassword.isNotEmpty,
+              enabled: (!widget.state.hasKey || _currentPassword.isNotEmpty) &&
+                  _newPassword.isNotEmpty,
             ),
             onChanged: (value) {
               setState(() {
