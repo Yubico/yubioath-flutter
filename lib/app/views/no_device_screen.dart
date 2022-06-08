@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/models.dart';
 import '../../desktop/state.dart';
 import '../../theme.dart';
-import '../../widgets/custom_icons.dart';
 import '../message.dart';
 import '../models.dart';
 import 'device_avatar.dart';
@@ -56,17 +55,12 @@ class NoDeviceScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return node?.map(usbYubiKey: (node) {
-          return _buildUsbPid(context, ref, node.pid);
-        }, nfcReader: (node) {
-          return MessagePage(
-            graphic: DeviceAvatar(child: nfcIcon),
+    return node?.map(
+          usbYubiKey: (node) => _buildUsbPid(context, ref, node.pid),
+          nfcReader: (_) => const MessagePage(
             message: 'Place your YubiKey on the NFC reader',
-          );
-        }) ??
-        const MessagePage(
-          graphic: DeviceAvatar(child: Icon(Icons.usb)),
-          message: 'Insert your YubiKey',
-        );
+          ),
+        ) ??
+        const MessagePage(message: 'Insert your YubiKey');
   }
 }

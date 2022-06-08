@@ -68,7 +68,7 @@ class _AndroidCurrentDeviceNotifier extends CurrentDeviceNotifier {
   }
 
   @override
-  setCurrentDevice(DeviceNode device) {
+  setCurrentDevice(DeviceNode? device) {
     state = device;
   }
 }

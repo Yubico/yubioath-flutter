@@ -31,7 +31,8 @@ class DeviceButton extends ConsumerWidget {
     } else {
       deviceWidget = DeviceAvatar(
         radius: radius,
-        child: const Icon(Icons.more_horiz),
+        selected: true,
+        child: const Icon(Icons.usb),
       );
     }
     return Padding(
