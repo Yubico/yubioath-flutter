@@ -29,6 +29,25 @@ The following operating systems are supported. The application may still run on 
 
 On Linux systems, make sure the `pcscd` service is installed and running.
 
+=== Building from source
+
+==== Debian/Ubuntu
+
+Install prerequisites:
+
+[source,bash]
+----
+sudo apt install make qmake qtquickcontrols2-5-dev qtmultimedia5-dev qml-module-io-thp-pyotherside libpcsclite-dev swig python3-pip
+pip3 install -r requirements.txt
+----
+
+Compile & install:
+
+[source,bash]
+----
+qmake && make
+sudo make install
+----
 
 === CLI
 Looking for a command line option? That is available in the https://developers.yubico.com/yubikey-manager/[YubiKey Manager CLI] with the `ykman oath` commands.
