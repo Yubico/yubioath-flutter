@@ -61,6 +61,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 labelText: 'Current PIN',
                 errorText: _currentIsWrong ? _currentPinError : null,
                 errorMaxLines: 3,
+                prefixIcon: const Icon(Icons.pin_outlined),
               ),
               onChanged: (value) {
                 setState(() {
@@ -82,6 +83,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               enabled: !hasPin || _currentPin.isNotEmpty,
               errorText: _newIsWrong ? _newPinError : null,
               errorMaxLines: 3,
+              prefixIcon: const Icon(Icons.pin_outlined),
             ),
             onChanged: (value) {
               setState(() {
@@ -96,6 +98,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               labelText: 'Confirm PIN',
+              prefixIcon: const Icon(Icons.pin_outlined),
               enabled:
                   (!hasPin || _currentPin.isNotEmpty) && _newPin.isNotEmpty,
             ),

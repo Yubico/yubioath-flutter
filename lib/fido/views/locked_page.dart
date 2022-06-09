@@ -165,6 +165,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
                 helperText: '', // Prevents dialog resizing
                 errorText: _pinIsWrong ? _getErrorText() : null,
                 errorMaxLines: 3,
+                prefixIcon: const Icon(Icons.pin_outlined),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _isObscure ? Icons.visibility : Icons.visibility_off,

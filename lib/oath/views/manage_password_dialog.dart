@@ -70,6 +70,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: 'Current password',
+                  prefixIcon: const Icon(Icons.password_outlined),
                   errorText: _currentIsWrong ? 'Wrong password' : null,
                   errorMaxLines: 3),
               onChanged: (value) {
@@ -125,6 +126,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               labelText: 'New password',
+              prefixIcon: const Icon(Icons.password_outlined),
               enabled: !widget.state.hasKey || _currentPassword.isNotEmpty,
             ),
             onChanged: (value) {
@@ -138,6 +140,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               labelText: 'Confirm password',
+              prefixIcon: const Icon(Icons.password_outlined),
               enabled: (!widget.state.hasKey || _currentPassword.isNotEmpty) &&
                   _newPassword.isNotEmpty,
             ),

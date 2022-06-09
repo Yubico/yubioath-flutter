@@ -253,6 +253,7 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
                   labelText: 'Password',
                   errorText: _passwordIsWrong ? 'Wrong password' : null,
                   helperText: '', // Prevents resizing when errorText shown
+                  prefixIcon: const Icon(Icons.password_outlined),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _isObscure ? Icons.visibility : Icons.visibility_off,
