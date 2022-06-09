@@ -37,6 +37,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final isValid = _newPin.isNotEmpty &&
         _newPin == _confirmPin &&
         (!hasPin || _currentPin.isNotEmpty);
+    final minPinLength = widget.state.minPinLength;
 
     return ResponsiveDialog(
       title: Text(hasPin ? 'Change PIN' : 'Set PIN'),
@@ -71,8 +72,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               },
             ),
           ],
-          const Text(
-              'Enter your new PIN. A PIN must be at least 4 characters long and may contain letters, numbers and special characters.'),
+          Text(
+              'Enter your new PIN. A PIN must be at least $minPinLength characters long and may contain letters, numbers and special characters.'),
           TextFormField(
             initialValue: _newPin,
             autofocus: !hasPin,
