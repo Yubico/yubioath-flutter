@@ -107,7 +107,16 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
         if (event is RawKeyDownEvent &&
             (Platform.isMacOS ? event.isMetaPressed : event.isControlPressed) &&
             event.logicalKey == LogicalKeyboardKey.keyC) {
-          copyToClipboard(context, ref);
+          () async {
+            if (isExpired(code, ref)) {
+              await calculateCode(context, ref);
+            }
+            await ref.read(withContextProvider)(
+              (context) async {
+                copyToClipboard(context, ref);
+              },
+            );
+          }();
           return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;
