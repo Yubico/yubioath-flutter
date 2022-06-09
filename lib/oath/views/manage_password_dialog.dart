@@ -134,6 +134,11 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 _newPassword = value;
               });
             },
+            onSubmitted: (_) {
+              if (isValid) {
+                _submit();
+              }
+            },
           ),
           TextField(
             obscureText: true,
