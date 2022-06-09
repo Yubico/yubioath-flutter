@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/app/state.dart';
 
@@ -73,6 +74,20 @@ class AccountView extends ConsumerWidget with AccountMixin {
         credential.oathType == OathType.hotp ||
         (credential.touchRequired && expired);
 
+    void triggerCopy() async {
+      if (calculateReady) {
+        await calculateCode(
+          context,
+          ref,
+        );
+      }
+      await ref.read(withContextProvider)(
+        (context) async {
+          copyToClipboard(context, ref);
+        },
+      );
+    }
+
     final darkMode = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
@@ -90,71 +105,71 @@ class AccountView extends ConsumerWidget with AccountMixin {
       },
       child: LayoutBuilder(builder: (context, constraints) {
         final showAvatar = constraints.maxWidth >= 315;
-        return ListTile(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          focusNode: focusNode,
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AccountDialog(credential);
-              },
-            );
-          },
-          onLongPress: () async {
-            if (calculateReady) {
-              await calculateCode(
-                context,
-                ref,
-              );
+        //TODO: Use Shortcuts, Intents, Actions
+        return Focus(
+          onKey: (node, event) {
+            if (event is RawKeyDownEvent &&
+                event.isControlPressed &&
+                event.logicalKey == LogicalKeyboardKey.keyC) {
+              triggerCopy();
+              return KeyEventResult.handled;
             }
-            await ref.read(withContextProvider)(
-              (context) async {
-                copyToClipboard(context, ref);
-              },
-            );
+            return KeyEventResult.ignored;
           },
-          leading: showAvatar
-              ? CircleAvatar(
-                  foregroundColor: darkMode ? Colors.black : Colors.white,
-                  backgroundColor: _iconColor(darkMode ? 300 : 400),
-                  child: Text(
-                    (credential.issuer ?? credential.name)
-                        .characters
-                        .first
-                        .toUpperCase(),
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w300),
-                  ),
-                )
-              : null,
-          title: Text(
-            title,
-            overflow: TextOverflow.fade,
-            maxLines: 1,
-            softWrap: false,
-          ),
-          subtitle: subtitle != null
-              ? Text(
-                  subtitle!,
-                  overflow: TextOverflow.fade,
-                  maxLines: 1,
-                  softWrap: false,
-                )
-              : null,
-          trailing: DecoratedBox(
-            decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              color: CardTheme.of(context).color,
-              borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+          child: ListTile(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            focusNode: focusNode,
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AccountDialog(credential);
+                },
+              );
+            },
+            onLongPress: triggerCopy,
+            leading: showAvatar
+                ? CircleAvatar(
+                    foregroundColor: darkMode ? Colors.black : Colors.white,
+                    backgroundColor: _iconColor(darkMode ? 300 : 400),
+                    child: Text(
+                      (credential.issuer ?? credential.name)
+                          .characters
+                          .first
+                          .toUpperCase(),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                  )
+                : null,
+            title: Text(
+              title,
+              overflow: TextOverflow.fade,
+              maxLines: 1,
+              softWrap: false,
             ),
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-              child: DefaultTextStyle.merge(
-                style: Theme.of(context).textTheme.bodyLarge,
-                child: buildCodeView(ref),
+            subtitle: subtitle != null
+                ? Text(
+                    subtitle!,
+                    overflow: TextOverflow.fade,
+                    maxLines: 1,
+                    softWrap: false,
+                  )
+                : null,
+            trailing: DecoratedBox(
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: CardTheme.of(context).color,
+                borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+                child: DefaultTextStyle.merge(
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  child: buildCodeView(ref),
+                ),
               ),
             ),
           ),
