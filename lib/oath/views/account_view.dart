@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -109,7 +110,9 @@ class AccountView extends ConsumerWidget with AccountMixin {
         return Focus(
           onKey: (node, event) {
             if (event is RawKeyDownEvent &&
-                event.isControlPressed &&
+                (Platform.isMacOS
+                    ? event.isMetaPressed
+                    : event.isControlPressed) &&
                 event.logicalKey == LogicalKeyboardKey.keyC) {
               triggerCopy();
               return KeyEventResult.handled;

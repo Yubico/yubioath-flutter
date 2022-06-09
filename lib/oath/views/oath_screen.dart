@@ -138,7 +138,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
       onKey: (node, event) {
         //TODO: Use Shortcuts, Intents, Actions
         if (event is RawKeyDownEvent &&
-            event.isControlPressed &&
+            (Platform.isMacOS ? event.isMetaPressed : event.isControlPressed) &&
             event.logicalKey == LogicalKeyboardKey.keyF) {
           searchController.selection = TextSelection(
               baseOffset: 0, extentOffset: searchController.text.length);

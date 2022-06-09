@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -104,7 +105,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
       autofocus: true,
       onKey: (node, event) {
         if (event is RawKeyDownEvent &&
-            event.isControlPressed &&
+            (Platform.isMacOS ? event.isMetaPressed : event.isControlPressed) &&
             event.logicalKey == LogicalKeyboardKey.keyC) {
           copyToClipboard(context, ref);
           return KeyEventResult.handled;
