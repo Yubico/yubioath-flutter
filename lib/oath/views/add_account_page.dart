@@ -60,6 +60,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       _loadCredentialData(data);
     } catch (e) {
       setState(() {
+        showMessage(context, 'No QR code found');
         _qrState = _QrScanState.failed;
       });
     }
@@ -79,27 +80,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       _isObscure = true;
       _qrState = _QrScanState.success;
     });
-  }
-
-  List<Widget> _buildQrStatus() {
-    switch (_qrState) {
-      case _QrScanState.success:
-        return const [
-          Icon(Icons.check_circle_outline_outlined),
-          Text('QR code scanned!'),
-        ];
-      case _QrScanState.scanning:
-        return const [
-          SizedBox.square(dimension: 16.0, child: CircularProgressIndicator()),
-        ];
-      case _QrScanState.failed:
-        return const [
-          Icon(Icons.warning_amber_rounded),
-          Text('No QR code found'),
-        ];
-      default:
-        return [];
-    }
   }
 
   @override
@@ -195,10 +175,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Account details',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
             TextField(
               key: const Key('issuer'),
               controller: _issuerController,
@@ -209,6 +185,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 border: OutlineInputBorder(),
                 labelText: 'Issuer (optional)',
                 helperText: '', // Prevents dialog resizing when enabled = false
+                prefixIcon: Icon(Icons.business_outlined),
               ),
               onChanged: (value) {
                 setState(() {
@@ -224,6 +201,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 border: OutlineInputBorder(),
                 labelText: 'Account name',
                 helperText: '', // Prevents dialog resizing when enabled = false
+                prefixIcon: Icon(Icons.people_alt_outlined),
               ),
               onChanged: (value) {
                 setState(() {
@@ -250,6 +228,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     },
                   ),
                   border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.key_outlined),
                   labelText: 'Secret key',
                   errorText: _validateSecretLength && !secretLengthValid
                       ? 'Invalid length'
@@ -263,26 +242,33 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             ),
             if (qrScanner != null)
               Padding(
-                padding: const EdgeInsets.only(top: 24.0),
+                padding: const EdgeInsets.only(top: 16.0),
                 child: Row(
                   children: [
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        _scanQrCode(qrScanner);
-                      },
-                      icon: const Icon(Icons.qr_code),
-                      label: const Text('Scan QR code'),
-                    ),
-                    const SizedBox(width: 8.0),
-                    ..._buildQrStatus(),
+                    if (_qrState != _QrScanState.scanning) ...[
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                            fixedSize: const Size.fromWidth(132)),
+                        onPressed: () {
+                          _scanQrCode(qrScanner);
+                        },
+                        icon: const Icon(Icons.qr_code),
+                        label: const Text('Scan QR code'),
+                      )
+                    ] else ...[
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                            fixedSize: const Size.fromWidth(132)),
+                        onPressed: null,
+                        child: const SizedBox.square(
+                            dimension: 16.0,
+                            child: CircularProgressIndicator()),
+                      )
+                    ]
                   ],
                 ),
               ),
             const Divider(),
-            Text(
-              'Options',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 4.0,

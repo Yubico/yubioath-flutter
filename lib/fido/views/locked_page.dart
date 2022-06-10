@@ -56,7 +56,6 @@ class FidoLockedPage extends ConsumerWidget {
       actions: _buildActions(context),
       child: Column(
         children: [
-          const ListTile(title: Text('Unlock')),
           _PinEntryForm(state, node),
         ],
       ),
@@ -123,14 +122,21 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
   final _pinController = TextEditingController();
   bool _blocked = false;
   int? _retries;
+  bool _pinIsWrong = false;
+  bool _isObscure = true;
 
   void _submit() async {
+    setState(() {
+      _pinIsWrong = false;
+      _isObscure = true;
+    });
     final result = await ref
         .read(fidoStateProvider(widget._deviceNode.path).notifier)
         .unlock(_pinController.text);
     result.whenOrNull(failed: (retries, authBlocked) {
       setState(() {
         _pinController.clear();
+        _pinIsWrong = true;
         _retries = retries;
         _blocked = authBlocked;
       });
@@ -154,23 +160,40 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
   Widget build(BuildContext context) {
     final noFingerprints = widget._state.bioEnroll == false;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18.0),
+      padding: const EdgeInsets.only(left: 18.0, right: 18, top: 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Enter the FIDO2 PIN for your YubiKey'),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
             child: TextField(
               autofocus: true,
-              obscureText: true,
+              obscureText: _isObscure,
               controller: _pinController,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: 'PIN',
-                errorText: _getErrorText(),
+                helperText: '', // Prevents dialog resizing
+                errorText: _pinIsWrong ? _getErrorText() : null,
+                errorMaxLines: 3,
+                prefixIcon: const Icon(Icons.pin_outlined),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isObscure ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isObscure = !_isObscure;
+                    });
+                  },
+                ),
               ),
-              onChanged: (_) => setState(() {}), // Update state on change
+              onChanged: (value) {
+                setState(() {
+                  _pinIsWrong = false;
+                });
+              }, // Update state on change
               onSubmitted: (_) => _submit(),
             ),
           ),
