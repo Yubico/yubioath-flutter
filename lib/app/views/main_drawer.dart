@@ -93,7 +93,10 @@ class MainPageDrawer extends ConsumerWidget {
               final nav = Navigator.of(context);
               if (shouldPop) nav.pop();
               showDialog(
-                  context: context, builder: (context) => const SettingsPage());
+                context: context,
+                builder: (context) => const SettingsPage(),
+                routeSettings: const RouteSettings(name: 'settings'),
+              );
             },
           ),
           DrawerItem(
@@ -103,7 +106,10 @@ class MainPageDrawer extends ConsumerWidget {
               final nav = Navigator.of(context);
               if (shouldPop) nav.pop();
               showDialog(
-                  context: context, builder: (context) => const AboutPage());
+                context: context,
+                builder: (context) => const AboutPage(),
+                routeSettings: const RouteSettings(name: 'about'),
+              );
             },
           ),
         ],

@@ -20,6 +20,18 @@ class MainPage extends ConsumerWidget {
         next?.call(context);
       },
     );
+    // If the current device changes, we need to pop any open dialogs.
+    ref.listen<DeviceNode?>(currentDeviceProvider, (_, __) {
+      Navigator.of(context).popUntil((route) {
+        return route.isFirst ||
+            [
+              'device_picker',
+              'settings',
+              'about',
+              'licenses',
+            ].contains(route.settings.name);
+      });
+    });
     final deviceData = ref.watch(currentDeviceDataProvider);
     if (deviceData == null) {
       final node = ref.watch(currentDeviceProvider);

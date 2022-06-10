@@ -39,11 +39,6 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop();
-    });
-
     return ResponsiveDialog(
       title: const Text('Rename fingerprint'),
       actions: [

@@ -119,12 +119,6 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      // Prevent over-popping if reset causes currentDevice to change.
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    });
-
     final progress = _samples == 0 ? 0.0 : _samples / (_samples + _remaining);
 
     return ResponsiveDialog(

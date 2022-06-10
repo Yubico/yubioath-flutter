@@ -232,11 +232,6 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<DeviceNode?>(currentDeviceProvider, (_, __) {
-      //TODO: This can probably be checked better to make sure it's the main page.
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    });
-
     var canSave = false;
     final child =
         ref.watch(managementStateProvider(widget.deviceData.node.path)).when(

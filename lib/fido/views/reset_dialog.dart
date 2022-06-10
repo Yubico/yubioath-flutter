@@ -47,12 +47,6 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      // Prevent over-popping if reset causes currentDevice to change.
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    });
-
     return ResponsiveDialog(
       title: const Text('Factory reset'),
       onCancel: () {

@@ -15,11 +15,6 @@ class DeleteFingerprintDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop(false);
-    });
-
     final label = fingerprint.label;
 
     return ResponsiveDialog(
