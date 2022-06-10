@@ -104,7 +104,7 @@ class AboutPage extends ConsumerWidget {
                 ),
                 onPressed: () {
                   launchUrl(
-                    Uri.parse('https://example.com'),
+                    Uri.parse('https://forms.gle/nYPVWcFnqoprZX1S9'),
                     mode: LaunchMode.externalApplication,
                   );
                 },

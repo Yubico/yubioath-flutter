@@ -13,18 +13,24 @@ const defaultHashAlgorithm = HashAlgorithm.sha1;
 
 enum HashAlgorithm {
   @JsonValue(0x01)
-  sha1,
+  sha1('SHA-1'),
   @JsonValue(0x02)
-  sha256,
+  sha256('SHA-256'),
   @JsonValue(0x03)
-  sha512,
+  sha512('SHA-512');
+
+  final String displayName;
+  const HashAlgorithm(this.displayName);
 }
 
 enum OathType {
   @JsonValue(0x10)
-  hotp,
+  hotp('Counter based'),
   @JsonValue(0x20)
-  totp,
+  totp('Time based');
+
+  final String displayName;
+  const OathType(this.displayName);
 }
 
 enum KeystoreState { unknown, allowed, failed }
