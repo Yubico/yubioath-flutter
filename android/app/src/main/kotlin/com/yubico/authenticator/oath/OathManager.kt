@@ -87,9 +87,6 @@ class OathManager(
         pendingYubiKeyAction.value?.let {
             _pendingYubiKeyAction.postValue(null)
             it.action.invoke(result)
-        } ?: run {
-            Log.e(TAG, "The pending action is not valid anymore")
-            throw IllegalStateException("The pending action is not valid anymore")
         }
 
     private var _isUsbKey = false
@@ -564,8 +561,7 @@ class OathManager(
         coroutineScope.launch(Dispatchers.Main) {
             if (!_isUsbKey) {
                 dialogManager.updateDialogState(
-                    title = "Action complete",
-                    description = "Success",
+                    title = "Action successfully completed",
                     icon = "check_circle",
                     delayMs = 500
                 )
@@ -584,10 +580,9 @@ class OathManager(
         coroutineScope.launch(Dispatchers.Main) {
             if (!_isUsbKey) {
                 dialogManager.updateDialogState(
-                    title = "Action complete",
-                    description = "Failure",
+                    title = "Action failed - try again",
                     icon = "error",
-                    delayMs = 500
+                    delayMs = 1500
                 )
                 dialogManager.closeDialog {
                     result.error(error)
