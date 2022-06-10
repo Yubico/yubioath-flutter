@@ -84,7 +84,6 @@ class _LockedView extends ConsumerWidget {
         ],
         child: Column(
           children: [
-            const ListTile(title: Text('Unlock')),
             _UnlockForm(
               devicePath,
               keystore: oathState.keystore,
@@ -130,6 +129,12 @@ class _UnlockedView extends ConsumerWidget {
             style: Theme.of(context).textTheme.titleSmall,
             decoration: const InputDecoration(
               hintText: 'Search accounts',
+              isDense: true,
+              prefixIcon: Icon(Icons.search_outlined),
+              prefixIconConstraints: BoxConstraints(
+                minHeight: 30,
+                minWidth: 30,
+              ),
               border: InputBorder.none,
             ),
             onChanged: (value) {
@@ -209,11 +214,13 @@ class _UnlockForm extends ConsumerStatefulWidget {
 class _UnlockFormState extends ConsumerState<_UnlockForm> {
   final _passwordController = TextEditingController();
   bool _remember = false;
-  bool _wrong = false;
+  bool _passwordIsWrong = false;
+  bool _isObscure = true;
 
   void _submit() async {
     setState(() {
-      _wrong = false;
+      _passwordIsWrong = false;
+      _isObscure = false;
     });
     final result = await ref
         .read(oathStateProvider(widget._devicePath).notifier)
@@ -221,10 +228,9 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
     if (!mounted) return;
     if (!result.first) {
       setState(() {
-        _wrong = true;
+        _passwordIsWrong = true;
         _passwordController.clear();
       });
-      showMessage(context, 'Wrong password');
     } else if (_remember && !result.second) {
       showMessage(context, 'Failed to remember password');
     }
@@ -236,7 +242,7 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.only(left: 18.0, right: 18, top: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -247,51 +253,60 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
               TextField(
                 controller: _passwordController,
                 autofocus: true,
-                obscureText: true,
+                obscureText: _isObscure,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: 'Password',
-                  errorText: _wrong ? 'Wrong password' : null,
+                  errorText: _passwordIsWrong ? 'Wrong password' : null,
                   helperText: '', // Prevents resizing when errorText shown
+                  prefixIcon: const Icon(Icons.password_outlined),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isObscure ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isObscure = !_isObscure;
+                      });
+                    },
+                  ),
                 ),
-                onChanged: (_) => setState(() {}), // Update state on change
+                onChanged: (_) => setState(() {
+                  _passwordIsWrong = false;
+                }), // Update state on change
                 onSubmitted: (_) => _submit(),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16.0),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(
-              child: keystoreFailed
-                  ? const ListTile(
-                      leading: Icon(Icons.warning_amber_rounded),
-                      title: Text('OS Keystore unavailable'),
-                      dense: true,
-                      minLeadingWidth: 0,
-                    )
-                  : CheckboxListTile(
-                      title: const Text('Remember password'),
-                      dense: true,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      value: _remember,
-                      onChanged: (value) {
-                        setState(() {
-                          _remember = value ?? false;
-                        });
-                      },
-                    ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ElevatedButton(
-                onPressed: _passwordController.text.isNotEmpty ? _submit : null,
-                child: const Text('Unlock'),
+        const SizedBox(height: 8.0),
+        keystoreFailed
+            ? const ListTile(
+                leading: Icon(Icons.warning_amber_rounded),
+                title: Text('OS Keystore unavailable'),
+                dense: true,
+                minLeadingWidth: 0,
+              )
+            : CheckboxListTile(
+                title: const Text('Remember password'),
+                dense: true,
+                controlAffinity: ListTileControlAffinity.leading,
+                value: _remember,
+                onChanged: (value) {
+                  setState(() {
+                    _remember = value ?? false;
+                  });
+                },
               ),
-            )
-          ],
+        Padding(
+          padding: const EdgeInsets.only(top: 12.0, right: 18.0, bottom: 4.0),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton(
+              onPressed: _passwordController.text.isNotEmpty ? _submit : null,
+              child: const Text('Unlock'),
+            ),
+          ),
         ),
       ],
     );

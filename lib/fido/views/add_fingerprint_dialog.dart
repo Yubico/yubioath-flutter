@@ -164,6 +164,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
               enabled: _fingerprint != null,
               border: const OutlineInputBorder(),
               labelText: 'Name',
+              prefixIcon: const Icon(Icons.fingerprint_outlined),
             ),
             onChanged: (value) {
               setState(() {
