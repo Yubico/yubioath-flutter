@@ -129,6 +129,12 @@ class _UnlockedView extends ConsumerWidget {
             style: Theme.of(context).textTheme.titleSmall,
             decoration: const InputDecoration(
               hintText: 'Search accounts',
+              isDense: true,
+              prefixIcon: Icon(Icons.search_outlined),
+              prefixIconConstraints: BoxConstraints(
+                minHeight: 30,
+                minWidth: 30,
+              ),
               border: InputBorder.none,
             ),
             onChanged: (value) {
