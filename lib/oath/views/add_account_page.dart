@@ -123,46 +123,45 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     final qrScanner = ref.watch(qrScannerProvider);
 
+    void submit() async {
+      if (secretLengthValid) {
+        final issuer = _issuerController.text;
+
+        final cred = CredentialData(
+          issuer: issuer.isEmpty ? null : issuer,
+          name: _accountController.text,
+          secret: secret,
+          oathType: _oathType,
+          hashAlgorithm: _hashAlgorithm,
+          digits: _digits,
+          period: period,
+        );
+
+        try {
+          await ref
+              .read(credentialListProvider(widget.devicePath).notifier)
+              .addAccount(cred.toUri(), requireTouch: _touch);
+          if (!mounted) return;
+          Navigator.of(context).pop();
+          showMessage(context, 'Account added');
+        } on UserCancelledException catch (_) {
+          // ignored
+        } catch (e) {
+          _log.error('Failed to add account', e);
+          showMessage(context, 'Failed adding account');
+        }
+      } else {
+        setState(() {
+          _validateSecretLength = true;
+        });
+      }
+    }
+
     return ResponsiveDialog(
       title: const Text('Add account'),
       actions: [
         TextButton(
-          onPressed: isValid
-              ? () async {
-                  if (secretLengthValid) {
-                    final issuer = _issuerController.text;
-
-                    final cred = CredentialData(
-                      issuer: issuer.isEmpty ? null : issuer,
-                      name: _accountController.text,
-                      secret: secret,
-                      oathType: _oathType,
-                      hashAlgorithm: _hashAlgorithm,
-                      digits: _digits,
-                      period: period,
-                    );
-
-                    try {
-                      await ref
-                          .read(credentialListProvider(widget.devicePath)
-                          .notifier)
-                          .addAccount(cred.toUri(), requireTouch: _touch);
-                      if (!mounted) return;
-                      Navigator.of(context).pop();
-                      showMessage(context, 'Account added');
-                    } on UserCancelledException catch (_) {
-                      // ignored
-                    } catch (e) {
-                      _log.error('Failed to add account', e);
-                      showMessage(context, 'Failed adding account');
-                    }
-                  } else {
-                    setState(() {
-                      _validateSecretLength = true;
-                    });
-                  }
-                }
-              : null,
+          onPressed: isValid ? submit : null,
           child: const Text('Save', key: Key('save_btn')),
         ),
       ],
@@ -195,6 +194,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   // Update maxlengths
                 });
               },
+              onSubmitted: (_) {
+                if (isValid) submit();
+              },
             ),
             TextField(
               key: const Key('name'),
@@ -210,6 +212,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 setState(() {
                   // Update maxlengths
                 });
+              },
+              onSubmitted: (_) {
+                if (isValid) submit();
               },
             ),
             TextField(
@@ -241,6 +246,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 setState(() {
                   _validateSecretLength = false;
                 });
+              },
+              onSubmitted: (_) {
+                if (isValid) submit();
               },
             ),
             if (qrScanner != null)
@@ -297,7 +305,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       items: OathType.values
                           .map((e) => DropdownMenuItem(
                                 value: e,
-                                child: Text(e.name.toUpperCase()),
+                                child: Text(e.displayName),
                               ))
                           .toList(),
                       onChanged: _qrState != _QrScanState.success
@@ -323,7 +331,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                               widget.state.version.isAtLeast(4, 3, 1))
                           .map((e) => DropdownMenuItem(
                                 value: e,
-                                child: Text(e.name.toUpperCase()),
+                                child: Text(e.displayName),
                               ))
                           .toList(),
                       onChanged: _qrState != _QrScanState.success

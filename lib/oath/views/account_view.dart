@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:yubico_authenticator/user_cancelled_exception.dart';
 import 'package:yubico_authenticator/app/state.dart';
 
+import '../../app/shortcuts.dart';
+import '../../app/state.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_dialog.dart';
@@ -74,6 +77,24 @@ class AccountView extends ConsumerWidget with AccountMixin {
         credential.oathType == OathType.hotp ||
         (credential.touchRequired && expired);
 
+    Future<void> triggerCopy() async {
+      try {
+        if (calculateReady) {
+          await calculateCode(
+            context,
+            ref,
+          );
+        }
+        await ref.read(withContextProvider)(
+              (context) async {
+            copyToClipboard(context, ref);
+          },
+        );
+      } on UserCancelledException catch (_) {
+        // ignored
+      }
+    }
+
     final darkMode = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
@@ -89,82 +110,75 @@ class AccountView extends ConsumerWidget with AccountMixin {
           items: _buildPopupMenu(context, ref),
         );
       },
-      child: LayoutBuilder(builder: (context, constraints) {
-        final showAvatar = constraints.maxWidth >= 315;
-        return ListTile(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          focusNode: focusNode,
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AccountDialog(credential);
-              },
-            );
-          },
-          onLongPress: () async {
-            try {
-              if (calculateReady) {
-                await calculateCode(
-                  context,
-                  ref,
-                );
-              }
-              await ref.read(withContextProvider)(
-                    (context) async {
-                  copyToClipboard(context, ref);
+      child: Actions(
+        actions: {
+          CopyIntent: CallbackAction(onInvoke: (_) async {
+            await triggerCopy();
+            return null;
+          }),
+        },
+        child: LayoutBuilder(builder: (context, constraints) {
+          final showAvatar = constraints.maxWidth >= 315;
+          return ListTile(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            focusNode: focusNode,
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AccountDialog(credential);
                 },
               );
-            } on UserCancelledException catch (_) {
-              // ignored
-            }
-          },
-          leading: showAvatar
-              ? CircleAvatar(
-                  foregroundColor: darkMode ? Colors.black : Colors.white,
-                  backgroundColor: _iconColor(darkMode ? 300 : 400),
-                  child: Text(
-                    (credential.issuer ?? credential.name)
-                        .characters
-                        .first
-                        .toUpperCase(),
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w300),
-                  ),
-                )
-              : null,
-          title: Text(
-            title,
-            overflow: TextOverflow.fade,
-            maxLines: 1,
-            softWrap: false,
-          ),
-          subtitle: subtitle != null
-              ? Text(
-                  subtitle!,
-                  overflow: TextOverflow.fade,
-                  maxLines: 1,
-                  softWrap: false,
-                )
-              : null,
-          trailing: DecoratedBox(
-            decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              color: CardTheme.of(context).color,
-              borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+            },
+            onLongPress: triggerCopy,
+            leading: showAvatar
+                ? CircleAvatar(
+                    foregroundColor: darkMode ? Colors.black : Colors.white,
+                    backgroundColor: _iconColor(darkMode ? 300 : 400),
+                    child: Text(
+                      (credential.issuer ?? credential.name)
+                          .characters
+                          .first
+                          .toUpperCase(),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                  )
+                : null,
+            title: Text(
+              title,
+              overflow: TextOverflow.fade,
+              maxLines: 1,
+              softWrap: false,
+
             ),
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-              child: DefaultTextStyle.merge(
-                style: Theme.of(context).textTheme.bodyLarge,
-                child: buildCodeView(ref),
+            subtitle: subtitle != null
+                ? Text(
+                    subtitle!,
+                    overflow: TextOverflow.fade,
+                    maxLines: 1,
+                    softWrap: false,
+                  )
+                : null,
+            trailing: DecoratedBox(
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: CardTheme.of(context).color,
+                borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+                child: DefaultTextStyle.merge(
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  child: buildCodeView(ref),
+                ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }

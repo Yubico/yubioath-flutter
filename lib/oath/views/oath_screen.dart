@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/shortcuts.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
@@ -93,15 +94,37 @@ class _LockedView extends ConsumerWidget {
       );
 }
 
-class _UnlockedView extends ConsumerWidget {
+class _UnlockedView extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OathState oathState;
 
   const _UnlockedView(this.devicePath, this.oathState);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isEmpty = ref.watch(credentialListProvider(devicePath)
+  ConsumerState<ConsumerStatefulWidget> createState() => _UnlockedViewState();
+}
+
+class _UnlockedViewState extends ConsumerState<_UnlockedView> {
+  late FocusNode searchFocus;
+  late TextEditingController searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    searchFocus = FocusNode();
+    searchController = TextEditingController(text: ref.read(searchProvider));
+  }
+
+  @override
+  void dispose() {
+    searchFocus.dispose();
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isEmpty = ref.watch(credentialListProvider(widget.devicePath)
         .select((value) => value?.isEmpty == true));
     if (isEmpty) {
       return MessagePage(
@@ -111,44 +134,57 @@ class _UnlockedView extends ConsumerWidget {
         actions: _buildActions(context, true),
       );
     }
-
-    return AppPage(
-      title: Focus(
-        canRequestFocus: false,
-        onKeyEvent: (node, event) {
-          if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-            node.focusInDirection(TraversalDirection.down);
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
-        child: Builder(builder: (context) {
-          return TextFormField(
-            key: const Key('search_accounts'),
-            initialValue: ref.read(searchProvider),
-            style: Theme.of(context).textTheme.titleSmall,
-            decoration: const InputDecoration(
-              hintText: 'Search accounts',
-              isDense: true,
-              prefixIcon: Icon(Icons.search_outlined),
-              prefixIconConstraints: BoxConstraints(
-                minHeight: 30,
-                minWidth: 30,
-              ),
-              border: InputBorder.none,
-            ),
-            onChanged: (value) {
-              ref.read(searchProvider.notifier).setFilter(value);
-            },
-            textInputAction: TextInputAction.next,
-            onFieldSubmitted: (value) {
-              Focus.of(context).focusInDirection(TraversalDirection.down);
-            },
-          );
+    return Actions(
+      actions: {
+        SearchIntent: CallbackAction(onInvoke: (_) {
+          searchController.selection = TextSelection(
+              baseOffset: 0, extentOffset: searchController.text.length);
+          searchFocus.requestFocus();
+          return null;
         }),
+      },
+      child: Focus(
+        autofocus: true,
+        child: AppPage(
+          title: Focus(
+            canRequestFocus: false,
+            onKeyEvent: (node, event) {
+              if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                node.focusInDirection(TraversalDirection.down);
+                return KeyEventResult.handled;
+              }
+              return KeyEventResult.ignored;
+            },
+            child: Builder(builder: (context) {
+              return TextFormField(
+                key: const Key('search_accounts'),
+                controller: searchController,
+                focusNode: searchFocus,
+                style: Theme.of(context).textTheme.titleSmall,
+                decoration: const InputDecoration(
+                  hintText: 'Search accounts',
+                  isDense: true,
+                  prefixIcon: Icon(Icons.search_outlined),
+                  prefixIconConstraints: BoxConstraints(
+                    minHeight: 30,
+                    minWidth: 30,
+                  ),
+                  border: InputBorder.none,
+                ),
+                onChanged: (value) {
+                  ref.read(searchProvider.notifier).setFilter(value);
+                },
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (value) {
+                  Focus.of(context).focusInDirection(TraversalDirection.down);
+                },
+              );
+            }),
+          ),
+          actions: _buildActions(context, false),
+          child: AccountList(widget.devicePath, widget.oathState),
+        ),
       ),
-      actions: _buildActions(context, false),
-      child: AccountList(devicePath, oathState),
     );
   }
 
@@ -162,8 +198,8 @@ class _UnlockedView extends ConsumerWidget {
           showDialog(
             context: context,
             builder: (context) => OathAddAccountPage(
-              devicePath,
-              oathState,
+              widget.devicePath,
+              widget.oathState,
               openQrScanner: Platform.isAndroid,
             ),
           );
@@ -175,13 +211,14 @@ class _UnlockedView extends ConsumerWidget {
         onPressed: () {
           showBottomMenu(context, [
             MenuAction(
-              text: oathState.hasKey ? 'Manage password' : 'Set password',
+              text:
+                  widget.oathState.hasKey ? 'Manage password' : 'Set password',
               icon: const Icon(Icons.password),
               action: (context) {
                 showDialog(
                   context: context,
                   builder: (context) =>
-                      ManagePasswordDialog(devicePath, oathState),
+                      ManagePasswordDialog(widget.devicePath, widget.oathState),
                 );
               },
             ),
@@ -191,7 +228,7 @@ class _UnlockedView extends ConsumerWidget {
               action: (context) {
                 showDialog(
                   context: context,
-                  builder: (context) => ResetDialog(devicePath),
+                  builder: (context) => ResetDialog(widget.devicePath),
                 );
               },
             ),
