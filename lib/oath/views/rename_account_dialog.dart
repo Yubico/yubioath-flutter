@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../user_cancelled_exception.dart';
 import '../../app/message.dart';
+import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
-import '../../app/models.dart';
-import '../../app/state.dart';
 import 'utils.dart';
 
 class RenameAccountDialog extends ConsumerStatefulWidget {
@@ -59,13 +60,18 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         TextButton(
           onPressed: isValid
               ? () async {
-                  final renamed = await ref
-                      .read(credentialListProvider(widget.device.path).notifier)
-                      .renameAccount(credential,
-                          _issuer.isNotEmpty ? _issuer : null, _account);
-                  if (!mounted) return;
-                  Navigator.of(context).pop(renamed);
-                  showMessage(context, 'Account renamed');
+                  try {
+                    final renamed = await ref
+                        .read(
+                            credentialListProvider(widget.device.path).notifier)
+                        .renameAccount(credential,
+                            _issuer.isNotEmpty ? _issuer : null, _account);
+                    if (!mounted) return;
+                    Navigator.of(context).pop(renamed);
+                    showMessage(context, 'Account renamed');
+                  } on UserCancelledException catch (_) {
+                    // ignored
+                  }
                 }
               : null,
           child: const Text('Save'),

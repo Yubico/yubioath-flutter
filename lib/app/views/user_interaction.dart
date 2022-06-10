@@ -99,12 +99,15 @@ UserInteractionController promptUserInteraction(
   Widget? icon,
   void Function()? onCancel,
 }) {
+  var wasPopped = false;
   final controller = _UserInteractionController(
     title: title,
     description: description,
     icon: icon,
     onClosed: () {
-      Navigator.of(context).pop();
+      if (!wasPopped) {
+        Navigator.of(context).pop();
+      }
     },
   );
   showDialog(
@@ -114,6 +117,7 @@ UserInteractionController promptUserInteraction(
           onWillPop: () async {
             if (onCancel != null) {
               onCancel();
+              wasPopped = true;
               return true;
             } else {
               return false;

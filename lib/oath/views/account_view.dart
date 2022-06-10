@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/user_cancelled_exception.dart';
 import 'package:yubico_authenticator/app/state.dart';
 
 import '../models.dart';
@@ -103,17 +104,21 @@ class AccountView extends ConsumerWidget with AccountMixin {
             );
           },
           onLongPress: () async {
-            if (calculateReady) {
-              await calculateCode(
-                context,
-                ref,
+            try {
+              if (calculateReady) {
+                await calculateCode(
+                  context,
+                  ref,
+                );
+              }
+              await ref.read(withContextProvider)(
+                    (context) async {
+                  copyToClipboard(context, ref);
+                },
               );
+            } on UserCancelledException catch (_) {
+              // ignored
             }
-            await ref.read(withContextProvider)(
-              (context) async {
-                copyToClipboard(context, ref);
-              },
-            );
           },
           leading: showAvatar
               ? CircleAvatar(

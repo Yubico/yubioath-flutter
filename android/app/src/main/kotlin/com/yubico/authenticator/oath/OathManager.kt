@@ -300,12 +300,16 @@ class OathManager(
 
     override fun deleteAccount(uri: String, result: Result<Void>) {
         coroutineScope.launch {
-            useOathSession("Delete account", true) { session ->
-                withUnlockedSession(session) {
-                    val credential = getOathCredential(session, uri)
-                    session.deleteCredential(credential)
-                    returnSuccess(result)
+            try {
+                useOathSession("Delete account", true) { session ->
+                    withUnlockedSession(session) {
+                        val credential = getOathCredential(session, uri)
+                        session.deleteCredential(credential)
+                        returnSuccess(result)
+                    }
                 }
+            } catch (cause: Throwable) {
+                returnError(result, cause)
             }
         }
     }
@@ -516,7 +520,9 @@ class OathManager(
             dialogManager.showDialog(title) {
                 coroutineScope.launch(Dispatchers.Main) {
                     Log.d(TAG, "Cancelled Dialog $title")
-                    provideYubiKey(com.yubico.yubikit.core.util.Result.failure(Exception("User canceled")))
+                    provideYubiKey(com.yubico.yubikit.core.util.Result.failure(
+                        UserCancelledException()
+                    ))
                 }
             }
         }

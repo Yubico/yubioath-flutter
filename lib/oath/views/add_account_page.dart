@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/user_cancelled_exception.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
 import '../../app/message.dart';
@@ -164,11 +165,13 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     try {
                       await ref
                           .read(credentialListProvider(widget.devicePath)
-                              .notifier)
+                          .notifier)
                           .addAccount(cred.toUri(), requireTouch: _touch);
                       if (!mounted) return;
                       Navigator.of(context).pop();
                       showMessage(context, 'Account added');
+                    } on UserCancelledException catch (_) {
+                      // ignored
                     } catch (e) {
                       _log.error('Failed to add account', e);
                       showMessage(context, 'Failed adding account');

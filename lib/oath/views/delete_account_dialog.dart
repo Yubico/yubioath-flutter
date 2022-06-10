@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/user_cancelled_exception.dart';
+import 'package:yubico_authenticator/android/oath/state.dart';
 
 import '../../app/message.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -29,15 +32,19 @@ class DeleteAccountDialog extends ConsumerWidget {
       actions: [
         TextButton(
           onPressed: () async {
-            await ref
-                .read(credentialListProvider(device.path).notifier)
-                .deleteAccount(credential);
-            await ref.read(withContextProvider)(
-              (context) async {
-                Navigator.of(context).pop();
-                showMessage(context, 'Account deleted');
-              },
-            );
+            try {
+              await ref
+                  .read(credentialListProvider(device.path).notifier)
+                  .deleteAccount(credential);
+              await ref.read(withContextProvider)(
+                    (context) async {
+                  Navigator.of(context).pop();
+                  showMessage(context, 'Account deleted');
+                },
+              );
+            } on UserCancelledException catch (_) {
+              // ignored
+            }
           },
           child: const Text('Delete'),
         ),
