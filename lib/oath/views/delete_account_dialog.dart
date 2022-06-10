@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/user_cancelled_exception.dart';
-import 'package:yubico_authenticator/android/oath/state.dart';
 
 import '../../app/message.dart';
 import '../../widgets/responsive_dialog.dart';
