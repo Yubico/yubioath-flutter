@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/app/state.dart';
 
+import '../../app/shortcuts.dart';
+import '../../app/state.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_dialog.dart';
@@ -104,22 +103,16 @@ class AccountView extends ConsumerWidget with AccountMixin {
           items: _buildPopupMenu(context, ref),
         );
       },
-      child: LayoutBuilder(builder: (context, constraints) {
-        final showAvatar = constraints.maxWidth >= 315;
-        //TODO: Use Shortcuts, Intents, Actions
-        return Focus(
-          onKey: (node, event) {
-            if (event is RawKeyDownEvent &&
-                (Platform.isMacOS
-                    ? event.isMetaPressed
-                    : event.isControlPressed) &&
-                event.logicalKey == LogicalKeyboardKey.keyC) {
-              triggerCopy();
-              return KeyEventResult.handled;
-            }
-            return KeyEventResult.ignored;
-          },
-          child: ListTile(
+      child: Actions(
+        actions: {
+          CopyIntent: CallbackAction(onInvoke: (_) {
+            triggerCopy();
+            return null;
+          }),
+        },
+        child: LayoutBuilder(builder: (context, constraints) {
+          final showAvatar = constraints.maxWidth >= 315;
+          return ListTile(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
             focusNode: focusNode,
@@ -175,9 +168,9 @@ class AccountView extends ConsumerWidget with AccountMixin {
                 ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }

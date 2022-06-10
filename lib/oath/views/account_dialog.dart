@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
@@ -100,88 +99,84 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
         Timer(Duration.zero, () => calculateCode(context, ref));
       }
     }
-    //TODO: Use Shortcuts, Intents, Actions
-    return Focus(
-      autofocus: true,
-      onKey: (node, event) {
-        if (event is RawKeyDownEvent &&
-            (Platform.isMacOS ? event.isMetaPressed : event.isControlPressed) &&
-            event.logicalKey == LogicalKeyboardKey.keyC) {
-          () async {
-            if (isExpired(code, ref)) {
-              await calculateCode(context, ref);
-            }
-            await ref.read(withContextProvider)(
-              (context) async {
-                copyToClipboard(context, ref);
-              },
-            );
-          }();
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
+    return Actions(
+      actions: {
+        CopyIntent: CallbackAction(onInvoke: (_) async {
+          if (isExpired(code, ref)) {
+            await calculateCode(context, ref);
+          }
+          await ref.read(withContextProvider)(
+            (context) async {
+              copyToClipboard(context, ref);
+            },
+          );
+          return null;
+        }),
       },
-      child: DialogFrame(
-        child: AlertDialog(
-          title: Center(
-            child: Text(
-              title,
-              overflow: TextOverflow.fade,
-              style: Theme.of(context).textTheme.headlineSmall,
-              maxLines: 1,
-              softWrap: false,
+      child: Focus(
+        autofocus: true,
+        child: DialogFrame(
+          child: AlertDialog(
+            title: Center(
+              child: Text(
+                title,
+                overflow: TextOverflow.fade,
+                style: Theme.of(context).textTheme.headlineSmall,
+                maxLines: 1,
+                softWrap: false,
+              ),
             ),
-          ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (subtitle != null)
-                Text(
-                  subtitle!,
-                  overflow: TextOverflow.fade,
-                  maxLines: 1,
-                  softWrap: false,
-                  // This is what ListTile uses for subtitle
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Theme.of(context).textTheme.caption!.color,
-                      ),
-                ),
-              const SizedBox(height: 12.0),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  color: CardTheme.of(context).color,
-                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-                ),
-                child: Center(
-                  child: FittedBox(
-                    child: DefaultTextStyle.merge(
-                      style: const TextStyle(fontSize: 28),
-                      child: IconTheme(
-                        data: IconTheme.of(context).copyWith(size: 24),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          child: buildCodeView(ref),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (subtitle != null)
+                  Text(
+                    subtitle!,
+                    overflow: TextOverflow.fade,
+                    maxLines: 1,
+                    softWrap: false,
+                    // This is what ListTile uses for subtitle
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Theme.of(context).textTheme.caption!.color,
+                        ),
+                  ),
+                const SizedBox(height: 12.0),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    color: CardTheme.of(context).color,
+                    borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                  ),
+                  child: Center(
+                    child: FittedBox(
+                      child: DefaultTextStyle.merge(
+                        style: const TextStyle(fontSize: 28),
+                        child: IconTheme(
+                          data: IconTheme.of(context).copyWith(size: 24),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: buildCodeView(ref),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
+              ],
+            ),
+            actionsPadding: const EdgeInsets.only(top: 10.0, right: -16.0),
+            actions: [
+              Center(
+                child: FittedBox(
+                  alignment: Alignment.center,
+                  child: Row(children: _buildActions(context, ref)),
+                ),
+              )
             ],
           ),
-          actionsPadding: const EdgeInsets.only(top: 10.0, right: -16.0),
-          actions: [
-            Center(
-              child: FittedBox(
-                alignment: Alignment.center,
-                child: Row(children: _buildActions(context, ref)),
-              ),
-            )
-          ],
         ),
       ),
     );
