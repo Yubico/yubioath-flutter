@@ -21,7 +21,7 @@ class MainPage extends ConsumerWidget {
       },
     );
     // If the current device changes, we need to pop any open dialogs.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (_, __) {
+    ref.listen<YubiKeyData?>(currentDeviceDataProvider, (_, __) {
       Navigator.of(context).popUntil((route) {
         return route.isFirst ||
             [
