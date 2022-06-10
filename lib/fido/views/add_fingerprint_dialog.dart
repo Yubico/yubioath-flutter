@@ -12,7 +12,6 @@ import '../../widgets/responsive_dialog.dart';
 import '../state.dart';
 import '../../fido/models.dart';
 import '../../app/models.dart';
-import '../../app/state.dart';
 
 final _log = Logger('fido.views.add_fingerprint_dialog');
 

@@ -6,7 +6,6 @@ import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../../app/models.dart';
-import '../../app/state.dart';
 import 'utils.dart';
 
 class RenameAccountDialog extends ConsumerStatefulWidget {
