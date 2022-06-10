@@ -557,6 +557,12 @@ class OathManager(
     private fun <T> returnSuccess(result: Result<T>, data: T? = null) {
         coroutineScope.launch(Dispatchers.Main) {
             if (!_isUsbKey) {
+                dialogManager.updateDialogState(
+                    title = "Action complete",
+                    description = "Success",
+                    icon = "check_circle",
+                    delayMs = 500
+                )
                 dialogManager.closeDialog {
                     result.success(data)
                 }
@@ -571,6 +577,12 @@ class OathManager(
     private fun <T> returnError(result: Result<T>, error: Throwable) {
         coroutineScope.launch(Dispatchers.Main) {
             if (!_isUsbKey) {
+                dialogManager.updateDialogState(
+                    title = "Action complete",
+                    description = "Failure",
+                    icon = "error",
+                    delayMs = 500
+                )
                 dialogManager.closeDialog {
                     result.error(error)
                 }

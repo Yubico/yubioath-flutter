@@ -3,9 +3,9 @@ package com.yubico.authenticator
 import com.yubico.authenticator.api.Pigeon.*
 import com.yubico.authenticator.logging.Log
 import io.flutter.plugin.common.BinaryMessenger
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 typealias OnDialogClosed = () -> Unit
 typealias OnDialogCancelled = () -> Unit
@@ -23,13 +23,26 @@ class DialogManager(messenger: BinaryMessenger, private var coroutineScope: Coro
 
     fun showDialog(message: String, cancelled: OnDialogCancelled?) =
         coroutineScope.launch(Dispatchers.Main) {
-            _fDialogApi.showDialogApi(message) { }
+            _fDialogApi.showDialog(message) { }
         }.also {
             onCancelled = cancelled
         }
 
+    suspend fun updateDialogState(title: String? = null, description: String? = null, icon: String? = null, delayMs: Long? = null) {
+        withContext(Dispatchers.Main) {
+            suspendCoroutine<Boolean> { continuation ->
+                _fDialogApi.updateDialogState(title, description, icon) {
+                    continuation.resume(true)
+                }
+            }
+            if (delayMs != null) {
+                delay(delayMs)
+            }
+        }
+    }
+
     fun closeDialog(onClosed: OnDialogClosed) {
-        _fDialogApi.closeDialogApi {
+        _fDialogApi.closeDialog {
             coroutineScope.launch(Dispatchers.Main) {
                 onClosed()
             }

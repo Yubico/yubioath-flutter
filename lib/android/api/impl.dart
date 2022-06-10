@@ -428,34 +428,52 @@ class _FDialogApiCodec extends StandardMessageCodec {
 abstract class FDialogApi {
   static const MessageCodec<Object?> codec = _FDialogApiCodec();
 
-  Future<void> showDialogApi(String dialogMessage);
-  Future<void> closeDialogApi();
+  Future<void> showDialog(String dialogMessage);
+  void updateDialogState(String? title, String? description, String? icon);
+  void closeDialog();
   static void setup(FDialogApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.FDialogApi.showDialogApi', codec, binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.FDialogApi.showDialog', codec, binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.FDialogApi.showDialogApi was null.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.FDialogApi.showDialog was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_dialogMessage = (args[0] as String?);
-          assert(arg_dialogMessage != null, 'Argument for dev.flutter.pigeon.FDialogApi.showDialogApi was null, expected non-null String.');
-          await api.showDialogApi(arg_dialogMessage!);
+          assert(arg_dialogMessage != null, 'Argument for dev.flutter.pigeon.FDialogApi.showDialog was null, expected non-null String.');
+          await api.showDialog(arg_dialogMessage!);
           return;
         });
       }
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.FDialogApi.closeDialogApi', codec, binaryMessenger: binaryMessenger);
+          'dev.flutter.pigeon.FDialogApi.updateDialogState', codec, binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null, 'Argument for dev.flutter.pigeon.FDialogApi.updateDialogState was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_title = (args[0] as String?);
+          final String? arg_description = (args[1] as String?);
+          final String? arg_icon = (args[2] as String?);
+          api.updateDialogState(arg_title, arg_description, arg_icon);
+          return;
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.FDialogApi.closeDialog', codec, binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           // ignore message
-          await api.closeDialogApi();
+          api.closeDialog();
           return;
         });
       }

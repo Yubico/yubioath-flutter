@@ -590,16 +590,23 @@ public class Pigeon {
       return FDialogApiCodec.INSTANCE;
     }
 
-    public void showDialogApi(@NonNull String dialogMessageArg, Reply<Void> callback) {
+    public void showDialog(@NonNull String dialogMessageArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.FDialogApi.showDialogApi", getCodec());
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.FDialogApi.showDialog", getCodec());
       channel.send(new ArrayList<Object>(Arrays.asList(dialogMessageArg)), channelReply -> {
         callback.reply(null);
       });
     }
-    public void closeDialogApi(Reply<Void> callback) {
+    public void updateDialogState(@Nullable String titleArg, @Nullable String descriptionArg, @Nullable String iconArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.FDialogApi.closeDialogApi", getCodec());
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.FDialogApi.updateDialogState", getCodec());
+      channel.send(new ArrayList<Object>(Arrays.asList(titleArg, descriptionArg, iconArg)), channelReply -> {
+        callback.reply(null);
+      });
+    }
+    public void closeDialog(Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.FDialogApi.closeDialog", getCodec());
       channel.send(null, channelReply -> {
         callback.reply(null);
       });
