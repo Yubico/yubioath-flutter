@@ -11,7 +11,6 @@ import '../../widgets/responsive_dialog.dart';
 import '../state.dart';
 import '../../fido/models.dart';
 import '../../app/models.dart';
-import '../../app/state.dart';
 
 final _log = Logger('fido.views.reset_dialog');
 
@@ -47,12 +46,6 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      // Prevent over-popping if reset causes currentDevice to change.
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    });
-
     return ResponsiveDialog(
       title: const Text('Factory reset'),
       onCancel: () {

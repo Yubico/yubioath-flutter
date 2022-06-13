@@ -6,7 +6,6 @@ import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../../app/models.dart';
-import '../../app/state.dart';
 import 'utils.dart';
 
 class RenameAccountDialog extends ConsumerStatefulWidget {
@@ -32,11 +31,6 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop();
-    });
-
     final credential = widget.credential;
 
     final label = credential.issuer != null

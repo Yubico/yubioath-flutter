@@ -77,10 +77,12 @@ class AboutPage extends ConsumerWidget {
               style: TextStyle(decoration: TextDecoration.underline),
             ),
             onPressed: () {
-              showLicensePage(
-                context: context,
-                applicationVersion: version,
-              );
+              Navigator.of(context).push(MaterialPageRoute<void>(
+                builder: (BuildContext context) => const LicensePage(
+                  applicationVersion: version,
+                ),
+                settings: const RouteSettings(name: 'licenses'),
+              ));
             },
           ),
           const Padding(
