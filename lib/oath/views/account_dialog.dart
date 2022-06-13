@@ -93,6 +93,13 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // TODO: Solve this in a cleaner way
+    if (ref.watch(currentDeviceDataProvider) == null) {
+      // The rest of this method assumes there is a device, and will throw an exception if not.
+      // This will never be shown, as the dialog will be immediately closed
+      return const SizedBox();
+    }
+
     final code = getCode(ref);
     if (code == null) {
       if (isDesktop) {

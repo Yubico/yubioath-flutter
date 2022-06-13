@@ -97,12 +97,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      //TODO: This can probably be checked better to make sure it's the main page.
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    });
-
     final period = int.tryParse(_periodController.text) ?? -1;
     final remaining = getRemainingKeySpace(
       oathType: _oathType,
@@ -206,7 +200,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 border: OutlineInputBorder(),
                 labelText: 'Account name',
                 helperText: '', // Prevents dialog resizing when enabled = false
-                prefixIcon: Icon(Icons.people_alt_outlined),
+                prefixIcon: Icon(Icons.person_outline),
               ),
               onChanged: (value) {
                 setState(() {

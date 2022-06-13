@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../app/state.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../core/models.dart';
 import '../../widgets/custom_icons.dart';
@@ -232,11 +231,6 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<DeviceNode?>(currentDeviceProvider, (_, __) {
-      //TODO: This can probably be checked better to make sure it's the main page.
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    });
-
     var canSave = false;
     final child =
         ref.watch(managementStateProvider(widget.deviceData.node.path)).when(

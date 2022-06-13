@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../app/state.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
@@ -28,11 +27,6 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop();
-    });
-
     final hasPin = widget.state.hasPin;
     final isValid = _newPin.isNotEmpty &&
         _newPin == _confirmPin &&

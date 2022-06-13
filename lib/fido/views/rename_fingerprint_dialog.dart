@@ -6,7 +6,6 @@ import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../../app/models.dart';
-import '../../app/state.dart';
 
 class RenameFingerprintDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -39,11 +38,6 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop();
-    });
-
     return ResponsiveDialog(
       title: const Text('Rename fingerprint'),
       actions: [

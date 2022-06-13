@@ -48,6 +48,7 @@ class DeviceButton extends ConsumerWidget {
           showDialog(
             context: context,
             builder: (context) => const DevicePickerDialog(),
+            routeSettings: const RouteSettings(name: 'device_picker'),
           );
         },
       ),
