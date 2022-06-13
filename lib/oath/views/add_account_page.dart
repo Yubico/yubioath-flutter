@@ -197,7 +197,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 border: OutlineInputBorder(),
                 labelText: 'Account name',
                 helperText: '', // Prevents dialog resizing when enabled = false
-                prefixIcon: Icon(Icons.people_alt_outlined),
+                prefixIcon: Icon(Icons.person_outline),
               ),
               onChanged: (value) {
                 setState(() {
