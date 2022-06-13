@@ -151,7 +151,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
       return 'PIN temporarily blocked, remove and reinsert your YubiKey.';
     }
     if (_retries != null) {
-      return 'Wrong PIN. $_retries attempts remaining.';
+      return 'Wrong PIN. $_retries attempt(s) remaining.';
     }
     return null;
   }
