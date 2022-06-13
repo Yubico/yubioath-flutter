@@ -106,7 +106,11 @@ class CurrentAppNotifier extends StateNotifier<Application> {
 }
 
 abstract class QrScanner {
-  Future<String> scanQr([String? imageData]);
+  /// Scans (or searches the given image) for a QR code, and decodes it.
+  ///
+  /// The contained data is returned as a String, or null, if no QR code is
+  /// found.
+  Future<String?> scanQr([String? imageData]);
 }
 
 final qrScannerProvider = Provider<QrScanner?>(

@@ -41,4 +41,4 @@ def scan_qr(image_data=None):
     result = zxingcpp.read_barcode(img)
     if result.valid:
         return result.text
-    raise ValueError("Unable to read QR code")
+    return None

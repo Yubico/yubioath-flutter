@@ -278,7 +278,13 @@ class CredentialsNode(RpcNode):
 
         if data.get_id() in self._creds:
             raise ValueError("Credential already exists")
-        credential = self.session.put_credential(data, require_touch)
+        try:
+            credential = self.session.put_credential(data, require_touch)
+        except ApduError as e:
+            if e.sw == SW.INCORRECT_PARAMETERS:
+                raise ValueError("Issuer/name too long")
+            raise e
+
         self._creds[credential.id] = credential
         return asdict(credential)
 
