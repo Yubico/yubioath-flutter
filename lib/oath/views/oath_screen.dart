@@ -257,7 +257,6 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
   void _submit() async {
     setState(() {
       _passwordIsWrong = false;
-      _isObscure = false;
     });
     final result = await ref
         .read(oathStateProvider(widget._devicePath).notifier)
