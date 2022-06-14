@@ -25,6 +25,8 @@ def _capture_screen():
                 rc = subprocess.call(["gnome-screenshot", "-f", fname])  # nosec
                 if rc == 0:
                     return Image.open(fname)
+            except FileNotFoundError:
+                pass  # Fall through to ValueError
             finally:
                 os.unlink(fname)
     raise ValueError("Unable to capture screenshot")
