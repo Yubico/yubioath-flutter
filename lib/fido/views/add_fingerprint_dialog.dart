@@ -8,6 +8,7 @@ import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
 import '../../app/message.dart';
+import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../state.dart';
 import '../../fido/models.dart';
@@ -92,7 +93,18 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     }, onError: (error, stacktrace) {
       _log.error('Error adding fingerprint', error, stacktrace);
       Navigator.of(context).pop();
-      showMessage(context, 'Error adding fingerprint');
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (error is RpcError) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = error.toString();
+      }
+      showMessage(
+        context,
+        'Error adding fingerprint: $errorMessage',
+        duration: const Duration(seconds: 4),
+      );
     });
   }
 
@@ -108,12 +120,27 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
   }
 
   void _submit() async {
-    await ref
-        .read(fingerprintProvider(widget.devicePath).notifier)
-        .renameFingerprint(_fingerprint!, _label);
-    if (!mounted) return;
-    Navigator.of(context).pop(true);
-    showMessage(context, 'Fingerprint added');
+    try {
+      await ref
+          .read(fingerprintProvider(widget.devicePath).notifier)
+          .renameFingerprint(_fingerprint!, _label);
+      if (!mounted) return;
+      Navigator.of(context).pop(true);
+      showMessage(context, 'Fingerprint added');
+    } catch (e) {
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (e is RpcError) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      showMessage(
+        context,
+        'Error setting name: $errorMessage',
+        duration: const Duration(seconds: 4),
+      );
+    }
   }
 
   @override
