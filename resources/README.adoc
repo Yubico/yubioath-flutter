@@ -1,0 +1,14 @@
+== Instructions for Linux
+
+To run Yubico Authenticator, execute the authenticator binary by double clicking or running it from command line:
+
+  ./authenticator
+
+You will need to have pcscd installed and running for Yubico Authenticator to work.
+On Ubuntu:
+
+  sudo apt install pcscd
+
+Note that the QR scanning feature requires gnome-screenshot when using Wayland.
+
+  sudo apt install gnome-screenshot
