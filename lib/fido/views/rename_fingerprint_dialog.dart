@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
+import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
@@ -28,12 +29,27 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
   }
 
   _submit() async {
-    final renamed = await ref
-        .read(fingerprintProvider(widget.devicePath).notifier)
-        .renameFingerprint(widget.fingerprint, _label);
-    if (!mounted) return;
-    Navigator.of(context).pop(renamed);
-    showMessage(context, 'Fingerprint renamed');
+    try {
+      final renamed = await ref
+          .read(fingerprintProvider(widget.devicePath).notifier)
+          .renameFingerprint(widget.fingerprint, _label);
+      if (!mounted) return;
+      Navigator.of(context).pop(renamed);
+      showMessage(context, 'Fingerprint renamed');
+    } catch (e) {
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (e is RpcError) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      showMessage(
+        context,
+        'Error renaming: $errorMessage',
+        duration: const Duration(seconds: 4),
+      );
+    }
   }
 
   @override
@@ -53,6 +69,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           const Text('This will change the label of the fingerprint.'),
           TextFormField(
             initialValue: _label,
+            // TODO: Make this field count UTF-8 bytes instead of characters.
             maxLength: 15,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),

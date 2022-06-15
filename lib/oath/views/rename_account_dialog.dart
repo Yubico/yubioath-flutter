@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
+import '../../app/logging.dart';
 import '../../app/message.dart';
+import '../../app/models.dart';
+import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
-import '../../app/models.dart';
 import 'utils.dart';
+
+final _log = Logger('oath.view.rename_account_dialog');
 
 class RenameAccountDialog extends ConsumerStatefulWidget {
   final DeviceNode device;
@@ -53,13 +58,30 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         TextButton(
           onPressed: isValid
               ? () async {
-                  final renamed = await ref
-                      .read(credentialListProvider(widget.device.path).notifier)
-                      .renameAccount(credential,
-                          _issuer.isNotEmpty ? _issuer : null, _account);
-                  if (!mounted) return;
-                  Navigator.of(context).pop(renamed);
-                  showMessage(context, 'Account renamed');
+                  try {
+                    final renamed = await ref
+                        .read(
+                            credentialListProvider(widget.device.path).notifier)
+                        .renameAccount(credential,
+                            _issuer.isNotEmpty ? _issuer : null, _account);
+                    if (!mounted) return;
+                    Navigator.of(context).pop(renamed);
+                    showMessage(context, 'Account renamed');
+                  } catch (e) {
+                    _log.error('Failed to add account', e);
+                    final String errorMessage;
+                    // TODO: Make this cleaner than importing desktop specific RpcError.
+                    if (e is RpcError) {
+                      errorMessage = e.message;
+                    } else {
+                      errorMessage = e.toString();
+                    }
+                    showMessage(
+                      context,
+                      'Failed adding account: $errorMessage',
+                      duration: const Duration(seconds: 4),
+                    );
+                  }
                 }
               : null,
           child: const Text('Save'),

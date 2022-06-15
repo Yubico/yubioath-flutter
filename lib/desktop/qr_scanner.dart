@@ -9,7 +9,7 @@ class RpcQrScanner implements QrScanner {
   RpcQrScanner(this._rpc);
 
   @override
-  Future<String> scanQr([String? imageData]) async {
+  Future<String?> scanQr([String? imageData]) async {
     final result = await _rpc.command('qr', [], params: {'image': imageData});
     return result['result'];
   }

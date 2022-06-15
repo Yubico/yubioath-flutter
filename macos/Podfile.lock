@@ -2,6 +2,8 @@ PODS:
   - desktop_drop (0.0.1):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
+  - screen_retriever (0.0.1):
+    - FlutterMacOS
   - shared_preferences_macos (0.0.1):
     - FlutterMacOS
   - url_launcher_macos (0.0.1):
@@ -12,6 +14,7 @@ PODS:
 DEPENDENCIES:
   - desktop_drop (from `Flutter/ephemeral/.symlinks/plugins/desktop_drop/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
+  - screen_retriever (from `Flutter/ephemeral/.symlinks/plugins/screen_retriever/macos`)
   - shared_preferences_macos (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_macos/macos`)
   - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
   - window_manager (from `Flutter/ephemeral/.symlinks/plugins/window_manager/macos`)
@@ -21,6 +24,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/desktop_drop/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
+  screen_retriever:
+    :path: Flutter/ephemeral/.symlinks/plugins/screen_retriever/macos
   shared_preferences_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_macos/macos
   url_launcher_macos:
@@ -31,6 +36,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   desktop_drop: 69eeff437544aa619c8db7f4481b3a65f7696898
   FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
+  screen_retriever: 59634572a57080243dd1bf715e55b6c54f241a38
   shared_preferences_macos: a64dc611287ed6cbe28fd1297898db1336975727
   url_launcher_macos: 597e05b8e514239626bcf4a850fcf9ef5c856ec3
   window_manager: 3a1844359a6295ab1e47659b1a777e36773cd6e8

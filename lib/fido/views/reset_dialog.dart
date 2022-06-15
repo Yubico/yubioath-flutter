@@ -7,6 +7,7 @@ import 'package:yubico_authenticator/app/logging.dart';
 
 import '../../app/message.dart';
 import '../../core/models.dart';
+import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../state.dart';
 import '../../fido/models.dart';
@@ -69,7 +70,18 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                   }, onError: (e) {
                     _log.error('Error performing FIDO reset', e);
                     Navigator.of(context).pop();
-                    showMessage(context, 'Error performing reset');
+                    final String errorMessage;
+                    // TODO: Make this cleaner than importing desktop specific RpcError.
+                    if (e is RpcError) {
+                      errorMessage = e.message;
+                    } else {
+                      errorMessage = e.toString();
+                    }
+                    showMessage(
+                      context,
+                      'Error performing reset: $errorMessage',
+                      duration: const Duration(seconds: 4),
+                    );
                   });
                 }
               : null,

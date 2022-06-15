@@ -32,7 +32,7 @@ class AppFailurePage extends ConsumerWidget {
             if (Platform.isMacOS) {
               message = 'Try to remove and re-insert your YubiKey.';
             } else if (Platform.isLinux) {
-              message = 'Make sure pcscd is running.';
+              message = 'Make sure pcscd is installed and running.';
             } else {
               message = 'Make sure your smart card service is functioning.';
             }

@@ -300,7 +300,7 @@ class UsbDeviceNode(AbstractDeviceNode):
     def ccid(self):
         try:
             return self._create_connection(SmartCardConnection)
-        except (ValueError, SmartcardException) as e:
+        except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
             raise ConnectionException("ccid", e)
 
@@ -335,7 +335,7 @@ class ReaderDeviceNode(AbstractDeviceNode):
             connection = self._device.open_connection(SmartCardConnection)
             info = read_info(connection)
             return ConnectionNode(self._device, connection, info)
-        except (ValueError, SmartcardException) as e:
+        except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
             raise ConnectionException("ccid", e)
 
@@ -346,7 +346,7 @@ class ReaderDeviceNode(AbstractDeviceNode):
                 info = read_info(conn)
             connection = self._device.open_connection(FidoConnection)
             return ConnectionNode(self._device, connection, info)
-        except (ValueError, SmartcardException) as e:
+        except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
             raise ConnectionException("fido", e)
 
