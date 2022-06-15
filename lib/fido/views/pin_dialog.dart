@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
+import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
+
+final _log = Logger('fido.views.pin_dialog');
 
 class FidoPinDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -68,6 +73,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           ],
           Text(
               'Enter your new PIN. A PIN must be at least $minPinLength characters long and may contain letters, numbers and special characters.'),
+          // TODO: Set max characters based on UTF-8 bytes
           TextFormField(
             initialValue: _newPin,
             autofocus: !hasPin,
@@ -128,23 +134,39 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       });
       return;
     }
-    final result = await ref
-        .read(fidoStateProvider(widget.devicePath).notifier)
-        .setPin(_newPin, oldPin: oldPin);
-    result.when(success: () {
-      Navigator.of(context).pop(true);
-      showMessage(context, 'PIN set');
-    }, failed: (retries, authBlocked) {
-      setState(() {
-        if (authBlocked) {
-          _currentPinError =
-              'PIN has been blocked until the YubiKey is removed and reinserted';
-          _currentIsWrong = true;
-        } else {
-          _currentPinError = 'Wrong PIN ($retries tries remaining)';
-          _currentIsWrong = true;
-        }
+    try {
+      final result = await ref
+          .read(fidoStateProvider(widget.devicePath).notifier)
+          .setPin(_newPin, oldPin: oldPin);
+      result.when(success: () {
+        Navigator.of(context).pop(true);
+        showMessage(context, 'PIN set');
+      }, failed: (retries, authBlocked) {
+        setState(() {
+          if (authBlocked) {
+            _currentPinError =
+                'PIN has been blocked until the YubiKey is removed and reinserted';
+            _currentIsWrong = true;
+          } else {
+            _currentPinError = 'Wrong PIN ($retries tries remaining)';
+            _currentIsWrong = true;
+          }
+        });
       });
-    });
+    } catch (e) {
+      _log.error('Failed to set PIN', e);
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (e is RpcError) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      showMessage(
+        context,
+        'Failed to set PIN: $errorMessage',
+        duration: const Duration(seconds: 4),
+      );
+    }
   }
 }

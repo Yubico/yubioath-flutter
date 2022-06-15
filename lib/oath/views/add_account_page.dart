@@ -10,6 +10,7 @@ import 'package:yubico_authenticator/app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../desktop/models.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
@@ -56,11 +57,30 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         _qrState = _QrScanState.scanning;
       });
       final otpauth = await qrScanner.scanQr();
-      final data = CredentialData.fromUri(Uri.parse(otpauth));
-      _loadCredentialData(data);
-    } catch (e) {
-      setState(() {
+      if (otpauth == null) {
+        if (!mounted) return;
         showMessage(context, 'No QR code found');
+        setState(() {
+          _qrState = _QrScanState.failed;
+        });
+      } else {
+        final data = CredentialData.fromUri(Uri.parse(otpauth));
+        _loadCredentialData(data);
+      }
+    } catch (e) {
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (e is RpcError) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      showMessage(
+        context,
+        'Failed reading QR code: $errorMessage',
+        duration: const Duration(seconds: 4),
+      );
+      setState(() {
         _qrState = _QrScanState.failed;
       });
     }
@@ -139,7 +159,18 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           showMessage(context, 'Account added');
         } catch (e) {
           _log.error('Failed to add account', e);
-          showMessage(context, 'Failed adding account');
+          final String errorMessage;
+          // TODO: Make this cleaner than importing desktop specific RpcError.
+          if (e is RpcError) {
+            errorMessage = e.message;
+          } else {
+            errorMessage = e.toString();
+          }
+          showMessage(
+            context,
+            'Failed adding account: $errorMessage',
+            duration: const Duration(seconds: 4),
+          );
         }
       } else {
         setState(() {
@@ -161,8 +192,13 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           if (qrScanner != null) {
             final b64Image = base64Encode(fileData);
             final otpauth = await qrScanner.scanQr(b64Image);
-            final data = CredentialData.fromUri(Uri.parse(otpauth));
-            _loadCredentialData(data);
+            if (otpauth == null) {
+              if (!mounted) return;
+              showMessage(context, 'No QR code found');
+            } else {
+              final data = CredentialData.fromUri(Uri.parse(otpauth));
+              _loadCredentialData(data);
+            }
           }
         },
         child: Column(

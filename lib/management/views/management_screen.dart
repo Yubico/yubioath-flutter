@@ -250,10 +250,11 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
               data: (info) {
                 bool hasConfig = info.version.major > 4;
                 if (hasConfig) {
-                  canSave = !_mapEquals(
-                    _enabled,
-                    info.config.enabledCapabilities,
-                  );
+                  canSave = _enabled[Transport.usb] != 0 &&
+                      !_mapEquals(
+                        _enabled,
+                        info.config.enabledCapabilities,
+                      );
                 } else {
                   canSave = _interfaces != 0 &&
                       _interfaces !=
