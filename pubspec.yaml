@@ -70,7 +70,7 @@ dev_dependencies:
   build_runner: ^2.1.4
   freezed: ^2.0.3
   json_serializable: ^6.0.0
-  pigeon: ^3.0.3
+  pigeon: ^3.1.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
