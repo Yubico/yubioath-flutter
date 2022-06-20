@@ -51,9 +51,6 @@ dependencies:
   desktop_drop: ^0.3.3
   url_launcher: ^6.1.2
 
-dependency_overrides:
-  analyzer: ^3.4.1
-
 dev_dependencies:
   integration_test:
     sdk: flutter
