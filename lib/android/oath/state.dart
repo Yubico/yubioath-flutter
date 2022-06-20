@@ -14,7 +14,7 @@ import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/oath/state.dart';
 
 import '../../oath/models.dart';
-import '../../user_cancelled_exception.dart';
+import '../../cancellation_exception.dart';
 import 'command_providers.dart';
 
 final _log = Logger('android.oath.state');
@@ -170,8 +170,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       }
       return code;
     } on PlatformException catch (pe) {
-      if (UserCancelledException.isCancellation(pe)) {
-        throw UserCancelledException();
+      if (CancellationException.isCancellation(pe)) {
+        throw CancellationException();
       }
       rethrow;
     }
@@ -205,8 +205,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       refresh();
       return addedCredential;
     } on PlatformException catch (pe) {
-      if (UserCancelledException.isCancellation(pe)) {
-        throw UserCancelledException();
+      if (CancellationException.isCancellation(pe)) {
+        throw CancellationException();
       }
       _log.error('Failed to add account.', pe);
       rethrow;
@@ -238,8 +238,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       return renamedCredential;
     } on PlatformException catch (pe) {
       _log.debug('Failed to execute renameOathCredential: ${pe.message}');
-      if (UserCancelledException.isCancellation(pe)) {
-        throw UserCancelledException();
+      if (CancellationException.isCancellation(pe)) {
+        throw CancellationException();
       }
       rethrow;
     }
@@ -255,8 +255,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       }
     } on PlatformException catch (e) {
       _log.debug('Received exception: $e');
-      if (UserCancelledException.isCancellation(e)) {
-        throw UserCancelledException();
+      if (CancellationException.isCancellation(e)) {
+        throw CancellationException();
       }
       rethrow;
     }

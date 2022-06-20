@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:yubico_authenticator/user_cancelled_exception.dart';
+import 'package:yubico_authenticator/cancellation_exception.dart';
 import 'package:yubico_authenticator/app/state.dart';
 
 import '../../app/shortcuts.dart';
@@ -90,7 +90,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
             copyToClipboard(context, ref);
           },
         );
-      } on UserCancelledException catch (_) {
+      } on CancellationException catch (_) {
         // ignored
       }
     }

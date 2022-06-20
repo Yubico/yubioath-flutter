@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/user_cancelled_exception.dart';
+import 'package:yubico_authenticator/cancellation_exception.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -35,7 +35,7 @@ class DeleteAccountDialog extends ConsumerWidget {
                   showMessage(context, 'Account deleted');
                 },
               );
-            } on UserCancelledException catch (_) {
+            } on CancellationException catch (_) {
               // ignored
             }
           },

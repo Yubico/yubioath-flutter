@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../user_cancelled_exception.dart';
+import '../../cancellation_exception.dart';
 import '../../widgets/circle_timer.dart';
 import '../../widgets/custom_icons.dart';
 import '../models.dart';
@@ -126,7 +126,7 @@ mixin AccountMixin {
               ? (context) async {
                   try {
                     await calculateCode(context, ref);
-                  } on UserCancelledException catch (_) {
+                  } on CancellationException catch (_) {
                     // ignored
                   }
                 }

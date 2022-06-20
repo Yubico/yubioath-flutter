@@ -518,7 +518,7 @@ class OathManager(
                 coroutineScope.launch(Dispatchers.Main) {
                     Log.d(TAG, "Cancelled Dialog $title")
                     provideYubiKey(com.yubico.yubikit.core.util.Result.failure(
-                        UserCancelledException()
+                        CancellationException()
                     ))
                 }
             }

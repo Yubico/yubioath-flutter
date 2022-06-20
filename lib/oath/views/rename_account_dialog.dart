@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-import '../../user_cancelled_exception.dart';
+import '../../cancellation_exception.dart';
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -68,7 +68,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                     if (!mounted) return;
                     Navigator.of(context).pop(renamed);
                     showMessage(context, 'Account renamed');
-                  } on UserCancelledException catch (_) {
+                  } on CancellationException catch (_) {
                     // ignored
                   } catch (e) {
                     _log.error('Failed to add account', e);
