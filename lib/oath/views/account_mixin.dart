@@ -94,63 +94,67 @@ mixin AccountMixin {
   }
 
   @protected
-  List<MenuAction> buildActions(BuildContext context, WidgetRef ref) {
-    final deviceData = ref.watch(currentDeviceDataProvider);
-    if (deviceData == null) {
-      return [];
-    }
-    final code = getCode(ref);
-    final expired = isExpired(code, ref);
-    final manual =
-        credential.touchRequired || credential.oathType == OathType.hotp;
-    final ready = expired || credential.oathType == OathType.hotp;
-    final pinned = isPinned(ref);
+  List<MenuAction> buildActions(BuildContext context, WidgetRef ref) =>
+      ref.watch(currentDeviceDataProvider).maybeWhen(
+            data: (data) {
+              final code = getCode(ref);
+              final expired = isExpired(code, ref);
+              final manual = credential.touchRequired ||
+                  credential.oathType == OathType.hotp;
+              final ready = expired || credential.oathType == OathType.hotp;
+              final pinned = isPinned(ref);
 
-    return [
-      MenuAction(
-        text: 'Copy to clipboard',
-        icon: const Icon(Icons.copy),
-        action: code == null || expired
-            ? null
-            : (context) {
-                Clipboard.setData(ClipboardData(text: code.value));
-                showMessage(context, 'Code copied to clipboard');
-              },
-      ),
-      if (manual)
-        MenuAction(
-          text: 'Calculate',
-          icon: const Icon(Icons.refresh),
-          action: ready
-              ? (context) {
-                  calculateCode(context, ref);
-                }
-              : null,
-        ),
-      MenuAction(
-        text: pinned ? 'Unpin account' : 'Pin account',
-        icon: pinned ? pushPinStrokeIcon : const Icon(Icons.push_pin_outlined),
-        action: (context) {
-          ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
-        },
-      ),
-      if (deviceData.info.version.isAtLeast(5, 3))
-        MenuAction(
-          icon: const Icon(Icons.edit_outlined),
-          text: 'Rename account',
-          action: (context) async {
-            await renameCredential(context, ref);
-          },
-        ),
-      MenuAction(
-        text: 'Delete account',
-        icon: const Icon(Icons.delete_outline),
-        action: (context) async {
-          await deleteCredential(context, ref);
-        },
-      ),
-    ];
-  }
+              return [
+                MenuAction(
+                  text: 'Copy to clipboard',
+                  icon: const Icon(Icons.copy),
+                  action: code == null || expired
+                      ? null
+                      : (context) {
+                          Clipboard.setData(ClipboardData(text: code.value));
+                          showMessage(context, 'Code copied to clipboard');
+                        },
+                ),
+                if (manual)
+                  MenuAction(
+                    text: 'Calculate',
+                    icon: const Icon(Icons.refresh),
+                    action: ready
+                        ? (context) {
+                            calculateCode(context, ref);
+                          }
+                        : null,
+                  ),
+                MenuAction(
+                  text: pinned ? 'Unpin account' : 'Pin account',
+                  icon: pinned
+                      ? pushPinStrokeIcon
+                      : const Icon(Icons.push_pin_outlined),
+                  action: (context) {
+                    ref
+                        .read(favoritesProvider.notifier)
+                        .toggleFavorite(credential.id);
+                  },
+                ),
+                if (data.info.version.isAtLeast(5, 3))
+                  MenuAction(
+                    icon: const Icon(Icons.edit_outlined),
+                    text: 'Rename account',
+                    action: (context) async {
+                      await renameCredential(context, ref);
+                    },
+                  ),
+                MenuAction(
+                  text: 'Delete account',
+                  icon: const Icon(Icons.delete_outline),
+                  action: (context) async {
+                    await deleteCredential(context, ref);
+                  },
+                ),
+              ];
+            },
+            orElse: () => [],
+          );
 
   @protected
   Widget buildCodeView(WidgetRef ref) {

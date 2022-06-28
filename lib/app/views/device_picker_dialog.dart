@@ -33,7 +33,7 @@ class DevicePickerDialog extends ConsumerWidget {
       devices.removeWhere((e) => e.path == currentNode.path);
       hero = _CurrentDeviceRow(
         currentNode,
-        data: ref.watch(currentDeviceDataProvider),
+        ref.watch(currentDeviceDataProvider),
         onTap: () {
           Navigator.of(context).pop();
         },
@@ -99,65 +99,61 @@ class DevicePickerDialog extends ConsumerWidget {
 
 class _CurrentDeviceRow extends StatelessWidget {
   final DeviceNode node;
-  final YubiKeyData? data;
+  final AsyncValue<YubiKeyData> data;
   final Function() onTap;
 
   const _CurrentDeviceRow(
-    this.node, {
-    this.data,
+    this.node,
+    this.data, {
     required this.onTap,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return node.when(usbYubiKey: (path, name, pid, info) {
-      if (info != null) {
-        return ListTile(
-          leading: DeviceAvatar.yubiKeyData(
-            data!,
-            selected: true,
-          ),
-          title: Text(name),
-          subtitle: Text(_getSubtitle(info)),
-          onTap: onTap,
-        );
-      } else {
-        return ListTile(
-          leading: DeviceAvatar.deviceNode(
-            node,
-            selected: true,
-          ),
-          title: Text(name),
-          subtitle: const Text('Device inaccessible'),
-          onTap: onTap,
-        );
-      }
-    }, nfcReader: (path, name) {
-      final info = data?.info;
-      if (info != null) {
-        return ListTile(
-          leading: DeviceAvatar.yubiKeyData(
-            data!,
-            selected: true,
-          ),
-          title: Text(data!.name),
-          isThreeLine: true,
-          subtitle: Text('$name\n${_getSubtitle(info)}'),
-          onTap: onTap,
-        );
-      } else {
-        return ListTile(
+  Widget build(BuildContext context) => data.when(
+        data: (data) {
+          final isNfc = data.node is NfcReaderNode;
+          return ListTile(
+            leading: DeviceAvatar.yubiKeyData(
+              data,
+              selected: true,
+            ),
+            isThreeLine: isNfc,
+            title: Text(isNfc ? node.name : data.name),
+            subtitle: Text(isNfc
+                ? '${data.name}\n${_getSubtitle(data.info)}'
+                : _getSubtitle(data.info)),
+            onTap: onTap,
+          );
+        },
+        error: (error, _) {
+          final String message;
+          switch (error) {
+            case 'unknown-device':
+              message = 'Unrecognized device';
+              break;
+            default:
+              message = 'No YubiKey present';
+          }
+          return ListTile(
+            leading: DeviceAvatar.deviceNode(
+              node,
+              selected: true,
+            ),
+            title: Text(message),
+            subtitle: Text(node.name),
+            onTap: onTap,
+          );
+        },
+        loading: () => ListTile(
           leading: DeviceAvatar.deviceNode(
             node,
             selected: true,
           ),
           title: const Text('No YubiKey present'),
-          subtitle: Text(name),
+          subtitle: Text(node.name),
           onTap: onTap,
-        );
-      }
-    });
-  }
+        ),
+      );
 }
 
 class _DeviceRow extends StatelessWidget {

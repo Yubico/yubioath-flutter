@@ -35,7 +35,8 @@ class MainPageDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final supportedApps = ref.watch(supportedAppsProvider);
-    final data = ref.watch(currentDeviceDataProvider);
+    final data =
+        ref.watch(currentDeviceDataProvider).whenOrNull(data: (data) => data);
     final currentApp = ref.watch(currentAppProvider);
 
     MediaQuery? mediaQuery =

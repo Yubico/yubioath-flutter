@@ -193,7 +193,8 @@ class _DesktopDevicesNotifier extends AttachedDevicesNotifier {
 }
 
 final _desktopDeviceDataProvider =
-    StateNotifierProvider<CurrentDeviceDataNotifier, YubiKeyData?>((ref) {
+    StateNotifierProvider<CurrentDeviceDataNotifier, AsyncValue<YubiKeyData>>(
+        (ref) {
   final notifier = CurrentDeviceDataNotifier(
     ref.watch(rpcProvider),
     ref.watch(currentDeviceProvider),
@@ -207,23 +208,24 @@ final _desktopDeviceDataProvider =
   return notifier;
 });
 
-final desktopDeviceDataProvider = Provider<YubiKeyData?>(
+final desktopDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
   (ref) {
     return ref.watch(_desktopDeviceDataProvider);
   },
 );
 
-class CurrentDeviceDataNotifier extends StateNotifier<YubiKeyData?> {
+class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
   final RpcSession _rpc;
   final DeviceNode? _deviceNode;
   Timer? _pollTimer;
 
-  CurrentDeviceDataNotifier(this._rpc, this._deviceNode) : super(null) {
+  CurrentDeviceDataNotifier(this._rpc, this._deviceNode)
+      : super(const AsyncValue.loading()) {
     final dev = _deviceNode;
     if (dev is UsbYubiKeyNode) {
       final info = dev.info;
       if (info != null) {
-        state = YubiKeyData(dev, dev.name, info);
+        state = AsyncValue.data(YubiKeyData(dev, dev.name, info));
       }
     }
   }
@@ -254,10 +256,10 @@ class CurrentDeviceDataNotifier extends StateNotifier<YubiKeyData?> {
       var result = await _rpc.command('get', node.path.segments);
       if (mounted) {
         if (result['data']['present']) {
-          state = YubiKeyData(node, result['data']['name'],
-              DeviceInfo.fromJson(result['data']['info']));
+          state = AsyncValue.data(YubiKeyData(node, result['data']['name'],
+              DeviceInfo.fromJson(result['data']['info'])));
         } else {
-          state = null;
+          state = AsyncValue.error(result['data']['status']);
         }
       }
     } on RpcError catch (e) {
@@ -265,7 +267,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<YubiKeyData?> {
     }
     if (mounted) {
       _pollTimer = Timer(
-          state == null ? _nfcAttachPollDelay : _nfcDetachPollDelay,
+          state is AsyncData ? _nfcDetachPollDelay : _nfcAttachPollDelay,
           _pollReader);
     }
   }

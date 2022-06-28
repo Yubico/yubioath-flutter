@@ -12,11 +12,11 @@ import '../management/models.dart';
 final _log = Logger('yubikeyDataCommandProvider');
 
 final androidYubikeyProvider =
-    StateNotifierProvider<_YubikeyProvider, YubiKeyData?>((ref) {
-  return _YubikeyProvider(null, ref);
+    StateNotifierProvider<_YubikeyProvider, AsyncValue<YubiKeyData>>((ref) {
+  return _YubikeyProvider(const AsyncValue.loading(), ref);
 });
 
-class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
+class _YubikeyProvider extends StateNotifier<AsyncValue<YubiKeyData>> {
   final Ref _ref;
   _YubikeyProvider(super.yubiKeyData, this._ref);
 
@@ -24,7 +24,7 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
     try {
       if (input.isEmpty) {
         _log.debug('Yubikey was detached.');
-        state = null;
+        state = const AsyncValue.loading();
 
         // reset other providers when YubiKey is removed
         _ref.refresh(androidStateProvider);
@@ -49,15 +49,17 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
 
       // reset oath providers on key change
       var yubiKeyData = YubiKeyData(deviceNode, name, deviceInfo);
-      if (state != yubiKeyData && state != null) {
-        _ref.refresh(androidStateProvider);
-        _ref.refresh(androidCredentialsProvider);
-      }
+      state.whenData((data) {
+        if (data != yubiKeyData) {
+          _ref.refresh(androidStateProvider);
+          _ref.refresh(androidCredentialsProvider);
+        }
+      });
 
-      state = yubiKeyData;
+      state = AsyncValue.data(yubiKeyData);
     } on Exception catch (e) {
       _log.debug('Invalid data for yubikey: $input. $e');
-      state = null;
+      state = AsyncValue.error(e);
     }
   }
 }
