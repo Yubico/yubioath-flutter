@@ -12,22 +12,20 @@ class DeviceButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final deviceNode = ref.watch(currentDeviceProvider);
-    final deviceData = ref.watch(currentDeviceDataProvider);
     Widget deviceWidget;
     if (deviceNode != null) {
-      if (deviceData != null) {
-        deviceWidget = DeviceAvatar.yubiKeyData(
-          deviceData,
-          selected: true,
-          radius: radius,
-        );
-      } else {
-        deviceWidget = DeviceAvatar.deviceNode(
-          deviceNode,
-          selected: true,
-          radius: radius,
-        );
-      }
+      deviceWidget = ref.watch(currentDeviceDataProvider).maybeWhen(
+            data: (data) => DeviceAvatar.yubiKeyData(
+              data,
+              selected: true,
+              radius: radius,
+            ),
+            orElse: () => DeviceAvatar.deviceNode(
+              deviceNode,
+              selected: true,
+              radius: radius,
+            ),
+          );
     } else {
       deviceWidget = DeviceAvatar(
         radius: radius,

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/android/init.dart' as android;
-import 'package:yubico_authenticator/app/views/no_device_screen.dart';
+import 'package:yubico_authenticator/app/views/device_error_screen.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/desktop/init.dart' as desktop;
 import 'package:yubico_authenticator/oath/views/account_list.dart';
@@ -55,7 +55,7 @@ void main() {
       await tester.pumpWidget(initializedApp);
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(NoDeviceScreen), findsNothing,
+      expect(find.byType(DeviceErrorScreen), findsNothing,
           reason: 'No YubiKey connected');
       expect(find.byType(OathScreen), findsOneWidget);
 

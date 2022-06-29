@@ -327,7 +327,9 @@ class ReaderDeviceNode(AbstractDeviceNode):
             with self._device.open_connection(SmartCardConnection) as conn:
                 return dict(self._read_data(conn), present=True)
         except NoCardException:
-            return dict(present=False)
+            return dict(present=False, status="no-card")
+        except ValueError:
+            return dict(present=False, status="unknown-device")
 
     @child
     def ccid(self):
