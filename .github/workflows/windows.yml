@@ -70,6 +70,7 @@ jobs:
           mkdir $dest
           mv build\windows\runner\Release\* $dest\
           mv yubioath-desktop.msi deploy
+          mv resources\win\release-win.ps1 deploy
 
       - name: Upload artifact
         uses: actions/upload-artifact@v1
