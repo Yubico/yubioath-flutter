@@ -1,16 +1,9 @@
 $version = $args[0]
 
-echo "Cloning the Git repo"
-git clone git@github.com:Yubico/yubioath-desktop-private.git
-
 echo "Renaming the Actions folder and moving it"
-mv yubioath-desktop-main-windows release
-mv release yubioath-desktop-private
+mv yubioath-desktop-* release
 
 echo "Signing the executables"
-cd yubioath-desktop-private
-echo "Sleeping 5s: Change to signing key"
-Start-Sleep -s 5
 signtool.exe sign /fd SHA256 /t http://timestamp.digicert.com/scripts/timstamp.dll release/authenticator.exe
 signtool.exe sign /fd SHA256 /t http://timestamp.digicert.com/scripts/timstamp.dll release/helper/authenticator-helper.exe
 
