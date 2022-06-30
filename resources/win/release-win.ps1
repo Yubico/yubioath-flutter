@@ -1,3 +1,5 @@
+$version = $args[0]
+
 echo "Cloning the Git repo"
 git clone git@github.com:Yubico/yubioath-desktop-private.git
 
@@ -16,9 +18,9 @@ echo "Setting env var and building installer"
 $env:SRCDIR = ".\release\"
 heat dir .\release -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
 candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs -ext WixUtilExtension -arch x64
-light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop-VERSION-win64.msi
+light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop-$version-win64.msi
 
 echo "Signing the installer"
-signtool.exe sign /d "Yubico Authenticator" /fd SHA256 /t http://timestamp.digicert.com/scripts/timstamp.dll yubioath-desktop-VERSION-win64.msi
+signtool.exe sign /d "Yubico Authenticator" /fd SHA256 /t http://timestamp.digicert.com/scripts/timstamp.dll yubioath-desktop-$version-win64.msi
 
 echo "All done"
