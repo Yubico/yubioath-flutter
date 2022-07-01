@@ -131,7 +131,15 @@ def update_helper_version(buf):
     )
     return buf
 
+# release-win.ps1
+def update_release_win(buf):
+    return sub1(
+        rf'\$version={version_pattern}',
+        f'$version={version}',
+        buf,
+    )
 
 update_file("pubspec.yaml", update_pubspec)
 update_file("windows/runner/Runner.rc", update_runner_rc)
 update_file("helper/version_info.txt", update_helper_version)
+update_file("resources/win/release-win.ps1", update_release_win)
