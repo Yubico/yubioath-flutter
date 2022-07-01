@@ -1,4 +1,4 @@
-$version = $args[0]
+$version=6.0.0-dev.0
 
 echo "Renaming the Actions folder and moving it"
 mv yubioath-desktop-* release
