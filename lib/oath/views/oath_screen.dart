@@ -62,7 +62,7 @@ class _LockedView extends ConsumerWidget {
                   text: 'Manage password',
                   icon: const Icon(Icons.password),
                   action: (context) {
-                    showDialog(
+                    showBlurDialog(
                       context: context,
                       builder: (context) =>
                           ManagePasswordDialog(devicePath, oathState),
@@ -73,7 +73,7 @@ class _LockedView extends ConsumerWidget {
                   text: 'Reset OATH',
                   icon: const Icon(Icons.delete),
                   action: (context) {
-                    showDialog(
+                    showBlurDialog(
                       context: context,
                       builder: (context) => ResetDialog(devicePath),
                     );
@@ -195,7 +195,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         label: const Text('Add account'),
         icon: const Icon(Icons.person_add_alt_1),
         onPressed: () {
-          showDialog(
+          showBlurDialog(
             context: context,
             builder: (context) => OathAddAccountPage(
               widget.devicePath,
@@ -215,7 +215,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   widget.oathState.hasKey ? 'Manage password' : 'Set password',
               icon: const Icon(Icons.password),
               action: (context) {
-                showDialog(
+                showBlurDialog(
                   context: context,
                   builder: (context) =>
                       ManagePasswordDialog(widget.devicePath, widget.oathState),
@@ -226,7 +226,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
               text: 'Reset OATH',
               icon: const Icon(Icons.delete),
               action: (context) {
-                showDialog(
+                showBlurDialog(
                   context: context,
                   builder: (context) => ResetDialog(widget.devicePath),
                 );

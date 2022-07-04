@@ -77,7 +77,7 @@ mixin AccountMixin {
   Future<OathCredential?> renameCredential(
       BuildContext context, WidgetRef ref) async {
     final node = ref.read(currentDeviceProvider)!;
-    return await showDialog(
+    return await showBlurDialog(
       context: context,
       builder: (context) => RenameAccountDialog(node, credential),
     );
@@ -86,7 +86,7 @@ mixin AccountMixin {
   @protected
   Future<bool> deleteCredential(BuildContext context, WidgetRef ref) async {
     final node = ref.read(currentDeviceProvider)!;
-    return await showDialog(
+    return await showBlurDialog(
           context: context,
           builder: (context) => DeleteAccountDialog(node, credential),
         ) ??

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -58,3 +60,26 @@ class _BottomMenu extends ConsumerWidget {
     );
   }
 }
+
+Future<T?> showBlurDialog<T>({
+  required BuildContext context,
+  required Widget Function(BuildContext) builder,
+  RouteSettings? routeSettings,
+}) =>
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.black12,
+      pageBuilder: (ctx, anim1, anim2) => builder(ctx),
+      transitionDuration: const Duration(milliseconds: 150),
+      transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
+        filter:
+            ImageFilter.blur(sigmaX: 4 * anim1.value, sigmaY: 4 * anim1.value),
+        child: FadeTransition(
+          opacity: anim1,
+          child: child,
+        ),
+      ),
+      routeSettings: routeSettings,
+    );

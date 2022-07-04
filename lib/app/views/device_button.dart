@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../message.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 import 'device_picker_dialog.dart';
@@ -43,7 +44,7 @@ class DeviceButton extends ConsumerWidget {
           child: deviceWidget,
         ),
         onPressed: () {
-          showDialog(
+          showBlurDialog(
             context: context,
             builder: (context) => const DevicePickerDialog(),
             routeSettings: const RouteSettings(name: 'device_picker'),

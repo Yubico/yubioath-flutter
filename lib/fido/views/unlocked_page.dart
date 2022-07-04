@@ -57,7 +57,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                 children: [
                   IconButton(
                       onPressed: () {
-                        showDialog(
+                        showBlurDialog(
                           context: context,
                           builder: (context) =>
                               DeleteCredentialDialog(node.path, cred),
@@ -96,7 +96,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                 children: [
                   IconButton(
                       onPressed: () {
-                        showDialog(
+                        showBlurDialog(
                           context: context,
                           builder: (context) =>
                               RenameFingerprintDialog(node.path, fp),
@@ -105,7 +105,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                       icon: const Icon(Icons.edit_outlined)),
                   IconButton(
                       onPressed: () {
-                        showDialog(
+                        showBlurDialog(
                           context: context,
                           builder: (context) =>
                               DeleteFingerprintDialog(node.path, fp),
@@ -163,7 +163,7 @@ class FidoUnlockedPage extends ConsumerWidget {
             label: const Text('Add fingerprint'),
             icon: const Icon(Icons.fingerprint),
             onPressed: () {
-              showDialog(
+              showBlurDialog(
                 context: context,
                 builder: (context) => AddFingerprintDialog(node.path),
               );
@@ -178,7 +178,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                 text: 'Change PIN',
                 icon: const Icon(Icons.pin),
                 action: (context) {
-                  showDialog(
+                  showBlurDialog(
                     context: context,
                     builder: (context) => FidoPinDialog(node.path, state),
                   );
@@ -188,7 +188,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                 text: 'Reset FIDO',
                 icon: const Icon(Icons.delete),
                 action: (context) {
-                  showDialog(
+                  showBlurDialog(
                     context: context,
                     builder: (context) => ResetDialog(node),
                   );

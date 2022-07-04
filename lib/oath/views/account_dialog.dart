@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
@@ -24,7 +25,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
       // Replace this dialog with a new one, for the renamed credential.
       await ref.read(withContextProvider)((context) async {
         Navigator.of(context).pop();
-        await showDialog(
+        await showBlurDialog(
           context: context,
           builder: (context) {
             return AccountDialog(renamed);

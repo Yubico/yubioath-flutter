@@ -71,7 +71,7 @@ class FidoLockedPage extends ConsumerWidget {
             label: const Text('Set PIN'),
             icon: const Icon(Icons.pin),
             onPressed: () {
-              showDialog(
+              showBlurDialog(
                 context: context,
                 builder: (context) => FidoPinDialog(node.path, state),
               );
@@ -87,7 +87,7 @@ class FidoLockedPage extends ConsumerWidget {
                   text: 'Change PIN',
                   icon: const Icon(Icons.pin),
                   action: (context) {
-                    showDialog(
+                    showBlurDialog(
                       context: context,
                       builder: (context) => FidoPinDialog(node.path, state),
                     );
@@ -97,7 +97,7 @@ class FidoLockedPage extends ConsumerWidget {
                 text: 'Reset FIDO',
                 icon: const Icon(Icons.delete),
                 action: (context) {
-                  showDialog(
+                  showBlurDialog(
                     context: context,
                     builder: (context) => ResetDialog(node),
                   );
