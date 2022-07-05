@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/state.dart';
 import '../../management/models.dart';
 import '../models.dart';
 import '../state.dart';
@@ -18,12 +20,36 @@ String _getSubtitle(DeviceInfo info) {
   return subtitle;
 }
 
+final _hiddenDevicesProvider =
+    StateNotifierProvider<_HiddenDevicesNotifier, List<String>>(
+        (ref) => _HiddenDevicesNotifier(ref.watch(prefProvider)));
+
+class _HiddenDevicesNotifier extends StateNotifier<List<String>> {
+  static const String _key = 'DEVICE_PICKER_HIDDEN';
+  final SharedPreferences _prefs;
+  _HiddenDevicesNotifier(this._prefs) : super(_prefs.getStringList(_key) ?? []);
+
+  void showAll() {
+    state = [];
+    _prefs.setStringList(_key, state);
+  }
+
+  void hideDevice(DevicePath devicePath) {
+    state = [...state, devicePath.key];
+    _prefs.setStringList(_key, state);
+  }
+}
+
 class DevicePickerDialog extends ConsumerWidget {
   const DevicePickerDialog({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final devices = ref.watch(attachedDevicesProvider).toList();
+    final hidden = ref.watch(_hiddenDevicesProvider);
+    final devices = ref
+        .watch(attachedDevicesProvider)
+        .where((e) => !hidden.contains(e.path.key))
+        .toList();
     final currentNode = ref.watch(currentDeviceProvider);
 
     final Widget hero;
@@ -34,23 +60,25 @@ class DevicePickerDialog extends ConsumerWidget {
       hero = _CurrentDeviceRow(
         currentNode,
         ref.watch(currentDeviceDataProvider),
-        onTap: () {
-          Navigator.of(context).pop();
-        },
       );
     } else {
-      hero = ListTile(
-        leading: DeviceAvatar(
-          selected: true,
-          child: Icon(Platform.isAndroid ? Icons.no_cell : Icons.usb),
-        ),
-        title: Text(Platform.isAndroid ? 'No YubiKey' : 'USB'),
-        subtitle: Text(Platform.isAndroid
-            ? 'Insert or tap a YubiKey'
-            : 'Insert a YubiKey'),
-        onTap: () {
-          Navigator.of(context).pop();
-        },
+      hero = Column(
+        children: [
+          DeviceAvatar(
+            selected: true,
+            radius: 64,
+            child: Icon(Platform.isAndroid ? Icons.no_cell : Icons.usb),
+          ),
+          ListTile(
+            title:
+                Center(child: Text(Platform.isAndroid ? 'No YubiKey' : 'USB')),
+            subtitle: Center(
+              child: Text(Platform.isAndroid
+                  ? 'Insert or tap a YubiKey'
+                  : 'Insert a YubiKey'),
+            ),
+          ),
+        ],
       );
       showUsb = false;
     }
@@ -68,31 +96,55 @@ class DevicePickerDialog extends ConsumerWidget {
           title: const Text('USB'),
           subtitle: const Text('No YubiKey present'),
           onTap: () {
-            Navigator.of(context).pop();
+            //Navigator.of(context).pop();
             ref.read(currentDeviceProvider.notifier).setCurrentDevice(null);
           },
         ),
       ...devices.map(
-        (e) => _DeviceRow(
-          e,
-          info: e.map(
-            usbYubiKey: (node) => node.info,
-            nfcReader: (_) => null,
-          ),
-          onTap: () {
-            Navigator.of(context).pop();
-            ref.read(currentDeviceProvider.notifier).setCurrentDevice(e);
-          },
+        (e) => e.map(
+          usbYubiKey: (node) => _DeviceRow(node, info: node.info),
+          nfcReader: (node) => _NfcDeviceRow(node),
         ),
       ),
     ];
 
-    return SimpleDialog(
-      children: [
-        hero,
-        if (others.isNotEmpty) const Divider(),
-        ...others,
-      ],
+    return GestureDetector(
+      onSecondaryTapDown: hidden.isEmpty
+          ? null
+          : (details) {
+              showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                  details.globalPosition.dx,
+                  details.globalPosition.dy,
+                  details.globalPosition.dx,
+                  0,
+                ),
+                items: [
+                  PopupMenuItem(
+                    onTap: () {
+                      ref.read(_hiddenDevicesProvider.notifier).showAll();
+                    },
+                    child: const ListTile(
+                      title: Text('Show hidden devices'),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
+              );
+            },
+      child: SimpleDialog(
+        children: [
+          hero,
+          if (others.isNotEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: Divider(),
+            ),
+          ...others,
+        ],
+      ),
     );
   }
 }
@@ -100,29 +152,32 @@ class DevicePickerDialog extends ConsumerWidget {
 class _CurrentDeviceRow extends StatelessWidget {
   final DeviceNode node;
   final AsyncValue<YubiKeyData> data;
-  final Function() onTap;
 
-  const _CurrentDeviceRow(
-    this.node,
-    this.data, {
-    required this.onTap,
-  });
+  const _CurrentDeviceRow(this.node, this.data);
 
   @override
   Widget build(BuildContext context) => data.when(
         data: (data) {
           final isNfc = data.node is NfcReaderNode;
-          return ListTile(
-            leading: DeviceAvatar.yubiKeyData(
-              data,
-              selected: true,
-            ),
-            isThreeLine: isNfc,
-            title: Text(isNfc ? node.name : data.name),
-            subtitle: Text(isNfc
-                ? '${data.name}\n${_getSubtitle(data.info)}'
-                : _getSubtitle(data.info)),
-            onTap: onTap,
+          return Column(
+            children: [
+              DeviceAvatar.yubiKeyData(
+                data,
+                selected: true,
+                radius: 64,
+              ),
+              ListTile(
+                isThreeLine: isNfc,
+                title: Center(child: Text(data.name)),
+                subtitle: Column(
+                  children: [
+                    Text(_getSubtitle(data.info)),
+                    if (isNfc) Text(node.name),
+                  ],
+                ),
+                //onTap: onTap,
+              ),
+            ],
           );
         },
         error: (error, _) {
@@ -134,41 +189,47 @@ class _CurrentDeviceRow extends StatelessWidget {
             default:
               message = 'No YubiKey present';
           }
-          return ListTile(
-            leading: DeviceAvatar.deviceNode(
-              node,
-              selected: true,
-            ),
-            title: Text(message),
-            subtitle: Text(node.name),
-            onTap: onTap,
+          return Column(
+            children: [
+              DeviceAvatar.deviceNode(
+                node,
+                selected: true,
+                radius: 64,
+              ),
+              ListTile(
+                title: Center(child: Text(message)),
+                subtitle: Center(child: Text(node.name)),
+              ),
+            ],
           );
         },
-        loading: () => ListTile(
-          leading: DeviceAvatar.deviceNode(
-            node,
-            selected: true,
-          ),
-          title: const Text('No YubiKey present'),
-          subtitle: Text(node.name),
-          onTap: onTap,
+        loading: () => Column(
+          children: [
+            DeviceAvatar.deviceNode(
+              node,
+              selected: true,
+              radius: 64,
+            ),
+            ListTile(
+              title: const Center(child: Text('No YubiKey present')),
+              subtitle: Center(child: Text(node.name)),
+            ),
+          ],
         ),
       );
 }
 
-class _DeviceRow extends StatelessWidget {
+class _DeviceRow extends ConsumerWidget {
   final DeviceNode node;
   final DeviceInfo? info;
-  final Function() onTap;
 
   const _DeviceRow(
     this.node, {
-    required this.info,
-    required this.onTap,
+    this.info,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
       leading: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -185,7 +246,59 @@ class _DeviceRow extends StatelessWidget {
           nfcReader: (_, __) => 'Select to scan',
         ),
       ),
-      onTap: onTap,
+      onTap: () {
+        //Navigator.of(context).pop();
+        ref.read(currentDeviceProvider.notifier).setCurrentDevice(node);
+      },
+    );
+  }
+}
+
+class _NfcDeviceRow extends ConsumerWidget {
+  final DeviceNode node;
+
+  const _NfcDeviceRow(this.node);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hidden = ref.watch(_hiddenDevicesProvider);
+    return GestureDetector(
+      onSecondaryTapDown: (details) {
+        showMenu(
+          context: context,
+          position: RelativeRect.fromLTRB(
+            details.globalPosition.dx,
+            details.globalPosition.dy,
+            details.globalPosition.dx,
+            0,
+          ),
+          items: [
+            PopupMenuItem(
+              enabled: hidden.isNotEmpty,
+              onTap: () {
+                ref.read(_hiddenDevicesProvider.notifier).showAll();
+              },
+              child: ListTile(
+                title: const Text('Show hidden devices'),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                enabled: hidden.isNotEmpty,
+              ),
+            ),
+            PopupMenuItem(
+              onTap: () {
+                ref.read(_hiddenDevicesProvider.notifier).hideDevice(node.path);
+              },
+              child: const ListTile(
+                title: Text('Hide device'),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+          ],
+        );
+      },
+      child: _DeviceRow(node),
     );
   }
 }
