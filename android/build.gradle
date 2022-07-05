@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.6.20'
+    ext.kotlin_version = '1.6.21'
     repositories {
         google()
         mavenCentral()
@@ -16,16 +16,15 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        mavenLocal()  // TODO: Remove this before release
     }
 
     project.ext {
         minSdkVersion = 23
-        targetSdkVersion = 31
-        compileSdkVersion = 31
+        targetSdkVersion = 32
+        compileSdkVersion = 32
         buildToolsVersion = "30.0.3"
 
-        yubiKitVersion = "2.1.0-SNAPSHOT"
+        yubiKitVersion = "2.1.0-alpha.1"
         junitVersion = "4.13.2"
         mockitoVersion = "3.9.0"
     }

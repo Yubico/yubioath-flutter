@@ -6,33 +6,37 @@ import 'device_avatar.dart';
 import 'device_picker_dialog.dart';
 
 class DeviceButton extends ConsumerWidget {
-  const DeviceButton({Key? key}) : super(key: key);
+  final double radius;
+  const DeviceButton({super.key, this.radius = 16});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final deviceNode = ref.watch(currentDeviceProvider);
-    final deviceData = ref.watch(currentDeviceDataProvider);
     Widget deviceWidget;
     if (deviceNode != null) {
-      if (deviceData != null) {
-        deviceWidget = DeviceAvatar.yubiKeyData(
-          deviceData,
-          selected: true,
-        );
-      } else {
-        deviceWidget = DeviceAvatar.deviceNode(
-          deviceNode,
-          selected: true,
-        );
-      }
+      deviceWidget = ref.watch(currentDeviceDataProvider).maybeWhen(
+            data: (data) => DeviceAvatar.yubiKeyData(
+              data,
+              selected: true,
+              radius: radius,
+            ),
+            orElse: () => DeviceAvatar.deviceNode(
+              deviceNode,
+              selected: true,
+              radius: radius,
+            ),
+          );
     } else {
-      deviceWidget = const DeviceAvatar(
-        child: Icon(Icons.more_horiz),
+      deviceWidget = DeviceAvatar(
+        radius: radius,
+        selected: true,
+        child: const Icon(Icons.usb),
       );
     }
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: IconButton(
+        tooltip: 'Select YubiKey or device',
         icon: OverflowBox(
           maxHeight: 44,
           maxWidth: 44,
@@ -42,6 +46,7 @@ class DeviceButton extends ConsumerWidget {
           showDialog(
             context: context,
             builder: (context) => const DevicePickerDialog(),
+            routeSettings: const RouteSettings(name: 'device_picker'),
           );
         },
       ),

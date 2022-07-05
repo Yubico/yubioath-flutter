@@ -61,6 +61,7 @@ Map<String, dynamic> _$$_OathPairToJson(_$_OathPair instance) =>
 
 _$_OathState _$$_OathStateFromJson(Map<String, dynamic> json) => _$_OathState(
       json['device_id'] as String,
+      Version.fromJson(json['version'] as List<dynamic>),
       hasKey: json['has_key'] as bool,
       remembered: json['remembered'] as bool,
       locked: json['locked'] as bool,
@@ -70,6 +71,7 @@ _$_OathState _$$_OathStateFromJson(Map<String, dynamic> json) => _$_OathState(
 Map<String, dynamic> _$$_OathStateToJson(_$_OathState instance) =>
     <String, dynamic>{
       'device_id': instance.deviceId,
+      'version': instance.version,
       'has_key': instance.hasKey,
       'remembered': instance.remembered,
       'locked': instance.locked,

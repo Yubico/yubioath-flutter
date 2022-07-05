@@ -10,6 +10,7 @@ import 'package:yubico_authenticator/app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../desktop/models.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
@@ -25,10 +26,10 @@ enum _QrScanState { none, scanning, success, failed }
 
 class OathAddAccountPage extends ConsumerStatefulWidget {
   final DevicePath devicePath;
+  final OathState state;
   final bool openQrScanner;
-  const OathAddAccountPage(this.devicePath,
-      {Key? key, required this.openQrScanner})
-      : super(key: key);
+  const OathAddAccountPage(this.devicePath, this.state,
+      {super.key, required this.openQrScanner});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -56,9 +57,29 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         _qrState = _QrScanState.scanning;
       });
       final otpauth = await qrScanner.scanQr();
-      final data = CredentialData.fromUri(Uri.parse(otpauth));
-      _loadCredentialData(data);
+      if (otpauth == null) {
+        if (!mounted) return;
+        showMessage(context, 'No QR code found');
+        setState(() {
+          _qrState = _QrScanState.failed;
+        });
+      } else {
+        final data = CredentialData.fromUri(Uri.parse(otpauth));
+        _loadCredentialData(data);
+      }
     } catch (e) {
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (e is RpcError) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      showMessage(
+        context,
+        'Failed reading QR code: $errorMessage',
+        duration: const Duration(seconds: 4),
+      );
       setState(() {
         _qrState = _QrScanState.failed;
       });
@@ -81,27 +102,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     });
   }
 
-  List<Widget> _buildQrStatus() {
-    switch (_qrState) {
-      case _QrScanState.success:
-        return const [
-          Icon(Icons.check_circle_outline_outlined),
-          Text('QR code scanned!'),
-        ];
-      case _QrScanState.scanning:
-        return const [
-          SizedBox.square(dimension: 16.0, child: CircularProgressIndicator()),
-        ];
-      case _QrScanState.failed:
-        return const [
-          Icon(Icons.warning_amber_rounded),
-          Text('No QR code found'),
-        ];
-      default:
-        return [];
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -116,12 +116,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      //TODO: This can probably be checked better to make sure it's the main page.
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    });
-
     final period = int.tryParse(_periodController.text) ?? -1;
     final remaining = getRemainingKeySpace(
       oathType: _oathType,
@@ -142,24 +136,74 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     final qrScanner = ref.watch(qrScannerProvider);
 
+    void submit() async {
+      if (secretLengthValid) {
+        final issuer = _issuerController.text;
+
+        final cred = CredentialData(
+          issuer: issuer.isEmpty ? null : issuer,
+          name: _accountController.text,
+          secret: secret,
+          oathType: _oathType,
+          hashAlgorithm: _hashAlgorithm,
+          digits: _digits,
+          period: period,
+        );
+
+        try {
+          await ref
+              .read(credentialListProvider(widget.devicePath).notifier)
+              .addAccount(cred.toUri(), requireTouch: _touch);
+          if (!mounted) return;
+          Navigator.of(context).pop();
+          showMessage(context, 'Account added');
+        } catch (e) {
+          _log.error('Failed to add account', e);
+          final String errorMessage;
+          // TODO: Make this cleaner than importing desktop specific RpcError.
+          if (e is RpcError) {
+            errorMessage = e.message;
+          } else {
+            errorMessage = e.toString();
+          }
+          showMessage(
+            context,
+            'Failed adding account: $errorMessage',
+            duration: const Duration(seconds: 4),
+          );
+        }
+      } else {
+        setState(() {
+          _validateSecretLength = true;
+        });
+      }
+    }
+
     return ResponsiveDialog(
       title: const Text('Add account'),
+      actions: [
+        TextButton(
+          onPressed: isValid ? submit : null,
+          child: const Text('Save', key: Key('save_btn')),
+        ),
+      ],
       child: FileDropTarget(
         onFileDropped: (fileData) async {
           if (qrScanner != null) {
             final b64Image = base64Encode(fileData);
             final otpauth = await qrScanner.scanQr(b64Image);
-            final data = CredentialData.fromUri(Uri.parse(otpauth));
-            _loadCredentialData(data);
+            if (otpauth == null) {
+              if (!mounted) return;
+              showMessage(context, 'No QR code found');
+            } else {
+              final data = CredentialData.fromUri(Uri.parse(otpauth));
+              _loadCredentialData(data);
+            }
           }
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Account details',
-              style: Theme.of(context).textTheme.headline6,
-            ),
             TextField(
               key: const Key('issuer'),
               controller: _issuerController,
@@ -170,11 +214,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 border: OutlineInputBorder(),
                 labelText: 'Issuer (optional)',
                 helperText: '', // Prevents dialog resizing when enabled = false
+                prefixIcon: Icon(Icons.business_outlined),
               ),
               onChanged: (value) {
                 setState(() {
                   // Update maxlengths
                 });
+              },
+              onSubmitted: (_) {
+                if (isValid) submit();
               },
             ),
             TextField(
@@ -185,11 +233,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 border: OutlineInputBorder(),
                 labelText: 'Account name',
                 helperText: '', // Prevents dialog resizing when enabled = false
+                prefixIcon: Icon(Icons.person_outline),
               ),
               onChanged: (value) {
                 setState(() {
                   // Update maxlengths
                 });
+              },
+              onSubmitted: (_) {
+                if (isValid) submit();
               },
             ),
             TextField(
@@ -211,6 +263,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     },
                   ),
                   border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.key_outlined),
                   labelText: 'Secret key',
                   errorText: _validateSecretLength && !secretLengthValid
                       ? 'Invalid length'
@@ -221,44 +274,56 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   _validateSecretLength = false;
                 });
               },
+              onSubmitted: (_) {
+                if (isValid) submit();
+              },
             ),
             if (qrScanner != null)
               Padding(
-                padding: const EdgeInsets.only(top: 24.0),
+                padding: const EdgeInsets.only(top: 16.0),
                 child: Row(
                   children: [
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        _scanQrCode(qrScanner);
-                      },
-                      icon: const Icon(Icons.qr_code),
-                      label: const Text('Scan QR code'),
-                    ),
-                    const SizedBox(width: 8.0),
-                    ..._buildQrStatus(),
+                    if (_qrState != _QrScanState.scanning) ...[
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                            fixedSize: const Size.fromWidth(132)),
+                        onPressed: () {
+                          _scanQrCode(qrScanner);
+                        },
+                        icon: const Icon(Icons.qr_code),
+                        label: const Text('Scan QR code'),
+                      )
+                    ] else ...[
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                            fixedSize: const Size.fromWidth(132)),
+                        onPressed: null,
+                        child: const SizedBox.square(
+                            dimension: 16.0,
+                            child: CircularProgressIndicator()),
+                      )
+                    ]
                   ],
                 ),
               ),
             const Divider(),
-            Text(
-              'Options',
-              style: Theme.of(context).textTheme.headline6,
-            ),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 4.0,
               runSpacing: 8.0,
               children: [
-                FilterChip(
-                  label: const Text('Require touch'),
-                  selected: _touch,
-                  onSelected: (value) {
-                    setState(() {
-                      _touch = value;
-                    });
-                  },
-                ),
+                if (widget.state.version.isAtLeast(4, 2))
+                  FilterChip(
+                    label: const Text('Require touch'),
+                    selected: _touch,
+                    onSelected: (value) {
+                      setState(() {
+                        _touch = value;
+                      });
+                    },
+                  ),
                 Chip(
+                  backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
                     child: DropdownButton<OathType>(
                       value: _oathType,
@@ -267,7 +332,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       items: OathType.values
                           .map((e) => DropdownMenuItem(
                                 value: e,
-                                child: Text(e.name.toUpperCase()),
+                                child: Text(e.displayName),
                               ))
                           .toList(),
                       onChanged: _qrState != _QrScanState.success
@@ -281,15 +346,19 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   ),
                 ),
                 Chip(
+                  backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
                     child: DropdownButton<HashAlgorithm>(
                       value: _hashAlgorithm,
                       isDense: true,
                       underline: null,
                       items: HashAlgorithm.values
+                          .where((alg) =>
+                              alg != HashAlgorithm.sha512 ||
+                              widget.state.version.isAtLeast(4, 3, 1))
                           .map((e) => DropdownMenuItem(
                                 value: e,
-                                child: Text(e.name.toUpperCase()),
+                                child: Text(e.displayName),
                               ))
                           .toList(),
                       onChanged: _qrState != _QrScanState.success
@@ -304,6 +373,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 ),
                 if (_oathType == OathType.totp)
                   Chip(
+                    backgroundColor: ChipTheme.of(context).selectedColor,
                     label: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
                         value: int.tryParse(_periodController.text) ??
@@ -328,6 +398,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     ),
                   ),
                 Chip(
+                  backgroundColor: ChipTheme.of(context).selectedColor,
                   label: DropdownButtonHideUnderline(
                     child: DropdownButton<int>(
                       value: _digits,
@@ -359,44 +430,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               .toList(),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: isValid
-              ? () async {
-                  if (secretLengthValid) {
-                    final issuer = _issuerController.text;
-
-                    final cred = CredentialData(
-                      issuer: issuer.isEmpty ? null : issuer,
-                      name: _accountController.text,
-                      secret: secret,
-                      oathType: _oathType,
-                      hashAlgorithm: _hashAlgorithm,
-                      digits: _digits,
-                      period: period,
-                    );
-
-                    try {
-                      await ref
-                          .read(credentialListProvider(widget.devicePath)
-                              .notifier)
-                          .addAccount(cred.toUri(), requireTouch: _touch);
-                      Navigator.of(context).pop();
-                      showMessage(context, 'Account added');
-                    } catch (e) {
-                      _log.error('Failed to add account', e);
-                      showMessage(context, 'Failed adding account');
-                    }
-                  } else {
-                    setState(() {
-                      _validateSecretLength = true;
-                    });
-                  }
-                }
-              : null,
-          child: const Text('Save', key: Key('save_btn')),
-        ),
-      ],
     );
   }
 }

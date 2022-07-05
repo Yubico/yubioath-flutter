@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:yubico_authenticator/app/views/no_device_screen.dart';
 import 'package:yubico_authenticator/oath/views/account_list.dart';
 import 'package:yubico_authenticator/oath/views/oath_screen.dart';
 
@@ -24,11 +23,11 @@ String randomPadded() {
 }
 
 String generateRandomIssuer() {
-  return 'i' + randomPadded();
+  return 'i${randomPadded()}';
 }
 
 String generateRandomName() {
-  return 'n' + randomPadded();
+  return 'n${randomPadded()}';
 }
 
 String generateRandomSecret() {
@@ -45,8 +44,6 @@ void main() {
       await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(NoDeviceScreen), findsNothing,
-          reason: 'No YubiKey connected');
       expect(find.byType(OathScreen), findsOneWidget);
 
       await tester.tap(find.byType(FloatingActionButton));
@@ -75,11 +72,7 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(
-          find.descendant(
-              of: find.byType(AccountList),
-              matching: find.textContaining(issuer)),
-          findsOneWidget);
+      expect(find.descendant(of: find.byType(AccountList), matching: find.textContaining(issuer)), findsOneWidget);
 
       await tester.pump(const Duration(seconds: 3));
     });

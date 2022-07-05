@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
+import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_view.dart';
@@ -10,8 +11,7 @@ import 'account_view.dart';
 class AccountList extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OathState oathState;
-  const AccountList(this.devicePath, this.oathState, {Key? key})
-      : super(key: key);
+  const AccountList(this.devicePath, this.oathState, {super.key});
 
   @override
   ConsumerState<AccountList> createState() => _AccountListState();
@@ -94,24 +94,14 @@ class _AccountListState extends ConsumerState<AccountList> {
 
     return Column(
       children: [
-        if (pinnedCreds.isNotEmpty)
-          const ListTile(
-            title: Text(
-              'Pinned',
-            ),
-          ),
+        if (pinnedCreds.isNotEmpty) const ListTitle('Pinned'),
         ...pinnedCreds.map(
           (entry) => AccountView(
             entry.credential,
             focusNode: _focusNodes[entry.credential],
           ),
         ),
-        if (creds.isNotEmpty)
-          const ListTile(
-            title: Text(
-              'Accounts',
-            ),
-          ),
+        if (creds.isNotEmpty) const ListTitle('Accounts'),
         ...creds.map(
           (entry) => AccountView(
             entry.credential,

@@ -9,12 +9,11 @@ class ResponsiveDialog extends StatefulWidget {
   final Function()? onCancel;
 
   const ResponsiveDialog(
-      {Key? key,
+      {super.key,
       required this.child,
       this.title,
       this.actions = const [],
-      this.onCancel})
-      : super(key: key);
+      this.onCancel});
 
   @override
   State<ResponsiveDialog> createState() => _ResponsiveDialogState();
@@ -30,7 +29,6 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
           // Fullscreen
           return Scaffold(
             appBar: AppBar(
-              centerTitle: true,
               title: widget.title,
               actions: widget.actions,
               leading: CloseButton(
@@ -41,7 +39,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               ),
             ),
             body: SingleChildScrollView(
-              padding: const EdgeInsets.all(18.0),
+              padding: const EdgeInsets.all(20.0),
               child: Container(key: _childKey, child: widget.child),
             ),
           );
@@ -52,7 +50,6 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               : 'Cancel';
           return DialogFrame(
             child: AlertDialog(
-              insetPadding: EdgeInsets.zero,
               title: widget.title,
               scrollable: true,
               content: SizedBox(

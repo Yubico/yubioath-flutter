@@ -27,15 +27,14 @@ class OverlayClipper extends CustomClipper<Path> {
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }
 
-class MobileScannerWrapper extends StatelessWidget {
+class _MobileScannerWrapper extends StatelessWidget {
   final Function(String) onDetect;
   final _ScanStatus status;
 
-  const MobileScannerWrapper({
-    Key? key,
+  const _MobileScannerWrapper({
     required this.onDetect,
     required this.status,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -90,10 +89,10 @@ class MobileScannerWrapper extends StatelessWidget {
 }
 
 class QrScannerView extends StatefulWidget {
-  const QrScannerView({Key? key}) : super(key: key);
+  const QrScannerView({super.key});
 
   @override
-  _QrScannerViewState createState() => _QrScannerViewState();
+  State<QrScannerView> createState() => _QrScannerViewState();
 }
 
 class _QrScannerViewState extends State<QrScannerView> {
@@ -166,7 +165,7 @@ class _QrScannerViewState extends State<QrScannerView> {
               ),
             ),
             body: Stack(children: [
-              MobileScannerWrapper(
+              _MobileScannerWrapper(
                 status: _status,
                 onDetect: (scannedData) => handleResult(scannedData),
               ),
@@ -186,19 +185,19 @@ class _QrScannerViewState extends State<QrScannerView> {
                           Text('Looking for a code...',
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline6
+                                  .titleLarge
                                   ?.copyWith(color: Colors.black)),
                         if (_status == _ScanStatus.success)
                           Text('Found a valid code',
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline6
+                                  .titleLarge
                                   ?.copyWith(color: Colors.white)),
                         if (_status == _ScanStatus.error)
                           Text('This code is not valid, try again.',
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline6
+                                  .titleLarge
                                   ?.copyWith(color: Colors.white)),
                       ]),
                       Row(
@@ -207,7 +206,7 @@ class _QrScannerViewState extends State<QrScannerView> {
                           MaterialButton(
                             color: Colors.white38,
                             onPressed: () {
-                              Navigator.of(context).pop('');
+                              Navigator.of(context).pop();
                             },
                             child: const Text('Add manually'),
                           )

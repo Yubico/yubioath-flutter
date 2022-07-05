@@ -4,6 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
+String _pad(int value, int zeroes) => value.toString().padLeft(zeroes, '0');
+
+extension DateTimeFormat on DateTime {
+  String get logFormat =>
+      '${_pad(hour, 2)}:${_pad(minute, 2)}:${_pad(second, 2)}.${_pad(millisecond, 3)}';
+}
+
 class Levels {
   /// Key for tracing information ([value] = 500).
   static const Level TRAFFIC = Level('TRAFFIC', 500);
@@ -45,7 +52,8 @@ class LogLevelNotifier extends StateNotifier<Level> {
   final List<String> _buffer = [];
   LogLevelNotifier() : super(Logger.root.level) {
     Logger.root.onRecord.listen((record) {
-      _buffer.add('[${record.loggerName}] ${record.level}: ${record.message}');
+      _buffer.add(
+          '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}');
       if (record.error != null) {
         _buffer.add('${record.error}');
       }
@@ -60,7 +68,7 @@ class LogLevelNotifier extends StateNotifier<Level> {
     Logger.root.level = level;
   }
 
-  List<String> getLogs() {
+  Future<List<String>> getLogs() async {
     return List.unmodifiable(_buffer);
   }
 }
@@ -68,7 +76,7 @@ class LogLevelNotifier extends StateNotifier<Level> {
 class LogWarningOverlay extends StatelessWidget {
   final Widget child;
 
-  const LogWarningOverlay({Key? key, required this.child}) : super(key: key);
+  const LogWarningOverlay({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

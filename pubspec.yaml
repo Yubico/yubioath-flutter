@@ -15,10 +15,13 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+
+# This field is updated by running ./set-version.py <version>
+# DO NOT MANUALLY EDIT THIS!
+version: 6.0.0+59900
 
 environment:
-  sdk: ">=2.15.0-268.18.beta <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -37,14 +40,16 @@ dependencies:
 
   async: ^2.8.2
   logging: ^1.0.2
+  collection: ^1.16.0
   shared_preferences: ^2.0.12
   flutter_riverpod: ^1.0.0
   json_annotation: ^4.4.0
-  freezed_annotation: ^1.0.0
+  freezed_annotation: ^2.0.3
   window_manager: ^0.2.0
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
   desktop_drop: ^0.3.3
+  url_launcher: ^6.1.2
 
 dev_dependencies:
   integration_test:
@@ -57,12 +62,12 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.1
 
   build_runner: ^2.1.4
-  freezed: ^1.0.0
+  freezed: ^2.0.3
   json_serializable: ^6.0.0
-  pigeon: ^2.0.2
+  pigeon: ^3.1.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -81,7 +86,8 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/product-images/
-
+    - assets/graphics/
+    - assets/licenses/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -108,3 +114,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Roboto-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Roboto-Thin.ttf
+          weight: 100

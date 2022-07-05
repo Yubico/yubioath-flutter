@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../core/models.dart';
+
 part 'models.freezed.dart';
 part 'models.g.dart';
 
@@ -11,18 +13,24 @@ const defaultHashAlgorithm = HashAlgorithm.sha1;
 
 enum HashAlgorithm {
   @JsonValue(0x01)
-  sha1,
+  sha1('SHA-1'),
   @JsonValue(0x02)
-  sha256,
+  sha256('SHA-256'),
   @JsonValue(0x03)
-  sha512,
+  sha512('SHA-512');
+
+  final String displayName;
+  const HashAlgorithm(this.displayName);
 }
 
 enum OathType {
   @JsonValue(0x10)
-  hotp,
+  hotp('Counter based'),
   @JsonValue(0x20)
-  totp,
+  totp('Time based');
+
+  final String displayName;
+  const OathType(this.displayName);
 }
 
 enum KeystoreState { unknown, allowed, failed }
@@ -61,7 +69,8 @@ class OathPair with _$OathPair {
 @freezed
 class OathState with _$OathState {
   factory OathState(
-    String deviceId, {
+    String deviceId,
+    Version version, {
     required bool hasKey,
     required bool remembered,
     required bool locked,

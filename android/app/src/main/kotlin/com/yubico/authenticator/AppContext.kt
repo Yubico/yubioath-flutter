@@ -3,6 +3,7 @@ package com.yubico.authenticator
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.yubico.authenticator.api.Pigeon
+import com.yubico.authenticator.logging.Log
 import io.flutter.plugin.common.BinaryMessenger
 
 enum class OperationContext(val value: Long) {
@@ -23,7 +24,7 @@ class AppContext(messenger: BinaryMessenger) : Pigeon.AppApi {
 
     override fun setContext(subPageIndex: Long, result: Pigeon.Result<Void>) {
         _appContext.value = OperationContext.getByValue(subPageIndex)
-        FlutterLog.d(TAG, "App context is now $_appContext")
+        Log.d(TAG, "App context is now $_appContext")
         result.success(null)
     }
 

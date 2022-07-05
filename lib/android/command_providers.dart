@@ -12,19 +12,19 @@ import '../management/models.dart';
 final _log = Logger('yubikeyDataCommandProvider');
 
 final androidYubikeyProvider =
-    StateNotifierProvider<_YubikeyProvider, YubiKeyData?>((ref) {
-  return _YubikeyProvider(null, ref);
+    StateNotifierProvider<_YubikeyProvider, AsyncValue<YubiKeyData>>((ref) {
+  return _YubikeyProvider(const AsyncValue.loading(), ref);
 });
 
-class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
+class _YubikeyProvider extends StateNotifier<AsyncValue<YubiKeyData>> {
   final Ref _ref;
-  _YubikeyProvider(YubiKeyData? yubiKeyData, this._ref) : super(yubiKeyData);
+  _YubikeyProvider(super.yubiKeyData, this._ref);
 
   void setFromString(String input) {
     try {
       if (input.isEmpty) {
         _log.debug('Yubikey was detached.');
-        state = null;
+        state = const AsyncValue.loading();
 
         // reset other providers when YubiKey is removed
         _ref.refresh(androidStateProvider);
@@ -37,26 +37,29 @@ class _YubikeyProvider extends StateNotifier<YubiKeyData?> {
       DeviceInfo deviceInfo = DeviceInfo.fromJson(args);
       String name = args['name'];
       bool isNfc = args['is_nfc'];
+      int? usbPid = args['usb_pid'];
 
       DeviceNode deviceNode = isNfc
           ? DeviceNode.nfcReader(DevicePath([]), name)
           : DeviceNode.usbYubiKey(
               DevicePath([]),
               name,
-              /*TODO: replace with correct PID*/ UsbPid.yk4OtpFidoCcid,
+              usbPid != null ? UsbPid.fromValue(usbPid) : UsbPid.yk4OtpFidoCcid,
               deviceInfo);
 
       // reset oath providers on key change
       var yubiKeyData = YubiKeyData(deviceNode, name, deviceInfo);
-      if (state != yubiKeyData && state != null) {
-        _ref.refresh(androidStateProvider);
-        _ref.refresh(androidCredentialsProvider);
-      }
+      state.whenData((data) {
+        if (data != yubiKeyData) {
+          _ref.refresh(androidStateProvider);
+          _ref.refresh(androidCredentialsProvider);
+        }
+      });
 
-      state = yubiKeyData;
+      state = AsyncValue.data(yubiKeyData);
     } on Exception catch (e) {
       _log.debug('Invalid data for yubikey: $input. $e');
-      state = null;
+      state = AsyncValue.error(e);
     }
   }
 }

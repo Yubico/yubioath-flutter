@@ -30,25 +30,29 @@ extension on Application {
 
 class MainPageDrawer extends ConsumerWidget {
   final bool shouldPop;
-  const MainPageDrawer({this.shouldPop = true, Key? key}) : super(key: key);
+  const MainPageDrawer({this.shouldPop = true, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final supportedApps = ref.watch(supportedAppsProvider);
-    final data = ref.watch(currentDeviceDataProvider);
+    final data =
+        ref.watch(currentDeviceDataProvider).whenOrNull(data: (data) => data);
     final currentApp = ref.watch(currentAppProvider);
 
+    MediaQuery? mediaQuery =
+        context.findAncestorWidgetOfExactType<MediaQuery>();
+    final width = mediaQuery?.data.size.width ?? 400;
+
     return Drawer(
+      width: width < 357 ? 0.85 * width : null,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topRight: Radius.circular(20.0),
+              bottomRight: Radius.circular(20.0))),
       child: ListView(
         primary: false, //Prevents conflict with the MainPage scroll view.
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text(
-              'Yubico Authenticator',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
+          const SizedBox(height: 24.0),
           if (data != null) ...[
             // Normal YubiKey Applications
             ...supportedApps
@@ -68,14 +72,6 @@ class MainPageDrawer extends ConsumerWidget {
             if (supportedApps.contains(Application.management) &&
                 Application.management.getAvailability(data) ==
                     Availability.enabled) ...[
-              const Divider(),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'Configuration',
-                  style: Theme.of(context).textTheme.bodyText2,
-                ),
-              ),
               DrawerItem(
                 titleText: 'Toggle applications',
                 icon: Icon(Application.management._icon),
@@ -87,17 +83,10 @@ class MainPageDrawer extends ConsumerWidget {
                   );
                 },
               ),
-              const Divider(),
             ],
+            const Divider(indent: 16.0, endIndent: 28.0),
           ],
           // Non-YubiKey pages
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Application',
-              style: Theme.of(context).textTheme.bodyText2,
-            ),
-          ),
           DrawerItem(
             titleText: 'Settings',
             icon: const Icon(Icons.settings),
@@ -105,17 +94,23 @@ class MainPageDrawer extends ConsumerWidget {
               final nav = Navigator.of(context);
               if (shouldPop) nav.pop();
               showDialog(
-                  context: context, builder: (context) => const SettingsPage());
+                context: context,
+                builder: (context) => const SettingsPage(),
+                routeSettings: const RouteSettings(name: 'settings'),
+              );
             },
           ),
           DrawerItem(
-            titleText: 'Help and feedback',
-            icon: const Icon(Icons.help_outline),
+            titleText: 'Help and about',
+            icon: const Icon(Icons.help),
             onTap: () {
               final nav = Navigator.of(context);
               if (shouldPop) nav.pop();
               showDialog(
-                  context: context, builder: (context) => const AboutPage());
+                context: context,
+                builder: (context) => const AboutPage(),
+                routeSettings: const RouteSettings(name: 'about'),
+              );
             },
           ),
         ],
@@ -134,8 +129,8 @@ class ApplicationItem extends ConsumerWidget {
     required this.available,
     required this.selected,
     required this.onSelect,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -167,23 +162,28 @@ class DrawerItem extends StatelessWidget {
     this.onTap,
     this.selected = false,
     this.enabled = true,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(left: 12.0, right: 12.0),
       child: ListTile(
         enabled: enabled,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.horizontal(right: Radius.circular(20)),
+          borderRadius: BorderRadius.all(Radius.circular(30)),
         ),
         dense: true,
+        minLeadingWidth: 24,
+        minVerticalPadding: 18,
         selected: selected,
-        selectedColor: Theme.of(context).backgroundColor,
-        selectedTileColor: Theme.of(context).colorScheme.secondary,
-        leading: icon,
+        selectedColor: Theme.of(context).colorScheme.onPrimary,
+        selectedTileColor: Theme.of(context).colorScheme.primary,
+        leading: IconTheme.merge(
+          data: const IconThemeData(size: 24),
+          child: icon,
+        ),
         title: Text(titleText),
         onTap: onTap,
       ),

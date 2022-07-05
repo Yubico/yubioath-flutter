@@ -136,8 +136,8 @@ class _DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
   }
 
   @override
-  setCurrentDevice(DeviceNode device) {
+  setCurrentDevice(DeviceNode? device) {
     state = device;
-    _prefs.setString(_lastDevice, device.path.key);
+    _prefs.setString(_lastDevice, device?.path.key ?? '');
   }
 }

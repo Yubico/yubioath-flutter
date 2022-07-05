@@ -1,5 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'models.dart';
@@ -11,31 +12,11 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 FidoState _$FidoStateFromJson(Map<String, dynamic> json) {
   return _FidoState.fromJson(json);
 }
-
-/// @nodoc
-class _$FidoStateTearOff {
-  const _$FidoStateTearOff();
-
-  _FidoState call(
-      {required Map<String, dynamic> info, required bool unlocked}) {
-    return _FidoState(
-      info: info,
-      unlocked: unlocked,
-    );
-  }
-
-  FidoState fromJson(Map<String, Object?> json) {
-    return FidoState.fromJson(json);
-  }
-}
-
-/// @nodoc
-const $FidoState = _$FidoStateTearOff();
 
 /// @nodoc
 mixin _$FidoState {
@@ -82,31 +63,32 @@ class _$FidoStateCopyWithImpl<$Res> implements $FidoStateCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$FidoStateCopyWith<$Res> implements $FidoStateCopyWith<$Res> {
-  factory _$FidoStateCopyWith(
-          _FidoState value, $Res Function(_FidoState) then) =
-      __$FidoStateCopyWithImpl<$Res>;
+abstract class _$$_FidoStateCopyWith<$Res> implements $FidoStateCopyWith<$Res> {
+  factory _$$_FidoStateCopyWith(
+          _$_FidoState value, $Res Function(_$_FidoState) then) =
+      __$$_FidoStateCopyWithImpl<$Res>;
   @override
   $Res call({Map<String, dynamic> info, bool unlocked});
 }
 
 /// @nodoc
-class __$FidoStateCopyWithImpl<$Res> extends _$FidoStateCopyWithImpl<$Res>
-    implements _$FidoStateCopyWith<$Res> {
-  __$FidoStateCopyWithImpl(_FidoState _value, $Res Function(_FidoState) _then)
-      : super(_value, (v) => _then(v as _FidoState));
+class __$$_FidoStateCopyWithImpl<$Res> extends _$FidoStateCopyWithImpl<$Res>
+    implements _$$_FidoStateCopyWith<$Res> {
+  __$$_FidoStateCopyWithImpl(
+      _$_FidoState _value, $Res Function(_$_FidoState) _then)
+      : super(_value, (v) => _then(v as _$_FidoState));
 
   @override
-  _FidoState get _value => super._value as _FidoState;
+  _$_FidoState get _value => super._value as _$_FidoState;
 
   @override
   $Res call({
     Object? info = freezed,
     Object? unlocked = freezed,
   }) {
-    return _then(_FidoState(
+    return _then(_$_FidoState(
       info: info == freezed
-          ? _value.info
+          ? _value._info
           : info // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
       unlocked: unlocked == freezed
@@ -120,13 +102,21 @@ class __$FidoStateCopyWithImpl<$Res> extends _$FidoStateCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$_FidoState extends _FidoState {
-  _$_FidoState({required this.info, required this.unlocked}) : super._();
+  _$_FidoState(
+      {required final Map<String, dynamic> info, required this.unlocked})
+      : _info = info,
+        super._();
 
   factory _$_FidoState.fromJson(Map<String, dynamic> json) =>
       _$$_FidoStateFromJson(json);
 
+  final Map<String, dynamic> _info;
   @override
-  final Map<String, dynamic> info;
+  Map<String, dynamic> get info {
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_info);
+  }
+
   @override
   final bool unlocked;
 
@@ -139,21 +129,22 @@ class _$_FidoState extends _FidoState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _FidoState &&
-            const DeepCollectionEquality().equals(other.info, info) &&
+            other is _$_FidoState &&
+            const DeepCollectionEquality().equals(other._info, _info) &&
             const DeepCollectionEquality().equals(other.unlocked, unlocked));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(info),
+      const DeepCollectionEquality().hash(_info),
       const DeepCollectionEquality().hash(unlocked));
 
   @JsonKey(ignore: true)
   @override
-  _$FidoStateCopyWith<_FidoState> get copyWith =>
-      __$FidoStateCopyWithImpl<_FidoState>(this, _$identity);
+  _$$_FidoStateCopyWith<_$_FidoState> get copyWith =>
+      __$$_FidoStateCopyWithImpl<_$_FidoState>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
@@ -163,41 +154,22 @@ class _$_FidoState extends _FidoState {
 
 abstract class _FidoState extends FidoState {
   factory _FidoState(
-      {required Map<String, dynamic> info,
-      required bool unlocked}) = _$_FidoState;
+      {required final Map<String, dynamic> info,
+      required final bool unlocked}) = _$_FidoState;
   _FidoState._() : super._();
 
   factory _FidoState.fromJson(Map<String, dynamic> json) =
       _$_FidoState.fromJson;
 
   @override
-  Map<String, dynamic> get info;
+  Map<String, dynamic> get info => throw _privateConstructorUsedError;
   @override
-  bool get unlocked;
+  bool get unlocked => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$FidoStateCopyWith<_FidoState> get copyWith =>
+  _$$_FidoStateCopyWith<_$_FidoState> get copyWith =>
       throw _privateConstructorUsedError;
 }
-
-/// @nodoc
-class _$PinResultTearOff {
-  const _$PinResultTearOff();
-
-  _PinSuccess success() {
-    return _PinSuccess();
-  }
-
-  _PinFailure failed(int retries, bool authBlocked) {
-    return _PinFailure(
-      retries,
-      authBlocked,
-    );
-  }
-}
-
-/// @nodoc
-const $PinResult = _$PinResultTearOff();
 
 /// @nodoc
 mixin _$PinResult {
@@ -257,21 +229,21 @@ class _$PinResultCopyWithImpl<$Res> implements $PinResultCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$PinSuccessCopyWith<$Res> {
-  factory _$PinSuccessCopyWith(
-          _PinSuccess value, $Res Function(_PinSuccess) then) =
-      __$PinSuccessCopyWithImpl<$Res>;
+abstract class _$$_PinSuccessCopyWith<$Res> {
+  factory _$$_PinSuccessCopyWith(
+          _$_PinSuccess value, $Res Function(_$_PinSuccess) then) =
+      __$$_PinSuccessCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$PinSuccessCopyWithImpl<$Res> extends _$PinResultCopyWithImpl<$Res>
-    implements _$PinSuccessCopyWith<$Res> {
-  __$PinSuccessCopyWithImpl(
-      _PinSuccess _value, $Res Function(_PinSuccess) _then)
-      : super(_value, (v) => _then(v as _PinSuccess));
+class __$$_PinSuccessCopyWithImpl<$Res> extends _$PinResultCopyWithImpl<$Res>
+    implements _$$_PinSuccessCopyWith<$Res> {
+  __$$_PinSuccessCopyWithImpl(
+      _$_PinSuccess _value, $Res Function(_$_PinSuccess) _then)
+      : super(_value, (v) => _then(v as _$_PinSuccess));
 
   @override
-  _PinSuccess get _value => super._value as _PinSuccess;
+  _$_PinSuccess get _value => super._value as _$_PinSuccess;
 }
 
 /// @nodoc
@@ -287,7 +259,7 @@ class _$_PinSuccess implements _PinSuccess {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _PinSuccess);
+        (other.runtimeType == runtimeType && other is _$_PinSuccess);
   }
 
   @override
@@ -361,29 +333,29 @@ abstract class _PinSuccess implements PinResult {
 }
 
 /// @nodoc
-abstract class _$PinFailureCopyWith<$Res> {
-  factory _$PinFailureCopyWith(
-          _PinFailure value, $Res Function(_PinFailure) then) =
-      __$PinFailureCopyWithImpl<$Res>;
+abstract class _$$_PinFailureCopyWith<$Res> {
+  factory _$$_PinFailureCopyWith(
+          _$_PinFailure value, $Res Function(_$_PinFailure) then) =
+      __$$_PinFailureCopyWithImpl<$Res>;
   $Res call({int retries, bool authBlocked});
 }
 
 /// @nodoc
-class __$PinFailureCopyWithImpl<$Res> extends _$PinResultCopyWithImpl<$Res>
-    implements _$PinFailureCopyWith<$Res> {
-  __$PinFailureCopyWithImpl(
-      _PinFailure _value, $Res Function(_PinFailure) _then)
-      : super(_value, (v) => _then(v as _PinFailure));
+class __$$_PinFailureCopyWithImpl<$Res> extends _$PinResultCopyWithImpl<$Res>
+    implements _$$_PinFailureCopyWith<$Res> {
+  __$$_PinFailureCopyWithImpl(
+      _$_PinFailure _value, $Res Function(_$_PinFailure) _then)
+      : super(_value, (v) => _then(v as _$_PinFailure));
 
   @override
-  _PinFailure get _value => super._value as _PinFailure;
+  _$_PinFailure get _value => super._value as _$_PinFailure;
 
   @override
   $Res call({
     Object? retries = freezed,
     Object? authBlocked = freezed,
   }) {
-    return _then(_PinFailure(
+    return _then(_$_PinFailure(
       retries == freezed
           ? _value.retries
           : retries // ignore: cast_nullable_to_non_nullable
@@ -415,7 +387,7 @@ class _$_PinFailure implements _PinFailure {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _PinFailure &&
+            other is _$_PinFailure &&
             const DeepCollectionEquality().equals(other.retries, retries) &&
             const DeepCollectionEquality()
                 .equals(other.authBlocked, authBlocked));
@@ -429,8 +401,8 @@ class _$_PinFailure implements _PinFailure {
 
   @JsonKey(ignore: true)
   @override
-  _$PinFailureCopyWith<_PinFailure> get copyWith =>
-      __$PinFailureCopyWithImpl<_PinFailure>(this, _$identity);
+  _$$_PinFailureCopyWith<_$_PinFailure> get copyWith =>
+      __$$_PinFailureCopyWithImpl<_$_PinFailure>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -496,37 +468,19 @@ class _$_PinFailure implements _PinFailure {
 }
 
 abstract class _PinFailure implements PinResult {
-  factory _PinFailure(int retries, bool authBlocked) = _$_PinFailure;
+  factory _PinFailure(final int retries, final bool authBlocked) =
+      _$_PinFailure;
 
-  int get retries;
-  bool get authBlocked;
+  int get retries => throw _privateConstructorUsedError;
+  bool get authBlocked => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  _$PinFailureCopyWith<_PinFailure> get copyWith =>
+  _$$_PinFailureCopyWith<_$_PinFailure> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 Fingerprint _$FingerprintFromJson(Map<String, dynamic> json) {
   return _Fingerprint.fromJson(json);
 }
-
-/// @nodoc
-class _$FingerprintTearOff {
-  const _$FingerprintTearOff();
-
-  _Fingerprint call(String templateId, String? name) {
-    return _Fingerprint(
-      templateId,
-      name,
-    );
-  }
-
-  Fingerprint fromJson(Map<String, Object?> json) {
-    return Fingerprint.fromJson(json);
-  }
-}
-
-/// @nodoc
-const $Fingerprint = _$FingerprintTearOff();
 
 /// @nodoc
 mixin _$Fingerprint {
@@ -574,31 +528,31 @@ class _$FingerprintCopyWithImpl<$Res> implements $FingerprintCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$FingerprintCopyWith<$Res>
+abstract class _$$_FingerprintCopyWith<$Res>
     implements $FingerprintCopyWith<$Res> {
-  factory _$FingerprintCopyWith(
-          _Fingerprint value, $Res Function(_Fingerprint) then) =
-      __$FingerprintCopyWithImpl<$Res>;
+  factory _$$_FingerprintCopyWith(
+          _$_Fingerprint value, $Res Function(_$_Fingerprint) then) =
+      __$$_FingerprintCopyWithImpl<$Res>;
   @override
   $Res call({String templateId, String? name});
 }
 
 /// @nodoc
-class __$FingerprintCopyWithImpl<$Res> extends _$FingerprintCopyWithImpl<$Res>
-    implements _$FingerprintCopyWith<$Res> {
-  __$FingerprintCopyWithImpl(
-      _Fingerprint _value, $Res Function(_Fingerprint) _then)
-      : super(_value, (v) => _then(v as _Fingerprint));
+class __$$_FingerprintCopyWithImpl<$Res> extends _$FingerprintCopyWithImpl<$Res>
+    implements _$$_FingerprintCopyWith<$Res> {
+  __$$_FingerprintCopyWithImpl(
+      _$_Fingerprint _value, $Res Function(_$_Fingerprint) _then)
+      : super(_value, (v) => _then(v as _$_Fingerprint));
 
   @override
-  _Fingerprint get _value => super._value as _Fingerprint;
+  _$_Fingerprint get _value => super._value as _$_Fingerprint;
 
   @override
   $Res call({
     Object? templateId = freezed,
     Object? name = freezed,
   }) {
-    return _then(_Fingerprint(
+    return _then(_$_Fingerprint(
       templateId == freezed
           ? _value.templateId
           : templateId // ignore: cast_nullable_to_non_nullable
@@ -633,12 +587,13 @@ class _$_Fingerprint extends _Fingerprint {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _Fingerprint &&
+            other is _$_Fingerprint &&
             const DeepCollectionEquality()
                 .equals(other.templateId, templateId) &&
             const DeepCollectionEquality().equals(other.name, name));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -647,8 +602,8 @@ class _$_Fingerprint extends _Fingerprint {
 
   @JsonKey(ignore: true)
   @override
-  _$FingerprintCopyWith<_Fingerprint> get copyWith =>
-      __$FingerprintCopyWithImpl<_Fingerprint>(this, _$identity);
+  _$$_FingerprintCopyWith<_$_Fingerprint> get copyWith =>
+      __$$_FingerprintCopyWithImpl<_$_Fingerprint>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
@@ -657,47 +612,22 @@ class _$_Fingerprint extends _Fingerprint {
 }
 
 abstract class _Fingerprint extends Fingerprint {
-  factory _Fingerprint(String templateId, String? name) = _$_Fingerprint;
+  factory _Fingerprint(final String templateId, final String? name) =
+      _$_Fingerprint;
   _Fingerprint._() : super._();
 
   factory _Fingerprint.fromJson(Map<String, dynamic> json) =
       _$_Fingerprint.fromJson;
 
   @override
-  String get templateId;
+  String get templateId => throw _privateConstructorUsedError;
   @override
-  String? get name;
+  String? get name => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$FingerprintCopyWith<_Fingerprint> get copyWith =>
+  _$$_FingerprintCopyWith<_$_Fingerprint> get copyWith =>
       throw _privateConstructorUsedError;
 }
-
-/// @nodoc
-class _$FingerprintEventTearOff {
-  const _$FingerprintEventTearOff();
-
-  _EventCapture capture(int remaining) {
-    return _EventCapture(
-      remaining,
-    );
-  }
-
-  _EventComplete complete(Fingerprint fingerprint) {
-    return _EventComplete(
-      fingerprint,
-    );
-  }
-
-  _EventError error(int code) {
-    return _EventError(
-      code,
-    );
-  }
-}
-
-/// @nodoc
-const $FingerprintEvent = _$FingerprintEventTearOff();
 
 /// @nodoc
 mixin _$FingerprintEvent {
@@ -765,29 +695,29 @@ class _$FingerprintEventCopyWithImpl<$Res>
 }
 
 /// @nodoc
-abstract class _$EventCaptureCopyWith<$Res> {
-  factory _$EventCaptureCopyWith(
-          _EventCapture value, $Res Function(_EventCapture) then) =
-      __$EventCaptureCopyWithImpl<$Res>;
+abstract class _$$_EventCaptureCopyWith<$Res> {
+  factory _$$_EventCaptureCopyWith(
+          _$_EventCapture value, $Res Function(_$_EventCapture) then) =
+      __$$_EventCaptureCopyWithImpl<$Res>;
   $Res call({int remaining});
 }
 
 /// @nodoc
-class __$EventCaptureCopyWithImpl<$Res>
+class __$$_EventCaptureCopyWithImpl<$Res>
     extends _$FingerprintEventCopyWithImpl<$Res>
-    implements _$EventCaptureCopyWith<$Res> {
-  __$EventCaptureCopyWithImpl(
-      _EventCapture _value, $Res Function(_EventCapture) _then)
-      : super(_value, (v) => _then(v as _EventCapture));
+    implements _$$_EventCaptureCopyWith<$Res> {
+  __$$_EventCaptureCopyWithImpl(
+      _$_EventCapture _value, $Res Function(_$_EventCapture) _then)
+      : super(_value, (v) => _then(v as _$_EventCapture));
 
   @override
-  _EventCapture get _value => super._value as _EventCapture;
+  _$_EventCapture get _value => super._value as _$_EventCapture;
 
   @override
   $Res call({
     Object? remaining = freezed,
   }) {
-    return _then(_EventCapture(
+    return _then(_$_EventCapture(
       remaining == freezed
           ? _value.remaining
           : remaining // ignore: cast_nullable_to_non_nullable
@@ -813,7 +743,7 @@ class _$_EventCapture implements _EventCapture {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _EventCapture &&
+            other is _$_EventCapture &&
             const DeepCollectionEquality().equals(other.remaining, remaining));
   }
 
@@ -823,8 +753,8 @@ class _$_EventCapture implements _EventCapture {
 
   @JsonKey(ignore: true)
   @override
-  _$EventCaptureCopyWith<_EventCapture> get copyWith =>
-      __$EventCaptureCopyWithImpl<_EventCapture>(this, _$identity);
+  _$$_EventCaptureCopyWith<_$_EventCapture> get copyWith =>
+      __$$_EventCaptureCopyWithImpl<_$_EventCapture>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -896,40 +826,40 @@ class _$_EventCapture implements _EventCapture {
 }
 
 abstract class _EventCapture implements FingerprintEvent {
-  factory _EventCapture(int remaining) = _$_EventCapture;
+  factory _EventCapture(final int remaining) = _$_EventCapture;
 
-  int get remaining;
+  int get remaining => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  _$EventCaptureCopyWith<_EventCapture> get copyWith =>
+  _$$_EventCaptureCopyWith<_$_EventCapture> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$EventCompleteCopyWith<$Res> {
-  factory _$EventCompleteCopyWith(
-          _EventComplete value, $Res Function(_EventComplete) then) =
-      __$EventCompleteCopyWithImpl<$Res>;
+abstract class _$$_EventCompleteCopyWith<$Res> {
+  factory _$$_EventCompleteCopyWith(
+          _$_EventComplete value, $Res Function(_$_EventComplete) then) =
+      __$$_EventCompleteCopyWithImpl<$Res>;
   $Res call({Fingerprint fingerprint});
 
   $FingerprintCopyWith<$Res> get fingerprint;
 }
 
 /// @nodoc
-class __$EventCompleteCopyWithImpl<$Res>
+class __$$_EventCompleteCopyWithImpl<$Res>
     extends _$FingerprintEventCopyWithImpl<$Res>
-    implements _$EventCompleteCopyWith<$Res> {
-  __$EventCompleteCopyWithImpl(
-      _EventComplete _value, $Res Function(_EventComplete) _then)
-      : super(_value, (v) => _then(v as _EventComplete));
+    implements _$$_EventCompleteCopyWith<$Res> {
+  __$$_EventCompleteCopyWithImpl(
+      _$_EventComplete _value, $Res Function(_$_EventComplete) _then)
+      : super(_value, (v) => _then(v as _$_EventComplete));
 
   @override
-  _EventComplete get _value => super._value as _EventComplete;
+  _$_EventComplete get _value => super._value as _$_EventComplete;
 
   @override
   $Res call({
     Object? fingerprint = freezed,
   }) {
-    return _then(_EventComplete(
+    return _then(_$_EventComplete(
       fingerprint == freezed
           ? _value.fingerprint
           : fingerprint // ignore: cast_nullable_to_non_nullable
@@ -962,7 +892,7 @@ class _$_EventComplete implements _EventComplete {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _EventComplete &&
+            other is _$_EventComplete &&
             const DeepCollectionEquality()
                 .equals(other.fingerprint, fingerprint));
   }
@@ -973,8 +903,8 @@ class _$_EventComplete implements _EventComplete {
 
   @JsonKey(ignore: true)
   @override
-  _$EventCompleteCopyWith<_EventComplete> get copyWith =>
-      __$EventCompleteCopyWithImpl<_EventComplete>(this, _$identity);
+  _$$_EventCompleteCopyWith<_$_EventComplete> get copyWith =>
+      __$$_EventCompleteCopyWithImpl<_$_EventComplete>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1046,38 +976,38 @@ class _$_EventComplete implements _EventComplete {
 }
 
 abstract class _EventComplete implements FingerprintEvent {
-  factory _EventComplete(Fingerprint fingerprint) = _$_EventComplete;
+  factory _EventComplete(final Fingerprint fingerprint) = _$_EventComplete;
 
-  Fingerprint get fingerprint;
+  Fingerprint get fingerprint => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  _$EventCompleteCopyWith<_EventComplete> get copyWith =>
+  _$$_EventCompleteCopyWith<_$_EventComplete> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$EventErrorCopyWith<$Res> {
-  factory _$EventErrorCopyWith(
-          _EventError value, $Res Function(_EventError) then) =
-      __$EventErrorCopyWithImpl<$Res>;
+abstract class _$$_EventErrorCopyWith<$Res> {
+  factory _$$_EventErrorCopyWith(
+          _$_EventError value, $Res Function(_$_EventError) then) =
+      __$$_EventErrorCopyWithImpl<$Res>;
   $Res call({int code});
 }
 
 /// @nodoc
-class __$EventErrorCopyWithImpl<$Res>
+class __$$_EventErrorCopyWithImpl<$Res>
     extends _$FingerprintEventCopyWithImpl<$Res>
-    implements _$EventErrorCopyWith<$Res> {
-  __$EventErrorCopyWithImpl(
-      _EventError _value, $Res Function(_EventError) _then)
-      : super(_value, (v) => _then(v as _EventError));
+    implements _$$_EventErrorCopyWith<$Res> {
+  __$$_EventErrorCopyWithImpl(
+      _$_EventError _value, $Res Function(_$_EventError) _then)
+      : super(_value, (v) => _then(v as _$_EventError));
 
   @override
-  _EventError get _value => super._value as _EventError;
+  _$_EventError get _value => super._value as _$_EventError;
 
   @override
   $Res call({
     Object? code = freezed,
   }) {
-    return _then(_EventError(
+    return _then(_$_EventError(
       code == freezed
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
@@ -1103,7 +1033,7 @@ class _$_EventError implements _EventError {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _EventError &&
+            other is _$_EventError &&
             const DeepCollectionEquality().equals(other.code, code));
   }
 
@@ -1113,8 +1043,8 @@ class _$_EventError implements _EventError {
 
   @JsonKey(ignore: true)
   @override
-  _$EventErrorCopyWith<_EventError> get copyWith =>
-      __$EventErrorCopyWithImpl<_EventError>(this, _$identity);
+  _$$_EventErrorCopyWith<_$_EventError> get copyWith =>
+      __$$_EventErrorCopyWithImpl<_$_EventError>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1186,42 +1116,17 @@ class _$_EventError implements _EventError {
 }
 
 abstract class _EventError implements FingerprintEvent {
-  factory _EventError(int code) = _$_EventError;
+  factory _EventError(final int code) = _$_EventError;
 
-  int get code;
+  int get code => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  _$EventErrorCopyWith<_EventError> get copyWith =>
+  _$$_EventErrorCopyWith<_$_EventError> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 FidoCredential _$FidoCredentialFromJson(Map<String, dynamic> json) {
   return _FidoCredential.fromJson(json);
 }
-
-/// @nodoc
-class _$FidoCredentialTearOff {
-  const _$FidoCredentialTearOff();
-
-  _FidoCredential call(
-      {required String rpId,
-      required String credentialId,
-      required String userId,
-      required String userName}) {
-    return _FidoCredential(
-      rpId: rpId,
-      credentialId: credentialId,
-      userId: userId,
-      userName: userName,
-    );
-  }
-
-  FidoCredential fromJson(Map<String, Object?> json) {
-    return FidoCredential.fromJson(json);
-  }
-}
-
-/// @nodoc
-const $FidoCredential = _$FidoCredentialTearOff();
 
 /// @nodoc
 mixin _$FidoCredential {
@@ -1282,25 +1187,25 @@ class _$FidoCredentialCopyWithImpl<$Res>
 }
 
 /// @nodoc
-abstract class _$FidoCredentialCopyWith<$Res>
+abstract class _$$_FidoCredentialCopyWith<$Res>
     implements $FidoCredentialCopyWith<$Res> {
-  factory _$FidoCredentialCopyWith(
-          _FidoCredential value, $Res Function(_FidoCredential) then) =
-      __$FidoCredentialCopyWithImpl<$Res>;
+  factory _$$_FidoCredentialCopyWith(
+          _$_FidoCredential value, $Res Function(_$_FidoCredential) then) =
+      __$$_FidoCredentialCopyWithImpl<$Res>;
   @override
   $Res call({String rpId, String credentialId, String userId, String userName});
 }
 
 /// @nodoc
-class __$FidoCredentialCopyWithImpl<$Res>
+class __$$_FidoCredentialCopyWithImpl<$Res>
     extends _$FidoCredentialCopyWithImpl<$Res>
-    implements _$FidoCredentialCopyWith<$Res> {
-  __$FidoCredentialCopyWithImpl(
-      _FidoCredential _value, $Res Function(_FidoCredential) _then)
-      : super(_value, (v) => _then(v as _FidoCredential));
+    implements _$$_FidoCredentialCopyWith<$Res> {
+  __$$_FidoCredentialCopyWithImpl(
+      _$_FidoCredential _value, $Res Function(_$_FidoCredential) _then)
+      : super(_value, (v) => _then(v as _$_FidoCredential));
 
   @override
-  _FidoCredential get _value => super._value as _FidoCredential;
+  _$_FidoCredential get _value => super._value as _$_FidoCredential;
 
   @override
   $Res call({
@@ -1309,7 +1214,7 @@ class __$FidoCredentialCopyWithImpl<$Res>
     Object? userId = freezed,
     Object? userName = freezed,
   }) {
-    return _then(_FidoCredential(
+    return _then(_$_FidoCredential(
       rpId: rpId == freezed
           ? _value.rpId
           : rpId // ignore: cast_nullable_to_non_nullable
@@ -1360,7 +1265,7 @@ class _$_FidoCredential implements _FidoCredential {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _FidoCredential &&
+            other is _$_FidoCredential &&
             const DeepCollectionEquality().equals(other.rpId, rpId) &&
             const DeepCollectionEquality()
                 .equals(other.credentialId, credentialId) &&
@@ -1368,6 +1273,7 @@ class _$_FidoCredential implements _FidoCredential {
             const DeepCollectionEquality().equals(other.userName, userName));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -1378,8 +1284,8 @@ class _$_FidoCredential implements _FidoCredential {
 
   @JsonKey(ignore: true)
   @override
-  _$FidoCredentialCopyWith<_FidoCredential> get copyWith =>
-      __$FidoCredentialCopyWithImpl<_FidoCredential>(this, _$identity);
+  _$$_FidoCredentialCopyWith<_$_FidoCredential> get copyWith =>
+      __$$_FidoCredentialCopyWithImpl<_$_FidoCredential>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
@@ -1389,24 +1295,24 @@ class _$_FidoCredential implements _FidoCredential {
 
 abstract class _FidoCredential implements FidoCredential {
   factory _FidoCredential(
-      {required String rpId,
-      required String credentialId,
-      required String userId,
-      required String userName}) = _$_FidoCredential;
+      {required final String rpId,
+      required final String credentialId,
+      required final String userId,
+      required final String userName}) = _$_FidoCredential;
 
   factory _FidoCredential.fromJson(Map<String, dynamic> json) =
       _$_FidoCredential.fromJson;
 
   @override
-  String get rpId;
+  String get rpId => throw _privateConstructorUsedError;
   @override
-  String get credentialId;
+  String get credentialId => throw _privateConstructorUsedError;
   @override
-  String get userId;
+  String get userId => throw _privateConstructorUsedError;
   @override
-  String get userName;
+  String get userName => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
-  _$FidoCredentialCopyWith<_FidoCredential> get copyWith =>
+  _$$_FidoCredentialCopyWith<_$_FidoCredential> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -9,17 +9,24 @@ import '../../app/state.dart';
 
 class ResetDialog extends ConsumerWidget {
   final DevicePath devicePath;
-  const ResetDialog(this.devicePath, {Key? key}) : super(key: key);
+  const ResetDialog(this.devicePath, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop();
-    });
-
     return ResponsiveDialog(
       title: const Text('Factory reset'),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            await ref.read(oathStateProvider(devicePath).notifier).reset();
+            await ref.read(withContextProvider)((context) async {
+              Navigator.of(context).pop();
+              showMessage(context, 'OATH application reset');
+            });
+          },
+          child: const Text('Reset'),
+        ),
+      ],
       child: Column(
         children: [
           const Text(
@@ -30,21 +37,11 @@ class ResetDialog extends ConsumerWidget {
           ),
         ]
             .map((e) => Padding(
-                  child: e,
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: e,
                 ))
             .toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            await ref.read(oathStateProvider(devicePath).notifier).reset();
-            Navigator.of(context).pop();
-            showMessage(context, 'OATH application reset');
-          },
-          child: const Text('Reset'),
-        ),
-      ],
     );
   }
 }

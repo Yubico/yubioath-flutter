@@ -1,5 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../management/models.dart';
 import '../core/models.dart';
 
@@ -9,27 +11,17 @@ const _listEquality = ListEquality();
 
 enum Availability { enabled, disabled, unsupported }
 
-enum Application { oath, fido, otp, piv, openpgp, hsmauth, management }
+enum Application {
+  oath('Authenticator'),
+  fido('WebAuthn'),
+  otp('One-Time Passwords'),
+  piv('Certificates'),
+  openpgp('OpenPGP'),
+  hsmauth('YubiHSM Auth'),
+  management('Toggle Applications');
 
-extension Applications on Application {
-  String get displayName {
-    switch (this) {
-      case Application.oath:
-        return 'Authenticator';
-      case Application.fido:
-        return 'WebAuthn';
-      case Application.otp:
-        return 'One-Time Passwords';
-      case Application.piv:
-        return 'Certificates';
-      case Application.openpgp:
-        return 'OpenPGP';
-      case Application.hsmauth:
-        return 'YubiHSM Auth';
-      case Application.management:
-        return 'Toggle applications';
-    }
-  }
+  final String displayName;
+  const Application(this.displayName);
 
   bool _inCapabilities(int capabilities) {
     switch (this) {

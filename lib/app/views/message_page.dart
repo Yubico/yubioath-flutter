@@ -4,29 +4,40 @@ import 'app_page.dart';
 
 class MessagePage extends StatelessWidget {
   final Widget? title;
-  final String header;
-  final String message;
-  final Widget? floatingActionButton;
+  final Widget? graphic;
+  final String? header;
+  final String? message;
+  final List<Widget> actions;
 
   const MessagePage({
-    Key? key,
+    super.key,
     this.title,
-    required this.header,
-    required this.message,
-    this.floatingActionButton,
-  }) : super(key: key);
+    this.graphic,
+    this.header,
+    this.message,
+    this.actions = const [],
+  });
 
   @override
   Widget build(BuildContext context) => AppPage(
         title: title,
         centered: true,
-        child: Column(
-          children: [
-            Text(header, style: Theme.of(context).textTheme.headline6),
-            const SizedBox(height: 12.0),
-            Text(message, textAlign: TextAlign.center),
-          ],
+        actions: actions,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              if (graphic != null) graphic!,
+              if (header != null)
+                Text(header!,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 12.0),
+              if (message != null) ...[
+                Text(message!, textAlign: TextAlign.center),
+              ],
+            ],
+          ),
         ),
-        floatingActionButton: floatingActionButton,
       );
 }

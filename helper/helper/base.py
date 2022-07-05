@@ -195,8 +195,8 @@ class RpcNode:
             logger.debug("close existing child: %s", self._child_name)
             try:
                 self._child.close()
-            except Exception as e:
-                logger.error("Error closing child", exc_info=e)
+            except Exception:
+                logger.exception("Error closing child")
             self._child = None
             self._child_name = None
 

@@ -11,22 +11,32 @@ import '../../app/state.dart';
 class DeleteAccountDialog extends ConsumerWidget {
   final DeviceNode device;
   final OathCredential credential;
-  const DeleteAccountDialog(this.device, this.credential, {Key? key})
-      : super(key: key);
+  const DeleteAccountDialog(this.device, this.credential, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop(false);
-    });
-
     final label = credential.issuer != null
         ? '${credential.issuer} (${credential.name})'
         : credential.name;
 
     return ResponsiveDialog(
       title: const Text('Delete account'),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            await ref
+                .read(credentialListProvider(device.path).notifier)
+                .deleteAccount(credential);
+            await ref.read(withContextProvider)(
+              (context) async {
+                Navigator.of(context).pop(true);
+                showMessage(context, 'Account deleted');
+              },
+            );
+          },
+          child: const Text('Delete'),
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -39,23 +49,11 @@ class DeleteAccountDialog extends ConsumerWidget {
           Text('Account: $label'),
         ]
             .map((e) => Padding(
-                  child: e,
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: e,
                 ))
             .toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            await ref
-                .read(credentialListProvider(device.path).notifier)
-                .deleteAccount(credential);
-            Navigator.of(context).pop(true);
-            showMessage(context, 'Account deleted');
-          },
-          child: const Text('Delete'),
-        ),
-      ],
     );
   }
 }

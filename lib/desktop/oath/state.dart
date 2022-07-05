@@ -29,7 +29,7 @@ final _oathLockKeyProvider =
         (ref, devicePath) => _LockKeyNotifier(null));
 
 class _LockKeyNotifier extends StateNotifier<String?> {
-  _LockKeyNotifier(String? state) : super(state);
+  _LockKeyNotifier(super.state);
 
   setKey(String key) {
     state = key;
@@ -240,6 +240,11 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
   @override
   Future<OathCode> calculate(OathCredential credential,
       {bool update = true}) async {
+    var now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    if (update) {
+      // Manually triggered, need to pad timer to avoid immediate expiration
+      now += 10;
+    }
     final OathCode code;
     final signaler = Signaler();
     UserInteractionController? controller;
@@ -256,7 +261,7 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
         }
       });
       if (credential.isSteam) {
-        final timeStep = DateTime.now().millisecondsSinceEpoch ~/ 30000;
+        final timeStep = now ~/ 30;
         var result = await _session.command('calculate',
             target: ['accounts', credential.id],
             params: {
@@ -266,8 +271,12 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
         code = OathCode(_formatSteam(result['response']), timeStep * 30,
             (timeStep + 1) * 30);
       } else {
-        var result = await _session.command('code',
-            target: ['accounts', credential.id], signal: signaler);
+        var result = await _session.command(
+          'code',
+          target: ['accounts', credential.id],
+          params: {'timestamp': now},
+          signal: signaler,
+        );
         code = OathCode.fromJson(result);
       }
       _log.debug('Calculate', jsonEncode(code));

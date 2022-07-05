@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/shortcuts.dart';
+import '../../app/state.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_dialog.dart';
@@ -12,7 +14,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
   @override
   final OathCredential credential;
   final FocusNode? focusNode;
-  AccountView(this.credential, {Key? key, this.focusNode}) : super(key: key);
+  AccountView(this.credential, {super.key, this.focusNode});
 
   Color _iconColor(int shade) {
     final colors = [
@@ -43,12 +45,6 @@ class AccountView extends ConsumerWidget with AccountMixin {
     return buildActions(context, ref).map((e) {
       final action = e.action;
       return PopupMenuItem(
-        child: ListTile(
-          leading: e.icon,
-          title: Text(e.text),
-          dense: true,
-          contentPadding: EdgeInsets.zero,
-        ),
         enabled: action != null,
         onTap: () {
           // As soon as onTap returns, the Navigator is popped,
@@ -58,6 +54,12 @@ class AccountView extends ConsumerWidget with AccountMixin {
             action?.call(context);
           });
         },
+        child: ListTile(
+          leading: e.icon,
+          title: Text(e.text),
+          dense: true,
+          contentPadding: EdgeInsets.zero,
+        ),
       );
     }).toList();
   }
@@ -71,6 +73,20 @@ class AccountView extends ConsumerWidget with AccountMixin {
     final calculateReady = code == null ||
         credential.oathType == OathType.hotp ||
         (credential.touchRequired && expired);
+
+    void triggerCopy() async {
+      if (calculateReady) {
+        await calculateCode(
+          context,
+          ref,
+        );
+      }
+      await ref.read(withContextProvider)(
+        (context) async {
+          copyToClipboard(context, ref);
+        },
+      );
+    }
 
     final darkMode = Theme.of(context).brightness == Brightness.dark;
 
@@ -87,51 +103,73 @@ class AccountView extends ConsumerWidget with AccountMixin {
           items: _buildPopupMenu(context, ref),
         );
       },
-      child: ListTile(
-        focusNode: focusNode,
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AccountDialog(credential);
+      child: Actions(
+        actions: {
+          CopyIntent: CallbackAction(onInvoke: (_) {
+            triggerCopy();
+            return null;
+          }),
+        },
+        child: LayoutBuilder(builder: (context, constraints) {
+          final showAvatar = constraints.maxWidth >= 315;
+          return ListTile(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            focusNode: focusNode,
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AccountDialog(credential);
+                },
+              );
             },
+            onLongPress: triggerCopy,
+            leading: showAvatar
+                ? CircleAvatar(
+                    foregroundColor: darkMode ? Colors.black : Colors.white,
+                    backgroundColor: _iconColor(darkMode ? 300 : 400),
+                    child: Text(
+                      (credential.issuer ?? credential.name)
+                          .characters
+                          .first
+                          .toUpperCase(),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                  )
+                : null,
+            title: Text(
+              title,
+              overflow: TextOverflow.fade,
+              maxLines: 1,
+              softWrap: false,
+            ),
+            subtitle: subtitle != null
+                ? Text(
+                    subtitle!,
+                    overflow: TextOverflow.fade,
+                    maxLines: 1,
+                    softWrap: false,
+                  )
+                : null,
+            trailing: DecoratedBox(
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: CardTheme.of(context).color,
+                borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+                child: DefaultTextStyle.merge(
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  child: buildCodeView(ref),
+                ),
+              ),
+            ),
           );
-        },
-        onLongPress: () async {
-          if (calculateReady) {
-            await calculateCode(
-              context,
-              ref,
-            );
-          }
-          copyToClipboard(context, ref);
-        },
-        leading: CircleAvatar(
-          foregroundColor: darkMode ? Colors.black : Colors.white,
-          backgroundColor: _iconColor(darkMode ? 300 : 400),
-          child: Text(
-            (credential.issuer ?? credential.name)
-                .characters
-                .first
-                .toUpperCase(),
-            style: const TextStyle(fontSize: 18),
-          ),
-        ),
-        title: Text(
-          title,
-          overflow: TextOverflow.fade,
-          maxLines: 1,
-          softWrap: false,
-        ),
-        subtitle: subtitle != null
-            ? Text(
-                subtitle!,
-                overflow: TextOverflow.fade,
-                maxLines: 1,
-                softWrap: false,
-              )
-            : null,
-        trailing: buildCodeView(ref),
+        }),
       ),
     );
   }

@@ -15,6 +15,11 @@ jobs:
       with:
         python-version: '3.9'
 
+    - name: Check app versions
+      run: |
+        python set-version.py
+        git diff --exit-code
+
     - name: Install dependencies
       run: |
         brew update
@@ -24,7 +29,7 @@ jobs:
 
     - uses: subosito/flutter-action@v2
       with:
-        channel: 'beta'
+        channel: 'stable'
         architecture: 'x64'
     - run: flutter config --enable-macos-desktop
     - run: flutter --version
@@ -43,10 +48,18 @@ jobs:
     - name: Check generated files
       run: git diff --exit-code
 
+    - name: Create dmg
+      run: |
+        brew install create-dmg
+        mkdir source_folder
+        cp -R build/macos/Build/Products/Release/"Yubico Authenticator.app" source_folder
+        sh create-dmg.sh
+
     - name: Rename and archive app bundle
       run: |
         export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
         mkdir deploy
+        mv yubioath-desktop.dmg deploy
         tar -czf deploy/yubioath-desktop-${REF}.app.tar.gz -C build/macos/Build/Products/Release "Yubico Authenticator.app"
 
     - name: Upload artifact

@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
+import '../../app/logging.dart';
 import '../../app/message.dart';
+import '../../app/models.dart';
+import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
-import '../../app/models.dart';
-import '../../app/state.dart';
 import 'utils.dart';
+
+final _log = Logger('oath.view.rename_account_dialog');
 
 class RenameAccountDialog extends ConsumerStatefulWidget {
   final DeviceNode device;
   final OathCredential credential;
-  const RenameAccountDialog(this.device, this.credential, {Key? key})
-      : super(key: key);
+  const RenameAccountDialog(this.device, this.credential, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -33,11 +36,6 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop();
-    });
-
     final credential = widget.credential;
 
     final label = credential.issuer != null
@@ -56,6 +54,39 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
 
     return ResponsiveDialog(
       title: const Text('Rename account'),
+      actions: [
+        TextButton(
+          onPressed: isValid
+              ? () async {
+                  try {
+                    final renamed = await ref
+                        .read(
+                            credentialListProvider(widget.device.path).notifier)
+                        .renameAccount(credential,
+                            _issuer.isNotEmpty ? _issuer : null, _account);
+                    if (!mounted) return;
+                    Navigator.of(context).pop(renamed);
+                    showMessage(context, 'Account renamed');
+                  } catch (e) {
+                    _log.error('Failed to add account', e);
+                    final String errorMessage;
+                    // TODO: Make this cleaner than importing desktop specific RpcError.
+                    if (e is RpcError) {
+                      errorMessage = e.message;
+                    } else {
+                      errorMessage = e.toString();
+                    }
+                    showMessage(
+                      context,
+                      'Failed adding account: $errorMessage',
+                      duration: const Duration(seconds: 4),
+                    );
+                  }
+                }
+              : null,
+          child: const Text('Save'),
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -70,6 +101,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               border: OutlineInputBorder(),
               labelText: 'Issuer (optional)',
               helperText: '', // Prevents dialog resizing when enabled = false
+              prefixIcon: Icon(Icons.business_outlined),
             ),
             onChanged: (value) {
               setState(() {
@@ -85,6 +117,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               labelText: 'Account name',
               helperText: '', // Prevents dialog resizing when enabled = false
               errorText: isValid ? null : 'Your account must have a name',
+              prefixIcon: const Icon(Icons.people_alt_outlined),
             ),
             onChanged: (value) {
               setState(() {
@@ -94,26 +127,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
           ),
         ]
             .map((e) => Padding(
-                  child: e,
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: e,
                 ))
             .toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: isValid
-              ? () async {
-                  final renamed = await ref
-                      .read(credentialListProvider(widget.device.path).notifier)
-                      .renameAccount(credential,
-                          _issuer.isNotEmpty ? _issuer : null, _account);
-                  Navigator.of(context).pop(renamed);
-                  showMessage(context, 'Account renamed');
-                }
-              : null,
-          child: const Text('Save'),
-        ),
-      ],
     );
   }
 }

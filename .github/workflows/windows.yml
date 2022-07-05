@@ -15,6 +15,11 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Check app versions
+        run: |
+          python set-version.py
+          git diff --exit-code
+
       - name: Install dependencies
         run: |
           choco install swig
@@ -23,7 +28,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'beta'
+          channel: 'stable'
       - run: flutter config --enable-windows-desktop
       - run: flutter --version
 
@@ -65,6 +70,7 @@ jobs:
           mkdir $dest
           mv build\windows\runner\Release\* $dest\
           mv yubioath-desktop.msi deploy
+          mv resources deploy
 
       - name: Upload artifact
         uses: actions/upload-artifact@v1

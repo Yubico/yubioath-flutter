@@ -1,3 +1,5 @@
+// ignore_for_file: sort_child_properties_last
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -6,17 +8,17 @@ import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
 import '../../app/message.dart';
+import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../state.dart';
 import '../../fido/models.dart';
 import '../../app/models.dart';
-import '../../app/state.dart';
 
 final _log = Logger('fido.views.add_fingerprint_dialog');
 
 class AddFingerprintDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
-  const AddFingerprintDialog(this.devicePath, {Key? key}) : super(key: key);
+  const AddFingerprintDialog(this.devicePath, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -91,7 +93,18 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     }, onError: (error, stacktrace) {
       _log.error('Error adding fingerprint', error, stacktrace);
       Navigator.of(context).pop();
-      showMessage(context, 'Error adding fingerprint');
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (error is RpcError) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = error.toString();
+      }
+      showMessage(
+        context,
+        'Error adding fingerprint: $errorMessage',
+        duration: const Duration(seconds: 4),
+      );
     });
   }
 
@@ -107,21 +120,31 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
   }
 
   void _submit() async {
-    await ref
-        .read(fingerprintProvider(widget.devicePath).notifier)
-        .renameFingerprint(_fingerprint!, _label);
-    Navigator.of(context).pop(true);
-    showMessage(context, 'Fingerprint added');
+    try {
+      await ref
+          .read(fingerprintProvider(widget.devicePath).notifier)
+          .renameFingerprint(_fingerprint!, _label);
+      if (!mounted) return;
+      Navigator.of(context).pop(true);
+      showMessage(context, 'Fingerprint added');
+    } catch (e) {
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (e is RpcError) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      showMessage(
+        context,
+        'Error setting name: $errorMessage',
+        duration: const Duration(seconds: 4),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      // Prevent over-popping if reset causes currentDevice to change.
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    });
-
     final progress = _samples == 0 ? 0.0 : _samples / (_samples + _remaining);
 
     return ResponsiveDialog(
@@ -130,26 +153,27 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Step 1/2: Capture fingerprint'),
-          Card(
-            child: Column(
-              children: [
-                AnimatedBuilder(
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(36.0),
+                child: AnimatedBuilder(
                   animation: _color,
                   builder: (context, _) {
                     return Icon(
                       _fingerprint == null ? Icons.fingerprint : Icons.check,
-                      size: 200.0,
+                      size: 128.0,
                       color: _color.value,
                     );
                   },
                 ),
-                LinearProgressIndicator(value: progress),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(_getMessage()),
-                ),
-              ],
-            ),
+              ),
+              LinearProgressIndicator(value: progress),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(_getMessage()),
+              ),
+            ],
           ),
           const Text('Step 2/2: Name fingerprint'),
           TextFormField(
@@ -160,6 +184,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
               enabled: _fingerprint != null,
               border: const OutlineInputBorder(),
               labelText: 'Name',
+              prefixIcon: const Icon(Icons.fingerprint_outlined),
             ),
             onChanged: (value) {
               setState(() {

@@ -171,7 +171,7 @@ class Ctap2Node(RpcNode):
         self.ctap = Ctap2(connection)
         if target != _ctap_id(self.ctap):
             raise ValueError("Re-inserted YubiKey does not match initial device")
-        self.ctap.reset(event)
+        self.ctap.reset(event=event)
         self._info = self.ctap.get_info()
         self._auth_blocked = False
         self._token = None
@@ -343,7 +343,7 @@ class FingerprintsNode(RpcNode):
         template_id = None
         while template_id is None:
             try:
-                template_id = enroller.capture(event)
+                template_id = enroller.capture(event=event)
                 signal("capture", dict(remaining=enroller.remaining))
             except CaptureError as e:
                 signal("capture-error", dict(code=e.code))

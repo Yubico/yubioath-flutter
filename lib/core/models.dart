@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../management/models.dart';
@@ -7,7 +8,33 @@ part 'models.g.dart';
 
 enum Transport { usb, nfc }
 
-enum UsbInterface { otp, fido, ccid }
+enum UsbInterface {
+  otp(0x01),
+  fido(0x02),
+  ccid(0x04);
+
+  final int value;
+  const UsbInterface(this.value);
+
+  static int forCapabilites(int capabilities) {
+    var interfaces = 0;
+    if (capabilities & Capability.otp.value != 0) {
+      interfaces |= UsbInterface.otp.value;
+    }
+    if (capabilities & (Capability.u2f.value | Capability.fido2.value) != 0) {
+      interfaces |= UsbInterface.fido.value;
+    }
+    if (capabilities &
+            (Capability.openpgp.value |
+                Capability.piv.value |
+                Capability.oath.value |
+                Capability.hsmauth.value) !=
+        0) {
+      interfaces |= UsbInterface.ccid.value;
+    }
+    return interfaces;
+  }
+}
 
 @JsonEnum(alwaysCreate: true)
 enum UsbPid {
@@ -44,10 +71,8 @@ enum UsbPid {
   @JsonValue(0x0407)
   yk4OtpFidoCcid,
   @JsonValue(0x0410)
-  ykpOtpFido,
-}
+  ykpOtpFido;
 
-extension UsbPids on UsbPid {
   int get value => _$UsbPidEnumMap[this]!;
 
   String get displayName {
@@ -79,41 +104,15 @@ extension UsbPids on UsbPid {
   }
 }
 
-extension UsbInterfaces on UsbInterface {
-  int get value {
-    switch (this) {
-      case UsbInterface.otp:
-        return 0x01;
-      case UsbInterface.fido:
-        return 0x02;
-      case UsbInterface.ccid:
-        return 0x04;
-    }
-  }
-
-  static int forCapabilites(int capabilities) {
-    var interfaces = 0;
-    if (capabilities & Capability.otp.value != 0) {
-      interfaces |= UsbInterface.otp.value;
-    }
-    if (capabilities & (Capability.u2f.value | Capability.fido2.value) != 0) {
-      interfaces |= UsbInterface.fido.value;
-    }
-    if (capabilities &
-            (Capability.openpgp.value |
-                Capability.piv.value |
-                Capability.oath.value |
-                Capability.hsmauth.value) !=
-        0) {
-      interfaces |= UsbInterface.ccid.value;
-    }
-    return interfaces;
-  }
-}
-
 @freezed
-class Version with _$Version {
+class Version with _$Version implements Comparable<Version> {
   const Version._();
+  @Assert('major >= 0')
+  @Assert('major < 256')
+  @Assert('minor >= 0')
+  @Assert('minor < 256')
+  @Assert('patch >= 0')
+  @Assert('patch < 256')
   const factory Version(int major, int minor, int patch) = _Version;
 
   factory Version.fromJson(List<dynamic> values) {
@@ -125,6 +124,16 @@ class Version with _$Version {
   @override
   String toString() {
     return '$major.$minor.$patch';
+  }
+
+  bool isAtLeast(int major, [int minor = 0, int patch = 0]) =>
+      compareTo(Version(major, minor, patch)) >= 0;
+
+  @override
+  int compareTo(Version other) {
+    final a = major << 16 | minor << 8 | patch;
+    final b = other.major << 16 | other.minor << 8 | other.patch;
+    return a - b;
   }
 }
 

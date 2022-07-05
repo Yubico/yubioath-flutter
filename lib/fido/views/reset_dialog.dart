@@ -7,17 +7,17 @@ import 'package:yubico_authenticator/app/logging.dart';
 
 import '../../app/message.dart';
 import '../../core/models.dart';
+import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../state.dart';
 import '../../fido/models.dart';
 import '../../app/models.dart';
-import '../../app/state.dart';
 
 final _log = Logger('fido.views.reset_dialog');
 
 class ResetDialog extends ConsumerStatefulWidget {
   final DeviceNode node;
-  const ResetDialog(this.node, {Key? key}) : super(key: key);
+  const ResetDialog(this.node, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ResetDialogState();
@@ -47,34 +47,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      // Prevent over-popping if reset causes currentDevice to change.
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    });
-
     return ResponsiveDialog(
       title: const Text('Factory reset'),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-              'Warning! This will irrevocably delete all U2F and FIDO2 accounts from your YubiKey.'),
-          Text(
-            'Your credentials, as well as any PIN set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.',
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-          Center(
-            child: Text(_getMessage(),
-                style: Theme.of(context).textTheme.headline6),
-          ),
-        ]
-            .map((e) => Padding(
-                  child: e,
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                ))
-            .toList(),
-      ),
       onCancel: () {
         _subscription?.cancel();
       },
@@ -96,13 +70,44 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                   }, onError: (e) {
                     _log.error('Error performing FIDO reset', e);
                     Navigator.of(context).pop();
-                    showMessage(context, 'Error performing reset');
+                    final String errorMessage;
+                    // TODO: Make this cleaner than importing desktop specific RpcError.
+                    if (e is RpcError) {
+                      errorMessage = e.message;
+                    } else {
+                      errorMessage = e.toString();
+                    }
+                    showMessage(
+                      context,
+                      'Error performing reset: $errorMessage',
+                      duration: const Duration(seconds: 4),
+                    );
                   });
                 }
               : null,
           child: const Text('Reset'),
         ),
       ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+              'Warning! This will irrevocably delete all U2F and FIDO2 accounts from your YubiKey.'),
+          Text(
+            'Your credentials, as well as any PIN set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.',
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
+          Center(
+            child: Text(_getMessage(),
+                style: Theme.of(context).textTheme.titleLarge),
+          ),
+        ]
+            .map((e) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: e,
+                ))
+            .toList(),
+      ),
     );
   }
 }

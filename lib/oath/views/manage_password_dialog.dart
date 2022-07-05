@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../app/state.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
@@ -11,7 +10,7 @@ import '../state.dart';
 class ManagePasswordDialog extends ConsumerStatefulWidget {
   final DevicePath path;
   final OathState state;
-  const ManagePasswordDialog(this.path, this.state, {Key? key}) : super(key: key);
+  const ManagePasswordDialog(this.path, this.state, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ManagePasswordDialogState();
@@ -26,6 +25,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   _submit() async {
     final result = await ref.read(oathStateProvider(widget.path).notifier).setPassword(_currentPassword, _newPassword);
     if (result) {
+      if (!mounted) return;
       Navigator.of(context).pop();
       showMessage(context, 'Password set');
     } else {
@@ -37,25 +37,24 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop();
-    });
-
     final isValid = _newPassword.isNotEmpty &&
         _newPassword == _confirmPassword &&
         (!widget.state.hasKey || _currentPassword.isNotEmpty);
 
     return ResponsiveDialog(
       title: const Text('Manage password'),
+      actions: [
+        TextButton(
+          onPressed: isValid ? _submit : null,
+          child: const Text('Save'),
+        )
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (widget.state.hasKey) ...[
-            Text(
-              'Current password',
-              style: Theme.of(context).textTheme.headline6,
-            ),
+            const Text(
+                "Enter your current password. If you don't know your password, you'll need to reset the YubiKey."),
             TextField(
               key: const Key('current oath password'),
               autofocus: true,
@@ -63,9 +62,12 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: 'Current password',
-                  errorText: _currentIsWrong ? 'Wrong password' : null),
+                  prefixIcon: const Icon(Icons.password_outlined),
+                  errorText: _currentIsWrong ? 'Wrong password' : null,
+                  errorMaxLines: 3),
               onChanged: (value) {
                 setState(() {
+                  _currentIsWrong = false;
                   _currentPassword = value;
                 });
               },
@@ -75,12 +77,12 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               runSpacing: 8.0,
               children: [
                 OutlinedButton(
-                  child: const Text('Remove password'),
                   onPressed: _currentPassword.isNotEmpty
                       ? () async {
                           final result =
                               await ref.read(oathStateProvider(widget.path).notifier).unsetPassword(_currentPassword);
                           if (result) {
+                            if (!mounted) return;
                             Navigator.of(context).pop();
                             showMessage(context, 'Password removed');
                           } else {
@@ -90,24 +92,22 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                           }
                         }
                       : null,
+                  child: const Text('Remove password'),
                 ),
                 if (widget.state.remembered)
                   OutlinedButton(
                     child: const Text('Clear saved password'),
                     onPressed: () async {
                       await ref.read(oathStateProvider(widget.path).notifier).forgetPassword();
+                      if (!mounted) return;
                       Navigator.of(context).pop();
                       showMessage(context, 'Password forgotten');
                     },
                   ),
               ],
             ),
-            const Divider(),
           ],
-          Text(
-            'New password',
-            style: Theme.of(context).textTheme.headline6,
-          ),
+          const Text('Enter your new password. A password may contain letters, numbers and special characters.'),
           TextField(
             key: const Key('new oath password'),
             autofocus: !widget.state.hasKey,
@@ -115,12 +115,18 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               labelText: 'New password',
+              prefixIcon: const Icon(Icons.password_outlined),
               enabled: !widget.state.hasKey || _currentPassword.isNotEmpty,
             ),
             onChanged: (value) {
               setState(() {
                 _newPassword = value;
               });
+            },
+            onSubmitted: (_) {
+              if (isValid) {
+                _submit();
+              }
             },
           ),
           TextField(
@@ -129,7 +135,8 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               labelText: 'Confirm password',
-              enabled: _newPassword.isNotEmpty,
+              prefixIcon: const Icon(Icons.password_outlined),
+              enabled: (!widget.state.hasKey || _currentPassword.isNotEmpty) && _newPassword.isNotEmpty,
             ),
             onChanged: (value) {
               setState(() {
@@ -149,12 +156,6 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 ))
             .toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: isValid ? _submit : null,
-          child: const Text('Save'),
-        )
-      ],
     );
   }
 }

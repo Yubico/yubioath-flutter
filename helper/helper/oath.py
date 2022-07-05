@@ -91,6 +91,7 @@ class OathNode(RpcNode):
     def __init__(self, connection):
         super().__init__()
         self.session = OathSession(connection)
+        self._key_verifier = None
 
         if self.session.locked:
             key = self._get_access_key(self.session.device_id)
@@ -162,11 +163,14 @@ class OathNode(RpcNode):
             return decode_bytes(params.pop("key"))
         raise ValueError("One of 'key' and 'password' must be provided.")
 
-    def _do_validate(self, key):
-        self.session.validate(key)
+    def _set_key_verifier(self, key):
         salt = os.urandom(32)
         digest = hmac.new(salt, key, "sha256").digest()
         self._key_verifier = (salt, digest)
+
+    def _do_validate(self, key):
+        self.session.validate(key)
+        self._set_key_verifier(key)
 
     @action
     def validate(self, params, event, signal):
@@ -181,7 +185,7 @@ class OathNode(RpcNode):
                     valid = False
                 else:
                     raise e
-        elif hasattr(self, "_key_verifier"):
+        elif self._key_verifier:
             salt, digest = self._key_verifier
             verify = hmac.new(salt, key, "sha256").digest()
             valid = hmac.compare_digest(digest, verify)
@@ -198,18 +202,21 @@ class OathNode(RpcNode):
         remember = params.pop("remember", False)
         key = self._get_key(params)
         self.session.set_key(key)
+        self._set_key_verifier(key)
         remember &= self._remember_key(key if remember else None)
         return dict(remembered=remember)
 
     @action(condition=lambda self: self.session.has_key)
     def unset_key(self, params, event, signal):
         self.session.unset_key()
+        self._key_verifier = None
         self._remember_key(None)
         return dict()
 
     @action
     def reset(self, params, event, signal):
         self.session.reset()
+        self._key_verifier = None
         self._remember_key(None)
         return dict()
 
@@ -271,7 +278,13 @@ class CredentialsNode(RpcNode):
 
         if data.get_id() in self._creds:
             raise ValueError("Credential already exists")
-        credential = self.session.put_credential(data, require_touch)
+        try:
+            credential = self.session.put_credential(data, require_touch)
+        except ApduError as e:
+            if e.sw == SW.INCORRECT_PARAMETERS:
+                raise ValueError("Issuer/name too long")
+            raise e
+
         self._creds[credential.id] = credential
         return asdict(credential)
 

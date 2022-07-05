@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
+import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../../app/models.dart';
-import '../../app/state.dart';
 
 class RenameFingerprintDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final Fingerprint fingerprint;
-  const RenameFingerprintDialog(this.devicePath, this.fingerprint, {Key? key})
-      : super(key: key);
+  const RenameFingerprintDialog(this.devicePath, this.fingerprint, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -30,22 +29,39 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
   }
 
   _submit() async {
-    final renamed = await ref
-        .read(fingerprintProvider(widget.devicePath).notifier)
-        .renameFingerprint(widget.fingerprint, _label);
-    Navigator.of(context).pop(renamed);
-    showMessage(context, 'Fingerprint renamed');
+    try {
+      final renamed = await ref
+          .read(fingerprintProvider(widget.devicePath).notifier)
+          .renameFingerprint(widget.fingerprint, _label);
+      if (!mounted) return;
+      Navigator.of(context).pop(renamed);
+      showMessage(context, 'Fingerprint renamed');
+    } catch (e) {
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (e is RpcError) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      showMessage(
+        context,
+        'Error renaming: $errorMessage',
+        duration: const Duration(seconds: 4),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop();
-    });
-
     return ResponsiveDialog(
       title: const Text('Rename fingerprint'),
+      actions: [
+        TextButton(
+          onPressed: _label.isNotEmpty ? _submit : null,
+          child: const Text('Save'),
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -53,10 +69,12 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           const Text('This will change the label of the fingerprint.'),
           TextFormField(
             initialValue: _label,
+            // TODO: Make this field count UTF-8 bytes instead of characters.
             maxLength: 15,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Label',
+              prefixIcon: Icon(Icons.fingerprint_outlined),
             ),
             onChanged: (value) {
               setState(() {
@@ -71,17 +89,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           ),
         ]
             .map((e) => Padding(
-                  child: e,
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: e,
                 ))
             .toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: _label.isNotEmpty ? _submit : null,
-          child: const Text('Save'),
-        ),
-      ],
     );
   }
 }

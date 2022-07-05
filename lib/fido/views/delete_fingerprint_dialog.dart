@@ -11,20 +11,28 @@ import '../../app/state.dart';
 class DeleteFingerprintDialog extends ConsumerWidget {
   final DevicePath devicePath;
   final Fingerprint fingerprint;
-  const DeleteFingerprintDialog(this.devicePath, this.fingerprint, {Key? key})
-      : super(key: key);
+  const DeleteFingerprintDialog(this.devicePath, this.fingerprint, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // If current device changes, we need to pop back to the main Page.
-    ref.listen<DeviceNode?>(currentDeviceProvider, (previous, next) {
-      Navigator.of(context).pop(false);
-    });
-
     final label = fingerprint.label;
 
     return ResponsiveDialog(
       title: const Text('Delete fingerprint'),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            await ref
+                .read(fingerprintProvider(devicePath).notifier)
+                .deleteFingerprint(fingerprint);
+            await ref.read(withContextProvider)((context) async {
+              Navigator.of(context).pop(true);
+              showMessage(context, 'Fingerprint deleted');
+            });
+          },
+          child: const Text('Delete'),
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -32,23 +40,11 @@ class DeleteFingerprintDialog extends ConsumerWidget {
           Text('Fingerprint: $label'),
         ]
             .map((e) => Padding(
-                  child: e,
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: e,
                 ))
             .toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            await ref
-                .read(fingerprintProvider(devicePath).notifier)
-                .deleteFingerprint(fingerprint);
-            Navigator.of(context).pop(true);
-            showMessage(context, 'Fingerprint deleted');
-          },
-          child: const Text('Delete'),
-        ),
-      ],
     );
   }
 }

@@ -53,14 +53,14 @@ final attachedDevicesProvider =
 );
 
 class AttachedDevicesNotifier extends StateNotifier<List<DeviceNode>> {
-  AttachedDevicesNotifier(List<DeviceNode> state) : super(state);
+  AttachedDevicesNotifier(super.state);
 
   /// Force a refresh of all device data.
   void refresh() {}
 }
 
 // Override with platform implementation
-final currentDeviceDataProvider = Provider<YubiKeyData?>(
+final currentDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
   (ref) => throw UnimplementedError(),
 );
 
@@ -70,15 +70,15 @@ final currentDeviceProvider =
         (ref) => throw UnimplementedError());
 
 abstract class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
-  CurrentDeviceNotifier(DeviceNode? state) : super(state);
-  setCurrentDevice(DeviceNode device);
+  CurrentDeviceNotifier(super.state);
+  setCurrentDevice(DeviceNode? device);
 }
 
 final currentAppProvider =
     StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
   final notifier = CurrentAppNotifier(ref.watch(supportedAppsProvider));
-  ref.listen<YubiKeyData?>(currentDeviceDataProvider, (_, data) {
-    notifier._notifyDeviceChanged(data);
+  ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
+    notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
   }, fireImmediately: true);
   return notifier;
 });
@@ -106,7 +106,11 @@ class CurrentAppNotifier extends StateNotifier<Application> {
 }
 
 abstract class QrScanner {
-  Future<String> scanQr([String? imageData]);
+  /// Scans (or searches the given image) for a QR code, and decodes it.
+  ///
+  /// The contained data is returned as a String, or null, if no QR code is
+  /// found.
+  Future<String?> scanQr([String? imageData]);
 }
 
 final qrScannerProvider = Provider<QrScanner?>(
