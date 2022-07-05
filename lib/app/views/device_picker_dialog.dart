@@ -211,8 +211,8 @@ class _CurrentDeviceRow extends StatelessWidget {
               radius: 64,
             ),
             ListTile(
-              title: const Center(child: Text('No YubiKey present')),
-              subtitle: Center(child: Text(node.name)),
+              title: Center(child: Text(node.name)),
+              subtitle: const Center(child: Text('Device inaccessible')),
             ),
           ],
         ),
