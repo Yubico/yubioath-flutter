@@ -58,6 +58,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
         child: ListTile(
           leading: e.icon,
           title: Text(e.text),
+          enabled: action != null,
           dense: true,
           contentPadding: EdgeInsets.zero,
         ),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'dialog_frame.dart';
-
 class ResponsiveDialog extends StatefulWidget {
   final Widget? title;
   final Widget child;
@@ -48,25 +46,23 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
           final cancelText = widget.onCancel == null && widget.actions.isEmpty
               ? 'Close'
               : 'Cancel';
-          return DialogFrame(
-            child: AlertDialog(
-              title: widget.title,
-              scrollable: true,
-              content: SizedBox(
-                width: 380,
-                child: Container(key: _childKey, child: widget.child),
-              ),
-              actions: [
-                TextButton(
-                  child: Text(cancelText),
-                  onPressed: () {
-                    widget.onCancel?.call();
-                    Navigator.of(context).pop();
-                  },
-                ),
-                ...widget.actions
-              ],
+          return AlertDialog(
+            title: widget.title,
+            scrollable: true,
+            content: SizedBox(
+              width: 380,
+              child: Container(key: _childKey, child: widget.child),
             ),
+            actions: [
+              TextButton(
+                child: Text(cancelText),
+                onPressed: () {
+                  widget.onCancel?.call();
+                  Navigator.of(context).pop();
+                },
+              ),
+              ...widget.actions
+            ],
           );
         }
       }));
