@@ -95,6 +95,12 @@ void Function() showToast(
           .subtitle1;
 
   OverlayEntry? entry;
+  void close() {
+    if (entry != null && entry.mounted) {
+      entry.remove();
+    }
+  }
+
   entry = OverlayEntry(builder: (context) {
     return Align(
       alignment: Alignment.bottomCenter,
@@ -107,9 +113,7 @@ void Function() showToast(
           duration,
           backgroundColor: backgroundColor,
           textStyle: textStyle,
-          onComplete: () {
-            entry!.remove();
-          },
+          onComplete: close,
         ),
       ),
     );
@@ -117,5 +121,6 @@ void Function() showToast(
   Timer.run(() {
     Overlay.of(context)!.insert(entry!);
   });
-  return entry.remove;
+
+  return close;
 }
