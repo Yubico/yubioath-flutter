@@ -10,6 +10,7 @@ import 'package:yubico_authenticator/app/logging.dart';
 import '../../app/message.dart';
 import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_text_fields.dart';
 import '../state.dart';
 import '../../fido/models.dart';
 import '../../app/models.dart';
@@ -179,6 +180,8 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
           TextFormField(
             focusNode: _nameFocus,
             maxLength: 15,
+            inputFormatters: [limitBytesLength(15)],
+            buildCounter: buildCountersFor(_label),
             autofocus: true,
             decoration: InputDecoration(
               enabled: _fingerprint != null,
