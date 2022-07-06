@@ -10,6 +10,7 @@
 
       <WixVariable Id="WixUIDialogBmp" Value="resources\icons\yubico-msi-background.png" />
       <WixVariable Id="WixUIBannerBmp" Value="resources\icons\yubico-msi-y-banner.png" />
+      <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
 
       <Icon Id="icon.ico" SourceFile="resources\icons\com.yubico.yubioath.ico"/>
       <Property Id="ARPPRODUCTICON" Value="icon.ico" />
@@ -31,6 +32,11 @@
       <UI>
           <UIRef Id="WixUI_InstallDir" />
           <Publish Dialog="WelcomeDlg"
+            Control="Next"
+            Event="NewDialog"
+            Value="LicenseAgreementDlg"
+            Order="2">1</Publish>
+          <Publish Dialog="LicenseAgreementDlg"
             Control="Next"
             Event="NewDialog"
             Value="InstallDirDlg"
