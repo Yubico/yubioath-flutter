@@ -10,7 +10,7 @@ import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 
-String _getSubtitle(DeviceInfo info) {
+String _getInfoString(DeviceInfo info) {
   final serial = info.serial;
   var subtitle = '';
   if (serial != null) {
@@ -64,10 +64,11 @@ class DevicePickerDialog extends ConsumerWidget {
     } else {
       hero = Column(
         children: [
-          DeviceAvatar(
-            selected: true,
-            radius: 64,
-            child: Icon(Platform.isAndroid ? Icons.no_cell : Icons.usb),
+          _HeroAvatar(
+            child: DeviceAvatar(
+              radius: 64,
+              child: Icon(Platform.isAndroid ? Icons.no_cell : Icons.usb),
+            ),
           ),
           ListTile(
             title:
@@ -88,15 +89,11 @@ class DevicePickerDialog extends ConsumerWidget {
         ListTile(
           leading: const Padding(
             padding: EdgeInsets.symmetric(horizontal: 4),
-            child: DeviceAvatar(
-              radius: 20,
-              child: Icon(Icons.usb),
-            ),
+            child: DeviceAvatar(child: Icon(Icons.usb)),
           ),
           title: const Text('USB'),
           subtitle: const Text('No YubiKey present'),
           onTap: () {
-            //Navigator.of(context).pop();
             ref.read(currentDeviceProvider.notifier).setCurrentDevice(null);
           },
         ),
@@ -149,6 +146,37 @@ class DevicePickerDialog extends ConsumerWidget {
   }
 }
 
+class _HeroAvatar extends StatelessWidget {
+  final Widget child;
+  const _HeroAvatar({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            theme.colorScheme.background,
+            theme.colorScheme.background.withOpacity(0.4),
+            (theme.dialogTheme.backgroundColor ?? theme.dialogBackgroundColor)
+                .withOpacity(0),
+          ],
+        ),
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Theme(
+        // Give the avatar a transparent background
+        data: theme.copyWith(
+            colorScheme:
+                theme.colorScheme.copyWith(background: Colors.transparent)),
+        child: child,
+      ),
+    );
+  }
+}
+
 class _CurrentDeviceRow extends StatelessWidget {
   final DeviceNode node;
   final AsyncValue<YubiKeyData> data;
@@ -156,98 +184,68 @@ class _CurrentDeviceRow extends StatelessWidget {
   const _CurrentDeviceRow(this.node, this.data);
 
   @override
-  Widget build(BuildContext context) => data.when(
-        data: (data) {
-          final isNfc = data.node is NfcReaderNode;
-          return Column(
-            children: [
-              DeviceAvatar.yubiKeyData(
-                data,
-                selected: true,
-                radius: 64,
-              ),
-              ListTile(
-                isThreeLine: isNfc,
-                title: Center(child: Text(data.name)),
-                subtitle: Column(
-                  children: [
-                    Text(_getSubtitle(data.info)),
-                    if (isNfc) Text(node.name),
-                  ],
-                ),
-                //onTap: onTap,
-              ),
-            ],
-          );
-        },
-        error: (error, _) {
-          final String message;
-          switch (error) {
-            case 'unknown-device':
-              message = 'Unrecognized device';
-              break;
-            default:
-              message = 'No YubiKey present';
-          }
-          return Column(
-            children: [
-              DeviceAvatar.deviceNode(
-                node,
-                selected: true,
-                radius: 64,
-              ),
-              ListTile(
-                title: Center(child: Text(message)),
-                subtitle: Center(child: Text(node.name)),
-              ),
-            ],
-          );
-        },
-        loading: () => Column(
-          children: [
-            DeviceAvatar.deviceNode(
-              node,
-              selected: true,
-              radius: 64,
-            ),
-            ListTile(
-              title: Center(child: Text(node.name)),
-              subtitle: const Center(child: Text('Device inaccessible')),
-            ),
-          ],
-        ),
-      );
+  Widget build(BuildContext context) {
+    final isNfc = node is NfcReaderNode;
+    final hero = data.maybeWhen(
+      data: (data) => DeviceAvatar.yubiKeyData(data, radius: 64),
+      orElse: () => DeviceAvatar.deviceNode(node, radius: 64),
+    );
+
+    final messages = data.whenOrNull(
+          data: (data) => [_getInfoString(data.info)],
+          error: (error, _) {
+            switch (error) {
+              case 'unknown-device':
+                return ['Unrecognized device'];
+              case 'device-inaccessible':
+                return ['Device inacessible'];
+            }
+            return null;
+          },
+        ) ??
+        ['No YubiKey present'];
+
+    String name =
+        data.asData?.value.name ?? (isNfc ? messages.removeAt(0) : node.name);
+    if (isNfc) {
+      messages.add(node.name);
+    }
+
+    return Column(
+      children: [
+        _HeroAvatar(child: hero),
+        ListTile(
+          title: Text(name, textAlign: TextAlign.center),
+          isThreeLine: messages.length > 1,
+          subtitle: Text(messages.join('\n'), textAlign: TextAlign.center),
+        )
+      ],
+    );
+  }
 }
 
 class _DeviceRow extends ConsumerWidget {
   final DeviceNode node;
   final DeviceInfo? info;
 
-  const _DeviceRow(
-    this.node, {
-    this.info,
-  });
+  const _DeviceRow(this.node, {this.info});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
       leading: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: DeviceAvatar.deviceNode(
-          node,
-          radius: 20,
-        ),
+        child: DeviceAvatar.deviceNode(node),
       ),
       title: Text(node.name),
       subtitle: Text(
         node.when(
           usbYubiKey: (_, __, ___, info) =>
-              info == null ? 'Device inaccessible' : _getSubtitle(info),
+              info == null ? 'Device inaccessible' : _getInfoString(info),
           nfcReader: (_, __) => 'Select to scan',
         ),
       ),
       onTap: () {
-        //Navigator.of(context).pop();
         ref.read(currentDeviceProvider.notifier).setCurrentDevice(node);
       },
     );
