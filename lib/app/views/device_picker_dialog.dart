@@ -40,8 +40,47 @@ class _HiddenDevicesNotifier extends StateNotifier<List<String>> {
   }
 }
 
-class DevicePickerDialog extends ConsumerWidget {
+class DevicePickerDialog extends StatefulWidget {
   const DevicePickerDialog({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _DevicePickerDialogState();
+}
+
+class _DevicePickerDialogState extends State<DevicePickerDialog> {
+  late FocusScopeNode _focus;
+
+  @override
+  void initState() {
+    super.initState();
+    _focus = FocusScopeNode();
+  }
+
+  @override
+  void dispose() {
+    _focus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // This keeps the focus in the dialog, even if the underlying page
+    // changes as it does when a new device is selected.
+    return FocusScope(
+      node: _focus,
+      autofocus: true,
+      onFocusChange: (focused) {
+        if (!focused) {
+          _focus.requestFocus();
+        }
+      },
+      child: const _DevicePickerContent(),
+    );
+  }
+}
+
+class _DevicePickerContent extends ConsumerWidget {
+  const _DevicePickerContent();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
