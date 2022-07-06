@@ -13,7 +13,7 @@ import '../../app/state.dart';
 import '../../desktop/models.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/responsive_dialog.dart';
-import '../../widgets/utf8_text_fields.dart';
+import '../../widgets/utf8_utils.dart';
 import '../models.dart';
 import '../state.dart';
 import 'utils.dart';
@@ -212,7 +212,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               enabled: issuerRemaining > 0,
               maxLength: max(issuerRemaining, 1),
               inputFormatters: [limitBytesLength(issuerRemaining)],
-              buildCounter: buildCountersFor(_issuerController.text),
+              buildCounter: buildByteCounterFor(_issuerController.text),
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Issuer (optional)',
@@ -232,7 +232,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               key: const Key('name'),
               controller: _accountController,
               maxLength: max(nameRemaining, 1),
-              buildCounter: buildCountersFor(_accountController.text),
+              buildCounter: buildByteCounterFor(_accountController.text),
               inputFormatters: [limitBytesLength(nameRemaining)],
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),

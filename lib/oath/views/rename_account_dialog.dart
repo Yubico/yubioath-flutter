@@ -7,7 +7,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
-import '../../widgets/utf8_text_fields.dart';
+import '../../widgets/utf8_utils.dart';
 import '../models.dart';
 import '../state.dart';
 import 'utils.dart';
@@ -98,7 +98,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             initialValue: _issuer,
             enabled: issuerRemaining > 0,
             maxLength: issuerRemaining > 0 ? issuerRemaining : null,
-            buildCounter: buildCountersFor(_issuer),
+            buildCounter: buildByteCounterFor(_issuer),
             inputFormatters: [limitBytesLength(issuerRemaining)],
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
@@ -116,7 +116,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             initialValue: _account,
             maxLength: nameRemaining,
             inputFormatters: [limitBytesLength(nameRemaining)],
-            buildCounter: buildCountersFor(_account),
+            buildCounter: buildByteCounterFor(_account),
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               labelText: 'Account name',
