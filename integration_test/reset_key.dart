@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:yubico_authenticator/app/views/no_device_screen.dart';
 import 'package:yubico_authenticator/oath/views/oath_screen.dart';
 
 import 'test_util.dart';
@@ -23,11 +22,11 @@ String randomPadded() {
 }
 
 String generateRandomIssuer() {
-  return 'i' + randomPadded();
+  return 'i${randomPadded()}';
 }
 
 String generateRandomName() {
-  return 'n' + randomPadded();
+  return 'n${randomPadded()}';
 }
 
 String generateRandomSecret() {
@@ -45,10 +44,6 @@ void main() {
       /// else it will fail on tap 'Authenticator' widget
       await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
-
-      expect(find.byType(NoDeviceScreen), findsNothing,
-          reason: 'No YubiKey connected');
-      expect(find.byType(OathScreen), findsOneWidget);
 
       /// QUESTION: I want to click the DrawerItem named 'WebAuthn' | 'Authenticator'
       ///       await tester.tap(find.byType(DrawerItem.titleText == 'WebAuthn'));
@@ -90,10 +85,6 @@ void main() {
       await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(NoDeviceScreen), findsNothing,
-          reason: 'No YubiKey connected');
-      expect(find.byType(OathScreen), findsOneWidget);
-
       /// QUESTION: I want to click the DrawerItem named 'WebAuthn' | 'Authenticator'
       ///       await tester.tap(find.byType(DrawerItem.titleText == 'WebAuthn'));
       /// which can be found in main_drawer.dart, how do I make sure I call the right
@@ -127,8 +118,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 30000));
 
       /// The following should report the success, if there are no accounts.
-      expect(find.byType(OathScreen), findsNothing,
-          reason: 'FIDO successfully reset.');
+      expect(find.byType(OathScreen), findsNothing, reason: 'FIDO successfully reset.');
 
       await tester.pump(const Duration(seconds: 3));
     });

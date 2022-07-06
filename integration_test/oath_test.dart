@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:yubico_authenticator/app/views/no_device_screen.dart';
 import 'package:yubico_authenticator/oath/views/account_list.dart';
 import 'package:yubico_authenticator/oath/views/oath_screen.dart';
 
@@ -24,11 +23,11 @@ String randomPadded() {
 }
 
 String generateRandomIssuer() {
-  return 'i' + randomPadded();
+  return 'i${randomPadded()}';
 }
 
 String generateRandomName() {
-  return 'n' + randomPadded();
+  return 'n${randomPadded()}';
 }
 
 String generateRandomSecret() {
@@ -40,111 +39,141 @@ void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
-  group('OATH tests', () {
-    /// For these tests there are defined Keys in manage_password_dialog.dart
-    testWidgets('set password', (WidgetTester tester) async {
+  group('OATH Options', () {
+    /*
+  These tests verify that all oath options are verified to function correctly by:
+    1. setting firsPassword and verifying it
+    2. logging in and changing to secondPassword and verifying it
+    3. changing to thirdPassword
+    4. removing thirdPassword
+   */
+    testWidgets('OATH: set firstPassword', (WidgetTester tester) async {
       await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(NoDeviceScreen), findsNothing,
-          reason: 'No YubiKey connected');
-      expect(find.byType(OathScreen), findsOneWidget);
+      var firstPassword = 'aaa111';
 
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pump(const Duration(milliseconds: 300));
+      /// expect(find.byType(OathScreen), findsOneWidget);  <<< I am not certain if this is needed.
+
+      await tester.tap(find.byIcon(Icons.tune));
+      await tester.pump(const Duration(milliseconds: 100));
 
       await tester.tap(find.text('Set password'));
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 100));
 
-      var first_password = 'aaa111';
-
-      /// TODO: I don't understand why these Keys don't work as intended
-      await tester.enterText(
-          find.byKey(const Key('new oath password')), first_password);
-      await tester.enterText(
-          find.byKey(const Key('confirm oath password')), first_password);
+      await tester.enterText(find.byKey(const Key('new oath password')), firstPassword);
+      await tester.pump();
+      await tester.enterText(find.byKey(const Key('confirm oath password')), firstPassword);
       await tester.pump();
 
       await tester.tap(find.text('Save'));
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 100));
 
-      /// TODO: verification of state here: restarting app and entering password
-      await tester.pump(const Duration(seconds: 3));
+      await tester.pump(const Duration(milliseconds: 1000));
     });
-    testWidgets('change password', (WidgetTester tester) async {
+    testWidgets('OATH: verify firstPassword', (WidgetTester tester) async {
       await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(NoDeviceScreen), findsNothing,
-          reason: 'No YubiKey connected');
-      expect(find.byType(OathScreen), findsOneWidget);
+      var firstPassword = 'aaa111';
 
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.enterText(find.byKey(const Key('oath password')), firstPassword);
+      await tester.pump();
+
+      /// TODO: verification of state here: see that list of accounts is shown
+      await tester.pump(const Duration(milliseconds: 1000));
+    });
+    testWidgets('OATH: set secondPassword', (WidgetTester tester) async {
+      await tester.pumpWidget(await getAuthenticatorApp());
+      await tester.pump(const Duration(milliseconds: 500));
+
+      var firstPassword = 'aaa111';
+      var secondPassword = 'bbb222';
+
+      await tester.enterText(find.byKey(const Key('oath password')), firstPassword);
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('oath unlock')));
+
+      await tester.tap(find.byIcon(Icons.tune));
+      await tester.pump(const Duration(milliseconds: 100));
 
       await tester.tap(find.text('Manage password'));
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 100));
 
-      var current_password = 'aaa111';
-      var second_password = 'bbb222';
+      await tester.enterText(find.byKey(const Key('current oath password')), firstPassword);
+      await tester.pump();
+      await tester.enterText(find.byKey(const Key('new oath password')), secondPassword);
 
-      /// TODO: I don't understand why these Keys don't work as intended
-      await tester.enterText(
-          find.byKey(const Key('current oath password')), current_password);
-      await tester.enterText(
-          find.byKey(const Key('new oath password')), second_password);
-      await tester.enterText(
-          find.byKey(const Key('confirm oath password')), second_password);
+      await tester.pump();
+      await tester.enterText(find.byKey(const Key('confirm oath password')), secondPassword);
       await tester.pump();
 
       await tester.tap(find.text('Save'));
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 100));
 
-      /// TODO: verification of state here: restarting app and entering password
-      await tester.pump(const Duration(seconds: 3));
+      await tester.pump(const Duration(milliseconds: 1000));
     });
-    testWidgets('remove password', (WidgetTester tester) async {
+    testWidgets('OATH: set thirdPassword', (WidgetTester tester) async {
       await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(NoDeviceScreen), findsNothing,
-          reason: 'No YubiKey connected');
-      expect(find.byType(OathScreen), findsOneWidget);
+      var secondPassword = 'bbb222';
+      var thirdPassword = 'ccc333';
 
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.tap(find.byIcon(Icons.tune));
+      await tester.pump(const Duration(milliseconds: 100));
 
       await tester.tap(find.text('Manage password'));
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 100));
 
-      var second_password = 'bbb222';
-      await tester.enterText(
-          find.byKey(const Key('current oath password')), second_password);
+      await tester.enterText(find.byKey(const Key('current oath password')), secondPassword);
+      await tester.pump();
+      await tester.enterText(find.byKey(const Key('new oath password')), thirdPassword);
+      await tester.pump();
+      await tester.enterText(find.byKey(const Key('confirm oath password')), thirdPassword);
+      await tester.pump();
+
+      await tester.tap(find.text('Save'));
+      await tester.pump(const Duration(milliseconds: 100));
+
+      await tester.pump(const Duration(milliseconds: 1000));
+
+      /// TODO: verification of state here: see that list of accounts is shown
+    });
+
+    testWidgets('OATH: remove thirdPassword', (WidgetTester tester) async {
+      await tester.pumpWidget(await getAuthenticatorApp());
+      await tester.pump(const Duration(milliseconds: 500));
+
+      var thirdPassword = 'ccc333';
+
+      await tester.tap(find.byIcon(Icons.tune));
+      await tester.pump(const Duration(milliseconds: 100));
+
+      await tester.tap(find.text('Manage password'));
+      await tester.pump(const Duration(milliseconds: 100));
+
+      await tester.enterText(find.byKey(const Key('current oath password')), thirdPassword);
       await tester.pump();
 
       await tester.tap(find.text('Remove password'));
-      await tester.pump(const Duration(milliseconds: 300));
 
-      /// TODO: verification of state here: restarting app and entering password
-      await tester.pump(const Duration(seconds: 3));
+      /// TODO: verification of state here: see that list of accounts is shown
+      await tester.pump(const Duration(milliseconds: 1000));
     });
   });
   group('TOTP tests', () {
-    testWidgets('Add 32 TOTP accounts and reset oath',
-        (WidgetTester tester) async {
+    /*
+  Tests will verify all TOTP functionality, not yet though:
+    1. Add 32 TOTP accounts
+     */
+    testWidgets('TOTP: Add 32 accounts', (WidgetTester tester) async {
       await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(NoDeviceScreen), findsNothing,
-          reason: 'No YubiKey connected');
-      expect(find.byType(OathScreen), findsOneWidget);
-
       for (var i = 0; i < 32; i += 1) {
-        await tester.tap(find.byType(FloatingActionButton));
-        await tester.pump(const Duration(milliseconds: 300));
-
-        await tester.tap(find.text('Add account'));
-        await tester.pump(const Duration(milliseconds: 300));
+        await tester.tap(find.byKey(const Key('add oath account')));
+        await tester.pump(const Duration(milliseconds: 100));
 
         var issuer = generateRandomIssuer();
         var name = generateRandomName();
@@ -153,53 +182,50 @@ void main() {
         /// this random fails: generateRandomSecret();
 
         await tester.enterText(find.byKey(const Key('issuer')), issuer);
-        await tester.pump(const Duration(milliseconds: 5));
+        await tester.pump(const Duration(milliseconds: 40));
         await tester.enterText(find.byKey(const Key('name')), name);
-        await tester.pump(const Duration(milliseconds: 5));
+        await tester.pump(const Duration(milliseconds: 40));
         await tester.enterText(find.byKey(const Key('secret')), secret);
 
-        await tester.pump(const Duration(milliseconds: 300));
+        await tester.pump(const Duration(milliseconds: 100));
 
         await tester.tap(find.byKey(const Key('save_btn')));
 
-        await tester.pump(const Duration(milliseconds: 300));
+        await tester.pump(const Duration(milliseconds: 100));
 
         expect(find.byType(OathScreen), findsOneWidget);
 
-        await tester.enterText(
-            find.byKey(const Key('search_accounts')), issuer);
+        await tester.enterText(find.byKey(const Key('search_accounts')), issuer);
 
-        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pump(const Duration(milliseconds: 100));
 
-        expect(
-            find.descendant(
-                of: find.byType(AccountList),
-                matching: find.textContaining(issuer)),
-            findsOneWidget);
+        expect(find.descendant(of: find.byType(AccountList), matching: find.textContaining(issuer)), findsOneWidget);
 
         await tester.pump(const Duration(milliseconds: 50));
       }
-
+      await tester.pump(const Duration(milliseconds: 3000));
+      /*
       await tester.tap(find.byType(FloatingActionButton));
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 500));
 
       await tester.tap(find.text('Reset OATH'));
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 500));
 
       await tester.tap(find.text('Reset'));
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 500));
 
-      await tester.pump(const Duration(seconds: 3));
+      */
     });
   });
+  /*
   group('HOTP tests', () {
     testWidgets('first HOTP test', (WidgetTester tester) async {
       await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(NoDeviceScreen), findsNothing,
-          reason: 'No YubiKey connected');
       expect(find.byType(OathScreen), findsOneWidget);
     });
   });
+
+   */
 }
