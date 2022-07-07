@@ -88,7 +88,7 @@ enum UsbPid {
         final suffix = UsbInterface.values
             .where((e) => e.value & usbInterfaces != 0)
             .map((e) => e.name.toUpperCase())
-            .join(' ');
+            .join('+');
         return '$prefix $suffix';
     }
   }
