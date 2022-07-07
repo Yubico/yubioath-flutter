@@ -12,7 +12,7 @@ import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
-import '../../theme.dart';
+import '../../widgets/menu_list_tile.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_list.dart';
@@ -52,34 +52,26 @@ class _LockedView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => AppPage(
         title: const Text('Authenticator'),
-        actions: [
-          OutlinedButton.icon(
-            label: const Text('Options'),
-            icon: const Icon(Icons.tune),
-            onPressed: () {
-              showBottomMenu(context, [
-                MenuAction(
-                  text: 'Manage password',
-                  icon: const Icon(Icons.password),
-                  action: (context) {
-                    showBlurDialog(
-                      context: context,
-                      builder: (context) =>
-                          ManagePasswordDialog(devicePath, oathState),
-                    );
-                  },
-                ),
-                MenuAction(
-                  text: 'Reset OATH',
-                  icon: const Icon(Icons.delete),
-                  action: (context) {
-                    showBlurDialog(
-                      context: context,
-                      builder: (context) => ResetDialog(devicePath),
-                    );
-                  },
-                ),
-              ]);
+        keyActions: [
+          buildMenuItem(
+            title: const Text('Manage password'),
+            leading: const Icon(Icons.password),
+            action: () {
+              showBlurDialog(
+                context: context,
+                builder: (context) =>
+                    ManagePasswordDialog(devicePath, oathState),
+              );
+            },
+          ),
+          buildMenuItem(
+            title: const Text('Reset OATH'),
+            leading: const Icon(Icons.delete),
+            action: () {
+              showBlurDialog(
+                context: context,
+                builder: (context) => ResetDialog(devicePath),
+              );
             },
           ),
         ],
@@ -124,14 +116,17 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
   @override
   Widget build(BuildContext context) {
-    final isEmpty = ref.watch(credentialListProvider(widget.devicePath)
-        .select((value) => value?.isEmpty == true));
-    if (isEmpty) {
+    final credentials = ref.watch(credentialListProvider(widget.devicePath));
+    if (credentials?.isEmpty == true) {
       return MessagePage(
         title: const Text('Authenticator'),
         graphic: noAccounts,
         header: 'No accounts',
-        actions: _buildActions(context, true),
+        keyActions: _buildActions(
+          context,
+          used: 0,
+          capacity: widget.oathState.version.isAtLeast(4) ? 32 : null,
+        ),
       );
     }
     return Actions(
@@ -179,59 +174,56 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             );
           }),
         ),
-        actions: _buildActions(context, false),
+        keyActions: _buildActions(
+          context,
+          used: credentials?.length ?? 0,
+          capacity: widget.oathState.version.isAtLeast(4) ? 32 : null,
+        ),
         child: AccountList(widget.devicePath, widget.oathState),
       ),
     );
   }
 
-  List<Widget> _buildActions(BuildContext context, bool isEmpty) {
+  List<PopupMenuEntry> _buildActions(BuildContext context,
+      {required int used, int? capacity}) {
     return [
-      OutlinedButton.icon(
-        style: isEmpty ? AppTheme.primaryOutlinedButtonStyle(context) : null,
-        label: const Text('Add account'),
-        icon: const Icon(Icons.person_add_alt_1),
-        onPressed: () {
-          showBlurDialog(
-            context: context,
-            builder: (context) => OathAddAccountPage(
-              widget.devicePath,
-              widget.oathState,
-              openQrScanner: Platform.isAndroid,
-            ),
-          );
-        },
-      ),
-      OutlinedButton.icon(
-        label: const Text('Options'),
-        icon: const Icon(Icons.tune),
-        onPressed: () {
-          showBottomMenu(context, [
-            MenuAction(
-              text:
-                  widget.oathState.hasKey ? 'Manage password' : 'Set password',
-              icon: const Icon(Icons.password),
-              action: (context) {
+      buildMenuItem(
+        title: const Text('Add account'),
+        leading: const Icon(Icons.person_add_alt_1),
+        trailing: capacity != null ? '$used/$capacity' : null,
+        action: capacity == null || capacity > used
+            ? () {
                 showBlurDialog(
                   context: context,
-                  builder: (context) =>
-                      ManagePasswordDialog(widget.devicePath, widget.oathState),
+                  builder: (context) => OathAddAccountPage(
+                    widget.devicePath,
+                    widget.oathState,
+                    openQrScanner: Platform.isAndroid,
+                  ),
                 );
-              },
-            ),
-            MenuAction(
-              text: 'Reset OATH',
-              icon: const Icon(Icons.delete),
-              action: (context) {
-                showBlurDialog(
-                  context: context,
-                  builder: (context) => ResetDialog(widget.devicePath),
-                );
-              },
-            ),
-          ]);
-        },
+              }
+            : null,
       ),
+      buildMenuItem(
+          title: Text(
+              widget.oathState.hasKey ? 'Manage password' : 'Set password'),
+          leading: const Icon(Icons.password),
+          action: () {
+            showBlurDialog(
+              context: context,
+              builder: (context) =>
+                  ManagePasswordDialog(widget.devicePath, widget.oathState),
+            );
+          }),
+      buildMenuItem(
+          title: const Text('Reset OATH'),
+          leading: const Icon(Icons.delete),
+          action: () {
+            showBlurDialog(
+              context: context,
+              builder: (context) => ResetDialog(widget.devicePath),
+            );
+          }),
     ];
   }
 }
