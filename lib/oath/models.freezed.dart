@@ -253,19 +253,19 @@ abstract class _OathCredential implements OathCredential {
       _$_OathCredential.fromJson;
 
   @override
-  String get deviceId => throw _privateConstructorUsedError;
+  String get deviceId;
   @override
-  String get id => throw _privateConstructorUsedError;
+  String get id;
   @override
-  String? get issuer => throw _privateConstructorUsedError;
+  String? get issuer;
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
   @override
-  OathType get oathType => throw _privateConstructorUsedError;
+  OathType get oathType;
   @override
-  int get period => throw _privateConstructorUsedError;
+  int get period;
   @override
-  bool get touchRequired => throw _privateConstructorUsedError;
+  bool get touchRequired;
   @override
   @JsonKey(ignore: true)
   _$$_OathCredentialCopyWith<_$_OathCredential> get copyWith =>
@@ -424,11 +424,11 @@ abstract class _OathCode implements OathCode {
   factory _OathCode.fromJson(Map<String, dynamic> json) = _$_OathCode.fromJson;
 
   @override
-  String get value => throw _privateConstructorUsedError;
+  String get value;
   @override
-  int get validFrom => throw _privateConstructorUsedError;
+  int get validFrom;
   @override
-  int get validTo => throw _privateConstructorUsedError;
+  int get validTo;
   @override
   @JsonKey(ignore: true)
   _$$_OathCodeCopyWith<_$_OathCode> get copyWith =>
@@ -599,9 +599,9 @@ abstract class _OathPair implements OathPair {
   factory _OathPair.fromJson(Map<String, dynamic> json) = _$_OathPair.fromJson;
 
   @override
-  OathCredential get credential => throw _privateConstructorUsedError;
+  OathCredential get credential;
   @override
-  OathCode? get code => throw _privateConstructorUsedError;
+  OathCode? get code;
   @override
   @JsonKey(ignore: true)
   _$$_OathPairCopyWith<_$_OathPair> get copyWith =>
@@ -838,17 +838,17 @@ abstract class _OathState implements OathState {
       _$_OathState.fromJson;
 
   @override
-  String get deviceId => throw _privateConstructorUsedError;
+  String get deviceId;
   @override
-  Version get version => throw _privateConstructorUsedError;
+  Version get version;
   @override
-  bool get hasKey => throw _privateConstructorUsedError;
+  bool get hasKey;
   @override
-  bool get remembered => throw _privateConstructorUsedError;
+  bool get remembered;
   @override
-  bool get locked => throw _privateConstructorUsedError;
+  bool get locked;
   @override
-  KeystoreState get keystore => throw _privateConstructorUsedError;
+  KeystoreState get keystore;
   @override
   @JsonKey(ignore: true)
   _$$_OathStateCopyWith<_$_OathState> get copyWith =>
@@ -1126,21 +1126,21 @@ abstract class _CredentialData extends CredentialData {
       _$_CredentialData.fromJson;
 
   @override
-  String? get issuer => throw _privateConstructorUsedError;
+  String? get issuer;
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
   @override
-  String get secret => throw _privateConstructorUsedError;
+  String get secret;
   @override
-  OathType get oathType => throw _privateConstructorUsedError;
+  OathType get oathType;
   @override
-  HashAlgorithm get hashAlgorithm => throw _privateConstructorUsedError;
+  HashAlgorithm get hashAlgorithm;
   @override
-  int get digits => throw _privateConstructorUsedError;
+  int get digits;
   @override
-  int get period => throw _privateConstructorUsedError;
+  int get period;
   @override
-  int get counter => throw _privateConstructorUsedError;
+  int get counter;
   @override
   @JsonKey(ignore: true)
   _$$_CredentialDataCopyWith<_$_CredentialData> get copyWith =>
