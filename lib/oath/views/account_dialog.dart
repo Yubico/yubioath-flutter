@@ -120,7 +120,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
           return null;
         }),
       },
-      child: Focus(
+      child: FocusScope(
         autofocus: true,
         child: AlertDialog(
           title: Center(
