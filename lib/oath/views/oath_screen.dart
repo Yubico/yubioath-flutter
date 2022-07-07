@@ -143,47 +143,44 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
           return null;
         }),
       },
-      child: Focus(
-        autofocus: true,
-        child: AppPage(
-          title: Focus(
-            canRequestFocus: false,
-            onKeyEvent: (node, event) {
-              if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                node.focusInDirection(TraversalDirection.down);
-                return KeyEventResult.handled;
-              }
-              return KeyEventResult.ignored;
-            },
-            child: Builder(builder: (context) {
-              return TextFormField(
-                key: const Key('search_accounts'),
-                controller: searchController,
-                focusNode: searchFocus,
-                style: Theme.of(context).textTheme.titleSmall,
-                decoration: const InputDecoration(
-                  hintText: 'Search accounts',
-                  isDense: true,
-                  prefixIcon: Icon(Icons.search_outlined),
-                  prefixIconConstraints: BoxConstraints(
-                    minHeight: 30,
-                    minWidth: 30,
-                  ),
-                  border: InputBorder.none,
+      child: AppPage(
+        title: Focus(
+          canRequestFocus: false,
+          onKeyEvent: (node, event) {
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              node.focusInDirection(TraversalDirection.down);
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: Builder(builder: (context) {
+            return TextFormField(
+              key: const Key('search_accounts'),
+              controller: searchController,
+              focusNode: searchFocus,
+              style: Theme.of(context).textTheme.titleSmall,
+              decoration: const InputDecoration(
+                hintText: 'Search accounts',
+                isDense: true,
+                prefixIcon: Icon(Icons.search_outlined),
+                prefixIconConstraints: BoxConstraints(
+                  minHeight: 30,
+                  minWidth: 30,
                 ),
-                onChanged: (value) {
-                  ref.read(searchProvider.notifier).setFilter(value);
-                },
-                textInputAction: TextInputAction.next,
-                onFieldSubmitted: (value) {
-                  Focus.of(context).focusInDirection(TraversalDirection.down);
-                },
-              );
-            }),
-          ),
-          actions: _buildActions(context, false),
-          child: AccountList(widget.devicePath, widget.oathState),
+                border: InputBorder.none,
+              ),
+              onChanged: (value) {
+                ref.read(searchProvider.notifier).setFilter(value);
+              },
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (value) {
+                Focus.of(context).focusInDirection(TraversalDirection.down);
+              },
+            );
+          }),
         ),
+        actions: _buildActions(context, false),
+        child: AccountList(widget.devicePath, widget.oathState),
       ),
     );
   }

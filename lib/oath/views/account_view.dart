@@ -14,8 +14,7 @@ import 'account_mixin.dart';
 class AccountView extends ConsumerWidget with AccountMixin {
   @override
   final OathCredential credential;
-  final FocusNode? focusNode;
-  AccountView(this.credential, {super.key, this.focusNode});
+  AccountView(this.credential, {super.key});
 
   Color _iconColor(int shade) {
     final colors = [
@@ -117,13 +116,10 @@ class AccountView extends ConsumerWidget with AccountMixin {
           return ListTile(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            focusNode: focusNode,
             onTap: () {
               showBlurDialog(
                 context: context,
-                builder: (context) {
-                  return AccountDialog(credential);
-                },
+                builder: (context) => AccountDialog(credential),
               );
             },
             onLongPress: triggerCopy,
