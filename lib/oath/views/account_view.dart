@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../models.dart';
@@ -57,6 +58,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
         child: ListTile(
           leading: e.icon,
           title: Text(e.text),
+          enabled: action != null,
           dense: true,
           contentPadding: EdgeInsets.zero,
         ),
@@ -117,7 +119,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
             focusNode: focusNode,
             onTap: () {
-              showDialog(
+              showBlurDialog(
                 context: context,
                 builder: (context) {
                   return AccountDialog(credential);

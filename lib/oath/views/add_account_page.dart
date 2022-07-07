@@ -5,14 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
+import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../models.dart';
 import '../state.dart';
 import 'utils.dart';
@@ -210,6 +211,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               autofocus: true,
               enabled: issuerRemaining > 0,
               maxLength: max(issuerRemaining, 1),
+              inputFormatters: [limitBytesLength(issuerRemaining)],
+              buildCounter: buildByteCounterFor(_issuerController.text),
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Issuer (optional)',
@@ -229,6 +232,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               key: const Key('name'),
               controller: _accountController,
               maxLength: max(nameRemaining, 1),
+              buildCounter: buildByteCounterFor(_accountController.text),
+              inputFormatters: [limitBytesLength(nameRemaining)],
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Account name',

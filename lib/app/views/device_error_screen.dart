@@ -30,7 +30,7 @@ class DeviceErrorScreen extends ConsumerWidget {
               label: const Text('Unlock'),
               icon: const Icon(Icons.lock_open),
               onPressed: () async {
-                final controller = showMessage(
+                final closeMessage = showMessage(
                     context, 'Elevating permissions...',
                     duration: const Duration(seconds: 30));
                 try {
@@ -40,7 +40,7 @@ class DeviceErrorScreen extends ConsumerWidget {
                     showMessage(context, 'Permission denied');
                   }
                 } finally {
-                  controller.close();
+                  closeMessage();
                 }
               },
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../message.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 import 'device_picker_dialog.dart';
@@ -17,19 +18,16 @@ class DeviceButton extends ConsumerWidget {
       deviceWidget = ref.watch(currentDeviceDataProvider).maybeWhen(
             data: (data) => DeviceAvatar.yubiKeyData(
               data,
-              selected: true,
-              radius: radius,
+              radius: radius - 1,
             ),
             orElse: () => DeviceAvatar.deviceNode(
               deviceNode,
-              selected: true,
-              radius: radius,
+              radius: radius - 1,
             ),
           );
     } else {
       deviceWidget = DeviceAvatar(
-        radius: radius,
-        selected: true,
+        radius: radius - 1,
         child: const Icon(Icons.usb),
       );
     }
@@ -40,10 +38,18 @@ class DeviceButton extends ConsumerWidget {
         icon: OverflowBox(
           maxHeight: 44,
           maxWidth: 44,
-          child: deviceWidget,
+          child: CircleAvatar(
+            radius: radius,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            child: IconTheme(
+              // Force the standard icon theme
+              data: IconTheme.of(context),
+              child: deviceWidget,
+            ),
+          ),
         ),
         onPressed: () {
-          showDialog(
+          showBlurDialog(
             context: context,
             builder: (context) => const DevicePickerDialog(),
             routeSettings: const RouteSettings(name: 'device_picker'),

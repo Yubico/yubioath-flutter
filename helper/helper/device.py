@@ -280,7 +280,7 @@ class UsbDeviceNode(AbstractDeviceNode):
         super().__init__(device, info)
 
     def _supports_connection(self, conn_type):
-        return self._device.supports_connection(conn_type)
+        return self._device.pid.supports_connection(conn_type)
 
     def _create_connection(self, conn_type):
         connection = self._device.open_connection(conn_type)

@@ -5,46 +5,34 @@ import '../models.dart';
 import 'device_images.dart';
 
 class DeviceAvatar extends StatelessWidget {
-  final bool selected;
   final Widget child;
   final Widget? badge;
   final double? radius;
-  const DeviceAvatar(
-      {super.key,
-      this.selected = false,
-      required this.child,
-      this.badge,
-      this.radius});
+  const DeviceAvatar({super.key, required this.child, this.badge, this.radius});
 
-  factory DeviceAvatar.yubiKeyData(YubiKeyData data,
-          {bool selected = false, double? radius}) =>
+  factory DeviceAvatar.yubiKeyData(YubiKeyData data, {double? radius}) =>
       DeviceAvatar(
         badge: data.node is NfcReaderNode ? nfcIcon : null,
-        selected: selected,
         radius: radius,
         child: getProductImage(data.info, data.name),
       );
 
-  factory DeviceAvatar.deviceNode(DeviceNode node,
-          {bool selected = false, double? radius}) =>
+  factory DeviceAvatar.deviceNode(DeviceNode node, {double? radius}) =>
       node.map(
         usbYubiKey: (node) {
           final info = node.info;
           if (info != null) {
             return DeviceAvatar.yubiKeyData(
               YubiKeyData(node, node.name, info),
-              selected: selected,
               radius: radius,
             );
           }
           return DeviceAvatar(
-            selected: selected,
             radius: radius,
             child: const Icon(Icons.device_unknown),
           );
         },
         nfcReader: (_) => DeviceAvatar(
-          selected: selected,
           radius: radius,
           child: nfcIcon,
         ),
@@ -52,24 +40,18 @@ class DeviceAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = this.radius ?? 24;
+    final radius = this.radius ?? 20;
     return Stack(
       alignment: AlignmentDirectional.bottomEnd,
       children: [
         CircleAvatar(
           radius: radius,
-          backgroundColor: selected
-              ? Theme.of(context).colorScheme.primary
-              : Colors.transparent,
-          child: CircleAvatar(
-            radius: radius - 1,
-            backgroundColor: Theme.of(context).colorScheme.background,
-            child: IconTheme(
-              data: IconTheme.of(context).copyWith(
-                size: radius,
-              ),
-              child: child,
+          backgroundColor: Theme.of(context).colorScheme.background,
+          child: IconTheme(
+            data: IconTheme.of(context).copyWith(
+              size: radius,
             ),
+            child: child,
           ),
         ),
         if (badge != null)

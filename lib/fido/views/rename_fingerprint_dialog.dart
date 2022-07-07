@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../models.dart';
 import '../state.dart';
 import '../../app/models.dart';
@@ -69,8 +70,9 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           const Text('This will change the label of the fingerprint.'),
           TextFormField(
             initialValue: _label,
-            // TODO: Make this field count UTF-8 bytes instead of characters.
             maxLength: 15,
+            inputFormatters: [limitBytesLength(15)],
+            buildCounter: buildByteCounterFor(_label),
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Label',

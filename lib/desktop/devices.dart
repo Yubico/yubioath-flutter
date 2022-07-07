@@ -226,6 +226,8 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
       final info = dev.info;
       if (info != null) {
         state = AsyncValue.data(YubiKeyData(dev, dev.name, info));
+      } else {
+        state = const AsyncValue.error('device-inaccessible');
       }
     }
   }
