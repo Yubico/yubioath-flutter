@@ -116,7 +116,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
   @override
   Widget build(BuildContext context) {
-    final credentials = ref.watch(credentialListProvider(widget.devicePath));
+    final credentials = ref.watch(credentialsProvider);
     if (credentials?.isEmpty == true) {
       return MessagePage(
         title: const Text('Authenticator'),
