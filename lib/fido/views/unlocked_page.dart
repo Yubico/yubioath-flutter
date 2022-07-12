@@ -6,8 +6,8 @@ import '../../app/models.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
-import '../../theme.dart';
 import '../../widgets/list_title.dart';
+import '../../widgets/menu_list_tile.dart';
 import '../models.dart';
 import '../state.dart';
 import 'add_fingerprint_dialog.dart';
@@ -121,7 +121,7 @@ class FidoUnlockedPage extends ConsumerWidget {
     if (children.isNotEmpty) {
       return AppPage(
         title: const Text('WebAuthn'),
-        actions: _buildActions(context),
+        keyActions: _buildKeyActions(context),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, children: children),
       );
@@ -133,7 +133,7 @@ class FidoUnlockedPage extends ConsumerWidget {
         graphic: noFingerprints,
         header: 'No fingerprints',
         message: 'Add one or more (up to five) fingerprints',
-        actions: _buildActions(context, fingerprintPrimary: true),
+        keyActions: _buildKeyActions(context),
       );
     }
 
@@ -142,7 +142,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       graphic: manageAccounts,
       header: 'No discoverable accounts',
       message: 'Register as a Security Key on websites',
-      actions: _buildActions(context),
+      keyActions: _buildKeyActions(context),
     );
   }
 
@@ -152,49 +152,36 @@ class FidoUnlockedPage extends ConsumerWidget {
         child: const CircularProgressIndicator(),
       );
 
-  List<Widget> _buildActions(BuildContext context,
-          {bool fingerprintPrimary = false}) =>
-      [
+  List<PopupMenuEntry> _buildKeyActions(BuildContext context) => [
         if (state.bioEnroll != null)
-          OutlinedButton.icon(
-            style: fingerprintPrimary
-                ? AppTheme.primaryOutlinedButtonStyle(context)
-                : null,
-            label: const Text('Add fingerprint'),
-            icon: const Icon(Icons.fingerprint),
-            onPressed: () {
+          buildMenuItem(
+            title: const Text('Add fingerprint'),
+            leading: const Icon(Icons.fingerprint),
+            action: () {
               showBlurDialog(
                 context: context,
                 builder: (context) => AddFingerprintDialog(node.path),
               );
             },
           ),
-        OutlinedButton.icon(
-          label: const Text('Options'),
-          icon: const Icon(Icons.tune),
-          onPressed: () {
-            showBottomMenu(context, [
-              MenuAction(
-                text: 'Change PIN',
-                icon: const Icon(Icons.pin),
-                action: (context) {
-                  showBlurDialog(
-                    context: context,
-                    builder: (context) => FidoPinDialog(node.path, state),
-                  );
-                },
-              ),
-              MenuAction(
-                text: 'Reset FIDO',
-                icon: const Icon(Icons.delete),
-                action: (context) {
-                  showBlurDialog(
-                    context: context,
-                    builder: (context) => ResetDialog(node),
-                  );
-                },
-              ),
-            ]);
+        buildMenuItem(
+          title: const Text('Change PIN'),
+          leading: const Icon(Icons.pin),
+          action: () {
+            showBlurDialog(
+              context: context,
+              builder: (context) => FidoPinDialog(node.path, state),
+            );
+          },
+        ),
+        buildMenuItem(
+          title: const Text('Reset FIDO'),
+          leading: const Icon(Icons.delete),
+          action: () {
+            showBlurDialog(
+              context: context,
+              builder: (context) => ResetDialog(node),
+            );
           },
         ),
       ];

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widgets/custom_icons.dart';
 import '../models.dart';
+import '../state.dart';
 import 'device_images.dart';
 
 class DeviceAvatar extends StatelessWidget {
@@ -37,6 +39,27 @@ class DeviceAvatar extends StatelessWidget {
           child: nfcIcon,
         ),
       );
+
+  factory DeviceAvatar.currentDevice(WidgetRef ref, {double? radius}) {
+    final deviceNode = ref.watch(currentDeviceProvider);
+    if (deviceNode != null) {
+      return ref.watch(currentDeviceDataProvider).maybeWhen(
+            data: (data) => DeviceAvatar.yubiKeyData(
+              data,
+              radius: radius,
+            ),
+            orElse: () => DeviceAvatar.deviceNode(
+              deviceNode,
+              radius: radius,
+            ),
+          );
+    } else {
+      return DeviceAvatar(
+        radius: radius,
+        child: const Icon(Icons.usb),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,14 +60,38 @@ abstract class OathCredentialListNotifier
   Future<void> deleteAccount(OathCredential credential);
 }
 
-final credentialsProvider = Provider.autoDispose<List<OathCredential>?>((ref) {
+final credentialsProvider = StateNotifierProvider.autoDispose<
+    _CredentialsProviderNotifier, List<OathCredential>?>((ref) {
+  final provider = _CredentialsProviderNotifier();
   final node = ref.watch(currentDeviceProvider);
   if (node != null) {
-    return ref.watch(credentialListProvider(node.path)
-        .select((pairs) => pairs?.map((e) => e.credential).toList()));
+    ref.listen<List<OathPair>?>(credentialListProvider(node.path),
+        (previous, next) {
+      provider._updatePairs(next);
+    });
   }
-  return null;
+  return provider;
 });
+
+class _CredentialsProviderNotifier
+    extends StateNotifier<List<OathCredential>?> {
+  _CredentialsProviderNotifier() : super(null);
+
+  void _updatePairs(List<OathPair>? pairs) {
+    if (mounted) {
+      if (pairs == null) {
+        if (state != null) {
+          state = null;
+        }
+      } else {
+        final creds = pairs.map((p) => p.credential).toList();
+        if (!const ListEquality().equals(creds, state)) {
+          state = creds;
+        }
+      }
+    }
+  }
+}
 
 final codeProvider =
     Provider.autoDispose.family<OathCode?, OathCredential>((ref, credential) {

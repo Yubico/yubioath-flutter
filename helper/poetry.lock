@@ -386,7 +386,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 
 [[package]]
 name = "zxing-cpp"
-version = "1.3.0"
+version = "1.4.0"
 description = "Python bindings for the zxing-cpp barcode library"
 category = "main"
 optional = false
@@ -711,19 +711,19 @@ zipp = [
     {file = "zipp-3.8.0.tar.gz", hash = "sha256:56bf8aadb83c24db6c4b577e13de374ccfb67da2078beba1d037c17980bf43ad"},
 ]
 zxing-cpp = [
-    {file = "zxing-cpp-1.3.0.tar.gz", hash = "sha256:5f30545afad01a278fc8c17efae11d82e36f8c2caa87c89096aec5a8d69103b2"},
-    {file = "zxing_cpp-1.3.0-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e3a6e183b6c0aae9378f674f9e7714a39482595915cf15198d10b9ba8c33b25f"},
-    {file = "zxing_cpp-1.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:88eadb723d20655caf81a6ba6ef64d74a266f57cbd782da82736c52a61a73fa5"},
-    {file = "zxing_cpp-1.3.0-cp310-cp310-win32.whl", hash = "sha256:15fb165ada1730ab0d96b67eb2d9827870d9ae534686e27541f3b3add15b96d7"},
-    {file = "zxing_cpp-1.3.0-cp310-cp310-win_amd64.whl", hash = "sha256:8dbb17a31ee1ac2c946a96e83b170ecefbc87a52b9c35b41809d9afff77d8879"},
-    {file = "zxing_cpp-1.3.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:31578db20ba0668e010cb62e4718cb86f47563ec5122e29a0746651ff1e13735"},
-    {file = "zxing_cpp-1.3.0-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:9253a3b6c8c143f3c22d172922226b10c8cc319d2554c73107fefce7e263daaa"},
-    {file = "zxing_cpp-1.3.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:250afd201f08bd1be8fd349766e32ef184a463b616c13102b2f80a4422695957"},
-    {file = "zxing_cpp-1.3.0-cp38-cp38-win32.whl", hash = "sha256:d2891dfba5c53b913867e7b01b8b430d801e15e54f53b3c05b9645dc824dfed3"},
-    {file = "zxing_cpp-1.3.0-cp38-cp38-win_amd64.whl", hash = "sha256:6201e60cbefbc8de90c5f18e6e25c3cb1be19be8f369bf4dad3ab910b954f29d"},
-    {file = "zxing_cpp-1.3.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:44467984c1a65a332c8656926f30af1752c1ff774c6a030b95572e0a1543b23b"},
-    {file = "zxing_cpp-1.3.0-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:0dbb54f8694063376d73be6f7dbddd39f3e7907ab885403d90cff7d518c54f7f"},
-    {file = "zxing_cpp-1.3.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e3cff8a7fe960c2016bc8e217fcf02b9b1ac61b17fc5c0c5158f853088be4ad9"},
-    {file = "zxing_cpp-1.3.0-cp39-cp39-win32.whl", hash = "sha256:f75431cf7cddcb21c267d39a5895831a3c20abfa7676426974652d25b29ae429"},
-    {file = "zxing_cpp-1.3.0-cp39-cp39-win_amd64.whl", hash = "sha256:de9dd0a2d01969e9828c5704d709b2559a417fea562bd2f308ebc8d4a9678b5e"},
+    {file = "zxing-cpp-1.4.0.tar.gz", hash = "sha256:3d3ec36954ecbf9b0f633dab4b8cebcf0059d8a27f7a5969c4e41a308111af38"},
+    {file = "zxing_cpp-1.4.0-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:25b11d77cf6b9f7405af3ed6bacf4a6e0756ea74dfda7040ff53e7c58f352b05"},
+    {file = "zxing_cpp-1.4.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c1f849205237d4bda462d0a4b745e72494f825e5b6b06581e05b58d34d9869aa"},
+    {file = "zxing_cpp-1.4.0-cp310-cp310-win32.whl", hash = "sha256:76e9777d943af3c51b6406b323b3f28cbf9e40cc65b53cf847fda08295f18e48"},
+    {file = "zxing_cpp-1.4.0-cp310-cp310-win_amd64.whl", hash = "sha256:234d672e34e607ffc8e06639e79c8e1bf2ddb7c249134a6836569e92a2f2dd64"},
+    {file = "zxing_cpp-1.4.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:2c1f66c61e43163740c59c58880c3a8c41ebd2109573c0494f255c9c96134e8c"},
+    {file = "zxing_cpp-1.4.0-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:9418e1bd0775820a4933b60007b7f8a177e4ddd23692c1aaed2348fafc0a8e01"},
+    {file = "zxing_cpp-1.4.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8bc1e48ddfd6692d183782f091fbf54e5e1d36d0070822b1eab14cfb580b1625"},
+    {file = "zxing_cpp-1.4.0-cp38-cp38-win32.whl", hash = "sha256:4f340b6907780e8eb0e6473fec43ea145c4dd3275e3c21d6f887c0e28e114f29"},
+    {file = "zxing_cpp-1.4.0-cp38-cp38-win_amd64.whl", hash = "sha256:71772f81c4602133b2dba6a1107339ed965725001ce9a4caaf772598110351a1"},
+    {file = "zxing_cpp-1.4.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:331bec6b0ac8a9b339bc82956c52c022e7b2debfeb9102209483eb7538ed72d4"},
+    {file = "zxing_cpp-1.4.0-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3b0844c6ad3c944452c980a025238ba3fbd3a414fd2c36e2bec1bc5bed03b21e"},
+    {file = "zxing_cpp-1.4.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a770aff618cd00dda3922de2f7085c1f84bbe02f2b6df114d19054ad41c52fb0"},
+    {file = "zxing_cpp-1.4.0-cp39-cp39-win32.whl", hash = "sha256:ebe67de6a4d3c48a5ee52211ecf2003301ab39bd7d7b7dfa72ae80be429cfcf9"},
+    {file = "zxing_cpp-1.4.0-cp39-cp39-win_amd64.whl", hash = "sha256:d0e8b54b29497ed9238f31ce522ddb0189c0d6c4597787ef2eb823ca9fb42350"},
 ]

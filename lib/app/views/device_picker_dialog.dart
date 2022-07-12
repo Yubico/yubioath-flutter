@@ -9,16 +9,7 @@ import '../../management/models.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
-
-String _getInfoString(DeviceInfo info) {
-  final serial = info.serial;
-  var subtitle = '';
-  if (serial != null) {
-    subtitle += 'S/N: $serial ';
-  }
-  subtitle += 'F/W: ${info.version}';
-  return subtitle;
-}
+import 'device_utils.dart';
 
 final _hiddenDevicesProvider =
     StateNotifierProvider<_HiddenDevicesNotifier, List<String>>(
@@ -224,37 +215,17 @@ class _CurrentDeviceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isNfc = node is NfcReaderNode;
     final hero = data.maybeWhen(
       data: (data) => DeviceAvatar.yubiKeyData(data, radius: 64),
       orElse: () => DeviceAvatar.deviceNode(node, radius: 64),
     );
-
-    final messages = data.whenOrNull(
-          data: (data) => [_getInfoString(data.info)],
-          error: (error, _) {
-            switch (error) {
-              case 'unknown-device':
-                return ['Unrecognized device'];
-              case 'device-inaccessible':
-                return ['Device inacessible'];
-            }
-            return null;
-          },
-        ) ??
-        ['No YubiKey present'];
-
-    String name =
-        data.asData?.value.name ?? (isNfc ? messages.removeAt(0) : node.name);
-    if (isNfc) {
-      messages.add(node.name);
-    }
+    final messages = getDeviceMessages(node, data);
 
     return Column(
       children: [
         _HeroAvatar(child: hero),
         ListTile(
-          title: Text(name, textAlign: TextAlign.center),
+          title: Text(messages.removeAt(0), textAlign: TextAlign.center),
           isThreeLine: messages.length > 1,
           subtitle: Text(messages.join('\n'), textAlign: TextAlign.center),
         )
@@ -280,7 +251,7 @@ class _DeviceRow extends ConsumerWidget {
       subtitle: Text(
         node.when(
           usbYubiKey: (_, __, ___, info) =>
-              info == null ? 'Device inaccessible' : _getInfoString(info),
+              info == null ? 'Device inaccessible' : getDeviceInfoString(info),
           nfcReader: (_, __) => 'Select to scan',
         ),
       ),

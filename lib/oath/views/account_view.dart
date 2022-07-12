@@ -1,11 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
+import '../../widgets/menu_list_tile.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_dialog.dart';
@@ -14,8 +13,7 @@ import 'account_mixin.dart';
 class AccountView extends ConsumerWidget with AccountMixin {
   @override
   final OathCredential credential;
-  final FocusNode? focusNode;
-  AccountView(this.credential, {super.key, this.focusNode});
+  AccountView(this.credential, {super.key});
 
   Color _iconColor(int shade) {
     final colors = [
@@ -45,23 +43,16 @@ class AccountView extends ConsumerWidget with AccountMixin {
   List<PopupMenuItem> _buildPopupMenu(BuildContext context, WidgetRef ref) {
     return buildActions(context, ref).map((e) {
       final action = e.action;
-      return PopupMenuItem(
-        enabled: action != null,
-        onTap: () {
-          // As soon as onTap returns, the Navigator is popped,
-          // closing the topmost item. Since we sometimes open new dialogs in
-          // the action, make sure that happens *after* the pop.
-          Timer(Duration.zero, () {
-            action?.call(context);
-          });
-        },
-        child: ListTile(
-          leading: e.icon,
-          title: Text(e.text),
-          enabled: action != null,
-          dense: true,
-          contentPadding: EdgeInsets.zero,
-        ),
+      return buildMenuItem(
+        leading: e.icon,
+        title: Text(e.text),
+        action: action != null
+            ? () {
+                ref.read(withContextProvider)((context) async {
+                  action.call(context);
+                });
+              }
+            : null,
       );
     }).toList();
   }
@@ -117,13 +108,10 @@ class AccountView extends ConsumerWidget with AccountMixin {
           return ListTile(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            focusNode: focusNode,
             onTap: () {
               showBlurDialog(
                 context: context,
-                builder: (context) {
-                  return AccountDialog(credential);
-                },
+                builder: (context) => AccountDialog(credential),
               );
             },
             onLongPress: triggerCopy,
