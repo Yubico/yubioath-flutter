@@ -8,32 +8,6 @@ import 'package:yubico_authenticator/oath/views/oath_screen.dart';
 
 import 'test_util.dart';
 
-Future<void> addDelay(int ms) async {
-  await Future<void>.delayed(Duration(milliseconds: ms));
-}
-
-int randomNum(int max) {
-  var r = Random.secure();
-  return r.nextInt(max);
-}
-
-String randomPadded() {
-  return randomNum(999).toString().padLeft(3, '0');
-}
-
-String generateRandomIssuer() {
-  return 'i${randomPadded()}';
-}
-
-String generateRandomName() {
-  return 'n${randomPadded()}';
-}
-
-String generateRandomSecret() {
-  final random = Random.secure();
-  return base64Encode(List.generate(10, (_) => random.nextInt(256)));
-}
-
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
