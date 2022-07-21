@@ -29,7 +29,6 @@ String generateSecret(int index) {
 }
 
 extension OathHelper on WidgetTester {
-
   /// Opens the device menu and taps the "Add account" menu item
   Future<void> tapAddAccount() async {
     await tapDeviceButton();
@@ -52,16 +51,16 @@ void main() {
 
   group('OATH UI tests', () {
     // Validates that expected UI is present
-    testWidgets(
-        'OATH UI: "Add account" menu item exists', (WidgetTester tester) async {
+    testWidgets('OATH UI: "Add account" menu item exists',
+        (WidgetTester tester) async {
       await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
       await tester.tapDeviceButton();
       expect(find.byKey(const Key('add oath account')), findsOneWidget);
     });
 
-    testWidgets('OATH-UI: "Set or manage oath password" menu item exists', (
-        WidgetTester tester) async {
+    testWidgets('OATH-UI: "Set or manage oath password" menu item exists',
+        (WidgetTester tester) async {
       await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
       await tester.tapDeviceButton();
@@ -69,8 +68,8 @@ void main() {
           find.byKey(const Key('set or manage oath password')), findsOneWidget);
     });
 
-    testWidgets(
-        'OATH-UI: "Reset OATH" menu item exists', (WidgetTester tester) async {
+    testWidgets('OATH-UI: "Reset OATH" menu item exists',
+        (WidgetTester tester) async {
       await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
       await tester.tapDeviceButton();
@@ -94,9 +93,11 @@ void main() {
 
       await tester.tapSetOrManagePassword();
 
-      await tester.enterText(find.byKey(const Key('new oath password')), firstPassword);
+      await tester.enterText(
+          find.byKey(const Key('new oath password')), firstPassword);
       await tester.pump();
-      await tester.enterText(find.byKey(const Key('confirm oath password')), firstPassword);
+      await tester.enterText(
+          find.byKey(const Key('confirm oath password')), firstPassword);
       await tester.pump();
 
       await tester.tap(find.text('Save'));
@@ -110,7 +111,8 @@ void main() {
 
       var firstPassword = 'aaa111';
 
-      await tester.enterText(find.byKey(const Key('oath password')), firstPassword);
+      await tester.enterText(
+          find.byKey(const Key('oath password')), firstPassword);
       await tester.pump();
 
       /// TODO: verification of state here: see that list of accounts is shown
@@ -123,19 +125,22 @@ void main() {
       var firstPassword = 'aaa111';
       var secondPassword = 'bbb222';
 
-      await tester.enterText(find.byKey(const Key('oath password')), firstPassword);
+      await tester.enterText(
+          find.byKey(const Key('oath password')), firstPassword);
       await tester.pump();
       await tester.tap(find.byKey(const Key('oath unlock')));
 
-
       await tester.tapSetOrManagePassword();
 
-      await tester.enterText(find.byKey(const Key('current oath password')), firstPassword);
+      await tester.enterText(
+          find.byKey(const Key('current oath password')), firstPassword);
       await tester.pump();
-      await tester.enterText(find.byKey(const Key('new oath password')), secondPassword);
+      await tester.enterText(
+          find.byKey(const Key('new oath password')), secondPassword);
 
       await tester.pump();
-      await tester.enterText(find.byKey(const Key('confirm oath password')), secondPassword);
+      await tester.enterText(
+          find.byKey(const Key('confirm oath password')), secondPassword);
       await tester.pump();
 
       await tester.tap(find.text('Save'));
@@ -150,17 +155,21 @@ void main() {
       var secondPassword = 'bbb222';
       var thirdPassword = 'ccc333';
 
-      await tester.enterText(find.byKey(const Key('oath password')), secondPassword);
+      await tester.enterText(
+          find.byKey(const Key('oath password')), secondPassword);
       await tester.pump();
       await tester.tap(find.byKey(const Key('oath unlock')));
 
       await tester.tapSetOrManagePassword();
 
-      await tester.enterText(find.byKey(const Key('current oath password')), secondPassword);
+      await tester.enterText(
+          find.byKey(const Key('current oath password')), secondPassword);
       await tester.pump();
-      await tester.enterText(find.byKey(const Key('new oath password')), thirdPassword);
+      await tester.enterText(
+          find.byKey(const Key('new oath password')), thirdPassword);
       await tester.pump();
-      await tester.enterText(find.byKey(const Key('confirm oath password')), thirdPassword);
+      await tester.enterText(
+          find.byKey(const Key('confirm oath password')), thirdPassword);
       await tester.pump();
 
       await tester.tap(find.text('Save'));
@@ -177,13 +186,15 @@ void main() {
 
       var thirdPassword = 'ccc333';
 
-      await tester.enterText(find.byKey(const Key('oath password')), thirdPassword);
+      await tester.enterText(
+          find.byKey(const Key('oath password')), thirdPassword);
       await tester.pump();
       await tester.tap(find.byKey(const Key('oath unlock')));
 
       await tester.tapSetOrManagePassword();
 
-      await tester.enterText(find.byKey(const Key('current oath password')), thirdPassword);
+      await tester.enterText(
+          find.byKey(const Key('current oath password')), thirdPassword);
       await tester.pump();
 
       await tester.tap(find.text('Remove password'));
@@ -222,11 +233,16 @@ void main() {
 
         expect(find.byType(OathScreen), findsOneWidget);
 
-        await tester.enterText(find.byKey(const Key('search_accounts')), issuer);
+        await tester.enterText(
+            find.byKey(const Key('search_accounts')), issuer);
 
         await tester.pump(const Duration(milliseconds: 100));
 
-        expect(find.descendant(of: find.byType(AccountList), matching: find.textContaining(issuer)), findsOneWidget);
+        expect(
+            find.descendant(
+                of: find.byType(AccountList),
+                matching: find.textContaining(issuer)),
+            findsOneWidget);
 
         await tester.pump(const Duration(milliseconds: 50));
       }
