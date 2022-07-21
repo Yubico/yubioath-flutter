@@ -49,7 +49,7 @@ class AppFailurePage extends ConsumerWidget {
                     icon: const Icon(Icons.lock_open),
                     style: AppTheme.primaryOutlinedButtonStyle(context),
                     onPressed: () async {
-                      final controller = showMessage(
+                      final closeMessage = showMessage(
                           context, 'Elevating permissions...',
                           duration: const Duration(seconds: 30));
                       try {
@@ -59,7 +59,7 @@ class AppFailurePage extends ConsumerWidget {
                           showMessage(context, 'Permission denied');
                         }
                       } finally {
-                        controller.close();
+                        closeMessage();
                       }
                     }),
               ];

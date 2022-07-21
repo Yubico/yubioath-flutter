@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../message.dart';
+
 abstract class UserInteractionController {
   void updateContent({String? title, String? description, Widget? icon});
   void close();
@@ -56,15 +58,28 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
     Widget? icon = widget.controller.icon;
     return AlertDialog(
       scrollable: true,
-      title: Text(widget.controller.title),
       content: SizedBox(
-        width: 300,
+        height: 160,
+        width: 100,
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (icon != null) icon,
+            if (icon != null)
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: IconTheme(
+                  data: IconTheme.of(context).copyWith(size: 36),
+                  child: icon,
+                ),
+              ),
+            Text(
+              widget.controller.title,
+              style: Theme.of(context).textTheme.headline6,
+            ),
             Text(
               widget.controller.description,
+              textAlign: TextAlign.center,
               softWrap: true,
             ),
           ],
@@ -110,7 +125,7 @@ UserInteractionController promptUserInteraction(
       }
     },
   );
-  showDialog(
+  showBlurDialog(
       context: context,
       builder: (context) {
         return WillPopScope(

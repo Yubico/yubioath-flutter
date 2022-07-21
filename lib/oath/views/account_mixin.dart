@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -78,7 +79,7 @@ mixin AccountMixin {
   Future<OathCredential?> renameCredential(
       BuildContext context, WidgetRef ref) async {
     final node = ref.read(currentDeviceProvider)!;
-    return await showDialog(
+    return await showBlurDialog(
       context: context,
       builder: (context) => RenameAccountDialog(node, credential),
     );
@@ -87,7 +88,7 @@ mixin AccountMixin {
   @protected
   Future<bool> deleteCredential(BuildContext context, WidgetRef ref) async {
     final node = ref.read(currentDeviceProvider)!;
-    return await showDialog(
+    return await showBlurDialog(
           context: context,
           builder: (context) => DeleteAccountDialog(node, credential),
         ) ??
@@ -95,67 +96,72 @@ mixin AccountMixin {
   }
 
   @protected
-  List<MenuAction> buildActions(BuildContext context, WidgetRef ref) {
-    final deviceData = ref.watch(currentDeviceDataProvider);
-    if (deviceData == null) {
-      return [];
-    }
-    final code = getCode(ref);
-    final expired = isExpired(code, ref);
-    final manual =
-        credential.touchRequired || credential.oathType == OathType.hotp;
-    final ready = expired || credential.oathType == OathType.hotp;
-    final pinned = isPinned(ref);
+  List<MenuAction> buildActions(BuildContext context, WidgetRef ref) =>
+      ref.watch(currentDeviceDataProvider).maybeWhen(
+            data: (data) {
+              final code = getCode(ref);
+              final expired = isExpired(code, ref);
+              final manual = credential.touchRequired ||
+                  credential.oathType == OathType.hotp;
+              final ready = expired || credential.oathType == OathType.hotp;
+              final pinned = isPinned(ref);
 
-    return [
-      MenuAction(
-        text: 'Copy to clipboard',
-        icon: const Icon(Icons.copy),
-        action: code == null || expired
-            ? null
-            : (context) {
-                Clipboard.setData(ClipboardData(text: code.value));
-                showMessage(context, 'Code copied to clipboard');
-              },
-      ),
-      if (manual)
-        MenuAction(
-          text: 'Calculate',
-          icon: const Icon(Icons.refresh),
-          action: ready
-              ? (context) async {
-                  try {
-                    await calculateCode(context, ref);
-                  } on CancellationException catch (_) {
-                    // ignored
-                  }
-                }
-              : null,
-        ),
-      MenuAction(
-        text: pinned ? 'Unpin account' : 'Pin account',
-        icon: pinned ? pushPinStrokeIcon : const Icon(Icons.push_pin_outlined),
-        action: (context) {
-          ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
-        },
-      ),
-      if (deviceData.info.version.isAtLeast(5, 3))
-        MenuAction(
-          icon: const Icon(Icons.edit_outlined),
-          text: 'Rename account',
-          action: (context) async {
-            await renameCredential(context, ref);
-          },
-        ),
-      MenuAction(
-        text: 'Delete account',
-        icon: const Icon(Icons.delete_outline),
-        action: (context) async {
-          await deleteCredential(context, ref);
-        },
-      ),
-    ];
-  }
+              final shortcut = Platform.isMacOS ? '\u2318 C' : 'Ctrl+C';
+              return [
+                MenuAction(
+                  text: 'Copy to clipboard ($shortcut)',
+                  icon: const Icon(Icons.copy),
+                  action: code == null || expired
+                      ? null
+                      : (context) {
+                          Clipboard.setData(ClipboardData(text: code.value));
+                          showMessage(context, 'Code copied to clipboard');
+                        },
+                ),
+                if (manual)
+                  MenuAction(
+                    text: 'Calculate',
+                    icon: const Icon(Icons.refresh),
+                    action: ready
+                        ? (context) async {
+                          try {
+                            await calculateCode(context, ref);
+                          } on CancellationException catch (_) {
+                            // ignored
+                          }
+                        }
+                        : null,
+                  ),
+                MenuAction(
+                  text: pinned ? 'Unpin account' : 'Pin account',
+                  icon: pinned
+                      ? pushPinStrokeIcon
+                      : const Icon(Icons.push_pin_outlined),
+                  action: (context) {
+                    ref
+                        .read(favoritesProvider.notifier)
+                        .toggleFavorite(credential.id);
+                  },
+                ),
+                if (data.info.version.isAtLeast(5, 3))
+                  MenuAction(
+                    icon: const Icon(Icons.edit_outlined),
+                    text: 'Rename account',
+                    action: (context) async {
+                      await renameCredential(context, ref);
+                    },
+                  ),
+                MenuAction(
+                  text: 'Delete account',
+                  icon: const Icon(Icons.delete_outline),
+                  action: (context) async {
+                    await deleteCredential(context, ref);
+                  },
+                ),
+              ];
+            },
+            orElse: () => [],
+          );
 
   @protected
   Widget buildCodeView(WidgetRef ref) {

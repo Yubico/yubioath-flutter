@@ -12,9 +12,10 @@ import 'device_avatar.dart';
 import 'graphics.dart';
 import 'message_page.dart';
 
-class NoDeviceScreen extends ConsumerWidget {
-  final DeviceNode? node;
-  const NoDeviceScreen(this.node, {super.key});
+class DeviceErrorScreen extends ConsumerWidget {
+  final DeviceNode node;
+  final Object? error;
+  const DeviceErrorScreen(this.node, {this.error, super.key});
 
   Widget _buildUsbPid(BuildContext context, WidgetRef ref, UsbPid pid) {
     if (pid.usbInterfaces == UsbInterface.fido.value) {
@@ -29,7 +30,7 @@ class NoDeviceScreen extends ConsumerWidget {
               label: const Text('Unlock'),
               icon: const Icon(Icons.lock_open),
               onPressed: () async {
-                final controller = showMessage(
+                final closeMessage = showMessage(
                     context, 'Elevating permissions...',
                     duration: const Duration(seconds: 30));
                 try {
@@ -39,7 +40,7 @@ class NoDeviceScreen extends ConsumerWidget {
                     showMessage(context, 'Permission denied');
                   }
                 } finally {
-                  controller.close();
+                  closeMessage();
                 }
               },
             ),
@@ -55,12 +56,19 @@ class NoDeviceScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return node?.map(
-          usbYubiKey: (node) => _buildUsbPid(context, ref, node.pid),
-          nfcReader: (_) => const MessagePage(
-            message: 'Place your YubiKey on the NFC reader',
-          ),
-        ) ??
-        const MessagePage(message: 'Insert your YubiKey');
+    return node.map(
+      usbYubiKey: (node) => _buildUsbPid(context, ref, node.pid),
+      nfcReader: (node) {
+        final String message;
+        switch (error) {
+          case 'unknown-device':
+            message = 'Unrecognized device';
+            break;
+          default:
+            message = 'Place your YubiKey on the NFC reader';
+        }
+        return MessagePage(message: message);
+      },
+    );
   }
 }

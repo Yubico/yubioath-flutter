@@ -280,7 +280,7 @@ class UsbDeviceNode(AbstractDeviceNode):
         super().__init__(device, info)
 
     def _supports_connection(self, conn_type):
-        return self._device.supports_connection(conn_type)
+        return self._device.pid.supports_connection(conn_type)
 
     def _create_connection(self, conn_type):
         connection = self._device.open_connection(conn_type)
@@ -327,7 +327,9 @@ class ReaderDeviceNode(AbstractDeviceNode):
             with self._device.open_connection(SmartCardConnection) as conn:
                 return dict(self._read_data(conn), present=True)
         except NoCardException:
-            return dict(present=False)
+            return dict(present=False, status="no-card")
+        except ValueError:
+            return dict(present=False, status="unknown-device")
 
     @child
     def ccid(self):

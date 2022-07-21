@@ -35,18 +35,17 @@ class _AndroidSubPageNotifier extends CurrentAppNotifier {
 final androidAttachedDevicesProvider =
     StateNotifierProvider<AttachedDevicesNotifier, List<DeviceNode>>((ref) {
   var currentDeviceData = ref.watch(androidDeviceDataProvider);
-  if (currentDeviceData != null) {
-    return _AndroidAttachedDevicesNotifier([currentDeviceData.node]);
-  }
-  return _AndroidAttachedDevicesNotifier([]);
+  List<DeviceNode> devs = currentDeviceData.maybeWhen(
+      data: (data) => [data.node], orElse: () => []);
+  return _AndroidAttachedDevicesNotifier(devs);
 });
 
 class _AndroidAttachedDevicesNotifier extends AttachedDevicesNotifier {
   _AndroidAttachedDevicesNotifier(super.state);
 }
 
-final androidDeviceDataProvider =
-    Provider<YubiKeyData?>((ref) => ref.watch(androidYubikeyProvider));
+final androidDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
+    (ref) => ref.watch(androidYubikeyProvider));
 
 final androidCurrentDeviceProvider =
     StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {

@@ -60,7 +60,7 @@ class AttachedDevicesNotifier extends StateNotifier<List<DeviceNode>> {
 }
 
 // Override with platform implementation
-final currentDeviceDataProvider = Provider<YubiKeyData?>(
+final currentDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
   (ref) => throw UnimplementedError(),
 );
 
@@ -77,8 +77,8 @@ abstract class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
 final currentAppProvider =
     StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
   final notifier = CurrentAppNotifier(ref.watch(supportedAppsProvider));
-  ref.listen<YubiKeyData?>(currentDeviceDataProvider, (_, data) {
-    notifier._notifyDeviceChanged(data);
+  ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
+    notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
   }, fireImmediately: true);
   return notifier;
 });

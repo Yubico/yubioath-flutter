@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../../widgets/utf8_utils.dart';
 import '../models.dart';
 import '../../core/models.dart';
 
@@ -18,7 +19,7 @@ Pair<int, int> getRemainingKeySpace(
     // Non-standard TOTP periods are stored as part of this data, as a "D/"- prefix.
     remaining -= '$period/'.length;
   }
-  int issuerSpace = issuer.length;
+  int issuerSpace = byteLength(issuer);
   if (issuer.isNotEmpty) {
     // Issuer is separated from name with a ":", if present.
     issuerSpace += 1;
@@ -26,7 +27,7 @@ Pair<int, int> getRemainingKeySpace(
 
   return Pair(
     // Always reserve at least one character for name
-    remaining - 1 - max(name.length, 1),
+    remaining - 1 - max(byteLength(name), 1),
     remaining - issuerSpace,
   );
 }

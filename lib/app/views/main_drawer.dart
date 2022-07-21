@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../management/views/management_screen.dart';
 import '../../about_page.dart';
 import '../../settings_page.dart';
+import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -35,7 +36,8 @@ class MainPageDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final supportedApps = ref.watch(supportedAppsProvider);
-    final data = ref.watch(currentDeviceDataProvider);
+    final data =
+        ref.watch(currentDeviceDataProvider).whenOrNull(data: (data) => data);
     final currentApp = ref.watch(currentAppProvider);
 
     MediaQuery? mediaQuery =
@@ -76,7 +78,7 @@ class MainPageDrawer extends ConsumerWidget {
                 icon: Icon(Application.management._icon),
                 onTap: () {
                   if (shouldPop) Navigator.of(context).pop();
-                  showDialog(
+                  showBlurDialog(
                     context: context,
                     builder: (context) => ManagementScreen(data),
                   );
@@ -92,7 +94,7 @@ class MainPageDrawer extends ConsumerWidget {
             onTap: () {
               final nav = Navigator.of(context);
               if (shouldPop) nav.pop();
-              showDialog(
+              showBlurDialog(
                 context: context,
                 builder: (context) => const SettingsPage(),
                 routeSettings: const RouteSettings(name: 'settings'),
@@ -105,7 +107,7 @@ class MainPageDrawer extends ConsumerWidget {
             onTap: () {
               final nav = Navigator.of(context);
               if (shouldPop) nav.pop();
-              showDialog(
+              showBlurDialog(
                 context: context,
                 builder: (context) => const AboutPage(),
                 routeSettings: const RouteSettings(name: 'about'),

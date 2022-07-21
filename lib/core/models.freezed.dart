@@ -151,11 +151,11 @@ abstract class _Version extends Version {
   const _Version._() : super._();
 
   @override
-  int get major => throw _privateConstructorUsedError;
+  int get major;
   @override
-  int get minor => throw _privateConstructorUsedError;
+  int get minor;
   @override
-  int get patch => throw _privateConstructorUsedError;
+  int get patch;
   @override
   @JsonKey(ignore: true)
   _$$_VersionCopyWith<_$_Version> get copyWith =>
@@ -284,9 +284,9 @@ abstract class _Pair<T1, T2> implements Pair<T1, T2> {
   factory _Pair(final T1 first, final T2 second) = _$_Pair<T1, T2>;
 
   @override
-  T1 get first => throw _privateConstructorUsedError;
+  T1 get first;
   @override
-  T2 get second => throw _privateConstructorUsedError;
+  T2 get second;
   @override
   @JsonKey(ignore: true)
   _$$_PairCopyWith<T1, T2, _$_Pair<T1, T2>> get copyWith =>

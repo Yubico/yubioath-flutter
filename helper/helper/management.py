@@ -32,7 +32,7 @@ from yubikit.core.smartcard import SmartCardConnection
 from yubikit.core.otp import OtpConnection
 from yubikit.core.fido import FidoConnection
 from yubikit.management import ManagementSession, DeviceConfig, Mode
-from ykman.device import connect_to_device
+from ykman.device import list_all_devices
 from dataclasses import asdict
 from time import sleep
 import logging
@@ -78,12 +78,10 @@ class ManagementNode(RpcNode):
         logger.debug("Waiting for device to re-appear...")
         for _ in range(10):
             sleep(0.2)  # Always sleep initially
-            try:
-                conn = connect_to_device(serial, connection_types)[0]
-                conn.close()
-                break
-            except ValueError:
-                logger.debug("Not found, sleep...")
+            for dev, info in list_all_devices(connection_types):
+                if info.serial == serial:
+                    return
+            logger.debug("Not found, sleep...")
         else:
             logger.warning("Timed out waiting for device")
 
