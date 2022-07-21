@@ -262,7 +262,9 @@ class _$Success implements Success {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SuccessToJson(this);
+    return _$$SuccessToJson(
+      this,
+    );
   }
 }
 
@@ -436,7 +438,9 @@ class _$Signal implements Signal {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SignalToJson(this);
+    return _$$SignalToJson(
+      this,
+    );
   }
 }
 
@@ -623,7 +627,9 @@ class _$RpcError implements RpcError {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$RpcErrorToJson(this);
+    return _$$RpcErrorToJson(
+      this,
+    );
   }
 }
 
@@ -769,7 +775,9 @@ class _$_RpcState implements _RpcState {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RpcStateToJson(this);
+    return _$$_RpcStateToJson(
+      this,
+    );
   }
 }
 

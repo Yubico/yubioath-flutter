@@ -193,7 +193,9 @@ class _$_DeviceConfig implements _DeviceConfig {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_DeviceConfigToJson(this);
+    return _$$_DeviceConfigToJson(
+      this,
+    );
   }
 }
 
@@ -494,7 +496,9 @@ class _$_DeviceInfo implements _DeviceInfo {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_DeviceInfoToJson(this);
+    return _$$_DeviceInfoToJson(
+      this,
+    );
   }
 }
 

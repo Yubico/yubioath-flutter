@@ -235,7 +235,9 @@ class _$_OathCredential implements _OathCredential {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_OathCredentialToJson(this);
+    return _$$_OathCredentialToJson(
+      this,
+    );
   }
 }
 
@@ -413,7 +415,9 @@ class _$_OathCode implements _OathCode {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_OathCodeToJson(this);
+    return _$$_OathCodeToJson(
+      this,
+    );
   }
 }
 
@@ -588,7 +592,9 @@ class _$_OathPair implements _OathPair {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_OathPairToJson(this);
+    return _$$_OathPairToJson(
+      this,
+    );
   }
 }
 
@@ -823,7 +829,9 @@ class _$_OathState implements _OathState {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_OathStateToJson(this);
+    return _$$_OathStateToJson(
+      this,
+    );
   }
 }
 
@@ -1106,7 +1114,9 @@ class _$_CredentialData extends _CredentialData {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CredentialDataToJson(this);
+    return _$$_CredentialDataToJson(
+      this,
+    );
   }
 }
 
