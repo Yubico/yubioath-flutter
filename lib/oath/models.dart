@@ -125,26 +125,18 @@ class CredentialData with _$CredentialData {
     );
   }
 
-  Uri toUri() {
-    final path = issuer != null ? '$issuer:$name' : name;
-    var uri = 'otpauth://${oathType.name}/$path?secret=$secret';
-    switch (oathType) {
-      case OathType.hotp:
-        uri += '&counter=$counter';
-        break;
-      case OathType.totp:
-        uri += '&period=$period';
-        break;
-    }
-    if (issuer != null) {
-      uri += '&issuer=$issuer';
-    }
-    if (digits != 6) {
-      uri += '&digits=$digits';
-    }
-    if (hashAlgorithm != HashAlgorithm.sha1) {
-      uri += '&algorithm=${hashAlgorithm.name}';
-    }
-    return Uri.parse(uri);
-  }
+  Uri toUri() => Uri(
+        scheme: 'otpauth',
+        host: oathType.name,
+        path: issuer != null ? '$issuer:$name' : name,
+        queryParameters: {
+          'secret': secret,
+          if (oathType == OathType.totp) 'period': period.toString(),
+          if (oathType == OathType.hotp) 'counter': counter.toString(),
+          if (issuer != null) 'issuer': issuer!,
+          if (digits != 6) 'digits': digits.toString(),
+          if (hashAlgorithm != HashAlgorithm.sha1)
+            'algorithm': hashAlgorithm.name,
+        },
+      );
 }

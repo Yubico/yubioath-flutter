@@ -2,13 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/app/logging.dart';
-import 'package:yubico_authenticator/app/views/user_interaction.dart';
 
+import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
@@ -254,6 +255,7 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
           controller = await _withContext(
             (context) async => promptUserInteraction(
               context,
+              icon: const Icon(Icons.touch_app),
               title: 'Touch Required',
               description: 'Touch the button on your YubiKey now.',
             ),

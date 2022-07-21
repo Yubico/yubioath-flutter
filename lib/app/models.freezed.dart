@@ -175,11 +175,11 @@ abstract class _YubiKeyData implements YubiKeyData {
       _$_YubiKeyData;
 
   @override
-  DeviceNode get node => throw _privateConstructorUsedError;
+  DeviceNode get node;
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
   @override
-  DeviceInfo get info => throw _privateConstructorUsedError;
+  DeviceInfo get info;
   @override
   @JsonKey(ignore: true)
   _$$_YubiKeyDataCopyWith<_$_YubiKeyData> get copyWith =>
@@ -454,11 +454,11 @@ abstract class UsbYubiKeyNode extends DeviceNode {
   UsbYubiKeyNode._() : super._();
 
   @override
-  DevicePath get path => throw _privateConstructorUsedError;
+  DevicePath get path;
   @override
-  String get name => throw _privateConstructorUsedError;
-  UsbPid get pid => throw _privateConstructorUsedError;
-  DeviceInfo? get info => throw _privateConstructorUsedError;
+  String get name;
+  UsbPid get pid;
+  DeviceInfo? get info;
   @override
   @JsonKey(ignore: true)
   _$$UsbYubiKeyNodeCopyWith<_$UsbYubiKeyNode> get copyWith =>
@@ -613,9 +613,9 @@ abstract class NfcReaderNode extends DeviceNode {
   NfcReaderNode._() : super._();
 
   @override
-  DevicePath get path => throw _privateConstructorUsedError;
+  DevicePath get path;
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
   @override
   @JsonKey(ignore: true)
   _$$NfcReaderNodeCopyWith<_$NfcReaderNode> get copyWith =>
@@ -762,11 +762,11 @@ abstract class _MenuAction implements MenuAction {
       final void Function(BuildContext)? action}) = _$_MenuAction;
 
   @override
-  String get text => throw _privateConstructorUsedError;
+  String get text;
   @override
-  Widget get icon => throw _privateConstructorUsedError;
+  Widget get icon;
   @override
-  void Function(BuildContext)? get action => throw _privateConstructorUsedError;
+  void Function(BuildContext)? get action;
   @override
   @JsonKey(ignore: true)
   _$$_MenuActionCopyWith<_$_MenuAction> get copyWith =>
@@ -914,11 +914,11 @@ abstract class _WindowState implements WindowState {
       required final bool active}) = _$_WindowState;
 
   @override
-  bool get focused => throw _privateConstructorUsedError;
+  bool get focused;
   @override
-  bool get visible => throw _privateConstructorUsedError;
+  bool get visible;
   @override
-  bool get active => throw _privateConstructorUsedError;
+  bool get active;
   @override
   @JsonKey(ignore: true)
   _$$_WindowStateCopyWith<_$_WindowState> get copyWith =>

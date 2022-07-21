@@ -162,9 +162,9 @@ abstract class _FidoState extends FidoState {
       _$_FidoState.fromJson;
 
   @override
-  Map<String, dynamic> get info => throw _privateConstructorUsedError;
+  Map<String, dynamic> get info;
   @override
-  bool get unlocked => throw _privateConstructorUsedError;
+  bool get unlocked;
   @override
   @JsonKey(ignore: true)
   _$$_FidoStateCopyWith<_$_FidoState> get copyWith =>
@@ -471,8 +471,8 @@ abstract class _PinFailure implements PinResult {
   factory _PinFailure(final int retries, final bool authBlocked) =
       _$_PinFailure;
 
-  int get retries => throw _privateConstructorUsedError;
-  bool get authBlocked => throw _privateConstructorUsedError;
+  int get retries;
+  bool get authBlocked;
   @JsonKey(ignore: true)
   _$$_PinFailureCopyWith<_$_PinFailure> get copyWith =>
       throw _privateConstructorUsedError;
@@ -620,9 +620,9 @@ abstract class _Fingerprint extends Fingerprint {
       _$_Fingerprint.fromJson;
 
   @override
-  String get templateId => throw _privateConstructorUsedError;
+  String get templateId;
   @override
-  String? get name => throw _privateConstructorUsedError;
+  String? get name;
   @override
   @JsonKey(ignore: true)
   _$$_FingerprintCopyWith<_$_Fingerprint> get copyWith =>
@@ -828,7 +828,7 @@ class _$_EventCapture implements _EventCapture {
 abstract class _EventCapture implements FingerprintEvent {
   factory _EventCapture(final int remaining) = _$_EventCapture;
 
-  int get remaining => throw _privateConstructorUsedError;
+  int get remaining;
   @JsonKey(ignore: true)
   _$$_EventCaptureCopyWith<_$_EventCapture> get copyWith =>
       throw _privateConstructorUsedError;
@@ -978,7 +978,7 @@ class _$_EventComplete implements _EventComplete {
 abstract class _EventComplete implements FingerprintEvent {
   factory _EventComplete(final Fingerprint fingerprint) = _$_EventComplete;
 
-  Fingerprint get fingerprint => throw _privateConstructorUsedError;
+  Fingerprint get fingerprint;
   @JsonKey(ignore: true)
   _$$_EventCompleteCopyWith<_$_EventComplete> get copyWith =>
       throw _privateConstructorUsedError;
@@ -1118,7 +1118,7 @@ class _$_EventError implements _EventError {
 abstract class _EventError implements FingerprintEvent {
   factory _EventError(final int code) = _$_EventError;
 
-  int get code => throw _privateConstructorUsedError;
+  int get code;
   @JsonKey(ignore: true)
   _$$_EventErrorCopyWith<_$_EventError> get copyWith =>
       throw _privateConstructorUsedError;
@@ -1304,13 +1304,13 @@ abstract class _FidoCredential implements FidoCredential {
       _$_FidoCredential.fromJson;
 
   @override
-  String get rpId => throw _privateConstructorUsedError;
+  String get rpId;
   @override
-  String get credentialId => throw _privateConstructorUsedError;
+  String get credentialId;
   @override
-  String get userId => throw _privateConstructorUsedError;
+  String get userId;
   @override
-  String get userName => throw _privateConstructorUsedError;
+  String get userName;
   @override
   @JsonKey(ignore: true)
   _$$_FidoCredentialCopyWith<_$_FidoCredential> get copyWith =>

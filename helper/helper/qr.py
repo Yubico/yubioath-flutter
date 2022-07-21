@@ -8,6 +8,7 @@ import subprocess
 import tempfile
 from mss.exception import ScreenShotError
 from PIL import Image
+import numpy.core.multiarray  # noqa
 
 
 def _capture_screen():
@@ -41,6 +42,6 @@ def scan_qr(image_data=None):
         img = _capture_screen()
 
     result = zxingcpp.read_barcode(img)
-    if result.valid:
+    if result and result.valid:
         return result.text
     return None

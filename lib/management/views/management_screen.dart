@@ -180,7 +180,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
           context,
           'Reconfiguring YubiKey...',
           duration: const Duration(seconds: 8),
-        ).close;
+        );
       }
       await ref
           .read(managementStateProvider(widget.deviceData.node.path).notifier)

@@ -9,12 +9,14 @@ class AppPage extends ConsumerWidget {
   final Widget? title;
   final Widget child;
   final List<Widget> actions;
+  final List<PopupMenuEntry> keyActions;
   final bool centered;
   AppPage({
     super.key,
     this.title,
     required this.child,
     this.actions = const [],
+    this.keyActions = const [],
     this.centered = false,
   });
 
@@ -82,10 +84,10 @@ class AppPage extends ConsumerWidget {
         title: title,
         centerTitle: true,
         titleTextStyle: Theme.of(context).textTheme.titleLarge,
-        actions: const [
+        actions: [
           Padding(
-            padding: EdgeInsets.only(right: 6),
-            child: DeviceButton(),
+            padding: const EdgeInsets.only(right: 6),
+            child: DeviceButton(actions: keyActions),
           ),
         ],
       ),

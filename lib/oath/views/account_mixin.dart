@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -77,7 +78,7 @@ mixin AccountMixin {
   Future<OathCredential?> renameCredential(
       BuildContext context, WidgetRef ref) async {
     final node = ref.read(currentDeviceProvider)!;
-    return await showDialog(
+    return await showBlurDialog(
       context: context,
       builder: (context) => RenameAccountDialog(node, credential),
     );
@@ -86,7 +87,7 @@ mixin AccountMixin {
   @protected
   Future<bool> deleteCredential(BuildContext context, WidgetRef ref) async {
     final node = ref.read(currentDeviceProvider)!;
-    return await showDialog(
+    return await showBlurDialog(
           context: context,
           builder: (context) => DeleteAccountDialog(node, credential),
         ) ??
@@ -104,9 +105,10 @@ mixin AccountMixin {
               final ready = expired || credential.oathType == OathType.hotp;
               final pinned = isPinned(ref);
 
+              final shortcut = Platform.isMacOS ? '\u2318 C' : 'Ctrl+C';
               return [
                 MenuAction(
-                  text: 'Copy to clipboard',
+                  text: 'Copy to clipboard ($shortcut)',
                   icon: const Icon(Icons.copy),
                   action: code == null || expired
                       ? null

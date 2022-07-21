@@ -272,7 +272,7 @@ abstract class Success implements RpcResponse {
   factory Success.fromJson(Map<String, dynamic> json) = _$Success.fromJson;
 
   @override
-  Map<String, dynamic> get body => throw _privateConstructorUsedError;
+  Map<String, dynamic> get body;
   @override
   @JsonKey(ignore: true)
   _$$SuccessCopyWith<_$Success> get copyWith =>
@@ -446,9 +446,9 @@ abstract class Signal implements RpcResponse {
 
   factory Signal.fromJson(Map<String, dynamic> json) = _$Signal.fromJson;
 
-  String get status => throw _privateConstructorUsedError;
+  String get status;
   @override
-  Map<String, dynamic> get body => throw _privateConstructorUsedError;
+  Map<String, dynamic> get body;
   @override
   @JsonKey(ignore: true)
   _$$SignalCopyWith<_$Signal> get copyWith =>
@@ -633,10 +633,10 @@ abstract class RpcError implements RpcResponse {
 
   factory RpcError.fromJson(Map<String, dynamic> json) = _$RpcError.fromJson;
 
-  String get status => throw _privateConstructorUsedError;
-  String get message => throw _privateConstructorUsedError;
+  String get status;
+  String get message;
   @override
-  Map<String, dynamic> get body => throw _privateConstructorUsedError;
+  Map<String, dynamic> get body;
   @override
   @JsonKey(ignore: true)
   _$$RpcErrorCopyWith<_$RpcError> get copyWith =>
@@ -780,9 +780,9 @@ abstract class _RpcState implements RpcState {
   factory _RpcState.fromJson(Map<String, dynamic> json) = _$_RpcState.fromJson;
 
   @override
-  String get version => throw _privateConstructorUsedError;
+  String get version;
   @override
-  bool get isAdmin => throw _privateConstructorUsedError;
+  bool get isAdmin;
   @override
   @JsonKey(ignore: true)
   _$$_RpcStateCopyWith<_$_RpcState> get copyWith =>

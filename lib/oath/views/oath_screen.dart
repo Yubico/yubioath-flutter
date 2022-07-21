@@ -12,7 +12,7 @@ import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
-import '../../theme.dart';
+import '../../widgets/menu_list_tile.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_list.dart';
@@ -36,8 +36,9 @@ class OathScreen extends ConsumerWidget {
             title: const Text('Authenticator'),
             cause: error,
           ),
-          data: (oathState) =>
-              oathState.locked ? _LockedView(devicePath, oathState) : _UnlockedView(devicePath, oathState),
+          data: (oathState) => oathState.locked
+              ? _LockedView(devicePath, oathState)
+              : _UnlockedView(devicePath, oathState),
         );
   }
 }
@@ -51,33 +52,26 @@ class _LockedView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => AppPage(
         title: const Text('Authenticator'),
-        actions: [
-          OutlinedButton.icon(
-            label: const Text('Options'),
-            icon: const Icon(Icons.tune),
-            onPressed: () {
-              showBottomMenu(context, [
-                MenuAction(
-                  text: 'Manage password',
-                  icon: const Icon(Icons.password),
-                  action: (context) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => ManagePasswordDialog(devicePath, oathState),
-                    );
-                  },
-                ),
-                MenuAction(
-                  text: 'Reset OATH',
-                  icon: const Icon(Icons.delete),
-                  action: (context) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => ResetDialog(devicePath),
-                    );
-                  },
-                ),
-              ]);
+        keyActions: [
+          buildMenuItem(
+            title: const Text('Manage password'),
+            leading: const Icon(Icons.password),
+            action: () {
+              showBlurDialog(
+                context: context,
+                builder: (context) =>
+                    ManagePasswordDialog(devicePath, oathState),
+              );
+            },
+          ),
+          buildMenuItem(
+            title: const Text('Reset OATH'),
+            leading: const Icon(Icons.delete),
+            action: () {
+              showBlurDialog(
+                context: context,
+                builder: (context) => ResetDialog(devicePath),
+              );
             },
           ),
         ],
@@ -122,114 +116,114 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
   @override
   Widget build(BuildContext context) {
-    final isEmpty = ref.watch(credentialListProvider(widget.devicePath).select((value) => value?.isEmpty == true));
-    if (isEmpty) {
+    final credentials = ref.watch(credentialsProvider);
+    if (credentials?.isEmpty == true) {
       return MessagePage(
         title: const Text('Authenticator'),
         graphic: noAccounts,
         header: 'No accounts',
-        actions: _buildActions(context, true),
+        keyActions: _buildActions(
+          context,
+          used: 0,
+          capacity: widget.oathState.version.isAtLeast(4) ? 32 : null,
+        ),
       );
     }
     return Actions(
       actions: {
         SearchIntent: CallbackAction(onInvoke: (_) {
-          searchController.selection = TextSelection(baseOffset: 0, extentOffset: searchController.text.length);
+          searchController.selection = TextSelection(
+              baseOffset: 0, extentOffset: searchController.text.length);
           searchFocus.requestFocus();
           return null;
         }),
       },
-      child: Focus(
-        autofocus: true,
-        child: AppPage(
-          title: Focus(
-            canRequestFocus: false,
-            onKeyEvent: (node, event) {
-              if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                node.focusInDirection(TraversalDirection.down);
-                return KeyEventResult.handled;
-              }
-              return KeyEventResult.ignored;
-            },
-            child: Builder(builder: (context) {
-              return TextFormField(
-                key: const Key('search_accounts'),
-                controller: searchController,
-                focusNode: searchFocus,
-                style: Theme.of(context).textTheme.titleSmall,
-                decoration: const InputDecoration(
-                  hintText: 'Search accounts',
-                  isDense: true,
-                  prefixIcon: Icon(Icons.search_outlined),
-                  prefixIconConstraints: BoxConstraints(
-                    minHeight: 30,
-                    minWidth: 30,
-                  ),
-                  border: InputBorder.none,
+      child: AppPage(
+        title: Focus(
+          canRequestFocus: false,
+          onKeyEvent: (node, event) {
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              node.focusInDirection(TraversalDirection.down);
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: Builder(builder: (context) {
+            return TextFormField(
+              key: const Key('search_accounts'),
+              controller: searchController,
+              focusNode: searchFocus,
+              style: Theme.of(context).textTheme.titleSmall,
+              decoration: const InputDecoration(
+                hintText: 'Search accounts',
+                isDense: true,
+                prefixIcon: Icon(Icons.search_outlined),
+                prefixIconConstraints: BoxConstraints(
+                  minHeight: 30,
+                  minWidth: 30,
                 ),
-                onChanged: (value) {
-                  ref.read(searchProvider.notifier).setFilter(value);
-                },
-                textInputAction: TextInputAction.next,
-                onFieldSubmitted: (value) {
-                  Focus.of(context).focusInDirection(TraversalDirection.down);
-                },
-              );
-            }),
-          ),
-          actions: _buildActions(context, false),
-          child: AccountList(widget.devicePath, widget.oathState),
+                border: InputBorder.none,
+              ),
+              onChanged: (value) {
+                ref.read(searchProvider.notifier).setFilter(value);
+              },
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (value) {
+                Focus.of(context).focusInDirection(TraversalDirection.down);
+              },
+            );
+          }),
         ),
+        keyActions: _buildActions(
+          context,
+          used: credentials?.length ?? 0,
+          capacity: widget.oathState.version.isAtLeast(4) ? 32 : null,
+        ),
+        child: AccountList(widget.devicePath, widget.oathState),
       ),
     );
   }
 
-  List<Widget> _buildActions(BuildContext context, bool isEmpty) {
+  List<PopupMenuEntry> _buildActions(BuildContext context,
+      {required int used, int? capacity}) {
     return [
-      OutlinedButton.icon(
-        key: const Key('add oath account'),
-        style: isEmpty ? AppTheme.primaryOutlinedButtonStyle(context) : null,
-        label: const Text('Add account'),
-        icon: const Icon(Icons.person_add_alt_1),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => OathAddAccountPage(
-              widget.devicePath,
-              widget.oathState,
-              openQrScanner: Platform.isAndroid,
-            ),
-          );
-        },
-      ),
-      OutlinedButton.icon(
-        label: const Text('Options'),
-        icon: const Icon(Icons.tune),
-        onPressed: () {
-          showBottomMenu(context, [
-            MenuAction(
-              text: widget.oathState.hasKey ? 'Manage password' : 'Set password',
-              icon: const Icon(Icons.password),
-              action: (context) {
-                showDialog(
+      buildMenuItem(
+        title: const Text('Add account'),
+        leading: const Icon(Icons.person_add_alt_1),
+        trailing: capacity != null ? '$used/$capacity' : null,
+        action: capacity == null || capacity > used
+            ? () {
+                showBlurDialog(
                   context: context,
-                  builder: (context) => ManagePasswordDialog(widget.devicePath, widget.oathState),
+                  builder: (context) => OathAddAccountPage(
+                    widget.devicePath,
+                    widget.oathState,
+                    openQrScanner: Platform.isAndroid,
+                  ),
                 );
-              },
-            ),
-            MenuAction(
-              text: 'Reset OATH',
-              icon: const Icon(Icons.delete),
-              action: (context) {
-                showDialog(
-                  context: context,
-                  builder: (context) => ResetDialog(widget.devicePath),
-                );
-              },
-            ),
-          ]);
-        },
+              }
+            : null,
       ),
+      buildMenuItem(
+          title: Text(
+              widget.oathState.hasKey ? 'Manage password' : 'Set password'),
+          leading: const Icon(Icons.password),
+          action: () {
+            showBlurDialog(
+              context: context,
+              builder: (context) =>
+                  ManagePasswordDialog(widget.devicePath, widget.oathState),
+            );
+          }),
+      buildMenuItem(
+          title: const Text('Reset OATH'),
+          leading: const Icon(Icons.delete),
+          action: () {
+            showBlurDialog(
+              context: context,
+              builder: (context) => ResetDialog(widget.devicePath),
+            );
+          }),
     ];
   }
 }
@@ -282,7 +276,6 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
               ),
               const SizedBox(height: 16.0),
               TextField(
-                key: const Key('oath password'),
                 controller: _passwordController,
                 autofocus: true,
                 obscureText: _isObscure,
@@ -335,7 +328,6 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
           child: Align(
             alignment: Alignment.centerRight,
             child: ElevatedButton(
-              key: const Key('oath unlock'),
               onPressed: _passwordController.text.isNotEmpty ? _submit : null,
               child: const Text('Unlock'),
             ),

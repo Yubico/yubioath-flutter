@@ -208,14 +208,13 @@ abstract class _DeviceConfig implements DeviceConfig {
       _$_DeviceConfig.fromJson;
 
   @override
-  Map<Transport, int> get enabledCapabilities =>
-      throw _privateConstructorUsedError;
+  Map<Transport, int> get enabledCapabilities;
   @override
-  int? get autoEjectTimeout => throw _privateConstructorUsedError;
+  int? get autoEjectTimeout;
   @override
-  int? get challengeResponseTimeout => throw _privateConstructorUsedError;
+  int? get challengeResponseTimeout;
   @override
-  int? get deviceFlags => throw _privateConstructorUsedError;
+  int? get deviceFlags;
   @override
   @JsonKey(ignore: true)
   _$$_DeviceConfigCopyWith<_$_DeviceConfig> get copyWith =>
@@ -514,22 +513,21 @@ abstract class _DeviceInfo implements DeviceInfo {
       _$_DeviceInfo.fromJson;
 
   @override
-  DeviceConfig get config => throw _privateConstructorUsedError;
+  DeviceConfig get config;
   @override
-  int? get serial => throw _privateConstructorUsedError;
+  int? get serial;
   @override
-  Version get version => throw _privateConstructorUsedError;
+  Version get version;
   @override
-  FormFactor get formFactor => throw _privateConstructorUsedError;
+  FormFactor get formFactor;
   @override
-  Map<Transport, int> get supportedCapabilities =>
-      throw _privateConstructorUsedError;
+  Map<Transport, int> get supportedCapabilities;
   @override
-  bool get isLocked => throw _privateConstructorUsedError;
+  bool get isLocked;
   @override
-  bool get isFips => throw _privateConstructorUsedError;
+  bool get isFips;
   @override
-  bool get isSky => throw _privateConstructorUsedError;
+  bool get isSky;
   @override
   @JsonKey(ignore: true)
   _$$_DeviceInfoCopyWith<_$_DeviceInfo> get copyWith =>
