@@ -188,7 +188,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
       {required int used, int? capacity}) {
     return [
       buildMenuItem(
-        title: const Text('Add account'),
+        title: const Text('Add account', key: Key('add oath account')),
         leading: const Icon(Icons.person_add_alt_1),
         trailing: capacity != null ? '$used/$capacity' : null,
         action: capacity == null || capacity > used
@@ -206,7 +206,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
       ),
       buildMenuItem(
           title: Text(
-              widget.oathState.hasKey ? 'Manage password' : 'Set password'),
+              widget.oathState.hasKey ? 'Manage password' : 'Set password',
+              key: const Key('set or manage oath password')),
           leading: const Icon(Icons.password),
           action: () {
             showBlurDialog(
@@ -216,7 +217,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             );
           }),
       buildMenuItem(
-          title: const Text('Reset OATH'),
+          title: const Text('Reset OATH',
+              key: Key('reset oath app')),
           leading: const Icon(Icons.delete),
           action: () {
             showBlurDialog(
@@ -276,6 +278,7 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
               ),
               const SizedBox(height: 16.0),
               TextField(
+                key: const Key('oath password'),
                 controller: _passwordController,
                 autofocus: true,
                 obscureText: _isObscure,
@@ -328,6 +331,7 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
           child: Align(
             alignment: Alignment.centerRight,
             child: ElevatedButton(
+              key: const Key('oath unlock'),
               onPressed: _passwordController.text.isNotEmpty ? _submit : null,
               child: const Text('Unlock'),
             ),

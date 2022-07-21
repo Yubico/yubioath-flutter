@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -13,33 +10,75 @@ Future<void> addDelay(int ms) async {
   await Future<void>.delayed(Duration(milliseconds: ms));
 }
 
-int randomNum(int max) {
-  var r = Random.secure();
-  return r.nextInt(max);
+String generateIssuer(int index) {
+  return 'issuer_${index.toString().padLeft(4, '0')}';
 }
 
-String randomPadded() {
-  return randomNum(999).toString().padLeft(3, '0');
+String generateName(int index) {
+  return 'name_${index.toString().padLeft(4, '0')}';
 }
 
-String generateRandomIssuer() {
-  return 'i${randomPadded()}';
+String base32(int i) {
+  var m = (i % 32);
+  return m < 26 ? String.fromCharCode(65 + m) : '${2 + m - 26}';
 }
 
-String generateRandomName() {
-  return 'n${randomPadded()}';
+/// generates 16 chars Base32 string
+String generateSecret(int index) {
+  return List.generate(16, (_) => base32(index)).toString();
 }
 
-String generateRandomSecret() {
-  final random = Random.secure();
-  return base64Encode(List.generate(10, (_) => random.nextInt(256)));
+extension OathHelper on WidgetTester {
+
+  /// Opens the device menu and taps the "Add account" menu item
+  Future<void> tapAddAccount() async {
+    await tapDeviceButton();
+    await tap(find.byKey(const Key('add oath account')));
+    await pump(const Duration(milliseconds: 500));
+  }
+
+  /// Opens the device menu and taps the "Set/Manage password" menu item
+  Future<void> tapSetOrManagePassword() async {
+    await pump(const Duration(milliseconds: 300));
+    await tapDeviceButton();
+    await tap(find.byKey(const Key('set or manage oath password')));
+    await pump(const Duration(milliseconds: 500));
+  }
 }
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
-  group('OATH Options', () {
+  group('OATH UI tests', () {
+    // Validates that expected UI is present
+    testWidgets(
+        'OATH UI: "Add account" menu item exists', (WidgetTester tester) async {
+      await tester.pumpWidget(await getAuthenticatorApp());
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tapDeviceButton();
+      expect(find.byKey(const Key('add oath account')), findsOneWidget);
+    });
+
+    testWidgets('OATH-UI: "Set or manage oath password" menu item exists', (
+        WidgetTester tester) async {
+      await tester.pumpWidget(await getAuthenticatorApp());
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tapDeviceButton();
+      expect(
+          find.byKey(const Key('set or manage oath password')), findsOneWidget);
+    });
+
+    testWidgets(
+        'OATH-UI: "Reset OATH" menu item exists', (WidgetTester tester) async {
+      await tester.pumpWidget(await getAuthenticatorApp());
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tapDeviceButton();
+      expect(find.byKey(const Key('reset oath app')), findsOneWidget);
+    });
+  });
+
+  group('OATH Password tests', () {
     /*
   These tests verify that all oath options are verified to function correctly by:
     1. setting firsPassword and verifying it
@@ -53,13 +92,7 @@ void main() {
 
       var firstPassword = 'aaa111';
 
-      /// expect(find.byType(OathScreen), findsOneWidget);  <<< I am not certain if this is needed.
-
-      await tester.tap(find.byIcon(Icons.tune));
-      await tester.pump(const Duration(milliseconds: 100));
-
-      await tester.tap(find.text('Set password'));
-      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tapSetOrManagePassword();
 
       await tester.enterText(find.byKey(const Key('new oath password')), firstPassword);
       await tester.pump();
@@ -94,11 +127,8 @@ void main() {
       await tester.pump();
       await tester.tap(find.byKey(const Key('oath unlock')));
 
-      await tester.tap(find.byIcon(Icons.tune));
-      await tester.pump(const Duration(milliseconds: 100));
 
-      await tester.tap(find.text('Manage password'));
-      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tapSetOrManagePassword();
 
       await tester.enterText(find.byKey(const Key('current oath password')), firstPassword);
       await tester.pump();
@@ -120,11 +150,11 @@ void main() {
       var secondPassword = 'bbb222';
       var thirdPassword = 'ccc333';
 
-      await tester.tap(find.byIcon(Icons.tune));
-      await tester.pump(const Duration(milliseconds: 100));
+      await tester.enterText(find.byKey(const Key('oath password')), secondPassword);
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('oath unlock')));
 
-      await tester.tap(find.text('Manage password'));
-      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tapSetOrManagePassword();
 
       await tester.enterText(find.byKey(const Key('current oath password')), secondPassword);
       await tester.pump();
@@ -147,11 +177,11 @@ void main() {
 
       var thirdPassword = 'ccc333';
 
-      await tester.tap(find.byIcon(Icons.tune));
-      await tester.pump(const Duration(milliseconds: 100));
+      await tester.enterText(find.byKey(const Key('oath password')), thirdPassword);
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('oath unlock')));
 
-      await tester.tap(find.text('Manage password'));
-      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tapSetOrManagePassword();
 
       await tester.enterText(find.byKey(const Key('current oath password')), thirdPassword);
       await tester.pump();
@@ -171,15 +201,12 @@ void main() {
       await tester.pumpWidget(await getAuthenticatorApp());
       await tester.pump(const Duration(milliseconds: 500));
 
-      for (var i = 0; i < 32; i += 1) {
-        await tester.tap(find.byKey(const Key('add oath account')));
-        await tester.pump(const Duration(milliseconds: 100));
+      for (var i = 0; i < 32; i++) {
+        await tester.tapAddAccount();
 
-        var issuer = generateRandomIssuer();
-        var name = generateRandomName();
-        var secret = 'abba';
-
-        /// this random fails: generateRandomSecret();
+        var issuer = generateIssuer(i);
+        var name = generateName(i);
+        var secret = generateSecret(i);
 
         await tester.enterText(find.byKey(const Key('issuer')), issuer);
         await tester.pump(const Duration(milliseconds: 40));
@@ -205,6 +232,7 @@ void main() {
       }
       await tester.pump(const Duration(milliseconds: 3000));
       /*
+      TODO:
       await tester.tap(find.byType(FloatingActionButton));
       await tester.pump(const Duration(milliseconds: 500));
 
@@ -217,15 +245,4 @@ void main() {
       */
     });
   });
-  /*
-  group('HOTP tests', () {
-    testWidgets('first HOTP test', (WidgetTester tester) async {
-      await tester.pumpWidget(await getAuthenticatorApp());
-      await tester.pump(const Duration(milliseconds: 500));
-
-      expect(find.byType(OathScreen), findsOneWidget);
-    });
-  });
-
-   */
 }
