@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: Yubico/yubikit-android
-          ref: fix/2.1.0a1-fixes-1
+          ref: release/2.1.0
           path: kit
 
       - name: set up JDK 11
