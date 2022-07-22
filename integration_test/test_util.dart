@@ -17,4 +17,9 @@ extension TestHelper on WidgetTester {
     await tap(find.byType(DeviceButton));
     await pump(const Duration(milliseconds: 500));
   }
+
+  Future<void> startUp() async {
+    await pumpWidget(
+        await getAuthenticatorApp(), const Duration(milliseconds: 2000));
+  }
 }

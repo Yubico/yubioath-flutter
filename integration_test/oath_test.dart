@@ -53,16 +53,14 @@ void main() {
     // Validates that expected UI is present
     testWidgets('OATH UI: "Add account" menu item exists',
         (WidgetTester tester) async {
-      await tester.pumpWidget(await getAuthenticatorApp());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.startUp();
       await tester.tapDeviceButton();
       expect(find.byKey(const Key('add oath account')), findsOneWidget);
     });
 
     testWidgets('OATH-UI: "Set or manage oath password" menu item exists',
         (WidgetTester tester) async {
-      await tester.pumpWidget(await getAuthenticatorApp());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.startUp();
       await tester.tapDeviceButton();
       expect(
           find.byKey(const Key('set or manage oath password')), findsOneWidget);
@@ -70,8 +68,7 @@ void main() {
 
     testWidgets('OATH-UI: "Reset OATH" menu item exists',
         (WidgetTester tester) async {
-      await tester.pumpWidget(await getAuthenticatorApp());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.startUp();
       await tester.tapDeviceButton();
       expect(find.byKey(const Key('reset oath app')), findsOneWidget);
     });
@@ -86,8 +83,7 @@ void main() {
     4. removing thirdPassword
    */
     testWidgets('OATH: set firstPassword', (WidgetTester tester) async {
-      await tester.pumpWidget(await getAuthenticatorApp());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.startUp();
 
       var firstPassword = 'aaa111';
 
@@ -106,8 +102,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 1000));
     });
     testWidgets('OATH: verify firstPassword', (WidgetTester tester) async {
-      await tester.pumpWidget(await getAuthenticatorApp());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.startUp();
 
       var firstPassword = 'aaa111';
 
@@ -119,8 +114,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 1000));
     });
     testWidgets('OATH: set secondPassword', (WidgetTester tester) async {
-      await tester.pumpWidget(await getAuthenticatorApp());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.startUp();
 
       var firstPassword = 'aaa111';
       var secondPassword = 'bbb222';
@@ -149,8 +143,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 1000));
     });
     testWidgets('OATH: set thirdPassword', (WidgetTester tester) async {
-      await tester.pumpWidget(await getAuthenticatorApp());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.startUp();
 
       var secondPassword = 'bbb222';
       var thirdPassword = 'ccc333';
@@ -181,8 +174,7 @@ void main() {
     });
 
     testWidgets('OATH: remove thirdPassword', (WidgetTester tester) async {
-      await tester.pumpWidget(await getAuthenticatorApp());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.startUp();
 
       var thirdPassword = 'ccc333';
 
@@ -209,8 +201,7 @@ void main() {
     1. Add 32 TOTP accounts
      */
     testWidgets('TOTP: Add 32 accounts', (WidgetTester tester) async {
-      await tester.pumpWidget(await getAuthenticatorApp());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.startUp();
 
       for (var i = 0; i < 32; i++) {
         await tester.tapAddAccount();
@@ -229,7 +220,7 @@ void main() {
 
         await tester.tap(find.byKey(const Key('save_btn')));
 
-        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 500));
 
         expect(find.byType(OathScreen), findsOneWidget);
 
