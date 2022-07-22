@@ -23,7 +23,7 @@ Map<String, dynamic> _$$_OathCredentialToJson(_$_OathCredential instance) =>
       'id': instance.id,
       'issuer': instance.issuer,
       'name': instance.name,
-      'oath_type': _$OathTypeEnumMap[instance.oathType],
+      'oath_type': _$OathTypeEnumMap[instance.oathType]!,
       'period': instance.period,
       'touch_required': instance.touchRequired,
     };
@@ -75,7 +75,7 @@ Map<String, dynamic> _$$_OathStateToJson(_$_OathState instance) =>
       'has_key': instance.hasKey,
       'remembered': instance.remembered,
       'locked': instance.locked,
-      'keystore': _$KeystoreStateEnumMap[instance.keystore],
+      'keystore': _$KeystoreStateEnumMap[instance.keystore]!,
     };
 
 const _$KeystoreStateEnumMap = {
@@ -104,8 +104,8 @@ Map<String, dynamic> _$$_CredentialDataToJson(_$_CredentialData instance) =>
       'issuer': instance.issuer,
       'name': instance.name,
       'secret': instance.secret,
-      'oath_type': _$OathTypeEnumMap[instance.oathType],
-      'hash_algorithm': _$HashAlgorithmEnumMap[instance.hashAlgorithm],
+      'oath_type': _$OathTypeEnumMap[instance.oathType]!,
+      'hash_algorithm': _$HashAlgorithmEnumMap[instance.hashAlgorithm]!,
       'digits': instance.digits,
       'period': instance.period,
       'counter': instance.counter,

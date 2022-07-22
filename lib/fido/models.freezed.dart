@@ -148,7 +148,9 @@ class _$_FidoState extends _FidoState {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_FidoStateToJson(this);
+    return _$$_FidoStateToJson(
+      this,
+    );
   }
 }
 
@@ -607,7 +609,9 @@ class _$_Fingerprint extends _Fingerprint {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_FingerprintToJson(this);
+    return _$$_FingerprintToJson(
+      this,
+    );
   }
 }
 
@@ -1289,7 +1293,9 @@ class _$_FidoCredential implements _FidoCredential {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_FidoCredentialToJson(this);
+    return _$$_FidoCredentialToJson(
+      this,
+    );
   }
 }
 
