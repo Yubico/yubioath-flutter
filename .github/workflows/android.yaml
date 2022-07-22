@@ -20,7 +20,7 @@ jobs:
           java-version: '11'
 
       - name: Build Yubikit-android
-        run: ./gradlew --stacktrace check test build javadocJar publishToMavenLocal
+        run: NO_GPG_SIGN=true ./gradlew --stacktrace check test build javadocJar publishToMavenLocal
         working-directory: ./kit
 
       - name: Install Flutter
