@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/cancellation_exception.dart';
 
 import '../../app/message.dart';
+import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
-import '../../app/models.dart';
-import '../../app/state.dart';
 
 class DeleteAccountDialog extends ConsumerWidget {
   final DeviceNode device;
@@ -24,15 +25,19 @@ class DeleteAccountDialog extends ConsumerWidget {
       actions: [
         TextButton(
           onPressed: () async {
-            await ref
-                .read(credentialListProvider(device.path).notifier)
-                .deleteAccount(credential);
-            await ref.read(withContextProvider)(
-              (context) async {
-                Navigator.of(context).pop(true);
-                showMessage(context, 'Account deleted');
-              },
-            );
+            try {
+              await ref
+                  .read(credentialListProvider(device.path).notifier)
+                  .deleteAccount(credential);
+              await ref.read(withContextProvider)(
+                (context) async {
+                  Navigator.of(context).pop(true);
+                  showMessage(context, 'Account deleted');
+                },
+              );
+            } on CancellationException catch (_) {
+              // ignored
+            }
           },
           child: const Text('Delete'),
         ),

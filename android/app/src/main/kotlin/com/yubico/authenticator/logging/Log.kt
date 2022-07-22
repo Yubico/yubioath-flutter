@@ -76,7 +76,7 @@ object Log {
         }
 
         error?.let {
-            Log.e(TAG, "[$loggerName] ${level.name}: $error".also {
+            Log.e(TAG, "[$loggerName] ${level.name}(details): $error".also {
                 _buffer.add(it)
             })
         }

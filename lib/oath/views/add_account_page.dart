@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/cancellation_exception.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
@@ -158,6 +159,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           if (!mounted) return;
           Navigator.of(context).pop();
           showMessage(context, 'Account added');
+        } on CancellationException catch (_) {
+          // ignored
         } catch (e) {
           _log.error('Failed to add account', e);
           final String errorMessage;

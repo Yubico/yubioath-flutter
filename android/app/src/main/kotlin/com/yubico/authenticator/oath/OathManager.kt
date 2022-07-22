@@ -87,9 +87,6 @@ class OathManager(
         pendingYubiKeyAction.value?.let {
             _pendingYubiKeyAction.postValue(null)
             it.action.invoke(result)
-        } ?: run {
-            Log.e(TAG, "The pending action is not valid anymore")
-            throw IllegalStateException("The pending action is not valid anymore")
         }
 
     private var _isUsbKey = false
@@ -300,12 +297,16 @@ class OathManager(
 
     override fun deleteAccount(uri: String, result: Result<Void>) {
         coroutineScope.launch {
-            useOathSession("Delete account", true) { session ->
-                withUnlockedSession(session) {
-                    val credential = getOathCredential(session, uri)
-                    session.deleteCredential(credential)
-                    returnSuccess(result)
+            try {
+                useOathSession("Delete account", true) { session ->
+                    withUnlockedSession(session) {
+                        val credential = getOathCredential(session, uri)
+                        session.deleteCredential(credential)
+                        returnSuccess(result)
+                    }
                 }
+            } catch (cause: Throwable) {
+                returnError(result, cause)
             }
         }
     }
@@ -516,7 +517,9 @@ class OathManager(
             dialogManager.showDialog(title) {
                 coroutineScope.launch(Dispatchers.Main) {
                     Log.d(TAG, "Cancelled Dialog $title")
-                    provideYubiKey(com.yubico.yubikit.core.util.Result.failure(Exception("User canceled")))
+                    provideYubiKey(com.yubico.yubikit.core.util.Result.failure(
+                        CancellationException()
+                    ))
                 }
             }
         }
@@ -557,6 +560,11 @@ class OathManager(
     private fun <T> returnSuccess(result: Result<T>, data: T? = null) {
         coroutineScope.launch(Dispatchers.Main) {
             if (!_isUsbKey) {
+                dialogManager.updateDialogState(
+                    title = "Action successfully completed",
+                    icon = "check_circle",
+                    delayMs = 500
+                )
                 dialogManager.closeDialog {
                     result.success(data)
                 }
@@ -571,6 +579,11 @@ class OathManager(
     private fun <T> returnError(result: Result<T>, error: Throwable) {
         coroutineScope.launch(Dispatchers.Main) {
             if (!_isUsbKey) {
+                dialogManager.updateDialogState(
+                    title = "Action failed - try again",
+                    icon = "error",
+                    delayMs = 1500
+                )
                 dialogManager.closeDialog {
                     result.error(error)
                 }
