@@ -51,7 +51,7 @@ jobs:
 
       - name: Run android tests
         run: |
-          ./gradlew test -x :url_launcher_android:test
+          ./gradlew test
         working-directory: ./app/android
 
       - name: Upload artifacts
