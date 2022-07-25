@@ -7,21 +7,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout YubiKit
-        uses: actions/checkout@v2
-        with:
-          repository: Yubico/yubikit-android
-          ref: release/2.1.0
-          path: kit
-
       - name: set up JDK 11
         uses: actions/setup-java@v1
         with:
           java-version: '11'
-
-      - name: Build Yubikit-android
-        run: NO_GPG_SIGN=true ./gradlew --stacktrace check test build javadocJar publishToMavenLocal
-        working-directory: ./kit
 
       - name: Install Flutter
         uses: subosito/flutter-action@v2
