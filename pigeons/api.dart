@@ -62,10 +62,11 @@ abstract class FManagementApi {
 @FlutterApi()
 abstract class FDialogApi {
   @async
-  void showDialogApi(String dialogMessage);
+  void showDialog(String dialogMessage);
 
-  @async
-  void closeDialogApi();
+  void updateDialogState(String? title, String? description, String? icon);
+
+  void closeDialog();
 }
 
 @HostApi()

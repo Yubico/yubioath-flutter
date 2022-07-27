@@ -14,11 +14,10 @@ import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/oath/state.dart';
 
 import '../../oath/models.dart';
+import '../../cancellation_exception.dart';
 import 'command_providers.dart';
 
 final _log = Logger('android.oath.state');
-
-class CancelException implements Exception {}
 
 final oathApiProvider = StateProvider((_) => OathApi());
 
@@ -159,28 +158,59 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   @override
   Future<OathCode> calculate(OathCredential credential,
       {bool update = true}) async {
-    final OathCode code;
-    var resultJson = await _api.calculate(credential.id);
-    var result = jsonDecode(resultJson);
-    code = OathCode.fromJson(result);
-    _log.debug('Calculate', jsonEncode(code));
-    if (update && mounted) {
-      final creds = state!.toList();
-      final i = creds.indexWhere((e) => e.credential.id == credential.id);
-      state = creds..[i] = creds[i].copyWith(code: code);
+    try {
+      var resultJson = await _api.calculate(credential.id);
+      var result = jsonDecode(resultJson);
+      final OathCode code = OathCode.fromJson(result);
+      _log.debug('Calculate', jsonEncode(code));
+      if (update && mounted) {
+        final creds = state!.toList();
+        final i = creds.indexWhere((e) => e.credential.id == credential.id);
+        state = creds..[i] = creds[i].copyWith(code: code);
+      }
+      return code;
+    } on PlatformException catch (pe) {
+      if (CancellationException.isCancellation(pe)) {
+        throw CancellationException();
+      }
+      rethrow;
     }
-    return code;
   }
 
   @override
   Future<OathCredential> addAccount(Uri credentialUri,
       {bool requireTouch = false}) async {
-    String resultString =
-        await _api.addAccount(credentialUri.toString(), requireTouch);
+    try {
+      String resultString =
+          await _api.addAccount(credentialUri.toString(), requireTouch);
 
-    var result = jsonDecode(resultString);
-    refresh();
-    return OathCredential.fromJson(result['credential']);
+      var result = jsonDecode(resultString);
+      var addedCredential = OathCredential.fromJson(result['credential']);
+      var addedCredCode = OathCode.fromJson(result['code']);
+
+      if (mounted) {
+        final newState = state!.toList();
+        final index =
+            newState.indexWhere((e) => e.credential == addedCredential);
+        if (index > -1) {
+          newState.removeAt(index);
+        }
+        newState.add(OathPair(
+          addedCredential,
+          addedCredCode,
+        ));
+        state = newState;
+      }
+
+      refresh();
+      return addedCredential;
+    } on PlatformException catch (pe) {
+      if (CancellationException.isCancellation(pe)) {
+        throw CancellationException();
+      }
+      _log.error('Failed to add account.', pe);
+      rethrow;
+    }
   }
 
   @override
@@ -206,11 +236,13 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       }
 
       return renamedCredential;
-    } on PlatformException catch (e) {
-      _log.debug('Failed to execute renameOathCredential: ${e.message}');
+    } on PlatformException catch (pe) {
+      _log.debug('Failed to execute renameOathCredential: ${pe.message}');
+      if (CancellationException.isCancellation(pe)) {
+        throw CancellationException();
+      }
+      rethrow;
     }
-
-    return credential;
   }
 
   @override
@@ -221,8 +253,12 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       if (mounted) {
         state = state!.toList()..removeWhere((e) => e.credential == credential);
       }
-    } catch (e) {
-      _log.debug('Call to delete credential failed: $e');
+    } on PlatformException catch (e) {
+      _log.debug('Received exception: $e');
+      if (CancellationException.isCancellation(e)) {
+        throw CancellationException();
+      }
+      rethrow;
     }
   }
 

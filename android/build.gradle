@@ -16,6 +16,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()  // TODO: Remove this before release
     }
 
     project.ext {
@@ -24,7 +25,7 @@ allprojects {
         compileSdkVersion = 32
         buildToolsVersion = "30.0.3"
 
-        yubiKitVersion = "2.1.0-alpha.1"
+        yubiKitVersion = "2.1.0"
         junitVersion = "4.13.2"
         mockitoVersion = "3.9.0"
     }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:yubico_authenticator/cancellation_exception.dart';
+import 'package:yubico_authenticator/app/state.dart';
+
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
@@ -67,18 +70,22 @@ class AccountView extends ConsumerWidget with AccountMixin {
         credential.oathType == OathType.hotp ||
         (credential.touchRequired && expired);
 
-    void triggerCopy() async {
-      if (calculateReady) {
-        await calculateCode(
-          context,
-          ref,
+    Future<void> triggerCopy() async {
+      try {
+        if (calculateReady) {
+          await calculateCode(
+            context,
+            ref,
+          );
+        }
+        await ref.read(withContextProvider)(
+              (context) async {
+            copyToClipboard(context, ref);
+          },
         );
+      } on CancellationException catch (_) {
+        // ignored
       }
-      await ref.read(withContextProvider)(
-        (context) async {
-          copyToClipboard(context, ref);
-        },
-      );
     }
 
     final darkMode = Theme.of(context).brightness == Brightness.dark;
@@ -98,8 +105,8 @@ class AccountView extends ConsumerWidget with AccountMixin {
       },
       child: Actions(
         actions: {
-          CopyIntent: CallbackAction(onInvoke: (_) {
-            triggerCopy();
+          CopyIntent: CallbackAction(onInvoke: (_) async {
+            await triggerCopy();
             return null;
           }),
         },
@@ -134,6 +141,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
               overflow: TextOverflow.fade,
               maxLines: 1,
               softWrap: false,
+
             ),
             subtitle: subtitle != null
                 ? Text(
