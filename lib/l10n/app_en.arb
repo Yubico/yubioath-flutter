@@ -1,0 +1,10 @@
+{
+    "@@locale": "en",
+    "appFailurePage_btn_unlock": "Unlock",
+    "appFailurePage_txt_info": "WebAuthn management requires elevated privileges.",
+    "appFailurePage_msg_permission": "Elevating permissions...",
+
+    "mainDrawer_txt_applications": "Toggle applications",
+    "mainDrawer_txt_settings": "Settings",
+    "mainDrawer_txt_help": "Help and about"
+}
