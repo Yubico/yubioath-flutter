@@ -32,7 +32,6 @@ class YubicoAuthenticatorApp extends ConsumerWidget {
           ],
           supportedLocales: const [
             Locale('en', ''), // English, no country code
-            Locale('sv', ''), // Swedish, no country code
           ],
         ),
       ),
