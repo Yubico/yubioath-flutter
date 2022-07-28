@@ -40,30 +40,43 @@ class MainActivity : FlutterFragmentActivity() {
 
         viewModel.handleYubiKey.observe(this) {
             if (it) {
+                Log.d(TAG, "Starting usb discovery")
                 yubikit.startUsbDiscovery(UsbConfiguration()) { device ->
                     viewModel.yubiKeyDevice.postValue(device)
                     device.setOnClosed { viewModel.yubiKeyDevice.postValue(null) }
                 }
-                hasNfc = try {
-                    yubikit.startNfcDiscovery(nfcConfiguration, this) { device ->
-                        viewModel.yubiKeyDevice.apply {
-                            lifecycleScope.launch(Dispatchers.Main) {
-                                value = device
-                                postValue(null)
-                            }
-                        }
-                    }
-                    true
-                } catch (e: NfcNotAvailable) {
-                    false
-                }
+                hasNfc = startNfcDiscovery()
             } else {
-                yubikit.stopNfcDiscovery(this)
+                stopNfcDiscovery()
                 yubikit.stopUsbDiscovery()
+                Log.d(TAG, "Stopped usb discovery")
             }
         }
 
         setupYubiKitLogger()
+    }
+
+    fun startNfcDiscovery(): Boolean =
+        try {
+            Log.d(TAG, "Starting nfc discovery")
+            yubikit.startNfcDiscovery(nfcConfiguration, this) { device ->
+                viewModel.yubiKeyDevice.apply {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        value = device
+                        postValue(null)
+                    }
+                }
+            }
+            true
+        } catch (e: NfcNotAvailable) {
+            false
+        }
+
+    fun stopNfcDiscovery() {
+        if (hasNfc) {
+            yubikit.stopNfcDiscovery(this)
+            Log.d(TAG, "Stopped nfc discovery")
+        }
     }
 
     private fun setupYubiKitLogger() {
@@ -85,6 +98,7 @@ class MainActivity : FlutterFragmentActivity() {
     private lateinit var oathManager: OathManager
     private lateinit var dialogManager: DialogManager
     private lateinit var flutterLog: FlutterLog
+    private lateinit var nfcDiscoveryHelper: NfcDiscoveryHelper
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -94,8 +108,12 @@ class MainActivity : FlutterFragmentActivity() {
         flutterLog = FlutterLog(messenger)
         appContext = AppContext(messenger)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
+        nfcDiscoveryHelper = NfcDiscoveryHelper(this)
 
-        oathManager = OathManager(this, messenger, appContext, viewModel, dialogManager)
+        oathManager = OathManager(this, messenger, appContext, viewModel, dialogManager, nfcDiscoveryHelper)
     }
 
+    companion object {
+        const val TAG = "MainActivity"
+    }
 }

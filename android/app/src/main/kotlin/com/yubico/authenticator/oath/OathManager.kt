@@ -30,7 +30,8 @@ class OathManager(
     messenger: BinaryMessenger,
     appContext: AppContext,
     private val appViewModel: MainViewModel,
-    private val dialogManager: DialogManager
+    private val dialogManager: DialogManager,
+    private val nfcDiscoveryHelper: NfcDiscoveryHelper
 ) : OathApi {
 
     private val _dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
@@ -229,6 +230,7 @@ class OathManager(
         requireTouch: Boolean,
         result: Result<String>
     ) {
+        nfcDiscoveryHelper.restartDiscovery()
         coroutineScope.launch {
             try {
                 useOathSession("Add account", true) { session ->
