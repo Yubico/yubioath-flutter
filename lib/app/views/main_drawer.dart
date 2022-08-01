@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../management/views/management_screen.dart';
@@ -74,7 +75,8 @@ class MainPageDrawer extends ConsumerWidget {
                 Application.management.getAvailability(data) ==
                     Availability.enabled) ...[
               DrawerItem(
-                titleText: 'Toggle applications',
+                titleText:
+                    AppLocalizations.of(context)!.mainDrawer_txt_applications,
                 icon: Icon(Application.management._icon),
                 onTap: () {
                   if (shouldPop) Navigator.of(context).pop();
@@ -89,7 +91,7 @@ class MainPageDrawer extends ConsumerWidget {
           ],
           // Non-YubiKey pages
           DrawerItem(
-            titleText: 'Settings',
+            titleText: AppLocalizations.of(context)!.mainDrawer_txt_settings,
             icon: const Icon(Icons.settings),
             onTap: () {
               final nav = Navigator.of(context);
@@ -102,7 +104,7 @@ class MainPageDrawer extends ConsumerWidget {
             },
           ),
           DrawerItem(
-            titleText: 'Help and about',
+            titleText: AppLocalizations.of(context)!.mainDrawer_txt_help,
             icon: const Icon(Icons.help),
             onTap: () {
               final nav = Navigator.of(context);
