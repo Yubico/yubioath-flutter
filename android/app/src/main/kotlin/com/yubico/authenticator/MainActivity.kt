@@ -1,9 +1,12 @@
 package com.yubico.authenticator
 
+import android.content.Intent
+import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.yubico.authenticator.Constants.Companion.EXTRA_OPENED_THROUGH_NFC
 import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.OathManager
@@ -38,6 +41,30 @@ class MainActivity : FlutterFragmentActivity() {
 
         yubikit = YubiKitManager(this)
 
+        setupYubiKeyDiscovery()
+        setupYubiKitLogger()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        try {
+            if (intent.getBooleanExtra(EXTRA_OPENED_THROUGH_NFC, false)) {
+                // make nfc available to yubikit
+                NfcAdapter.getDefaultAdapter(this).disableReaderMode(this)
+                setupYubiKeyDiscovery()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failure when resuming YubiKey discovery", e.stackTraceToString())
+        }
+    }
+
+    private fun setupYubiKeyDiscovery() {
         viewModel.handleYubiKey.observe(this) {
             if (it) {
                 yubikit.startUsbDiscovery(UsbConfiguration()) { device ->
@@ -62,8 +89,6 @@ class MainActivity : FlutterFragmentActivity() {
                 yubikit.stopUsbDiscovery()
             }
         }
-
-        setupYubiKitLogger()
     }
 
     private fun setupYubiKitLogger() {
@@ -96,6 +121,10 @@ class MainActivity : FlutterFragmentActivity() {
         dialogManager = DialogManager(messenger, this.lifecycleScope)
 
         oathManager = OathManager(this, messenger, appContext, viewModel, dialogManager)
+    }
+
+    companion object {
+        const val TAG = "MainActivity"
     }
 
 }

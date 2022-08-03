@@ -7,6 +7,8 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 
+import com.yubico.authenticator.Constants.Companion.EXTRA_OPENED_THROUGH_NFC
+
 import com.yubico.authenticator.logging.Log
 
 typealias ResourceId = Int
@@ -27,6 +29,7 @@ class YOTPActivity : Activity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        setIntent(intent)
         handleIntent(intent)
     }
 
@@ -36,13 +39,11 @@ class YOTPActivity : Activity() {
     }
 
     private fun handleIntent(intent: Intent) {
-        val intentData: Uri? = intent.data
-        if (intentData != null) {
+        intent.data?.let { uri ->
 
-            var otp: String? = null
             if (copyOtpOnNfcTap) {
                 try {
-                    otp = parseOtpFromUri(intentData)
+                    val otp = parseOtpFromUri(uri)
                     setPrimaryClip(otp)
 
                     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
@@ -58,9 +59,7 @@ class YOTPActivity : Activity() {
 
             if (openAppOnNfcTap) {
                 val mainAppIntent = Intent(this, MainActivity::class.java).apply {
-                    if (otp != null) {
-                        putExtra("OTP", otp)
-                    }
+                    putExtra(EXTRA_OPENED_THROUGH_NFC, true)
                 }
                 startActivity(mainAppIntent)
             }
