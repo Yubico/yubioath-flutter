@@ -1,39 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
-import '../../app/logging.dart';
 import '../../app/state.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
 
-final _log = Logger('android_settings');
-
-class AndroidSettingsPage extends ConsumerStatefulWidget {
+class AndroidSettingsPage extends ConsumerWidget {
   const AndroidSettingsPage({super.key});
 
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _AndroidSettingsPageState();
-}
-
-class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
   static const String prefNfcOpenApp = 'prefNfcOpenApp';
   static const String prefNfcCopyOtp = 'prefNfcCopyOtp';
+  static const String prefClipKbdLayout = 'prefClipKbdLayout';
 
-  bool nfcOpenApp = false;
-  bool nfcCopyOtp = false;
-
-  @override
-  void initState() {
-    super.initState();
-    nfcOpenApp = ref.read(prefProvider).getBool(prefNfcOpenApp) ?? false;
-    nfcCopyOtp = ref.read(prefProvider).getBool(prefNfcCopyOtp) ?? false;
-  }
+  static const String defaultClipKbdLayout = 'US';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final nfcOpenApp = ref.watch(prefProvider).getBool(prefNfcOpenApp) ?? false;
+    final nfcCopyOtp = ref.watch(prefProvider).getBool(prefNfcCopyOtp) ?? false;
+    final clipKbdLayout =
+        ref.watch(prefProvider).getString(prefClipKbdLayout) ??
+            defaultClipKbdLayout;
     final themeMode = ref.watch(themeModeProvider);
     return ResponsiveDialog(
       title: const Text('Settings'),
@@ -41,55 +29,114 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const ListTitle('NFC tap options'),
+          const ListTitle('General'),
           SwitchListTile(
-              title: const Text('Open authenticator'),
+              title: const Text('Open authenticator on NFC tap'),
               value: nfcOpenApp,
               onChanged: (value) {
                 ref.read(prefProvider).setBool(prefNfcOpenApp, value);
-                setState(() {
-                  nfcOpenApp = value;
-                });
+                ref.refresh(prefProvider);
               }),
+          const ListTitle('Yubiclip'),
           SwitchListTile(
               title: const Text('Copy OTP to clipboard'),
               value: nfcCopyOtp,
               onChanged: (value) {
                 ref.read(prefProvider).setBool(prefNfcCopyOtp, value);
-                setState(() {
-                  nfcCopyOtp = value;
-                });
+                ref.refresh(prefProvider);
               }),
+          ListTile(
+            title: const Text('Static password keyboard layout'),
+            subtitle: Text('Current: $clipKbdLayout'),
+            onTap: () async {
+              var newValue = await _selectKbdLayout(context, clipKbdLayout);
+              if (newValue != clipKbdLayout) {
+                await ref
+                    .read(prefProvider)
+                    .setString(prefClipKbdLayout, newValue);
+                ref.refresh(prefProvider);
+              }
+            },
+          ),
           const ListTitle('Appearance'),
-          RadioListTile<ThemeMode>(
-            title: const Text('System default'),
-            value: ThemeMode.system,
-            groupValue: themeMode,
-            onChanged: (mode) {
-              ref.read(themeModeProvider.notifier).setThemeMode(mode!);
-              _log.debug('Set theme mode to $mode');
-            },
-          ),
-          RadioListTile<ThemeMode>(
-            title: const Text('Light mode'),
-            value: ThemeMode.light,
-            groupValue: themeMode,
-            onChanged: (mode) {
-              ref.read(themeModeProvider.notifier).setThemeMode(mode!);
-              _log.debug('Set theme mode to $mode');
-            },
-          ),
-          RadioListTile<ThemeMode>(
-            title: const Text('Dark mode'),
-            value: ThemeMode.dark,
-            groupValue: themeMode,
-            onChanged: (mode) {
-              ref.read(themeModeProvider.notifier).setThemeMode(mode!);
-              _log.debug('Set theme mode to $mode');
+          ListTile(
+            title: const Text('App theme'),
+            subtitle: Text(ref.read(themeModeProvider).name),
+            onTap: () async {
+              var newMode = await _selectAppearance(context, themeMode);
+              ref.read(themeModeProvider.notifier).setThemeMode(newMode);
             },
           ),
         ],
       ),
     );
   }
+
+  Future<String> _selectKbdLayout(
+          BuildContext context, String currentKbdLayout) async =>
+      await showDialog<String>(
+          context: context,
+          builder: (BuildContext context) {
+            return SimpleDialog(
+              title: const Text('Choose keyboard layout'),
+              children: <Widget>[
+                RadioListTile<String>(
+                    title: const Text('US'),
+                    value: 'US',
+                    groupValue: currentKbdLayout,
+                    onChanged: (mode) {
+                      Navigator.pop(context, 'US');
+                    }),
+                RadioListTile<String>(
+                    title: const Text('DE'),
+                    value: 'DE',
+                    groupValue: currentKbdLayout,
+                    onChanged: (mode) {
+                      Navigator.pop(context, 'DE');
+                    }),
+                RadioListTile<String>(
+                    title: const Text('DE-CH'),
+                    value: 'DE-CH',
+                    groupValue: currentKbdLayout,
+                    onChanged: (mode) {
+                      Navigator.pop(context, 'DE-CH');
+                    }),
+              ],
+            );
+          }) ??
+      defaultClipKbdLayout;
+
+  Future<ThemeMode> _selectAppearance(
+          BuildContext context, ThemeMode themeMode) async =>
+      await showDialog<ThemeMode>(
+          context: context,
+          builder: (BuildContext context) {
+            return SimpleDialog(
+              title: const Text('Choose app theme'),
+              children: <Widget>[
+                RadioListTile<ThemeMode>(
+                    title: const Text('System default'),
+                    value: ThemeMode.system,
+                    groupValue: themeMode,
+                    onChanged: (mode) {
+                      Navigator.pop(context, ThemeMode.system);
+                    }),
+                RadioListTile<ThemeMode>(
+                    title: const Text('Light mode'),
+                    value: ThemeMode.light,
+                    groupValue: themeMode,
+                    onChanged: (mode) {
+                      Navigator.pop(context, ThemeMode.light);
+                    }),
+                RadioListTile<ThemeMode>(
+                    title: const Text('Dark mode'),
+                    value: ThemeMode.dark,
+                    groupValue: themeMode,
+                    onChanged: (mode) {
+                      Navigator.pop(context, ThemeMode.dark);
+                    }),
+              ],
+            );
+          }) ??
+      ThemeMode.system;
 }
