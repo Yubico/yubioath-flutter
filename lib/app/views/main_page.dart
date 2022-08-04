@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -34,15 +36,20 @@ class MainPage extends ConsumerWidget {
 
     final deviceNode = ref.watch(currentDeviceProvider);
     if (deviceNode == null) {
-      return const MessagePage(message: 'Insert your YubiKey');
+      return MessagePage(message: Platform.isAndroid ? 'Insert or tap your YubiKey' : 'Insert your YubiKey');
     } else {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
               final app = ref.watch(currentAppProvider);
-              if (app.getAvailability(data) != Availability.enabled) {
-                return const MessagePage(
+              if (app.getAvailability(data) == Availability.unsupported) {
+                return MessagePage(
+                  header: 'Application not supported',
+                  message: 'The used YubiKey does not support \'${app.name}\' application',
+                );
+              } else if (app.getAvailability(data) != Availability.enabled) {
+                return MessagePage(
                   header: 'Application disabled',
-                  message: 'Enable the application on your YubiKey to access',
+                  message: 'Enable the \'${app.name}\' application on your YubiKey to access',
                 );
               }
 
