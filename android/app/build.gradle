@@ -46,7 +46,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.yubico.yubioath"
+        applicationId "com.yubico.yubioath.preview"
         minSdkVersion project.minSdkVersion
         targetSdkVersion project.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
