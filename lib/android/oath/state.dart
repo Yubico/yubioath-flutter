@@ -13,8 +13,8 @@ import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/oath/state.dart';
 
-import '../../oath/models.dart';
 import '../../cancellation_exception.dart';
+import '../../oath/models.dart';
 import 'command_providers.dart';
 
 final _log = Logger('android.oath.state');
@@ -186,7 +186,9 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
 
       var result = jsonDecode(resultString);
       var addedCredential = OathCredential.fromJson(result['credential']);
-      var addedCredCode = OathCode.fromJson(result['code']);
+
+      var addedCredCode =
+          result['code'] != null ? OathCode.fromJson(result['code']) : null;
 
       if (mounted) {
         final newState = state!.toList();
