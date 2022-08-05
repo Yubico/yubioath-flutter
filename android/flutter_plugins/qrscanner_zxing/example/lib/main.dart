@@ -79,6 +79,9 @@ class QRScannerPageState extends State<QRScannerPage> {
             right: 0,
             child: QRScannerZxingView(
                 marginPct: 10,
+                onViewInitialized: (permissionsGranted) {
+                  // this example does not handle Camera permissions
+                },
                 onDetect: (result) {
                   if (currentCode == null) {
                     setState(() {
