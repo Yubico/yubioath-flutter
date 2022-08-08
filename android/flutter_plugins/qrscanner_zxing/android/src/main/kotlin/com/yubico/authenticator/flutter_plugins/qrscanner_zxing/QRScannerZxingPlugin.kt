@@ -1,6 +1,5 @@
 package com.yubico.authenticator.flutter_plugins.qrscanner_zxing
 
-import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -38,7 +37,7 @@ class QRScannerZxingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private val registrar = PermissionsResultRegistrar()
     private lateinit var channel: MethodChannel
 
-    override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(binding.binaryMessenger, "qrscanner_zxing")
         channel.setMethodCallHandler(this)
 
@@ -49,7 +48,7 @@ class QRScannerZxingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             )
     }
 
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+    override fun onMethodCall(call: MethodCall, result: Result) {
         if (call.method == "getPlatformVersion") {
             result.success("Android ${android.os.Build.VERSION.RELEASE}")
         } else {
@@ -57,7 +56,7 @@ class QRScannerZxingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         }
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
     }
 

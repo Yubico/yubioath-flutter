@@ -180,11 +180,11 @@ internal class QRScannerView(
                                 bindUseCases(activity)
                             } else {
                                 previewView.visibility = View.GONE
-                                reportViewInitialized(false);
+                                reportViewInitialized(false)
                             }
                         } else {
                             previewView.visibility = View.GONE
-                            reportViewInitialized(false);
+                            reportViewInitialized(false)
                         }
                         return true
                     }
@@ -250,7 +250,7 @@ internal class QRScannerView(
                 preview, imageAnalyzer
             )
 
-            reportViewInitialized(true);
+            reportViewInitialized(true)
         }, ContextCompat.getMainExecutor(context))
     }
 
