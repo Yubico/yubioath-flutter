@@ -211,7 +211,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             TextField(
               key: const Key('issuer'),
               controller: _issuerController,
-              autofocus: true,
+              autofocus: !widget.openQrScanner,
               enabled: issuerRemaining > 0,
               maxLength: max(issuerRemaining, 1),
               inputFormatters: [limitBytesLength(issuerRemaining)],

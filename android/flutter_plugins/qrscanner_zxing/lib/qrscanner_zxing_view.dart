@@ -9,9 +9,13 @@ import 'package:flutter/services.dart';
 class QRScannerZxingView extends StatefulWidget {
   final int marginPct;
   final Function(String rawData) onDetect;
+  final Function(bool permissionsGranted) onViewInitialized;
 
   const QRScannerZxingView(
-      {Key? key, required this.marginPct, required this.onDetect})
+      {Key? key,
+      required this.marginPct,
+      required this.onDetect,
+      required this.onViewInitialized})
       : super(key: key);
 
   @override
@@ -31,6 +35,11 @@ class QRScannerZxingViewState extends State<QRScannerZxingView> {
             var rawValue = arguments["value"];
             widget.onDetect(rawValue);
             return;
+          case "viewInitialized":
+            var arguments = jsonDecode(call.arguments);
+            var permissionsGranted = arguments["permissionsGranted"];
+            widget.onViewInitialized(permissionsGranted);
+            return;
         }
       } catch (e) {
         if (kDebugMode) {
@@ -38,6 +47,11 @@ class QRScannerZxingViewState extends State<QRScannerZxingView> {
         }
       }
     });
+  }
+
+  void requestPermissions() {
+    debugPrint("Permissions requested");
+    channel.invokeMethod("requestCameraPermissions", null);
   }
 
   @override

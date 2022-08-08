@@ -3,17 +3,20 @@ package com.yubico.authenticator.flutter_plugins.qrscanner_zxing
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LifecycleOwner
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
@@ -97,8 +100,8 @@ internal class QRScannerView(
     private val qrScannerView = View.inflate(context, R.layout.qr_scanner_view, null)
     private val previewView = qrScannerView.findViewById<PreviewView>(R.id.preview_view).also {
         it.scaleType = PreviewView.ScaleType.FILL_CENTER
+        it.implementationMode = PreviewView.ImplementationMode.PERFORMANCE
     }
-    private val infoText = qrScannerView.findViewById<TextView>(R.id.info_text)
 
     private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     private val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -117,6 +120,7 @@ internal class QRScannerView(
         preview = null
         imageAnalyzer = null
         cameraExecutor.shutdown()
+        methodChannel.setMethodCallHandler(null)
         Log.d(TAG, "View disposed")
     }
 
@@ -142,6 +146,20 @@ internal class QRScannerView(
             } else {
                 bindUseCases(context)
             }
+
+            methodChannel.setMethodCallHandler { call, result ->
+                if (call.method =="requestCameraPermissions") {
+                    requestPermissionsFromUser(context)
+
+                    val intent = Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:" + context.getPackageName())
+                    )
+                    intent.addCategory(Intent.CATEGORY_DEFAULT)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(context, intent, null)
+                }
+            }
         }
     }
 
@@ -159,17 +177,14 @@ internal class QRScannerView(
                                 grantResults.first() == PackageManager.PERMISSION_GRANTED
                             ) {
                                 previewView.visibility = View.VISIBLE
-                                infoText.visibility = View.GONE
                                 bindUseCases(activity)
                             } else {
                                 previewView.visibility = View.GONE
-                                infoText.visibility = View.VISIBLE
-                                infoText.setText(R.string.please_grant_permissions)
+                                reportViewInitialized(false);
                             }
                         } else {
                             previewView.visibility = View.GONE
-                            infoText.visibility = View.VISIBLE
-                            infoText.setText(R.string.please_grant_permissions)
+                            reportViewInitialized(false);
                         }
                         return true
                     }
@@ -181,8 +196,28 @@ internal class QRScannerView(
         requestPermissions(activity)
     }
 
+    private fun reportViewInitialized(permissionsGranted: Boolean) {
+        uiThreadHandler.post {
+            methodChannel.invokeMethod(
+                "viewInitialized",
+                JSONObject(mapOf("permissionsGranted" to permissionsGranted)).toString()
+            )
+        }
+    }
+
+    private fun reportCodeFound(code: String) {
+        uiThreadHandler.post {
+            methodChannel.invokeMethod(
+                "codeFound", JSONObject(
+                    mapOf("value" to code)
+                ).toString()
+            )
+        }
+    }
+
     private fun bindUseCases(context: Context) {
         cameraProviderFuture.addListener({
+
             previewView.visibility = View.VISIBLE
             cameraProvider = cameraProviderFuture.get()
 
@@ -196,13 +231,7 @@ internal class QRScannerView(
                     it.setAnalyzer(cameraExecutor, BarcodeAnalyzer(marginPct) { analyzeResult ->
                         if (analyzeResult.isSuccess) {
                             analyzeResult.getOrNull()?.let { result ->
-                                uiThreadHandler.post {
-                                    methodChannel.invokeMethod(
-                                        "codeFound", JSONObject(
-                                            mapOf("value" to result)
-                                        ).toString()
-                                    )
-                                }
+                                reportCodeFound(result)
                             }
                         }
                     })
@@ -220,6 +249,8 @@ internal class QRScannerView(
                 cameraSelector,
                 preview, imageAnalyzer
             )
+
+            reportViewInitialized(true);
         }, ContextCompat.getMainExecutor(context))
     }
 
