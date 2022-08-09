@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../management/views/management_screen.dart';
 import '../../about_page.dart';
+import '../../android/views/android_settings_page.dart';
+import '../../management/views/management_screen.dart';
 import '../../settings_page.dart';
 import '../message.dart';
 import '../models.dart';
@@ -98,7 +101,9 @@ class MainPageDrawer extends ConsumerWidget {
               if (shouldPop) nav.pop();
               showBlurDialog(
                 context: context,
-                builder: (context) => const SettingsPage(),
+                builder: (context) => Platform.isAndroid
+                    ? const AndroidSettingsPage()
+                    : const SettingsPage(),
                 routeSettings: const RouteSettings(name: 'settings'),
               );
             },

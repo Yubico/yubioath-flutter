@@ -4,10 +4,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.yubico.authenticator.Constants.Companion.EXTRA_OPENED_THROUGH_NFC
 import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.OathManager
@@ -45,6 +47,16 @@ class MainActivity : FlutterFragmentActivity() {
 
         yubikit = YubiKitManager(this)
 
+        setupYubiKeyDiscovery()
+        setupYubiKitLogger()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+
+    private fun setupYubiKeyDiscovery() {
         viewModel.handleYubiKey.observe(this) {
             if (it) {
                 Log.d(TAG, "Starting usb discovery")
@@ -59,8 +71,6 @@ class MainActivity : FlutterFragmentActivity() {
                 Log.d(TAG, "Stopped usb discovery")
             }
         }
-
-        setupYubiKitLogger()
     }
 
     fun startNfcDiscovery(): Boolean =
@@ -118,6 +128,17 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        try {
+            if (intent.getBooleanExtra(EXTRA_OPENED_THROUGH_NFC, false)) {
+                // make nfc available to yubikit
+                NfcAdapter.getDefaultAdapter(this).disableReaderMode(this)
+                setupYubiKeyDiscovery()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failure when resuming YubiKey discovery", e.stackTraceToString())
+        }
+
         startNfcDiscovery()
     }
 

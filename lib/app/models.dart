@@ -44,6 +44,7 @@ enum Application {
   }
 
   Availability getAvailability(YubiKeyData data) {
+
     if (this == Application.management) {
       final version = data.info.version;
       final available = (version.major > 4 || // YK5 and up

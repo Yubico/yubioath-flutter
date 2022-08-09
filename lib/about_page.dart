@@ -7,12 +7,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'app/state.dart';
-import 'version.dart';
 import 'app/logging.dart';
 import 'app/message.dart';
+import 'app/state.dart';
 import 'core/state.dart';
 import 'desktop/state.dart';
+import 'version.dart';
 import 'widgets/responsive_dialog.dart';
 
 final _log = Logger('about');
@@ -31,7 +31,9 @@ class AboutPage extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(top: 24.0),
             child: Text(
-              'Yubico Authenticator',
+              Platform.isAndroid
+                  ? 'Yubico Authenticator Preview'
+                  : 'Yubico Authenticator',
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
