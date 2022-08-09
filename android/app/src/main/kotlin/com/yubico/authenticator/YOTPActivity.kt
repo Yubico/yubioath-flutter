@@ -2,7 +2,6 @@ package com.yubico.authenticator
 
 import android.app.Activity
 import android.content.*
-import android.net.Uri
 import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
 import android.os.Build
@@ -11,14 +10,12 @@ import android.widget.Toast
 import com.yubico.authenticator.Constants.Companion.EXTRA_OPENED_THROUGH_NFC
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.yubiclip.scancode.KeyboardLayout
-import java.util.*
-import java.util.regex.Pattern
+import com.yubico.yubikit.core.util.NdefUtils
+import java.nio.charset.StandardCharsets
 
 typealias ResourceId = Int
 
 class YOTPActivity : Activity() {
-
-    private val otpPattern = Pattern.compile(".*/#?([a-zA-Z0-9!]+)$")
 
     private var openAppOnNfcTap: Boolean = false
     private var copyOtpOnNfcTap: Boolean = false
@@ -46,17 +43,27 @@ class YOTPActivity : Activity() {
     }
 
     private fun handleIntent(intent: Intent) {
-        intent.data?.let { uri ->
-
+        intent.data?.let {
             if (copyOtpOnNfcTap) {
                 try {
-                    val otp = parseOtpFromUri(uri)
-                    setPrimaryClip(otp)
+                    val otpSlotContent = parseOtpFromIntent()
+                    setPrimaryClip(otpSlotContent.content)
 
                     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-                        showToast(R.string.otp_success, Toast.LENGTH_SHORT)
+                        showToast(
+                            when (otpSlotContent.type) {
+                                OtpType.Otp -> R.string.otp_success_set_otp_to_clipboard
+                                OtpType.Password -> R.string.otp_success_set_password_to_clipboard
+                            }, Toast.LENGTH_SHORT
+                        )
                     }
-                } catch (_: IllegalArgumentException) {
+
+                } catch (illegalArgumentException: IllegalArgumentException) {
+                    Log.e(
+                        TAG,
+                        illegalArgumentException.message ?: "Failure when handling YubiKey OTP",
+                        illegalArgumentException.stackTraceToString()
+                    )
                     showToast(R.string.otp_parse_failure, Toast.LENGTH_LONG)
                 } catch (_: UnsupportedOperationException) {
                     showToast(R.string.otp_set_clip_failure, Toast.LENGTH_LONG)
@@ -78,66 +85,20 @@ class YOTPActivity : Activity() {
         Toast.makeText(this, value, length).show()
     }
 
-    private fun parseOtpFromUri(uri: Uri): String {
+    private fun parseOtpFromIntent(): OtpSlotValue {
+        val parcelable = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
+        if (parcelable != null && parcelable.isNotEmpty()) {
+            val ndefPayloadBytes =
+                NdefUtils.getNdefPayloadBytes((parcelable[0] as NdefMessage).toByteArray())
 
-        val matcher = otpPattern.matcher(uri.toString())
-        if (matcher.matches()) {
-            matcher.group(1)?.let {
-                return it
+            return if (ndefPayloadBytes.all { it in 32..126 }) {
+                OtpSlotValue(OtpType.Otp, String(ndefPayloadBytes, StandardCharsets.US_ASCII))
+            } else {
+                val kbd: KeyboardLayout = KeyboardLayout.forName(clipKbdLayout)
+                OtpSlotValue(OtpType.Password, kbd.fromScanCodes(ndefPayloadBytes))
             }
         }
-
-        val fromNdefMessages = parseExtraNdefMessages()
-        if (fromNdefMessages != null) {
-            return fromNdefMessages
-        }
-
-        Log.e(TAG, "Failed to parse OTP from provided otp uri string")
-        Log.t(TAG, "Uri was $uri")
-        throw IllegalArgumentException()
-    }
-
-    private fun parseExtraNdefMessages(): String? {
-        val prefix = "https://my.yubico.com/"
-        val ndefRecord = 0xd1.toByte()
-        val prefixByteArr = ByteArray(prefix.length + 2 - 8)
-
-        try {
-            prefixByteArr[0] = 85
-            prefixByteArr[1] = 4
-            System.arraycopy(
-                prefix.substring(8).toByteArray(),
-                0,
-                prefixByteArr,
-                2,
-                prefixByteArr.size - 2
-            )
-
-            // get intent extra if possible
-            val raw = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
-            var bytes = (raw!![0] as NdefMessage).toByteArray()
-            if (bytes[0] == ndefRecord && Arrays.equals(
-                    prefixByteArr,
-                    Arrays.copyOfRange(bytes, 3, 3 + prefixByteArr.size)
-                )
-            ) {
-                if (Arrays.equals("/neo/".toByteArray(), Arrays.copyOfRange(bytes, 18, 18 + 5))) {
-                    bytes[22] = '#'.code.toByte()
-                }
-                for (i in bytes.indices) {
-                    if (bytes[i] == '#'.code.toByte()) {
-                        bytes = Arrays.copyOfRange(bytes, i + 1, bytes.size)
-                        val kbd: KeyboardLayout = KeyboardLayout.forName(clipKbdLayout)
-                        return kbd.fromScanCodes(bytes)
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to parse NDEF messages", e.stackTraceToString())
-            throw IllegalArgumentException()
-        }
-
-        return null
+        throw IllegalArgumentException("Failed to parse OTP from the intent")
     }
 
     private fun setPrimaryClip(otp: String) {
@@ -160,4 +121,9 @@ class YOTPActivity : Activity() {
         const val DEFAULT_CLIP_KBD_LAYOUT = "US"
     }
 
+    enum class OtpType {
+        Otp, Password
+    }
+
+    data class OtpSlotValue(val type: OtpType, val content: String)
 }
