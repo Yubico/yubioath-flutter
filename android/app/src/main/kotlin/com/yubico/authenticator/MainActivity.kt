@@ -1,5 +1,9 @@
 package com.yubico.authenticator
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.viewModels
@@ -25,6 +29,9 @@ class MainActivity : FlutterFragmentActivity() {
     private var hasNfc by Delegates.notNull<Boolean>()
 
     private lateinit var yubikit: YubiKitManager
+
+    // receives broadcasts when QR Scanner camera is closed
+    private val qrScannerCameraClosedBR = QRScannerCameraClosedBR()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +79,7 @@ class MainActivity : FlutterFragmentActivity() {
             false
         }
 
-    fun stopNfcDiscovery() {
+    private fun stopNfcDiscovery() {
         if (hasNfc) {
             yubikit.stopNfcDiscovery(this)
             Log.d(TAG, "Stopped nfc discovery")
@@ -94,11 +101,30 @@ class MainActivity : FlutterFragmentActivity() {
         })
     }
 
+    override fun onStart() {
+        super.onStart()
+        registerReceiver(qrScannerCameraClosedBR, QRScannerCameraClosedBR.intentFilter)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(qrScannerCameraClosedBR)
+    }
+
+    override fun onPause() {
+        stopNfcDiscovery()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        startNfcDiscovery()
+    }
+
     private lateinit var appContext: AppContext
     private lateinit var oathManager: OathManager
     private lateinit var dialogManager: DialogManager
     private lateinit var flutterLog: FlutterLog
-    private lateinit var nfcDiscoveryHelper: NfcDiscoveryHelper
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -108,12 +134,26 @@ class MainActivity : FlutterFragmentActivity() {
         flutterLog = FlutterLog(messenger)
         appContext = AppContext(messenger)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
-        nfcDiscoveryHelper = NfcDiscoveryHelper(this)
 
-        oathManager = OathManager(this, messenger, appContext, viewModel, dialogManager, nfcDiscoveryHelper)
+
+        oathManager = OathManager(this, messenger, appContext, viewModel, dialogManager)
     }
 
     companion object {
         const val TAG = "MainActivity"
+    }
+
+    /** We observed that some devices (Pixel 2, OnePlus 6) automatically end NFC discovery
+     * during the use of device camera when scanning QR codes. To handle NFC events correctly,
+     * this receiver restarts the YubiKit NFC discovery when the QR Scanner camera is closed.
+     */
+    class QRScannerCameraClosedBR : BroadcastReceiver() {
+        companion object {
+            val intentFilter = IntentFilter("com.yubico.authenticator.QRScannerView.CameraClosed")
+        }
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+            (context as? MainActivity)?.startNfcDiscovery()
+        }
     }
 }

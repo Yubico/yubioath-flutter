@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
 import io.flutter.plugin.common.BinaryMessenger
@@ -61,6 +62,7 @@ internal class QRScannerView(
     creationParams: Map<String?, Any?>?
 ) : PlatformView {
 
+    private val stateChangeObserver = StateChangeObserver(context)
     private val uiThreadHandler = Handler(Looper.getMainLooper())
 
     private var marginPct: Double? = null
@@ -244,11 +246,16 @@ internal class QRScannerView(
                     it.setSurfaceProvider(previewView.surfaceProvider)
                 }
 
-            cameraProvider?.bindToLifecycle(
+            val camera = cameraProvider?.bindToLifecycle(
                 context as LifecycleOwner,
                 cameraSelector,
                 preview, imageAnalyzer
             )
+
+            camera?.cameraInfo?.cameraState?.let {
+                it.removeObservers(context as LifecycleOwner)
+                it.observe(context as LifecycleOwner, stateChangeObserver)
+            }
 
             reportViewInitialized(true)
         }, ContextCompat.getMainExecutor(context))
@@ -302,6 +309,26 @@ internal class QRScannerView(
             } finally {
                 // important call
                 imageProxy.close()
+            }
+        }
+    }
+
+    private class StateChangeObserver(val context: Context) : Observer<CameraState> {
+        private var cameraOpened: Boolean = false
+
+        override fun onChanged(t: CameraState) {
+            Log.d(TAG, "Camera state changed to ${t.type}")
+
+            if (t.type == CameraState.Type.OPEN) {
+                cameraOpened = true
+            }
+
+            if (cameraOpened && t.type == CameraState.Type.CLOSED) {
+                Log.d(TAG, "Camera closed")
+                val stateChangedIntent =
+                    Intent("com.yubico.authenticator.QRScannerView.CameraClosed")
+                context.sendBroadcast(stateChangedIntent)
+                cameraOpened = false
             }
         }
     }
