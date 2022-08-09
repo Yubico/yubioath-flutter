@@ -45,10 +45,6 @@ enum Application {
 
   Availability getAvailability(YubiKeyData data) {
 
-    if (data.info.isSky && this != Application.fido) {
-      return Availability.unsupported;
-    }
-
     if (this == Application.management) {
       final version = data.info.version;
       final available = (version.major > 4 || // YK5 and up
