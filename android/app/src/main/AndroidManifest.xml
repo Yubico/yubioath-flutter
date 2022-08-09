@@ -47,10 +47,10 @@
         </activity>
 
         <activity
-            android:name=".YOTPActivity"
+            android:name=".NdefActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/YOTPActivityTheme">
+            android:theme="@style/NdefActivityTheme">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />

@@ -16,7 +16,7 @@
         <item name="android:windowBackground">?android:colorBackground</item>
     </style>
 
-    <style name="YOTPActivityTheme" parent="NormalTheme">
+    <style name="NdefActivityTheme" parent="NormalTheme">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:windowDisablePreview">true</item>

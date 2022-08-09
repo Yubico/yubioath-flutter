@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets
 
 typealias ResourceId = Int
 
-class YOTPActivity : Activity() {
+class NdefActivity : Activity() {
 
     private var openAppOnNfcTap: Boolean = false
     private var copyOtpOnNfcTap: Boolean = false
