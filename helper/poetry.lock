@@ -8,7 +8,7 @@ python-versions = "*"
 
 [[package]]
 name = "atomicwrites"
-version = "1.4.0"
+version = "1.4.1"
 description = "Atomic file writes."
 category = "dev"
 optional = false
@@ -16,17 +16,17 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "attrs"
-version = "21.4.0"
+version = "22.1.0"
 description = "Classes Without Boilerplate"
 category = "dev"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+python-versions = ">=3.5"
 
 [package.extras]
-dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit", "cloudpickle"]
+dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit", "cloudpickle"]
 docs = ["furo", "sphinx", "zope.interface", "sphinx-notfound-page"]
-tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "zope.interface", "cloudpickle"]
-tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "cloudpickle"]
+tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "zope.interface", "cloudpickle"]
+tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "cloudpickle"]
 
 [[package]]
 name = "cffi"
@@ -137,7 +137,7 @@ trio = ["trio", "async-generator"]
 
 [[package]]
 name = "keyring"
-version = "23.6.0"
+version = "23.8.2"
 description = "Store and access your passwords safely."
 category = "main"
 optional = false
@@ -151,7 +151,7 @@ SecretStorage = {version = ">=3.2", markers = "sys_platform == \"linux\""}
 
 [package.extras]
 docs = ["sphinx", "jaraco.packaging (>=9)", "rst.linker (>=1.9)", "jaraco.tidelift (>=1.4)"]
-testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-black (>=0.3.7)", "pytest-mypy (>=0.9.1)"]
+testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "flake8 (<5)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-black (>=0.3.7)", "pytest-mypy (>=0.9.1)"]
 
 [[package]]
 name = "macholib"
@@ -174,7 +174,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "numpy"
-version = "1.23.0"
+version = "1.23.1"
 description = "NumPy is the fundamental package for array computing with Python."
 category = "main"
 optional = false
@@ -244,7 +244,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "pyinstaller"
-version = "5.1"
+version = "5.3"
 description = "PyInstaller bundles a Python application and all its dependencies into a single package."
 category = "dev"
 optional = false
@@ -253,7 +253,7 @@ python-versions = "<3.11,>=3.7"
 [package.dependencies]
 altgraph = "*"
 macholib = {version = ">=1.8", markers = "sys_platform == \"darwin\""}
-pefile = {version = ">=2017.8.1", markers = "sys_platform == \"win32\""}
+pefile = {version = ">=2022.5.30", markers = "sys_platform == \"win32\""}
 pyinstaller-hooks-contrib = ">=2021.4"
 pywin32-ctypes = {version = ">=0.2.0", markers = "sys_platform == \"win32\""}
 
@@ -263,7 +263,7 @@ hook_testing = ["pytest (>=2.7.3)", "execnet (>=1.5.0)", "psutil"]
 
 [[package]]
 name = "pyinstaller-hooks-contrib"
-version = "2022.7"
+version = "2022.8"
 description = "Community maintained hooks for PyInstaller"
 category = "dev"
 optional = false
@@ -374,15 +374,15 @@ resolved_reference = "32612d177db0d8dd768679ce26c4e509d10f2a97"
 
 [[package]]
 name = "zipp"
-version = "3.8.0"
+version = "3.8.1"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=9)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy (>=0.9.1)"]
+docs = ["sphinx", "jaraco.packaging (>=9)", "rst.linker (>=1.9)", "jaraco.tidelift (>=1.4)"]
+testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.3)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy (>=0.9.1)"]
 
 [[package]]
 name = "zxing-cpp"
@@ -405,14 +405,8 @@ altgraph = [
     {file = "altgraph-0.17.2-py2.py3-none-any.whl", hash = "sha256:743628f2ac6a7c26f5d9223c91ed8ecbba535f506f4b6f558885a8a56a105857"},
     {file = "altgraph-0.17.2.tar.gz", hash = "sha256:ebf2269361b47d97b3b88e696439f6e4cbc607c17c51feb1754f90fb79839158"},
 ]
-atomicwrites = [
-    {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
-    {file = "atomicwrites-1.4.0.tar.gz", hash = "sha256:ae70396ad1a434f9c7046fd2dd196fc04b12f9e91ffb859164193be8b6168a7a"},
-]
-attrs = [
-    {file = "attrs-21.4.0-py2.py3-none-any.whl", hash = "sha256:2d27e3784d7a565d36ab851fe94887c5eccd6a463168875832a1be79c82828b4"},
-    {file = "attrs-21.4.0.tar.gz", hash = "sha256:626ba8234211db98e869df76230a137c4c40a12d72445c45d5f5b716f076e2fd"},
-]
+atomicwrites = []
+attrs = []
 cffi = [
     {file = "cffi-1.15.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:a66d3508133af6e8548451b25058d5812812ec3798c886bf38ed24a98216fab2"},
     {file = "cffi-1.15.1-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:470c103ae716238bbe698d67ad020e1db9d9dba34fa5a899b5e21577e6d52ed2"},
@@ -530,10 +524,7 @@ jeepney = [
     {file = "jeepney-0.8.0-py3-none-any.whl", hash = "sha256:c0a454ad016ca575060802ee4d590dd912e35c122fa04e70306de3d076cce755"},
     {file = "jeepney-0.8.0.tar.gz", hash = "sha256:5efe48d255973902f6badc3ce55e2aa6c5c3b3bc642059ef3a91247bcfcc5806"},
 ]
-keyring = [
-    {file = "keyring-23.6.0-py3-none-any.whl", hash = "sha256:372ff2fc43ab779e3f87911c26e6c7acc8bb440cbd82683e383ca37594cb0617"},
-    {file = "keyring-23.6.0.tar.gz", hash = "sha256:3ac00c26e4c93739e19103091a9986a9f79665a78cf15a4df1dba7ea9ac8da2f"},
-]
+keyring = []
 macholib = [
     {file = "macholib-1.16-py2.py3-none-any.whl", hash = "sha256:5a0742b587e6e57bfade1ab90651d4877185bf66fd4a176a488116de36878229"},
     {file = "macholib-1.16.tar.gz", hash = "sha256:001bf281279b986a66d7821790d734e61150d52f40c080899df8fefae056e9f7"},
@@ -542,30 +533,7 @@ mss = [
     {file = "mss-6.1.0-py3-none-any.whl", hash = "sha256:2722c5c9211ce29b4f1497fc2c70faecf9cdcb7653fa7f0f88e2231a31949b93"},
     {file = "mss-6.1.0.tar.gz", hash = "sha256:aebd069f3e05667fe9c7b9fa4b1771fe42a4710ce1058ce0236936ce06fa5394"},
 ]
-numpy = [
-    {file = "numpy-1.23.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:58bfd40eb478f54ff7a5710dd61c8097e169bc36cc68333d00a9bcd8def53b38"},
-    {file = "numpy-1.23.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:196cd074c3f97c4121601790955f915187736f9cf458d3ee1f1b46aff2b1ade0"},
-    {file = "numpy-1.23.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f1d88ef79e0a7fa631bb2c3dda1ea46b32b1fe614e10fedd611d3d5398447f2f"},
-    {file = "numpy-1.23.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d54b3b828d618a19779a84c3ad952e96e2c2311b16384e973e671aa5be1f6187"},
-    {file = "numpy-1.23.0-cp310-cp310-win32.whl", hash = "sha256:2b2da66582f3a69c8ce25ed7921dcd8010d05e59ac8d89d126a299be60421171"},
-    {file = "numpy-1.23.0-cp310-cp310-win_amd64.whl", hash = "sha256:97a76604d9b0e79f59baeca16593c711fddb44936e40310f78bfef79ee9a835f"},
-    {file = "numpy-1.23.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:d8cc87bed09de55477dba9da370c1679bd534df9baa171dd01accbb09687dac3"},
-    {file = "numpy-1.23.0-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:f0f18804df7370571fb65db9b98bf1378172bd4e962482b857e612d1fec0f53e"},
-    {file = "numpy-1.23.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ac86f407873b952679f5f9e6c0612687e51547af0e14ddea1eedfcb22466babd"},
-    {file = "numpy-1.23.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ae8adff4172692ce56233db04b7ce5792186f179c415c37d539c25de7298d25d"},
-    {file = "numpy-1.23.0-cp38-cp38-win32.whl", hash = "sha256:fe8b9683eb26d2c4d5db32cd29b38fdcf8381324ab48313b5b69088e0e355379"},
-    {file = "numpy-1.23.0-cp38-cp38-win_amd64.whl", hash = "sha256:5043bcd71fcc458dfb8a0fc5509bbc979da0131b9d08e3d5f50fb0bbb36f169a"},
-    {file = "numpy-1.23.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:1c29b44905af288b3919803aceb6ec7fec77406d8b08aaa2e8b9e63d0fe2f160"},
-    {file = "numpy-1.23.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:98e8e0d8d69ff4d3fa63e6c61e8cfe2d03c29b16b58dbef1f9baa175bbed7860"},
-    {file = "numpy-1.23.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:79a506cacf2be3a74ead5467aee97b81fca00c9c4c8b3ba16dbab488cd99ba10"},
-    {file = "numpy-1.23.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:092f5e6025813e64ad6d1b52b519165d08c730d099c114a9247c9bb635a2a450"},
-    {file = "numpy-1.23.0-cp39-cp39-win32.whl", hash = "sha256:d6ca8dabe696c2785d0c8c9b0d8a9b6e5fdbe4f922bde70d57fa1a2848134f95"},
-    {file = "numpy-1.23.0-cp39-cp39-win_amd64.whl", hash = "sha256:fc431493df245f3c627c0c05c2bd134535e7929dbe2e602b80e42bf52ff760bc"},
-    {file = "numpy-1.23.0-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:f9c3fc2adf67762c9fe1849c859942d23f8d3e0bee7b5ed3d4a9c3eeb50a2f07"},
-    {file = "numpy-1.23.0-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d0d2094e8f4d760500394d77b383a1b06d3663e8892cdf5df3c592f55f3bff66"},
-    {file = "numpy-1.23.0-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:94b170b4fa0168cd6be4becf37cb5b127bd12a795123984385b8cd4aca9857e5"},
-    {file = "numpy-1.23.0.tar.gz", hash = "sha256:bd3fa4fe2e38533d5336e1272fc4e765cabbbde144309ccee8675509d5cd7b05"},
-]
+numpy = []
 packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
     {file = "packaging-21.3.tar.gz", hash = "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb"},
@@ -645,23 +613,8 @@ pycparser = [
     {file = "pycparser-2.21-py2.py3-none-any.whl", hash = "sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9"},
     {file = "pycparser-2.21.tar.gz", hash = "sha256:e644fdec12f7872f86c58ff790da456218b10f863970249516d60a5eaca77206"},
 ]
-pyinstaller = [
-    {file = "pyinstaller-5.1-py3-none-macosx_10_13_universal2.whl", hash = "sha256:3c9bc373b4a4bf6d81b306b9918e290a3de582d7b50a0f6f4e837970a4db0c54"},
-    {file = "pyinstaller-5.1-py3-none-manylinux2014_aarch64.whl", hash = "sha256:ac003d49bbd62f6712b5631487049cee4f0a07445dd31c6d05e5724e33689fca"},
-    {file = "pyinstaller-5.1-py3-none-manylinux2014_i686.whl", hash = "sha256:f786cb013ebfd3fb23ddb46285902663e31256220b12b368f8c36e859a77ebc9"},
-    {file = "pyinstaller-5.1-py3-none-manylinux2014_ppc64le.whl", hash = "sha256:d8bfe5c32b4b5aaa91a5c1c7912fe3e5d13e7671f3468ee7742ec71ca192a975"},
-    {file = "pyinstaller-5.1-py3-none-manylinux2014_s390x.whl", hash = "sha256:c421b46ebf81ad4498de480640ce1a47ac15dfd3938dfc2e1c0846cb5cdb0c59"},
-    {file = "pyinstaller-5.1-py3-none-manylinux2014_x86_64.whl", hash = "sha256:588f2840c27a8a7e1b1fa361f107a1060c5096b36d3c94c243b23687ee41609d"},
-    {file = "pyinstaller-5.1-py3-none-musllinux_1_1_aarch64.whl", hash = "sha256:d3852c1f8fe6ca2f5c7942c845dc6d1f6140aa7860fe3500eac3ac88875d1dd4"},
-    {file = "pyinstaller-5.1-py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:29b3f17d75ff58b12db7b0116df1b3382c8345aefd500a177987eaf0599dec03"},
-    {file = "pyinstaller-5.1-py3-none-win32.whl", hash = "sha256:a90ee3181c88aed0893bf537a50ad547655f5d555a5b731215a5fe1946d2f3db"},
-    {file = "pyinstaller-5.1-py3-none-win_amd64.whl", hash = "sha256:996e296d1dfe27c3e89efc26dbcc247f49c0801a9b5e22e2b39f5b983cf5c2f5"},
-    {file = "pyinstaller-5.1.tar.gz", hash = "sha256:9596c70c860cbce19537354db95b180351959b4cd14a70db6ab1d1432668c313"},
-]
-pyinstaller-hooks-contrib = [
-    {file = "pyinstaller-hooks-contrib-2022.7.tar.gz", hash = "sha256:6675634279cfe9e475580fb310c3d557037baefb065e6cb5a69a124361b926fd"},
-    {file = "pyinstaller_hooks_contrib-2022.7-py2.py3-none-any.whl", hash = "sha256:5fdb97dcae177955db7ab27840cba97b89dc0c7f4fd9142bba0f9b8d8df85c48"},
-]
+pyinstaller = []
+pyinstaller-hooks-contrib = []
 pyparsing = [
     {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
     {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
@@ -706,24 +659,5 @@ tomli = [
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
 ]
 yubikey-manager = []
-zipp = [
-    {file = "zipp-3.8.0-py3-none-any.whl", hash = "sha256:c4f6e5bbf48e74f7a38e7cc5b0480ff42b0ae5178957d564d18932525d5cf099"},
-    {file = "zipp-3.8.0.tar.gz", hash = "sha256:56bf8aadb83c24db6c4b577e13de374ccfb67da2078beba1d037c17980bf43ad"},
-]
-zxing-cpp = [
-    {file = "zxing-cpp-1.4.0.tar.gz", hash = "sha256:3d3ec36954ecbf9b0f633dab4b8cebcf0059d8a27f7a5969c4e41a308111af38"},
-    {file = "zxing_cpp-1.4.0-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:25b11d77cf6b9f7405af3ed6bacf4a6e0756ea74dfda7040ff53e7c58f352b05"},
-    {file = "zxing_cpp-1.4.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c1f849205237d4bda462d0a4b745e72494f825e5b6b06581e05b58d34d9869aa"},
-    {file = "zxing_cpp-1.4.0-cp310-cp310-win32.whl", hash = "sha256:76e9777d943af3c51b6406b323b3f28cbf9e40cc65b53cf847fda08295f18e48"},
-    {file = "zxing_cpp-1.4.0-cp310-cp310-win_amd64.whl", hash = "sha256:234d672e34e607ffc8e06639e79c8e1bf2ddb7c249134a6836569e92a2f2dd64"},
-    {file = "zxing_cpp-1.4.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:2c1f66c61e43163740c59c58880c3a8c41ebd2109573c0494f255c9c96134e8c"},
-    {file = "zxing_cpp-1.4.0-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:9418e1bd0775820a4933b60007b7f8a177e4ddd23692c1aaed2348fafc0a8e01"},
-    {file = "zxing_cpp-1.4.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8bc1e48ddfd6692d183782f091fbf54e5e1d36d0070822b1eab14cfb580b1625"},
-    {file = "zxing_cpp-1.4.0-cp38-cp38-win32.whl", hash = "sha256:4f340b6907780e8eb0e6473fec43ea145c4dd3275e3c21d6f887c0e28e114f29"},
-    {file = "zxing_cpp-1.4.0-cp38-cp38-win_amd64.whl", hash = "sha256:71772f81c4602133b2dba6a1107339ed965725001ce9a4caaf772598110351a1"},
-    {file = "zxing_cpp-1.4.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:331bec6b0ac8a9b339bc82956c52c022e7b2debfeb9102209483eb7538ed72d4"},
-    {file = "zxing_cpp-1.4.0-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3b0844c6ad3c944452c980a025238ba3fbd3a414fd2c36e2bec1bc5bed03b21e"},
-    {file = "zxing_cpp-1.4.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a770aff618cd00dda3922de2f7085c1f84bbe02f2b6df114d19054ad41c52fb0"},
-    {file = "zxing_cpp-1.4.0-cp39-cp39-win32.whl", hash = "sha256:ebe67de6a4d3c48a5ee52211ecf2003301ab39bd7d7b7dfa72ae80be429cfcf9"},
-    {file = "zxing_cpp-1.4.0-cp39-cp39-win_amd64.whl", hash = "sha256:d0e8b54b29497ed9238f31ce522ddb0189c0d6c4597787ef2eb823ca9fb42350"},
-]
+zipp = []
+zxing-cpp = []
