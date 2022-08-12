@@ -11,6 +11,7 @@ import '../../settings_page.dart';
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
+import 'graphics.dart';
 
 extension on Application {
   IconData get _icon {
@@ -48,6 +49,9 @@ class MainPageDrawer extends ConsumerWidget {
         context.findAncestorWidgetOfExactType<MediaQuery>();
     final width = mediaQuery?.data.size.width ?? 400;
 
+    final color =
+        Theme.of(context).brightness == Brightness.dark ? 'white' : 'green';
+
     return Drawer(
       width: width < 357 ? 0.85 * width : null,
       shape: const RoundedRectangleBorder(
@@ -57,7 +61,16 @@ class MainPageDrawer extends ConsumerWidget {
       child: ListView(
         primary: false, //Prevents conflict with the MainPage scroll view.
         children: [
-          const SizedBox(height: 24.0),
+          Padding(
+            padding: const EdgeInsets.only(top: 19.0, left: 30.0, bottom: 12.0),
+            child: Image.asset(
+              'assets/graphics/yubico-$color.png',
+              alignment: Alignment.centerLeft,
+              height: 28,
+              filterQuality: FilterQuality.medium,
+            ),
+          ),
+          const Divider(indent: 16.0, endIndent: 28.0),
           if (data != null) ...[
             // Normal YubiKey Applications
             ...supportedApps
