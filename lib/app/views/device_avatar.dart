@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/state.dart';
 import '../../widgets/custom_icons.dart';
 import '../models.dart';
 import '../state.dart';
@@ -14,7 +15,7 @@ class DeviceAvatar extends StatelessWidget {
 
   factory DeviceAvatar.yubiKeyData(YubiKeyData data, {double? radius}) =>
       DeviceAvatar(
-        badge: data.node is NfcReaderNode ? nfcIcon : null,
+        badge: isDesktop && data.node is NfcReaderNode ? nfcIcon : null,
         radius: radius,
         child: getProductImage(data.info, data.name),
       );
@@ -86,7 +87,7 @@ class DeviceAvatar extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onPrimary,
                 size: radius * 0.5,
               ),
-              child: nfcIcon,
+              child: badge!,
             ),
           ),
       ],

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/state.dart';
 import '../message.dart';
 import '../state.dart';
 import 'device_avatar.dart';
@@ -50,21 +51,24 @@ class DeviceButton extends ConsumerWidget {
             items: <PopupMenuEntry>[
               PopupMenuItem(
                 padding: const EdgeInsets.only(left: 11, right: 16),
-                onTap: () {
-                  // Wait for menu to close, and use the main context to open
-                  Timer.run(() {
-                    withContext(
-                      (context) async {
-                        await showBlurDialog(
-                          context: context,
-                          builder: (context) => const DevicePickerDialog(),
-                          routeSettings:
-                              const RouteSettings(name: 'device_picker'),
-                        );
-                      },
-                    );
-                  });
-                },
+                onTap: isDesktop
+                    ? () {
+                        // Wait for menu to close, and use the main context to open
+                        Timer.run(() {
+                          withContext(
+                            (context) async {
+                              await showBlurDialog(
+                                context: context,
+                                builder: (context) =>
+                                    const DevicePickerDialog(),
+                                routeSettings:
+                                    const RouteSettings(name: 'device_picker'),
+                              );
+                            },
+                          );
+                        });
+                      }
+                    : null,
                 child: _SlideInWidget(radius: radius),
               ),
               if (actions.isNotEmpty) const PopupMenuDivider(),
