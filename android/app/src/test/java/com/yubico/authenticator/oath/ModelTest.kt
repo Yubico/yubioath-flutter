@@ -149,13 +149,13 @@ class ModelTest {
     }
 
     @Test
-    fun `update preserves non-interactive codes`() {
+    fun `update without code preserves existing value`() {
         val d = "device"
         val totp = totp(d, name = "totpCred")
         val totpCode: Model.Code? = null
 
         val hotp = hotp(d, name = "hotpCred")
-        val hotpCode: Model.Code? = null
+        val hotpCode: Model.Code? = code(value = "098765")
 
         val m1 = mapOf(hotp to hotpCode, totp to totpCode)
         model.update(d, m1)
@@ -163,7 +163,7 @@ class ModelTest {
         assertTrue(model.credentials.find { it.code == hotpCode } != null)
 
         val updatedTotpCode = code(value = "121212")
-        val updatedHotpCode = code(value = "098765")
+        val updatedHotpCode = null
         val m2 = mapOf(hotp to updatedHotpCode, totp to updatedTotpCode)
         model.update(d, m2)
 
