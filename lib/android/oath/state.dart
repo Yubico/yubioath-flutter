@@ -13,6 +13,7 @@ import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/oath/state.dart';
 
+import '../../app/views/user_interaction.dart';
 import '../../cancellation_exception.dart';
 import '../../oath/models.dart';
 import 'command_providers.dart';
@@ -111,6 +112,7 @@ final androidCredentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
     var notifier = _AndroidCredentialListNotifier(
+      ref.watch(withContextProvider),
       ref.watch(currentDeviceProvider),
       ref.watch(oathApiProvider),
       ref.watch(androidCredentialsProvider),
@@ -123,12 +125,13 @@ final androidCredentialListProvider = StateNotifierProvider.autoDispose
 );
 
 class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
+  final WithContext _withContext;
   final DeviceNode? _currentDevice;
   final OathApi _api;
   Timer? _timer;
 
   _AndroidCredentialListNotifier(
-      this._currentDevice, this._api, List<OathPair>? pairs)
+      this._withContext, this._currentDevice, this._api, List<OathPair>? pairs)
       : super() {
     state = pairs;
     _scheduleRefresh();
@@ -158,6 +161,29 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   @override
   Future<OathCode> calculate(OathCredential credential,
       {bool update = true}) async {
+    // Prompt for touch if needed
+    UserInteractionController? controller;
+    Timer? touchTimer;
+    if (_currentDevice?.transport == Transport.usb) {
+      void triggerTouchPrompt() async {
+        controller = await _withContext(
+          (context) async => promptUserInteraction(
+            context,
+            icon: const Icon(Icons.touch_app),
+            title: 'Touch Required',
+            description: 'Touch the button on your YubiKey now.',
+          ),
+        );
+      }
+
+      if (credential.touchRequired) {
+        triggerTouchPrompt();
+      } else if (credential.oathType == OathType.hotp) {
+        touchTimer =
+            Timer(const Duration(milliseconds: 500), triggerTouchPrompt);
+      }
+    }
+
     try {
       var resultJson = await _api.calculate(credential.id);
       var result = jsonDecode(resultJson);
@@ -174,6 +200,9 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         throw CancellationException();
       }
       rethrow;
+    } finally {
+      touchTimer?.cancel();
+      controller?.close();
     }
   }
 
