@@ -11,7 +11,6 @@ import '../../settings_page.dart';
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
-import 'graphics.dart';
 
 extension on Application {
   IconData get _icon {
