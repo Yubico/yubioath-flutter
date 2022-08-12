@@ -68,7 +68,7 @@ final credentialsProvider = StateNotifierProvider.autoDispose<
     ref.listen<List<OathPair>?>(credentialListProvider(node.path),
         (previous, next) {
       provider._updatePairs(next);
-    });
+    }, fireImmediately: true);
   }
   return provider;
 });
