@@ -109,6 +109,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               helperText: '', // Prevents dialog resizing when enabled = false
               prefixIcon: Icon(Icons.business_outlined),
             ),
+            textInputAction: TextInputAction.next,
             onChanged: (value) {
               setState(() {
                 _issuer = value.trim();
@@ -127,6 +128,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               errorText: isValid ? null : 'Your account must have a name',
               prefixIcon: const Icon(Icons.people_alt_outlined),
             ),
+            textInputAction: TextInputAction.done,
             onChanged: (value) {
               setState(() {
                 _account = value.trim();

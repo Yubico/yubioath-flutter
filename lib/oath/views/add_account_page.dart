@@ -222,6 +222,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 helperText: '', // Prevents dialog resizing when enabled = false
                 prefixIcon: Icon(Icons.business_outlined),
               ),
+              textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
                   // Update maxlengths
@@ -243,6 +244,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 helperText: '', // Prevents dialog resizing when enabled = false
                 prefixIcon: Icon(Icons.person_outline),
               ),
+              textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
                   // Update maxlengths
@@ -277,6 +279,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       ? 'Invalid length'
                       : null),
               readOnly: _qrState == _QrScanState.success,
+              textInputAction: TextInputAction.done,
               onChanged: (value) {
                 setState(() {
                   _validateSecretLength = false;

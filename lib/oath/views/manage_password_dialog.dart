@@ -67,6 +67,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                   prefixIcon: const Icon(Icons.password_outlined),
                   errorText: _currentIsWrong ? 'Wrong password' : null,
                   errorMaxLines: 3),
+              textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
                   _currentIsWrong = false;
@@ -123,6 +124,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               prefixIcon: const Icon(Icons.password_outlined),
               enabled: !widget.state.hasKey || _currentPassword.isNotEmpty,
             ),
+            textInputAction: TextInputAction.next,
             onChanged: (value) {
               setState(() {
                 _newPassword = value;
@@ -143,6 +145,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               enabled: (!widget.state.hasKey || _currentPassword.isNotEmpty) &&
                   _newPassword.isNotEmpty,
             ),
+            textInputAction: TextInputAction.done,
             onChanged: (value) {
               setState(() {
                 _confirmPassword = value;
