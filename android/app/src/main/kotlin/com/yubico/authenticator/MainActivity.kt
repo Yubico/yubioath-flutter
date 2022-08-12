@@ -145,6 +145,7 @@ class MainActivity : FlutterFragmentActivity() {
     private lateinit var appContext: AppContext
     private lateinit var oathManager: OathManager
     private lateinit var dialogManager: DialogManager
+    private lateinit var appPreferences: AppPreferences
     private lateinit var flutterLog: FlutterLog
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -155,9 +156,9 @@ class MainActivity : FlutterFragmentActivity() {
         flutterLog = FlutterLog(messenger)
         appContext = AppContext(messenger)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
+        appPreferences = AppPreferences(this)
 
-
-        oathManager = OathManager(this, messenger, appContext, viewModel, dialogManager)
+        oathManager = OathManager(this, messenger, appContext, viewModel, dialogManager, appPreferences)
     }
 
     companion object {

@@ -16,18 +16,11 @@ import java.nio.charset.StandardCharsets
 typealias ResourceId = Int
 
 class NdefActivity : Activity() {
-
-    private var openAppOnNfcTap: Boolean = false
-    private var copyOtpOnNfcTap: Boolean = false
-    private lateinit var clipKbdLayout: String
+    private lateinit var appPreferences: AppPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val prefs: SharedPreferences = getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
-        openAppOnNfcTap = prefs.getBoolean(PREF_NFC_OPEN_APP, false)
-        copyOtpOnNfcTap = prefs.getBoolean(PREF_NFC_COPY_OTP, false)
-        clipKbdLayout = prefs.getString(PREF_CLIP_KBD_LAYOUT, DEFAULT_CLIP_KBD_LAYOUT)!!
-
+        appPreferences = AppPreferences(this)
         handleIntent(intent)
     }
 
@@ -44,7 +37,7 @@ class NdefActivity : Activity() {
 
     private fun handleIntent(intent: Intent) {
         intent.data?.let {
-            if (copyOtpOnNfcTap) {
+            if (appPreferences.copyOtpOnNfcTap) {
                 try {
                     val otpSlotContent = parseOtpFromIntent()
                     setPrimaryClip(otpSlotContent.content)
@@ -70,7 +63,7 @@ class NdefActivity : Activity() {
                 }
             }
 
-            if (openAppOnNfcTap) {
+            if (appPreferences.openAppOnNfcTap) {
                 val mainAppIntent = Intent(this, MainActivity::class.java).apply {
                     putExtra(EXTRA_OPENED_THROUGH_NFC, true)
                 }
@@ -94,7 +87,7 @@ class NdefActivity : Activity() {
             return if (ndefPayloadBytes.all { it in 32..126 }) {
                 OtpSlotValue(OtpType.Otp, String(ndefPayloadBytes, StandardCharsets.US_ASCII))
             } else {
-                val kbd: KeyboardLayout = KeyboardLayout.forName(clipKbdLayout)
+                val kbd: KeyboardLayout = KeyboardLayout.forName(appPreferences.clipKbdLayout)
                 OtpSlotValue(OtpType.Password, kbd.fromScanCodes(ndefPayloadBytes))
             }
         }
@@ -113,12 +106,6 @@ class NdefActivity : Activity() {
 
     companion object {
         const val TAG = "YubicoAuthenticatorOTPActivity"
-        const val PREFS_FILE = "FlutterSharedPreferences"
-        const val PREF_NFC_OPEN_APP = "flutter.prefNfcOpenApp"
-        const val PREF_NFC_COPY_OTP = "flutter.prefNfcCopyOtp"
-
-        const val PREF_CLIP_KBD_LAYOUT = "flutter.prefClipKbdLayout"
-        const val DEFAULT_CLIP_KBD_LAYOUT = "US"
     }
 
     enum class OtpType {

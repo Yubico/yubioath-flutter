@@ -30,21 +30,6 @@ class ModelTest {
     }
 
     @Test
-    fun `hotp is interactive`() {
-        assertTrue(hotp().isInteractive())
-    }
-
-    @Test
-    fun `totp with touch is interactive`() {
-        assertTrue(totp(touchRequired = true).isInteractive())
-    }
-
-    @Test
-    fun `totp without touch is not interactive`() {
-        assertFalse(totp(touchRequired = false).isInteractive())
-    }
-
-    @Test
     fun `has no credentials after initialization`() {
         assertTrue(model.credentials.isEmpty())
     }

@@ -30,7 +30,8 @@ class OathManager(
     messenger: BinaryMessenger,
     appContext: AppContext,
     private val appViewModel: MainViewModel,
-    private val dialogManager: DialogManager
+    private val dialogManager: DialogManager,
+    private val appPreferences: AppPreferences,
 ) : OathApi {
 
     private val _dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
@@ -490,10 +491,13 @@ class OathManager(
             // NFC, need to pad timer to avoid immediate expiration
             timestamp += 10000
         }
+        val bypassTouch = appPreferences.bypassTouchOnNfcTap && !_isUsbKey
         return session.calculateCodes(timestamp).map { (credential, code) ->
             Pair(
-                credential, if (credential.isSteamCredential() && !credential.isTouchRequired) {
+                credential, if (credential.isSteamCredential() && (!credential.isTouchRequired || bypassTouch)) {
                     session.calculateSteamCode(credential, timestamp)
+                } else if (credential.isTouchRequired && bypassTouch) {
+                    session.calculateCode(credential, timestamp)
                 } else {
                     code
                 }
