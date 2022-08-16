@@ -1,22 +1,19 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
-import 'api/flutter_management_api_impl.dart';
-import 'api/flutter_oath_api_impl.dart';
-import 'api/impl.dart';
-import 'command_providers.dart';
+import 'devices.dart';
+
+const _contextChannel =
+    MethodChannel('com.yubico.authenticator.channel.appContext');
 
 final androidSubPageProvider =
     StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
-  FOathApi.setup(FOathApiImpl(ref));
-  FManagementApi.setup(FManagementApiImpl(ref));
   return _AndroidSubPageNotifier(ref.watch(supportedAppsProvider));
 });
 
 class _AndroidSubPageNotifier extends CurrentAppNotifier {
-  final AppApi _api = AppApi();
-
   _AndroidSubPageNotifier(super.supportedApps) {
     _handleSubPage(state);
   }
@@ -28,7 +25,7 @@ class _AndroidSubPageNotifier extends CurrentAppNotifier {
   }
 
   void _handleSubPage(Application subPage) async {
-    await _api.setContext(subPage.index);
+    await _contextChannel.invokeMethod('setContext', {'index': subPage.index});
   }
 }
 

@@ -16,12 +16,11 @@ import '../app/views/main_page.dart';
 import '../core/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
-import 'api/impl.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
 import 'state.dart';
-import 'views/tap_request_dialog.dart';
+import 'tap_request_dialog.dart';
 
 Future<Widget> initialize() async {
   if (kDebugMode) {
@@ -57,7 +56,8 @@ Future<Widget> initialize() async {
           ref.read(androidWindowStateProvider);
 
           /// initializes global handler for dialogs
-          FDialogApi.setup(FDialogApiImpl(ref.watch(withContextProvider)));
+          ref.read(androidDialogProvider);
+
           return const MainPage();
         },
       )),

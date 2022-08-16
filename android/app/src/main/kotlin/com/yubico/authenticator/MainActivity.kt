@@ -154,7 +154,7 @@ class MainActivity : FlutterFragmentActivity() {
         val messenger = flutterEngine.dartExecutor.binaryMessenger
 
         flutterLog = FlutterLog(messenger)
-        appContext = AppContext(messenger)
+        appContext = AppContext(messenger, this.lifecycleScope)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
         appPreferences = AppPreferences(this)
 
