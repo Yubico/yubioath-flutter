@@ -75,8 +75,6 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   Future<void> reset() async {
     try {
       await _channel.invokeMethod('reset');
-      setData(state.value!
-          .copyWith(locked: false, remembered: false, hasKey: false));
     } catch (e) {
       _log.debug('Calling reset failed with exception: $e');
     }

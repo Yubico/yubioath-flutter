@@ -155,13 +155,28 @@ class OathManager(
         }
     }
 
-    private suspend fun reset(): String =
+    private suspend fun reset(): String {
         useOathSession("Reset YubiKey", true) {
             // note, it is ok to reset locked session
             it.reset()
             _keyManager.removeKey(it.deviceId)
-            FlutterChannel.NULL
+            _model.reset()
+            _model.session = Model.Session(
+                it.deviceId,
+                Version(
+                    it.version.major,
+                    it.version.minor,
+                    it.version.micro
+                ),
+                isAccessKeySet = false,
+                isRemembered = false,
+                isLocked = false
+            )
         }
+        sendOathInfo()
+        sendOathCodes()
+        return FlutterChannel.NULL
+    }
 
 
     private suspend fun unlock(password: String, remember: Boolean): String =
