@@ -145,7 +145,7 @@ final androidCredentialListProvider = StateNotifierProvider.autoDispose
   (ref, devicePath) {
     var notifier = _AndroidCredentialListNotifier(
       ref.watch(withContextProvider),
-      ref.watch(currentDeviceProvider),
+      ref.watch(currentDeviceProvider)?.transport == Transport.usb,
       ref.watch(_oathDataProvider.select((pair) => pair.second)),
     );
     ref.listen<WindowState>(windowStateProvider, (_, windowState) {
@@ -157,18 +157,18 @@ final androidCredentialListProvider = StateNotifierProvider.autoDispose
 
 class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   final WithContext _withContext;
-  final DeviceNode? _currentDevice;
+  final bool _isUsbAttached;
   Timer? _timer;
 
   _AndroidCredentialListNotifier(
-      this._withContext, this._currentDevice, List<OathPair>? value)
+      this._withContext, this._isUsbAttached, List<OathPair>? value)
       : super() {
     state = value;
     _scheduleRefresh();
   }
 
   void _notifyWindowState(WindowState windowState) {
-    if (_currentDevice == null) return;
+    if (!_isUsbAttached) return;
     if (windowState.active) {
       _scheduleRefresh();
     } else {
@@ -194,7 +194,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     // Prompt for touch if needed
     UserInteractionController? controller;
     Timer? touchTimer;
-    if (_currentDevice?.transport == Transport.usb) {
+    if (_isUsbAttached) {
       void triggerTouchPrompt() async {
         controller = await _withContext(
           (context) async => promptUserInteraction(
@@ -327,7 +327,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   }
 
   refresh() async {
-    if (_currentDevice == null) return;
+    if (!_isUsbAttached) return;
     _log.debug('refreshing credentials...');
 
     try {
@@ -356,8 +356,9 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   }
 
   _scheduleRefresh() {
+    if (!_isUsbAttached) return;
+
     _timer?.cancel();
-    if (_currentDevice == null) return;
     if (state == null) {
       _log.debug('No OATH state, refresh immediately');
       refresh();
