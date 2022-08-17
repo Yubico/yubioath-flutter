@@ -60,33 +60,31 @@ class OathManager(
 
         // OATH methods callable from Flutter:
         oathChannel.setHandler(coroutineScope) { method, args ->
-            withDialog {
-                when (method) {
-                    "reset" -> reset()
-                    "unlock" -> unlock(
-                        args["password"] as String,
-                        args["remember"] as Boolean
-                    )
-                    "setPassword" -> setPassword(
-                        args["current"] as String?,
-                        args["password"] as String
-                    )
-                    "unsetPassword" -> unsetPassword(args["current"] as String)
-                    "forgetPassword" -> forgetPassword()
-                    "calculate" -> calculate(args["credentialId"] as String)
-                    "addAccount" -> addAccount(
-                        args["uri"] as String,
-                        args["requireTouch"] as Boolean
-                    )
-                    "renameAccount" -> renameAccount(
-                        args["credentialId"] as String,
-                        args["name"] as String,
-                        args["issuer"] as String?
-                    )
-                    "deleteAccount" -> deleteAccount(args["credentialId"] as String)
-                    "refreshCodes" -> refreshCodes()
-                    else -> throw NotImplementedError()
-                }
+            when (method) {
+                "reset" -> reset()
+                "unlock" -> unlock(
+                    args["password"] as String,
+                    args["remember"] as Boolean
+                )
+                "setPassword" -> setPassword(
+                    args["current"] as String?,
+                    args["password"] as String
+                )
+                "unsetPassword" -> unsetPassword(args["current"] as String)
+                "forgetPassword" -> forgetPassword()
+                "calculate" -> calculate(args["credentialId"] as String)
+                "addAccount" -> addAccount(
+                    args["uri"] as String,
+                    args["requireTouch"] as Boolean
+                )
+                "renameAccount" -> renameAccount(
+                    args["credentialId"] as String,
+                    args["name"] as String,
+                    args["issuer"] as String?
+                )
+                "deleteAccount" -> deleteAccount(args["credentialId"] as String)
+                "refreshCodes" -> refreshCodes()
+                else -> throw NotImplementedError()
             }
         }
     }
@@ -156,7 +154,7 @@ class OathManager(
     }
 
     private suspend fun reset(): String {
-        useOathSession("Reset YubiKey", true) {
+        useOathSession("Reset YubiKey") {
             // note, it is ok to reset locked session
             it.reset()
             _keyManager.removeKey(it.deviceId)
@@ -180,7 +178,7 @@ class OathManager(
 
 
     private suspend fun unlock(password: String, remember: Boolean): String =
-        useOathSession("Unlocking", true) {
+        useOathSession("Unlocking") {
             val accessKey = it.deriveAccessKey(password.toCharArray())
             _keyManager.addKey(it.deviceId, accessKey, remember)
 
@@ -200,7 +198,7 @@ class OathManager(
         currentPassword: String?,
         newPassword: String,
     ): String =
-        useOathSession("Set password", true) { session ->
+        useOathSession("Set password") { session ->
             if (session.isAccessKeySet) {
                 if (currentPassword == null) {
                     throw Exception("Must provide current password to be able to change it")
@@ -218,7 +216,7 @@ class OathManager(
         }
 
     private suspend fun unsetPassword(currentPassword: String): String =
-        useOathSession("Unset password", true) { session ->
+        useOathSession("Unset password") { session ->
             if (session.isAccessKeySet) {
                 // test current password sent by the user
                 if (session.unlock(currentPassword.toCharArray())) {
@@ -241,7 +239,7 @@ class OathManager(
         uri: String,
         requireTouch: Boolean,
     ): String =
-        useOathSession("Add account", true) { session ->
+        useOathSession("Add account") { session ->
             withUnlockedSession(session) {
                 val credentialData: CredentialData =
                     CredentialData.parseUri(URI.create(uri))
@@ -271,7 +269,7 @@ class OathManager(
         }
 
     private suspend fun renameAccount(uri: String, name: String, issuer: String?): String =
-        useOathSession("Rename", true) { session ->
+        useOathSession("Rename") { session ->
             withUnlockedSession(session) {
                 val credential = getOathCredential(session, uri)
 
@@ -291,7 +289,7 @@ class OathManager(
         }
 
     private suspend fun deleteAccount(credentialId: String): String =
-        useOathSession("Delete account", true) { session ->
+        useOathSession("Delete account") { session ->
             withUnlockedSession(session) {
                 val credential = getOathCredential(session, credentialId)
                 session.deleteCredential(credential)
@@ -304,7 +302,7 @@ class OathManager(
             throw Exception("Cannot refresh for nfc key")
         }
 
-        return useOathSession("Refresh codes", false) {
+        return useOathSession("Refresh codes") {
             withUnlockedSession(it) { session ->
                 _model.update(
                     session.deviceId,
@@ -316,7 +314,7 @@ class OathManager(
     }
 
     private suspend fun calculate(credentialId: String): String =
-        useOathSession("Calculate", true) {
+        useOathSession("Calculate") {
             withUnlockedSession(it) { session ->
                 val credential = getOathCredential(session, credentialId)
 
@@ -471,23 +469,11 @@ class OathManager(
         return block(session)
     }
 
-    private suspend fun <T> useOathSession(
+    private suspend fun <T> useOathSessionUsb(
         title: String,
-        queryUserToTap: Boolean,
         action: (OathSession) -> T
-    ) = suspendCoroutine { outer ->
-        if (queryUserToTap && !_isUsbKey) {
-            dialogManager.showDialog(title) {
-                coroutineScope.launch(Dispatchers.Main) {
-                    Log.d(TAG, "Cancelled Dialog $title")
-                    provideYubiKey(com.yubico.yubikit.core.util.Result.failure(
-                        CancellationException()
-                    ))
-                }
-            }
-        }
-
-        if (_isUsbKey) {
+    ): T {
+        return suspendCoroutine { outer ->
             appViewModel.yubiKeyDevice.value?.let { yubiKey ->
                 Log.d(TAG, "Executing action on usb key: $title")
                 yubiKey.requestConnection(SmartCardConnection::class.java) {
@@ -499,18 +485,68 @@ class OathManager(
                 Log.e(TAG, "USB Key not found for action: $title")
                 throw IllegalStateException("USB Key not found for action: $title")
             }
-        } else {
-            _pendingYubiKeyAction.postValue(YubiKeyAction(title) { yubiKey ->
-                outer.resumeWith(runCatching {
-                    suspendCoroutine { inner ->
-                        yubiKey.value.requestConnection(SmartCardConnection::class.java) {
-                            inner.resumeWith(runCatching {
-                                action.invoke(OathSession(it.value))
-                            })
+        }
+    }
+
+    private suspend fun <T> useOathSessionNfc(
+        title: String,
+        action: (OathSession) -> T
+    ): T {
+        try {
+            val result = suspendCoroutine { outer ->
+                _pendingYubiKeyAction.postValue(YubiKeyAction(title) { yubiKey ->
+                    outer.resumeWith(runCatching {
+                        suspendCoroutine { inner ->
+                            yubiKey.value.requestConnection(SmartCardConnection::class.java) {
+                                inner.resumeWith(runCatching {
+                                    action.invoke(OathSession(it.value))
+                                })
+                            }
                         }
-                    }
+                    })
                 })
-            })
+                dialogManager.showDialog(Icon.NFC, "Tap your key", title) {
+                    Log.d(TAG, "Cancelled Dialog $title")
+                    provideYubiKey(
+                        com.yubico.yubikit.core.util.Result.failure(
+                            CancellationException()
+                        )
+                    )
+                }
+            }
+            dialogManager.updateDialogState(
+                icon = Icon.SUCCESS,
+                title = "Success"
+            )
+            // TODO: This delays the closing of the dialog, but also the return value
+            delay(500)
+            return result
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (error: Throwable) {
+            dialogManager.updateDialogState(
+                icon = Icon.ERROR,
+                title = "Failure",
+                description = "Action failed - try again"
+            )
+            // TODO: This delays the closing of the dialog, but also the return value
+            delay(1500)
+            throw error
+        } finally {
+            dialogManager.closeDialog()
+        }
+    }
+
+    private suspend fun <T> useOathSession(
+        title: String,
+        action: (OathSession) -> T
+    ): T {
+        return if (_isUsbKey) {
+            // Uses the connected YubiKey directly
+            useOathSessionUsb(title, action)
+        } else {
+            // Prompts for NFC tap
+            useOathSessionNfc(title, action)
         }
     }
 
@@ -518,32 +554,4 @@ class OathManager(
         oathSession.credentials.firstOrNull { credential ->
             (credential != null) && credential.id.asString() == credentialId
         } ?: throw Exception("Failed to find account to delete")
-
-
-    /// for nfc connection waits for the dialog to be closed and then returns result
-    /// for usb connection returns success data directly
-    private suspend fun <T> withDialog(action: suspend () -> T): T {
-        try {
-            val result = action()
-            if (!_isUsbKey) {
-                dialogManager.updateDialogState(
-                    title = "Action successfully completed",
-                    icon = "check_circle",
-                    delayMs = 500
-                )
-            }
-            return result
-        } catch (error: Throwable) {
-            if (!_isUsbKey) {
-                dialogManager.updateDialogState(
-                    title = "Action failed - try again",
-                    icon = "error",
-                    delayMs = 1500
-                )
-            }
-            throw error
-        } finally {
-            dialogManager.closeDialog()
-        }
-    }
 }

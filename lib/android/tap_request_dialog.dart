@@ -29,7 +29,7 @@ class _DialogProvider {
           _closeDialog();
           break;
         case 'show':
-          await _showDialog(args['message']);
+          await _showDialog(args['title'], args['description'], args['icon']);
           break;
         case 'state':
           await _updateDialogState(
@@ -49,33 +49,49 @@ class _DialogProvider {
     _controller = null;
   }
 
-  Future<void> _updateDialogState(
-      String? title, String? description, String? icon) async {
-    final iconResource = icon == 'check_circle'
-        ? Icons.check_circle
-        : icon == 'error'
-            ? Icons.error
-            : null;
-    final dialogIcon = Icon(
-      iconResource,
-      size: 64,
-    );
-    _controller?.updateContent(
-      title: title,
-      description: description,
-      icon: dialogIcon,
-    );
+  Widget? _getIcon(String? icon) {
+    switch (icon) {
+      case 'nfc':
+        return nfcIcon;
+      case 'success':
+        return const Icon(Icons.check_circle);
+      case 'error':
+        return const Icon(Icons.error);
+      default:
+        return null;
+    }
   }
 
-  Future<void> _showDialog(String dialogMessage) async {
+  Future<void> _updateDialogState(
+      String? title, String? description, String? iconName) async {
+    final icon = _getIcon(iconName);
+    await _withContext((context) async {
+      _controller?.updateContent(
+        title: title,
+        description: description,
+        icon: icon != null
+            ? IconTheme(
+                data: IconTheme.of(context).copyWith(size: 64),
+                child: icon,
+              )
+            : null,
+      );
+    });
+  }
+
+  Future<void> _showDialog(
+      String title, String description, String? iconName) async {
+    final icon = _getIcon(iconName);
     _controller = await _withContext((context) async => promptUserInteraction(
           context,
-          title: 'Tap your key',
-          description: dialogMessage,
-          icon: IconTheme(
-            data: IconTheme.of(context).copyWith(size: 64),
-            child: nfcIcon,
-          ),
+          title: title,
+          description: description,
+          icon: icon != null
+              ? IconTheme(
+                  data: IconTheme.of(context).copyWith(size: 64),
+                  child: icon,
+                )
+              : null,
           onCancel: () {
             _channel.invokeMethod('cancel');
           },

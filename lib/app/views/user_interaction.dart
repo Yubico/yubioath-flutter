@@ -59,7 +59,6 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
     return AlertDialog(
       scrollable: true,
       content: SizedBox(
-        height: 160,
         width: 100,
         child: Column(
           mainAxisSize: MainAxisSize.min,

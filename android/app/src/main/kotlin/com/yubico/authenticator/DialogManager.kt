@@ -1,13 +1,17 @@
 package com.yubico.authenticator
 
 import io.flutter.plugin.common.BinaryMessenger
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-typealias OnDialogCancelled = () -> Unit
+typealias OnDialogCancelled = suspend () -> Unit
+
+enum class Icon(val value: String) {
+    NFC("nfc"),
+    SUCCESS("success"),
+    ERROR("error");
+}
 
 class DialogManager(messenger: BinaryMessenger, private val coroutineScope: CoroutineScope) {
     private val channel =
@@ -24,29 +28,52 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
         }
     }
 
-    fun showDialog(message: String, cancelled: OnDialogCancelled?) =
+    fun showDialog(icon: Icon, title: String, description: String, cancelled: OnDialogCancelled?) {
+        onCancelled = cancelled
         coroutineScope.launch {
-            channel.call("show", Json.encodeToString(mapOf("message" to message)))
-        }.also {
-            onCancelled = cancelled
-        }
-
-    suspend fun updateDialogState(title: String? = null, description: String? = null, icon: String? = null, delayMs: Long? = null) {
-        channel.call(
-            "state",
-            Json.encodeToString(mapOf("title" to title, "description" to description, "icon" to icon))
-        )
-        if (delayMs != null) {
-            delay(delayMs)
+            channel.call(
+                "show",
+                Json.encodeToString(
+                    mapOf(
+                        "title" to title,
+                        "description" to description,
+                        "icon" to icon.value
+                    )
+                )
+            )
         }
     }
 
-    suspend fun closeDialog() {
-        channel.call("close")
+    suspend fun updateDialogState(
+        icon: Icon? = null,
+        title: String? = null,
+        description: String? = null
+    ) {
+        channel.call(
+            "state",
+            Json.encodeToString(
+                mapOf(
+                    "title" to title,
+                    "description" to description,
+                    "icon" to icon?.value
+                )
+            )
+        )
+    }
+
+    fun closeDialog() {
+        coroutineScope.launch {
+            channel.call("close")
+        }
     }
 
     private suspend fun dialogClosed(): String {
-        onCancelled?.invoke()
+        onCancelled?.let {
+            onCancelled = null
+            withContext(Dispatchers.Main) {
+                it.invoke()
+            }
+        }
         return FlutterChannel.NULL
     }
 
