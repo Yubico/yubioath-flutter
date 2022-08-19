@@ -6,18 +6,8 @@ import com.yubico.authenticator.logging.Log
 import io.flutter.plugin.common.BinaryMessenger
 import kotlinx.coroutines.CoroutineScope
 
-enum class OperationContext(val value: Int) {
-    Oath(0), Yubikey(1), Invalid(-1);
-
-    companion object {
-        fun getByValue(value: Int) = values().firstOrNull { it.value == value } ?: Invalid
-    }
-}
-
-class AppContext(messenger: BinaryMessenger, coroutineScope: CoroutineScope)  {
+class AppContext(messenger: BinaryMessenger, coroutineScope: CoroutineScope, private val appViewModel: MainViewModel)  {
     private val channel = FlutterChannel(messenger, "android.state.appContext")
-    private var _appContext = MutableLiveData(OperationContext.Oath)
-    val appContext: LiveData<OperationContext> = _appContext
 
     init {
         channel.setHandler(coroutineScope) { method, args ->
@@ -30,8 +20,9 @@ class AppContext(messenger: BinaryMessenger, coroutineScope: CoroutineScope)  {
 
 
     private suspend fun setContext(subPageIndex: Int): String {
-        _appContext.value = OperationContext.getByValue(subPageIndex)
-        Log.d(TAG, "App context is now ${_appContext.value}")
+        val appContext = OperationContext.getByValue(subPageIndex)
+        appViewModel.setContext(appContext)
+        Log.d(TAG, "App context is now ${appContext}")
         return FlutterChannel.NULL
     }
 

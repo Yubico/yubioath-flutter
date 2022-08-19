@@ -35,7 +35,6 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
           state = const AsyncValue.loading();
         } else {
           final oathState = OathState.fromJson(json);
-          _log.debug('STATE: $oathState');
           state = AsyncValue.data(oathState);
         }
       }
@@ -139,8 +138,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
           ? List.unmodifiable(
               (json as List).map((e) => OathPair.fromJson(e)).toList())
           : null;
+      _scheduleRefresh();
     });
-    _scheduleRefresh();
   }
 
   void _notifyWindowState(WindowState windowState) {
