@@ -18,7 +18,7 @@ class AndroidSettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nfcOpenApp = ref.watch(prefProvider).getBool(prefNfcOpenApp) ?? false;
+    final nfcOpenApp = ref.watch(prefProvider).getBool(prefNfcOpenApp) ?? true;
     final nfcBypassTouch =
         ref.watch(prefProvider).getBool(prefNfcBypassTouch) ?? false;
     final nfcCopyOtp = ref.watch(prefProvider).getBool(prefNfcCopyOtp) ?? false;
