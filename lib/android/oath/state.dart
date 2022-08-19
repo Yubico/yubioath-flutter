@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -116,9 +115,6 @@ final androidCredentialListProvider = StateNotifierProvider.autoDispose
       ref.watch(withContextProvider),
       ref.watch(currentDeviceProvider)?.transport == Transport.usb,
     );
-    ref.listen<WindowState>(windowStateProvider, (_, windowState) {
-      notifier._notifyWindowState(windowState);
-    }, fireImmediately: true);
     return notifier;
   },
 );
@@ -128,7 +124,6 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   final WithContext _withContext;
   final bool _isUsbAttached;
   late StreamSubscription _sub;
-  Timer? _timer;
 
   _AndroidCredentialListNotifier(this._withContext, this._isUsbAttached)
       : super() {
@@ -138,22 +133,11 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
           ? List.unmodifiable(
               (json as List).map((e) => OathPair.fromJson(e)).toList())
           : null;
-      _scheduleRefresh();
     });
-  }
-
-  void _notifyWindowState(WindowState windowState) {
-    if (!_isUsbAttached) return;
-    if (windowState.active) {
-      _scheduleRefresh();
-    } else {
-      _timer?.cancel();
-    }
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
     _sub.cancel();
     super.dispose();
   }
@@ -249,49 +233,6 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
         throw CancellationException();
       }
       rethrow;
-    }
-  }
-
-  _refresh() async {
-    if (!_isUsbAttached) return;
-    _log.debug('refreshing credentials...');
-
-    try {
-      await _methods.invokeMethod('requestRefresh');
-    } catch (e) {
-      _log.debug('Failure refreshing codes: $e');
-    }
-  }
-
-  _scheduleRefresh() {
-    if (!_isUsbAttached) return;
-
-    _timer?.cancel();
-    if (state == null) {
-      _log.debug('No OATH state, refresh immediately');
-      _refresh();
-    } else if (mounted) {
-      final expirations = (state ?? [])
-          .where((pair) =>
-              pair.credential.oathType == OathType.totp &&
-              !pair.credential.touchRequired)
-          .map((e) => e.code)
-          .whereType<OathCode>()
-          .map((e) => e.validTo);
-      if (expirations.isEmpty) {
-        _log.debug('No expirations, no refresh');
-        _timer = null;
-      } else {
-        final earliest = expirations.reduce(min) * 1000;
-        final now = DateTime.now().millisecondsSinceEpoch;
-        if (earliest < now) {
-          _log.debug('Already expired, refresh immediately');
-          _refresh();
-        } else {
-          _log.debug('Schedule refresh in ${earliest - now}ms');
-          _timer = Timer(Duration(milliseconds: earliest - now), _refresh);
-        }
-      }
     }
   }
 }

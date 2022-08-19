@@ -1,6 +1,7 @@
 package com.yubico.authenticator
 
 import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -15,12 +16,12 @@ enum class Icon(val value: String) {
 
 class DialogManager(messenger: BinaryMessenger, private val coroutineScope: CoroutineScope) {
     private val channel =
-        FlutterChannel(messenger, "com.yubico.authenticator.channel.dialog")
+        MethodChannel(messenger, "com.yubico.authenticator.channel.dialog")
 
     private var onCancelled: OnDialogCancelled? = null
 
     init {
-        channel.setHandler(coroutineScope) { method, args ->
+        channel.setHandler(coroutineScope) { method, _ ->
             when (method) {
                 "cancel" -> dialogClosed()
                 else -> throw NotImplementedError()
@@ -31,7 +32,7 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
     fun showDialog(icon: Icon, title: String, description: String, cancelled: OnDialogCancelled?) {
         onCancelled = cancelled
         coroutineScope.launch {
-            channel.call(
+            channel.invoke(
                 "show",
                 Json.encodeToString(
                     mapOf(
@@ -49,7 +50,7 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
         title: String? = null,
         description: String? = null
     ) {
-        channel.call(
+        channel.invoke(
             "state",
             Json.encodeToString(
                 mapOf(
@@ -63,7 +64,7 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
 
     fun closeDialog() {
         coroutineScope.launch {
-            channel.call("close")
+            channel.invoke("close", NULL)
         }
     }
 
@@ -74,7 +75,7 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
                 it.invoke()
             }
         }
-        return FlutterChannel.NULL
+        return NULL
     }
 
     companion object {

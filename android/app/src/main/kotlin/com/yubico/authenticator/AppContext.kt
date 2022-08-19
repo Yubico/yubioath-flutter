@@ -1,13 +1,12 @@
 package com.yubico.authenticator
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.yubico.authenticator.logging.Log
 import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 
 class AppContext(messenger: BinaryMessenger, coroutineScope: CoroutineScope, private val appViewModel: MainViewModel)  {
-    private val channel = FlutterChannel(messenger, "android.state.appContext")
+    private val channel = MethodChannel(messenger, "android.state.appContext")
 
     init {
         channel.setHandler(coroutineScope) { method, args ->
@@ -18,12 +17,11 @@ class AppContext(messenger: BinaryMessenger, coroutineScope: CoroutineScope, pri
         }
     }
 
-
     private suspend fun setContext(subPageIndex: Int): String {
         val appContext = OperationContext.getByValue(subPageIndex)
-        appViewModel.setContext(appContext)
-        Log.d(TAG, "App context is now ${appContext}")
-        return FlutterChannel.NULL
+        appViewModel.setAppContext(appContext)
+        Log.d(TAG, "App context is now $appContext")
+        return NULL
     }
 
     companion object {

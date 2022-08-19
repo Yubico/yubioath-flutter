@@ -20,7 +20,7 @@ class MainViewModel : ViewModel() {
 
     private var _appContext = MutableLiveData(OperationContext.Oath)
     val appContext: LiveData<OperationContext> = _appContext
-    fun setContext(appContext: OperationContext) = _appContext.postValue(appContext)
+    fun setAppContext(appContext: OperationContext) = _appContext.postValue(appContext)
 
     private val _connectedYubiKey = MutableLiveData<UsbYubiKeyDevice?>()
     val connectedYubiKey: LiveData<UsbYubiKeyDevice?> = _connectedYubiKey
