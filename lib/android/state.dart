@@ -5,8 +5,7 @@ import '../app/models.dart';
 import '../app/state.dart';
 import 'devices.dart';
 
-const _contextChannel =
-    MethodChannel('com.yubico.authenticator.channel.appContext');
+const _contextChannel = MethodChannel('android.state.appContext');
 
 final androidSubPageProvider =
     StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
@@ -46,22 +45,14 @@ final androidDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
 
 final androidCurrentDeviceProvider =
     StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {
-  final provider = _AndroidCurrentDeviceNotifier();
-  ref.listen(attachedDevicesProvider, provider._updateAttachedDevices);
+  final provider =
+      _AndroidCurrentDeviceNotifier(ref.watch(androidYubikeyProvider));
   return provider;
 });
 
 class _AndroidCurrentDeviceNotifier extends CurrentDeviceNotifier {
-  _AndroidCurrentDeviceNotifier() : super(null);
-
-  _updateAttachedDevices(
-      List<DeviceNode>? previous, List<DeviceNode?> devices) {
-    if (devices.isNotEmpty) {
-      state = devices.first;
-    } else {
-      state = null;
-    }
-  }
+  _AndroidCurrentDeviceNotifier(AsyncValue<YubiKeyData> device)
+      : super(device.whenOrNull(data: (data) => data.node));
 
   @override
   setCurrentDevice(DeviceNode? device) {

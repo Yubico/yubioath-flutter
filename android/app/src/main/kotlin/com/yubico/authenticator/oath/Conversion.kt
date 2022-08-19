@@ -1,7 +1,9 @@
 package com.yubico.authenticator.oath
 
+import com.yubico.authenticator.device.Version
 import com.yubico.yubikit.oath.Code
 import com.yubico.yubikit.oath.Credential
+import com.yubico.yubikit.oath.OathSession
 import com.yubico.yubikit.oath.OathType
 
 fun ByteArray.asString() = joinToString(
@@ -9,6 +11,18 @@ fun ByteArray.asString() = joinToString(
 ) { b -> "%02x".format(b) }
 
 // convert yubikit types to Model types
+fun OathSession.model(isRemembered: Boolean) = Model.Session(
+    deviceId,
+    Version(
+        version.major,
+        version.minor,
+        version.micro
+    ),
+    isAccessKeySet,
+    isRemembered,
+    isLocked
+)
+
 fun Credential.model(deviceId: String) = Model.Credential(
     deviceId = deviceId,
     id = id.asString(),

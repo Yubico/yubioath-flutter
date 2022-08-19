@@ -14,9 +14,8 @@ enum class OperationContext(val value: Int) {
     }
 }
 
-class AppContext(messenger: BinaryMessenger, private val coroutineScope: CoroutineScope)  {
-    private val channel =
-        FlutterChannel(messenger, "com.yubico.authenticator.channel.appContext")
+class AppContext(messenger: BinaryMessenger, coroutineScope: CoroutineScope)  {
+    private val channel = FlutterChannel(messenger, "android.state.appContext")
     private var _appContext = MutableLiveData(OperationContext.Oath)
     val appContext: LiveData<OperationContext> = _appContext
 
@@ -32,7 +31,7 @@ class AppContext(messenger: BinaryMessenger, private val coroutineScope: Corouti
 
     private suspend fun setContext(subPageIndex: Int): String {
         _appContext.value = OperationContext.getByValue(subPageIndex)
-        Log.d(TAG, "App context is now $_appContext")
+        Log.d(TAG, "App context is now ${_appContext.value}")
         return FlutterChannel.NULL
     }
 
