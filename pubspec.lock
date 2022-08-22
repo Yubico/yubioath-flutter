@@ -414,13 +414,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
-  pigeon:
-    dependency: "direct dev"
-    description:
-      name: pigeon
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.2.7"
   platform:
     dependency: transitive
     description:

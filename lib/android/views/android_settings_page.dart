@@ -10,6 +10,7 @@ class AndroidSettingsPage extends ConsumerWidget {
   const AndroidSettingsPage({super.key});
 
   static const String prefNfcOpenApp = 'prefNfcOpenApp';
+  static const String prefNfcBypassTouch = 'prefNfcBypassTouch';
   static const String prefNfcCopyOtp = 'prefNfcCopyOtp';
   static const String prefClipKbdLayout = 'prefClipKbdLayout';
 
@@ -18,6 +19,8 @@ class AndroidSettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nfcOpenApp = ref.watch(prefProvider).getBool(prefNfcOpenApp) ?? false;
+    final nfcBypassTouch =
+        ref.watch(prefProvider).getBool(prefNfcBypassTouch) ?? false;
     final nfcCopyOtp = ref.watch(prefProvider).getBool(prefNfcCopyOtp) ?? false;
     final clipKbdLayout =
         ref.watch(prefProvider).getString(prefClipKbdLayout) ??
@@ -35,6 +38,13 @@ class AndroidSettingsPage extends ConsumerWidget {
               value: nfcOpenApp,
               onChanged: (value) {
                 ref.read(prefProvider).setBool(prefNfcOpenApp, value);
+                ref.refresh(prefProvider);
+              }),
+          SwitchListTile(
+              title: const Text('Bypass touch requirement for NFC'),
+              value: nfcBypassTouch,
+              onChanged: (value) {
+                ref.read(prefProvider).setBool(prefNfcBypassTouch, value);
                 ref.refresh(prefProvider);
               }),
           const ListTitle('Yubiclip'),

@@ -8,10 +8,6 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-fun Model.Credential.isInteractive(): Boolean {
-    return oathType == Model.OathType.HOTP || (oathType == Model.OathType.TOTP && touchRequired)
-}
-
 class Model {
 
     @Serializable
@@ -121,13 +117,13 @@ class Model {
             this._credentials.clear()
             this._credentials.putAll(from = credentials)
         } else {
-
-            // update codes for non interactive keys
+            // update with newer codes
             for ((credential, code) in credentials) {
-                if (!credential.isInteractive() || !this._credentials.contains(credential)) {
+                if (!this._credentials.contains(credential) || code != null) {
                     this._credentials[credential] = code
                 }
             }
+
             // remove obsolete credentials
             this._credentials.filter { entry ->
                 // get only keys which are not present in the input map
