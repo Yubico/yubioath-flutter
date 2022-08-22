@@ -66,7 +66,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       _log.debug('applet unlocked');
 
       final unlocked = unlockResponse['unlocked'] == true;
-      final remembered = unlockResponse['emembered'] == true;
+      final remembered = unlockResponse['remembered'] == true;
 
       return Pair(unlocked, remembered);
     } on PlatformException catch (e) {

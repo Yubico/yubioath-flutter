@@ -310,7 +310,7 @@ class OathManager(
                     calculateOathCodes(it).model(it.deviceId)
                 )
             }
-        } ?: throw throw IllegalStateException("Cannot refresh for nfc key")
+        } ?: throw IllegalStateException("Cannot refresh for nfc key")
     }
 
     private suspend fun calculate(credentialId: String): String =
