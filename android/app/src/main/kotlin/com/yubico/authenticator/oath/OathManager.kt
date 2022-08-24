@@ -351,7 +351,7 @@ class OathManager(
      * Tries to unlocks [OathSession] with [AccessKey] stored in [KeyManager]. On failure clears
      * relevant access keys from [KeyManager]
      *
-     * @return true if we the session is not locked or it was successfully unlocked, false otherwise
+     * @return true if the session is not locked or it was successfully unlocked, false otherwise
      */
     private fun tryToUnlockOathSession(session: OathSession): Boolean {
         if (!session.isLocked) {
@@ -406,7 +406,9 @@ class OathManager(
         device: UsbYubiKeyDevice,
         block: (OathSession) -> T
     ): T = device.withConnection<SmartCardConnection, T> {
-        block(OathSession(it))
+        val oath = OathSession(it)
+        tryToUnlockOathSession(oath)
+        block(oath)
     }
 
     private suspend fun <T> useOathSessionNfc(

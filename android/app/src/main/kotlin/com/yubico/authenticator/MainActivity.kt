@@ -23,7 +23,6 @@ import com.yubico.yubikit.core.Logger
 import com.yubico.yubikit.core.YubiKeyDevice
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.EventChannel
 import kotlinx.coroutines.launch
 import java.io.Closeable
 import java.util.concurrent.Executors
