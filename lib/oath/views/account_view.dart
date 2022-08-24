@@ -72,15 +72,16 @@ class AccountView extends ConsumerWidget with AccountMixin {
 
     Future<void> triggerCopy() async {
       try {
-        if (calculateReady) {
-          await calculateCode(
-            context,
-            ref,
-          );
-        }
         await ref.read(withContextProvider)(
-              (context) async {
-            copyToClipboard(context, ref);
+          (context) async {
+            if (calculateReady) {
+              await calculateCode(
+                context,
+                ref,
+              ).then((value) => copyToClipboard(context, value));
+            } else {
+              copyToClipboard(context, getCode(ref));
+            }
           },
         );
       } on CancellationException catch (_) {
