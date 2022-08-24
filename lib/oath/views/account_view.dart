@@ -72,7 +72,8 @@ class AccountView extends ConsumerWidget with AccountMixin {
 
     Future<void> triggerCopy() async {
       try {
-        await ref.read(withContextProvider)(
+        final withContext = ref.read(withContextProvider);
+        await withContext(
           (context) async {
             OathCode? code = calculateReady
                 ? await calculateCode(
@@ -80,8 +81,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
                     ref,
                   )
                 : getCode(ref);
-            // ignore: use_build_context_synchronously
-            copyToClipboard(context, code);
+            await withContext((context) async => copyToClipboard(context, code));
           },
         );
       } on CancellationException catch (_) {
