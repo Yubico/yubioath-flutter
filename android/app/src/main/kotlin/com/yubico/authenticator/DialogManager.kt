@@ -62,10 +62,8 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
         )
     }
 
-    fun closeDialog() {
-        coroutineScope.launch {
-            channel.invoke("close", NULL)
-        }
+    suspend fun closeDialog() {
+        channel.invoke("close", NULL)
     }
 
     private suspend fun dialogClosed(): String {
