@@ -60,7 +60,7 @@ class Model {
 
 
     @Serializable
-    class Code(
+    data class Code(
         val value: String? = null,
         @SerialName("valid_from")
         @Suppress("unused")
@@ -68,11 +68,7 @@ class Model {
         @SerialName("valid_to")
         @Suppress("unused")
         val validTo: Long
-    ) {
-        override fun toString(): String {
-            return "[value: $value, valid_from: $validFrom, valid_to: $validTo}"
-        }
-    }
+    )
 
     @Serializable
     data class CredentialWithCode(

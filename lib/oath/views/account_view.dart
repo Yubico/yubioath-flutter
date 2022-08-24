@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:yubico_authenticator/cancellation_exception.dart';
 import 'package:yubico_authenticator/app/state.dart';
+import 'package:yubico_authenticator/cancellation_exception.dart';
 
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
@@ -16,6 +15,7 @@ import 'account_mixin.dart';
 class AccountView extends ConsumerWidget with AccountMixin {
   @override
   final OathCredential credential;
+
   AccountView(this.credential, {super.key});
 
   Color _iconColor(int shade) {
@@ -74,14 +74,14 @@ class AccountView extends ConsumerWidget with AccountMixin {
       try {
         await ref.read(withContextProvider)(
           (context) async {
-            if (calculateReady) {
-              await calculateCode(
-                context,
-                ref,
-              ).then((value) => copyToClipboard(context, value));
-            } else {
-              copyToClipboard(context, getCode(ref));
-            }
+            OathCode? code = calculateReady
+                ? await calculateCode(
+                    context,
+                    ref,
+                  )
+                : getCode(ref);
+            // ignore: use_build_context_synchronously
+            copyToClipboard(context, code);
           },
         );
       } on CancellationException catch (_) {
@@ -142,7 +142,6 @@ class AccountView extends ConsumerWidget with AccountMixin {
               overflow: TextOverflow.fade,
               maxLines: 1,
               softWrap: false,
-
             ),
             subtitle: subtitle != null
                 ? Text(
