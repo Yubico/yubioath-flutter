@@ -18,10 +18,10 @@ suspend fun getDeviceInfo(device: YubiKeyDevice): Info {
 
     val deviceInfo = runCatching {
         device.withConnection<SmartCardConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
-    }.onFailure {
+    }.recoverCatching {
         Log.d(OathManager.TAG, "Smart card connection not available")
         device.withConnection<OtpConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
-    }.onFailure {
+    }.recoverCatching {
         Log.d(OathManager.TAG, "OTP connection not available")
         device.withConnection<FidoConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
     }.getOrElse {
