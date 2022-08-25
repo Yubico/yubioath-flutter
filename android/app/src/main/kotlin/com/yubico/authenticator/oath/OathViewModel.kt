@@ -17,7 +17,7 @@ class OathViewModel: ViewModel() {
     }
 
     private val _credentials = MutableLiveData<List<Model.CredentialWithCode>?>()
-    val credentials = _credentials
+    val credentials: LiveData<List<Model.CredentialWithCode>?> = _credentials
 
     fun updateCredentials(credentials: Map<Model.Credential, Model.Code?>): List<Model.CredentialWithCode> {
         val existing = _credentials.value?.associate { it.credential to it.code } ?: mapOf()
