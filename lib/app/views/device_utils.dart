@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/core/models.dart';
 
 import '../../management/models.dart';
 import '../models.dart';
