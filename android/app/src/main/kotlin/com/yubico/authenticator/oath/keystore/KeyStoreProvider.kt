@@ -45,7 +45,7 @@ class KeyStoreProvider : KeyProvider {
     private inner class KeyStoreStoredSigner(val deviceId: String) :
         AccessKey {
         val mac: Mac = Mac.getInstance(KeyProperties.KEY_ALGORITHM_HMAC_SHA1).apply {
-            init(keystore.getKey(getAlias(deviceId), null), null)
+            init(keystore.getKey(getAlias(deviceId), null))
         }
 
         override fun calculateResponse(challenge: ByteArray): ByteArray = mac.doFinal(challenge)
