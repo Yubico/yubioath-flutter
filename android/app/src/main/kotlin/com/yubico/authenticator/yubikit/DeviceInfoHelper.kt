@@ -24,8 +24,11 @@ suspend fun getDeviceInfo(device: YubiKeyDevice): Info {
     }.recoverCatching {
         Log.d(OathManager.TAG, "OTP connection not available")
         device.withConnection<FidoConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
+    }.recoverCatching {
+        Log.d(OathManager.TAG, "FIDO connection not available")
+        return SkyHelper.getDeviceInfo(device)
     }.getOrElse {
-        Log.e(OathManager.TAG, "No connection available for getting device info")
+        Log.e(OathManager.TAG, "Failed to recognize device")
         throw it
     }
 

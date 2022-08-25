@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/core/models.dart';
 
 import '../../management/models.dart';
 import '../models.dart';
@@ -9,7 +10,11 @@ String getDeviceInfoString(DeviceInfo info) {
   if (serial != null) {
     subtitle += 'S/N: $serial ';
   }
-  subtitle += 'F/W: ${info.version}';
+  if (info.version.isAtLeast(1)) {
+    subtitle += 'F/W: ${info.version}';
+  } else {
+    subtitle += 'Unknown type';
+  }
   return subtitle;
 }
 
@@ -24,7 +29,7 @@ List<String> getDeviceMessages(DeviceNode? node, AsyncValue<YubiKeyData> data) {
             case 'unknown-device':
               return ['Unrecognized device'];
             case 'device-inaccessible':
-              return ['Device inacessible'];
+              return ['Device inaccessible'];
           }
           return null;
         },
