@@ -86,10 +86,11 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
-    implementation 'androidx.fragment:fragment-ktx:1.5.1'
+    implementation 'androidx.fragment:fragment-ktx:1.5.2'
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     // testing dependencies
     testImplementation "junit:junit:$project.junitVersion"
     testImplementation "org.mockito:mockito-core:$project.mockitoVersion"
+    testImplementation 'android.arch.core:core-testing:1.1.1'
 }

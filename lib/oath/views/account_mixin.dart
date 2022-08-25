@@ -67,8 +67,7 @@ mixin AccountMixin {
   }
 
   @protected
-  void copyToClipboard(BuildContext context, WidgetRef ref) {
-    final code = getCode(ref);
+  void copyToClipboard(BuildContext context, OathCode? code) {
     if (code != null) {
       Clipboard.setData(ClipboardData(text: code.value));
       showMessage(context, 'Code copied to clipboard');

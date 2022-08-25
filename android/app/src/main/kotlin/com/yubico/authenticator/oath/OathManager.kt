@@ -1,62 +1,85 @@
 package com.yubico.authenticator.oath
 
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.*
-import com.yubico.authenticator.device.Version
 import com.yubico.authenticator.logging.Log
+import com.yubico.authenticator.management.model
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.yubikit.getDeviceInfo
-import com.yubico.authenticator.yubikit.withSmartCardConnection
-import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
+import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
+import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
+import com.yubico.yubikit.core.application.ApplicationNotAvailableException
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
+import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.oath.*
+import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import java.net.URI
 import java.util.concurrent.Executors
 import kotlin.coroutines.suspendCoroutine
 
+typealias OathAction = (Result<OathSession, Exception>) -> Unit
+
 class OathManager(
-    private val lifecycleOwner: LifecycleOwner,
+    lifecycleOwner: LifecycleOwner,
     messenger: BinaryMessenger,
-    appContext: AppContext,
     private val appViewModel: MainViewModel,
+    private val oathViewModel: OathViewModel,
     private val dialogManager: DialogManager,
     private val appPreferences: AppPreferences,
-) {
+): AppContextManager {
+    companion object {
+        const val TAG = "OathManager"
+    }
 
     private val _dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(SupervisorJob() + _dispatcher)
 
-    private val oathChannel =
-        FlutterChannel(messenger, "com.yubico.authenticator.channel.oath")
-    private val deviceChannel =
-        FlutterChannel(messenger, "com.yubico.authenticator.channel.device")
+    private val oathChannel = MethodChannel(messenger, "android.oath.methods")
 
     private val _memoryKeyProvider = ClearingMemProvider()
     private val _keyManager = KeyManager(KeyStoreProvider(), _memoryKeyProvider)
-    private var _previousNfcDeviceId = ""
 
-    private val _pendingYubiKeyAction = MutableLiveData<YubiKeyAction?>()
-    private val pendingYubiKeyAction: LiveData<YubiKeyAction?> = _pendingYubiKeyAction
+    private var pendingAction: OathAction? = null
+    private var refreshJob: Job? = null
 
-    private val _model = Model()
+    private val usbObserver = Observer<UsbYubiKeyDevice?> {
+        refreshJob?.cancel()
+        if (it == null) {
+            appViewModel.setDeviceInfo(null)
+            oathViewModel.setSessionState(null)
+        }
+    }
 
-    init {
-        appContext.appContext.observe(lifecycleOwner) {
-            if (it == OperationContext.Oath) {
-                installObservers()
-            } else {
-                uninstallObservers()
+    private val credentialObserver = Observer<List<Model.CredentialWithCode>?> { codes ->
+        refreshJob?.cancel()
+        if(codes != null && appViewModel.connectedYubiKey.value != null) {
+            val expirations = codes
+                .filter { it.credential.oathType == Model.OathType.TOTP && !it.credential.touchRequired }
+                .mapNotNull { it.code?.validTo }
+            if(expirations.isNotEmpty()) {
+                val earliest = expirations.min() * 1000
+                val now = System.currentTimeMillis()
+                refreshJob = coroutineScope.launch {
+                    if(earliest > now) {
+                        delay(earliest - now)
+                    }
+                    requestRefresh()
+                }
             }
         }
+    }
+
+    init {
+        appViewModel.connectedYubiKey.observe(lifecycleOwner, usbObserver)
+        oathViewModel.credentials.observe(lifecycleOwner, credentialObserver)
 
         // OATH methods callable from Flutter:
         oathChannel.setHandler(coroutineScope) { method, args ->
@@ -83,73 +106,85 @@ class OathManager(
                     args["issuer"] as String?
                 )
                 "deleteAccount" -> deleteAccount(args["credentialId"] as String)
-                "refreshCodes" -> refreshCodes()
                 else -> throw NotImplementedError()
             }
         }
     }
 
-    companion object {
-        const val TAG = "OathManager"
+    override fun dispose() {
+        appViewModel.connectedYubiKey.removeObserver(usbObserver)
+        oathViewModel.credentials.removeObserver(credentialObserver)
+        oathChannel.setMethodCallHandler(null)
+        coroutineScope.cancel()
     }
 
-    private val deviceObserver =
-        Observer<YubiKeyDevice?> { yubiKeyDevice ->
-            if (yubiKeyDevice != null) {
-                yubikeyAttached(yubiKeyDevice)
-            } else {
-                yubikeyDetached()
+    override suspend fun processYubiKey(device: YubiKeyDevice) {
+        try {
+            device.withConnection<SmartCardConnection, Unit> {
+                val oath = OathSession(it)
+                tryToUnlockOathSession(oath)
+
+                val previousId = oathViewModel.sessionState.value?.deviceId
+                if (oath.deviceId == previousId) {
+                    // Run any pending action
+                    pendingAction?.let { action ->
+                        action.invoke(Result.success(oath))
+                        pendingAction = null
+                    }
+
+                    // Refresh codes
+                    if (!oath.isLocked) {
+                        try {
+                            oathViewModel.updateCredentials(
+                                calculateOathCodes(oath).model(oath.deviceId)
+                            )
+                        } catch (error: Exception) {
+                            Log.e(TAG, "Failed to refresh codes", error.toString())
+                        }
+                    }
+                } else {
+                    // Awaiting an action for a different device? Fail it and stop processing.
+                    pendingAction?.let { action ->
+                        action.invoke(Result.failure(IllegalStateException("Wrong deviceId")))
+                        pendingAction = null
+                        return@withConnection
+                    }
+
+                    // Clear in-memory password for any previous device
+                    if (it.transport == Transport.NFC && previousId != null) {
+                        _memoryKeyProvider.removeKey(previousId)
+                    }
+
+                    // Update the OATH state
+                    oathViewModel.setSessionState(oath.model(_keyManager.isRemembered(oath.deviceId)))
+                    if(!oath.isLocked) {
+                        oathViewModel.updateCredentials(
+                            calculateOathCodes(oath).model(oath.deviceId)
+                        )
+                    }
+
+                    // Update deviceInfo since the deviceId has changed
+                    val pid = (device as? UsbYubiKeyDevice)?.pid
+                    val deviceInfo = DeviceUtil.readInfo(it, pid)
+                    appViewModel.setDeviceInfo(deviceInfo.model(
+                        DeviceUtil.getName(deviceInfo, pid?.type),
+                        device.transport == Transport.NFC,
+                        pid?.value
+                    ))
+                }
             }
-        }
-
-    private fun installObservers() {
-        Log.d(TAG, "Installed oath observers")
-        appViewModel.yubiKeyDevice.observe(lifecycleOwner, deviceObserver)
-    }
-
-    private fun uninstallObservers() {
-        appViewModel.yubiKeyDevice.removeObserver(deviceObserver)
-        Log.d(TAG, "Uninstalled oath observers")
-    }
-
-    private suspend fun provideYubiKey(result: com.yubico.yubikit.core.util.Result<YubiKeyDevice, Exception>) =
-        pendingYubiKeyAction.value?.let {
-            _pendingYubiKeyAction.postValue(null)
-            it.action.invoke(result)
-        }
-
-    private var _isUsbKey = false
-    private fun yubikeyAttached(device: YubiKeyDevice) {
-        Log.d(TAG, "Device connected")
-
-        _isUsbKey = device is UsbYubiKeyDevice
-
-        val handler = CoroutineExceptionHandler { _, throwable ->
-            Log.e(TAG, "Exception caught: ${throwable.message}")
-        }
-
-        coroutineScope.launch(handler) {
-            sendDeviceInfo(device)
-            readOathData(device)
-            if (pendingYubiKeyAction.value != null) {
-                provideYubiKey(com.yubico.yubikit.core.util.Result.success(device))
-            } else {
-                sendOathInfo()
-                sendOathCodes()
+            Log.d(TAG, "Successfully read Oath session info (and credentials if unlocked) from connected key")
+        } catch (e: Exception) {
+            // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
+            Log.e(TAG, "Failed to connect to CCID", e.toString())
+            if (device.transport == Transport.USB || e is ApplicationNotAvailableException) {
+                val deviceInfoData = getDeviceInfo(device)
+                Log.d(TAG, "Sending device info: $deviceInfoData")
+                appViewModel.setDeviceInfo(deviceInfoData)
             }
-        }
-    }
 
-    private fun yubikeyDetached() {
-        if (_isUsbKey) {
-            Log.d(TAG, "Device disconnected")
-            // clear keys from memory
-            _memoryKeyProvider.clearAll()
-            _pendingYubiKeyAction.postValue(null)
-            coroutineScope.launch {
-                deviceChannel.call("setDevice", FlutterChannel.NULL)
-            }
-            _model.reset()
+            // Clear any cached OATH state
+            oathViewModel.setSessionState(null)
         }
     }
 
@@ -158,24 +193,10 @@ class OathManager(
             // note, it is ok to reset locked session
             it.reset()
             _keyManager.removeKey(it.deviceId)
-            _model.reset()
-            _model.session = Model.Session(
-                it.deviceId,
-                Version(
-                    it.version.major,
-                    it.version.minor,
-                    it.version.micro
-                ),
-                isAccessKeySet = false,
-                isRemembered = false,
-                isLocked = false
-            )
+            oathViewModel.setSessionState(it.model(false))
         }
-        sendOathInfo()
-        sendOathCodes()
-        return FlutterChannel.NULL
+        return NULL
     }
-
 
     private suspend fun unlock(password: String, remember: Boolean): String =
         useOathSession("Unlocking") {
@@ -185,10 +206,8 @@ class OathManager(
             val unlocked = tryToUnlockOathSession(it)
             val remembered = _keyManager.isRemembered(it.deviceId)
             if (unlocked) {
-                _model.update(it.deviceId, calculateOathCodes(it).model(it.deviceId))
-                coroutineScope.launch {
-                    sendOathCodes()
-                }
+                oathViewModel.setSessionState(it.model(remembered))
+                oathViewModel.updateCredentials(calculateOathCodes(it).model(it.deviceId))
             }
 
             jsonSerializer.encodeToString(mapOf("unlocked" to unlocked, "remembered" to remembered))
@@ -211,8 +230,9 @@ class OathManager(
             val accessKey = session.deriveAccessKey(newPassword.toCharArray())
             session.setAccessKey(accessKey)
             _keyManager.addKey(session.deviceId, accessKey, false)
+            oathViewModel.setSessionState(session.model(false))
             Log.d(TAG, "Successfully set password")
-            FlutterChannel.NULL
+            NULL
         }
 
     private suspend fun unsetPassword(currentPassword: String): String =
@@ -222,8 +242,9 @@ class OathManager(
                 if (session.unlock(currentPassword.toCharArray())) {
                     session.deleteAccessKey()
                     _keyManager.removeKey(session.deviceId)
+                    oathViewModel.setSessionState(session.model(false))
                     Log.d(TAG, "Successfully unset password")
-                    return@useOathSession FlutterChannel.NULL
+                    return@useOathSession NULL
                 }
             }
             throw Exception("Unset password failed")
@@ -232,7 +253,10 @@ class OathManager(
     private suspend fun forgetPassword(): String {
         _keyManager.clearAll()
         Log.d(TAG, "Cleared all keys.")
-        return FlutterChannel.NULL
+        oathViewModel.sessionState.value?.let {
+            oathViewModel.setSessionState(it.copy(isLocked = it.isAccessKeySet, isRemembered = false))
+        }
+        return NULL
     }
 
     private suspend fun addAccount(
@@ -240,98 +264,67 @@ class OathManager(
         requireTouch: Boolean,
     ): String =
         useOathSession("Add account") { session ->
-            withUnlockedSession(session) {
-                val credentialData: CredentialData =
-                    CredentialData.parseUri(URI.create(uri))
+            val credentialData: CredentialData =
+                CredentialData.parseUri(URI.create(uri))
 
-                val credential = session.putCredential(credentialData, requireTouch)
+            val credential = session.putCredential(credentialData, requireTouch)
 
-                val code =
-                    if (credentialData.oathType == OathType.TOTP && !requireTouch) {
-                        // recalculate the code
-                        calculateCode(session, credential)
-                    } else null
+            val code =
+                if (credentialData.oathType == OathType.TOTP && !requireTouch) {
+                    // recalculate the code
+                    calculateCode(session, credential)
+                } else null
 
-                val addedCred = _model.add(
-                    session.deviceId,
-                    credential.model(session.deviceId),
-                    code?.model()
-                )
+            val addedCred = oathViewModel.addCredential(
+                credential.model(session.deviceId),
+                code?.model()
+            )
 
-                if (addedCred != null) {
-                    val jsonResult = jsonSerializer.encodeToString(addedCred)
-                    return@withUnlockedSession jsonResult
-                } else {
-                    // TODO - figure out better error handling here
-                    throw java.lang.IllegalStateException()
-                }
-            }
+            jsonSerializer.encodeToString(addedCred)
         }
 
     private suspend fun renameAccount(uri: String, name: String, issuer: String?): String =
         useOathSession("Rename") { session ->
-            withUnlockedSession(session) {
-                val credential = getOathCredential(session, uri)
+            val credential = getOathCredential(session, uri)
+            val renamedCredential = session.renameCredential(credential, name, issuer).model(session.deviceId)
+            oathViewModel.renameCredential(
+                credential.model(session.deviceId),
+                renamedCredential
+            )
 
-                val renamedCredential = _model.rename(
-                    it.deviceId,
-                    credential.model(it.deviceId),
-                    session.renameCredential(credential, name, issuer).model(it.deviceId)
-                )
-
-                if (renamedCredential != null) {
-                    return@withUnlockedSession jsonSerializer.encodeToString(renamedCredential)
-                } else {
-                    // TODO - figure out better error handling here
-                    throw java.lang.IllegalStateException()
-                }
-            }
+            jsonSerializer.encodeToString(renamedCredential)
         }
 
     private suspend fun deleteAccount(credentialId: String): String =
         useOathSession("Delete account") { session ->
-            withUnlockedSession(session) {
-                val credential = getOathCredential(session, credentialId)
-                session.deleteCredential(credential)
-            }
-            FlutterChannel.NULL
+            val credential = getOathCredential(session, credentialId)
+            session.deleteCredential(credential)
+            oathViewModel.removeCredential(credential.model(session.deviceId))
+            NULL
         }
 
-    private suspend fun refreshCodes(): String {
-        if (!_isUsbKey) {
-            throw Exception("Cannot refresh for nfc key")
-        }
-
-        return useOathSession("Refresh codes") {
-            withUnlockedSession(it) { session ->
-                _model.update(
-                    session.deviceId,
-                    calculateOathCodes(session).model(session.deviceId)
+    private suspend fun requestRefresh() {
+        appViewModel.connectedYubiKey.value?.let {
+            useOathSessionUsb(it) {
+                oathViewModel.updateCredentials(
+                    calculateOathCodes(it).model(it.deviceId)
                 )
-                jsonSerializer.encodeToString(_model.credentials)
             }
-        }
+        } ?: throw IllegalStateException("Cannot refresh for nfc key")
     }
 
     private suspend fun calculate(credentialId: String): String =
-        useOathSession("Calculate") {
-            withUnlockedSession(it) { session ->
-                val credential = getOathCredential(session, credentialId)
+        useOathSession("Calculate") { session ->
+            val credential = getOathCredential(session, credentialId)
 
-                val code = _model.updateCode(
-                    session.deviceId,
-                    credential.model(session.deviceId),
-                    calculateCode(session, credential).model()
-                )
-                Log.d(TAG, "Code calculated $code")
+            val code = calculateCode(session, credential).model()
+            oathViewModel.updateCode(
+                credential.model(session.deviceId),
+                code
+            )
+            Log.d(TAG, "Code calculated $code")
 
-                if (code != null) {
-                    return@withUnlockedSession jsonSerializer.encodeToString(code)
-                } else {
-                    // TODO - figure out better error handling here
-                    throw java.lang.IllegalStateException()
-                }
-            }
+            jsonSerializer.encodeToString(code)
         }
 
     /**
@@ -354,74 +347,11 @@ class OathManager(
         }
     }
 
-    private suspend fun sendDeviceInfo(device: YubiKeyDevice) {
-        val deviceInfoData = getDeviceInfo(device)
-        Log.d(TAG, "Sending device info: $deviceInfoData")
-        deviceChannel.call("setDevice", jsonSerializer.encodeToString(deviceInfoData))
-        Log.d(TAG, "Device info sent successfully")
-    }
-
-
-    private suspend fun readOathData(device: YubiKeyDevice) {
-        withSmartCardConnection(device) { smartCardConnection ->
-            val oathSession = OathSession(smartCardConnection)
-
-            val deviceId = oathSession.deviceId
-
-            _previousNfcDeviceId = if (device is NfcYubiKeyDevice) {
-                if (deviceId != _previousNfcDeviceId) {
-                    // devices are different, clear access key for previous device
-                    _memoryKeyProvider.removeKey(_previousNfcDeviceId)
-                }
-                deviceId
-            } else {
-                ""
-            }
-
-            // calling unlock session will remove invalid access keys
-            val isUnlocked = tryToUnlockOathSession(oathSession)
-            val isRemembered = _keyManager.isRemembered(deviceId)
-
-            _model.session = Model.Session(
-                deviceId,
-                Version(
-                    oathSession.version.major,
-                    oathSession.version.minor,
-                    oathSession.version.micro
-                ),
-                oathSession.isAccessKeySet,
-                isRemembered,
-                oathSession.isLocked
-            )
-
-            if (isUnlocked) {
-                _model.update(
-                    deviceId,
-                    calculateOathCodes(oathSession).model(deviceId)
-                )
-            }
-
-            Log.d(TAG, "Successfully read Oath session info (and credentials if unlocked) from connected key")
-        }
-    }
-
-    private suspend fun sendOathInfo() {
-        val oathSessionData = jsonSerializer.encodeToString(_model.session)
-        oathChannel.call("setState", oathSessionData)
-        Log.d(TAG, "OathSessionData sent successfully")
-    }
-
-    private suspend fun sendOathCodes() {
-        val sendOathCodes = jsonSerializer.encodeToString(_model.credentials)
-        oathChannel.call("setCredentials", sendOathCodes)
-        Log.d(TAG, "OathCredentials sent successfully")
-    }
-
     /**
      * Tries to unlocks [OathSession] with [AccessKey] stored in [KeyManager]. On failure clears
      * relevant access keys from [KeyManager]
      *
-     * @return true if we the session is not locked or it was successfully unlocked, false otherwise
+     * @return true if the session is not locked or it was successfully unlocked, false otherwise
      */
     private fun tryToUnlockOathSession(session: OathSession): Boolean {
         if (!session.isLocked) {
@@ -443,12 +373,13 @@ class OathManager(
     }
 
     private fun calculateOathCodes(session: OathSession): Map<Credential, Code> {
+        val isUsbKey = appViewModel.connectedYubiKey.value != null
         var timestamp = System.currentTimeMillis()
-        if (!_isUsbKey) {
+        if (!isUsbKey) {
             // NFC, need to pad timer to avoid immediate expiration
             timestamp += 10000
         }
-        val bypassTouch = appPreferences.bypassTouchOnNfcTap && !_isUsbKey
+        val bypassTouch = appPreferences.bypassTouchOnNfcTap && !isUsbKey
         return session.calculateCodes(timestamp).map { (credential, code) ->
             Pair(
                 credential, if (credential.isSteamCredential() && (!credential.isTouchRequired || bypassTouch)) {
@@ -462,56 +393,39 @@ class OathManager(
         }.toMap()
     }
 
-    private fun <T> withUnlockedSession(session: OathSession, block: (OathSession) -> T): T {
-        if (!tryToUnlockOathSession(session)) {
-            throw Exception("Session is locked")
-        }
-        return block(session)
-    }
-
-    private suspend fun <T> useOathSessionUsb(
+    private suspend fun <T> useOathSession(
         title: String,
         action: (OathSession) -> T
     ): T {
-        return suspendCoroutine { outer ->
-            appViewModel.yubiKeyDevice.value?.let { yubiKey ->
-                Log.d(TAG, "Executing action on usb key: $title")
-                yubiKey.requestConnection(SmartCardConnection::class.java) {
-                    outer.resumeWith(runCatching {
-                        action.invoke(OathSession(it.value))
-                    })
-                }
-            } ?: run {
-                Log.e(TAG, "USB Key not found for action: $title")
-                throw IllegalStateException("USB Key not found for action: $title")
-            }
-        }
+        return appViewModel.connectedYubiKey.value?.let {
+            useOathSessionUsb(it, action)
+        } ?: useOathSessionNfc(title, action)
+    }
+
+    private suspend fun <T> useOathSessionUsb(
+        device: UsbYubiKeyDevice,
+        block: (OathSession) -> T
+    ): T = device.withConnection<SmartCardConnection, T> {
+        val oath = OathSession(it)
+        tryToUnlockOathSession(oath)
+        block(oath)
     }
 
     private suspend fun <T> useOathSessionNfc(
         title: String,
-        action: (OathSession) -> T
+        block: (OathSession) -> T
     ): T {
         try {
             val result = suspendCoroutine { outer ->
-                _pendingYubiKeyAction.postValue(YubiKeyAction(title) { yubiKey ->
+                pendingAction = {
                     outer.resumeWith(runCatching {
-                        suspendCoroutine { inner ->
-                            yubiKey.value.requestConnection(SmartCardConnection::class.java) {
-                                inner.resumeWith(runCatching {
-                                    action.invoke(OathSession(it.value))
-                                })
-                            }
-                        }
+                        block.invoke(it.value)
                     })
-                })
+                }
                 dialogManager.showDialog(Icon.NFC, "Tap your key", title) {
                     Log.d(TAG, "Cancelled Dialog $title")
-                    provideYubiKey(
-                        com.yubico.yubikit.core.util.Result.failure(
-                            CancellationException()
-                        )
-                    )
+                    pendingAction?.invoke(Result.failure(CancellationException()))
+                    pendingAction = null
                 }
             }
             dialogManager.updateDialogState(
@@ -537,21 +451,8 @@ class OathManager(
         }
     }
 
-    private suspend fun <T> useOathSession(
-        title: String,
-        action: (OathSession) -> T
-    ): T {
-        return if (_isUsbKey) {
-            // Uses the connected YubiKey directly
-            useOathSessionUsb(title, action)
-        } else {
-            // Prompts for NFC tap
-            useOathSessionNfc(title, action)
-        }
-    }
-
     private fun getOathCredential(oathSession: OathSession, credentialId: String) =
         oathSession.credentials.firstOrNull { credential ->
             (credential != null) && credential.id.asString() == credentialId
-        } ?: throw Exception("Failed to find account to delete")
+        } ?: throw Exception("Failed to find account")
 }

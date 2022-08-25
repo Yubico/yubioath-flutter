@@ -5,27 +5,33 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.nfc.NfcAdapter
+import android.nfc.Tag
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.yubico.authenticator.Constants.Companion.EXTRA_OPENED_THROUGH_NFC
 import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.OathManager
+import com.yubico.authenticator.oath.OathViewModel
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
+import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration
 import com.yubico.yubikit.core.Logger
+import com.yubico.yubikit.core.YubiKeyDevice
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.Closeable
+import java.util.concurrent.Executors
 import kotlin.properties.Delegates
 
 class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
+    private val oathViewModel: OathViewModel by viewModels()
+
     private val nfcConfiguration = NfcConfiguration()
 
     private var hasNfc by Delegates.notNull<Boolean>()
@@ -61,8 +67,8 @@ class MainActivity : FlutterFragmentActivity() {
             if (it) {
                 Log.d(TAG, "Starting usb discovery")
                 yubikit.startUsbDiscovery(UsbConfiguration()) { device ->
-                    viewModel.yubiKeyDevice.postValue(device)
-                    device.setOnClosed { viewModel.yubiKeyDevice.postValue(null) }
+                    viewModel.setConnectedYubiKey(device)
+                    processYubiKey(device)
                 }
                 hasNfc = startNfcDiscovery()
             } else {
@@ -76,14 +82,7 @@ class MainActivity : FlutterFragmentActivity() {
     fun startNfcDiscovery(): Boolean =
         try {
             Log.d(TAG, "Starting nfc discovery")
-            yubikit.startNfcDiscovery(nfcConfiguration, this) { device ->
-                viewModel.yubiKeyDevice.apply {
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        value = device
-                        postValue(null)
-                    }
-                }
-            }
+            yubikit.startNfcDiscovery(nfcConfiguration, this, ::processYubiKey)
             true
         } catch (e: NfcNotAvailable) {
             false
@@ -129,24 +128,47 @@ class MainActivity : FlutterFragmentActivity() {
     override fun onResume() {
         super.onResume()
 
-        try {
-            if (intent.getBooleanExtra(EXTRA_OPENED_THROUGH_NFC, false)) {
-                // make nfc available to yubikit
-                NfcAdapter.getDefaultAdapter(this).disableReaderMode(this)
-                setupYubiKeyDiscovery()
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failure when resuming YubiKey discovery", e.stackTraceToString())
-        }
+        // Handle existing tag when launched from NDEF
+        val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+        if(tag != null) {
+            intent.removeExtra(NfcAdapter.EXTRA_TAG)
 
-        startNfcDiscovery()
+            val executor = Executors.newSingleThreadExecutor()
+            val device = NfcYubiKeyDevice(tag, nfcConfiguration.timeout, executor)
+            lifecycleScope.launch {
+                try {
+                    contextManager?.processYubiKey(device)
+                    device.remove {
+                        executor.shutdown()
+                        startNfcDiscovery()
+                    }
+                } catch (e: Throwable) {
+                    Log.e(TAG, "Error processing YubiKey in AppContextManager", e.toString())
+                }
+            }
+        } else {
+            startNfcDiscovery()
+        }
     }
 
+    private fun processYubiKey(device: YubiKeyDevice) {
+        contextManager?.let {
+            lifecycleScope.launch {
+                try {
+                    it.processYubiKey(device)
+                } catch (e: Throwable) {
+                    Log.e(TAG, "Error processing YubiKey in AppContextManager", e.toString())
+                }
+            }
+        }
+    }
+
+    private var contextManager: AppContextManager? = null
     private lateinit var appContext: AppContext
-    private lateinit var oathManager: OathManager
     private lateinit var dialogManager: DialogManager
     private lateinit var appPreferences: AppPreferences
     private lateinit var flutterLog: FlutterLog
+    private lateinit var flutterStreams: List<Closeable>
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -154,11 +176,29 @@ class MainActivity : FlutterFragmentActivity() {
         val messenger = flutterEngine.dartExecutor.binaryMessenger
 
         flutterLog = FlutterLog(messenger)
-        appContext = AppContext(messenger, this.lifecycleScope)
+        appContext = AppContext(messenger, this.lifecycleScope, viewModel)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
         appPreferences = AppPreferences(this)
 
-        oathManager = OathManager(this, messenger, appContext, viewModel, dialogManager, appPreferences)
+        flutterStreams = listOf(
+            viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),
+            oathViewModel.sessionState.streamTo(this, messenger, "android.oath.sessionState"),
+            oathViewModel.credentials.streamTo(this, messenger, "android.oath.credentials"),
+        )
+
+        viewModel.appContext.observe(this) {
+            contextManager?.dispose()
+            contextManager = when(it) {
+                OperationContext.Oath -> OathManager(this, messenger, viewModel, oathViewModel, dialogManager, appPreferences)
+                else -> null
+            }
+            viewModel.connectedYubiKey.value?.let(::processYubiKey)
+        }
+    }
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        flutterStreams.forEach { it.close() }
+        super.cleanUpFlutterEngine(flutterEngine)
     }
 
     companion object {

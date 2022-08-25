@@ -18,7 +18,7 @@ class AppPreferences(context: Context) {
         context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
 
     val openAppOnNfcTap: Boolean
-        get() = prefs.getBoolean(PREF_NFC_OPEN_APP, false)
+        get() = prefs.getBoolean(PREF_NFC_OPEN_APP, true)
 
     val bypassTouchOnNfcTap: Boolean
         get() = prefs.getBoolean(PREF_NFC_BYPASS_TOUCH, false)

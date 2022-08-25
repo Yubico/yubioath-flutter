@@ -1,43 +1,34 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
+import '../app/logging.dart';
 import '../app/models.dart';
 import '../core/models.dart';
 import '../management/models.dart';
 
 final _log = Logger('android.devices');
 
-const _channel = MethodChannel('com.yubico.authenticator.channel.device');
-
 final androidYubikeyProvider =
     StateNotifierProvider<_YubikeyProvider, AsyncValue<YubiKeyData>>((ref) {
-  return _YubikeyProvider(const AsyncValue.loading());
+  return _YubikeyProvider();
 });
 
 class _YubikeyProvider extends StateNotifier<AsyncValue<YubiKeyData>> {
-  _YubikeyProvider(super.yubiKeyData) {
-    _channel.setMethodCallHandler((call) async {
-      final json = jsonDecode(call.arguments);
-      switch (call.method) {
-        case 'setDevice':
-          await _setDevice(json);
-          break;
-        default:
-          throw PlatformException(
-            code: 'NotImplemented',
-            message: 'Method ${call.method} is not implemented',
-          );
-      }
+  final _events = const EventChannel('android.devices.deviceInfo');
+  late StreamSubscription sub;
+  _YubikeyProvider() : super(const AsyncValue.loading()) {
+    sub = _events.receiveBroadcastStream().listen((event) {
+      _setDevice(jsonDecode(event));
     });
   }
 
   @override
   void dispose() {
-    _channel.setMethodCallHandler(null);
+    sub.cancel();
     super.dispose();
   }
 

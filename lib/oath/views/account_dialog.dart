@@ -114,7 +114,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
           }
           await ref.read(withContextProvider)(
             (context) async {
-              copyToClipboard(context, ref);
+              copyToClipboard(context, getCode(ref));
             },
           );
           return null;

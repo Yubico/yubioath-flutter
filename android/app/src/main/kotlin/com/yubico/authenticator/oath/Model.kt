@@ -24,6 +24,7 @@ class Model {
         val isLocked: Boolean
     ) {
         @SerialName("keystore")
+        @Suppress("unused")
         val keystoreState: String = "unknown"
     }
 
@@ -59,7 +60,7 @@ class Model {
 
 
     @Serializable
-    class Code(
+    data class Code(
         val value: String? = null,
         @SerialName("valid_from")
         @Suppress("unused")
@@ -90,97 +91,5 @@ class Model {
             encoder.encodeByte(value = value.value)
         }
 
-    }
-
-    private var _credentials = mutableMapOf<Credential, Code?>()
-
-    var session : Session? = null
-    val credentials: List<CredentialWithCode>
-        get() = _credentials.map {
-            CredentialWithCode(it.key, it.value)
-        }
-
-    // resets the model to initial values
-    // used when a usb key has been disconnected
-    fun reset() {
-        this._credentials.clear()
-        this.session = null
-    }
-
-    fun update(deviceId: String, credentials: Map<Credential, Code?>) {
-
-        // is the model already holding credentials for the deviceId
-        val sameDevice = this._credentials.keys.firstOrNull()?.deviceId == deviceId
-
-        if (!sameDevice) {
-            // device was changed, we use the new list
-            this._credentials.clear()
-            this._credentials.putAll(from = credentials)
-        } else {
-            // update with newer codes
-            for ((credential, code) in credentials) {
-                if (!this._credentials.contains(credential) || code != null) {
-                    this._credentials[credential] = code
-                }
-            }
-
-            // remove obsolete credentials
-            this._credentials.filter { entry ->
-                // get only keys which are not present in the input map
-                !credentials.contains(entry.key)
-            }.forEach(action = {
-                this._credentials.remove(it.key)
-            })
-        }
-    }
-
-    fun add(deviceId: String, credential: Credential, code: Code?): CredentialWithCode? {
-        if (this.session?.deviceId != deviceId) {
-            return null
-        }
-
-        _credentials[credential] = code
-
-        return CredentialWithCode(credential, code)
-    }
-
-    fun rename(
-        deviceId: String,
-        oldCredential: Credential,
-        newCredential: Credential
-    ): Credential? {
-        if (this.session?.deviceId != deviceId) {
-            return null
-        }
-
-        if (oldCredential.deviceId != newCredential.deviceId) {
-            return null
-        }
-
-        if (!_credentials.contains(oldCredential)) {
-            return null
-        }
-
-        // preserve code
-        val code = _credentials[oldCredential]
-
-        _credentials.remove(oldCredential)
-        _credentials[newCredential] = code
-
-        return newCredential
-    }
-
-    fun updateCode(deviceId: String, credential: Credential, code: Code?): Code? {
-        if (this.session?.deviceId != deviceId) {
-            return null
-        }
-
-        if (!_credentials.contains(credential)) {
-            return null
-        }
-
-        _credentials[credential] = code
-
-        return code
     }
 }

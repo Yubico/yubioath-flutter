@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.*
 import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
+import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
-import com.yubico.authenticator.Constants.Companion.EXTRA_OPENED_THROUGH_NFC
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.yubiclip.scancode.KeyboardLayout
 import com.yubico.yubikit.core.util.NdefUtils
@@ -65,7 +65,8 @@ class NdefActivity : Activity() {
 
             if (appPreferences.openAppOnNfcTap) {
                 val mainAppIntent = Intent(this, MainActivity::class.java).apply {
-                    putExtra(EXTRA_OPENED_THROUGH_NFC, true)
+                    // Pass the NFC Tag to the main Activity.
+                    putExtra(NfcAdapter.EXTRA_TAG, intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG))
                 }
                 startActivity(mainAppIntent)
             }
