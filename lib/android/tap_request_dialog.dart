@@ -17,7 +17,7 @@ final androidDialogProvider = Provider<_DialogProvider>(
   },
 );
 
-class _DialogProvider {
+class _DialogProvider with WidgetsBindingObserver {
   final WithContext _withContext;
   UserInteractionController? _controller;
 
@@ -47,6 +47,7 @@ class _DialogProvider {
   void _closeDialog() {
     _controller?.close();
     _controller = null;
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   Widget? _getIcon(String? icon) {
@@ -81,6 +82,7 @@ class _DialogProvider {
 
   Future<void> _showDialog(
       String title, String description, String? iconName) async {
+    WidgetsBinding.instance.addObserver(this);
     final icon = _getIcon(iconName);
     _controller = await _withContext((context) async => promptUserInteraction(
           context,
@@ -96,5 +98,13 @@ class _DialogProvider {
             _channel.invokeMethod('cancel');
           },
         ));
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state.name == 'inactive') {
+      await _channel.invokeMethod('cancel');
+      _closeDialog();
+    }
   }
 }
