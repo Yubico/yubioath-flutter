@@ -152,6 +152,9 @@ class AccountView extends ConsumerWidget with AccountMixin {
                   )
                 : null,
             trailing: GestureDetector(
+              onTap: () {
+                // Block opening the dialog.
+              },
               onDoubleTap: triggerCopy,
               child: DecoratedBox(
                 decoration: BoxDecoration(
