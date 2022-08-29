@@ -25,7 +25,7 @@ class KeyStoreProvider : KeyProvider {
 
     override fun putKey(deviceId: String, secret: ByteArray) {
         keystore.setEntry(
-            deviceId,
+            getAlias(deviceId),
             KeyStore.SecretKeyEntry(
                 SecretKeySpec(secret, KeyProperties.KEY_ALGORITHM_HMAC_SHA1)
             ),
