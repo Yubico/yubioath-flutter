@@ -86,26 +86,27 @@ class SkyHelper {
          * @return original version or [Version(0,0,0)] indicating invalid/unknown version
          */
         private fun validateVersionForPid(usbVersion: Version, pid: UsbPid): Version {
-            if (pid == UsbPid.NEO_FIDO && !usbVersion.inRange(VERSION_3, VERSION_4)) {
-                return VERSION_0
+            if ((pid == UsbPid.NEO_FIDO && usbVersion.inRange(VERSION_3, VERSION_4)) ||
+                (pid == UsbPid.SKY_FIDO && usbVersion.isAtLeast(VERSION_3)) ||
+                (pid == UsbPid.YK4_FIDO && usbVersion.isAtLeast(VERSION_4))
+            ) {
+                return usbVersion
             }
-
-            if (pid == UsbPid.SKY_FIDO && !usbVersion.inRange(VERSION_4, VERSION_5)) {
-                return VERSION_0
-            }
-
-            if (pid == UsbPid.YK4_FIDO && !usbVersion.inRange(VERSION_5, VERSION_6)) {
-                return VERSION_0
-            }
-
-            return usbVersion
+            return VERSION_0
         }
 
         /** Check if this version is at least v1 and less than v2
-         * @return true if in range [v1,v2)
+         * @return true if this is in range [v1,v2)
          */
-        private fun Version.inRange(v1: Version, v2: Version) : Boolean {
+        private fun Version.inRange(v1: Version, v2: Version): Boolean {
             return this >= v1 && this < v2
+        }
+
+        /** Check if this version is at least v
+         * @return true if this >= v
+         */
+        private fun Version.isAtLeast(v: Version): Boolean {
+            return this >= v
         }
     }
 }
