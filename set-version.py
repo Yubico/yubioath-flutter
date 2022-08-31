@@ -90,22 +90,6 @@ def update_pubspec(buf):
         buf,
     )
 
-# Windows Runner.rc
-def update_runner_rc(buf):
-    buf = sub1(
-        rf'#define VERSION_AS_STRING "{version_pattern}"',
-        f'#define VERSION_AS_STRING "{version}"',
-        buf,
-    )
-
-    version_as_number = short_version.replace(".", ",")
-    buf = sub1(
-        r"#define VERSION_AS_NUMBER \d+,\d+,\d+",
-        f"#define VERSION_AS_NUMBER {version_as_number}",
-        buf,
-    )
-    return buf
-
 # Helper version_info
 def update_helper_version(buf):
     version_tuple = repr(tuple(int(d) for d in short_version.split(".")) + (0,))
@@ -140,6 +124,5 @@ def update_release_win(buf):
     )
 
 update_file("pubspec.yaml", update_pubspec)
-update_file("windows/runner/Runner.rc", update_runner_rc)
 update_file("helper/version_info.txt", update_helper_version)
 update_file("resources/win/release-win.ps1", update_release_win)
