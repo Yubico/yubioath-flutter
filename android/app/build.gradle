@@ -27,6 +27,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
 android {
 
@@ -68,6 +69,7 @@ android {
 }
 
 apply from: "signing.gradle"
+apply from: "collect_licenses.gradle"
 
 flutter {
     source '../..'
@@ -79,7 +81,7 @@ dependencies {
     api "com.yubico.yubikit:oath:$project.yubiKitVersion"
     api "com.yubico.yubikit:support:$project.yubiKitVersion"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2'
 
     // Lifecycle
@@ -88,6 +90,7 @@ dependencies {
 
     implementation 'androidx.fragment:fragment-ktx:1.5.2'
     implementation 'androidx.preference:preference-ktx:1.2.0'
+
 
     // testing dependencies
     testImplementation "junit:junit:$project.junitVersion"
