@@ -187,10 +187,11 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
             dense: true,
             contentPadding: const EdgeInsets.symmetric(horizontal: 0),
             minLeadingWidth: 0,
-            trailing: ElevatedButton(
+            trailing: ElevatedButton.icon(
+              icon: const Icon(Icons.lock_open),
+              label: const Text('Unlock'),
               onPressed:
                   _pinController.text.isNotEmpty && !_blocked ? _submit : null,
-              child: const Text('Unlock'),
             ),
           ),
         ],

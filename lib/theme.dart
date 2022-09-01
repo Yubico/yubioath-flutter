@@ -182,14 +182,6 @@ class AppTheme {
               fontSize: 16),
         ),
       );
-
-  static ButtonStyle primaryOutlinedButtonStyle(BuildContext context) =>
-      OutlinedButton.styleFrom(
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        side:
-            BorderSide(width: 1, color: Theme.of(context).colorScheme.primary),
-      );
 }
 
 /// This fixes the issue with FilterChip resizing vertically on toggle.

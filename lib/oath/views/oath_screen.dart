@@ -327,9 +327,10 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
           padding: const EdgeInsets.only(top: 12.0, right: 18.0, bottom: 4.0),
           child: Align(
             alignment: Alignment.centerRight,
-            child: ElevatedButton(
+            child: ElevatedButton.icon(
+              label: const Text('Unlock'),
+              icon: const Icon(Icons.lock_open),
               onPressed: _passwordController.text.isNotEmpty ? _submit : null,
-              child: const Text('Unlock'),
             ),
           ),
         ),
