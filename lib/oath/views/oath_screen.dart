@@ -288,6 +288,7 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       _isObscure ? Icons.visibility : Icons.visibility_off,
+                      color: IconTheme.of(context).color,
                     ),
                     onPressed: () {
                       setState(() {

@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/cancellation_exception.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../cancellation_exception.dart';
 import '../../desktop/models.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_target.dart';
@@ -57,6 +57,16 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   _scanQrCode(QrScanner qrScanner) async {
     try {
       setState(() {
+        // If we have a previous scan result stored, clear it
+        if (_qrState == _QrScanState.success) {
+          _issuerController.text = '';
+          _accountController.text = '';
+          _secretController.text = '';
+          _oathType = defaultOathType;
+          _hashAlgorithm = defaultHashAlgorithm;
+          _periodController.text = '$defaultPeriod';
+          _digits = defaultDigits;
+        }
         _qrState = _QrScanState.scanning;
       });
       final otpauth = await qrScanner.scanQr();
@@ -266,6 +276,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       _isObscure ? Icons.visibility : Icons.visibility_off,
+                      color: IconTheme.of(context).color,
                     ),
                     onPressed: () {
                       setState(() {
@@ -293,30 +304,19 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             if (qrScanner != null)
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
-                child: Row(
-                  children: [
-                    if (_qrState != _QrScanState.scanning) ...[
-                      OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                            fixedSize: const Size.fromWidth(132)),
-                        onPressed: () {
-                          _scanQrCode(qrScanner);
-                        },
-                        icon: const Icon(Icons.qr_code),
-                        label: const Text('Scan QR code'),
-                      )
-                    ] else ...[
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                            fixedSize: const Size.fromWidth(132)),
-                        onPressed: null,
-                        child: const SizedBox.square(
-                            dimension: 16.0,
-                            child: CircularProgressIndicator()),
-                      )
-                    ]
-                  ],
-                ),
+                child: ActionChip(
+                    autofocus: true,
+                    avatar: _qrState != _QrScanState.scanning
+                        ? (_qrState == _QrScanState.success
+                            ? const Icon(Icons.qr_code)
+                            : const Icon(Icons.qr_code_scanner_outlined))
+                        : const CircularProgressIndicator(strokeWidth: 2.0),
+                    label: _qrState == _QrScanState.success
+                        ? const Text('Scanned QR code')
+                        : const Text('Scan QR code'),
+                    onPressed: () {
+                      _scanQrCode(qrScanner);
+                    }),
               ),
             const Divider(),
             Wrap(
@@ -337,6 +337,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 ChoiceFilterChip<OathType>(
                   items: OathType.values,
                   value: _oathType,
+                  selected: _oathType != defaultOathType,
                   itemBuilder: (value) => Text(value.displayName),
                   onChanged: _qrState != _QrScanState.success
                       ? (value) {
@@ -349,6 +350,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 ChoiceFilterChip<HashAlgorithm>(
                   items: HashAlgorithm.values,
                   value: _hashAlgorithm,
+                  selected: _hashAlgorithm != defaultHashAlgorithm,
                   itemBuilder: (value) => Text(value.displayName),
                   onChanged: _qrState != _QrScanState.success
                       ? (value) {
@@ -363,6 +365,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     items: _periodValues,
                     value:
                         int.tryParse(_periodController.text) ?? defaultPeriod,
+                    selected:
+                        int.tryParse(_periodController.text) != defaultPeriod,
                     itemBuilder: ((value) => Text('$value sec')),
                     onChanged: _qrState != _QrScanState.success
                         ? (period) {
@@ -375,6 +379,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 ChoiceFilterChip<int>(
                   items: _digitsValues,
                   value: _digits,
+                  selected: _digits != defaultDigits,
                   itemBuilder: (value) => Text('$value digits'),
                   onChanged: _qrState != _QrScanState.success
                       ? (digits) {

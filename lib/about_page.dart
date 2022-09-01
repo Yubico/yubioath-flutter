@@ -14,6 +14,7 @@ import 'core/state.dart';
 import 'desktop/state.dart';
 import 'version.dart';
 import 'widgets/responsive_dialog.dart';
+import 'widgets/choice_filter_chip.dart';
 
 final _log = Logger('about');
 
@@ -141,8 +142,8 @@ class AboutPage extends ConsumerWidget {
           const LoggingPanel(),
           if (isDesktop) ...[
             const SizedBox(height: 12.0),
-            OutlinedButton.icon(
-              icon: const Icon(Icons.bug_report_outlined),
+            ActionChip(
+              avatar: const Icon(Icons.bug_report_outlined),
               label: const Text('Run diagnostics'),
               onPressed: () async {
                 _log.info('Running diagnostics...');
@@ -174,31 +175,33 @@ class LoggingPanel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
+    final logLevel = ref.watch(logLevelProvider);
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 4.0,
+      runSpacing: 8.0,
       children: [
-        const SizedBox(height: 12.0),
-        DropdownButtonFormField<Level>(
-          decoration: const InputDecoration(
-            labelText: 'Log level',
-            border: OutlineInputBorder(),
+        ChoiceFilterChip<Level>(
+          avatar: Icon(
+            Icons.insights,
+            color: Theme.of(context).colorScheme.primary,
           ),
-          value: ref.watch(logLevelProvider),
-          items: Levels.LEVELS
-              .map((e) => DropdownMenuItem(
-                    value: e,
-                    child: Text(e.name.toUpperCase()),
-                  ))
-              .toList(),
+          value: logLevel,
+          items: Levels.LEVELS,
+          selected: logLevel != Level.INFO,
+          labelBuilder: (value) => Text(
+              'Log level: ${value.name[0]}${value.name.substring(1).toLowerCase()}'),
+          itemBuilder: (value) =>
+              Text('${value.name[0]}${value.name.substring(1).toLowerCase()}'),
           onChanged: (level) {
-            ref.read(logLevelProvider.notifier).setLogLevel(level!);
+            ref.read(logLevelProvider.notifier).setLogLevel(level);
             _log.debug('Log level set to $level');
             showMessage(context, 'Log level set to $level');
           },
         ),
-        const SizedBox(height: 12.0),
-        OutlinedButton.icon(
-          icon: const Icon(Icons.copy),
-          label: const Text('Copy log to clipboard'),
+        ActionChip(
+          avatar: const Icon(Icons.copy),
+          label: const Text('Copy log'),
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');
             final logs = await ref.read(logLevelProvider.notifier).getLogs();

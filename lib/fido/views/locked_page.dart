@@ -159,6 +159,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
                 suffixIcon: IconButton(
                   icon: Icon(
                     _isObscure ? Icons.visibility : Icons.visibility_off,
+                    color: IconTheme.of(context).color,
                   ),
                   onPressed: () {
                     setState(() {

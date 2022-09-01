@@ -6,13 +6,19 @@ class ChoiceFilterChip<T> extends StatefulWidget {
   final T value;
   final List<T> items;
   final Widget Function(T value) itemBuilder;
+  final Widget Function(T value)? labelBuilder;
   final void Function(T value)? onChanged;
+  final Widget? avatar;
+  final bool selected;
   const ChoiceFilterChip({
     super.key,
     required this.value,
     required this.items,
     required this.itemBuilder,
     required this.onChanged,
+    this.avatar,
+    this.selected = false,
+    this.labelBuilder,
   });
 
   @override
@@ -25,11 +31,12 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
   @override
   Widget build(BuildContext context) {
     return FilterChip(
+      avatar: widget.avatar,
       labelPadding: const EdgeInsets.only(left: 4),
       label: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          widget.itemBuilder(widget.value),
+          (widget.labelBuilder ?? widget.itemBuilder).call(widget.value),
           Padding(
             padding: const EdgeInsets.only(left: 6),
             child: Icon(
@@ -39,7 +46,7 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
           ),
         ],
       ),
-      selected: true,
+      selected: widget.selected,
       showCheckmark: false,
       onSelected: widget.onChanged != null
           ? (_) async {
