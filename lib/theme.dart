@@ -41,12 +41,12 @@ class AppTheme {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: primaryBlue,
+          foregroundColor: Colors.white,
+          backgroundColor: primaryBlue,
         )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
-          primary: Colors.grey.shade800,
+          backgroundColor: Colors.grey.shade800,
           side: BorderSide(width: 1, color: Colors.grey.shade400),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -127,12 +127,12 @@ class AppTheme {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-          onPrimary: Colors.black,
-          primary: primaryGreen,
+          foregroundColor: Colors.black,
+          backgroundColor: primaryGreen,
         )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
-          primary: Colors.white70,
+          foregroundColor: Colors.white70,
           side: const BorderSide(width: 1, color: Colors.white12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -193,7 +193,7 @@ class AppTheme {
 
   static ButtonStyle primaryOutlinedButtonStyle(BuildContext context) =>
       OutlinedButton.styleFrom(
-        primary: Theme.of(context).colorScheme.onPrimary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         backgroundColor: Theme.of(context).colorScheme.primary,
         side:
             BorderSide(width: 1, color: Theme.of(context).colorScheme.primary),

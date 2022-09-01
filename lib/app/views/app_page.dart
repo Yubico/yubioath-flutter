@@ -86,7 +86,7 @@ class AppPage extends ConsumerWidget {
         titleTextStyle: Theme.of(context).textTheme.titleLarge,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 6),
+            padding: const EdgeInsets.only(right: 12),
             child: DeviceButton(actions: keyActions),
           ),
         ],
