@@ -1,8 +1,8 @@
 {
-  "http://www.apache.org/licenses/LICENSE-2.0.txt": [0, 11358],
-  "https://www.apache.org/licenses/LICENSE-2.0.txt": [0, 11358],
-  "http://www.eclipse.org/legal/epl-v10.html": [11364, 22684],
-  "http://www.gnu.org/software/classpath/license.html":  [30781, 66860],
-  "http://opensource.org/licenses/MIT": [29753, 30777],
-  "http://creativecommons.org/licenses/publicdomain": [22690, 29748]
+  "http://www.apache.org/licenses/LICENSE-2.0.txt": "apache-2.0.txt",
+  "https://www.apache.org/licenses/LICENSE-2.0.txt": "apache-2.0.txt",
+  "http://www.eclipse.org/legal/epl-v10.html": "eclipse-1.0.txt",
+  "http://www.gnu.org/software/classpath/license.html": "classpath.txt",
+  "http://opensource.org/licenses/MIT": "mit.txt",
+  "http://creativecommons.org/licenses/publicdomain": "cc0-1.0.txt"
 }

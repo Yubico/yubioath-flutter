@@ -96,17 +96,16 @@ void _initLicenses() async {
     (value) async => jsonDecode(value),
   );
 
-  // file containing all known licenses
-  final licenses = await rootBundle.loadString('assets/licenses/licenses.txt');
-
   // mapping from url to license text
-  final urlToIndices = await rootBundle.loadStructuredData<Map>(
+  final urlToFile = await rootBundle.loadStructuredData<Map>(
     'assets/licenses/license_indices.json',
     (value) async => jsonDecode(value),
   );
 
-  final urlToLicense = urlToIndices.map((key, indices) {
-    return MapEntry(key, licenses.substring(indices[0], indices[1]));
+  final urlToLicense = <String, String>{};
+  urlToFile.forEach((url, file) async {
+    final licenseText = await rootBundle.loadString('assets/licenses/$file');
+    urlToLicense[url] = licenseText;
   });
 
   if (androidProjectsToLicenseUrl.isNotEmpty) {
