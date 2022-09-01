@@ -32,15 +32,6 @@ class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val oathViewModel: OathViewModel by viewModels()
 
-    private val delayedNfcCleanupAction = DelayedResumeAction(NFC_DATA_CLEANUP_DELAY) {
-        if (viewModel.connectedYubiKey.value == null) {
-            // no USB YubiKey is connected, reset known data on resume
-            Log.d(TAG, "Removing NFC data after resume.")
-            viewModel.setDeviceInfo(null)
-            oathViewModel.setSessionState(null)
-        }
-    }
-
     private val nfcConfiguration = NfcConfiguration()
 
     private var hasNfc by Delegates.notNull<Boolean>()
@@ -64,7 +55,6 @@ class MainActivity : FlutterFragmentActivity() {
 
         setupYubiKeyDiscovery()
         setupYubiKitLogger()
-        lifecycle.addObserver(delayedNfcCleanupAction)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -213,7 +203,6 @@ class MainActivity : FlutterFragmentActivity() {
 
     companion object {
         const val TAG = "MainActivity"
-        const val NFC_DATA_CLEANUP_DELAY = 30L * 1000; // 30s
     }
 
     /** We observed that some devices (Pixel 2, OnePlus 6) automatically end NFC discovery

@@ -1,5 +1,6 @@
 package com.yubico.authenticator.oath
 
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.*
@@ -28,15 +29,16 @@ import kotlin.coroutines.suspendCoroutine
 typealias OathAction = (Result<OathSession, Exception>) -> Unit
 
 class OathManager(
-    lifecycleOwner: LifecycleOwner,
+    private val lifecycleOwner: LifecycleOwner,
     messenger: BinaryMessenger,
     private val appViewModel: MainViewModel,
     private val oathViewModel: OathViewModel,
     private val dialogManager: DialogManager,
     private val appPreferences: AppPreferences,
-): AppContextManager {
+) : AppContextManager {
     companion object {
         const val TAG = "OathManager"
+        const val NFC_DATA_CLEANUP_DELAY = 30L * 1000; // 30s
     }
 
     private val _dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
@@ -50,6 +52,47 @@ class OathManager(
     private var pendingAction: OathAction? = null
     private var refreshJob: Job? = null
 
+    // provides actions for lifecycle events
+    private val lifecycleObserver = object : DefaultLifecycleObserver {
+
+        private var startTimeMs: Long = -1
+
+        override fun onPause(owner: LifecycleOwner) {
+            startTimeMs = currentTimeMs
+
+            // cancel any pending actions
+            pendingAction?.let {
+                Log.d(TAG, "Cancelling pending action/closing nfc dialog.")
+                it.invoke(Result.failure(CancellationException()))
+                coroutineScope.launch {
+                    dialogManager.closeDialog()
+                }
+                pendingAction = null
+            }
+
+            super.onPause(owner)
+        }
+
+        override fun onResume(owner: LifecycleOwner) {
+            super.onResume(owner)
+            if (canInvoke) {
+                if (appViewModel.connectedYubiKey.value == null) {
+                    // no USB YubiKey is connected, reset known data on resume
+                    Log.d(TAG, "Removing NFC data after resume.")
+                    appViewModel.setDeviceInfo(null)
+                    oathViewModel.setSessionState(null)
+                }
+            }
+        }
+
+
+        private val currentTimeMs
+            get() = System.currentTimeMillis()
+
+        private val canInvoke: Boolean
+            get() = startTimeMs != -1L && currentTimeMs - startTimeMs > NFC_DATA_CLEANUP_DELAY
+    }
+
     private val usbObserver = Observer<UsbYubiKeyDevice?> {
         refreshJob?.cancel()
         if (it == null) {
@@ -60,15 +103,15 @@ class OathManager(
 
     private val credentialObserver = Observer<List<Model.CredentialWithCode>?> { codes ->
         refreshJob?.cancel()
-        if(codes != null && appViewModel.connectedYubiKey.value != null) {
+        if (codes != null && appViewModel.connectedYubiKey.value != null) {
             val expirations = codes
                 .filter { it.credential.oathType == Model.OathType.TOTP && !it.credential.touchRequired }
                 .mapNotNull { it.code?.validTo }
-            if(expirations.isNotEmpty()) {
+            if (expirations.isNotEmpty()) {
                 val earliest = expirations.min() * 1000
                 val now = System.currentTimeMillis()
                 refreshJob = coroutineScope.launch {
-                    if(earliest > now) {
+                    if (earliest > now) {
                         delay(earliest - now)
                     }
                     requestRefresh()
@@ -109,9 +152,12 @@ class OathManager(
                 else -> throw NotImplementedError()
             }
         }
+
+        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
     }
 
     override fun dispose() {
+        lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
         appViewModel.connectedYubiKey.removeObserver(usbObserver)
         oathViewModel.credentials.removeObserver(credentialObserver)
         oathChannel.setMethodCallHandler(null)
@@ -157,7 +203,7 @@ class OathManager(
 
                     // Update the OATH state
                     oathViewModel.setSessionState(oath.model(_keyManager.isRemembered(oath.deviceId)))
-                    if(!oath.isLocked) {
+                    if (!oath.isLocked) {
                         oathViewModel.updateCredentials(
                             calculateOathCodes(oath).model(oath.deviceId)
                         )
@@ -166,14 +212,19 @@ class OathManager(
                     // Update deviceInfo since the deviceId has changed
                     val pid = (device as? UsbYubiKeyDevice)?.pid
                     val deviceInfo = DeviceUtil.readInfo(it, pid)
-                    appViewModel.setDeviceInfo(deviceInfo.model(
-                        DeviceUtil.getName(deviceInfo, pid?.type),
-                        device.transport == Transport.NFC,
-                        pid?.value
-                    ))
+                    appViewModel.setDeviceInfo(
+                        deviceInfo.model(
+                            DeviceUtil.getName(deviceInfo, pid?.type),
+                            device.transport == Transport.NFC,
+                            pid?.value
+                        )
+                    )
                 }
             }
-            Log.d(TAG, "Successfully read Oath session info (and credentials if unlocked) from connected key")
+            Log.d(
+                TAG,
+                "Successfully read Oath session info (and credentials if unlocked) from connected key"
+            )
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
             Log.e(TAG, "Failed to connect to CCID", e.toString())
@@ -254,7 +305,12 @@ class OathManager(
         _keyManager.clearAll()
         Log.d(TAG, "Cleared all keys.")
         oathViewModel.sessionState.value?.let {
-            oathViewModel.setSessionState(it.copy(isLocked = it.isAccessKeySet, isRemembered = false))
+            oathViewModel.setSessionState(
+                it.copy(
+                    isLocked = it.isAccessKeySet,
+                    isRemembered = false
+                )
+            )
         }
         return NULL
     }
@@ -286,7 +342,8 @@ class OathManager(
     private suspend fun renameAccount(uri: String, name: String, issuer: String?): String =
         useOathSession("Rename") { session ->
             val credential = getOathCredential(session, uri)
-            val renamedCredential = session.renameCredential(credential, name, issuer).model(session.deviceId)
+            val renamedCredential =
+                session.renameCredential(credential, name, issuer).model(session.deviceId)
             oathViewModel.renameCredential(
                 credential.model(session.deviceId),
                 renamedCredential
@@ -382,7 +439,8 @@ class OathManager(
         val bypassTouch = appPreferences.bypassTouchOnNfcTap && !isUsbKey
         return session.calculateCodes(timestamp).map { (credential, code) ->
             Pair(
-                credential, if (credential.isSteamCredential() && (!credential.isTouchRequired || bypassTouch)) {
+                credential,
+                if (credential.isSteamCredential() && (!credential.isTouchRequired || bypassTouch)) {
                     session.calculateSteamCode(credential, timestamp)
                 } else if (credential.isTouchRequired && bypassTouch) {
                     session.calculateCode(credential, timestamp)
@@ -455,4 +513,6 @@ class OathManager(
         oathSession.credentials.firstOrNull { credential ->
             (credential != null) && credential.id.asString() == credentialId
         } ?: throw Exception("Failed to find account")
+
+
 }
