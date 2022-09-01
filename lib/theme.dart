@@ -57,12 +57,9 @@ class AppTheme {
           color: Colors.grey.shade300,
         ),
         chipTheme: ChipThemeData(
-          backgroundColor: Colors.transparent,
           selectedColor: const Color(0xffd2dbdf),
-          side: BorderSide(width: 1, color: Colors.grey.shade400),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          side: _ChipBorder(color: Colors.grey.shade400),
+          checkmarkColor: Colors.black,
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: primaryBlue,
@@ -143,17 +140,12 @@ class AppTheme {
           color: Colors.grey.shade800,
         ),
         chipTheme: ChipThemeData(
-          backgroundColor: Colors.transparent,
           selectedColor: Colors.white12,
-          side: const BorderSide(width: 1, color: Colors.white12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          side: const _ChipBorder(color: Colors.white12),
           labelStyle: TextStyle(
-              // Should match titleMedium
-              color: Colors.grey.shade200,
-              fontWeight: FontWeight.w300,
-              fontSize: 16),
+            color: Colors.grey.shade200,
+          ),
+          checkmarkColor: Colors.grey.shade200,
         ),
         dialogTheme: const DialogTheme(
           backgroundColor: Color(0xff323232),
@@ -198,4 +190,17 @@ class AppTheme {
         side:
             BorderSide(width: 1, color: Theme.of(context).colorScheme.primary),
       );
+}
+
+/// This fixes the issue with FilterChip resizing vertically on toggle.
+class _ChipBorder extends BorderSide implements MaterialStateBorderSide {
+  const _ChipBorder({super.color});
+
+  @override
+  BorderSide? resolve(Set<MaterialState> states) {
+    if (states.contains(MaterialState.selected)) {
+      return const BorderSide(width: 1, color: Colors.transparent);
+    }
+    return BorderSide(width: 1, color: color);
+  }
 }

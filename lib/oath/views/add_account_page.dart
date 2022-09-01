@@ -12,7 +12,9 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
+import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_target.dart';
+import '../../widgets/menu_list_tile.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../models.dart';
@@ -333,103 +335,55 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       });
                     },
                   ),
-                Chip(
-                  backgroundColor: ChipTheme.of(context).selectedColor,
-                  label: DropdownButtonHideUnderline(
-                    child: DropdownButton<OathType>(
-                      value: _oathType,
-                      isDense: true,
-                      underline: null,
-                      items: OathType.values
-                          .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(e.displayName),
-                              ))
-                          .toList(),
-                      onChanged: _qrState != _QrScanState.success
-                          ? (type) {
-                              setState(() {
-                                _oathType = type ?? OathType.totp;
-                              });
-                            }
-                          : null,
-                    ),
-                  ),
+                ChoiceFilterChip<OathType>(
+                  items: OathType.values,
+                  value: _oathType,
+                  itemBuilder: (value) => Text(value.displayName),
+                  onChanged: _qrState != _QrScanState.success
+                      ? (value) {
+                          setState(() {
+                            _oathType = value;
+                          });
+                        }
+                      : null,
                 ),
-                Chip(
-                  backgroundColor: ChipTheme.of(context).selectedColor,
-                  label: DropdownButtonHideUnderline(
-                    child: DropdownButton<HashAlgorithm>(
-                      value: _hashAlgorithm,
-                      isDense: true,
-                      underline: null,
-                      items: HashAlgorithm.values
-                          .where((alg) =>
-                              alg != HashAlgorithm.sha512 ||
-                              widget.state.version.isAtLeast(4, 3, 1))
-                          .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(e.displayName),
-                              ))
-                          .toList(),
-                      onChanged: _qrState != _QrScanState.success
-                          ? (type) {
-                              setState(() {
-                                _hashAlgorithm = type ?? HashAlgorithm.sha1;
-                              });
-                            }
-                          : null,
-                    ),
-                  ),
+                ChoiceFilterChip<HashAlgorithm>(
+                  items: HashAlgorithm.values,
+                  value: _hashAlgorithm,
+                  itemBuilder: (value) => Text(value.displayName),
+                  onChanged: _qrState != _QrScanState.success
+                      ? (value) {
+                          setState(() {
+                            _hashAlgorithm = value;
+                          });
+                        }
+                      : null,
                 ),
                 if (_oathType == OathType.totp)
-                  Chip(
-                    backgroundColor: ChipTheme.of(context).selectedColor,
-                    label: DropdownButtonHideUnderline(
-                      child: DropdownButton<int>(
-                        value: int.tryParse(_periodController.text) ??
-                            defaultPeriod,
-                        isDense: true,
-                        underline: null,
-                        items: _periodValues
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text('$e sec'),
-                                ))
-                            .toList(),
-                        onChanged: _qrState != _QrScanState.success
-                            ? (period) {
-                                setState(() {
-                                  _periodController.text =
-                                      '${period ?? defaultPeriod}';
-                                });
-                              }
-                            : null,
-                      ),
-                    ),
+                  ChoiceFilterChip<int>(
+                    items: _periodValues,
+                    value:
+                        int.tryParse(_periodController.text) ?? defaultPeriod,
+                    itemBuilder: ((value) => Text('$value sec')),
+                    onChanged: _qrState != _QrScanState.success
+                        ? (period) {
+                            setState(() {
+                              _periodController.text = '$period';
+                            });
+                          }
+                        : null,
                   ),
-                Chip(
-                  backgroundColor: ChipTheme.of(context).selectedColor,
-                  label: DropdownButtonHideUnderline(
-                    child: DropdownButton<int>(
-                      value: _digits,
-                      isDense: true,
-                      underline: null,
-                      items: _digitsValues
-                          .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text('$e digits'),
-                              ))
-                          .toList(),
-                      onChanged: _qrState != _QrScanState.success
-                          ? (digits) {
-                              setState(() {
-                                _digits = digits ?? defaultDigits;
-                              });
-                            }
-                          : null,
-                    ),
-                  ),
+                ChoiceFilterChip<int>(
+                  items: _digitsValues,
+                  value: _digits,
+                  itemBuilder: (value) => Text('$value digits'),
+                  onChanged: _qrState != _QrScanState.success
+                      ? (digits) {
+                          setState(() {
+                            _digits = digits;
+                          });
+                        }
+                      : null,
                 ),
               ],
             ),
