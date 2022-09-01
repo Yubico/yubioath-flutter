@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/app/state.dart';
-import 'package:yubico_authenticator/cancellation_exception.dart';
 
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
+import '../../cancellation_exception.dart';
 import '../../widgets/menu_list_tile.dart';
 import '../models.dart';
 import '../state.dart';
@@ -81,7 +80,8 @@ class AccountView extends ConsumerWidget with AccountMixin {
                     ref,
                   )
                 : getCode(ref);
-            await withContext((context) async => copyToClipboard(context, code));
+            await withContext(
+                (context) async => copyToClipboard(context, code));
           },
         );
       } on CancellationException catch (_) {
