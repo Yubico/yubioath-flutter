@@ -14,7 +14,6 @@ import '../../app/state.dart';
 import '../../desktop/models.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_target.dart';
-import '../../widgets/menu_list_tile.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../models.dart';
