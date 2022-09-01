@@ -14,7 +14,7 @@ class KeyStoreProvider : KeyProvider {
         keystore.load(null)
     }
 
-    override fun hasKey(deviceId: String): Boolean = keystore.containsAlias(deviceId)
+    override fun hasKey(deviceId: String): Boolean = keystore.containsAlias(getAlias(deviceId))
 
     override fun getKey(deviceId: String): AccessKey? =
         if (hasKey(deviceId)) {
@@ -25,7 +25,7 @@ class KeyStoreProvider : KeyProvider {
 
     override fun putKey(deviceId: String, secret: ByteArray) {
         keystore.setEntry(
-            deviceId,
+            getAlias(deviceId),
             KeyStore.SecretKeyEntry(
                 SecretKeySpec(secret, KeyProperties.KEY_ALGORITHM_HMAC_SHA1)
             ),
@@ -35,7 +35,7 @@ class KeyStoreProvider : KeyProvider {
 
 
     override fun removeKey(deviceId: String) {
-        keystore.deleteEntry(deviceId)
+        keystore.deleteEntry(getAlias(deviceId))
     }
 
     override fun clearAll() {
@@ -45,9 +45,13 @@ class KeyStoreProvider : KeyProvider {
     private inner class KeyStoreStoredSigner(val deviceId: String) :
         AccessKey {
         val mac: Mac = Mac.getInstance(KeyProperties.KEY_ALGORITHM_HMAC_SHA1).apply {
-            init(keystore.getKey(deviceId, null))
+            init(keystore.getKey(getAlias(deviceId), null))
         }
 
         override fun calculateResponse(challenge: ByteArray): ByteArray = mac.doFinal(challenge)
     }
+
+    // return key alias used in legacy app
+    private fun getAlias(deviceId: String) = "$deviceId,0"
+
 }
