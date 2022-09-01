@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
@@ -26,8 +27,8 @@ class AccountList extends ConsumerWidget {
     final credentials = ref.watch(filteredCredentialsProvider(accounts));
     final favorites = ref.watch(favoritesProvider);
     if (credentials.isEmpty) {
-      return const Center(
-        child: Text('No credentials'),
+      return Center(
+        child: Text(AppLocalizations.of(context)!.oath_no_credentials),
       );
     }
 
@@ -40,13 +41,15 @@ class AccountList extends ConsumerWidget {
       policy: WidgetOrderTraversalPolicy(),
       child: Column(
         children: [
-          if (pinnedCreds.isNotEmpty) const ListTitle('Pinned'),
+          if (pinnedCreds.isNotEmpty)
+            ListTitle(AppLocalizations.of(context)!.oath_pinned),
           ...pinnedCreds.map(
             (entry) => AccountView(
               entry.credential,
             ),
           ),
-          if (creds.isNotEmpty) const ListTitle('Accounts'),
+          if (creds.isNotEmpty)
+            ListTitle(AppLocalizations.of(context)!.oath_accounts),
           ...creds.map(
             (entry) => AccountView(
               entry.credential,

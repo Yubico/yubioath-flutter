@@ -1,5 +1,18 @@
 {
     "@@locale": "en",
+    "oath_no_credentials": "No credentials",
+    "oath_pinned": "Pinned",
+    "oath_accounts": "Accounts",
+    "oath_copied_to_clipboard": "Code copied to clipboard",
+    "oath_copy_to_clipboard": "Copy to clipboard",
+    "oath_calculate": "Calculate",
+    "oath_pin_account": "Pin account",
+    "oath_unpin_account": "Unpin account",
+    "oath_rename_account": "Rename account",
+    "oath_delete_account": "Delete account",
+
+
+
     "appFailurePage_btn_unlock": "Unlock",
     "appFailurePage_txt_info": "WebAuthn management requires elevated privileges.",
     "appFailurePage_msg_permission": "Elevating permissions...",
