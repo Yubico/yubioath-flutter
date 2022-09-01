@@ -2,7 +2,7 @@ import groovy.json.JsonOutput
 
 import java.util.regex.Pattern
 
-def collectLicenses(File ossPluginResDir, File outDir) {
+def collectLicenses(File rootDir, File ossPluginResDir, File outDir) {
 
     def pattern = Pattern.compile("^(\\d+:\\d+) (.*)\$")
 
@@ -21,11 +21,13 @@ def collectLicenses(File ossPluginResDir, File outDir) {
         throw new GradleException("Cannot find/read ${metadata.absolutePath}")
     }
 
-    if (!outDir.isDirectory() || !outDir.canExecute()) {
-        throw new GradleException("Insufficient permissions to ${outDir.absolutePath}")
+    if (!outDir.exists() || !outDir.canExecute()) {
+        if (!outDir.mkdir()) {
+            throw new GradleException("Failed to create ${outDir.absolutePath}")
+        }
     }
 
-    def outFile = new File(outDir, "android_licenses.json")
+    def outFile = new File(outDir, "android.json")
     if (outFile.exists()) {
         outFile.delete()
     }
@@ -35,10 +37,12 @@ def collectLicenses(File ossPluginResDir, File outDir) {
     var index = 0
     licenses.eachLine { line ->
         def indices = "$index:${line.length()}"
+        println line
         licenseMap[indices] = line
         index += line.length() + 1
     }
 
+    println "Modules:"
     def licenseList = []
     metadata.eachLine { line ->
         def matcher = pattern.matcher(line)
@@ -56,17 +60,32 @@ def collectLicenses(File ossPluginResDir, File outDir) {
     }
 
     // add zxing_licenses which are not detected
+    println "adding zxing licenses"
     licenseList.add(PackageName: "ZXing Core (3.3.0)", PackageLicense: "https://www.apache.org/licenses/LICENSE-2.0.txt")
     licenseList.add(PackageName: "ZXing Android Core (3.3.0)", PackageLicense: "https://www.apache.org/licenses/LICENSE-2.0.txt")
 
     outFile.write(new JsonOutput().toJson(licenseList))
     println "Created ${outFile.absolutePath}"
+
+    // copy license assets to flutter resources
+    def licensesDir = new File(rootDir, "licenses/");
+    copy {
+        from(licensesDir.absolutePath) {
+            include "**/*txt"
+            include "**/*json"
+        }
+        into outDir
+    }
+
+    // remove not needed oss-licenses-plugin files
+    licenses.delete()
+    metadata.delete()
 }
 
 task collectLicenses() {
     dependsOn(":app:releaseOssLicensesTask")
     doLast {
-        def inputDir = new File(project.buildDir, "generated/third_party_licenses/release/res/raw/")
-        collectLicenses(inputDir, new File(project.rootDir.parent, "assets/licenses/"))
+        def ossPluginResDir = new File(project.buildDir, "generated/third_party_licenses/release/res/raw/")
+        collectLicenses(project.rootDir, ossPluginResDir, new File(project.rootDir.parent, "assets/licenses/android/"))
     }
 }

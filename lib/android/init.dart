@@ -91,21 +91,29 @@ class DismissKeyboard extends StatelessWidget {
 }
 
 void _initLicenses() async {
+
+  const licenseDir = 'assets/licenses/android';
+
   final androidProjectsToLicenseUrl = await rootBundle.loadStructuredData<List>(
-    'assets/licenses/android_licenses.json',
+    '$licenseDir/android.json',
     (value) async => jsonDecode(value),
   );
 
   // mapping from url to license text
-  final urlToFile = await rootBundle.loadStructuredData<Map>(
-    'assets/licenses/license_indices.json',
-    (value) async => jsonDecode(value),
+  final fileMap = await rootBundle.loadStructuredData<Map>(
+    '$licenseDir/map.json',
+        (value) async => jsonDecode(value),
   );
 
   final urlToLicense = <String, String>{};
-  urlToFile.forEach((url, file) async {
-    final licenseText = await rootBundle.loadString('assets/licenses/$file');
-    urlToLicense[url] = licenseText;
+  fileMap.forEach((url, file) async {
+    String licenseText = url;
+    try {
+      licenseText = await rootBundle.loadString('$licenseDir/$file');
+      urlToLicense[url] = licenseText;
+    } catch (_) {
+      // failed to read license file, will use the url
+    }
   });
 
   if (androidProjectsToLicenseUrl.isNotEmpty) {
