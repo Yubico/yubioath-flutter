@@ -28,6 +28,7 @@ import java.io.Closeable
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
 
+
 class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val oathViewModel: OathViewModel by viewModels()

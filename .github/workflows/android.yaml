@@ -37,6 +37,10 @@ jobs:
           flutter analyze
         working-directory: ./app
 
+      - name: Generate Third party licenses
+        run: ./gradlew collectLicenses
+        working-directory: ./app/android
+
       - name: Build the App
         run: flutter build apk --release
         env:

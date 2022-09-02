@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,6 +28,8 @@ Future<Widget> initialize() async {
   if (kDebugMode) {
     Logger.root.level = Levels.DEBUG;
   }
+
+  _initLicenses();
 
   return ProviderScope(
     overrides: [
@@ -67,6 +71,7 @@ Future<Widget> initialize() async {
 
 class DismissKeyboard extends StatelessWidget {
   final Widget child;
+
   const DismissKeyboard({super.key, required this.child});
 
   @override
@@ -82,5 +87,45 @@ class DismissKeyboard extends StatelessWidget {
       },
       child: child,
     );
+  }
+}
+
+void _initLicenses() async {
+
+  const licenseDir = 'assets/licenses/android';
+
+  final androidProjectsToLicenseUrl = await rootBundle.loadStructuredData<List>(
+    '$licenseDir/android.json',
+    (value) async => jsonDecode(value),
+  );
+
+  // mapping from url to license text
+  final fileMap = await rootBundle.loadStructuredData<Map>(
+    '$licenseDir/map.json',
+        (value) async => jsonDecode(value),
+  );
+
+  final urlToLicense = <String, String>{};
+  fileMap.forEach((url, file) async {
+    String licenseText = url;
+    try {
+      licenseText = await rootBundle.loadString('$licenseDir/$file');
+      urlToLicense[url] = licenseText;
+    } catch (_) {
+      // failed to read license file, will use the url
+    }
+  });
+
+  if (androidProjectsToLicenseUrl.isNotEmpty) {
+    LicenseRegistry.addLicense(() async* {
+      for (final e in androidProjectsToLicenseUrl) {
+        var licenseUrl = e['PackageLicense'];
+        var content = licenseUrl;
+        if (urlToLicense.containsKey(licenseUrl)) {
+          content = '${urlToLicense[licenseUrl]}\n\n$licenseUrl\n\n';
+        }
+        yield LicenseEntryWithLineBreaks([e['PackageName']], content);
+      }
+    });
   }
 }
