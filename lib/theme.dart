@@ -41,8 +41,8 @@ class AppTheme {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: primaryBlue,
+          onPrimary: Colors.white,
+          primary: primaryBlue,
         )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
@@ -57,6 +57,9 @@ class AppTheme {
           color: Colors.grey.shade300,
         ),
         chipTheme: ChipThemeData(
+          backgroundColor: Colors.transparent, // Remove 3.3
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8)), // Remove 3.3
           selectedColor: const Color(0xffd2dbdf),
           side: _ChipBorder(color: Colors.grey.shade400),
           checkmarkColor: Colors.black,
@@ -124,12 +127,12 @@ class AppTheme {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.black,
-          backgroundColor: primaryGreen,
+          onPrimary: Colors.black,
+          primary: primaryGreen,
         )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
-          foregroundColor: Colors.white70,
+          primary: Colors.white70,
           side: const BorderSide(width: 1, color: Colors.white12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -140,6 +143,9 @@ class AppTheme {
           color: Colors.grey.shade800,
         ),
         chipTheme: ChipThemeData(
+          backgroundColor: Colors.transparent, // Remove 3.3
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8)), // Remove 3.3
           selectedColor: Colors.white12,
           side: const _ChipBorder(color: Colors.white12),
           labelStyle: TextStyle(
