@@ -17,8 +17,6 @@ class SkyHelper {
         private val VERSION_0 = Version(0, 0, 0)
         private val VERSION_3 = Version(3, 0, 0)
         private val VERSION_4 = Version(4, 0, 0)
-        private val VERSION_5 = Version(5, 0, 0)
-        private val VERSION_6 = Version(6, 0, 0)
 
         private val USB_VERSION_STRING_PATTERN: Pattern =
             Pattern.compile("\\b(\\d{1,3})\\.(\\d)(\\d+)\\b")
@@ -64,17 +62,13 @@ class SkyHelper {
         // try to convert USB version to YubiKey version
         private fun getVersionFromUsbDescriptor(device: UsbYubiKeyDevice): Version {
             val version = device.usbDevice.version
+            val match = USB_VERSION_STRING_PATTERN.matcher(version)
 
-            try {
-                return Version.parse(version)
-            } catch (_: IllegalArgumentException) {
-                val match = USB_VERSION_STRING_PATTERN.matcher(version)
-                if (match.find()) {
-                    val major = match.group(1)?.toByte() ?: 0
-                    val minor = match.group(2)?.toByte() ?: 0
-                    val patch = match.group(3)?.toByte() ?: 0
-                    return Version(major, minor, patch)
-                }
+            if (match.find()) {
+                val major = match.group(1)?.toByte() ?: 0
+                val minor = match.group(2)?.toByte() ?: 0
+                val patch = match.group(3)?.toByte() ?: 0
+                return Version(major, minor, patch)
             }
 
             return VERSION_0
