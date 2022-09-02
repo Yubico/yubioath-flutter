@@ -31,9 +31,8 @@ class _CapabilityForm extends StatelessWidget {
       children: Capability.values
           .where((c) => capabilities & c.value != 0)
           .map((c) => FilterChip(
-                showCheckmark: true,
-                selected: enabled & c.value != 0,
                 label: Text(c.name),
+                selected: enabled & c.value != 0,
                 onSelected: (_) {
                   onChanged(enabled ^ c.value);
                 },

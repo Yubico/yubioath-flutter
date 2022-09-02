@@ -41,8 +41,8 @@ class AppTheme {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: primaryBlue,
+          onPrimary: Colors.white,
+          primary: primaryBlue,
         )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
@@ -57,12 +57,12 @@ class AppTheme {
           color: Colors.grey.shade300,
         ),
         chipTheme: ChipThemeData(
-          backgroundColor: Colors.transparent,
-          selectedColor: const Color(0xffd2dbdf),
-          side: BorderSide(width: 1, color: Colors.grey.shade400),
+          backgroundColor: Colors.transparent, // Remove 3.3
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+              borderRadius: BorderRadius.circular(8)), // Remove 3.3
+          selectedColor: const Color(0xffd2dbdf),
+          side: _ChipBorder(color: Colors.grey.shade400),
+          checkmarkColor: Colors.black,
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: primaryBlue,
@@ -127,12 +127,12 @@ class AppTheme {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.black,
-          backgroundColor: primaryGreen,
+          onPrimary: Colors.black,
+          primary: primaryGreen,
         )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
-          foregroundColor: Colors.white70,
+          primary: Colors.white70,
           side: const BorderSide(width: 1, color: Colors.white12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -143,17 +143,15 @@ class AppTheme {
           color: Colors.grey.shade800,
         ),
         chipTheme: ChipThemeData(
-          backgroundColor: Colors.transparent,
-          selectedColor: Colors.white12,
-          side: const BorderSide(width: 1, color: Colors.white12),
+          backgroundColor: Colors.transparent, // Remove 3.3
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+              borderRadius: BorderRadius.circular(8)), // Remove 3.3
+          selectedColor: Colors.white12,
+          side: const _ChipBorder(color: Colors.white12),
           labelStyle: TextStyle(
-              // Should match titleMedium
-              color: Colors.grey.shade200,
-              fontWeight: FontWeight.w300,
-              fontSize: 16),
+            color: Colors.grey.shade200,
+          ),
+          checkmarkColor: Colors.grey.shade200,
         ),
         dialogTheme: const DialogTheme(
           backgroundColor: Color(0xff323232),
@@ -190,12 +188,17 @@ class AppTheme {
               fontSize: 16),
         ),
       );
+}
 
-  static ButtonStyle primaryOutlinedButtonStyle(BuildContext context) =>
-      OutlinedButton.styleFrom(
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        side:
-            BorderSide(width: 1, color: Theme.of(context).colorScheme.primary),
-      );
+/// This fixes the issue with FilterChip resizing vertically on toggle.
+class _ChipBorder extends BorderSide implements MaterialStateBorderSide {
+  const _ChipBorder({super.color});
+
+  @override
+  BorderSide? resolve(Set<MaterialState> states) {
+    if (states.contains(MaterialState.selected)) {
+      return const BorderSide(width: 1, color: Colors.transparent);
+    }
+    return BorderSide(width: 1, color: color);
+  }
 }

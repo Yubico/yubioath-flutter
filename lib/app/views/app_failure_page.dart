@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../desktop/models.dart';
 import '../../desktop/state.dart';
-import '../../theme.dart';
 import '../message.dart';
 import 'graphics.dart';
 import 'message_page.dart';
@@ -45,27 +44,27 @@ class AppFailurePage extends ConsumerWidget {
               header = null;
               message = AppLocalizations.of(context)!.appFailurePage_txt_info;
               actions = [
-                OutlinedButton.icon(
-                    label: Text(AppLocalizations.of(context)!
-                        .appFailurePage_btn_unlock),
-                    icon: const Icon(Icons.lock_open),
-                    style: AppTheme.primaryOutlinedButtonStyle(context),
-                    onPressed: () async {
-                      final closeMessage = showMessage(
-                          context,
-                          AppLocalizations.of(context)!
-                              .appFailurePage_msg_permission,
-                          duration: const Duration(seconds: 30));
-                      try {
-                        if (await ref.read(rpcProvider).elevate()) {
-                          ref.refresh(rpcProvider);
-                        } else {
-                          showMessage(context, 'Permission denied');
-                        }
-                      } finally {
-                        closeMessage();
+                ElevatedButton.icon(
+                  label: Text(
+                      AppLocalizations.of(context)!.appFailurePage_btn_unlock),
+                  icon: const Icon(Icons.lock_open),
+                  onPressed: () async {
+                    final closeMessage = showMessage(
+                        context,
+                        AppLocalizations.of(context)!
+                            .appFailurePage_msg_permission,
+                        duration: const Duration(seconds: 30));
+                    try {
+                      if (await ref.read(rpcProvider).elevate()) {
+                        ref.refresh(rpcProvider);
+                      } else {
+                        showMessage(context, 'Permission denied');
                       }
-                    }),
+                    } finally {
+                      closeMessage();
+                    }
+                  },
+                ),
               ];
             }
             break;

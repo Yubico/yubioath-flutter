@@ -68,10 +68,14 @@ class _ToastState extends State<Toast> with SingleTickerProviderStateMixin {
         ),
         color: widget.backgroundColor,
         child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
-          widget.message,
-          style: widget.textStyle,
-        )),
+              widget.message,
+              style: widget.textStyle,
+            ),
+          ),
+        ),
       ),
     );
   }
