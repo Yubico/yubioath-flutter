@@ -41,13 +41,13 @@ class OathManager(
         const val NFC_DATA_CLEANUP_DELAY = 30L * 1000; // 30s
     }
 
-    private val _dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    private val coroutineScope = CoroutineScope(SupervisorJob() + _dispatcher)
+    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 
     private val oathChannel = MethodChannel(messenger, "android.oath.methods")
 
-    private val _memoryKeyProvider = ClearingMemProvider()
-    private val _keyManager = KeyManager(KeyStoreProvider(), _memoryKeyProvider)
+    private val memoryKeyProvider = ClearingMemProvider()
+    private val keyManager = KeyManager(KeyStoreProvider(), memoryKeyProvider)
 
     private var pendingAction: OathAction? = null
     private var refreshJob: Job? = null
@@ -198,11 +198,11 @@ class OathManager(
 
                     // Clear in-memory password for any previous device
                     if (it.transport == Transport.NFC && previousId != null) {
-                        _memoryKeyProvider.removeKey(previousId)
+                        memoryKeyProvider.removeKey(previousId)
                     }
 
                     // Update the OATH state
-                    oathViewModel.setSessionState(oath.model(_keyManager.isRemembered(oath.deviceId)))
+                    oathViewModel.setSessionState(oath.model(keyManager.isRemembered(oath.deviceId)))
                     if (!oath.isLocked) {
                         oathViewModel.updateCredentials(
                             calculateOathCodes(oath).model(oath.deviceId)
@@ -243,7 +243,7 @@ class OathManager(
         useOathSession("Reset YubiKey") {
             // note, it is ok to reset locked session
             it.reset()
-            _keyManager.removeKey(it.deviceId)
+            keyManager.removeKey(it.deviceId)
             oathViewModel.setSessionState(it.model(false))
         }
         return NULL
@@ -252,10 +252,10 @@ class OathManager(
     private suspend fun unlock(password: String, remember: Boolean): String =
         useOathSession("Unlocking") {
             val accessKey = it.deriveAccessKey(password.toCharArray())
-            _keyManager.addKey(it.deviceId, accessKey, remember)
+            keyManager.addKey(it.deviceId, accessKey, remember)
 
             val unlocked = tryToUnlockOathSession(it)
-            val remembered = _keyManager.isRemembered(it.deviceId)
+            val remembered = keyManager.isRemembered(it.deviceId)
             if (unlocked) {
                 oathViewModel.setSessionState(it.model(remembered))
                 oathViewModel.updateCredentials(calculateOathCodes(it).model(it.deviceId))
@@ -280,7 +280,7 @@ class OathManager(
             }
             val accessKey = session.deriveAccessKey(newPassword.toCharArray())
             session.setAccessKey(accessKey)
-            _keyManager.addKey(session.deviceId, accessKey, false)
+            keyManager.addKey(session.deviceId, accessKey, false)
             oathViewModel.setSessionState(session.model(false))
             Log.d(TAG, "Successfully set password")
             NULL
@@ -292,7 +292,7 @@ class OathManager(
                 // test current password sent by the user
                 if (session.unlock(currentPassword.toCharArray())) {
                     session.deleteAccessKey()
-                    _keyManager.removeKey(session.deviceId)
+                    keyManager.removeKey(session.deviceId)
                     oathViewModel.setSessionState(session.model(false))
                     Log.d(TAG, "Successfully unset password")
                     return@useOathSession NULL
@@ -302,7 +302,7 @@ class OathManager(
         }
 
     private suspend fun forgetPassword(): String {
-        _keyManager.clearAll()
+        keyManager.clearAll()
         Log.d(TAG, "Cleared all keys.")
         oathViewModel.sessionState.value?.let {
             oathViewModel.setSessionState(
@@ -416,7 +416,7 @@ class OathManager(
         }
 
         val deviceId = session.deviceId
-        val accessKey = _keyManager.getKey(deviceId)
+        val accessKey = keyManager.getKey(deviceId)
             ?: return false // we have no access key to unlock the session
 
         val unlockSucceed = session.unlock(accessKey)
@@ -425,7 +425,7 @@ class OathManager(
             return true
         }
 
-        _keyManager.removeKey(deviceId) // remove invalid access keys from [KeyManager]
+        keyManager.removeKey(deviceId) // remove invalid access keys from [KeyManager]
         return false // the unlock did not work, session is locked
     }
 

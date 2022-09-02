@@ -56,7 +56,7 @@ typealias BarcodeAnalyzerListener = (Result<String>) -> Unit
 
 internal class QRScannerView(
     context: Context,
-    id: Int,
+    @Suppress("UNUSED_PARAMETER") id : Int,
     binaryMessenger: BinaryMessenger,
     private val permissionsResultRegistrar: PermissionsResultRegistrar,
     creationParams: Map<String?, Any?>?
@@ -149,7 +149,7 @@ internal class QRScannerView(
                 bindUseCases(context)
             }
 
-            methodChannel.setMethodCallHandler { call, result ->
+            methodChannel.setMethodCallHandler { call, _ ->
                 if (call.method =="requestCameraPermissions") {
                     requestPermissionsFromUser(context)
 
