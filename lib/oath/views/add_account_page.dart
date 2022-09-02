@@ -305,7 +305,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: ActionChip(
-                    autofocus: true,
                     avatar: _qrState != _QrScanState.scanning
                         ? (_qrState == _QrScanState.success
                             ? const Icon(Icons.qr_code)
