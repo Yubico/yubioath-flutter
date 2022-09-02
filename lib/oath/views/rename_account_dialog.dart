@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-import '../../cancellation_exception.dart';
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../cancellation_exception.dart';
 import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
@@ -18,7 +18,10 @@ final _log = Logger('oath.view.rename_account_dialog');
 class RenameAccountDialog extends ConsumerStatefulWidget {
   final DeviceNode device;
   final OathCredential credential;
-  const RenameAccountDialog(this.device, this.credential, {super.key});
+  final List<OathCredential>? credentials;
+
+  const RenameAccountDialog(this.device, this.credential, this.credentials,
+      {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -52,13 +55,33 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     );
     final issuerRemaining = remaining.first;
     final nameRemaining = remaining.second;
-    final isValid = _account.isNotEmpty;
+
+    // is this credentials name/issuer pair different from all other?
+    final isUnique = widget.credentials
+            ?.where((element) =>
+                element != credential &&
+                element.name == _account &&
+                (element.issuer ?? '') == _issuer)
+            .isEmpty ??
+        false;
+
+    // is this credential name/issuer of valid format
+    final isValidFormat = _account.isNotEmpty;
+
+    // are the name/issuer values different from original
+    final didChange = (widget.credential.issuer != null
+            ? _issuer != widget.credential.issuer
+            : _issuer != '') ||
+        _account != widget.credential.name;
+
+    // can we rename with the new values
+    final isValid = isUnique && isValidFormat;
 
     return ResponsiveDialog(
       title: const Text('Rename account'),
       actions: [
         TextButton(
-          onPressed: isValid
+          onPressed: didChange && isValid
               ? () async {
                   try {
                     final renamed = await ref
@@ -103,11 +126,13 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             maxLength: issuerRemaining > 0 ? issuerRemaining : null,
             buildCounter: buildByteCounterFor(_issuer),
             inputFormatters: [limitBytesLength(issuerRemaining)],
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
               labelText: 'Issuer (optional)',
-              helperText: '', // Prevents dialog resizing when enabled = false
-              prefixIcon: Icon(Icons.business_outlined),
+              helperText: '',
+              // Prevents dialog resizing when enabled = false
+              errorText: isUnique ? null : ' ', // make the decoration red
+              prefixIcon: const Icon(Icons.business_outlined),
             ),
             textInputAction: TextInputAction.next,
             onChanged: (value) {
@@ -124,8 +149,13 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               labelText: 'Account name',
-              helperText: '', // Prevents dialog resizing when enabled = false
-              errorText: isValid ? null : 'Your account must have a name',
+              helperText: '',
+              // Prevents dialog resizing when enabled = false
+              errorText: !isValidFormat
+                  ? 'Your account must have a name'
+                  : isUnique
+                      ? null
+                      : 'Same account already exists on the YubiKey',
               prefixIcon: const Icon(Icons.people_alt_outlined),
             ),
             textInputAction: TextInputAction.done,

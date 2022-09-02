@@ -80,9 +80,10 @@ mixin AccountMixin {
   Future<OathCredential?> renameCredential(
       BuildContext context, WidgetRef ref) async {
     final node = ref.read(currentDeviceProvider)!;
+    final credentials = ref.read(credentialsProvider);
     return await showBlurDialog(
       context: context,
-      builder: (context) => RenameAccountDialog(node, credential),
+      builder: (context) => RenameAccountDialog(node, credential, credentials),
     );
   }
 
