@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -72,7 +73,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       final otpauth = await qrScanner.scanQr();
       if (otpauth == null) {
         if (!mounted) return;
-        showMessage(context, 'No QR code found');
+        showMessage(context, AppLocalizations.of(context)!.oath_no_qr_code);
         setState(() {
           _qrState = _QrScanState.failed;
         });
@@ -90,7 +91,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       }
       showMessage(
         context,
-        'Failed reading QR code: $errorMessage',
+        '${AppLocalizations.of(context)!.oath_failed_reading_qr}: $errorMessage',
         duration: const Duration(seconds: 4),
       );
       setState(() {
@@ -169,7 +170,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               .addAccount(cred.toUri(), requireTouch: _touch);
           if (!mounted) return;
           Navigator.of(context).pop();
-          showMessage(context, 'Account added');
+          showMessage(
+              context, AppLocalizations.of(context)!.oath_success_add_account);
         } on CancellationException catch (_) {
           // ignored
         } catch (e) {
@@ -183,7 +185,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           }
           showMessage(
             context,
-            'Failed adding account: $errorMessage',
+            '${AppLocalizations.of(context)!.oath_fail_add_account}: $errorMessage',
             duration: const Duration(seconds: 4),
           );
         }
@@ -195,11 +197,12 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     }
 
     return ResponsiveDialog(
-      title: const Text('Add account'),
+      title: Text(AppLocalizations.of(context)!.oath_add_account),
       actions: [
         TextButton(
           onPressed: isValid ? submit : null,
-          child: const Text('Save', key: Key('save_btn')),
+          child: Text(AppLocalizations.of(context)!.oath_save,
+              key: const Key('save_btn')),
         ),
       ],
       child: FileDropTarget(
@@ -209,7 +212,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             final otpauth = await qrScanner.scanQr(b64Image);
             if (otpauth == null) {
               if (!mounted) return;
-              showMessage(context, 'No QR code found');
+              showMessage(
+                  context, AppLocalizations.of(context)!.oath_no_qr_code);
             } else {
               final data = CredentialData.fromUri(Uri.parse(otpauth));
               _loadCredentialData(data);
@@ -227,11 +231,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               maxLength: max(issuerRemaining, 1),
               inputFormatters: [limitBytesLength(issuerRemaining)],
               buildCounter: buildByteCounterFor(_issuerController.text),
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Issuer (optional)',
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.oath_issuer_optional,
                 helperText: '', // Prevents dialog resizing when enabled = false
-                prefixIcon: Icon(Icons.business_outlined),
+                prefixIcon: const Icon(Icons.business_outlined),
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -249,11 +253,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               maxLength: max(nameRemaining, 1),
               buildCounter: buildByteCounterFor(_accountController.text),
               inputFormatters: [limitBytesLength(nameRemaining)],
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Account name',
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.oath_account_name,
                 helperText: '', // Prevents dialog resizing when enabled = false
-                prefixIcon: Icon(Icons.person_outline),
+                prefixIcon: const Icon(Icons.person_outline),
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -286,9 +290,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   ),
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.key_outlined),
-                  labelText: 'Secret key',
+                  labelText: AppLocalizations.of(context)!.oath_secret_key,
                   errorText: _validateSecretLength && !secretLengthValid
-                      ? 'Invalid length'
+                      ? AppLocalizations.of(context)!.oath_invalid_length
                       : null),
               readOnly: _qrState == _QrScanState.success,
               textInputAction: TextInputAction.done,
@@ -311,8 +315,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             : const Icon(Icons.qr_code_scanner_outlined))
                         : const CircularProgressIndicator(strokeWidth: 2.0),
                     label: _qrState == _QrScanState.success
-                        ? const Text('Scanned QR code')
-                        : const Text('Scan QR code'),
+                        ? Text(AppLocalizations.of(context)!.oath_scanned_qr)
+                        : Text(AppLocalizations.of(context)!.oath_scan_qr),
                     onPressed: () {
                       _scanQrCode(qrScanner);
                     }),
@@ -325,7 +329,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               children: [
                 if (widget.state.version.isAtLeast(4, 2))
                   FilterChip(
-                    label: const Text('Require touch'),
+                    label:
+                        Text(AppLocalizations.of(context)!.oath_require_touch),
                     selected: _touch,
                     onSelected: (value) {
                       setState(() {
@@ -366,7 +371,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         int.tryParse(_periodController.text) ?? defaultPeriod,
                     selected:
                         int.tryParse(_periodController.text) != defaultPeriod,
-                    itemBuilder: ((value) => Text('$value sec')),
+                    itemBuilder: ((value) => Text(
+                        '$value ${AppLocalizations.of(context)!.oath_sec}')),
                     onChanged: _qrState != _QrScanState.success
                         ? (period) {
                             setState(() {
@@ -379,7 +385,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                   items: _digitsValues,
                   value: _digits,
                   selected: _digits != defaultDigits,
-                  itemBuilder: (value) => Text('$value digits'),
+                  itemBuilder: (value) => Text(
+                      '$value ${AppLocalizations.of(context)!.oath_digits}'),
                   onChanged: _qrState != _QrScanState.success
                       ? (digits) {
                           setState(() {
