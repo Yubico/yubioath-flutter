@@ -35,8 +35,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   @override
   void initState() {
     super.initState();
-    _issuer = widget.credential.issuer ?? '';
-    _account = widget.credential.name;
+    _issuer = widget.credential.issuer?.trim() ?? '';
+    _account = widget.credential.name.trim();
   }
 
   @override
@@ -69,10 +69,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     final isValidFormat = _account.isNotEmpty;
 
     // are the name/issuer values different from original
-    final didChange = (widget.credential.issuer != null
-            ? _issuer != widget.credential.issuer
-            : _issuer != '') ||
-        _account != widget.credential.name;
+    final didChange = (widget.credential.issuer ?? '') != _issuer ||
+        widget.credential.name != _account;
 
     // can we rename with the new values
     final isValid = isUnique && isValidFormat;
@@ -126,13 +124,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             maxLength: issuerRemaining > 0 ? issuerRemaining : null,
             buildCounter: buildByteCounterFor(_issuer),
             inputFormatters: [limitBytesLength(issuerRemaining)],
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
               labelText: 'Issuer (optional)',
-              helperText: '',
-              // Prevents dialog resizing when enabled = false
-              errorText: isUnique ? null : ' ', // make the decoration red
-              prefixIcon: const Icon(Icons.business_outlined),
+              helperText: '', // Prevents dialog resizing when enabled = false
+              prefixIcon: Icon(Icons.business_outlined),
             ),
             textInputAction: TextInputAction.next,
             onChanged: (value) {
@@ -153,9 +149,9 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               // Prevents dialog resizing when enabled = false
               errorText: !isValidFormat
                   ? 'Your account must have a name'
-                  : isUnique
-                      ? null
-                      : 'Same account already exists on the YubiKey',
+                  : !isUnique
+                      ? 'This name already exists for the Issuer'
+                      : null,
               prefixIcon: const Icon(Icons.people_alt_outlined),
             ),
             textInputAction: TextInputAction.done,

@@ -124,8 +124,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         header: 'No accounts',
         keyActions: _buildActions(
           context,
-          used: 0,
-          capacity: widget.oathState.version.isAtLeast(4) ? 32 : null,
+          credentials: null,
         ),
       );
     }
@@ -176,16 +175,19 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         ),
         keyActions: _buildActions(
           context,
-          used: credentials?.length ?? 0,
-          capacity: widget.oathState.version.isAtLeast(4) ? 32 : null,
+          credentials: credentials,
         ),
         child: AccountList(widget.devicePath, widget.oathState),
       ),
     );
   }
 
-  List<PopupMenuEntry> _buildActions(BuildContext context,
-      {required int used, int? capacity}) {
+  List<PopupMenuEntry> _buildActions(
+    BuildContext context, {
+    required List<OathCredential>? credentials,
+  }) {
+    final used = credentials?.length ?? 0;
+    final capacity = widget.oathState.version.isAtLeast(4) ? 32 : null;
     return [
       buildMenuItem(
         title: const Text('Add account'),
@@ -198,6 +200,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   builder: (context) => OathAddAccountPage(
                     widget.devicePath,
                     widget.oathState,
+                    credentials: credentials,
                     openQrScanner: Platform.isAndroid,
                   ),
                 );
