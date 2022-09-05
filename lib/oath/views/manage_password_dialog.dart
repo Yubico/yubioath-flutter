@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
@@ -30,7 +31,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
     if (result) {
       if (!mounted) return;
       Navigator.of(context).pop();
-      showMessage(context, 'Password set');
+      showMessage(context, AppLocalizations.of(context)!.oath_password_set);
     } else {
       setState(() {
         _currentIsWrong = true;
@@ -45,27 +46,29 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         (!widget.state.hasKey || _currentPassword.isNotEmpty);
 
     return ResponsiveDialog(
-      title: const Text('Manage password'),
+      title: Text(AppLocalizations.of(context)!.oath_manage_password),
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.oath_save),
         )
       ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (widget.state.hasKey) ...[
-            const Text(
-                "Enter your current password. If you don't know your password, you'll need to reset the YubiKey."),
+            Text(AppLocalizations.of(context)!.oath_enter_current_password),
             TextField(
               autofocus: true,
               obscureText: true,
               decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  labelText: 'Current password',
+                  labelText:
+                      AppLocalizations.of(context)!.oath_current_password,
                   prefixIcon: const Icon(Icons.password_outlined),
-                  errorText: _currentIsWrong ? 'Wrong password' : null,
+                  errorText: _currentIsWrong
+                      ? AppLocalizations.of(context)!.oath_wrong_password
+                      : null,
                   errorMaxLines: 3),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -88,7 +91,10 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                           if (result) {
                             if (!mounted) return;
                             Navigator.of(context).pop();
-                            showMessage(context, 'Password removed');
+                            showMessage(
+                                context,
+                                AppLocalizations.of(context)!
+                                    .oath_password_removed);
                           } else {
                             setState(() {
                               _currentIsWrong = true;
@@ -96,31 +102,35 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                           }
                         }
                       : null,
-                  child: const Text('Remove password'),
+                  child:
+                      Text(AppLocalizations.of(context)!.oath_remove_password),
                 ),
                 if (widget.state.remembered)
                   OutlinedButton(
-                    child: const Text('Clear saved password'),
+                    child: Text(AppLocalizations.of(context)!
+                        .oath_clear_saved_password),
                     onPressed: () async {
                       await ref
                           .read(oathStateProvider(widget.path).notifier)
                           .forgetPassword();
                       if (!mounted) return;
                       Navigator.of(context).pop();
-                      showMessage(context, 'Password forgotten');
+                      showMessage(
+                          context,
+                          AppLocalizations.of(context)!
+                              .oath_password_forgotten);
                     },
                   ),
               ],
             ),
           ],
-          const Text(
-              'Enter your new password. A password may contain letters, numbers and special characters.'),
+          Text(AppLocalizations.of(context)!.oath_enter_new_password),
           TextField(
             autofocus: !widget.state.hasKey,
             obscureText: true,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              labelText: 'New password',
+              labelText: AppLocalizations.of(context)!.oath_new_password,
               prefixIcon: const Icon(Icons.password_outlined),
               enabled: !widget.state.hasKey || _currentPassword.isNotEmpty,
             ),
@@ -140,7 +150,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             obscureText: true,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              labelText: 'Confirm password',
+              labelText: AppLocalizations.of(context)!.oath_confirm_password,
               prefixIcon: const Icon(Icons.password_outlined),
               enabled: (!widget.state.hasKey || _currentPassword.isNotEmpty) &&
                   _newPassword.isNotEmpty,
