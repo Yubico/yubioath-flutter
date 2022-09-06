@@ -51,12 +51,7 @@ class AppTheme {
         )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
-          backgroundColor: Colors.grey.shade800,
           side: BorderSide(width: 1, color: Colors.grey.shade400),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
         )),
         cardTheme: CardTheme(
           color: Colors.grey.shade300,
@@ -144,12 +139,7 @@ class AppTheme {
         )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
-          primary: Colors.white70,
-          side: const BorderSide(width: 1, color: Colors.white12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+          side: BorderSide(width: 1, color: Colors.grey.shade400),
         )),
         cardTheme: CardTheme(
           color: Colors.grey.shade800,
