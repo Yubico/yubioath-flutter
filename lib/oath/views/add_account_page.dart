@@ -256,11 +256,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               maxLength: max(issuerRemaining, 1),
               inputFormatters: [limitBytesLength(issuerRemaining)],
               buildCounter: buildByteCounterFor(_issuerController.text.trim()),
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
                 labelText: AppLocalizations.of(context)!.oath_issuer_optional,
                 helperText: '', // Prevents dialog resizing when disabled
-                prefixIcon: Icon(Icons.business_outlined),
+                prefixIcon: const Icon(Icons.business_outlined),
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -285,7 +285,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 helperText: '', // Prevents dialog resizing when disabled
                 errorText: isUnique
                     ? null
-                    : 'This name already exists for the Issuer', //TODO
+                    : AppLocalizations.of(context)!.oath_duplicate_name,
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
