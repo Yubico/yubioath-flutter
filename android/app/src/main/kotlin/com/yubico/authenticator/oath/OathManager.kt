@@ -509,9 +509,11 @@ class OathManager(
         }
     }
 
-    private fun getOathCredential(oathSession: OathSession, credentialId: String) : Credential =
+    private fun getOathCredential(oathSession: OathSession, credentialId: String) =
         // we need to use oathSession.calculateCodes() to get proper Credential.touchRequired value
         oathSession.calculateCodes().map { e -> e.key }.firstOrNull { credential ->
             (credential != null) && credential.id.asString() == credentialId
         } ?: throw Exception("Failed to find account")
+
+
 }
