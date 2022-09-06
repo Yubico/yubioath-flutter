@@ -150,6 +150,13 @@ class FavoritesNotifier extends StateNotifier<List<String>> {
     }
     _prefs.setStringList(_key, state);
   }
+
+  renameCredential(String oldCredentialId, String newCredentialId) {
+    if (state.contains(oldCredentialId)) {
+      state = [newCredentialId, ...state.toList()..remove(oldCredentialId)];
+      _prefs.setStringList(_key, state);
+    }
+  }
 }
 
 final filteredCredentialsProvider = StateNotifierProvider.autoDispose

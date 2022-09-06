@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-import '../../cancellation_exception.dart';
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../cancellation_exception.dart';
 import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
@@ -18,7 +18,10 @@ final _log = Logger('oath.view.rename_account_dialog');
 class RenameAccountDialog extends ConsumerStatefulWidget {
   final DeviceNode device;
   final OathCredential credential;
-  const RenameAccountDialog(this.device, this.credential, {super.key});
+  final List<OathCredential>? credentials;
+
+  const RenameAccountDialog(this.device, this.credential, this.credentials,
+      {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -32,8 +35,43 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   @override
   void initState() {
     super.initState();
-    _issuer = widget.credential.issuer ?? '';
-    _account = widget.credential.name;
+    _issuer = widget.credential.issuer?.trim() ?? '';
+    _account = widget.credential.name.trim();
+  }
+
+  void _submit() async {
+    try {
+      // Rename credentials
+      final renamed = await ref
+          .read(credentialListProvider(widget.device.path).notifier)
+          .renameAccount(
+              widget.credential, _issuer.isNotEmpty ? _issuer : null, _account);
+
+      // Update favorite
+      ref
+          .read(favoritesProvider.notifier)
+          .renameCredential(widget.credential.id, renamed.id);
+
+      if (!mounted) return;
+      Navigator.of(context).pop(renamed);
+      showMessage(context, 'Account renamed');
+    } on CancellationException catch (_) {
+      // ignored
+    } catch (e) {
+      _log.error('Failed to add account', e);
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (e is RpcError) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      showMessage(
+        context,
+        'Failed adding account: $errorMessage',
+        duration: const Duration(seconds: 4),
+      );
+    }
   }
 
   @override
@@ -52,42 +90,31 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     );
     final issuerRemaining = remaining.first;
     final nameRemaining = remaining.second;
-    final isValid = _account.isNotEmpty;
+
+    // is this credentials name/issuer pair different from all other?
+    final isUnique = widget.credentials
+            ?.where((element) =>
+                element != credential &&
+                element.name == _account &&
+                (element.issuer ?? '') == _issuer)
+            .isEmpty ??
+        false;
+
+    // is this credential name/issuer of valid format
+    final isValidFormat = _account.isNotEmpty;
+
+    // are the name/issuer values different from original
+    final didChange = (widget.credential.issuer ?? '') != _issuer ||
+        widget.credential.name != _account;
+
+    // can we rename with the new values
+    final isValid = isUnique && isValidFormat;
 
     return ResponsiveDialog(
       title: const Text('Rename account'),
       actions: [
         TextButton(
-          onPressed: isValid
-              ? () async {
-                  try {
-                    final renamed = await ref
-                        .read(
-                            credentialListProvider(widget.device.path).notifier)
-                        .renameAccount(credential,
-                            _issuer.isNotEmpty ? _issuer : null, _account);
-                    if (!mounted) return;
-                    Navigator.of(context).pop(renamed);
-                    showMessage(context, 'Account renamed');
-                  } on CancellationException catch (_) {
-                    // ignored
-                  } catch (e) {
-                    _log.error('Failed to add account', e);
-                    final String errorMessage;
-                    // TODO: Make this cleaner than importing desktop specific RpcError.
-                    if (e is RpcError) {
-                      errorMessage = e.message;
-                    } else {
-                      errorMessage = e.toString();
-                    }
-                    showMessage(
-                      context,
-                      'Failed adding account: $errorMessage',
-                      duration: const Duration(seconds: 4),
-                    );
-                  }
-                }
-              : null,
+          onPressed: didChange && isValid ? _submit : null,
           child: const Text('Save'),
         ),
       ],
@@ -106,7 +133,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Issuer (optional)',
-              helperText: '', // Prevents dialog resizing when enabled = false
+              helperText: '', // Prevents dialog resizing when disabled
               prefixIcon: Icon(Icons.business_outlined),
             ),
             textInputAction: TextInputAction.next,
@@ -124,8 +151,12 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               labelText: 'Account name',
-              helperText: '', // Prevents dialog resizing when enabled = false
-              errorText: isValid ? null : 'Your account must have a name',
+              helperText: '', // Prevents dialog resizing when disabled
+              errorText: !isValidFormat
+                  ? 'Your account must have a name'
+                  : !isUnique
+                      ? 'This name already exists for the Issuer'
+                      : null,
               prefixIcon: const Icon(Icons.people_alt_outlined),
             ),
             textInputAction: TextInputAction.done,
@@ -133,6 +164,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               setState(() {
                 _account = value.trim();
               });
+            },
+            onFieldSubmitted: (_) {
+              if (didChange && isValid) {
+                _submit();
+              }
             },
           ),
         ]

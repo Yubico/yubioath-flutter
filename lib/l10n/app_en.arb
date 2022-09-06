@@ -17,6 +17,7 @@
     "oath_add_account": "Add account",
     "oath_save": "Save",
     "oath_no_qr_code": "No QR code found",
+    "oath_duplicate_name": "This name already exists for the Issuer",
     "oath_issuer_optional": "Issuer (optional)",
     "oath_account_name": "Account name",
     "oath_secret_key": "Secret key",
