@@ -39,6 +39,41 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     _account = widget.credential.name.trim();
   }
 
+  void _submit() async {
+    try {
+      // Rename credentials
+      final renamed = await ref
+          .read(credentialListProvider(widget.device.path).notifier)
+          .renameAccount(
+              widget.credential, _issuer.isNotEmpty ? _issuer : null, _account);
+
+      // Update favorite
+      ref
+          .read(favoritesProvider.notifier)
+          .renameCredential(widget.credential.id, renamed.id);
+
+      if (!mounted) return;
+      Navigator.of(context).pop(renamed);
+      showMessage(context, 'Account renamed');
+    } on CancellationException catch (_) {
+      // ignored
+    } catch (e) {
+      _log.error('Failed to add account', e);
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (e is RpcError) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      showMessage(
+        context,
+        'Failed adding account: $errorMessage',
+        duration: const Duration(seconds: 4),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final credential = widget.credential;
@@ -79,36 +114,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
       title: const Text('Rename account'),
       actions: [
         TextButton(
-          onPressed: didChange && isValid
-              ? () async {
-                  try {
-                    final renamed = await ref
-                        .read(
-                            credentialListProvider(widget.device.path).notifier)
-                        .renameAccount(credential,
-                            _issuer.isNotEmpty ? _issuer : null, _account);
-                    if (!mounted) return;
-                    Navigator.of(context).pop(renamed);
-                    showMessage(context, 'Account renamed');
-                  } on CancellationException catch (_) {
-                    // ignored
-                  } catch (e) {
-                    _log.error('Failed to add account', e);
-                    final String errorMessage;
-                    // TODO: Make this cleaner than importing desktop specific RpcError.
-                    if (e is RpcError) {
-                      errorMessage = e.message;
-                    } else {
-                      errorMessage = e.toString();
-                    }
-                    showMessage(
-                      context,
-                      'Failed adding account: $errorMessage',
-                      duration: const Duration(seconds: 4),
-                    );
-                  }
-                }
-              : null,
+          onPressed: didChange && isValid ? _submit : null,
           child: const Text('Save'),
         ),
       ],
@@ -159,6 +165,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               setState(() {
                 _account = value.trim();
               });
+            },
+            onFieldSubmitted: (_) {
+              if (didChange && isValid) {
+                _submit();
+              }
             },
           ),
         ]
