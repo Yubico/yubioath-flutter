@@ -164,7 +164,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 element.name == _accountController.text.trim() &&
                 (element.issuer ?? '') == _issuerController.text.trim())
             .isEmpty ??
-        false;
+        true;
 
     final isValid = _accountController.text.trim().isNotEmpty &&
         secret.isNotEmpty &&
