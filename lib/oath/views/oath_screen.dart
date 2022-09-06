@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
@@ -28,12 +29,12 @@ class OathScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(oathStateProvider(devicePath)).when(
           loading: () => AppPage(
-            title: const Text('Authenticator'),
+            title: Text(AppLocalizations.of(context)!.oath_authenticator),
             centered: true,
             child: const AppLoadingScreen(),
           ),
           error: (error, _) => AppFailurePage(
-            title: const Text('Authenticator'),
+            title: Text(AppLocalizations.of(context)!.oath_authenticator),
             cause: error,
           ),
           data: (oathState) => oathState.locked
@@ -51,10 +52,10 @@ class _LockedView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => AppPage(
-        title: const Text('Authenticator'),
+        title: Text(AppLocalizations.of(context)!.oath_authenticator),
         keyActions: [
           buildMenuItem(
-            title: const Text('Manage password'),
+            title: Text(AppLocalizations.of(context)!.oath_manage_password),
             leading: const Icon(Icons.password),
             action: () {
               showBlurDialog(
@@ -65,7 +66,7 @@ class _LockedView extends ConsumerWidget {
             },
           ),
           buildMenuItem(
-            title: const Text('Reset OATH'),
+            title: Text(AppLocalizations.of(context)!.oath_reset_oath),
             leading: const Icon(Icons.delete),
             action: () {
               showBlurDialog(
@@ -119,9 +120,9 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final credentials = ref.watch(credentialsProvider);
     if (credentials?.isEmpty == true) {
       return MessagePage(
-        title: const Text('Authenticator'),
+        title: Text(AppLocalizations.of(context)!.oath_authenticator),
         graphic: noAccounts,
-        header: 'No accounts',
+        header: AppLocalizations.of(context)!.oath_no_accounts,
         keyActions: _buildActions(
           context,
           credentials: null,
@@ -153,11 +154,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
               controller: searchController,
               focusNode: searchFocus,
               style: Theme.of(context).textTheme.titleSmall,
-              decoration: const InputDecoration(
-                hintText: 'Search accounts',
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.oath_search_accounts,
                 isDense: true,
-                prefixIcon: Icon(Icons.search_outlined),
-                prefixIconConstraints: BoxConstraints(
+                prefixIcon: const Icon(Icons.search_outlined),
+                prefixIconConstraints: const BoxConstraints(
                   minHeight: 30,
                   minWidth: 30,
                 ),
@@ -190,7 +191,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final capacity = widget.oathState.version.isAtLeast(4) ? 32 : null;
     return [
       buildMenuItem(
-        title: const Text('Add account'),
+        title: Text(AppLocalizations.of(context)!.oath_add_account),
         leading: const Icon(Icons.person_add_alt_1),
         trailing: capacity != null ? '$used/$capacity' : null,
         action: capacity == null || capacity > used
@@ -208,8 +209,9 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             : null,
       ),
       buildMenuItem(
-          title: Text(
-              widget.oathState.hasKey ? 'Manage password' : 'Set password'),
+          title: Text(widget.oathState.hasKey
+              ? AppLocalizations.of(context)!.oath_manage_password
+              : AppLocalizations.of(context)!.oath_set_password),
           leading: const Icon(Icons.password),
           action: () {
             showBlurDialog(
@@ -219,7 +221,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             );
           }),
       buildMenuItem(
-          title: const Text('Reset OATH'),
+          title: Text(AppLocalizations.of(context)!.oath_reset_oath),
           leading: const Icon(Icons.delete),
           action: () {
             showBlurDialog(
@@ -260,7 +262,8 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
         _passwordController.clear();
       });
     } else if (_remember && !result.second) {
-      showMessage(context, 'Failed to remember password');
+      showMessage(
+          context, AppLocalizations.of(context)!.oath_failed_remember_pw);
     }
   }
 
@@ -274,8 +277,8 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Enter the OATH password for your YubiKey',
+              Text(
+                AppLocalizations.of(context)!.oath_enter_oath_pw,
               ),
               const SizedBox(height: 16.0),
               TextField(
@@ -284,8 +287,10 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
                 obscureText: _isObscure,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  labelText: 'Password',
-                  errorText: _passwordIsWrong ? 'Wrong password' : null,
+                  labelText: AppLocalizations.of(context)!.oath_password,
+                  errorText: _passwordIsWrong
+                      ? AppLocalizations.of(context)!.oath_wrong_password
+                      : null,
                   helperText: '', // Prevents resizing when errorText shown
                   prefixIcon: const Icon(Icons.password_outlined),
                   suffixIcon: IconButton(
@@ -310,14 +315,16 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
         ),
         const SizedBox(height: 8.0),
         keystoreFailed
-            ? const ListTile(
-                leading: Icon(Icons.warning_amber_rounded),
-                title: Text('OS Keystore unavailable'),
+            ? ListTile(
+                leading: const Icon(Icons.warning_amber_rounded),
+                title: Text(
+                    AppLocalizations.of(context)!.oath_keystore_unavailable),
                 dense: true,
                 minLeadingWidth: 0,
               )
             : CheckboxListTile(
-                title: const Text('Remember password'),
+                title:
+                    Text(AppLocalizations.of(context)!.oath_remember_password),
                 dense: true,
                 controlAffinity: ListTileControlAffinity.leading,
                 value: _remember,
@@ -332,7 +339,7 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
           child: Align(
             alignment: Alignment.centerRight,
             child: ElevatedButton.icon(
-              label: const Text('Unlock'),
+              label: Text(AppLocalizations.of(context)!.oath_unlock),
               icon: const Icon(Icons.lock_open),
               onPressed: _passwordController.text.isNotEmpty ? _submit : null,
             ),

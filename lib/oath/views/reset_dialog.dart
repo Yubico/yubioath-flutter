@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
@@ -14,25 +15,25 @@ class ResetDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ResponsiveDialog(
-      title: const Text('Factory reset'),
+      title: Text(AppLocalizations.of(context)!.oath_factory_reset),
       actions: [
         TextButton(
           onPressed: () async {
             await ref.read(oathStateProvider(devicePath).notifier).reset();
             await ref.read(withContextProvider)((context) async {
               Navigator.of(context).pop();
-              showMessage(context, 'OATH application reset');
+              showMessage(context,
+                  AppLocalizations.of(context)!.oath_oath_application_reset);
             });
           },
-          child: const Text('Reset'),
+          child: Text(AppLocalizations.of(context)!.oath_reset),
         ),
       ],
       child: Column(
         children: [
-          const Text(
-              'Warning! This will irrevocably delete all OATH TOTP/HOTP accounts from your YubiKey.'),
+          Text(AppLocalizations.of(context)!.oath_warning_will_delete_accounts),
           Text(
-            'Your OATH credentials, as well as any password set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.',
+            AppLocalizations.of(context)!.oath_warning_disable_these_creds,
             style: Theme.of(context).textTheme.bodyText1,
           ),
         ]
