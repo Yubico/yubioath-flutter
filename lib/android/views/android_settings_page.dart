@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/android/app_methods.dart';
 import 'package:yubico_authenticator/app/logging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
 import '../../app/state.dart';
@@ -12,25 +13,80 @@ import '../../widgets/responsive_dialog.dart';
 final _log = Logger('android_settings_page');
 final _hideAppThumbnailProvider = StateProvider<bool>((ref) => true);
 
-class AndroidSettingsPage extends ConsumerWidget {
+const String _prefNfcOpenApp = 'prefNfcOpenApp';
+const String _prefNfcBypassTouch = 'prefNfcBypassTouch';
+const String _prefNfcCopyOtp = 'prefNfcCopyOtp';
+const String _prefClipKbdLayout = 'prefClipKbdLayout';
+
+// TODO: Get these from Android
+const List<String> _keyboardLayouts = ['US', 'DE', 'DE-CH'];
+const String _defaultClipKbdLayout = 'US';
+
+enum _TapAction {
+  launch,
+  copy,
+  both;
+
+  String get description {
+    switch (this) {
+      case _TapAction.launch:
+        return 'Launch Yubico Authenticator';
+      case _TapAction.copy:
+        return 'Copy OTP to clipboard';
+      case _TapAction.both:
+        return 'Launch app and copy OTP';
+    }
+  }
+
+  static _TapAction load(SharedPreferences prefs) {
+    final launchApp = prefs.getBool(_prefNfcOpenApp) ?? true;
+    final copyOtp = prefs.getBool(_prefNfcCopyOtp) ?? false;
+    if (launchApp && copyOtp) {
+      return both;
+    }
+    if (copyOtp) {
+      return copy;
+    }
+    // This is the default value if both are false.
+    return launch;
+  }
+
+  void save(SharedPreferences prefs) {
+    prefs.setBool(_prefNfcOpenApp, this != copy);
+    prefs.setBool(_prefNfcCopyOtp, this != launch);
+  }
+}
+
+extension on ThemeMode {
+  String get displayName {
+    switch (this) {
+      case ThemeMode.system:
+        return 'System default';
+      case ThemeMode.light:
+        return 'Light theme';
+      case ThemeMode.dark:
+        return 'Dark theme';
+    }
+  }
+}
+
+class AndroidSettingsPage extends ConsumerStatefulWidget {
   const AndroidSettingsPage({super.key});
 
-  static const String prefNfcOpenApp = 'prefNfcOpenApp';
-  static const String prefNfcBypassTouch = 'prefNfcBypassTouch';
-  static const String prefNfcCopyOtp = 'prefNfcCopyOtp';
-  static const String prefClipKbdLayout = 'prefClipKbdLayout';
-
-  static const String defaultClipKbdLayout = 'US';
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final nfcOpenApp = ref.watch(prefProvider).getBool(prefNfcOpenApp) ?? true;
-    final nfcBypassTouch =
-        ref.watch(prefProvider).getBool(prefNfcBypassTouch) ?? false;
-    final nfcCopyOtp = ref.watch(prefProvider).getBool(prefNfcCopyOtp) ?? false;
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _AndroidSettingsPageState();
+}
+
+class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
+  @override
+  Widget build(BuildContext context) {
+    final prefs = ref.watch(prefProvider);
+
+    final tapAction = _TapAction.load(prefs);
     final clipKbdLayout =
-        ref.watch(prefProvider).getString(prefClipKbdLayout) ??
-            defaultClipKbdLayout;
+        prefs.getString(_prefClipKbdLayout) ?? _defaultClipKbdLayout;
+    final nfcBypassTouch = prefs.getBool(_prefNfcBypassTouch) ?? false;
     final themeMode = ref.watch(themeModeProvider);
     final hideAppThumbnail = ref.watch(_hideAppThumbnailProvider);
 
@@ -40,48 +96,47 @@ class AndroidSettingsPage extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const ListTitle('General'),
-          SwitchListTile(
-              title: const Text('Open authenticator on NFC tap'),
-              value: nfcOpenApp,
-              onChanged: (value) {
-                ref.read(prefProvider).setBool(prefNfcOpenApp, value);
-                ref.refresh(prefProvider);
-              }),
-          SwitchListTile(
-              title: const Text('Bypass touch requirement for NFC'),
-              value: nfcBypassTouch,
-              onChanged: (value) {
-                ref.read(prefProvider).setBool(prefNfcBypassTouch, value);
-                ref.refresh(prefProvider);
-              }),
-          const ListTitle('Yubiclip'),
-          SwitchListTile(
-              title: const Text('Copy OTP to clipboard'),
-              value: nfcCopyOtp,
-              onChanged: (value) {
-                ref.read(prefProvider).setBool(prefNfcCopyOtp, value);
-                ref.refresh(prefProvider);
-              }),
+          const ListTitle('NFC Options'),
           ListTile(
-            title: const Text('Static password keyboard layout'),
-            subtitle: Text('Current: $clipKbdLayout'),
+            title: const Text('On YubiKey NFC tap'),
+            subtitle: Text(tapAction.description),
+            onTap: () async {
+              final newTapAction = await _selectTapAction(context, tapAction);
+              newTapAction.save(prefs);
+              setState(() {});
+            },
+          ),
+          ListTile(
+            title: const Text('Keyboard Layout (for static password)'),
+            subtitle: Text(clipKbdLayout),
+            enabled: tapAction != _TapAction.launch,
             onTap: () async {
               var newValue = await _selectKbdLayout(context, clipKbdLayout);
               if (newValue != clipKbdLayout) {
-                await ref
-                    .read(prefProvider)
-                    .setString(prefClipKbdLayout, newValue);
-                ref.refresh(prefProvider);
+                await prefs.setString(_prefClipKbdLayout, newValue);
+                setState(() {});
               }
             },
           ),
+          SwitchListTile(
+              title: const Text('Bypass touch requirement'),
+              subtitle: nfcBypassTouch
+                  ? const Text(
+                      'Accounts that require touch are automatically shown over NFC.')
+                  : const Text(
+                      'Accounts that require touch need an additional tap over NFC.'),
+              value: nfcBypassTouch,
+              onChanged: (value) {
+                prefs.setBool(_prefNfcBypassTouch, value);
+                setState(() {});
+              }),
+          const Divider(),
           const ListTitle('Appearance'),
           ListTile(
             title: const Text('App theme'),
-            subtitle: Text(ref.read(themeModeProvider).name),
+            subtitle: Text(themeMode.displayName),
             onTap: () async {
-              var newMode = await _selectAppearance(context, themeMode);
+              final newMode = await _selectAppearance(context, themeMode);
               ref.read(themeModeProvider.notifier).setThemeMode(newMode);
             },
           ),
@@ -105,6 +160,28 @@ class AndroidSettingsPage extends ConsumerWidget {
     );
   }
 
+  Future<_TapAction> _selectTapAction(
+          BuildContext context, _TapAction tapAction) async =>
+      await showDialog<_TapAction>(
+          context: context,
+          builder: (BuildContext context) {
+            return SimpleDialog(
+              title: const Text('On YubiKey NFC tap'),
+              children: _TapAction.values
+                  .map(
+                    (e) => RadioListTile<_TapAction>(
+                        title: Text(e.description),
+                        value: e,
+                        groupValue: tapAction,
+                        onChanged: (mode) {
+                          Navigator.pop(context, e);
+                        }),
+                  )
+                  .toList(),
+            );
+          }) ??
+      _TapAction.launch;
+
   Future<String> _selectKbdLayout(
           BuildContext context, String currentKbdLayout) async =>
       await showDialog<String>(
@@ -112,32 +189,20 @@ class AndroidSettingsPage extends ConsumerWidget {
           builder: (BuildContext context) {
             return SimpleDialog(
               title: const Text('Choose keyboard layout'),
-              children: <Widget>[
-                RadioListTile<String>(
-                    title: const Text('US'),
-                    value: 'US',
-                    groupValue: currentKbdLayout,
-                    onChanged: (mode) {
-                      Navigator.pop(context, 'US');
-                    }),
-                RadioListTile<String>(
-                    title: const Text('DE'),
-                    value: 'DE',
-                    groupValue: currentKbdLayout,
-                    onChanged: (mode) {
-                      Navigator.pop(context, 'DE');
-                    }),
-                RadioListTile<String>(
-                    title: const Text('DE-CH'),
-                    value: 'DE-CH',
-                    groupValue: currentKbdLayout,
-                    onChanged: (mode) {
-                      Navigator.pop(context, 'DE-CH');
-                    }),
-              ],
+              children: _keyboardLayouts
+                  .map(
+                    (e) => RadioListTile<String>(
+                        title: Text(e),
+                        value: e,
+                        groupValue: currentKbdLayout,
+                        onChanged: (mode) {
+                          Navigator.pop(context, e);
+                        }),
+                  )
+                  .toList(),
             );
           }) ??
-      defaultClipKbdLayout;
+      _defaultClipKbdLayout;
 
   Future<ThemeMode> _selectAppearance(
           BuildContext context, ThemeMode themeMode) async =>
@@ -146,29 +211,16 @@ class AndroidSettingsPage extends ConsumerWidget {
           builder: (BuildContext context) {
             return SimpleDialog(
               title: const Text('Choose app theme'),
-              children: <Widget>[
-                RadioListTile<ThemeMode>(
-                    title: const Text('System default'),
-                    value: ThemeMode.system,
-                    groupValue: themeMode,
-                    onChanged: (mode) {
-                      Navigator.pop(context, ThemeMode.system);
-                    }),
-                RadioListTile<ThemeMode>(
-                    title: const Text('Light mode'),
-                    value: ThemeMode.light,
-                    groupValue: themeMode,
-                    onChanged: (mode) {
-                      Navigator.pop(context, ThemeMode.light);
-                    }),
-                RadioListTile<ThemeMode>(
-                    title: const Text('Dark mode'),
-                    value: ThemeMode.dark,
-                    groupValue: themeMode,
-                    onChanged: (mode) {
-                      Navigator.pop(context, ThemeMode.dark);
-                    }),
-              ],
+              children: ThemeMode.values
+                  .map((e) => RadioListTile(
+                        title: Text(e.displayName),
+                        value: e,
+                        groupValue: themeMode,
+                        onChanged: (mode) {
+                          Navigator.pop(context, e);
+                        },
+                      ))
+                  .toList(),
             );
           }) ??
       ThemeMode.system;
