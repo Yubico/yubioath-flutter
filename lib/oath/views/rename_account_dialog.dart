@@ -122,7 +122,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${AppLocalizations.of(context)!.oath_rename} $label?'),
+          Text(AppLocalizations.of(context)!.oath_rename(label)),
           Text(AppLocalizations.of(context)!
               .oath_warning_will_change_account_displayed),
           TextFormField(

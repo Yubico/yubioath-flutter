@@ -59,7 +59,12 @@
     "oath_account_must_have_name": "Your account must have a name",
     "oath_name_exists": "This name already exists for the Issuer",
     "oath_account_renamed": "Account renamed",
-    "oath_rename": "Rename",
+    "oath_rename": "Rename {label}?",
+    "@oath_rename" : {
+        "placeholders": {
+            "label": {}
+        }
+    },
     "oath_factory_reset": "Factory reset",
     "oath_oath_application_reset": "OATH application reset",
     "oath_reset": "Reset",
