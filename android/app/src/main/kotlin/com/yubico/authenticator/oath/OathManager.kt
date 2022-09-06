@@ -361,10 +361,10 @@ class OathManager(
         }
 
     private suspend fun requestRefresh() {
-        appViewModel.connectedYubiKey.value?.let {
-            useOathSessionUsb(it) {
+        appViewModel.connectedYubiKey.value?.let { usbYubiKeyDevice ->
+            useOathSessionUsb(usbYubiKeyDevice) { session ->
                 oathViewModel.updateCredentials(
-                    calculateOathCodes(it).model(it.deviceId)
+                    calculateOathCodes(session).model(session.deviceId)
                 )
             }
         } ?: throw IllegalStateException("Cannot refresh for nfc key")
@@ -510,7 +510,8 @@ class OathManager(
     }
 
     private fun getOathCredential(oathSession: OathSession, credentialId: String) =
-        oathSession.credentials.firstOrNull { credential ->
+        // we need to use oathSession.calculateCodes() to get proper Credential.touchRequired value
+        oathSession.calculateCodes().map { e -> e.key }.firstOrNull { credential ->
             (credential != null) && credential.id.asString() == credentialId
         } ?: throw Exception("Failed to find account")
 
