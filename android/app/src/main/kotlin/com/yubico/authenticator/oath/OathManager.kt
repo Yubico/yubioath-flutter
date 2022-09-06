@@ -361,10 +361,10 @@ class OathManager(
         }
 
     private suspend fun requestRefresh() {
-        appViewModel.connectedYubiKey.value?.let {
-            useOathSessionUsb(it) {
+        appViewModel.connectedYubiKey.value?.let { usbYubiKeyDevice ->
+            useOathSessionUsb(usbYubiKeyDevice) { session ->
                 oathViewModel.updateCredentials(
-                    calculateOathCodes(it).model(it.deviceId)
+                    calculateOathCodes(session).model(session.deviceId)
                 )
             }
         } ?: throw IllegalStateException("Cannot refresh for nfc key")
