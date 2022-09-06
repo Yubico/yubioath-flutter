@@ -133,7 +133,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Issuer (optional)',
-              helperText: '', // Prevents dialog resizing when enabled = false
+              helperText: '', // Prevents dialog resizing when disabled
               prefixIcon: Icon(Icons.business_outlined),
             ),
             textInputAction: TextInputAction.next,
@@ -151,8 +151,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               labelText: 'Account name',
-              helperText: '',
-              // Prevents dialog resizing when enabled = false
+              helperText: '', // Prevents dialog resizing when disabled
               errorText: !isValidFormat
                   ? 'Your account must have a name'
                   : !isUnique

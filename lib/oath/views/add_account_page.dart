@@ -61,6 +61,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   List<int> _periodValues = [20, 30, 45, 60];
   List<int> _digitsValues = [6, 8];
 
+  @override
+  void dispose() {
+    _issuerController.dispose();
+    _accountController.dispose();
+    _secretController.dispose();
+    _periodController.dispose();
+    super.dispose();
+  }
+
   _scanQrCode(QrScanner qrScanner) async {
     try {
       setState(() {
@@ -250,8 +259,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: AppLocalizations.of(context)!.oath_issuer_optional,
-                helperText: '', // Prevents dialog resizing when enabled = false
-                prefixIcon: const Icon(Icons.business_outlined),
+                helperText: '', // Prevents dialog resizing when disabled
+                prefixIcon: Icon(Icons.business_outlined),
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -273,10 +282,10 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.person_outline),
                 labelText: AppLocalizations.of(context)!.oath_account_name,
-                helperText: '', // Prevents dialog resizing when enabled = false
+                helperText: '', // Prevents dialog resizing when disabled
                 errorText: isUnique
                     ? null
-                    : 'This name already exists for the Issuer', // TODO
+                    : 'This name already exists for the Issuer', //TODO
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
