@@ -33,17 +33,20 @@ class DeleteFingerprintDialog extends ConsumerWidget {
           child: const Text('Delete'),
         ),
       ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('This will delete the fingerprint from your YubiKey.'),
-          Text('Fingerprint: $label'),
-        ]
-            .map((e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: e,
-                ))
-            .toList(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('This will delete the fingerprint from your YubiKey.'),
+            Text('Fingerprint: $label'),
+          ]
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: e,
+                  ))
+              .toList(),
+        ),
       ),
     );
   }

@@ -38,7 +38,6 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               ),
             ),
             body: SingleChildScrollView(
-              padding: const EdgeInsets.all(20.0),
               child: Container(key: _childKey, child: widget.child),
             ),
           );
@@ -49,7 +48,9 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               : AppLocalizations.of(context)!.widgets_cancel;
           return AlertDialog(
             title: widget.title,
+            titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
             scrollable: true,
+            contentPadding: const EdgeInsets.symmetric(vertical: 8),
             content: SizedBox(
               width: 380,
               child: Container(key: _childKey, child: widget.child),

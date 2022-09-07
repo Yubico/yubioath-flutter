@@ -284,7 +284,10 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
           child: Text(AppLocalizations.of(context)!.mgmt_save),
         ),
       ],
-      child: child,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: child,
+      ),
     );
   }
 }

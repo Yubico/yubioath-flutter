@@ -21,17 +21,20 @@ class DeleteCredentialDialog extends ConsumerWidget {
 
     return ResponsiveDialog(
       title: const Text('Delete credential'),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('This will delete the credential from your YubiKey.'),
-          Text('Credential: $label'),
-        ]
-            .map((e) => Padding(
-                  child: e,
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                ))
-            .toList(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('This will delete the credential from your YubiKey.'),
+            Text('Credential: $label'),
+          ]
+              .map((e) => Padding(
+                    child: e,
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  ))
+              .toList(),
+        ),
       ),
       actions: [
         TextButton(

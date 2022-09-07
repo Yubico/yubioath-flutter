@@ -245,192 +245,197 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             }
           }
         },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              key: const Key('issuer'),
-              controller: _issuerController,
-              autofocus: !widget.openQrScanner,
-              enabled: issuerRemaining > 0,
-              maxLength: max(issuerRemaining, 1),
-              inputFormatters: [limitBytesLength(issuerRemaining)],
-              buildCounter: buildByteCounterFor(_issuerController.text.trim()),
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: AppLocalizations.of(context)!.oath_issuer_optional,
-                helperText: '', // Prevents dialog resizing when disabled
-                prefixIcon: const Icon(Icons.business_outlined),
-              ),
-              textInputAction: TextInputAction.next,
-              onChanged: (value) {
-                setState(() {
-                  // Update maxlengths
-                });
-              },
-              onSubmitted: (_) {
-                if (isValid) submit();
-              },
-            ),
-            TextField(
-              key: const Key('name'),
-              controller: _accountController,
-              maxLength: max(nameRemaining, 1),
-              buildCounter: buildByteCounterFor(_accountController.text.trim()),
-              inputFormatters: [limitBytesLength(nameRemaining)],
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.person_outline),
-                labelText: AppLocalizations.of(context)!.oath_account_name,
-                helperText: '', // Prevents dialog resizing when disabled
-                errorText: isUnique
-                    ? null
-                    : AppLocalizations.of(context)!.oath_duplicate_name,
-              ),
-              textInputAction: TextInputAction.next,
-              onChanged: (value) {
-                setState(() {
-                  // Update maxlengths
-                });
-              },
-              onSubmitted: (_) {
-                if (isValid) submit();
-              },
-            ),
-            TextField(
-              key: const Key('secret'),
-              controller: _secretController,
-              obscureText: _isObscure,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(_secretFormatterPattern)
-              ],
-              decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off,
-                      color: IconTheme.of(context).color,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isObscure = !_isObscure;
-                      });
-                    },
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                key: const Key('issuer'),
+                controller: _issuerController,
+                autofocus: !widget.openQrScanner,
+                enabled: issuerRemaining > 0,
+                maxLength: max(issuerRemaining, 1),
+                inputFormatters: [limitBytesLength(issuerRemaining)],
+                buildCounter:
+                    buildByteCounterFor(_issuerController.text.trim()),
+                decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.key_outlined),
-                  labelText: AppLocalizations.of(context)!.oath_secret_key,
-                  errorText: _validateSecretLength && !secretLengthValid
-                      ? AppLocalizations.of(context)!.oath_invalid_length
-                      : null),
-              readOnly: _qrState == _QrScanState.success,
-              textInputAction: TextInputAction.done,
-              onChanged: (value) {
-                setState(() {
-                  _validateSecretLength = false;
-                });
-              },
-              onSubmitted: (_) {
-                if (isValid) submit();
-              },
-            ),
-            if (qrScanner != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: ActionChip(
-                    avatar: _qrState != _QrScanState.scanning
-                        ? (_qrState == _QrScanState.success
-                            ? const Icon(Icons.qr_code)
-                            : const Icon(Icons.qr_code_scanner_outlined))
-                        : const CircularProgressIndicator(strokeWidth: 2.0),
-                    label: _qrState == _QrScanState.success
-                        ? Text(AppLocalizations.of(context)!.oath_scanned_qr)
-                        : Text(AppLocalizations.of(context)!.oath_scan_qr),
-                    onPressed: () {
-                      _scanQrCode(qrScanner);
-                    }),
+                  labelText: AppLocalizations.of(context)!.oath_issuer_optional,
+                  helperText: '', // Prevents dialog resizing when disabled
+                  prefixIcon: const Icon(Icons.business_outlined),
+                ),
+                textInputAction: TextInputAction.next,
+                onChanged: (value) {
+                  setState(() {
+                    // Update maxlengths
+                  });
+                },
+                onSubmitted: (_) {
+                  if (isValid) submit();
+                },
               ),
-            const Divider(),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 4.0,
-              runSpacing: 8.0,
-              children: [
-                if (widget.state.version.isAtLeast(4, 2))
-                  FilterChip(
-                    label:
-                        Text(AppLocalizations.of(context)!.oath_require_touch),
-                    selected: _touch,
-                    onSelected: (value) {
-                      setState(() {
-                        _touch = value;
-                      });
-                    },
-                  ),
-                ChoiceFilterChip<OathType>(
-                  items: OathType.values,
-                  value: _oathType,
-                  selected: _oathType != defaultOathType,
-                  itemBuilder: (value) => Text(value.displayName),
-                  onChanged: _qrState != _QrScanState.success
-                      ? (value) {
-                          setState(() {
-                            _oathType = value;
-                          });
-                        }
-                      : null,
+              TextField(
+                key: const Key('name'),
+                controller: _accountController,
+                maxLength: max(nameRemaining, 1),
+                buildCounter:
+                    buildByteCounterFor(_accountController.text.trim()),
+                inputFormatters: [limitBytesLength(nameRemaining)],
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.person_outline),
+                  labelText: AppLocalizations.of(context)!.oath_account_name,
+                  helperText: '', // Prevents dialog resizing when disabled
+                  errorText: isUnique
+                      ? null
+                      : AppLocalizations.of(context)!.oath_duplicate_name,
                 ),
-                ChoiceFilterChip<HashAlgorithm>(
-                  items: HashAlgorithm.values,
-                  value: _hashAlgorithm,
-                  selected: _hashAlgorithm != defaultHashAlgorithm,
-                  itemBuilder: (value) => Text(value.displayName),
-                  onChanged: _qrState != _QrScanState.success
-                      ? (value) {
-                          setState(() {
-                            _hashAlgorithm = value;
-                          });
-                        }
-                      : null,
+                textInputAction: TextInputAction.next,
+                onChanged: (value) {
+                  setState(() {
+                    // Update maxlengths
+                  });
+                },
+                onSubmitted: (_) {
+                  if (isValid) submit();
+                },
+              ),
+              TextField(
+                key: const Key('secret'),
+                controller: _secretController,
+                obscureText: _isObscure,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(_secretFormatterPattern)
+                ],
+                decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isObscure ? Icons.visibility : Icons.visibility_off,
+                        color: IconTheme.of(context).color,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                    ),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.key_outlined),
+                    labelText: AppLocalizations.of(context)!.oath_secret_key,
+                    errorText: _validateSecretLength && !secretLengthValid
+                        ? AppLocalizations.of(context)!.oath_invalid_length
+                        : null),
+                readOnly: _qrState == _QrScanState.success,
+                textInputAction: TextInputAction.done,
+                onChanged: (value) {
+                  setState(() {
+                    _validateSecretLength = false;
+                  });
+                },
+                onSubmitted: (_) {
+                  if (isValid) submit();
+                },
+              ),
+              if (qrScanner != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: ActionChip(
+                      avatar: _qrState != _QrScanState.scanning
+                          ? (_qrState == _QrScanState.success
+                              ? const Icon(Icons.qr_code)
+                              : const Icon(Icons.qr_code_scanner_outlined))
+                          : const CircularProgressIndicator(strokeWidth: 2.0),
+                      label: _qrState == _QrScanState.success
+                          ? Text(AppLocalizations.of(context)!.oath_scanned_qr)
+                          : Text(AppLocalizations.of(context)!.oath_scan_qr),
+                      onPressed: () {
+                        _scanQrCode(qrScanner);
+                      }),
                 ),
-                if (_oathType == OathType.totp)
-                  ChoiceFilterChip<int>(
-                    items: _periodValues,
-                    value:
-                        int.tryParse(_periodController.text) ?? defaultPeriod,
-                    selected:
-                        int.tryParse(_periodController.text) != defaultPeriod,
-                    itemBuilder: ((value) => Text(
-                        '$value ${AppLocalizations.of(context)!.oath_sec}')),
+              const Divider(),
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 4.0,
+                runSpacing: 8.0,
+                children: [
+                  if (widget.state.version.isAtLeast(4, 2))
+                    FilterChip(
+                      label: Text(
+                          AppLocalizations.of(context)!.oath_require_touch),
+                      selected: _touch,
+                      onSelected: (value) {
+                        setState(() {
+                          _touch = value;
+                        });
+                      },
+                    ),
+                  ChoiceFilterChip<OathType>(
+                    items: OathType.values,
+                    value: _oathType,
+                    selected: _oathType != defaultOathType,
+                    itemBuilder: (value) => Text(value.displayName),
                     onChanged: _qrState != _QrScanState.success
-                        ? (period) {
+                        ? (value) {
                             setState(() {
-                              _periodController.text = '$period';
+                              _oathType = value;
                             });
                           }
                         : null,
                   ),
-                ChoiceFilterChip<int>(
-                  items: _digitsValues,
-                  value: _digits,
-                  selected: _digits != defaultDigits,
-                  itemBuilder: (value) => Text(
-                      '$value ${AppLocalizations.of(context)!.oath_digits}'),
-                  onChanged: _qrState != _QrScanState.success
-                      ? (digits) {
-                          setState(() {
-                            _digits = digits;
-                          });
-                        }
-                      : null,
-                ),
-              ],
-            ),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
+                  ChoiceFilterChip<HashAlgorithm>(
+                    items: HashAlgorithm.values,
+                    value: _hashAlgorithm,
+                    selected: _hashAlgorithm != defaultHashAlgorithm,
+                    itemBuilder: (value) => Text(value.displayName),
+                    onChanged: _qrState != _QrScanState.success
+                        ? (value) {
+                            setState(() {
+                              _hashAlgorithm = value;
+                            });
+                          }
+                        : null,
+                  ),
+                  if (_oathType == OathType.totp)
+                    ChoiceFilterChip<int>(
+                      items: _periodValues,
+                      value:
+                          int.tryParse(_periodController.text) ?? defaultPeriod,
+                      selected:
+                          int.tryParse(_periodController.text) != defaultPeriod,
+                      itemBuilder: ((value) => Text(
+                          '$value ${AppLocalizations.of(context)!.oath_sec}')),
+                      onChanged: _qrState != _QrScanState.success
+                          ? (period) {
+                              setState(() {
+                                _periodController.text = '$period';
+                              });
+                            }
+                          : null,
+                    ),
+                  ChoiceFilterChip<int>(
+                    items: _digitsValues,
+                    value: _digits,
+                    selected: _digits != defaultDigits,
+                    itemBuilder: (value) => Text(
+                        '$value ${AppLocalizations.of(context)!.oath_digits}'),
+                    onChanged: _qrState != _QrScanState.success
+                        ? (digits) {
+                            setState(() {
+                              _digits = digits;
+                            });
+                          }
+                        : null,
+                  ),
+                ],
+              ),
+            ]
+                .map((e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ))
+                .toList(),
+          ),
         ),
       ),
     );

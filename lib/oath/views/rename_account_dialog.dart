@@ -119,65 +119,57 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
           child: Text(AppLocalizations.of(context)!.oath_save),
         ),
       ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocalizations.of(context)!.oath_rename(label)),
-          Text(AppLocalizations.of(context)!
-              .oath_warning_will_change_account_displayed),
-          TextFormField(
-            initialValue: _issuer,
-            enabled: issuerRemaining > 0,
-            maxLength: issuerRemaining > 0 ? issuerRemaining : null,
-            buildCounter: buildByteCounterFor(_issuer),
-            inputFormatters: [limitBytesLength(issuerRemaining)],
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              labelText: AppLocalizations.of(context)!.oath_issuer_optional,
-              helperText: '', // Prevents dialog resizing when disabled
-              prefixIcon: const Icon(Icons.business_outlined),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(AppLocalizations.of(context)!.oath_rename(label)),
+            Text(AppLocalizations.of(context)!
+                .oath_warning_will_change_account_displayed),
+            TextFormField(
+              initialValue: _issuer,
+              enabled: issuerRemaining > 0,
+              maxLength: issuerRemaining > 0 ? issuerRemaining : null,
+              buildCounter: buildByteCounterFor(_issuer),
+              inputFormatters: [limitBytesLength(issuerRemaining)],
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.oath_issuer_optional,
+                helperText: '', // Prevents dialog resizing when disabled
+                prefixIcon: const Icon(Icons.business_outlined),
+              ),
+              textInputAction: TextInputAction.next,
+              onChanged: (value) {
+                setState(() {
+                  _issuer = value.trim();
+                });
+              },
             ),
-            textInputAction: TextInputAction.next,
-            onChanged: (value) {
-              setState(() {
-                _issuer = value.trim();
-              });
-            },
-          ),
-          TextFormField(
-            initialValue: _account,
-            maxLength: nameRemaining,
-            inputFormatters: [limitBytesLength(nameRemaining)],
-            buildCounter: buildByteCounterFor(_account),
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              labelText: AppLocalizations.of(context)!.oath_account_name,
-              helperText: '', // Prevents dialog resizing when disabled
-              errorText: !isValidFormat
-                  ? AppLocalizations.of(context)!.oath_account_must_have_name
-                  : !isUnique
-                      ? AppLocalizations.of(context)!.oath_name_exists
-                      : null,
-              prefixIcon: const Icon(Icons.people_alt_outlined),
+            TextFormField(
+              initialValue: _account,
+              maxLength: nameRemaining,
+              inputFormatters: [limitBytesLength(nameRemaining)],
+              buildCounter: buildByteCounterFor(_account),
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.oath_account_name,
+                helperText: '', // Prevents dialog resizing when disabled
+                errorText: !isValidFormat
+                    ? AppLocalizations.of(context)!.oath_account_must_have_name
+                    : !isUnique
+                        ? AppLocalizations.of(context)!.oath_name_exists
+                        : null,
+                prefixIcon: const Icon(Icons.people_alt_outlined),
+              ),
             ),
-            textInputAction: TextInputAction.done,
-            onChanged: (value) {
-              setState(() {
-                _account = value.trim();
-              });
-            },
-            onFieldSubmitted: (_) {
-              if (didChange && isValid) {
-                _submit();
-              }
-            },
-          ),
-        ]
-            .map((e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: e,
-                ))
-            .toList(),
+          ]
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: e,
+                  ))
+              .toList(),
+        ),
       ),
     );
   }
