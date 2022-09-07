@@ -87,6 +87,9 @@ class AppTheme {
           //labelLarge: TextStyle(color: Colors.cyan.shade500),
           //titleSmall: TextStyle(color: Colors.grey.shade600),
           //titleMedium: const TextStyle(),
+          titleMedium: TextStyle(
+              fontWeight: FontWeight.w300,
+              fontSize: 16),
           titleLarge: TextStyle(
               //color: Colors.grey.shade500,
               fontWeight: FontWeight.w400,
