@@ -5,6 +5,7 @@ const primaryGreen = Color(0xffaed581);
 const accentGreen = Color(0xff9aca3c);
 const primaryBlue = Color(0xff325f74);
 const primaryRed = Color(0xffea4335);
+const darkRed = Color(0xffda4d41);
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
@@ -105,6 +106,7 @@ class AppTheme {
           onPrimary: Colors.black,
           secondary: const Color(0xff5d7d90),
         ),
+        errorColor: darkRed,
         iconTheme: const IconThemeData(
           color: Colors.white70,
           size: 18.0,
@@ -128,7 +130,7 @@ class AppTheme {
             onSecondary: Colors.white,
             primary: primaryGreen,
             onPrimary: Colors.grey.shade900,
-            error: primaryRed,
+            error: darkRed,
             onError: Colors.grey.shade100,
           ),
         ),
