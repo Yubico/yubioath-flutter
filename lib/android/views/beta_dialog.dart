@@ -29,7 +29,6 @@ class BetaDialog {
       context: context,
       builder: (context) {
         final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-        final color = isDarkTheme ? 'white' : 'green';
         return WillPopScope(
           onWillPop: () async => false,
           child: AlertDialog(
@@ -38,14 +37,16 @@ class BetaDialog {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Image.asset(
-                  'assets/graphics/yubico-$color.png',
-                  alignment: Alignment.centerLeft,
-                  height: 78,
+                  isDarkTheme
+                      ? 'assets/graphics/beta-dark.png'
+                      : 'assets/graphics/beta-light.png',
+                  alignment: Alignment.topCenter,
+                  height: 124,
                   filterQuality: FilterQuality.medium,
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Welcome to Yubico Authenticator Beta',
+                  'Welcome to Yubico Authenticator Beta!',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: isDarkTheme ? Colors.white : Colors.black),
                   textAlign: TextAlign.center,
