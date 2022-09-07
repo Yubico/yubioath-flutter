@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -47,9 +48,9 @@ class AboutPage extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextButton(
-                child: const Text(
-                  'Terms of use',
-                  style: TextStyle(decoration: TextDecoration.underline),
+                child: Text(
+                  AppLocalizations.of(context)!.general_terms_of_use,
+                  style: const TextStyle(decoration: TextDecoration.underline),
                 ),
                 onPressed: () {
                   launchUrl(
@@ -60,9 +61,9 @@ class AboutPage extends ConsumerWidget {
                 },
               ),
               TextButton(
-                child: const Text(
-                  'Privacy policy',
-                  style: TextStyle(decoration: TextDecoration.underline),
+                child: Text(
+                  AppLocalizations.of(context)!.general_privacy_policy,
+                  style: const TextStyle(decoration: TextDecoration.underline),
                 ),
                 onPressed: () {
                   launchUrl(
@@ -75,9 +76,9 @@ class AboutPage extends ConsumerWidget {
             ],
           ),
           TextButton(
-            child: const Text(
-              'Open source licenses',
-              style: TextStyle(decoration: TextDecoration.underline),
+            child: Text(
+              AppLocalizations.of(context)!.general_open_src_licenses,
+              style: const TextStyle(decoration: TextDecoration.underline),
             ),
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute<void>(
@@ -95,7 +96,7 @@ class AboutPage extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: Text(
-              'Help and feedback',
+              AppLocalizations.of(context)!.general_help_and_feedback,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -103,9 +104,9 @@ class AboutPage extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextButton(
-                child: const Text(
-                  'Send us feedback',
-                  style: TextStyle(decoration: TextDecoration.underline),
+                child: Text(
+                  AppLocalizations.of(context)!.general_send_feedback,
+                  style: const TextStyle(decoration: TextDecoration.underline),
                 ),
                 onPressed: () {
                   launchUrl(
@@ -115,9 +116,9 @@ class AboutPage extends ConsumerWidget {
                 },
               ),
               TextButton(
-                child: const Text(
-                  'I need help',
-                  style: TextStyle(decoration: TextDecoration.underline),
+                child: Text(
+                  AppLocalizations.of(context)!.general_i_need_help,
+                  style: const TextStyle(decoration: TextDecoration.underline),
                 ),
                 onPressed: () {
                   launchUrl(

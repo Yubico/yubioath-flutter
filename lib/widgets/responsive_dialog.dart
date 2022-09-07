@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ResponsiveDialog extends StatefulWidget {
   final Widget? title;
@@ -44,8 +45,8 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         } else {
           // Dialog
           final cancelText = widget.onCancel == null && widget.actions.isEmpty
-              ? 'Close'
-              : 'Cancel';
+              ? AppLocalizations.of(context)!.widgets_close
+              : AppLocalizations.of(context)!.widgets_cancel;
           return AlertDialog(
             title: widget.title,
             scrollable: true,

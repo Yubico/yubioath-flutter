@@ -70,6 +70,27 @@
     "oath_reset": "Reset",
     "oath_warning_will_delete_accounts": "Warning! This will irrevocably delete all OATH TOTP/HOTP accounts from your YubiKey.",
     "oath_warning_disable_these_creds": "Your OATH credentials, as well as any password set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.",
+    
+    "widgets_cancel": "Cancel",
+    "widgets_close": "Close",
+
+    "mgmt_min_one_interface": "At least one interface must be enabled",
+    "mgmt_reconfiguring_yubikey": "Reconfiguring YubiKey...",
+    "mgmt_configuration_updated": "Configuration updated",
+    "mgmt_configuration_updated_remove_reinsert": "Configuration updated, remove and reinsert your YubiKey",
+    "mgmt_toggle_applications": "Toggle applications",
+    "mgmt_save": "Save",
+
+    "general_terms_of_use": "Terms of use",
+    "general_privacy_policy": "Privacy policy",
+    "general_open_src_licenses": "Open source licenses",
+    "general_help_and_feedback": "Help and feedback",
+    "general_send_feedback": "Send us feedback",
+    "general_i_need_help": "I need help",
+    "general_application_error": "Application error",
+    
+
+
 
 
 
