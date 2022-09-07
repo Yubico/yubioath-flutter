@@ -109,7 +109,11 @@ class AboutPage extends ConsumerWidget {
                 ),
                 onPressed: () {
                   launchUrl(
-                    Uri.parse('https://forms.gle/nYPVWcFnqoprZX1S9'),
+                    Platform.isAndroid
+                        // Android Beta feedback form
+                        ? Uri.parse('https://forms.gle/2J81Kh8rnzBrtNc69')
+                        // Desktop Beta feedback form
+                        : Uri.parse('https://forms.gle/nYPVWcFnqoprZX1S9'),
                     mode: LaunchMode.externalApplication,
                   );
                 },
