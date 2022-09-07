@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 const primaryGreen = Color(0xffaed581);
 const accentGreen = Color(0xff9aca3c);
@@ -27,6 +28,10 @@ class AppTheme {
           //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.grey.shade800,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+          )
         ),
         // Mainly used for the OATH dialog view at the moment
         buttonTheme: ButtonThemeData(
@@ -82,6 +87,9 @@ class AppTheme {
           //labelLarge: TextStyle(color: Colors.cyan.shade500),
           //titleSmall: TextStyle(color: Colors.grey.shade600),
           //titleMedium: const TextStyle(),
+          titleMedium: TextStyle(
+              fontWeight: FontWeight.w300,
+              fontSize: 16),
           titleLarge: TextStyle(
               //color: Colors.grey.shade500,
               fontWeight: FontWeight.w400,
@@ -113,6 +121,10 @@ class AppTheme {
           //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.grey.shade400,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light,
+          )
         ),
         // Mainly used for the OATH dialog view at the moment
         buttonTheme: ButtonThemeData(
