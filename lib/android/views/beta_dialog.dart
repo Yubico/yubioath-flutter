@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/message.dart';
 import '../../core/state.dart';
@@ -27,8 +28,8 @@ class BetaDialog {
     await showBlurDialog(
       context: context,
       builder: (context) {
-        final color =
-            Theme.of(context).brightness == Brightness.dark ? 'white' : 'green';
+        final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+        final color = isDarkTheme ? 'white' : 'green';
         return WillPopScope(
           onWillPop: () async => false,
           child: AlertDialog(
@@ -42,28 +43,43 @@ class BetaDialog {
                   height: 78,
                   filterQuality: FilterQuality.medium,
                 ),
-                const SizedBox(height: 16),
-                Text('Beta Release',
-                    style: Theme.of(context).textTheme.headlineMedium),
+                const SizedBox(height: 24),
+                Text(
+                  'Welcome to Yubico Authenticator Beta',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: isDarkTheme ? Colors.white : Colors.black),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                    '• Preview the latest beta: Try out the newest features. (Sometimes these may be a little rough around the edges.)'),
                 const SizedBox(height: 8),
                 const Text(
-                    'Preview the latest beta: Try out the newest features. (Sometimes these may be a little rough around the edges.)'),
-                const SizedBox(height: 8),
-                const Text(
-                    'Give early feedback: Let us know what you think and help make Authenticator for Android a better experience. Go to “Send us feedback” under Help and about.'),
+                    '• Give early feedback: Let us know what you think and help make Authenticator for Android a better experience. Go to “Send us feedback” under Help and about.'),
               ],
             ),
             actions: <Widget>[
               TextButton(
                 style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
+                  textStyle: Theme.of(context)
+                      .textTheme
+                      .labelLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 child: const Text('Learn more'),
-                onPressed: () => onBetaDialogClosed(context, ref),
+                onPressed: () {
+                  // FIXME: get correct Android Beta Blog URI
+                  launchUrl(Uri.parse('https://forms.gle/2J81Kh8rnzBrtNc69'),
+                      mode: LaunchMode.externalApplication);
+                  onBetaDialogClosed(context, ref);
+                },
               ),
               TextButton(
                 style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
+                  textStyle: Theme.of(context)
+                      .textTheme
+                      .labelLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 child: const Text('Got it'),
                 onPressed: () => onBetaDialogClosed(context, ref),
