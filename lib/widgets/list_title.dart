@@ -7,8 +7,8 @@ class ListTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ListTile(
         title: Text(
-          title.toUpperCase(),
-          style: Theme.of(context).textTheme.labelSmall,
+          title,
+          style: Theme.of(context).textTheme.labelLarge,
         ),
       );
 }

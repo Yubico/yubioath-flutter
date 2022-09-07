@@ -176,7 +176,7 @@ class AppTheme {
           bodyMedium: TextStyle(color: Colors.grey.shade200),
           labelSmall: TextStyle(color: Colors.grey.shade500),
           labelMedium: TextStyle(color: Colors.cyan.shade200),
-          labelLarge: TextStyle(color: Colors.cyan.shade500),
+          labelLarge: TextStyle(color: Colors.grey.shade400),
           titleSmall: TextStyle(color: Colors.grey.shade600),
           titleMedium: TextStyle(
               color: Colors.grey.shade200,

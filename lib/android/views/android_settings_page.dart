@@ -90,72 +90,82 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
     final themeMode = ref.watch(themeModeProvider);
     final hideAppThumbnail = ref.watch(_hideAppThumbnailProvider);
 
+    final theme = Theme.of(context);
+
     return ResponsiveDialog(
       title: const Text('Settings'),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const ListTitle('NFC Options'),
-          ListTile(
-            title: const Text('On YubiKey NFC tap'),
-            subtitle: Text(tapAction.description),
-            onTap: () async {
-              final newTapAction = await _selectTapAction(context, tapAction);
-              newTapAction.save(prefs);
-              setState(() {});
-            },
-          ),
-          ListTile(
-            title: const Text('Keyboard Layout (for static password)'),
-            subtitle: Text(clipKbdLayout),
-            enabled: tapAction != _TapAction.launch,
-            onTap: () async {
-              var newValue = await _selectKbdLayout(context, clipKbdLayout);
-              if (newValue != clipKbdLayout) {
-                await prefs.setString(_prefClipKbdLayout, newValue);
+      child: Theme(
+        // Make the headers use the primary color to pop a bit.
+        // Once M3 is implemented this will probably not be needed.
+        data: theme.copyWith(
+          textTheme: theme.textTheme.copyWith(
+              labelLarge: theme.textTheme.labelLarge
+                  ?.copyWith(color: theme.colorScheme.primary)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const ListTitle('NFC options'),
+            ListTile(
+              title: const Text('On YubiKey NFC tap'),
+              subtitle: Text(tapAction.description),
+              onTap: () async {
+                final newTapAction = await _selectTapAction(context, tapAction);
+                newTapAction.save(prefs);
                 setState(() {});
-              }
-            },
-          ),
-          SwitchListTile(
-              title: const Text('Bypass touch requirement'),
-              subtitle: nfcBypassTouch
-                  ? const Text(
-                      'Accounts that require touch are automatically shown over NFC.')
-                  : const Text(
-                      'Accounts that require touch need an additional tap over NFC.'),
-              value: nfcBypassTouch,
-              onChanged: (value) {
-                prefs.setBool(_prefNfcBypassTouch, value);
-                setState(() {});
-              }),
-          const Divider(),
-          const ListTitle('Appearance'),
-          ListTile(
-            title: const Text('App theme'),
-            subtitle: Text(themeMode.displayName),
-            onTap: () async {
-              final newMode = await _selectAppearance(context, themeMode);
-              ref.read(themeModeProvider.notifier).setThemeMode(newMode);
-            },
-          ),
-          const ListTitle('Security'),
-          SwitchListTile(
-              title: const Text('Hide app thumbnail'),
-              value: hideAppThumbnail,
-              onChanged: (value) async {
-                try {
-                  bool hideAppThumbnail = await ref
-                      .read(appMethodsProvider)
-                      .invokeMethod('hideAppThumbnail', value);
-                  ref.read(_hideAppThumbnailProvider.notifier).state =
-                      hideAppThumbnail;
-                } catch (e) {
-                  _log.error('Failed to call hideAppThumbnail', e);
+              },
+            ),
+            ListTile(
+              title: const Text('Keyboard Layout (for static password)'),
+              subtitle: Text(clipKbdLayout),
+              enabled: tapAction != _TapAction.launch,
+              onTap: () async {
+                var newValue = await _selectKbdLayout(context, clipKbdLayout);
+                if (newValue != clipKbdLayout) {
+                  await prefs.setString(_prefClipKbdLayout, newValue);
+                  setState(() {});
                 }
-              }),
-        ],
+              },
+            ),
+            SwitchListTile(
+                title: const Text('Bypass touch requirement'),
+                subtitle: nfcBypassTouch
+                    ? const Text(
+                        'Accounts that require touch are automatically shown over NFC.')
+                    : const Text(
+                        'Accounts that require touch need an additional tap over NFC.'),
+                value: nfcBypassTouch,
+                onChanged: (value) {
+                  prefs.setBool(_prefNfcBypassTouch, value);
+                  setState(() {});
+                }),
+            const ListTitle('Appearance'),
+            ListTile(
+              title: const Text('App theme'),
+              subtitle: Text(themeMode.displayName),
+              onTap: () async {
+                final newMode = await _selectAppearance(context, themeMode);
+                ref.read(themeModeProvider.notifier).setThemeMode(newMode);
+              },
+            ),
+            const ListTitle('Security'),
+            SwitchListTile(
+                title: const Text('Hide app thumbnail'),
+                value: hideAppThumbnail,
+                onChanged: (value) async {
+                  try {
+                    bool hideAppThumbnail = await ref
+                        .read(appMethodsProvider)
+                        .invokeMethod('hideAppThumbnail', value);
+                    ref.read(_hideAppThumbnailProvider.notifier).state =
+                        hideAppThumbnail;
+                  } catch (e) {
+                    _log.error('Failed to call hideAppThumbnail', e);
+                  }
+                }),
+          ],
+        ),
       ),
     );
   }
