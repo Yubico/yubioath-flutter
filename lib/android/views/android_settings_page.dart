@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/android/app_methods.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
 import '../../app/state.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
+
+final _log = Logger('android_settings_page');
+final _hideAppThumbnailProvider = StateProvider<bool>((ref) => true);
 
 class AndroidSettingsPage extends ConsumerWidget {
   const AndroidSettingsPage({super.key});
@@ -26,6 +32,8 @@ class AndroidSettingsPage extends ConsumerWidget {
         ref.watch(prefProvider).getString(prefClipKbdLayout) ??
             defaultClipKbdLayout;
     final themeMode = ref.watch(themeModeProvider);
+    final flatSecure = ref.watch(_hideAppThumbnailProvider);
+
     return ResponsiveDialog(
       title: const Text('Settings'),
       child: Column(
@@ -77,6 +85,21 @@ class AndroidSettingsPage extends ConsumerWidget {
               ref.read(themeModeProvider.notifier).setThemeMode(newMode);
             },
           ),
+          const ListTitle('Security'),
+          SwitchListTile(
+              title: const Text('Hide app thumbnail'),
+              value: flatSecure,
+              onChanged: (value) async {
+                try {
+                  bool hideAppThumbnail = await ref
+                      .read(appMethodsProvider)
+                      .invokeMethod('hideAppThumbnail', value);
+                  ref.read(_hideAppThumbnailProvider.notifier).state =
+                      hideAppThumbnail;
+                } catch (e) {
+                  _log.error('Failed to call hideAppThumbnail', e);
+                }
+              }),
         ],
       ),
     );

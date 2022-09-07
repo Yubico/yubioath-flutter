@@ -23,6 +23,8 @@ import com.yubico.yubikit.core.Logger
 import com.yubico.yubikit.core.YubiKeyDevice
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.launch
 import java.io.Closeable
 import java.util.concurrent.Executors
@@ -45,17 +47,11 @@ class MainActivity : FlutterFragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        if (!BuildConfig.DEBUG) {
-//            window.setFlags(
-//                WindowManager.LayoutParams.FLAG_SECURE,
-//                WindowManager.LayoutParams.FLAG_SECURE
-//            )
-//        }
-
         yubikit = YubiKitManager(this)
 
         setupYubiKeyDiscovery()
         setupYubiKitLogger()
+        hideAppThumbnail(true)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -170,6 +166,7 @@ class MainActivity : FlutterFragmentActivity() {
     private lateinit var appPreferences: AppPreferences
     private lateinit var flutterLog: FlutterLog
     private lateinit var flutterStreams: List<Closeable>
+    private lateinit var appMethodChannel: AppMethodChannel
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -180,6 +177,7 @@ class MainActivity : FlutterFragmentActivity() {
         appContext = AppContext(messenger, this.lifecycleScope, viewModel)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
         appPreferences = AppPreferences(this)
+        appMethodChannel = AppMethodChannel(messenger)
 
         flutterStreams = listOf(
             viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),
@@ -204,6 +202,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     companion object {
         const val TAG = "MainActivity"
+        const val FLAG_SECURE = WindowManager.LayoutParams.FLAG_SECURE
     }
 
     /** We observed that some devices (Pixel 2, OnePlus 6) automatically end NFC discovery
@@ -219,4 +218,35 @@ class MainActivity : FlutterFragmentActivity() {
             (context as? MainActivity)?.startNfcDiscovery()
         }
     }
+
+    inner class AppMethodChannel(messenger: BinaryMessenger) {
+
+        private val methodChannel = MethodChannel(messenger, "app.methods")
+
+        init {
+            methodChannel.setMethodCallHandler { methodCall, result ->
+                when (methodCall.method) {
+                    "hideAppThumbnail" -> result.success(
+                        hideAppThumbnail(
+                            methodCall.arguments as Boolean,
+                        )
+                    )
+                    else -> Log.w(TAG, "Unknown app method: ${methodCall.method}")
+                }
+            }
+        }
+    }
+
+    private fun hideAppThumbnail(value: Boolean): Boolean {
+        if (value) {
+            Log.d(TAG, "Setting FLAG_SECURE (hideAppThumbnail)")
+            window.setFlags(FLAG_SECURE, FLAG_SECURE)
+        } else {
+            Log.d(TAG, "Clearing FLAG_SECURE (hideAppThumbnail)")
+            window.clearFlags(FLAG_SECURE)
+        }
+
+        return FLAG_SECURE == (window.attributes.flags and FLAG_SECURE)
+    }
+
 }
