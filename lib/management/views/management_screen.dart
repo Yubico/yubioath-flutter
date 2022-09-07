@@ -236,45 +236,49 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
   @override
   Widget build(BuildContext context) {
     var canSave = false;
-    final child =
-        ref.watch(managementStateProvider(widget.deviceData.node.path)).when(
-              loading: () => const AppLoadingScreen(),
-              error: (error, _) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      error.toString(),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+    final child = ref
+        .watch(managementStateProvider(widget.deviceData.node.path))
+        .when(
+          loading: () => const AppLoadingScreen(),
+          error: (error, _) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  error.toString(),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-              data: (info) {
-                bool hasConfig = info.version.major > 4;
-                if (hasConfig) {
-                  canSave = _enabled[Transport.usb] != 0 &&
-                      !_mapEquals(
-                        _enabled,
-                        info.config.enabledCapabilities,
-                      );
-                } else {
-                  canSave = _interfaces != 0 &&
-                      _interfaces !=
-                          UsbInterface.forCapabilites(widget.deviceData.info
-                                  .config.enabledCapabilities[Transport.usb] ??
-                              0);
-                }
-                return Column(
-                  children: [
-                    hasConfig
-                        ? _buildCapabilitiesForm(context, ref, info)
-                        : _buildModeForm(context, ref, info),
-                  ],
-                );
-              },
+              ],
+            ),
+          ),
+          data: (info) {
+            bool hasConfig = info.version.major > 4;
+            if (hasConfig) {
+              canSave = _enabled[Transport.usb] != 0 &&
+                  !_mapEquals(
+                    _enabled,
+                    info.config.enabledCapabilities,
+                  );
+            } else {
+              canSave = _interfaces != 0 &&
+                  _interfaces !=
+                      UsbInterface.forCapabilites(widget.deviceData.info.config
+                              .enabledCapabilities[Transport.usb] ??
+                          0);
+            }
+            return Column(
+              children: [
+                hasConfig
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                        child: _buildCapabilitiesForm(context, ref, info),
+                      )
+                    : _buildModeForm(context, ref, info),
+              ],
             );
+          },
+        );
 
     return ResponsiveDialog(
       title: Text(AppLocalizations.of(context)!.mgmt_toggle_applications),
@@ -284,10 +288,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
           child: Text(AppLocalizations.of(context)!.mgmt_save),
         ),
       ],
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: child,
-      ),
+      child: child,
     );
   }
 }
