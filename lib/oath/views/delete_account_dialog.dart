@@ -50,7 +50,7 @@ class DeleteAccountDialog extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(AppLocalizations.of(context)!
-              .oath_warning_this_will_delete_from_key),
+              .oath_warning_this_will_delete_account_from_key),
           Text(
             AppLocalizations.of(context)!.oath_warning_disable_this_cred,
             style: Theme.of(context).textTheme.bodyText1,

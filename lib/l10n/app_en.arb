@@ -29,7 +29,7 @@
     "oath_digits": "digits",
     "oath_success_delete_account": "Account deleted",
     "oath_delete": "Delete",
-    "oath_warning_this_will_delete_from_key": "Warning! This action will delete the account from your YubiKey.",
+    "oath_warning_this_will_delete_account_from_key": "Warning! This action will delete the account from your YubiKey.",
     "oath_warning_disable_this_cred": "You will no longer be able to generate OTPs for this account. Make sure to first disable this credential from the website to avoid being locked out of your account.",
     "oath_account": "Account",
     "oath_password_set": "Password set",
@@ -44,6 +44,35 @@
     "oath_enter_new_password": "Enter your new password. A password may contain letters, numbers and special characters.",
     "oath_new_password": "New password",
     "oath_confirm_password": "Confirm password",
+    "oath_authenticator": "Authenticator",
+    "oath_reset_oath": "Reset OATH",
+    "oath_no_accounts": "No accounts",
+    "oath_search_accounts": "Search accounts",
+    "oath_set_password": "Set password",
+    "oath_failed_remember_pw": "Failed to remember password",
+    "oath_enter_oath_pw": "Enter the OATH password for your YubiKey",
+    "oath_password": "Password",
+    "oath_keystore_unavailable": "OS Keystore unavailable",
+    "oath_remember_password": "Remember password",
+    "oath_unlock": "Unlock",
+    "oath_warning_will_change_account_displayed": "This will change how the account is displayed in the list.",
+    "oath_account_must_have_name": "Your account must have a name",
+    "oath_name_exists": "This name already exists for the Issuer",
+    "oath_account_renamed": "Account renamed",
+    "oath_rename": "Rename {label}?",
+    "@oath_rename" : {
+        "placeholders": {
+            "label": {}
+        }
+    },
+    "oath_factory_reset": "Factory reset",
+    "oath_oath_application_reset": "OATH application reset",
+    "oath_reset": "Reset",
+    "oath_warning_will_delete_accounts": "Warning! This will irrevocably delete all OATH TOTP/HOTP accounts from your YubiKey.",
+    "oath_warning_disable_these_creds": "Your OATH credentials, as well as any password set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.",
+
+
+
 
 
 
