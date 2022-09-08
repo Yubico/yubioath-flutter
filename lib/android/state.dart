@@ -6,6 +6,21 @@ import '../app/state.dart';
 import 'devices.dart';
 
 const _contextChannel = MethodChannel('android.state.appContext');
+const _methodsChannel = MethodChannel('app.methods');
+
+final androidAllowScreenshotsProvider =
+    StateNotifierProvider<AllowScreenshotsNotifier, bool>(
+  (ref) => AllowScreenshotsNotifier(),
+);
+
+class AllowScreenshotsNotifier extends StateNotifier<bool> {
+  AllowScreenshotsNotifier() : super(false);
+
+  void setAllowScreenshots(bool value) async {
+    state = value;
+    await _methodsChannel.invokeMethod('hideAppThumbnail', !value);
+  }
+}
 
 final androidSubPageProvider =
     StateNotifierProvider<CurrentAppNotifier, Application>((ref) {

@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/android/app_methods.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yubico_authenticator/core/state.dart';
 
+import '../../core/state.dart';
 import '../../app/state.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
-
-final _log = Logger('android_settings_page');
-final _hideAppThumbnailProvider = StateProvider<bool>((ref) => true);
 
 const String _prefNfcOpenApp = 'prefNfcOpenApp';
 const String _prefNfcBypassTouch = 'prefNfcBypassTouch';
@@ -88,7 +82,6 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
         prefs.getString(_prefClipKbdLayout) ?? _defaultClipKbdLayout;
     final nfcBypassTouch = prefs.getBool(_prefNfcBypassTouch) ?? false;
     final themeMode = ref.watch(themeModeProvider);
-    final hideAppThumbnail = ref.watch(_hideAppThumbnailProvider);
 
     final theme = Theme.of(context);
 
@@ -149,21 +142,6 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                 ref.read(themeModeProvider.notifier).setThemeMode(newMode);
               },
             ),
-            const ListTitle('Security'),
-            SwitchListTile(
-                title: const Text('Hide app thumbnail'),
-                value: hideAppThumbnail,
-                onChanged: (value) async {
-                  try {
-                    bool hideAppThumbnail = await ref
-                        .read(appMethodsProvider)
-                        .invokeMethod('hideAppThumbnail', value);
-                    ref.read(_hideAppThumbnailProvider.notifier).state =
-                        hideAppThumbnail;
-                  } catch (e) {
-                    _log.error('Failed to call hideAppThumbnail', e);
-                  }
-                }),
           ],
         ),
       ),
