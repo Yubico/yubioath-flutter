@@ -26,6 +26,8 @@ import 'state.dart';
 import 'tap_request_dialog.dart';
 
 Future<Widget> initialize() async {
+  _initSystemUi();
+
   if (kDebugMode) {
     Logger.root.level = Levels.DEBUG;
   }
@@ -94,8 +96,16 @@ class DismissKeyboard extends StatelessWidget {
   }
 }
 
-void _initLicenses() async {
+void _initSystemUi() async {
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+      overlays: SystemUiOverlay.values);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarContrastEnforced: true
+  ));
+}
 
+void _initLicenses() async {
   const licenseDir = 'assets/licenses/android';
 
   final androidProjectsToLicenseUrl = await rootBundle.loadStructuredData<List>(
@@ -106,7 +116,7 @@ void _initLicenses() async {
   // mapping from url to license text
   final fileMap = await rootBundle.loadStructuredData<Map>(
     '$licenseDir/map.json',
-        (value) async => jsonDecode(value),
+    (value) async => jsonDecode(value),
   );
 
   final urlToLicense = <String, String>{};

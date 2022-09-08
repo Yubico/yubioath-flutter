@@ -48,6 +48,7 @@ class AppPage extends ConsumerWidget {
       );
 
   Widget _buildScrollView() => SafeArea(
+        bottom: false,
         child: SingleChildScrollView(
           child: Center(
             child: SizedBox(

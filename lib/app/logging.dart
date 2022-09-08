@@ -109,16 +109,19 @@ class LogWarningOverlay extends StatelessWidget {
             return const SizedBox();
           }
 
-          return Align(
-            alignment: Alignment.bottomCenter,
-            child: IgnorePointer(
-              child: Text(
-                'WARNING: $message!',
-                textDirection: TextDirection.ltr,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: IgnorePointer(
+                child: Text(
+                  'WARNING: $message!',
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
