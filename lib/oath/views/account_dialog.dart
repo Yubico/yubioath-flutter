@@ -157,25 +157,22 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
                       ),
                 ),
               const SizedBox(height: 12.0),
-              GestureDetector(
-                onDoubleTap: () => copyToClipboard(context, code),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.rectangle,
-                    color: CardTheme.of(context).color,
-                    borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-                  ),
-                  child: Center(
-                    child: FittedBox(
-                      child: DefaultTextStyle.merge(
-                        style: const TextStyle(fontSize: 28),
-                        child: IconTheme(
-                          data: IconTheme.of(context).copyWith(size: 24),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
-                            child: buildCodeView(ref),
-                          ),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: CardTheme.of(context).color,
+                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                ),
+                child: Center(
+                  child: FittedBox(
+                    child: DefaultTextStyle.merge(
+                      style: const TextStyle(fontSize: 28),
+                      child: IconTheme(
+                        data: IconTheme.of(context).copyWith(size: 24),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: buildCodeView(ref),
                         ),
                       ),
                     ),
