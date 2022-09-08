@@ -32,7 +32,7 @@ class AndroidSettingsPage extends ConsumerWidget {
         ref.watch(prefProvider).getString(prefClipKbdLayout) ??
             defaultClipKbdLayout;
     final themeMode = ref.watch(themeModeProvider);
-    final flatSecure = ref.watch(_hideAppThumbnailProvider);
+    final hideAppThumbnail = ref.watch(_hideAppThumbnailProvider);
 
     return ResponsiveDialog(
       title: const Text('Settings'),
@@ -88,7 +88,7 @@ class AndroidSettingsPage extends ConsumerWidget {
           const ListTitle('Security'),
           SwitchListTile(
               title: const Text('Hide app thumbnail'),
-              value: flatSecure,
+              value: hideAppThumbnail,
               onChanged: (value) async {
                 try {
                   bool hideAppThumbnail = await ref
