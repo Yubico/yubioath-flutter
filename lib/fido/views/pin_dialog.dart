@@ -46,80 +46,83 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           child: const Text('Save'),
         ),
       ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (hasPin) ...[
-            const Text(
-                "Enter your current PIN. If you don't know your PIN, you'll need to reset the YubiKey."),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (hasPin) ...[
+              const Text(
+                  "Enter your current PIN. If you don't know your PIN, you'll need to reset the YubiKey."),
+              TextFormField(
+                initialValue: _currentPin,
+                autofocus: true,
+                obscureText: true,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: 'Current PIN',
+                  errorText: _currentIsWrong ? _currentPinError : null,
+                  errorMaxLines: 3,
+                  prefixIcon: const Icon(Icons.pin_outlined),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _currentIsWrong = false;
+                    _currentPin = value;
+                  });
+                },
+              ),
+            ],
+            Text(
+                'Enter your new PIN. A PIN must be at least $minPinLength characters long and may contain letters, numbers and special characters.'),
+            // TODO: Set max characters based on UTF-8 bytes
             TextFormField(
-              initialValue: _currentPin,
-              autofocus: true,
+              initialValue: _newPin,
+              autofocus: !hasPin,
               obscureText: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: 'Current PIN',
-                errorText: _currentIsWrong ? _currentPinError : null,
+                labelText: 'New PIN',
+                enabled: !hasPin || _currentPin.isNotEmpty,
+                errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Icons.pin_outlined),
               ),
               onChanged: (value) {
                 setState(() {
-                  _currentIsWrong = false;
-                  _currentPin = value;
+                  _newIsWrong = false;
+                  _newPin = value;
                 });
               },
             ),
-          ],
-          Text(
-              'Enter your new PIN. A PIN must be at least $minPinLength characters long and may contain letters, numbers and special characters.'),
-          // TODO: Set max characters based on UTF-8 bytes
-          TextFormField(
-            initialValue: _newPin,
-            autofocus: !hasPin,
-            obscureText: true,
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              labelText: 'New PIN',
-              enabled: !hasPin || _currentPin.isNotEmpty,
-              errorText: _newIsWrong ? _newPinError : null,
-              errorMaxLines: 3,
-              prefixIcon: const Icon(Icons.pin_outlined),
+            TextFormField(
+              initialValue: _confirmPin,
+              obscureText: true,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: 'Confirm PIN',
+                prefixIcon: const Icon(Icons.pin_outlined),
+                enabled:
+                    (!hasPin || _currentPin.isNotEmpty) && _newPin.isNotEmpty,
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _confirmPin = value;
+                });
+              },
+              onFieldSubmitted: (_) {
+                if (isValid) {
+                  _submit();
+                }
+              },
             ),
-            onChanged: (value) {
-              setState(() {
-                _newIsWrong = false;
-                _newPin = value;
-              });
-            },
-          ),
-          TextFormField(
-            initialValue: _confirmPin,
-            obscureText: true,
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              labelText: 'Confirm PIN',
-              prefixIcon: const Icon(Icons.pin_outlined),
-              enabled:
-                  (!hasPin || _currentPin.isNotEmpty) && _newPin.isNotEmpty,
-            ),
-            onChanged: (value) {
-              setState(() {
-                _confirmPin = value;
-              });
-            },
-            onFieldSubmitted: (_) {
-              if (isValid) {
-                _submit();
-              }
-            },
-          ),
-        ]
-            .map((e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: e,
-                ))
-            .toList(),
+          ]
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: e,
+                  ))
+              .toList(),
+        ),
       ),
     );
   }

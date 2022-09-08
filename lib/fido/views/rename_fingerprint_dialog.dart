@@ -63,38 +63,41 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           child: const Text('Save'),
         ),
       ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Rename ${widget.fingerprint.label}?'),
-          const Text('This will change the label of the fingerprint.'),
-          TextFormField(
-            initialValue: _label,
-            maxLength: 15,
-            inputFormatters: [limitBytesLength(15)],
-            buildCounter: buildByteCounterFor(_label),
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Label',
-              prefixIcon: Icon(Icons.fingerprint_outlined),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Rename ${widget.fingerprint.label}?'),
+            const Text('This will change the label of the fingerprint.'),
+            TextFormField(
+              initialValue: _label,
+              maxLength: 15,
+              inputFormatters: [limitBytesLength(15)],
+              buildCounter: buildByteCounterFor(_label),
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Label',
+                prefixIcon: Icon(Icons.fingerprint_outlined),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _label = value.trim();
+                });
+              },
+              onFieldSubmitted: (_) {
+                if (_label.isNotEmpty) {
+                  _submit();
+                }
+              },
             ),
-            onChanged: (value) {
-              setState(() {
-                _label = value.trim();
-              });
-            },
-            onFieldSubmitted: (_) {
-              if (_label.isNotEmpty) {
-                _submit();
-              }
-            },
-          ),
-        ]
-            .map((e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: e,
-                ))
-            .toList(),
+          ]
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: e,
+                  ))
+              .toList(),
+        ),
       ),
     );
   }

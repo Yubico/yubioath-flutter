@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -54,7 +55,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
 
       if (!mounted) return;
       Navigator.of(context).pop(renamed);
-      showMessage(context, 'Account renamed');
+      showMessage(context, AppLocalizations.of(context)!.oath_account_renamed);
     } on CancellationException catch (_) {
       // ignored
     } catch (e) {
@@ -68,7 +69,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
       }
       showMessage(
         context,
-        'Failed adding account: $errorMessage',
+        '${AppLocalizations.of(context)!.oath_fail_add_account}: $errorMessage',
         duration: const Duration(seconds: 4),
       );
     }
@@ -111,72 +112,64 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     final isValid = isUnique && isValidFormat;
 
     return ResponsiveDialog(
-      title: const Text('Rename account'),
+      title: Text(AppLocalizations.of(context)!.oath_rename_account),
       actions: [
         TextButton(
           onPressed: didChange && isValid ? _submit : null,
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.oath_save),
         ),
       ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Rename $label?'),
-          const Text(
-              'This will change how the account is displayed in the list.'),
-          TextFormField(
-            initialValue: _issuer,
-            enabled: issuerRemaining > 0,
-            maxLength: issuerRemaining > 0 ? issuerRemaining : null,
-            buildCounter: buildByteCounterFor(_issuer),
-            inputFormatters: [limitBytesLength(issuerRemaining)],
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Issuer (optional)',
-              helperText: '', // Prevents dialog resizing when disabled
-              prefixIcon: Icon(Icons.business_outlined),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(AppLocalizations.of(context)!.oath_rename(label)),
+            Text(AppLocalizations.of(context)!
+                .oath_warning_will_change_account_displayed),
+            TextFormField(
+              initialValue: _issuer,
+              enabled: issuerRemaining > 0,
+              maxLength: issuerRemaining > 0 ? issuerRemaining : null,
+              buildCounter: buildByteCounterFor(_issuer),
+              inputFormatters: [limitBytesLength(issuerRemaining)],
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.oath_issuer_optional,
+                helperText: '', // Prevents dialog resizing when disabled
+                prefixIcon: const Icon(Icons.business_outlined),
+              ),
+              textInputAction: TextInputAction.next,
+              onChanged: (value) {
+                setState(() {
+                  _issuer = value.trim();
+                });
+              },
             ),
-            textInputAction: TextInputAction.next,
-            onChanged: (value) {
-              setState(() {
-                _issuer = value.trim();
-              });
-            },
-          ),
-          TextFormField(
-            initialValue: _account,
-            maxLength: nameRemaining,
-            inputFormatters: [limitBytesLength(nameRemaining)],
-            buildCounter: buildByteCounterFor(_account),
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              labelText: 'Account name',
-              helperText: '', // Prevents dialog resizing when disabled
-              errorText: !isValidFormat
-                  ? 'Your account must have a name'
-                  : !isUnique
-                      ? 'This name already exists for the Issuer'
-                      : null,
-              prefixIcon: const Icon(Icons.people_alt_outlined),
+            TextFormField(
+              initialValue: _account,
+              maxLength: nameRemaining,
+              inputFormatters: [limitBytesLength(nameRemaining)],
+              buildCounter: buildByteCounterFor(_account),
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.oath_account_name,
+                helperText: '', // Prevents dialog resizing when disabled
+                errorText: !isValidFormat
+                    ? AppLocalizations.of(context)!.oath_account_must_have_name
+                    : !isUnique
+                        ? AppLocalizations.of(context)!.oath_name_exists
+                        : null,
+                prefixIcon: const Icon(Icons.people_alt_outlined),
+              ),
             ),
-            textInputAction: TextInputAction.done,
-            onChanged: (value) {
-              setState(() {
-                _account = value.trim();
-              });
-            },
-            onFieldSubmitted: (_) {
-              if (didChange && isValid) {
-                _submit();
-              }
-            },
-          ),
-        ]
-            .map((e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: e,
-                ))
-            .toList(),
+          ]
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: e,
+                  ))
+              .toList(),
+        ),
       ),
     );
   }

@@ -150,60 +150,63 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
 
     return ResponsiveDialog(
       title: const Text('Add fingerprint'),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Step 1/2: Capture fingerprint'),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(36.0),
-                child: AnimatedBuilder(
-                  animation: _color,
-                  builder: (context, _) {
-                    return Icon(
-                      _fingerprint == null ? Icons.fingerprint : Icons.check,
-                      size: 128.0,
-                      color: _color.value,
-                    );
-                  },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Step 1/2: Capture fingerprint'),
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(36.0),
+                  child: AnimatedBuilder(
+                    animation: _color,
+                    builder: (context, _) {
+                      return Icon(
+                        _fingerprint == null ? Icons.fingerprint : Icons.check,
+                        size: 128.0,
+                        color: _color.value,
+                      );
+                    },
+                  ),
                 ),
-              ),
-              LinearProgressIndicator(value: progress),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(_getMessage()),
-              ),
-            ],
-          ),
-          const Text('Step 2/2: Name fingerprint'),
-          TextFormField(
-            focusNode: _nameFocus,
-            maxLength: 15,
-            inputFormatters: [limitBytesLength(15)],
-            buildCounter: buildByteCounterFor(_label),
-            autofocus: true,
-            decoration: InputDecoration(
-              enabled: _fingerprint != null,
-              border: const OutlineInputBorder(),
-              labelText: 'Name',
-              prefixIcon: const Icon(Icons.fingerprint_outlined),
+                LinearProgressIndicator(value: progress),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(_getMessage()),
+                ),
+              ],
             ),
-            onChanged: (value) {
-              setState(() {
-                _label = value.trim();
-              });
-            },
-            onFieldSubmitted: (_) {
-              _submit();
-            },
-          ),
-        ]
-            .map((e) => Padding(
-                  child: e,
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                ))
-            .toList(),
+            const Text('Step 2/2: Name fingerprint'),
+            TextFormField(
+              focusNode: _nameFocus,
+              maxLength: 15,
+              inputFormatters: [limitBytesLength(15)],
+              buildCounter: buildByteCounterFor(_label),
+              autofocus: true,
+              decoration: InputDecoration(
+                enabled: _fingerprint != null,
+                border: const OutlineInputBorder(),
+                labelText: 'Name',
+                prefixIcon: const Icon(Icons.fingerprint_outlined),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _label = value.trim();
+                });
+              },
+              onFieldSubmitted: (_) {
+                _submit();
+              },
+            ),
+          ]
+              .map((e) => Padding(
+                    child: e,
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  ))
+              .toList(),
+        ),
       ),
       onCancel: () {
         _subscription.cancel();
