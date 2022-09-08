@@ -60,21 +60,21 @@ class BetaDialog {
               ],
             ),
             actions: <Widget>[
-              TextButton(
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context)
-                      .textTheme
-                      .labelLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                child: const Text('Learn more'),
-                onPressed: () {
-                  // FIXME: get correct Android Beta Blog URI
-                  launchUrl(Uri.parse('https://forms.gle/2J81Kh8rnzBrtNc69'),
-                      mode: LaunchMode.externalApplication);
-                  onBetaDialogClosed(context, ref);
-                },
-              ),
+              // FIXME: enable and add correct uri
+              // TextButton(
+              //   style: TextButton.styleFrom(
+              //     textStyle: Theme.of(context)
+              //         .textTheme
+              //         .labelLarge
+              //         ?.copyWith(fontWeight: FontWeight.bold),
+              //   ),
+              //   child: const Text('Learn more'),
+              //   onPressed: () {
+              //     launchUrl(Uri.parse('https://learn more uri'),
+              //         mode: LaunchMode.externalApplication);
+              //     onBetaDialogClosed(context, ref);
+              //   },
+              // ),
               TextButton(
                 style: TextButton.styleFrom(
                   textStyle: Theme.of(context)
