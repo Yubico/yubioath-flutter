@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
 
@@ -59,7 +60,9 @@ class _ModeForm extends StatelessWidget {
           },
         ),
       ),
-      Text(interfaces == 0 ? 'At least one interface must be enabled' : ''),
+      Text(interfaces == 0
+          ? AppLocalizations.of(context)!.mgmt_min_one_interface
+          : ''),
     ]);
   }
 }
@@ -177,7 +180,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
         // This will take longer, show a message
         close = showMessage(
           context,
-          'Reconfiguring YubiKey...',
+          AppLocalizations.of(context)!.mgmt_reconfiguring_yubikey,
           duration: const Duration(seconds: 8),
         );
       }
@@ -190,7 +193,8 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
           );
       if (!mounted) return;
       if (!reboot) Navigator.pop(context);
-      showMessage(context, 'Configuration updated');
+      showMessage(
+          context, AppLocalizations.of(context)!.mgmt_configuration_updated);
     } finally {
       close?.call();
     }
@@ -214,9 +218,10 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     showMessage(
         context,
         widget.deviceData.node.maybeMap(
-            nfcReader: (_) => 'Configuration updated',
-            orElse: () =>
-                'Configuration updated, remove and reinsert your YubiKey'));
+            nfcReader: (_) =>
+                AppLocalizations.of(context)!.mgmt_configuration_updated,
+            orElse: () => AppLocalizations.of(context)!
+                .mgmt_configuration_updated_remove_reinsert));
     Navigator.pop(context);
   }
 
@@ -272,11 +277,11 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
             );
 
     return ResponsiveDialog(
-      title: const Text('Toggle applications'),
+      title: Text(AppLocalizations.of(context)!.mgmt_toggle_applications),
       actions: [
         TextButton(
           onPressed: canSave ? _submitForm : null,
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.mgmt_save),
         ),
       ],
       child: child,

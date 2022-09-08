@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -47,9 +48,9 @@ class AboutPage extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextButton(
-                child: const Text(
-                  'Terms of use',
-                  style: TextStyle(decoration: TextDecoration.underline),
+                child: Text(
+                  AppLocalizations.of(context)!.general_terms_of_use,
+                  style: const TextStyle(decoration: TextDecoration.underline),
                 ),
                 onPressed: () {
                   launchUrl(
@@ -60,9 +61,9 @@ class AboutPage extends ConsumerWidget {
                 },
               ),
               TextButton(
-                child: const Text(
-                  'Privacy policy',
-                  style: TextStyle(decoration: TextDecoration.underline),
+                child: Text(
+                  AppLocalizations.of(context)!.general_privacy_policy,
+                  style: const TextStyle(decoration: TextDecoration.underline),
                 ),
                 onPressed: () {
                   launchUrl(
@@ -75,9 +76,9 @@ class AboutPage extends ConsumerWidget {
             ],
           ),
           TextButton(
-            child: const Text(
-              'Open source licenses',
-              style: TextStyle(decoration: TextDecoration.underline),
+            child: Text(
+              AppLocalizations.of(context)!.general_open_src_licenses,
+              style: const TextStyle(decoration: TextDecoration.underline),
             ),
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute<void>(
@@ -95,7 +96,7 @@ class AboutPage extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: Text(
-              'Help and feedback',
+              AppLocalizations.of(context)!.general_help_and_feedback,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -103,9 +104,9 @@ class AboutPage extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextButton(
-                child: const Text(
-                  'Send us feedback',
-                  style: TextStyle(decoration: TextDecoration.underline),
+                child: Text(
+                  AppLocalizations.of(context)!.general_send_feedback,
+                  style: const TextStyle(decoration: TextDecoration.underline),
                 ),
                 onPressed: () {
                   launchUrl(
@@ -115,9 +116,9 @@ class AboutPage extends ConsumerWidget {
                 },
               ),
               TextButton(
-                child: const Text(
-                  'I need help',
-                  style: TextStyle(decoration: TextDecoration.underline),
+                child: Text(
+                  AppLocalizations.of(context)!.general_i_need_help,
+                  style: const TextStyle(decoration: TextDecoration.underline),
                 ),
                 onPressed: () {
                   launchUrl(
@@ -135,7 +136,7 @@ class AboutPage extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: Text(
-              'Troubleshooting',
+              AppLocalizations.of(context)!.general_troubleshooting,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -144,7 +145,8 @@ class AboutPage extends ConsumerWidget {
             const SizedBox(height: 12.0),
             ActionChip(
               avatar: const Icon(Icons.bug_report_outlined),
-              label: const Text('Run diagnostics'),
+              label:
+                  Text(AppLocalizations.of(context)!.general_run_diagnostics),
               onPressed: () async {
                 _log.info('Running diagnostics...');
                 final response =
@@ -158,7 +160,10 @@ class AboutPage extends ConsumerWidget {
                 await Clipboard.setData(ClipboardData(text: text));
                 await ref.read(withContextProvider)(
                   (context) async {
-                    showMessage(context, 'Diagnostic data copied to clipboard');
+                    showMessage(
+                        context,
+                        AppLocalizations.of(context)!
+                            .general_diagnostics_copied);
                   },
                 );
               },
@@ -190,25 +195,27 @@ class LoggingPanel extends ConsumerWidget {
           items: Levels.LEVELS,
           selected: logLevel != Level.INFO,
           labelBuilder: (value) => Text(
-              'Log level: ${value.name[0]}${value.name.substring(1).toLowerCase()}'),
+              '${AppLocalizations.of(context)!.general_log_level}: ${value.name[0]}${value.name.substring(1).toLowerCase()}'),
           itemBuilder: (value) =>
               Text('${value.name[0]}${value.name.substring(1).toLowerCase()}'),
           onChanged: (level) {
             ref.read(logLevelProvider.notifier).setLogLevel(level);
             _log.debug('Log level set to $level');
-            showMessage(context, 'Log level set to $level');
+            showMessage(context,
+                '${AppLocalizations.of(context)!.general_log_level_set_to} $level');
           },
         ),
         ActionChip(
           avatar: const Icon(Icons.copy),
-          label: const Text('Copy log'),
+          label: Text(AppLocalizations.of(context)!.general_copy_log),
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');
             final logs = await ref.read(logLevelProvider.notifier).getLogs();
             await Clipboard.setData(ClipboardData(text: logs.join('\n')));
             await ref.read(withContextProvider)(
               (context) async {
-                showMessage(context, 'Log copied to clipboard');
+                showMessage(
+                    context, AppLocalizations.of(context)!.general_log_copied);
               },
             );
           },
