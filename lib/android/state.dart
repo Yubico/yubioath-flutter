@@ -17,8 +17,11 @@ class AllowScreenshotsNotifier extends StateNotifier<bool> {
   AllowScreenshotsNotifier() : super(false);
 
   void setAllowScreenshots(bool value) async {
-    state = value;
-    await _methodsChannel.invokeMethod('hideAppThumbnail', !value);
+    final result =
+        await _methodsChannel.invokeMethod('allowScreenshots', value);
+    if (mounted) {
+      state = result;
+    }
   }
 }
 
