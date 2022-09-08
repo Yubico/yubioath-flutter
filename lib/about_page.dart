@@ -136,7 +136,7 @@ class AboutPage extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: Text(
-              'Troubleshooting',
+              AppLocalizations.of(context)!.general_troubleshooting,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -145,7 +145,8 @@ class AboutPage extends ConsumerWidget {
             const SizedBox(height: 12.0),
             ActionChip(
               avatar: const Icon(Icons.bug_report_outlined),
-              label: const Text('Run diagnostics'),
+              label:
+                  Text(AppLocalizations.of(context)!.general_run_diagnostics),
               onPressed: () async {
                 _log.info('Running diagnostics...');
                 final response =
@@ -159,7 +160,10 @@ class AboutPage extends ConsumerWidget {
                 await Clipboard.setData(ClipboardData(text: text));
                 await ref.read(withContextProvider)(
                   (context) async {
-                    showMessage(context, 'Diagnostic data copied to clipboard');
+                    showMessage(
+                        context,
+                        AppLocalizations.of(context)!
+                            .general_diagnostics_copied);
                   },
                 );
               },
@@ -191,25 +195,27 @@ class LoggingPanel extends ConsumerWidget {
           items: Levels.LEVELS,
           selected: logLevel != Level.INFO,
           labelBuilder: (value) => Text(
-              'Log level: ${value.name[0]}${value.name.substring(1).toLowerCase()}'),
+              '${AppLocalizations.of(context)!.general_log_level}: ${value.name[0]}${value.name.substring(1).toLowerCase()}'),
           itemBuilder: (value) =>
               Text('${value.name[0]}${value.name.substring(1).toLowerCase()}'),
           onChanged: (level) {
             ref.read(logLevelProvider.notifier).setLogLevel(level);
             _log.debug('Log level set to $level');
-            showMessage(context, 'Log level set to $level');
+            showMessage(context,
+                '${AppLocalizations.of(context)!.general_log_level_set_to} $level');
           },
         ),
         ActionChip(
           avatar: const Icon(Icons.copy),
-          label: const Text('Copy log'),
+          label: Text(AppLocalizations.of(context)!.general_copy_log),
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');
             final logs = await ref.read(logLevelProvider.notifier).getLogs();
             await Clipboard.setData(ClipboardData(text: logs.join('\n')));
             await ref.read(withContextProvider)(
               (context) async {
-                showMessage(context, 'Log copied to clipboard');
+                showMessage(
+                    context, AppLocalizations.of(context)!.general_log_copied);
               },
             );
           },

@@ -88,7 +88,14 @@
     "general_send_feedback": "Send us feedback",
     "general_i_need_help": "I need help",
     "general_application_error": "Application error",
-    
+    "general_troubleshooting": "Troubleshooting",
+    "general_run_diagnostics": "Run diagnostics",
+    "general_diagnostics_copied": "Diagnostic data copied to clipboard",
+    "general_log_level": "Log level",
+    "general_log_level_set_to": "Log level set to",
+    "general_copy_log": "Copy log",
+    "general_log_copied": "Log copied to clipboard",
+
 
 
 
