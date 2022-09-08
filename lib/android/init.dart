@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yubico_authenticator/android/logger.dart';
+import 'package:yubico_authenticator/android/views/beta_dialog.dart';
 import 'package:yubico_authenticator/android/window_state_provider.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
@@ -61,6 +62,9 @@ Future<Widget> initialize() async {
 
           /// initializes global handler for dialogs
           ref.read(androidDialogProvider);
+
+          var betaDialog = BetaDialog(context, ref);
+          betaDialog.request();
 
           return const MainPage();
         },
