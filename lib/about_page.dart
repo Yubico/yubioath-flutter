@@ -12,6 +12,7 @@ import 'app/logging.dart';
 import 'app/message.dart';
 import 'app/state.dart';
 import 'core/state.dart';
+import 'android/state.dart';
 import 'desktop/state.dart';
 import 'version.dart';
 import 'widgets/responsive_dialog.dart';
@@ -25,151 +26,173 @@ class AboutPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ResponsiveDialog(
-      title: const Text('About'),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset('assets/graphics/app-icon.png', scale: 1 / 0.75),
-          Padding(
-            padding: const EdgeInsets.only(top: 24.0),
-            child: Text(
-              Platform.isAndroid
-                  ? 'Yubico Authenticator Preview'
-                  : 'Yubico Authenticator',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-          const Text(version),
-          const Text(''),
-          const Text('Copyright © 2022 Yubico'),
-          const Text('All rights reserved'),
-          const Text(''),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton(
-                child: Text(
-                  AppLocalizations.of(context)!.general_terms_of_use,
-                  style: const TextStyle(decoration: TextDecoration.underline),
-                ),
-                onPressed: () {
-                  launchUrl(
-                    Uri.parse(
-                        'https://www.yubico.com/support/terms-conditions/yubico-license-agreement/'),
-                    mode: LaunchMode.externalApplication,
-                  );
-                },
+      title: Text(AppLocalizations.of(context)!.general_about),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset('assets/graphics/app-icon.png', scale: 1 / 0.75),
+            Padding(
+              padding: const EdgeInsets.only(top: 24.0),
+              child: Text(
+                'Yubico Authenticator',
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-              TextButton(
-                child: Text(
-                  AppLocalizations.of(context)!.general_privacy_policy,
-                  style: const TextStyle(decoration: TextDecoration.underline),
-                ),
-                onPressed: () {
-                  launchUrl(
-                    Uri.parse(
-                        'https://www.yubico.com/support/terms-conditions/privacy-notice/'),
-                    mode: LaunchMode.externalApplication,
-                  );
-                },
-              ),
-            ],
-          ),
-          TextButton(
-            child: Text(
-              AppLocalizations.of(context)!.general_open_src_licenses,
-              style: const TextStyle(decoration: TextDecoration.underline),
             ),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute<void>(
-                builder: (BuildContext context) => const LicensePage(
-                  applicationVersion: version,
-                ),
-                settings: const RouteSettings(name: 'licenses'),
-              ));
-            },
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
-            child: Divider(),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: Text(
-              AppLocalizations.of(context)!.general_help_and_feedback,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton(
-                child: Text(
-                  AppLocalizations.of(context)!.general_send_feedback,
-                  style: const TextStyle(decoration: TextDecoration.underline),
-                ),
-                onPressed: () {
-                  launchUrl(
-                    Uri.parse('https://forms.gle/nYPVWcFnqoprZX1S9'),
-                    mode: LaunchMode.externalApplication,
-                  );
-                },
-              ),
-              TextButton(
-                child: Text(
-                  AppLocalizations.of(context)!.general_i_need_help,
-                  style: const TextStyle(decoration: TextDecoration.underline),
-                ),
-                onPressed: () {
-                  launchUrl(
-                    Uri.parse('https://support.yubico.com/support/home'),
-                    mode: LaunchMode.externalApplication,
-                  );
-                },
-              ),
-            ],
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
-            child: Divider(),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: Text(
-              AppLocalizations.of(context)!.general_troubleshooting,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-          const LoggingPanel(),
-          if (isDesktop) ...[
-            const SizedBox(height: 12.0),
-            ActionChip(
-              avatar: const Icon(Icons.bug_report_outlined),
-              label:
-                  Text(AppLocalizations.of(context)!.general_run_diagnostics),
-              onPressed: () async {
-                _log.info('Running diagnostics...');
-                final response =
-                    await ref.read(rpcProvider).command('diagnose', []);
-                final data = response['diagnostics'] as List;
-                data.insert(0, {
-                  'app_version': version,
-                  'dart': Platform.version,
-                });
-                final text = const JsonEncoder.withIndent('  ').convert(data);
-                await Clipboard.setData(ClipboardData(text: text));
-                await ref.read(withContextProvider)(
-                  (context) async {
-                    showMessage(
-                        context,
-                        AppLocalizations.of(context)!
-                            .general_diagnostics_copied);
+            const Text(version),
+            const Text(''),
+            const Text('Copyright © 2022 Yubico'),
+            const Text('All rights reserved'),
+            const Text(''),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton(
+                  child: Text(
+                    AppLocalizations.of(context)!.general_terms_of_use,
+                    style:
+                        const TextStyle(decoration: TextDecoration.underline),
+                  ),
+                  onPressed: () {
+                    launchUrl(
+                      Uri.parse(
+                          'https://www.yubico.com/support/terms-conditions/yubico-license-agreement/'),
+                      mode: LaunchMode.externalApplication,
+                    );
                   },
-                );
+                ),
+                TextButton(
+                  child: Text(
+                    AppLocalizations.of(context)!.general_privacy_policy,
+                    style:
+                        const TextStyle(decoration: TextDecoration.underline),
+                  ),
+                  onPressed: () {
+                    launchUrl(
+                      Uri.parse(
+                          'https://www.yubico.com/support/terms-conditions/privacy-notice/'),
+                      mode: LaunchMode.externalApplication,
+                    );
+                  },
+                ),
+              ],
+            ),
+            TextButton(
+              child: Text(
+                AppLocalizations.of(context)!.general_open_src_licenses,
+                style: const TextStyle(decoration: TextDecoration.underline),
+              ),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute<void>(
+                  builder: (BuildContext context) => const LicensePage(
+                    applicationVersion: version,
+                  ),
+                  settings: const RouteSettings(name: 'licenses'),
+                ));
               },
             ),
-          ]
-        ],
+            const Padding(
+              padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
+              child: Divider(),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Text(
+                AppLocalizations.of(context)!.general_help_and_feedback,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton(
+                  child: Text(
+                    AppLocalizations.of(context)!.general_send_feedback,
+                    style:
+                        const TextStyle(decoration: TextDecoration.underline),
+                  ),
+                  onPressed: () {
+                    launchUrl(
+                      Uri.parse('https://forms.gle/nYPVWcFnqoprZX1S9'),
+                      mode: LaunchMode.externalApplication,
+                    );
+                  },
+                ),
+                TextButton(
+                  child: Text(
+                    AppLocalizations.of(context)!.general_i_need_help,
+                    style:
+                        const TextStyle(decoration: TextDecoration.underline),
+                  ),
+                  onPressed: () {
+                    launchUrl(
+                      Uri.parse('https://support.yubico.com/support/home'),
+                      mode: LaunchMode.externalApplication,
+                    );
+                  },
+                ),
+              ],
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
+              child: Divider(),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Text(
+                AppLocalizations.of(context)!.general_troubleshooting,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            const LoggingPanel(),
+
+            // Diagnostics (desktop only)
+            if (isDesktop) ...[
+              const SizedBox(height: 12.0),
+              ActionChip(
+                avatar: const Icon(Icons.bug_report_outlined),
+                label:
+                    Text(AppLocalizations.of(context)!.general_run_diagnostics),
+                onPressed: () async {
+                  _log.info('Running diagnostics...');
+                  final response =
+                      await ref.read(rpcProvider).command('diagnose', []);
+                  final data = response['diagnostics'] as List;
+                  data.insert(0, {
+                    'app_version': version,
+                    'dart': Platform.version,
+                  });
+                  final text = const JsonEncoder.withIndent('  ').convert(data);
+                  await Clipboard.setData(ClipboardData(text: text));
+                  await ref.read(withContextProvider)(
+                    (context) async {
+                      showMessage(
+                          context,
+                          AppLocalizations.of(context)!
+                              .general_diagnostics_copied);
+                    },
+                  );
+                },
+              ),
+            ],
+
+            // Enable screenshots (Android only)
+            if (isAndroid) ...[
+              const SizedBox(height: 12.0),
+              FilterChip(
+                label: Text(
+                    AppLocalizations.of(context)!.general_allow_screenshots),
+                selected: ref.watch(androidAllowScreenshotsProvider),
+                onSelected: (value) async {
+                  ref
+                      .read(androidAllowScreenshotsProvider.notifier)
+                      .setAllowScreenshots(value);
+                },
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -201,8 +224,6 @@ class LoggingPanel extends ConsumerWidget {
           onChanged: (level) {
             ref.read(logLevelProvider.notifier).setLogLevel(level);
             _log.debug('Log level set to $level');
-            showMessage(context,
-                '${AppLocalizations.of(context)!.general_log_level_set_to} $level');
           },
         ),
         ActionChip(

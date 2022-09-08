@@ -81,6 +81,7 @@
     "mgmt_toggle_applications": "Toggle applications",
     "mgmt_save": "Save",
 
+    "general_about": "About",
     "general_terms_of_use": "Terms of use",
     "general_privacy_policy": "Privacy policy",
     "general_open_src_licenses": "Open source licenses",
@@ -92,10 +93,9 @@
     "general_run_diagnostics": "Run diagnostics",
     "general_diagnostics_copied": "Diagnostic data copied to clipboard",
     "general_log_level": "Log level",
-    "general_log_level_set_to": "Log level set to",
     "general_copy_log": "Copy log",
     "general_log_copied": "Log copied to clipboard",
-
+    "general_allow_screenshots": "Allow screenshots",
 
 
 

@@ -47,11 +47,12 @@ class MainActivity : FlutterFragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        allowScreenshots(false)
+
         yubikit = YubiKitManager(this)
 
         setupYubiKeyDiscovery()
         setupYubiKitLogger()
-        hideAppThumbnail(true)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -226,8 +227,8 @@ class MainActivity : FlutterFragmentActivity() {
         init {
             methodChannel.setMethodCallHandler { methodCall, result ->
                 when (methodCall.method) {
-                    "hideAppThumbnail" -> result.success(
-                        hideAppThumbnail(
+                    "allowScreenshots" -> result.success(
+                        allowScreenshots(
                             methodCall.arguments as Boolean,
                         )
                     )
@@ -237,16 +238,17 @@ class MainActivity : FlutterFragmentActivity() {
         }
     }
 
-    private fun hideAppThumbnail(value: Boolean): Boolean {
+    private fun allowScreenshots(value: Boolean): Boolean {
+        // Note that FLAG_SECURE is the inverse of allowScreenshots
         if (value) {
-            Log.d(TAG, "Setting FLAG_SECURE (hideAppThumbnail)")
-            window.setFlags(FLAG_SECURE, FLAG_SECURE)
-        } else {
-            Log.d(TAG, "Clearing FLAG_SECURE (hideAppThumbnail)")
+            Log.d(TAG, "Clearing FLAG_SECURE (allow screenshots)")
             window.clearFlags(FLAG_SECURE)
+        } else {
+            Log.d(TAG, "Setting FLAG_SECURE (disallow screenshots)")
+            window.setFlags(FLAG_SECURE, FLAG_SECURE)
         }
 
-        return FLAG_SECURE == (window.attributes.flags and FLAG_SECURE)
+        return FLAG_SECURE != (window.attributes.flags and FLAG_SECURE)
     }
 
 }

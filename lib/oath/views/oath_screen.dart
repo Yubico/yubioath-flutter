@@ -149,11 +149,14 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             return KeyEventResult.ignored;
           },
           child: Builder(builder: (context) {
+            final textTheme = Theme.of(context).textTheme;
             return TextFormField(
               key: const Key('search_accounts'),
               controller: searchController,
               focusNode: searchFocus,
-              style: Theme.of(context).textTheme.titleSmall,
+              // Use the default style, but with a smaller font size:
+              style: textTheme.subtitle1
+                  ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.oath_search_accounts,
                 isDense: true,
