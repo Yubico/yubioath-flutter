@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
@@ -18,7 +19,7 @@ class DeleteFingerprintDialog extends ConsumerWidget {
     final label = fingerprint.label;
 
     return ResponsiveDialog(
-      title: const Text('Delete fingerprint'),
+      title: Text(AppLocalizations.of(context)!.fido_delete_fingerprint),
       actions: [
         TextButton(
           onPressed: () async {
@@ -27,10 +28,11 @@ class DeleteFingerprintDialog extends ConsumerWidget {
                 .deleteFingerprint(fingerprint);
             await ref.read(withContextProvider)((context) async {
               Navigator.of(context).pop(true);
-              showMessage(context, 'Fingerprint deleted');
+              showMessage(context,
+                  AppLocalizations.of(context)!.fido_fingerprint_deleted);
             });
           },
-          child: const Text('Delete'),
+          child: Text(AppLocalizations.of(context)!.fido_delete),
         ),
       ],
       child: Padding(
@@ -38,8 +40,8 @@ class DeleteFingerprintDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('This will delete the fingerprint from your YubiKey.'),
-            Text('Fingerprint: $label'),
+            Text(AppLocalizations.of(context)!.fido_this_will_delete_fp),
+            Text('${AppLocalizations.of(context)!.fido_fingerprint}: $label'),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

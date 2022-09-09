@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -18,7 +19,7 @@ class SettingsPage extends ConsumerWidget {
 
     final theme = Theme.of(context);
     return ResponsiveDialog(
-      title: const Text('Settings'),
+      title: Text(AppLocalizations.of(context)!.general_settings),
       child: Theme(
         // Make the headers use the primary color to pop a bit.
         // Once M3 is implemented this will probably not be needed.
@@ -31,9 +32,9 @@ class SettingsPage extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const ListTitle('Appearance'),
+            ListTitle(AppLocalizations.of(context)!.general_appearance),
             RadioListTile<ThemeMode>(
-              title: const Text('System default'),
+              title: Text(AppLocalizations.of(context)!.general_system_default),
               value: ThemeMode.system,
               groupValue: themeMode,
               onChanged: (mode) {
@@ -42,7 +43,7 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: const Text('Light mode'),
+              title: Text(AppLocalizations.of(context)!.general_light_mode),
               value: ThemeMode.light,
               groupValue: themeMode,
               onChanged: (mode) {
@@ -51,7 +52,7 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: const Text('Dark mode'),
+              title: Text(AppLocalizations.of(context)!.general_dark_mode),
               value: ThemeMode.dark,
               groupValue: themeMode,
               onChanged: (mode) {
