@@ -48,13 +48,8 @@ class AppPage extends ConsumerWidget {
       );
 
   Widget _buildScrollView() {
-    var mediaQueryData = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
-    var bottomPadding = mediaQueryData.systemGestureInsets.bottom;
-    return SafeArea(
-      bottom: false,
-      maintainBottomViewPadding: false,
-      child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(0, 0, 0, bottomPadding),
+    return SingleChildScrollView(
+      child: SafeArea(
         child: Center(
           child: SizedBox(
             width: 700,
