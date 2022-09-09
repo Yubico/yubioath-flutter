@@ -1,6 +1,7 @@
 // ignore_for_file: sort_child_properties_last
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
@@ -20,12 +21,12 @@ class DeleteCredentialDialog extends ConsumerWidget {
     final label = credential.userName;
 
     return ResponsiveDialog(
-      title: const Text('Delete credential'),
+      title: Text(AppLocalizations.of(context)!.fido_delete_credential),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('This will delete the credential from your YubiKey.'),
-          Text('Credential: $label'),
+          Text(AppLocalizations.of(context)!.fido_this_will_delete_cred),
+          Text('${AppLocalizations.of(context)!.fido_credential}: $label'),
         ]
             .map((e) => Padding(
                   child: e,
@@ -42,11 +43,12 @@ class DeleteCredentialDialog extends ConsumerWidget {
             await ref.read(withContextProvider)(
               (context) async {
                 Navigator.of(context).pop(true);
-                showMessage(context, 'Credential deleted');
+                showMessage(context,
+                    AppLocalizations.of(context)!.fido_credential_deleted);
               },
             );
           },
-          child: const Text('Delete'),
+          child: Text(AppLocalizations.of(context)!.fido_delete),
         ),
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
@@ -20,7 +21,7 @@ class FidoScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) =>
       ref.watch(fidoStateProvider(deviceData.node.path)).when(
           loading: () => AppPage(
-                title: const Text('WebAuthn'),
+                title: Text(AppLocalizations.of(context)!.fido_webauthn),
                 centered: true,
                 child: const AppLoadingScreen(),
               ),
@@ -30,26 +31,25 @@ class FidoScreen extends ConsumerWidget {
                 0;
             if (Capability.fido2.value & supported == 0) {
               return MessagePage(
-                title: const Text('WebAuthn'),
+                title: Text(AppLocalizations.of(context)!.fido_webauthn),
                 graphic: manageAccounts,
-                header: 'Ready to use',
-                message: 'Register as a Security Key on websites',
+                header: AppLocalizations.of(context)!.fido_ready_to_use,
+                message: AppLocalizations.of(context)!.fido_register_as_a_key,
               );
             }
             final enabled = deviceData.info.config
                     .enabledCapabilities[deviceData.node.transport] ??
                 0;
             if (Capability.fido2.value & enabled == 0) {
-              return const MessagePage(
-                title: Text('WebAuthn'),
-                header: 'FIDO2 disabled',
-                message:
-                    'WebAuthn requires the FIDO2 application to be enabled on your YubiKey',
+              return MessagePage(
+                title: Text(AppLocalizations.of(context)!.fido_webauthn),
+                header: AppLocalizations.of(context)!.fido_fido_disabled,
+                message: AppLocalizations.of(context)!.fido_webauthn_req_fido,
               );
             }
 
             return AppFailurePage(
-              title: const Text('WebAuthn'),
+              title: Text(AppLocalizations.of(context)!.fido_webauthn),
               cause: error,
             );
           },
