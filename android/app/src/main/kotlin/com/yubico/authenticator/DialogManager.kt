@@ -1,55 +1,82 @@
 package com.yubico.authenticator
 
-import com.yubico.authenticator.api.Pigeon.*
-import com.yubico.authenticator.logging.Log
 import io.flutter.plugin.common.BinaryMessenger
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
-typealias OnDialogClosed = () -> Unit
-typealias OnDialogCancelled = () -> Unit
+typealias OnDialogCancelled = suspend () -> Unit
 
-class DialogManager(messenger: BinaryMessenger, private var coroutineScope: CoroutineScope) :
-    HDialogApi {
+enum class Icon(val value: String) {
+    NFC("nfc"),
+    SUCCESS("success"),
+    ERROR("error");
+}
 
-    private val _fDialogApi = FDialogApi(messenger)
+class DialogManager(messenger: BinaryMessenger, private val coroutineScope: CoroutineScope) {
+    private val channel =
+        MethodChannel(messenger, "com.yubico.authenticator.channel.dialog")
 
     private var onCancelled: OnDialogCancelled? = null
 
     init {
-        HDialogApi.setup(messenger, this)
-    }
-
-    fun showDialog(message: String, cancelled: OnDialogCancelled?) =
-        coroutineScope.launch(Dispatchers.Main) {
-            _fDialogApi.showDialogApi(message) { }
-        }.also {
-            onCancelled = cancelled
-        }
-
-    fun closeDialog(onClosed: OnDialogClosed) {
-        _fDialogApi.closeDialogApi {
-            coroutineScope.launch(Dispatchers.Main) {
-                onClosed()
+        channel.setHandler(coroutineScope) { method, _ ->
+            when (method) {
+                "cancel" -> dialogClosed()
+                else -> throw NotImplementedError()
             }
         }
     }
 
-    override fun dialogClosed(result: Result<Void>) {
+    fun showDialog(icon: Icon, title: String, description: String, cancelled: OnDialogCancelled?) {
+        onCancelled = cancelled
         coroutineScope.launch {
-            try {
-                onCancelled?.invoke()
-                result.success(null)
-            } catch (cause: Throwable) {
-                Log.d(TAG, "Failed to close dialog during User cancel action")
-                result.error(Exception("Failed to close dialog during User cancel action"))
+            channel.invoke(
+                "show",
+                Json.encodeToString(
+                    mapOf(
+                        "title" to title,
+                        "description" to description,
+                        "icon" to icon.value
+                    )
+                )
+            )
+        }
+    }
+
+    suspend fun updateDialogState(
+        icon: Icon? = null,
+        title: String? = null,
+        description: String? = null
+    ) {
+        channel.invoke(
+            "state",
+            Json.encodeToString(
+                mapOf(
+                    "title" to title,
+                    "description" to description,
+                    "icon" to icon?.value
+                )
+            )
+        )
+    }
+
+    suspend fun closeDialog() {
+        channel.invoke("close", NULL)
+    }
+
+    private suspend fun dialogClosed(): String {
+        onCancelled?.let {
+            onCancelled = null
+            withContext(Dispatchers.Main) {
+                it.invoke()
             }
         }
+        return NULL
     }
 
     companion object {
         const val TAG = "dialogManager"
     }
-
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/state.dart';
 import '../message.dart';
 import '../state.dart';
 import 'device_avatar.dart';
@@ -32,47 +33,47 @@ class DeviceButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: IconButton(
-        tooltip: 'More actions',
-        icon: OverflowBox(
-          maxHeight: 44,
-          maxWidth: 44,
-          child: _CircledDeviceAvatar(radius),
-        ),
-        onPressed: () {
-          final withContext = ref.read(withContextProvider);
-
-          showMenu(
-            context: context,
-            position: const RelativeRect.fromLTRB(100, 0, 0, 0),
-            items: <PopupMenuEntry>[
-              PopupMenuItem(
-                padding: const EdgeInsets.only(left: 11, right: 16),
-                onTap: () {
-                  // Wait for menu to close, and use the main context to open
-                  Timer.run(() {
-                    withContext(
-                      (context) async {
-                        await showBlurDialog(
-                          context: context,
-                          builder: (context) => const DevicePickerDialog(),
-                          routeSettings:
-                              const RouteSettings(name: 'device_picker'),
-                        );
-                      },
-                    );
-                  });
-                },
-                child: _SlideInWidget(radius: radius),
-              ),
-              if (actions.isNotEmpty) const PopupMenuDivider(),
-              ...actions,
-            ],
-          );
-        },
+    return IconButton(
+      tooltip: 'More actions',
+      // TODO: Remove OverflowBox on Flutter 3.3
+      icon: OverflowBox(
+        maxHeight: 44,
+        maxWidth: 44,
+        child: _CircledDeviceAvatar(radius),
       ),
+      onPressed: () {
+        final withContext = ref.read(withContextProvider);
+
+        showMenu(
+          context: context,
+          position: const RelativeRect.fromLTRB(100, 0, 0, 0),
+          items: <PopupMenuEntry>[
+            PopupMenuItem(
+              padding: const EdgeInsets.only(left: 11, right: 16),
+              onTap: isDesktop
+                  ? () {
+                      // Wait for menu to close, and use the main context to open
+                      Timer.run(() {
+                        withContext(
+                          (context) async {
+                            await showBlurDialog(
+                              context: context,
+                              builder: (context) => const DevicePickerDialog(),
+                              routeSettings:
+                                  const RouteSettings(name: 'device_picker'),
+                            );
+                          },
+                        );
+                      });
+                    }
+                  : null,
+              child: _SlideInWidget(radius: radius),
+            ),
+            if (actions.isNotEmpty) const PopupMenuDivider(),
+            ...actions,
+          ],
+        );
+      },
     );
   }
 }

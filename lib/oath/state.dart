@@ -68,7 +68,7 @@ final credentialsProvider = StateNotifierProvider.autoDispose<
     ref.listen<List<OathPair>?>(credentialListProvider(node.path),
         (previous, next) {
       provider._updatePairs(next);
-    });
+    }, fireImmediately: true);
   }
   return provider;
 });
@@ -150,6 +150,13 @@ class FavoritesNotifier extends StateNotifier<List<String>> {
     }
     _prefs.setStringList(_key, state);
   }
+
+  renameCredential(String oldCredentialId, String newCredentialId) {
+    if (state.contains(oldCredentialId)) {
+      state = [newCredentialId, ...state.toList()..remove(oldCredentialId)];
+      _prefs.setStringList(_key, state);
+    }
+  }
 }
 
 final filteredCredentialsProvider = StateNotifierProvider.autoDispose
@@ -169,6 +176,7 @@ class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
                   "${pair.credential.issuer ?? ''}:${pair.credential.name}"
                       .toLowerCase()
                       .contains(query.toLowerCase()))
+              .where((pair) => pair.credential.issuer != '_hidden')
               .toList()
             ..sort((a, b) {
               String searchKey(OathCredential c) => (c.issuer ?? '') + c.name;

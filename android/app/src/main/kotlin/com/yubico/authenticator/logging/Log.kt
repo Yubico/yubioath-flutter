@@ -13,11 +13,11 @@ object Log {
         ERROR
     }
 
-    const val MAX_BUFFER_SIZE = 1000
-    private val _buffer = arrayListOf<String>()
+    private const val MAX_BUFFER_SIZE = 1000
+    private val buffer = arrayListOf<String>()
 
     fun getBuffer() : List<String> {
-        return _buffer
+        return buffer
     }
 
     private var level = if (BuildConfig.DEBUG) {
@@ -59,12 +59,12 @@ object Log {
             return
         }
 
-        if (_buffer.size > MAX_BUFFER_SIZE) {
-            _buffer.removeAt(0)
+        if (buffer.size > MAX_BUFFER_SIZE) {
+            buffer.removeAt(0)
         }
 
         val logMessage = "[$loggerName] ${level.name}: $message".also {
-            _buffer.add(it)
+            buffer.add(it)
         }
 
         when (level) {
@@ -76,8 +76,8 @@ object Log {
         }
 
         error?.let {
-            Log.e(TAG, "[$loggerName] ${level.name}: $error".also {
-                _buffer.add(it)
+            Log.e(TAG, "[$loggerName] ${level.name}(details): $error".also {
+                buffer.add(it)
             })
         }
     }

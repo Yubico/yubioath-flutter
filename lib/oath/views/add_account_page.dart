@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -10,7 +11,9 @@ import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../cancellation_exception.dart';
 import '../../desktop/models.dart';
+import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
@@ -28,9 +31,15 @@ enum _QrScanState { none, scanning, success, failed }
 class OathAddAccountPage extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OathState state;
+  final List<OathCredential>? credentials;
   final bool openQrScanner;
-  const OathAddAccountPage(this.devicePath, this.state,
-      {super.key, required this.openQrScanner});
+  const OathAddAccountPage(
+    this.devicePath,
+    this.state, {
+    super.key,
+    required this.openQrScanner,
+    required this.credentials,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -52,15 +61,34 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   List<int> _periodValues = [20, 30, 45, 60];
   List<int> _digitsValues = [6, 8];
 
+  @override
+  void dispose() {
+    _issuerController.dispose();
+    _accountController.dispose();
+    _secretController.dispose();
+    _periodController.dispose();
+    super.dispose();
+  }
+
   _scanQrCode(QrScanner qrScanner) async {
     try {
       setState(() {
+        // If we have a previous scan result stored, clear it
+        if (_qrState == _QrScanState.success) {
+          _issuerController.text = '';
+          _accountController.text = '';
+          _secretController.text = '';
+          _oathType = defaultOathType;
+          _hashAlgorithm = defaultHashAlgorithm;
+          _periodController.text = '$defaultPeriod';
+          _digits = defaultDigits;
+        }
         _qrState = _QrScanState.scanning;
       });
       final otpauth = await qrScanner.scanQr();
       if (otpauth == null) {
         if (!mounted) return;
-        showMessage(context, 'No QR code found');
+        showMessage(context, AppLocalizations.of(context)!.oath_no_qr_code);
         setState(() {
           _qrState = _QrScanState.failed;
         });
@@ -78,7 +106,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       }
       showMessage(
         context,
-        'Failed reading QR code: $errorMessage',
+        '${AppLocalizations.of(context)!.oath_failed_reading_qr}: $errorMessage',
         duration: const Duration(seconds: 4),
       );
       setState(() {
@@ -89,8 +117,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
   _loadCredentialData(CredentialData data) {
     setState(() {
-      _issuerController.text = data.issuer ?? '';
-      _accountController.text = data.name;
+      _issuerController.text = data.issuer?.trim() ?? '';
+      _accountController.text = data.name.trim();
       _secretController.text = data.secret;
       _oathType = data.oathType;
       _hashAlgorithm = data.hashAlgorithm;
@@ -121,16 +149,26 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     final remaining = getRemainingKeySpace(
       oathType: _oathType,
       period: period,
-      issuer: _issuerController.text,
-      name: _accountController.text,
+      issuer: _issuerController.text.trim(),
+      name: _accountController.text.trim(),
     );
     final issuerRemaining = remaining.first;
     final nameRemaining = remaining.second;
 
     final secret = _secretController.text.replaceAll(' ', '');
     final secretLengthValid = secret.length * 5 % 8 < 5;
-    final isValid = _accountController.text.isNotEmpty &&
+
+    // is this credentials name/issuer pair different from all other?
+    final isUnique = widget.credentials
+            ?.where((element) =>
+                element.name == _accountController.text.trim() &&
+                (element.issuer ?? '') == _issuerController.text.trim())
+            .isEmpty ??
+        true;
+
+    final isValid = _accountController.text.trim().isNotEmpty &&
         secret.isNotEmpty &&
+        isUnique &&
         issuerRemaining >= -1 &&
         nameRemaining >= 0 &&
         period > 0;
@@ -139,11 +177,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     void submit() async {
       if (secretLengthValid) {
-        final issuer = _issuerController.text;
+        final issuer = _issuerController.text.trim();
 
         final cred = CredentialData(
           issuer: issuer.isEmpty ? null : issuer,
-          name: _accountController.text,
+          name: _accountController.text.trim(),
           secret: secret,
           oathType: _oathType,
           hashAlgorithm: _hashAlgorithm,
@@ -157,7 +195,10 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               .addAccount(cred.toUri(), requireTouch: _touch);
           if (!mounted) return;
           Navigator.of(context).pop();
-          showMessage(context, 'Account added');
+          showMessage(
+              context, AppLocalizations.of(context)!.oath_success_add_account);
+        } on CancellationException catch (_) {
+          // ignored
         } catch (e) {
           _log.error('Failed to add account', e);
           final String errorMessage;
@@ -169,7 +210,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           }
           showMessage(
             context,
-            'Failed adding account: $errorMessage',
+            '${AppLocalizations.of(context)!.oath_fail_add_account}: $errorMessage',
             duration: const Duration(seconds: 4),
           );
         }
@@ -181,11 +222,12 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     }
 
     return ResponsiveDialog(
-      title: const Text('Add account'),
+      title: Text(AppLocalizations.of(context)!.oath_add_account),
       actions: [
         TextButton(
           onPressed: isValid ? submit : null,
-          child: const Text('Save', key: Key('save_btn')),
+          child: Text(AppLocalizations.of(context)!.oath_save,
+              key: const Key('save_btn')),
         ),
       ],
       child: FileDropTarget(
@@ -195,244 +237,205 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             final otpauth = await qrScanner.scanQr(b64Image);
             if (otpauth == null) {
               if (!mounted) return;
-              showMessage(context, 'No QR code found');
+              showMessage(
+                  context, AppLocalizations.of(context)!.oath_no_qr_code);
             } else {
               final data = CredentialData.fromUri(Uri.parse(otpauth));
               _loadCredentialData(data);
             }
           }
         },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              key: const Key('issuer'),
-              controller: _issuerController,
-              autofocus: true,
-              enabled: issuerRemaining > 0,
-              maxLength: max(issuerRemaining, 1),
-              inputFormatters: [limitBytesLength(issuerRemaining)],
-              buildCounter: buildByteCounterFor(_issuerController.text),
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Issuer (optional)',
-                helperText: '', // Prevents dialog resizing when enabled = false
-                prefixIcon: Icon(Icons.business_outlined),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  // Update maxlengths
-                });
-              },
-              onSubmitted: (_) {
-                if (isValid) submit();
-              },
-            ),
-            TextField(
-              key: const Key('name'),
-              controller: _accountController,
-              maxLength: max(nameRemaining, 1),
-              buildCounter: buildByteCounterFor(_accountController.text),
-              inputFormatters: [limitBytesLength(nameRemaining)],
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Account name',
-                helperText: '', // Prevents dialog resizing when enabled = false
-                prefixIcon: Icon(Icons.person_outline),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  // Update maxlengths
-                });
-              },
-              onSubmitted: (_) {
-                if (isValid) submit();
-              },
-            ),
-            TextField(
-              key: const Key('secret'),
-              controller: _secretController,
-              obscureText: _isObscure,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(_secretFormatterPattern)
-              ],
-              decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isObscure = !_isObscure;
-                      });
-                    },
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                key: const Key('issuer'),
+                controller: _issuerController,
+                autofocus: !widget.openQrScanner,
+                enabled: issuerRemaining > 0,
+                maxLength: max(issuerRemaining, 1),
+                inputFormatters: [limitBytesLength(issuerRemaining)],
+                buildCounter:
+                    buildByteCounterFor(_issuerController.text.trim()),
+                decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.key_outlined),
-                  labelText: 'Secret key',
-                  errorText: _validateSecretLength && !secretLengthValid
-                      ? 'Invalid length'
-                      : null),
-              readOnly: _qrState == _QrScanState.success,
-              onChanged: (value) {
-                setState(() {
-                  _validateSecretLength = false;
-                });
-              },
-              onSubmitted: (_) {
-                if (isValid) submit();
-              },
-            ),
-            if (qrScanner != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: Row(
-                  children: [
-                    if (_qrState != _QrScanState.scanning) ...[
-                      OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                            fixedSize: const Size.fromWidth(132)),
-                        onPressed: () {
-                          _scanQrCode(qrScanner);
-                        },
-                        icon: const Icon(Icons.qr_code),
-                        label: const Text('Scan QR code'),
-                      )
-                    ] else ...[
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                            fixedSize: const Size.fromWidth(132)),
-                        onPressed: null,
-                        child: const SizedBox.square(
-                            dimension: 16.0,
-                            child: CircularProgressIndicator()),
-                      )
-                    ]
-                  ],
+                  labelText: AppLocalizations.of(context)!.oath_issuer_optional,
+                  helperText: '', // Prevents dialog resizing when disabled
+                  prefixIcon: const Icon(Icons.business_outlined),
                 ),
+                textInputAction: TextInputAction.next,
+                onChanged: (value) {
+                  setState(() {
+                    // Update maxlengths
+                  });
+                },
+                onSubmitted: (_) {
+                  if (isValid) submit();
+                },
               ),
-            const Divider(),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 4.0,
-              runSpacing: 8.0,
-              children: [
-                if (widget.state.version.isAtLeast(4, 2))
-                  FilterChip(
-                    label: const Text('Require touch'),
-                    selected: _touch,
-                    onSelected: (value) {
-                      setState(() {
-                        _touch = value;
-                      });
-                    },
-                  ),
-                Chip(
-                  backgroundColor: ChipTheme.of(context).selectedColor,
-                  label: DropdownButtonHideUnderline(
-                    child: DropdownButton<OathType>(
-                      value: _oathType,
-                      isDense: true,
-                      underline: null,
-                      items: OathType.values
-                          .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(e.displayName),
-                              ))
-                          .toList(),
-                      onChanged: _qrState != _QrScanState.success
-                          ? (type) {
-                              setState(() {
-                                _oathType = type ?? OathType.totp;
-                              });
-                            }
-                          : null,
-                    ),
-                  ),
+              TextField(
+                key: const Key('name'),
+                controller: _accountController,
+                maxLength: max(nameRemaining, 1),
+                buildCounter:
+                    buildByteCounterFor(_accountController.text.trim()),
+                inputFormatters: [limitBytesLength(nameRemaining)],
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.person_outline),
+                  labelText: AppLocalizations.of(context)!.oath_account_name,
+                  helperText: '', // Prevents dialog resizing when disabled
+                  errorText: isUnique
+                      ? null
+                      : AppLocalizations.of(context)!.oath_duplicate_name,
                 ),
-                Chip(
-                  backgroundColor: ChipTheme.of(context).selectedColor,
-                  label: DropdownButtonHideUnderline(
-                    child: DropdownButton<HashAlgorithm>(
-                      value: _hashAlgorithm,
-                      isDense: true,
-                      underline: null,
-                      items: HashAlgorithm.values
-                          .where((alg) =>
-                              alg != HashAlgorithm.sha512 ||
-                              widget.state.version.isAtLeast(4, 3, 1))
-                          .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(e.displayName),
-                              ))
-                          .toList(),
-                      onChanged: _qrState != _QrScanState.success
-                          ? (type) {
-                              setState(() {
-                                _hashAlgorithm = type ?? HashAlgorithm.sha1;
-                              });
-                            }
-                          : null,
-                    ),
-                  ),
-                ),
-                if (_oathType == OathType.totp)
-                  Chip(
-                    backgroundColor: ChipTheme.of(context).selectedColor,
-                    label: DropdownButtonHideUnderline(
-                      child: DropdownButton<int>(
-                        value: int.tryParse(_periodController.text) ??
-                            defaultPeriod,
-                        isDense: true,
-                        underline: null,
-                        items: _periodValues
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text('$e sec'),
-                                ))
-                            .toList(),
-                        onChanged: _qrState != _QrScanState.success
-                            ? (period) {
-                                setState(() {
-                                  _periodController.text =
-                                      '${period ?? defaultPeriod}';
-                                });
-                              }
-                            : null,
+                textInputAction: TextInputAction.next,
+                onChanged: (value) {
+                  setState(() {
+                    // Update maxlengths
+                  });
+                },
+                onSubmitted: (_) {
+                  if (isValid) submit();
+                },
+              ),
+              TextField(
+                key: const Key('secret'),
+                controller: _secretController,
+                obscureText: _isObscure,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(_secretFormatterPattern)
+                ],
+                decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isObscure ? Icons.visibility : Icons.visibility_off,
+                        color: IconTheme.of(context).color,
                       ),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
                     ),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.key_outlined),
+                    labelText: AppLocalizations.of(context)!.oath_secret_key,
+                    errorText: _validateSecretLength && !secretLengthValid
+                        ? AppLocalizations.of(context)!.oath_invalid_length
+                        : null),
+                readOnly: _qrState == _QrScanState.success,
+                textInputAction: TextInputAction.done,
+                onChanged: (value) {
+                  setState(() {
+                    _validateSecretLength = false;
+                  });
+                },
+                onSubmitted: (_) {
+                  if (isValid) submit();
+                },
+              ),
+              if (qrScanner != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: ActionChip(
+                      avatar: _qrState != _QrScanState.scanning
+                          ? (_qrState == _QrScanState.success
+                              ? const Icon(Icons.qr_code)
+                              : const Icon(Icons.qr_code_scanner_outlined))
+                          : const CircularProgressIndicator(strokeWidth: 2.0),
+                      label: _qrState == _QrScanState.success
+                          ? Text(AppLocalizations.of(context)!.oath_scanned_qr)
+                          : Text(AppLocalizations.of(context)!.oath_scan_qr),
+                      onPressed: () {
+                        _scanQrCode(qrScanner);
+                      }),
+                ),
+              const Divider(),
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 4.0,
+                runSpacing: 8.0,
+                children: [
+                  if (widget.state.version.isAtLeast(4, 2))
+                    FilterChip(
+                      label: Text(
+                          AppLocalizations.of(context)!.oath_require_touch),
+                      selected: _touch,
+                      onSelected: (value) {
+                        setState(() {
+                          _touch = value;
+                        });
+                      },
+                    ),
+                  ChoiceFilterChip<OathType>(
+                    items: OathType.values,
+                    value: _oathType,
+                    selected: _oathType != defaultOathType,
+                    itemBuilder: (value) => Text(value.displayName),
+                    onChanged: _qrState != _QrScanState.success
+                        ? (value) {
+                            setState(() {
+                              _oathType = value;
+                            });
+                          }
+                        : null,
                   ),
-                Chip(
-                  backgroundColor: ChipTheme.of(context).selectedColor,
-                  label: DropdownButtonHideUnderline(
-                    child: DropdownButton<int>(
-                      value: _digits,
-                      isDense: true,
-                      underline: null,
-                      items: _digitsValues
-                          .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text('$e digits'),
-                              ))
-                          .toList(),
+                  ChoiceFilterChip<HashAlgorithm>(
+                    items: HashAlgorithm.values,
+                    value: _hashAlgorithm,
+                    selected: _hashAlgorithm != defaultHashAlgorithm,
+                    itemBuilder: (value) => Text(value.displayName),
+                    onChanged: _qrState != _QrScanState.success
+                        ? (value) {
+                            setState(() {
+                              _hashAlgorithm = value;
+                            });
+                          }
+                        : null,
+                  ),
+                  if (_oathType == OathType.totp)
+                    ChoiceFilterChip<int>(
+                      items: _periodValues,
+                      value:
+                          int.tryParse(_periodController.text) ?? defaultPeriod,
+                      selected:
+                          int.tryParse(_periodController.text) != defaultPeriod,
+                      itemBuilder: ((value) => Text(
+                          '$value ${AppLocalizations.of(context)!.oath_sec}')),
                       onChanged: _qrState != _QrScanState.success
-                          ? (digits) {
+                          ? (period) {
                               setState(() {
-                                _digits = digits ?? defaultDigits;
+                                _periodController.text = '$period';
                               });
                             }
                           : null,
                     ),
+                  ChoiceFilterChip<int>(
+                    items: _digitsValues,
+                    value: _digits,
+                    selected: _digits != defaultDigits,
+                    itemBuilder: (value) => Text(
+                        '$value ${AppLocalizations.of(context)!.oath_digits}'),
+                    onChanged: _qrState != _QrScanState.success
+                        ? (digits) {
+                            setState(() {
+                              _digits = digits;
+                            });
+                          }
+                        : null,
                   ),
-                ),
-              ],
-            ),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
+                ],
+              ),
+            ]
+                .map((e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ))
+                .toList(),
+          ),
         ),
       ),
     );

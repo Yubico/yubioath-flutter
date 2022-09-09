@@ -3,18 +3,22 @@ package com.yubico.authenticator.flutter_plugins.qrscanner_zxing
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
 import io.flutter.plugin.common.BinaryMessenger
@@ -52,12 +56,13 @@ typealias BarcodeAnalyzerListener = (Result<String>) -> Unit
 
 internal class QRScannerView(
     context: Context,
-    id: Int,
+    @Suppress("UNUSED_PARAMETER") id : Int,
     binaryMessenger: BinaryMessenger,
     private val permissionsResultRegistrar: PermissionsResultRegistrar,
     creationParams: Map<String?, Any?>?
 ) : PlatformView {
 
+    private val stateChangeObserver = StateChangeObserver(context)
     private val uiThreadHandler = Handler(Looper.getMainLooper())
 
     private var marginPct: Double? = null
@@ -97,8 +102,8 @@ internal class QRScannerView(
     private val qrScannerView = View.inflate(context, R.layout.qr_scanner_view, null)
     private val previewView = qrScannerView.findViewById<PreviewView>(R.id.preview_view).also {
         it.scaleType = PreviewView.ScaleType.FILL_CENTER
+        it.implementationMode = PreviewView.ImplementationMode.PERFORMANCE
     }
-    private val infoText = qrScannerView.findViewById<TextView>(R.id.info_text)
 
     private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     private val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -117,6 +122,7 @@ internal class QRScannerView(
         preview = null
         imageAnalyzer = null
         cameraExecutor.shutdown()
+        methodChannel.setMethodCallHandler(null)
         Log.d(TAG, "View disposed")
     }
 
@@ -142,6 +148,20 @@ internal class QRScannerView(
             } else {
                 bindUseCases(context)
             }
+
+            methodChannel.setMethodCallHandler { call, _ ->
+                if (call.method =="requestCameraPermissions") {
+                    requestPermissionsFromUser(context)
+
+                    val intent = Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:" + context.getPackageName())
+                    )
+                    intent.addCategory(Intent.CATEGORY_DEFAULT)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(context, intent, null)
+                }
+            }
         }
     }
 
@@ -159,17 +179,14 @@ internal class QRScannerView(
                                 grantResults.first() == PackageManager.PERMISSION_GRANTED
                             ) {
                                 previewView.visibility = View.VISIBLE
-                                infoText.visibility = View.GONE
                                 bindUseCases(activity)
                             } else {
                                 previewView.visibility = View.GONE
-                                infoText.visibility = View.VISIBLE
-                                infoText.setText(R.string.please_grant_permissions)
+                                reportViewInitialized(false)
                             }
                         } else {
                             previewView.visibility = View.GONE
-                            infoText.visibility = View.VISIBLE
-                            infoText.setText(R.string.please_grant_permissions)
+                            reportViewInitialized(false)
                         }
                         return true
                     }
@@ -181,8 +198,28 @@ internal class QRScannerView(
         requestPermissions(activity)
     }
 
+    private fun reportViewInitialized(permissionsGranted: Boolean) {
+        uiThreadHandler.post {
+            methodChannel.invokeMethod(
+                "viewInitialized",
+                JSONObject(mapOf("permissionsGranted" to permissionsGranted)).toString()
+            )
+        }
+    }
+
+    private fun reportCodeFound(code: String) {
+        uiThreadHandler.post {
+            methodChannel.invokeMethod(
+                "codeFound", JSONObject(
+                    mapOf("value" to code)
+                ).toString()
+            )
+        }
+    }
+
     private fun bindUseCases(context: Context) {
         cameraProviderFuture.addListener({
+
             previewView.visibility = View.VISIBLE
             cameraProvider = cameraProviderFuture.get()
 
@@ -196,13 +233,7 @@ internal class QRScannerView(
                     it.setAnalyzer(cameraExecutor, BarcodeAnalyzer(marginPct) { analyzeResult ->
                         if (analyzeResult.isSuccess) {
                             analyzeResult.getOrNull()?.let { result ->
-                                uiThreadHandler.post {
-                                    methodChannel.invokeMethod(
-                                        "codeFound", JSONObject(
-                                            mapOf("value" to result)
-                                        ).toString()
-                                    )
-                                }
+                                reportCodeFound(result)
                             }
                         }
                     })
@@ -215,11 +246,18 @@ internal class QRScannerView(
                     it.setSurfaceProvider(previewView.surfaceProvider)
                 }
 
-            cameraProvider?.bindToLifecycle(
+            val camera = cameraProvider?.bindToLifecycle(
                 context as LifecycleOwner,
                 cameraSelector,
                 preview, imageAnalyzer
             )
+
+            camera?.cameraInfo?.cameraState?.let {
+                it.removeObservers(context as LifecycleOwner)
+                it.observe(context as LifecycleOwner, stateChangeObserver)
+            }
+
+            reportViewInitialized(true)
         }, ContextCompat.getMainExecutor(context))
     }
 
@@ -271,6 +309,26 @@ internal class QRScannerView(
             } finally {
                 // important call
                 imageProxy.close()
+            }
+        }
+    }
+
+    private class StateChangeObserver(val context: Context) : Observer<CameraState> {
+        private var cameraOpened: Boolean = false
+
+        override fun onChanged(t: CameraState) {
+            Log.d(TAG, "Camera state changed to ${t.type}")
+
+            if (t.type == CameraState.Type.OPEN) {
+                cameraOpened = true
+            }
+
+            if (cameraOpened && t.type == CameraState.Type.CLOSED) {
+                Log.d(TAG, "Camera closed")
+                val stateChangedIntent =
+                    Intent("com.yubico.authenticator.QRScannerView.CameraClosed")
+                context.sendBroadcast(stateChangedIntent)
+                cameraOpened = false
             }
         }
     }

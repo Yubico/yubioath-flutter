@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/models.dart';
 import '../../desktop/state.dart';
-import '../../theme.dart';
 import '../message.dart';
 import '../models.dart';
 import 'device_avatar.dart';
@@ -25,8 +24,7 @@ class DeviceErrorScreen extends ConsumerWidget {
           graphic: noPermission,
           message: 'Managing this device requires elevated privileges.',
           actions: [
-            OutlinedButton.icon(
-              style: AppTheme.primaryOutlinedButtonStyle(context),
+            ElevatedButton.icon(
               label: const Text('Unlock'),
               icon: const Icon(Icons.lock_open),
               onPressed: () async {

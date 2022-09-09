@@ -1,6 +1,7 @@
 package com.yubico.authenticator.oath
 
 import com.yubico.authenticator.device.Version
+import com.yubico.authenticator.jsonSerializer
 import com.yubico.authenticator.oath.OathTestHelper.code
 import com.yubico.authenticator.oath.OathTestHelper.hotp
 import com.yubico.authenticator.oath.OathTestHelper.totp

@@ -4,10 +4,10 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 
 class FlutterLog(messenger: BinaryMessenger) {
-    private var _channel = MethodChannel(messenger, "android.log.redirect")
+    private var channel = MethodChannel(messenger, "android.log.redirect")
 
     init {
-        _channel.setMethodCallHandler { call, result ->
+        channel.setMethodCallHandler { call, result ->
 
             when (call.method) {
                 "log" -> {

@@ -1,22 +1,36 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
-import 'api/flutter_management_api_impl.dart';
-import 'api/flutter_oath_api_impl.dart';
-import 'api/impl.dart';
-import 'command_providers.dart';
+import 'devices.dart';
+
+const _contextChannel = MethodChannel('android.state.appContext');
+const _methodsChannel = MethodChannel('app.methods');
+
+final androidAllowScreenshotsProvider =
+    StateNotifierProvider<AllowScreenshotsNotifier, bool>(
+  (ref) => AllowScreenshotsNotifier(),
+);
+
+class AllowScreenshotsNotifier extends StateNotifier<bool> {
+  AllowScreenshotsNotifier() : super(false);
+
+  void setAllowScreenshots(bool value) async {
+    final result =
+        await _methodsChannel.invokeMethod('allowScreenshots', value);
+    if (mounted) {
+      state = result;
+    }
+  }
+}
 
 final androidSubPageProvider =
     StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
-  FOathApi.setup(FOathApiImpl(ref));
-  FManagementApi.setup(FManagementApiImpl(ref));
   return _AndroidSubPageNotifier(ref.watch(supportedAppsProvider));
 });
 
 class _AndroidSubPageNotifier extends CurrentAppNotifier {
-  final AppApi _api = AppApi();
-
   _AndroidSubPageNotifier(super.supportedApps) {
     _handleSubPage(state);
   }
@@ -28,7 +42,7 @@ class _AndroidSubPageNotifier extends CurrentAppNotifier {
   }
 
   void _handleSubPage(Application subPage) async {
-    await _api.setContext(subPage.index);
+    await _contextChannel.invokeMethod('setContext', {'index': subPage.index});
   }
 }
 
@@ -49,22 +63,14 @@ final androidDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
 
 final androidCurrentDeviceProvider =
     StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {
-  final provider = _AndroidCurrentDeviceNotifier();
-  ref.listen(attachedDevicesProvider, provider._updateAttachedDevices);
+  final provider =
+      _AndroidCurrentDeviceNotifier(ref.watch(androidYubikeyProvider));
   return provider;
 });
 
 class _AndroidCurrentDeviceNotifier extends CurrentDeviceNotifier {
-  _AndroidCurrentDeviceNotifier() : super(null);
-
-  _updateAttachedDevices(
-      List<DeviceNode>? previous, List<DeviceNode?> devices) {
-    if (devices.isNotEmpty) {
-      state = devices.first;
-    } else {
-      state = null;
-    }
-  }
+  _AndroidCurrentDeviceNotifier(AsyncValue<YubiKeyData> device)
+      : super(device.whenOrNull(data: (data) => data.node));
 
   @override
   setCurrentDevice(DeviceNode? device) {

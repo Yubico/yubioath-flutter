@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../management/views/management_screen.dart';
 import '../../about_page.dart';
+import '../../android/views/android_settings_page.dart';
+import '../../management/views/management_screen.dart';
 import '../../settings_page.dart';
 import '../message.dart';
 import '../models.dart';
@@ -44,6 +48,9 @@ class MainPageDrawer extends ConsumerWidget {
         context.findAncestorWidgetOfExactType<MediaQuery>();
     final width = mediaQuery?.data.size.width ?? 400;
 
+    final color =
+        Theme.of(context).brightness == Brightness.dark ? 'white' : 'green';
+
     return Drawer(
       width: width < 357 ? 0.85 * width : null,
       shape: const RoundedRectangleBorder(
@@ -53,7 +60,16 @@ class MainPageDrawer extends ConsumerWidget {
       child: ListView(
         primary: false, //Prevents conflict with the MainPage scroll view.
         children: [
-          const SizedBox(height: 24.0),
+          Padding(
+            padding: const EdgeInsets.only(top: 19.0, left: 30.0, bottom: 12.0),
+            child: Image.asset(
+              'assets/graphics/yubico-$color.png',
+              alignment: Alignment.centerLeft,
+              height: 28,
+              filterQuality: FilterQuality.medium,
+            ),
+          ),
+          const Divider(indent: 16.0, endIndent: 28.0),
           if (data != null) ...[
             // Normal YubiKey Applications
             ...supportedApps
@@ -74,7 +90,8 @@ class MainPageDrawer extends ConsumerWidget {
                 Application.management.getAvailability(data) ==
                     Availability.enabled) ...[
               DrawerItem(
-                titleText: 'Toggle applications',
+                titleText:
+                    AppLocalizations.of(context)!.mainDrawer_txt_applications,
                 icon: Icon(Application.management._icon),
                 onTap: () {
                   if (shouldPop) Navigator.of(context).pop();
@@ -89,20 +106,22 @@ class MainPageDrawer extends ConsumerWidget {
           ],
           // Non-YubiKey pages
           DrawerItem(
-            titleText: 'Settings',
+            titleText: AppLocalizations.of(context)!.mainDrawer_txt_settings,
             icon: const Icon(Icons.settings),
             onTap: () {
               final nav = Navigator.of(context);
               if (shouldPop) nav.pop();
               showBlurDialog(
                 context: context,
-                builder: (context) => const SettingsPage(),
+                builder: (context) => Platform.isAndroid
+                    ? const AndroidSettingsPage()
+                    : const SettingsPage(),
                 routeSettings: const RouteSettings(name: 'settings'),
               );
             },
           ),
           DrawerItem(
-            titleText: 'Help and about',
+            titleText: AppLocalizations.of(context)!.mainDrawer_txt_help,
             icon: const Icon(Icons.help),
             onTap: () {
               final nav = Navigator.of(context);

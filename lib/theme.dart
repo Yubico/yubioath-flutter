@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 const primaryGreen = Color(0xffaed581);
 const accentGreen = Color(0xff9aca3c);
 const primaryBlue = Color(0xff325f74);
 const primaryRed = Color(0xffea4335);
+const darkRed = Color(0xffda4d41);
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
@@ -27,6 +29,10 @@ class AppTheme {
           //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.grey.shade800,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+          )
         ),
         // Mainly used for the OATH dialog view at the moment
         buttonTheme: ButtonThemeData(
@@ -46,23 +52,18 @@ class AppTheme {
         )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
-          primary: Colors.grey.shade800,
           side: BorderSide(width: 1, color: Colors.grey.shade400),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
         )),
         cardTheme: CardTheme(
           color: Colors.grey.shade300,
         ),
         chipTheme: ChipThemeData(
-          backgroundColor: Colors.transparent,
-          selectedColor: const Color(0xffd2dbdf),
-          side: BorderSide(width: 1, color: Colors.grey.shade400),
+          backgroundColor: Colors.transparent, // Remove 3.3
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+              borderRadius: BorderRadius.circular(8)), // Remove 3.3
+          selectedColor: const Color(0xffd2dbdf),
+          side: _ChipBorder(color: Colors.grey.shade400),
+          checkmarkColor: Colors.black,
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: primaryBlue,
@@ -82,6 +83,9 @@ class AppTheme {
           //labelLarge: TextStyle(color: Colors.cyan.shade500),
           //titleSmall: TextStyle(color: Colors.grey.shade600),
           //titleMedium: const TextStyle(),
+          titleMedium: TextStyle(
+              fontWeight: FontWeight.w300,
+              fontSize: 16),
           titleLarge: TextStyle(
               //color: Colors.grey.shade500,
               fontWeight: FontWeight.w400,
@@ -102,6 +106,7 @@ class AppTheme {
           onPrimary: Colors.black,
           secondary: const Color(0xff5d7d90),
         ),
+        errorColor: darkRed,
         iconTheme: const IconThemeData(
           color: Colors.white70,
           size: 18.0,
@@ -113,6 +118,10 @@ class AppTheme {
           //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.grey.shade400,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light,
+          )
         ),
         // Mainly used for the OATH dialog view at the moment
         buttonTheme: ButtonThemeData(
@@ -121,7 +130,7 @@ class AppTheme {
             onSecondary: Colors.white,
             primary: primaryGreen,
             onPrimary: Colors.grey.shade900,
-            error: primaryRed,
+            error: darkRed,
             onError: Colors.grey.shade100,
           ),
         ),
@@ -132,28 +141,21 @@ class AppTheme {
         )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
-          primary: Colors.white70,
-          side: const BorderSide(width: 1, color: Colors.white12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+          side: BorderSide(width: 1, color: Colors.grey.shade400),
         )),
         cardTheme: CardTheme(
           color: Colors.grey.shade800,
         ),
         chipTheme: ChipThemeData(
-          backgroundColor: Colors.transparent,
-          selectedColor: Colors.white12,
-          side: const BorderSide(width: 1, color: Colors.white12),
+          backgroundColor: Colors.transparent, // Remove 3.3
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+              borderRadius: BorderRadius.circular(8)), // Remove 3.3
+          selectedColor: Colors.white12,
+          side: const _ChipBorder(color: Colors.white12),
           labelStyle: TextStyle(
-              // Should match titleMedium
-              color: Colors.grey.shade200,
-              fontWeight: FontWeight.w300,
-              fontSize: 16),
+            color: Colors.grey.shade200,
+          ),
+          checkmarkColor: Colors.grey.shade200,
         ),
         dialogTheme: const DialogTheme(
           backgroundColor: Color(0xff323232),
@@ -174,7 +176,7 @@ class AppTheme {
           bodyMedium: TextStyle(color: Colors.grey.shade200),
           labelSmall: TextStyle(color: Colors.grey.shade500),
           labelMedium: TextStyle(color: Colors.cyan.shade200),
-          labelLarge: TextStyle(color: Colors.cyan.shade500),
+          labelLarge: TextStyle(color: Colors.grey.shade400),
           titleSmall: TextStyle(color: Colors.grey.shade600),
           titleMedium: TextStyle(
               color: Colors.grey.shade200,
@@ -190,12 +192,17 @@ class AppTheme {
               fontSize: 16),
         ),
       );
+}
 
-  static ButtonStyle primaryOutlinedButtonStyle(BuildContext context) =>
-      OutlinedButton.styleFrom(
-        primary: Theme.of(context).colorScheme.onPrimary,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        side:
-            BorderSide(width: 1, color: Theme.of(context).colorScheme.primary),
-      );
+/// This fixes the issue with FilterChip resizing vertically on toggle.
+class _ChipBorder extends BorderSide implements MaterialStateBorderSide {
+  const _ChipBorder({super.color});
+
+  @override
+  BorderSide? resolve(Set<MaterialState> states) {
+    if (states.contains(MaterialState.selected)) {
+      return const BorderSide(width: 1, color: Colors.transparent);
+    }
+    return BorderSide(width: 1, color: color);
+  }
 }

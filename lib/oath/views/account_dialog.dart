@@ -71,14 +71,22 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
       final action = e.action;
       final color = colors[e] ?? Pair(theme.secondary, theme.onSecondary);
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        padding: const EdgeInsets.symmetric(horizontal: 6.0),
         child: CircleAvatar(
           backgroundColor: action != null ? color.first : theme.secondary,
           foregroundColor: color.second,
           child: IconButton(
+            /* use this in Flutter 3.3
+            style: IconButton.styleFrom(
+              backgroundColor: action != null ? color.first : theme.secondary,
+              foregroundColor: color.second,
+              disabledBackgroundColor: theme.onSecondary.withOpacity(0.2),
+              fixedSize: const Size.square(38),
+            ),*/
             icon: e.icon,
             iconSize: 22,
             tooltip: e.text,
+            // Remove the following line in Flutter 3.3:
             disabledColor: theme.onSecondary.withOpacity(0.2),
             onPressed: action != null
                 ? () {
@@ -114,7 +122,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
           }
           await ref.read(withContextProvider)(
             (context) async {
-              copyToClipboard(context, ref);
+              copyToClipboard(context, getCode(ref));
             },
           );
           return null;
@@ -174,6 +182,8 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
             ],
           ),
           actionsPadding: const EdgeInsets.only(top: 10.0, right: -16.0),
+          // use this in Flutter 3.3:
+          // actionsPadding: const EdgeInsets.symmetric(vertical: 10.0),
           actions: [
             Center(
               child: FittedBox(

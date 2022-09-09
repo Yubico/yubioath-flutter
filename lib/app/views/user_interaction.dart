@@ -59,7 +59,6 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
     return AlertDialog(
       scrollable: true,
       content: SizedBox(
-        height: 160,
         width: 100,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -114,12 +113,15 @@ UserInteractionController promptUserInteraction(
   Widget? icon,
   void Function()? onCancel,
 }) {
+  var wasPopped = false;
   final controller = _UserInteractionController(
     title: title,
     description: description,
     icon: icon,
     onClosed: () {
-      Navigator.of(context).pop();
+      if (!wasPopped) {
+        Navigator.of(context).pop();
+      }
     },
   );
   showBlurDialog(
@@ -129,6 +131,7 @@ UserInteractionController promptUserInteraction(
           onWillPop: () async {
             if (onCancel != null) {
               onCancel();
+              wasPopped = true;
               return true;
             } else {
               return false;

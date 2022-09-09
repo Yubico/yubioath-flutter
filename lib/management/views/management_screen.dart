@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
 
@@ -31,9 +32,8 @@ class _CapabilityForm extends StatelessWidget {
       children: Capability.values
           .where((c) => capabilities & c.value != 0)
           .map((c) => FilterChip(
-                showCheckmark: true,
-                selected: enabled & c.value != 0,
                 label: Text(c.name),
+                selected: enabled & c.value != 0,
                 onSelected: (_) {
                   onChanged(enabled ^ c.value);
                 },
@@ -60,7 +60,9 @@ class _ModeForm extends StatelessWidget {
           },
         ),
       ),
-      Text(interfaces == 0 ? 'At least one interface must be enabled' : ''),
+      Text(interfaces == 0
+          ? AppLocalizations.of(context)!.mgmt_min_one_interface
+          : ''),
     ]);
   }
 }
@@ -178,7 +180,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
         // This will take longer, show a message
         close = showMessage(
           context,
-          'Reconfiguring YubiKey...',
+          AppLocalizations.of(context)!.mgmt_reconfiguring_yubikey,
           duration: const Duration(seconds: 8),
         );
       }
@@ -191,7 +193,8 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
           );
       if (!mounted) return;
       if (!reboot) Navigator.pop(context);
-      showMessage(context, 'Configuration updated');
+      showMessage(
+          context, AppLocalizations.of(context)!.mgmt_configuration_updated);
     } finally {
       close?.call();
     }
@@ -215,9 +218,10 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     showMessage(
         context,
         widget.deviceData.node.maybeMap(
-            nfcReader: (_) => 'Configuration updated',
-            orElse: () =>
-                'Configuration updated, remove and reinsert your YubiKey'));
+            nfcReader: (_) =>
+                AppLocalizations.of(context)!.mgmt_configuration_updated,
+            orElse: () => AppLocalizations.of(context)!
+                .mgmt_configuration_updated_remove_reinsert));
     Navigator.pop(context);
   }
 
@@ -232,52 +236,56 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
   @override
   Widget build(BuildContext context) {
     var canSave = false;
-    final child =
-        ref.watch(managementStateProvider(widget.deviceData.node.path)).when(
-              loading: () => const AppLoadingScreen(),
-              error: (error, _) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      error.toString(),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+    final child = ref
+        .watch(managementStateProvider(widget.deviceData.node.path))
+        .when(
+          loading: () => const AppLoadingScreen(),
+          error: (error, _) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  error.toString(),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-              data: (info) {
-                bool hasConfig = info.version.major > 4;
-                if (hasConfig) {
-                  canSave = _enabled[Transport.usb] != 0 &&
-                      !_mapEquals(
-                        _enabled,
-                        info.config.enabledCapabilities,
-                      );
-                } else {
-                  canSave = _interfaces != 0 &&
-                      _interfaces !=
-                          UsbInterface.forCapabilites(widget.deviceData.info
-                                  .config.enabledCapabilities[Transport.usb] ??
-                              0);
-                }
-                return Column(
-                  children: [
-                    hasConfig
-                        ? _buildCapabilitiesForm(context, ref, info)
-                        : _buildModeForm(context, ref, info),
-                  ],
-                );
-              },
+              ],
+            ),
+          ),
+          data: (info) {
+            bool hasConfig = info.version.major > 4;
+            if (hasConfig) {
+              canSave = _enabled[Transport.usb] != 0 &&
+                  !_mapEquals(
+                    _enabled,
+                    info.config.enabledCapabilities,
+                  );
+            } else {
+              canSave = _interfaces != 0 &&
+                  _interfaces !=
+                      UsbInterface.forCapabilites(widget.deviceData.info.config
+                              .enabledCapabilities[Transport.usb] ??
+                          0);
+            }
+            return Column(
+              children: [
+                hasConfig
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                        child: _buildCapabilitiesForm(context, ref, info),
+                      )
+                    : _buildModeForm(context, ref, info),
+              ],
             );
+          },
+        );
 
     return ResponsiveDialog(
-      title: const Text('Toggle applications'),
+      title: Text(AppLocalizations.of(context)!.mgmt_toggle_applications),
       actions: [
         TextButton(
           onPressed: canSave ? _submitForm : null,
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.mgmt_save),
         ),
       ],
       child: child,

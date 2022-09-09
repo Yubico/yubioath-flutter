@@ -1,26 +1,31 @@
 package com.yubico.authenticator.oath
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.yubico.authenticator.device.Version
 import com.yubico.authenticator.oath.OathTestHelper.code
 import com.yubico.authenticator.oath.OathTestHelper.emptyCredentials
 import com.yubico.authenticator.oath.OathTestHelper.hotp
 import com.yubico.authenticator.oath.OathTestHelper.totp
 import org.junit.Assert.*
+import org.junit.Rule
 
 import org.junit.Test
 
 class ModelTest {
 
-    private val model = Model()
+    @get:Rule
+    val rule = InstantTaskExecutorRule()
+
+    private val viewModel = OathViewModel()
 
     private fun connectDevice(deviceId: String) {
-        model.session = Model.Session(
+        viewModel.setSessionState(Model.Session(
             deviceId,
             Version(1, 2, 3),
             isAccessKeySet = false,
             isRemembered = false,
             isLocked = false
-        )
+        ))
     }
 
     @Test
@@ -30,52 +35,39 @@ class ModelTest {
     }
 
     @Test
-    fun `hotp is interactive`() {
-        assertTrue(hotp().isInteractive())
-    }
-
-    @Test
-    fun `totp with touch is interactive`() {
-        assertTrue(totp(touchRequired = true).isInteractive())
-    }
-
-    @Test
-    fun `totp without touch is not interactive`() {
-        assertFalse(totp(touchRequired = false).isInteractive())
-    }
-
-    @Test
     fun `has no credentials after initialization`() {
-        assertTrue(model.credentials.isEmpty())
+        assertNull(viewModel.credentials.value)
     }
 
     @Test
     fun `updates empty model`() {
-
         val d = "device1"
+        connectDevice(d)
         val m = mapOf(totp(d) to code())
-        model.update(d, m)
+        viewModel.updateCredentials(m)
 
-        assertEquals(1, model.credentials.size)
+        assertEquals(1, viewModel.credentials.value?.size)
     }
 
     @Test
     fun `replaces credentials on device change`() {
         val d1 = "device1"
+        connectDevice(d1)
         val m1 = mapOf(
             totp(d1) to code(),
             totp(d1) to code()
         )
-        model.update(d1, m1)
+        viewModel.updateCredentials(m1)
 
-        val d2 = "device2"
+        connectDevice("device2")
         val m2 = emptyCredentials()
-        model.update(d2, m2)
+        viewModel.updateCredentials(m2)
 
-        assertTrue(model.credentials.isEmpty())
+        assertTrue(viewModel.credentials.value!!.isEmpty())
 
-        model.update(d1, m1)
-        assertEquals(2, model.credentials.size)
+        connectDevice("device1")
+        viewModel.updateCredentials(m1)
+        assertEquals(2, viewModel.credentials.value!!.size)
     }
 
     @Test
@@ -92,7 +84,7 @@ class ModelTest {
             cred2 to code()
         )
         connectDevice(d1)
-        model.update(d1, m1)
+        viewModel.updateCredentials(m1)
 
         // one more credential was added
         val m2 = mapOf(
@@ -101,13 +93,13 @@ class ModelTest {
             cred1 to code()
         )
 
-        model.update(d1, m2)
+        viewModel.updateCredentials(m2)
 
-        assertEquals("device1", model.session?.deviceId)
-        assertEquals(3, model.credentials.size)
-        assertTrue(model.credentials.find { it.credential == cred1 } != null)
-        assertTrue(model.credentials.find { it.credential == cred2 } != null)
-        assertTrue(model.credentials.find { it.credential == cred3 } != null)
+        assertEquals("device1", viewModel.sessionState.value?.deviceId)
+        assertEquals(3, viewModel.credentials.value!!.size)
+        assertTrue(viewModel.credentials.value!!.find { it.credential == cred1 } != null)
+        assertTrue(viewModel.credentials.value!!.find { it.credential == cred2 } != null)
+        assertTrue(viewModel.credentials.value!!.find { it.credential == cred3 } != null)
     }
 
     @Test
@@ -115,21 +107,24 @@ class ModelTest {
         val cred = totp(name = "cred1")
         val code = code(value = "123456")
         val m1 = mapOf(cred to code)
-        model.update(cred.deviceId, m1)
 
-        assertTrue(model.credentials.find { it.code == code } != null)
+        connectDevice(cred.deviceId)
+        viewModel.updateCredentials(m1)
+
+        assertTrue(viewModel.credentials.value?.find { it.code == code } != null)
 
         val updatedCode = code(value = "121212")
         val m2 = mapOf(cred to updatedCode)
-        model.update(cred.deviceId, m2)
+        viewModel.updateCredentials(m2)
 
-        assertTrue(model.credentials.find { it.code == updatedCode } != null)
+        assertTrue(viewModel.credentials.value?.find { it.code == updatedCode } != null)
     }
 
     @Test
     fun `update uses all credentials from its input `() {
         val d = "device"
-        model.update(d, emptyCredentials())
+        connectDevice(d)
+        viewModel.updateCredentials(emptyCredentials())
 
         // in next update the device has credentials
         val totp1 = totp(deviceId = d, name = "totp1", touchRequired = false)
@@ -142,49 +137,51 @@ class ModelTest {
         val code4 = code(value = "4444")
 
         val m1 = mapOf(totp1 to code1, totp2 to code2, hotp1 to code3, hotp2 to code4)
-        model.update(d, m1)
+        viewModel.updateCredentials(m1)
 
         // all four are present
-        val foundTotp1 = model.credentials.find { it.credential == totp1 }
+        val foundTotp1 = viewModel.credentials.value?.find { it.credential == totp1 }
         assertTrue(foundTotp1 != null)
         assertEquals("111111", foundTotp1?.code?.value)
 
-        val foundTotp2 = model.credentials.find { it.credential == totp2 }
+        val foundTotp2 = viewModel.credentials.value?.find { it.credential == totp2 }
         assertTrue(foundTotp2 != null)
         assertEquals("222222", foundTotp2?.code?.value)
 
-        val foundHotp1 = model.credentials.find { it.credential == hotp1 }
+        val foundHotp1 = viewModel.credentials.value?.find { it.credential == hotp1 }
         assertTrue(foundHotp1 != null)
         assertEquals("33333", foundHotp1?.code?.value)
 
-        val foundHotp2 = model.credentials.find { it.credential == hotp2 }
+        val foundHotp2 = viewModel.credentials.value?.find { it.credential == hotp2 }
         assertTrue(foundHotp2 != null)
         assertEquals("4444", foundHotp2?.code?.value)
 
     }
 
     @Test
-    fun `update preserves non-interactive codes`() {
+    fun `update without code preserves existing value`() {
         val d = "device"
         val totp = totp(d, name = "totpCred")
         val totpCode: Model.Code? = null
 
         val hotp = hotp(d, name = "hotpCred")
-        val hotpCode: Model.Code? = null
+        val hotpCode: Model.Code? = code(value = "098765")
 
         val m1 = mapOf(hotp to hotpCode, totp to totpCode)
-        model.update(d, m1)
 
-        assertTrue(model.credentials.find { it.code == hotpCode } != null)
+        connectDevice(d)
+        viewModel.updateCredentials(m1)
+
+        assertTrue(viewModel.credentials.value?.find { it.code == hotpCode } != null)
 
         val updatedTotpCode = code(value = "121212")
-        val updatedHotpCode = code(value = "098765")
+        val updatedHotpCode = null
         val m2 = mapOf(hotp to updatedHotpCode, totp to updatedTotpCode)
-        model.update(d, m2)
+        viewModel.updateCredentials(m2)
 
-        assertTrue(model.credentials.find { it.code == updatedTotpCode } != null)
-        assertTrue(model.credentials.find { it.code == hotpCode } != null)
-        assertFalse(model.credentials.find { it.code == updatedHotpCode } != null)
+        assertTrue(viewModel.credentials.value?.find { it.code == updatedTotpCode } != null)
+        assertTrue(viewModel.credentials.value?.find { it.code == hotpCode } != null)
+        assertFalse(viewModel.credentials.value?.find { it.code == updatedHotpCode } != null)
     }
 
     @Test
@@ -194,17 +191,18 @@ class ModelTest {
         val totpCode: Model.Code? = null
 
         connectDevice(d)
-        model.update(d, mapOf(totp to totpCode))
+        viewModel.updateCredentials(mapOf(totp to totpCode))
 
         // simulate touch
-        val newCode = model.updateCode(d, totp, code(value = "00000"))
+        viewModel.updateCode(totp, code(value = "00000"))
+        val newCode = viewModel.credentials.value?.find { it.credential == totp }?.code
         assertNotNull(newCode)
 
         // update with same values
-        model.update(d, mapOf(totp to newCode))
+        viewModel.updateCredentials(mapOf(totp to newCode))
 
-        assertEquals(1, model.credentials.size)
-        assertEquals("00000", model.credentials.find { it.credential == totp }?.code?.value)
+        assertEquals(1, viewModel.credentials.value?.size)
+        assertEquals("00000", viewModel.credentials.value?.find { it.credential == totp }?.code?.value)
     }
 
     @Test
@@ -212,16 +210,17 @@ class ModelTest {
         val d = "Device"
         val t1 = totp()
         val c1 = code()
-        model.update(d, mapOf(t1 to c1))
+        connectDevice(d)
+        viewModel.updateCredentials(mapOf(t1 to c1))
 
         val t2 = totp()
         val c2 = code()
         val t3 = totp()
         val c3 = code()
-        model.update(d, mapOf(t3 to c3, t2 to c2, t1 to c1))
+        viewModel.updateCredentials(mapOf(t3 to c3, t2 to c2, t1 to c1))
 
         // t3 and t2 are added to credentials
-        assertEquals(3, model.credentials.size)
+        assertEquals(3, viewModel.credentials.value?.size)
     }
 
     @Test
@@ -234,30 +233,35 @@ class ModelTest {
         val t3 = totp()
         val c3 = code()
 
-        model.update(d, mapOf(t3 to c3, t1 to c1, t2 to c2))
-        assertEquals(3, model.credentials.size)
+        connectDevice(d)
+        viewModel.updateCredentials(mapOf(t3 to c3, t1 to c1, t2 to c2))
+        assertEquals(3, viewModel.credentials.value?.size)
 
-        model.update(d, mapOf(t1 to c1))
+        viewModel.updateCredentials(mapOf(t1 to c1))
 
         // only t1 is part of credentials
-        assertEquals(1, model.credentials.size)
-        assertTrue(model.credentials.find { it.credential == t1 } != null)
+        assertEquals(1, viewModel.credentials.value?.size)
+        assertTrue(viewModel.credentials.value?.find { it.credential == t1 } != null)
     }
 
     @Test
     fun `adds one credential with code to empty`() {
         val d = "device"
-        model.update(d, mapOf(totp() to code()))
+        connectDevice(d)
+        viewModel.updateCredentials(mapOf(totp() to code()))
 
-        assertEquals(1, model.credentials.size)
+        assertEquals(1, viewModel.credentials.value?.size)
     }
 
     @Test
     fun `does not add one credential with code to not initialized model`() {
         val d = "device"
-        model.add(d, totp(), code())
+        connectDevice(d)
+        assertThrows(IllegalArgumentException::class.java) {
+            viewModel.addCredential(totp(), code())
+        }
 
-        assertEquals(0, model.credentials.size)
+        assertEquals(0, viewModel.credentials.value?.size ?: 0)
     }
 
     @Test
@@ -265,15 +269,17 @@ class ModelTest {
         val d1 = "device1"
         val d2 = "device2"
         connectDevice(d1)
-        model.update(d1, mapOf(totp() to code()))
+        viewModel.updateCredentials(mapOf(totp(d1) to code()))
 
         // cannot add to this model
-        assertNull(model.add(d2, totp(), code()))
+        assertThrows(IllegalArgumentException::class.java) {
+            viewModel.addCredential(totp(), code())
+        }
 
         // can add to this model
-        assertNotNull(model.add(d1, totp(), code()))
+        assertNotNull(viewModel.addCredential(totp(d1), code()))
 
-        assertEquals(2, model.credentials.size)
+        assertEquals(2, viewModel.credentials.value?.size)
     }
 
     @Test
@@ -284,18 +290,23 @@ class ModelTest {
         val code1 = code()
 
         connectDevice(d1)
-        model.update(d1, mapOf(toRename to code1))
+        viewModel.updateCredentials(mapOf(toRename to code1))
 
         val renamedForD2 = totp(d2, name = "newName", issuer = "newIssuer")
-        assertNull(model.rename(d1, toRename, renamedForD2))
+        assertThrows(IllegalArgumentException::class.java) {
+            viewModel.renameCredential(toRename, renamedForD2)
+        }
 
         val renamedForD1 = totp(d1, name = "newName", issuer = "newIssuer")
         // trying to rename on wrong device
-        assertNull(model.rename(d2, toRename, renamedForD2))
+        assertThrows(IllegalArgumentException::class.java) {
+            viewModel.renameCredential(toRename, renamedForD2)
+        }
 
 
         // rename success
-        val renamed = model.rename(d1, toRename, renamedForD1)
+        viewModel.renameCredential(toRename, renamedForD1)
+        val renamed = viewModel.credentials.value?.find { it.credential == renamedForD1 }?.credential
         assertNotNull(renamed)
 
         // the name and issuer are correct
@@ -310,15 +321,17 @@ class ModelTest {
         val code1 = code()
 
         connectDevice(d)
-        model.update(d, mapOf(toRename to code1))
+        viewModel.updateCredentials(mapOf(toRename to code1))
 
         val nullIssuer = totp(d, name = "newName", issuer = null)
-        val renamed = model.rename(d, toRename, nullIssuer)
+        viewModel.renameCredential(toRename, nullIssuer)
+        val renamed = viewModel.credentials.value?.find { it.credential == nullIssuer }?.credential
 
         assertNull(renamed!!.issuer)
 
         val nonNullIssuer = totp(d, name = "newName", issuer = "valueHere")
-        val renamed2 = model.rename(d, renamed, nonNullIssuer)
+        viewModel.renameCredential(nullIssuer, nonNullIssuer)
+        val renamed2 = viewModel.credentials.value?.find { it.credential == nonNullIssuer }?.credential
 
         assertNotNull(renamed2!!.issuer)
     }
@@ -333,16 +346,17 @@ class ModelTest {
         val code2 = code(value = "00000")
 
         connectDevice(d1)
-        model.update(d1, mapOf(totpD1 to code1))
-
-        // cant update on different device
-        assertNull(model.updateCode(d2, totpD1, code()))
+        viewModel.updateCredentials(mapOf(totpD1 to code1))
 
         // cant update for credential from different device
-        assertNull(model.updateCode(d1, totpD2, code()))
+        // TODO: This should fail
+        assertThrows(NullPointerException::class.java) {
+            viewModel.updateCode(totpD2, code())
+        }
 
         // updates correctly to new code
-        val newCode = model.updateCode(d1, totpD1, code2)
+        viewModel.updateCode(totpD1, code2)
+        val newCode = viewModel.credentials.value?.find { it.credential == totpD1 }?.code
         assertNotNull(newCode)
         assertEquals("00000", newCode!!.value!!)
     }
@@ -351,10 +365,10 @@ class ModelTest {
     fun `removes data on reset`() {
         val deviceId = "device"
         connectDevice(deviceId)
-        model.update(deviceId, mapOf(totp() to code()))
-        model.reset()
+        viewModel.updateCredentials(mapOf(totp() to code()))
+        viewModel.setSessionState(null)
 
-        assertNull(model.session)
-        assertTrue(model.credentials.isEmpty())
+        assertNull(viewModel.sessionState.value)
+        assertNull(viewModel.credentials.value)
     }
 }

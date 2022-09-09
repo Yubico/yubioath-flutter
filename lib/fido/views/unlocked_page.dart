@@ -72,6 +72,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       }
     }
 
+    int nFingerprints = 0;
     if (state.bioEnroll != null) {
       final data = ref.watch(fingerprintProvider(node.path)).asData;
       if (data == null) {
@@ -79,6 +80,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       }
       final fingerprints = data.value;
       if (fingerprints.isNotEmpty) {
+        nFingerprints = fingerprints.length;
         children.add(const ListTitle('Fingerprints'));
         children.addAll(fingerprints.map((fp) => ListTile(
               leading: CircleAvatar(
@@ -121,7 +123,7 @@ class FidoUnlockedPage extends ConsumerWidget {
     if (children.isNotEmpty) {
       return AppPage(
         title: const Text('WebAuthn'),
-        keyActions: _buildKeyActions(context),
+        keyActions: _buildKeyActions(context, nFingerprints),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, children: children),
       );
@@ -133,7 +135,7 @@ class FidoUnlockedPage extends ConsumerWidget {
         graphic: noFingerprints,
         header: 'No fingerprints',
         message: 'Add one or more (up to five) fingerprints',
-        keyActions: _buildKeyActions(context),
+        keyActions: _buildKeyActions(context, 0),
       );
     }
 
@@ -142,7 +144,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       graphic: manageAccounts,
       header: 'No discoverable accounts',
       message: 'Register as a Security Key on websites',
-      keyActions: _buildKeyActions(context),
+      keyActions: _buildKeyActions(context, 0),
     );
   }
 
@@ -152,17 +154,22 @@ class FidoUnlockedPage extends ConsumerWidget {
         child: const CircularProgressIndicator(),
       );
 
-  List<PopupMenuEntry> _buildKeyActions(BuildContext context) => [
+  List<PopupMenuEntry> _buildKeyActions(
+          BuildContext context, int fingerprints) =>
+      [
         if (state.bioEnroll != null)
           buildMenuItem(
             title: const Text('Add fingerprint'),
             leading: const Icon(Icons.fingerprint),
-            action: () {
-              showBlurDialog(
-                context: context,
-                builder: (context) => AddFingerprintDialog(node.path),
-              );
-            },
+            trailing: '$fingerprints/5',
+            action: fingerprints < 5
+                ? () {
+                    showBlurDialog(
+                      context: context,
+                      builder: (context) => AddFingerprintDialog(node.path),
+                    );
+                  }
+                : null,
           ),
         buildMenuItem(
           title: const Text('Change PIN'),

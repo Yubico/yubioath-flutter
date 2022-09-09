@@ -4,11 +4,13 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../cancellation_exception.dart';
 import '../../widgets/circle_timer.dart';
 import '../../widgets/custom_icons.dart';
 import '../models.dart';
@@ -66,11 +68,11 @@ mixin AccountMixin {
   }
 
   @protected
-  void copyToClipboard(BuildContext context, WidgetRef ref) {
-    final code = getCode(ref);
+  void copyToClipboard(BuildContext context, OathCode? code) {
     if (code != null) {
       Clipboard.setData(ClipboardData(text: code.value));
-      showMessage(context, 'Code copied to clipboard');
+      showMessage(
+          context, AppLocalizations.of(context)!.oath_copied_to_clipboard);
     }
   }
 
@@ -78,9 +80,10 @@ mixin AccountMixin {
   Future<OathCredential?> renameCredential(
       BuildContext context, WidgetRef ref) async {
     final node = ref.read(currentDeviceProvider)!;
+    final credentials = ref.read(credentialsProvider);
     return await showBlurDialog(
       context: context,
-      builder: (context) => RenameAccountDialog(node, credential),
+      builder: (context) => RenameAccountDialog(node, credential, credentials),
     );
   }
 
@@ -108,27 +111,37 @@ mixin AccountMixin {
               final shortcut = Platform.isMacOS ? '\u2318 C' : 'Ctrl+C';
               return [
                 MenuAction(
-                  text: 'Copy to clipboard ($shortcut)',
+                  text:
+                      '${AppLocalizations.of(context)!.oath_copy_to_clipboard} ($shortcut)',
                   icon: const Icon(Icons.copy),
                   action: code == null || expired
                       ? null
                       : (context) {
                           Clipboard.setData(ClipboardData(text: code.value));
-                          showMessage(context, 'Code copied to clipboard');
+                          showMessage(
+                              context,
+                              AppLocalizations.of(context)!
+                                  .oath_copied_to_clipboard);
                         },
                 ),
                 if (manual)
                   MenuAction(
-                    text: 'Calculate',
+                    text: AppLocalizations.of(context)!.oath_calculate,
                     icon: const Icon(Icons.refresh),
                     action: ready
-                        ? (context) {
-                            calculateCode(context, ref);
+                        ? (context) async {
+                            try {
+                              await calculateCode(context, ref);
+                            } on CancellationException catch (_) {
+                              // ignored
+                            }
                           }
                         : null,
                   ),
                 MenuAction(
-                  text: pinned ? 'Unpin account' : 'Pin account',
+                  text: pinned
+                      ? AppLocalizations.of(context)!.oath_unpin_account
+                      : AppLocalizations.of(context)!.oath_pin_account,
                   icon: pinned
                       ? pushPinStrokeIcon
                       : const Icon(Icons.push_pin_outlined),
@@ -141,13 +154,13 @@ mixin AccountMixin {
                 if (data.info.version.isAtLeast(5, 3))
                   MenuAction(
                     icon: const Icon(Icons.edit_outlined),
-                    text: 'Rename account',
+                    text: AppLocalizations.of(context)!.oath_rename_account,
                     action: (context) async {
                       await renameCredential(context, ref);
                     },
                   ),
                 MenuAction(
-                  text: 'Delete account',
+                  text: AppLocalizations.of(context)!.oath_delete_account,
                   icon: const Icon(Icons.delete_outline),
                   action: (context) async {
                     await deleteCredential(context, ref);

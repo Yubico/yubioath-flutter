@@ -19,7 +19,7 @@ _$_DeviceConfig _$$_DeviceConfigFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$_DeviceConfigToJson(_$_DeviceConfig instance) =>
     <String, dynamic>{
       'enabled_capabilities': instance.enabledCapabilities
-          .map((k, e) => MapEntry(_$TransportEnumMap[k], e)),
+          .map((k, e) => MapEntry(_$TransportEnumMap[k]!, e)),
       'auto_eject_timeout': instance.autoEjectTimeout,
       'challenge_response_timeout': instance.challengeResponseTimeout,
       'device_flags': instance.deviceFlags,
@@ -49,9 +49,9 @@ Map<String, dynamic> _$$_DeviceInfoToJson(_$_DeviceInfo instance) =>
       'config': instance.config,
       'serial': instance.serial,
       'version': instance.version,
-      'form_factor': _$FormFactorEnumMap[instance.formFactor],
+      'form_factor': _$FormFactorEnumMap[instance.formFactor]!,
       'supported_capabilities': instance.supportedCapabilities
-          .map((k, e) => MapEntry(_$TransportEnumMap[k], e)),
+          .map((k, e) => MapEntry(_$TransportEnumMap[k]!, e)),
       'is_locked': instance.isLocked,
       'is_fips': instance.isFips,
       'is_sky': instance.isSky,

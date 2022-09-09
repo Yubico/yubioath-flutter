@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
+import '../../cancellation_exception.dart';
 import '../../widgets/menu_list_tile.dart';
 import '../models.dart';
 import '../state.dart';
@@ -13,6 +14,7 @@ import 'account_mixin.dart';
 class AccountView extends ConsumerWidget with AccountMixin {
   @override
   final OathCredential credential;
+
   AccountView(this.credential, {super.key});
 
   Color _iconColor(int shade) {
@@ -67,18 +69,24 @@ class AccountView extends ConsumerWidget with AccountMixin {
         credential.oathType == OathType.hotp ||
         (credential.touchRequired && expired);
 
-    void triggerCopy() async {
-      if (calculateReady) {
-        await calculateCode(
-          context,
-          ref,
+    Future<void> triggerCopy() async {
+      try {
+        final withContext = ref.read(withContextProvider);
+        await withContext(
+          (context) async {
+            OathCode? code = calculateReady
+                ? await calculateCode(
+                    context,
+                    ref,
+                  )
+                : getCode(ref);
+            await withContext(
+                (context) async => copyToClipboard(context, code));
+          },
         );
+      } on CancellationException catch (_) {
+        // ignored
       }
-      await ref.read(withContextProvider)(
-        (context) async {
-          copyToClipboard(context, ref);
-        },
-      );
     }
 
     final darkMode = Theme.of(context).brightness == Brightness.dark;
@@ -98,8 +106,8 @@ class AccountView extends ConsumerWidget with AccountMixin {
       },
       child: Actions(
         actions: {
-          CopyIntent: CallbackAction(onInvoke: (_) {
-            triggerCopy();
+          CopyIntent: CallbackAction(onInvoke: (_) async {
+            await triggerCopy();
             return null;
           }),
         },

@@ -1,31 +1,27 @@
 package com.yubico.authenticator
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.yubico.authenticator.api.Pigeon
 import com.yubico.authenticator.logging.Log
 import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.CoroutineScope
 
-enum class OperationContext(val value: Long) {
-    Oath(0), Yubikey(1), Invalid(-1);
-
-    companion object {
-        fun getByValue(value: Long) = values().firstOrNull { it.value == value } ?: Invalid
-    }
-}
-
-class AppContext(messenger: BinaryMessenger) : Pigeon.AppApi {
-    private var _appContext = MutableLiveData(OperationContext.Oath)
-    val appContext: LiveData<OperationContext> = _appContext
+class AppContext(messenger: BinaryMessenger, coroutineScope: CoroutineScope, private val appViewModel: MainViewModel)  {
+    private val channel = MethodChannel(messenger, "android.state.appContext")
 
     init {
-        Pigeon.AppApi.setup(messenger, this)
+        channel.setHandler(coroutineScope) { method, args ->
+            when (method) {
+                "setContext" -> setContext(args["index"] as Int)
+                else -> throw NotImplementedError()
+            }
+        }
     }
 
-    override fun setContext(subPageIndex: Long, result: Pigeon.Result<Void>) {
-        _appContext.value = OperationContext.getByValue(subPageIndex)
-        Log.d(TAG, "App context is now $_appContext")
-        result.success(null)
+    private suspend fun setContext(subPageIndex: Int): String {
+        val appContext = OperationContext.getByValue(subPageIndex)
+        appViewModel.setAppContext(appContext)
+        Log.d(TAG, "App context is now $appContext")
+        return NULL
     }
 
     companion object {

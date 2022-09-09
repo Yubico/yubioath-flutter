@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ResponsiveDialog extends StatefulWidget {
   final Widget? title;
@@ -37,18 +38,19 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               ),
             ),
             body: SingleChildScrollView(
-              padding: const EdgeInsets.all(20.0),
               child: Container(key: _childKey, child: widget.child),
             ),
           );
         } else {
           // Dialog
           final cancelText = widget.onCancel == null && widget.actions.isEmpty
-              ? 'Close'
-              : 'Cancel';
+              ? AppLocalizations.of(context)!.widgets_close
+              : AppLocalizations.of(context)!.widgets_cancel;
           return AlertDialog(
             title: widget.title,
+            titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
             scrollable: true,
+            contentPadding: const EdgeInsets.symmetric(vertical: 8),
             content: SizedBox(
               width: 380,
               child: Container(key: _childKey, child: widget.child),

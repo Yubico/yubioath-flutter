@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/cancellation_exception.dart';
 
 import '../../app/message.dart';
+import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
-import '../../app/models.dart';
-import '../../app/state.dart';
 
 class DeleteAccountDialog extends ConsumerWidget {
   final DeviceNode device;
@@ -20,39 +22,49 @@ class DeleteAccountDialog extends ConsumerWidget {
         : credential.name;
 
     return ResponsiveDialog(
-      title: const Text('Delete account'),
+      title: Text(AppLocalizations.of(context)!.oath_delete_account),
       actions: [
         TextButton(
           onPressed: () async {
-            await ref
-                .read(credentialListProvider(device.path).notifier)
-                .deleteAccount(credential);
-            await ref.read(withContextProvider)(
-              (context) async {
-                Navigator.of(context).pop(true);
-                showMessage(context, 'Account deleted');
-              },
-            );
+            try {
+              await ref
+                  .read(credentialListProvider(device.path).notifier)
+                  .deleteAccount(credential);
+              await ref.read(withContextProvider)(
+                (context) async {
+                  Navigator.of(context).pop(true);
+                  showMessage(
+                      context,
+                      AppLocalizations.of(context)!
+                          .oath_success_delete_account);
+                },
+              );
+            } on CancellationException catch (_) {
+              // ignored
+            }
           },
-          child: const Text('Delete'),
+          child: Text(AppLocalizations.of(context)!.oath_delete),
         ),
       ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-              'Warning! This action will delete the account from your YubiKey.'),
-          Text(
-            'You will no longer be able to generate OTPs for this account. Make sure to first disable this credential from the website to avoid being locked out of your account.',
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-          Text('Account: $label'),
-        ]
-            .map((e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: e,
-                ))
-            .toList(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(AppLocalizations.of(context)!
+                .oath_warning_this_will_delete_account_from_key),
+            Text(
+              AppLocalizations.of(context)!.oath_warning_disable_this_cred,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+            Text('${AppLocalizations.of(context)!.oath_account} $label'),
+          ]
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: e,
+                  ))
+              .toList(),
+        ),
       ),
     );
   }

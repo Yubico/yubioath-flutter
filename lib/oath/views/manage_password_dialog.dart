@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
@@ -27,7 +28,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
     if (result) {
       if (!mounted) return;
       Navigator.of(context).pop();
-      showMessage(context, 'Password set');
+      showMessage(context, AppLocalizations.of(context)!.oath_password_set);
     } else {
       setState(() {
         _currentIsWrong = true;
@@ -42,119 +43,139 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         (!widget.state.hasKey || _currentPassword.isNotEmpty);
 
     return ResponsiveDialog(
-      title: const Text('Manage password'),
+      title: Text(AppLocalizations.of(context)!.oath_manage_password),
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.oath_save),
         )
       ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.state.hasKey) ...[
-            const Text(
-                "Enter your current password. If you don't know your password, you'll need to reset the YubiKey."),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (widget.state.hasKey) ...[
+              Text(AppLocalizations.of(context)!.oath_enter_current_password),
+              TextField(
+                autofocus: true,
+                obscureText: true,
+                decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText:
+                        AppLocalizations.of(context)!.oath_current_password,
+                    prefixIcon: const Icon(Icons.password_outlined),
+                    errorText: _currentIsWrong
+                        ? AppLocalizations.of(context)!.oath_wrong_password
+                        : null,
+                    errorMaxLines: 3),
+                textInputAction: TextInputAction.next,
+                onChanged: (value) {
+                  setState(() {
+                    _currentIsWrong = false;
+                    _currentPassword = value;
+                  });
+                },
+              ),
+              Wrap(
+                spacing: 4.0,
+                runSpacing: 8.0,
+                children: [
+                  OutlinedButton(
+                    onPressed: _currentPassword.isNotEmpty
+                        ? () async {
+                            final result = await ref
+                                .read(oathStateProvider(widget.path).notifier)
+                                .unsetPassword(_currentPassword);
+                            if (result) {
+                              if (!mounted) return;
+                              Navigator.of(context).pop();
+                              showMessage(
+                                  context,
+                                  AppLocalizations.of(context)!
+                                      .oath_password_removed);
+                            } else {
+                              setState(() {
+                                _currentIsWrong = true;
+                              });
+                            }
+                          }
+                        : null,
+                    child: Text(
+                        AppLocalizations.of(context)!.oath_remove_password),
+                  ),
+                  if (widget.state.remembered)
+                    OutlinedButton(
+                      child: Text(AppLocalizations.of(context)!
+                          .oath_clear_saved_password),
+                      onPressed: () async {
+                        await ref
+                            .read(oathStateProvider(widget.path).notifier)
+                            .forgetPassword();
+                        if (!mounted) return;
+                        Navigator.of(context).pop();
+                        showMessage(
+                            context,
+                            AppLocalizations.of(context)!
+                                .oath_password_forgotten);
+                      },
+                    ),
+                ],
+              ),
+            ],
+            Text(AppLocalizations.of(context)!.oath_enter_new_password),
             TextField(
               key: const Key('current oath password'),
-              autofocus: true,
+              autofocus: !widget.state.hasKey,
               obscureText: true,
               decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: 'Current password',
-                  prefixIcon: const Icon(Icons.password_outlined),
-                  errorText: _currentIsWrong ? 'Wrong password' : null,
-                  errorMaxLines: 3),
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.oath_new_password,
+                prefixIcon: const Icon(Icons.password_outlined),
+                enabled: !widget.state.hasKey || _currentPassword.isNotEmpty,
+              ),
+              textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
-                  _currentIsWrong = false;
-                  _currentPassword = value;
+                  _newPassword = value;
                 });
               },
+              onSubmitted: (_) {
+                if (isValid) {
+                  _submit();
+                }
+              },
             ),
-            Wrap(
-              spacing: 4.0,
-              runSpacing: 8.0,
-              children: [
-                OutlinedButton(
-                  onPressed: _currentPassword.isNotEmpty
-                      ? () async {
-                          final result =
-                              await ref.read(oathStateProvider(widget.path).notifier).unsetPassword(_currentPassword);
-                          if (result) {
-                            if (!mounted) return;
-                            Navigator.of(context).pop();
-                            showMessage(context, 'Password removed');
-                          } else {
-                            setState(() {
-                              _currentIsWrong = true;
-                            });
-                          }
-                        }
-                      : null,
-                  child: const Text('Remove password'),
-                ),
-                if (widget.state.remembered)
-                  OutlinedButton(
-                    child: const Text('Clear saved password'),
-                    onPressed: () async {
-                      await ref.read(oathStateProvider(widget.path).notifier).forgetPassword();
-                      if (!mounted) return;
-                      Navigator.of(context).pop();
-                      showMessage(context, 'Password forgotten');
-                    },
-                  ),
-              ],
+            TextField(
+              key: const Key('confirm oath password'),
+              obscureText: true,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.oath_confirm_password,
+                prefixIcon: const Icon(Icons.password_outlined),
+                enabled:
+                    (!widget.state.hasKey || _currentPassword.isNotEmpty) &&
+                        _newPassword.isNotEmpty,
+              ),
+              textInputAction: TextInputAction.done,
+              onChanged: (value) {
+                setState(() {
+                  _confirmPassword = value;
+                });
+              },
+              onSubmitted: (_) {
+                if (isValid) {
+                  _submit();
+                }
+              },
             ),
-          ],
-          const Text('Enter your new password. A password may contain letters, numbers and special characters.'),
-          TextField(
-            key: const Key('new oath password'),
-            autofocus: !widget.state.hasKey,
-            obscureText: true,
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              labelText: 'New password',
-              prefixIcon: const Icon(Icons.password_outlined),
-              enabled: !widget.state.hasKey || _currentPassword.isNotEmpty,
-            ),
-            onChanged: (value) {
-              setState(() {
-                _newPassword = value;
-              });
-            },
-            onSubmitted: (_) {
-              if (isValid) {
-                _submit();
-              }
-            },
-          ),
-          TextField(
-            key: const Key('confirm oath password'),
-            obscureText: true,
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              labelText: 'Confirm password',
-              prefixIcon: const Icon(Icons.password_outlined),
-              enabled: (!widget.state.hasKey || _currentPassword.isNotEmpty) && _newPassword.isNotEmpty,
-            ),
-            onChanged: (value) {
-              setState(() {
-                _confirmPassword = value;
-              });
-            },
-            onSubmitted: (_) {
-              if (isValid) {
-                _submit();
-              }
-            },
-          ),
-        ]
-            .map((e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: e,
-                ))
-            .toList(),
+          ]
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: e,
+                  ))
+              .toList(),
+        ),
       ),
     );
   }

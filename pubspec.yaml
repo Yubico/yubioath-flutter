@@ -32,6 +32,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.17.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -43,13 +46,13 @@ dependencies:
   collection: ^1.16.0
   shared_preferences: ^2.0.12
   flutter_riverpod: ^1.0.0
-  json_annotation: ^4.5.0
+  json_annotation: ^4.6.0
   freezed_annotation: ^2.0.3
   window_manager: ^0.2.0
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
   desktop_drop: ^0.3.3
-  url_launcher: ^6.1.2
+  url_launcher: ^6.1.5
 
 dev_dependencies:
   integration_test:
@@ -64,10 +67,9 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.1
 
-  build_runner: ^2.1.4
-  freezed: ^2.0.3
-  json_serializable: ^6.0.0
-  pigeon: ^3.1.6
+  build_runner: ^2.2.0
+  freezed: ^2.1.0+1
+  json_serializable: ^6.3.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -75,6 +77,7 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
 
+  generate: true
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -88,6 +91,7 @@ flutter:
     - assets/product-images/
     - assets/graphics/
     - assets/licenses/
+    - assets/licenses/android/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
