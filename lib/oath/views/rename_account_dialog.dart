@@ -162,6 +162,17 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                         : null,
                 prefixIcon: const Icon(Icons.people_alt_outlined),
               ),
+              textInputAction: TextInputAction.done,
+              onChanged: (value) {
+                setState(() {
+                  _account = value.trim();
+                });
+              },
+              onFieldSubmitted: (_) {
+                if (didChange && isValid) {
+                  _submit();
+                }
+              },
             ),
           ]
               .map((e) => Padding(
