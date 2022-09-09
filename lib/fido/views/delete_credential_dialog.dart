@@ -22,17 +22,20 @@ class DeleteCredentialDialog extends ConsumerWidget {
 
     return ResponsiveDialog(
       title: Text(AppLocalizations.of(context)!.fido_delete_credential),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocalizations.of(context)!.fido_this_will_delete_cred),
-          Text('${AppLocalizations.of(context)!.fido_credential}: $label'),
-        ]
-            .map((e) => Padding(
-                  child: e,
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                ))
-            .toList(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(AppLocalizations.of(context)!.fido_this_will_delete_cred),
+            Text('${AppLocalizations.of(context)!.fido_credential}: $label'),
+          ]
+              .map((e) => Padding(
+                    child: e,
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  ))
+              .toList(),
+        ),
       ),
       actions: [
         TextButton(

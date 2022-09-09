@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
+import '../core/state.dart';
+import '../android/state.dart';
+
 String _pad(int value, int zeroes) => value.toString().padLeft(zeroes, '0');
 
 extension DateTimeFormat on DateTime {
@@ -85,23 +88,41 @@ class LogWarningOverlay extends StatelessWidget {
       children: [
         child,
         Consumer(builder: (context, ref, _) {
-          if (ref.watch(logLevelProvider
-              .select((level) => level.value <= Level.CONFIG.value))) {
-            return const Align(
-              alignment: Alignment.bottomCenter,
-              child: IgnorePointer(
-                child: Text(
-                  'WARNING: Potentially sensitive data is being logged!',
-                  textDirection: TextDirection.ltr,
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
+          final sensitiveLogs = ref.watch(logLevelProvider
+              .select((level) => level.value <= Level.CONFIG.value));
+          final allowScreenshots =
+              isAndroid ? ref.watch(androidAllowScreenshotsProvider) : false;
+
+          if (!(sensitiveLogs || allowScreenshots)) {
+            return const SizedBox();
+          }
+
+          final String message;
+          if (sensitiveLogs && allowScreenshots) {
+            message =
+                'Potentially sensitive data is being logged, and other apps can potentially record the screen';
+          } else if (sensitiveLogs) {
+            message = 'Potentially sensitive data is being logged';
+          } else if (allowScreenshots) {
+            message = 'Other apps can potentially record the screen';
+          } else {
+            return const SizedBox();
+          }
+
+          return Align(
+            alignment: Alignment.bottomCenter,
+            child: IgnorePointer(
+              child: Text(
+                'WARNING: $message!',
+                textDirection: TextDirection.ltr,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            );
-          }
-          return const SizedBox();
+            ),
+          );
         }),
       ],
     );

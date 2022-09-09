@@ -46,22 +46,25 @@ class DeleteAccountDialog extends ConsumerWidget {
           child: Text(AppLocalizations.of(context)!.oath_delete),
         ),
       ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocalizations.of(context)!
-              .oath_warning_this_will_delete_account_from_key),
-          Text(
-            AppLocalizations.of(context)!.oath_warning_disable_this_cred,
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-          Text('${AppLocalizations.of(context)!.oath_account} $label'),
-        ]
-            .map((e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: e,
-                ))
-            .toList(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(AppLocalizations.of(context)!
+                .oath_warning_this_will_delete_account_from_key),
+            Text(
+              AppLocalizations.of(context)!.oath_warning_disable_this_cred,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+            Text('${AppLocalizations.of(context)!.oath_account} $label'),
+          ]
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: e,
+                  ))
+              .toList(),
+        ),
       ),
     );
   }

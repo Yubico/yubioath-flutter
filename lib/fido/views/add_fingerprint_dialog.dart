@@ -152,60 +152,63 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
 
     return ResponsiveDialog(
       title: Text(AppLocalizations.of(context)!.fido_add_fingerprint),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocalizations.of(context)!.fido_step_1_2),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(36.0),
-                child: AnimatedBuilder(
-                  animation: _color,
-                  builder: (context, _) {
-                    return Icon(
-                      _fingerprint == null ? Icons.fingerprint : Icons.check,
-                      size: 128.0,
-                      color: _color.value,
-                    );
-                  },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(AppLocalizations.of(context)!.fido_step_1_2),
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(36.0),
+                  child: AnimatedBuilder(
+                    animation: _color,
+                    builder: (context, _) {
+                      return Icon(
+                        _fingerprint == null ? Icons.fingerprint : Icons.check,
+                        size: 128.0,
+                        color: _color.value,
+                      );
+                    },
+                  ),
                 ),
-              ),
-              LinearProgressIndicator(value: progress),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(_getMessage()),
-              ),
-            ],
-          ),
-          Text(AppLocalizations.of(context)!.fido_step_2_2),
-          TextFormField(
-            focusNode: _nameFocus,
-            maxLength: 15,
-            inputFormatters: [limitBytesLength(15)],
-            buildCounter: buildByteCounterFor(_label),
-            autofocus: true,
-            decoration: InputDecoration(
-              enabled: _fingerprint != null,
-              border: const OutlineInputBorder(),
-              labelText: AppLocalizations.of(context)!.fido_name,
-              prefixIcon: const Icon(Icons.fingerprint_outlined),
+                LinearProgressIndicator(value: progress),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(_getMessage()),
+                ),
+              ],
             ),
-            onChanged: (value) {
-              setState(() {
-                _label = value.trim();
-              });
-            },
-            onFieldSubmitted: (_) {
-              _submit();
-            },
-          ),
-        ]
-            .map((e) => Padding(
-                  child: e,
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                ))
-            .toList(),
+            Text(AppLocalizations.of(context)!.fido_step_2_2),
+            TextFormField(
+              focusNode: _nameFocus,
+              maxLength: 15,
+              inputFormatters: [limitBytesLength(15)],
+              buildCounter: buildByteCounterFor(_label),
+              autofocus: true,
+              decoration: InputDecoration(
+                enabled: _fingerprint != null,
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.fido_name,
+                prefixIcon: const Icon(Icons.fingerprint_outlined),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _label = value.trim();
+                });
+              },
+              onFieldSubmitted: (_) {
+                _submit();
+              },
+            ),
+          ]
+              .map((e) => Padding(
+                    child: e,
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  ))
+              .toList(),
+        ),
       ),
       onCancel: () {
         _subscription.cancel();

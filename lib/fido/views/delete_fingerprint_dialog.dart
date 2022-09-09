@@ -35,17 +35,20 @@ class DeleteFingerprintDialog extends ConsumerWidget {
           child: Text(AppLocalizations.of(context)!.fido_delete),
         ),
       ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocalizations.of(context)!.fido_this_will_delete_fp),
-          Text('${AppLocalizations.of(context)!.fido_fingerprint}: $label'),
-        ]
-            .map((e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: e,
-                ))
-            .toList(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(AppLocalizations.of(context)!.fido_this_will_delete_fp),
+            Text('${AppLocalizations.of(context)!.fido_fingerprint}: $label'),
+          ]
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: e,
+                  ))
+              .toList(),
+        ),
       ),
     );
   }

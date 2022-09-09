@@ -81,6 +81,7 @@
     "mgmt_toggle_applications": "Toggle applications",
     "mgmt_save": "Save",
 
+    "general_about": "About",
     "general_terms_of_use": "Terms of use",
     "general_privacy_policy": "Privacy policy",
     "general_open_src_licenses": "Open source licenses",
@@ -92,7 +93,6 @@
     "general_run_diagnostics": "Run diagnostics",
     "general_diagnostics_copied": "Diagnostic data copied to clipboard",
     "general_log_level": "Log level",
-    "general_log_level_set_to": "Log level set to",
     "general_copy_log": "Copy log",
     "general_log_copied": "Log copied to clipboard",
     "general_settings": "Settings",
@@ -100,6 +100,7 @@
     "general_system_default": "System default",
     "general_light_mode": "Light mode",
     "general_dark_mode": "Dark mode",
+    "general_allow_screenshots": "Allow screenshots",
 
     "fido_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
     "fido_keep_touching_yubikey": "Keep touching your YubiKey repeatedly...",
@@ -125,9 +126,6 @@
     "fido_register_as_a_key": "Register as a Security Key on websites",
     "fido_fido_disabled": "FIDO2 disabled",
     "fido_webauthn_req_fido": "WebAuthn requires the FIDO2 application to be enabled on your YubiKey",
-    
-
-
 
 
 

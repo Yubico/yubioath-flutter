@@ -29,19 +29,23 @@ class ResetDialog extends ConsumerWidget {
           child: Text(AppLocalizations.of(context)!.oath_reset),
         ),
       ],
-      child: Column(
-        children: [
-          Text(AppLocalizations.of(context)!.oath_warning_will_delete_accounts),
-          Text(
-            AppLocalizations.of(context)!.oath_warning_disable_these_creds,
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-        ]
-            .map((e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: e,
-                ))
-            .toList(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          children: [
+            Text(AppLocalizations.of(context)!
+                .oath_warning_will_delete_accounts),
+            Text(
+              AppLocalizations.of(context)!.oath_warning_disable_these_creds,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          ]
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: e,
+                  ))
+              .toList(),
+        ),
       ),
     );
   }
