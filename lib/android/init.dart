@@ -100,9 +100,8 @@ void _initSystemUi() async {
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
       overlays: SystemUiOverlay.values);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    systemNavigationBarColor: Colors.transparent,
-    systemNavigationBarContrastEnforced: true
-  ));
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarContrastEnforced: true));
 }
 
 void _initLicenses() async {
