@@ -21,9 +21,9 @@ allprojects {
     }
 
     project.ext {
-        minSdkVersion = 23
-        targetSdkVersion = 32
-        compileSdkVersion = 32
+        minSdkVersion = 21
+        targetSdkVersion = 33
+        compileSdkVersion = 33
         buildToolsVersion = "30.0.3"
 
         yubiKitVersion = "2.1.0"
