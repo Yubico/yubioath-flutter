@@ -109,8 +109,10 @@ class LogWarningOverlay extends StatelessWidget {
             return const SizedBox();
           }
 
+          var deviceBottomViewPadding = MediaQueryData.fromWindow(WidgetsBinding.instance.window).viewPadding.bottom;
           return Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+            padding:
+                EdgeInsets.fromLTRB(5, 0, 5, deviceBottomViewPadding + 15),
             child: Align(
               alignment: Alignment.bottomCenter,
               child: IgnorePointer(
@@ -119,9 +121,10 @@ class LogWarningOverlay extends StatelessWidget {
                   textDirection: TextDirection.ltr,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                      height: 1.5,
+                      fontSize: 16),
                 ),
               ),
             ),

@@ -47,35 +47,39 @@ class AppPage extends ConsumerWidget {
         },
       );
 
-  Widget _buildScrollView() => SafeArea(
-        bottom: false,
-        child: SingleChildScrollView(
-          child: Center(
-            child: SizedBox(
-              width: 700,
-              child: Column(
-                children: [
-                  child,
-                  if (actions.isNotEmpty)
-                    Align(
-                      alignment:
-                          centered ? Alignment.center : Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 16.0, horizontal: 18.0),
-                        child: Wrap(
-                          spacing: 4,
-                          runSpacing: 4,
-                          children: actions,
-                        ),
+  Widget _buildScrollView() {
+    var bottomPadding = MediaQueryData.fromWindow(WidgetsBinding.instance.window).viewPadding.bottom;
+    return SafeArea(
+      bottom: bottomPadding > 24,
+      maintainBottomViewPadding: false,
+      child: SingleChildScrollView(
+        child: Center(
+          child: SizedBox(
+            width: 700,
+            child: Column(
+              children: [
+                child,
+                if (actions.isNotEmpty)
+                  Align(
+                    alignment:
+                        centered ? Alignment.center : Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 16.0, horizontal: 18.0),
+                      child: Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: actions,
                       ),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 
   Scaffold _buildScaffold(BuildContext context, WidgetRef ref, bool hasDrawer) {
     return Scaffold(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/app/state.dart';
+import 'package:yubico_authenticator/cancellation_exception.dart';
 
 import 'qr_scanner_view.dart';
 
@@ -17,7 +18,8 @@ class AndroidQrScanner implements QrScanner {
         reverseTransitionDuration: const Duration(seconds: 0),
       )));
     if (scannedCode == null) {
-      throw Exception('Null value from QR scanner');
+      // user has cancelled the scan
+      throw CancellationException();
     }
     return scannedCode;
   }

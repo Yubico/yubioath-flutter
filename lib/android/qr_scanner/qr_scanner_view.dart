@@ -82,12 +82,12 @@ class _QrScannerViewState extends State<QrScannerView> {
   void initState() {
     super.initState();
     _status = ScanStatus.scanning;
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
   }
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
         overlays: SystemUiOverlay.values);
     super.dispose();
   }
@@ -95,8 +95,7 @@ class _QrScannerViewState extends State<QrScannerView> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       extendBody: true,
@@ -130,7 +129,7 @@ class _QrScannerViewState extends State<QrScannerView> {
               maintainSize: true,
               visible: _permissionsGranted,
               child: QRScannerZxingView(
-                key: _zxingViewKey,
+                  key: _zxingViewKey,
                   marginPct: 50,
                   onDetect: (scannedData) => handleResult(scannedData),
                   onViewInitialized: (bool permissionsGranted) {
@@ -164,6 +163,6 @@ class _QrScannerViewState extends State<QrScannerView> {
               )),
         ],
       ),
-    ));
+    );
   }
 }
