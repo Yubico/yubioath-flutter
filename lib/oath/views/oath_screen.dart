@@ -193,10 +193,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final used = credentials?.length ?? 0;
     final capacity = widget.oathState.version.isAtLeast(4) ? 32 : null;
     return [
-    buildMenuItem(
-      title: Text(AppLocalizations.of(context)!.oath_add_account,
+      buildMenuItem(
+        title: Text(AppLocalizations.of(context)!.oath_add_account,
         key: const Key('add oath account'),),
-      leading: const Icon(Icons.person_add_alt_1),
+        leading: const Icon(Icons.person_add_alt_1),
         trailing: capacity != null ? '$used/$capacity' : null,
         action: capacity == null || capacity > used
             ? () {

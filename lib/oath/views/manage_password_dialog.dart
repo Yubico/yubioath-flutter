@@ -14,7 +14,8 @@ class ManagePasswordDialog extends ConsumerStatefulWidget {
   const ManagePasswordDialog(this.path, this.state, {super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ManagePasswordDialogState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _ManagePasswordDialogState();
 }
 
 class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
@@ -24,7 +25,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   bool _currentIsWrong = false;
 
   _submit() async {
-    final result = await ref.read(oathStateProvider(widget.path).notifier).setPassword(_currentPassword, _newPassword);
+    final result = await ref
+        .read(oathStateProvider(widget.path).notifier)
+        .setPassword(_currentPassword, _newPassword);
     if (result) {
       if (!mounted) return;
       Navigator.of(context).pop();
