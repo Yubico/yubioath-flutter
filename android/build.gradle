@@ -17,7 +17,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        mavenLocal()  // TODO: Remove this before release
     }
 
     project.ext {
