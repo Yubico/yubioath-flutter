@@ -5,6 +5,8 @@ import 'package:yubico_authenticator/app/views/device_button.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/desktop/init.dart' as desktop;
 
+import 'android/util.dart';
+
 Future<Widget> getAuthenticatorApp() async => isDesktop
     ? await desktop.initialize([])
     : isAndroid
@@ -14,12 +16,18 @@ Future<Widget> getAuthenticatorApp() async => isDesktop
 extension TestHelper on WidgetTester {
   /// Taps the device button
   Future<void> tapDeviceButton() async {
-    await tap(find.byType(DeviceButton));
+    await tap(find.byType(DeviceButton).hitTestable());
     await pump(const Duration(milliseconds: 500));
   }
 
-  Future<void> startUp() async {
-    await pumpWidget(
-        await getAuthenticatorApp(), const Duration(milliseconds: 2000));
+
+  Future<void> startUp([Map<dynamic, dynamic>? startUpParams]) async {
+    if (isAndroid) {
+      return AndroidTestUtils.startUp(this, startUpParams);
+    } else {
+      // desktop
+      return await pumpWidget(
+          await getAuthenticatorApp(), const Duration(milliseconds: 2000));
+    }
   }
 }

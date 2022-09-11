@@ -25,6 +25,7 @@ class DeleteAccountDialog extends ConsumerWidget {
       title: Text(AppLocalizations.of(context)!.oath_delete_account),
       actions: [
         TextButton(
+          key: const Key('oath.dlg.delete_account.btn.delete'),
           onPressed: () async {
             try {
               await ref

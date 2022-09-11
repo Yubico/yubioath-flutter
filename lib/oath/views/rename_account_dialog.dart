@@ -116,6 +116,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
       actions: [
         TextButton(
           onPressed: didChange && isValid ? _submit : null,
+          key: const Key('oath.dlg.rename_account.btn.save'),
           child: Text(AppLocalizations.of(context)!.oath_save),
         ),
       ],
@@ -133,6 +134,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               maxLength: issuerRemaining > 0 ? issuerRemaining : null,
               buildCounter: buildByteCounterFor(_issuer),
               inputFormatters: [limitBytesLength(issuerRemaining)],
+              key: const Key('oath.dlg.rename_account.edit.issuer'),
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: AppLocalizations.of(context)!.oath_issuer_optional,
@@ -151,6 +153,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               maxLength: nameRemaining,
               inputFormatters: [limitBytesLength(nameRemaining)],
               buildCounter: buildByteCounterFor(_account),
+              key: const Key('oath.dlg.rename_account.edit.name'),
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: AppLocalizations.of(context)!.oath_account_name,
@@ -162,6 +165,17 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                         : null,
                 prefixIcon: const Icon(Icons.people_alt_outlined),
               ),
+              textInputAction: TextInputAction.done,
+              onChanged: (value) {
+                setState(() {
+                  _account = value.trim();
+                });
+              },
+              onFieldSubmitted: (_) {
+                if (didChange && isValid) {
+                  _submit();
+                }
+              },
             ),
           ]
               .map((e) => Padding(

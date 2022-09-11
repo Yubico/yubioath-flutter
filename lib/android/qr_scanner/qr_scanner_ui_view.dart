@@ -52,6 +52,7 @@ class QRScannerUI extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
+                key: const Key('android.qr_scanner.btn.enter_manually'),
                 child: const Text('Enter manually',
                     style: TextStyle(color: Colors.white))),
           ],
