@@ -1,33 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:yubico_authenticator/android/keys.dart' as android_keys;
 import 'package:yubico_authenticator/core/state.dart';
+import 'package:yubico_authenticator/oath/keys.dart' as keys;
 import 'package:yubico_authenticator/oath/views/account_list.dart';
 import 'package:yubico_authenticator/oath/views/account_view.dart';
 
 import 'test_util.dart';
-
-/// when connecting YubiKey with OATH password
-const passwordValidateEditKey = Key('oath password');
-const unlockOathBtnKey = Key('oath unlock');
-
-/// when setting or changing existing YubiKey OATH password
-const newOathPasswordEntryKey = Key('new oath password');
-const currentOathPasswordEntryKey = Key('current oath password');
-const confirmOathPasswordEditKey = Key('confirm oath password');
-const oathPasswordSaveBntKey = Key('save oath password changes');
-const oathPasswordRemoveBntKey = Key('remove oath password btn');
-
-const qrScannerEnterManuallyKey = Key('android.qr_scanner.btn.enter_manually');
-const deleteAccountBtnKey = Key('oath.dlg.delete_account.btn.delete');
-const renameAccountBtnSaveKey = Key('oath.dlg.rename_account.btn.save');
-const renameAccountEditIssuerKey = Key('oath.dlg.rename_account.edit.issuer');
-const renameAccountEditNameKey = Key('oath.dlg.rename_account.edit.name');
-
-const deviceMenuAddAccountKey = Key('add oath account');
-const deviceMenuSetManagePasswordKey = Key('set or manage oath password');
-const deviceMenuResetOathKey = Key('reset oath app');
-
-const noAccountsMessagePage = Key('oath.message_page.no_accounts');
 
 class Account {
   final String? issuer;
@@ -48,14 +27,14 @@ extension OathFunctions on WidgetTester {
   /// Opens the device menu and taps the "Add account" menu item
   Future<void> tapAddAccount() async {
     await tapDeviceButton();
-    await tap(find.byKey(deviceMenuAddAccountKey).hitTestable());
+    await tap(find.byKey(keys.addAccountAction).hitTestable());
     await longWait();
   }
 
   /// Opens the device menu and taps the "Set/Manage password" menu item
   Future<void> tapSetOrManagePassword() async {
     await tapDeviceButton();
-    await tap(find.byKey(deviceMenuSetManagePasswordKey));
+    await tap(find.byKey(keys.setOrManagePasswordAction));
     await longWait();
   }
 
@@ -71,31 +50,33 @@ extension OathFunctions on WidgetTester {
     if (isAndroid) {
       /// on android a QR Scanner starts
       /// we want to do a manual addition
-      var manualEntryBtn = find.byKey(qrScannerEnterManuallyKey).hitTestable();
+      var manualEntryBtn =
+          find.byKey(android_keys.manualEntryButton).hitTestable();
       if (manualEntryBtn.evaluate().isEmpty) {
         printToConsole('Allow camera permission');
         await pump(const Duration(seconds: 2));
-        manualEntryBtn = find.byKey(qrScannerEnterManuallyKey).hitTestable();
+        manualEntryBtn =
+            find.byKey(android_keys.manualEntryButton).hitTestable();
       }
 
       await tap(manualEntryBtn);
       await longWait();
     }
 
-    var issuerText = find.byKey(const Key('issuer')).hitTestable();
+    var issuerText = find.byKey(keys.issuerField).hitTestable();
     await tap(issuerText);
     await enterText(issuerText, a.issuer ?? '');
     await shortWait();
-    var nameText = find.byKey(const Key('name')).hitTestable();
+    var nameText = find.byKey(keys.nameField).hitTestable();
     await tap(nameText);
     await enterText(nameText, a.name);
     await shortWait();
-    var secretText = find.byKey(const Key('secret')).hitTestable();
+    var secretText = find.byKey(keys.secretField).hitTestable();
     await tap(secretText);
     await enterText(secretText, a.secret);
     await shortWait();
 
-    await tap(find.byKey(const Key('save_btn')));
+    await tap(find.byKey(keys.saveButton));
 
     await longWait();
 
@@ -118,7 +99,7 @@ extension OathFunctions on WidgetTester {
   }
 
   Future<AccountView?> findAccount(Account a, {bool quiet = true}) async {
-    if (find.byKey(noAccountsMessagePage).hitTestable().evaluate().isNotEmpty) {
+    if (find.byKey(keys.noAccountsView).hitTestable().evaluate().isNotEmpty) {
       /// if there is no OATH account on the YubiKey, the app shows
       /// No accounts [MessagePage]
       return null;
@@ -179,7 +160,7 @@ extension OathFunctions on WidgetTester {
     await longWait();
 
     /// TODO check dialog shows correct information about account
-    var deleteButton = find.byKey(deleteAccountBtnKey).hitTestable();
+    var deleteButton = find.byKey(keys.deleteButton).hitTestable();
     expect(deleteButton, findsOneWidget);
     await tap(deleteButton);
     await longWait();
@@ -221,15 +202,15 @@ extension OathFunctions on WidgetTester {
     await longWait();
 
     /// fill new info
-    var issuerTextField = find.byKey(renameAccountEditIssuerKey).hitTestable();
+    var issuerTextField = find.byKey(keys.issuerField).hitTestable();
     await tap(issuerTextField);
     await enterText(issuerTextField, newIssuer ?? '');
-    var nameTextField = find.byKey(renameAccountEditNameKey).hitTestable();
+    var nameTextField = find.byKey(keys.nameField).hitTestable();
     await tap(nameTextField);
     await enterText(nameTextField, newName);
     await shortestWait();
 
-    var saveButton = find.byKey(renameAccountBtnSaveKey).hitTestable();
+    var saveButton = find.byKey(keys.saveButton).hitTestable();
     expect(saveButton, findsOneWidget);
     await tap(saveButton);
     await longWait();
@@ -258,20 +239,20 @@ extension OathFunctions on WidgetTester {
 
     await longWait();
 
-    var newPasswordEntry = find.byKey(newOathPasswordEntryKey);
+    var newPasswordEntry = find.byKey(keys.newPasswordField);
     await tap(newPasswordEntry);
     await enterText(newPasswordEntry, newPassword);
     await shortWait();
-    var confirmPasswordEntry = find.byKey(confirmOathPasswordEditKey);
+    var confirmPasswordEntry = find.byKey(keys.confirmPasswordField);
     await tap(confirmPasswordEntry);
     await enterText(confirmPasswordEntry, newPassword);
     await shortWait();
 
-    await tap(find.byKey(oathPasswordSaveBntKey));
+    await tap(find.byKey(keys.savePasswordButton));
     await longWait();
 
     /// after tapping Save, the dialog is closed and the save button does not exist
-    expect(find.byKey(oathPasswordSaveBntKey).hitTestable(), findsNothing);
+    expect(find.byKey(keys.savePasswordButton).hitTestable(), findsNothing);
   }
 
   Future<void> replaceOathPassword(
@@ -280,35 +261,35 @@ extension OathFunctions on WidgetTester {
 
     await shortWait();
 
-    var currentPasswordEntry = find.byKey(currentOathPasswordEntryKey);
+    var currentPasswordEntry = find.byKey(keys.currentPasswordField);
     await tap(currentPasswordEntry);
     await enterText(currentPasswordEntry, currentPassword);
     await shortWait();
-    var newPasswordEntry = find.byKey(newOathPasswordEntryKey);
+    var newPasswordEntry = find.byKey(keys.newPasswordField);
     await tap(newPasswordEntry);
     await enterText(newPasswordEntry, newPassword);
     await shortWait();
-    var confirmPasswordEntry = find.byKey(confirmOathPasswordEditKey);
+    var confirmPasswordEntry = find.byKey(keys.confirmPasswordField);
     await tap(confirmPasswordEntry);
     await enterText(confirmPasswordEntry, newPassword);
     await shortWait();
 
-    await tap(find.byKey(oathPasswordSaveBntKey));
+    await tap(find.byKey(keys.savePasswordButton));
     await longWait();
 
-    expect(find.byKey(oathPasswordSaveBntKey).hitTestable(), findsNothing);
+    expect(find.byKey(keys.savePasswordButton).hitTestable(), findsNothing);
   }
 
   Future<void> unlockOathSession(String newPassword) async {
-    var validatePasswordEntry = find.byKey(passwordValidateEditKey);
+    var validatePasswordEntry = find.byKey(keys.passwordField);
     await tap(validatePasswordEntry);
     await enterText(validatePasswordEntry, newPassword);
     await shortWait();
-    var unlockButton = find.byKey(unlockOathBtnKey);
+    var unlockButton = find.byKey(keys.unlockButton);
     await tap(unlockButton);
     await longWait();
 
-    expect(find.byKey(unlockOathBtnKey).hitTestable(), findsNothing);
+    expect(find.byKey(keys.unlockButton).hitTestable(), findsNothing);
   }
 
   Future<void> removeOathPassword(String currentPassword) async {
@@ -316,13 +297,13 @@ extension OathFunctions on WidgetTester {
 
     await longWait();
 
-    var currentPasswordEntry = find.byKey(currentOathPasswordEntryKey);
+    var currentPasswordEntry = find.byKey(keys.currentPasswordField);
     await tap(currentPasswordEntry);
     await enterText(currentPasswordEntry, currentPassword);
     await shortWait();
-    await tap(find.byKey(oathPasswordRemoveBntKey));
+    await tap(find.byKey(keys.removePasswordButton));
     await longWait();
 
-    expect(find.byKey(oathPasswordRemoveBntKey).hitTestable(), findsNothing);
+    expect(find.byKey(keys.removePasswordButton).hitTestable(), findsNothing);
   }
 }

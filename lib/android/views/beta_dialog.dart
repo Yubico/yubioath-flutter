@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../core/state.dart';
+import '../keys.dart' as keys;
 
 class BetaDialog {
   final BuildContext context;
@@ -32,7 +33,7 @@ class BetaDialog {
         return WillPopScope(
           onWillPop: () async => false,
           child: AlertDialog(
-            key: const Key('android.beta.dialog'),
+            key: keys.betaDialogView,
             content: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -77,7 +78,7 @@ class BetaDialog {
               //   },
               // ),
               TextButton(
-                key: const Key('android.beta.dialog.btn.got_it'),
+                key: keys.okButton,
                 style: TextButton.styleFrom(
                   textStyle: Theme.of(context)
                       .textTheme

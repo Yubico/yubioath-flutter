@@ -14,6 +14,7 @@ import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../widgets/menu_list_tile.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
 import 'account_list.dart';
@@ -55,7 +56,8 @@ class _LockedView extends ConsumerWidget {
         title: Text(AppLocalizations.of(context)!.oath_authenticator),
         keyActions: [
           buildMenuItem(
-            title: Text(AppLocalizations.of(context)!.oath_manage_password),
+            title: Text(AppLocalizations.of(context)!.oath_manage_password,
+                key: keys.setOrManagePasswordAction),
             leading: const Icon(Icons.password),
             action: () {
               showBlurDialog(
@@ -121,7 +123,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     if (credentials?.isEmpty == true) {
       return MessagePage(
         title: Text(AppLocalizations.of(context)!.oath_authenticator),
-        key: const Key('oath.message_page.no_accounts'),
+        key: keys.noAccountsView,
         graphic: noAccounts,
         header: AppLocalizations.of(context)!.oath_no_accounts,
         keyActions: _buildActions(
@@ -152,7 +154,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
           child: Builder(builder: (context) {
             final textTheme = Theme.of(context).textTheme;
             return TextFormField(
-              key: const Key('search_accounts'),
+              key: keys.searchAccountsField,
               controller: searchController,
               focusNode: searchFocus,
               // Use the default style, but with a smaller font size:
@@ -195,8 +197,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final capacity = widget.oathState.version.isAtLeast(4) ? 32 : null;
     return [
       buildMenuItem(
-        title: Text(AppLocalizations.of(context)!.oath_add_account,
-        key: const Key('add oath account'),),
+        title: Text(
+          AppLocalizations.of(context)!.oath_add_account,
+          key: keys.addAccountAction,
+        ),
         leading: const Icon(Icons.person_add_alt_1),
         trailing: capacity != null ? '$used/$capacity' : null,
         action: capacity == null || capacity > used
@@ -214,9 +218,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             : null,
       ),
       buildMenuItem(
-          title: Text(widget.oathState.hasKey
-              ? AppLocalizations.of(context)!.oath_manage_password
-              : AppLocalizations.of(context)!.oath_set_password, key: const Key('set or manage oath password')),
+          title: Text(
+              widget.oathState.hasKey
+                  ? AppLocalizations.of(context)!.oath_manage_password
+                  : AppLocalizations.of(context)!.oath_set_password,
+              key: keys.setOrManagePasswordAction),
           leading: const Icon(Icons.password),
           action: () {
             showBlurDialog(
@@ -226,7 +232,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             );
           }),
       buildMenuItem(
-          title: Text(AppLocalizations.of(context)!.oath_reset_oath, key: const Key('reset oath app')),
+          title: Text(AppLocalizations.of(context)!.oath_reset_oath,
+              key: keys.resetAction),
           leading: const Icon(Icons.delete),
           action: () {
             showBlurDialog(
@@ -287,7 +294,7 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
               ),
               const SizedBox(height: 16.0),
               TextField(
-                key: const Key('oath password'),
+                key: keys.passwordField,
                 controller: _passwordController,
                 autofocus: true,
                 obscureText: _isObscure,
@@ -345,7 +352,7 @@ class _UnlockFormState extends ConsumerState<_UnlockForm> {
           child: Align(
             alignment: Alignment.centerRight,
             child: ElevatedButton.icon(
-              key: const Key('oath unlock'),
+              key: keys.unlockButton,
               label: Text(AppLocalizations.of(context)!.oath_unlock),
               icon: const Icon(Icons.lock_open),
               onPressed: _passwordController.text.isNotEmpty ? _submit : null,

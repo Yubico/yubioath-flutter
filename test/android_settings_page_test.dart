@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yubico_authenticator/android/keys.dart' as keys;
 import 'package:yubico_authenticator/android/views/android_settings_page.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
@@ -26,7 +27,7 @@ Widget createMaterialApp({required Widget child}) {
 
 extension _WidgetTesterHelper on WidgetTester {
   Future<void> openNfcTapOptionSelection() async {
-    var widget = find.byKey(settingsOnNfcTapOptionKey).hitTestable();
+    var widget = find.byKey(keys.nfcTapSetting).hitTestable();
     expect(widget, findsOneWidget);
     await tap(widget);
     await pumpAndSettle();
@@ -34,28 +35,28 @@ extension _WidgetTesterHelper on WidgetTester {
 
   Future<void> selectLaunchOption() async {
     await openNfcTapOptionSelection();
-    await tap(find.byKey(settingsOnNfcTapLaunch));
+    await tap(find.byKey(keys.launchTapAction));
     await pumpAndSettle();
   }
 
   Future<void> selectCopyOption() async {
     await openNfcTapOptionSelection();
-    await tap(find.byKey(settingsOnNfcTapCopy));
+    await tap(find.byKey(keys.copyTapAction));
     await pumpAndSettle();
   }
 
   Future<void> selectBothOption() async {
     await openNfcTapOptionSelection();
-    await tap(find.byKey(settingsOnNfcTapBoth));
+    await tap(find.byKey(keys.bothTapAction));
     await pumpAndSettle();
   }
 
   ListTile keyboardLayoutListTile() =>
-      find.byKey(settingsKeyboardLayoutOptionKey).evaluate().single.widget
+      find.byKey(keys.nfcKeyboardLayoutSetting).evaluate().single.widget
           as ListTile;
 
   Future<void> openKeyboardLayoutOptionSelection() async {
-    var widget = find.byKey(settingsKeyboardLayoutOptionKey).hitTestable();
+    var widget = find.byKey(keys.nfcKeyboardLayoutSetting).hitTestable();
     expect(widget, findsOneWidget);
     await tap(widget);
     await pumpAndSettle();
@@ -63,31 +64,29 @@ extension _WidgetTesterHelper on WidgetTester {
 
   Future<void> selectKeyboardLayoutUSOption() async {
     await openKeyboardLayoutOptionSelection();
-    await tap(find.byKey(settingsKeyboardLayoutUS));
+    await tap(find.byKey(keys.keyboardLayoutOption('US')));
     await pumpAndSettle();
   }
 
   Future<void> selectKeyboardLayoutDEOption() async {
     await openKeyboardLayoutOptionSelection();
-    await tap(find.byKey(settingsKeyboardLayoutDE));
+    await tap(find.byKey(keys.keyboardLayoutOption('DE')));
     await pumpAndSettle();
   }
 
   Future<void> selectKeyboardLayoutDECHOption() async {
     await openKeyboardLayoutOptionSelection();
-    await tap(find.byKey(settingsKeyboardLayoutDECH));
+    await tap(find.byKey(keys.keyboardLayoutOption('DE-CH')));
     await pumpAndSettle();
   }
 
   Future<void> tapBypassTouch() async {
-    await tap(find.byKey(settingsBypassTouchKey));
+    await tap(find.byKey(keys.nfcBypassTouchSetting));
     await pumpAndSettle();
   }
-
 }
 
 void main() {
-
   var widget = createMaterialApp(child: const AndroidSettingsPage());
 
   testWidgets('NFC Tap options', (WidgetTester tester) async {

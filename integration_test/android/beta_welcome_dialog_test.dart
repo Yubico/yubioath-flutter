@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yubico_authenticator/android/keys.dart' as keys;
 
 import '../test_util.dart';
 import 'constants.dart';
@@ -21,18 +22,18 @@ void main() {
       await tester.startUp({
         'dlg.beta.enabled': true,
       });
-      expect(find.byKey(betaDialogKey), findsOneWidget);
+      expect(find.byKey(keys.betaDialogView), findsOneWidget);
     });
 
     testWidgets('does not show welcome dialog', (WidgetTester tester) async {
       await tester.startUp();
-      expect(find.byKey(betaDialogKey), findsNothing);
+      expect(find.byKey(keys.betaDialogView), findsNothing);
     });
 
     testWidgets('updates preferences', (WidgetTester tester) async {
       await tester.startUp({'dlg.beta.enabled': true});
       var prefs = await SharedPreferences.getInstance();
-      await tester.tap(find.byKey(gotItBtn));
+      await tester.tap(find.byKey(keys.okButton));
       await expectLater(prefs.getBool(betaDialogPrefName), equals(false));
     });
   });

@@ -17,6 +17,7 @@ import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
 import 'utils.dart';
@@ -230,7 +231,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         TextButton(
           onPressed: isValid ? submit : null,
           child: Text(AppLocalizations.of(context)!.oath_save,
-              key: const Key('save_btn')),
+              key: keys.saveButton),
         ),
       ],
       child: FileDropTarget(
@@ -254,7 +255,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
-                key: const Key('issuer'),
+                key: keys.issuerField,
                 controller: _issuerController,
                 autofocus: !widget.openQrScanner,
                 enabled: issuerRemaining > 0,
@@ -279,7 +280,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 },
               ),
               TextField(
-                key: const Key('name'),
+                key: keys.nameField,
                 controller: _accountController,
                 maxLength: max(nameRemaining, 1),
                 buildCounter:
@@ -305,7 +306,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 },
               ),
               TextField(
-                key: const Key('secret'),
+                key: keys.secretField,
                 controller: _secretController,
                 obscureText: _isObscure,
                 inputFormatters: <TextInputFormatter>[

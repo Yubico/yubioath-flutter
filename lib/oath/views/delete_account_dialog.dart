@@ -9,6 +9,7 @@ import '../../app/state.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
+import '../keys.dart' as keys;
 
 class DeleteAccountDialog extends ConsumerWidget {
   final DeviceNode device;
@@ -25,7 +26,7 @@ class DeleteAccountDialog extends ConsumerWidget {
       title: Text(AppLocalizations.of(context)!.oath_delete_account),
       actions: [
         TextButton(
-          key: const Key('oath.dlg.delete_account.btn.delete'),
+          key: keys.deleteButton,
           onPressed: () async {
             try {
               await ref

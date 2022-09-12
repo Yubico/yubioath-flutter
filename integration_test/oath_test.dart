@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/core/state.dart';
+import 'package:yubico_authenticator/oath/keys.dart' as keys;
 
 import 'oath_test_util.dart';
 import 'test_util.dart';
@@ -27,9 +28,9 @@ void main() {
     testWidgets('Menu items exist', (WidgetTester tester) async {
       await tester.startUp(startupParams);
       await tester.tapDeviceButton();
-      expect(find.byKey(deviceMenuAddAccountKey), findsOneWidget);
-      expect(find.byKey(deviceMenuSetManagePasswordKey), findsOneWidget);
-      expect(find.byKey(deviceMenuResetOathKey), findsOneWidget);
+      expect(find.byKey(keys.addAccountAction), findsOneWidget);
+      expect(find.byKey(keys.setOrManagePasswordAction), findsOneWidget);
+      expect(find.byKey(keys.resetAction), findsOneWidget);
     });
   });
 
