@@ -32,6 +32,7 @@ class AppTheme {
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
             statusBarIconBrightness: Brightness.dark,
+            systemNavigationBarIconBrightness: Brightness.dark
           )
         ),
         // Mainly used for the OATH dialog view at the moment
@@ -121,6 +122,7 @@ class AppTheme {
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
             statusBarIconBrightness: Brightness.light,
+            systemNavigationBarIconBrightness: Brightness.light
           )
         ),
         // Mainly used for the OATH dialog view at the moment
