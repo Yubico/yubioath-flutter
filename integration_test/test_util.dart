@@ -20,7 +20,6 @@ const veryLongWaitS = 10; // seconds
 
 extension AppWidgetTester on WidgetTester {
 
-  /// pumping
   Future<void> shortestWait() async {
     await pump(const Duration(milliseconds: shortestWaitMs));
   }
@@ -48,7 +47,7 @@ extension AppWidgetTester on WidgetTester {
     if (isAndroid) {
       return AndroidTestUtils.startUp(this, startUpParams);
     } else {
-      // desktop
+      /// desktop
       return await pumpWidget(
           await getAuthenticatorApp(), const Duration(milliseconds: 2000));
     }
