@@ -121,6 +121,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     if (credentials?.isEmpty == true) {
       return MessagePage(
         title: Text(AppLocalizations.of(context)!.oath_authenticator),
+        key: const Key('oath.message_page.no_accounts'),
         graphic: noAccounts,
         header: AppLocalizations.of(context)!.oath_no_accounts,
         keyActions: _buildActions(

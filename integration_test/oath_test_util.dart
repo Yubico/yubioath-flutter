@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:yubico_authenticator/app/views/message_page.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/oath/views/account_list.dart';
 import 'package:yubico_authenticator/oath/views/account_view.dart';
@@ -26,6 +27,9 @@ const renameAccountEditNameKey = Key('oath.dlg.rename_account.edit.name');
 const deviceMenuAddAccountKey = Key('add oath account');
 const deviceMenuSetManagePasswordKey = Key('set or manage oath password');
 const deviceMenuResetOathKey = Key('reset oath app');
+
+const noAccountsMessagePage = Key('oath.message_page.no_accounts');
+
 
 class Account {
   final String? issuer;
@@ -116,6 +120,13 @@ extension OathFunctions on WidgetTester {
   }
 
   Future<AccountView?> findAccount(Account a, {bool quiet = true}) async {
+
+    if (find.byKey(noAccountsMessagePage).hitTestable().evaluate().isNotEmpty) {
+      /// if there is no OATH account on the YubiKey, the app shows
+      /// No accounts [MessagePage]
+      return null;
+    }
+
     /// find an AccountView with issuer/name in the account list
     var matchingAccounts = find.descendant(
         of: findAccountList(),
@@ -198,6 +209,16 @@ extension OathFunctions on WidgetTester {
 
     await openAccountDialog(a);
     var renameIconButton = find.byIcon(Icons.edit_outlined).hitTestable();
+
+    /// only newer FW supports renaming
+    /// TODO verify this is correct for the FW of the YubiKey
+    if (renameIconButton.evaluate().isEmpty) {
+      /// close the dialog and return
+      await tapAt(const Offset(10, 10));
+      await shortWait();
+      return;
+    }
+
     expect(renameIconButton, findsOneWidget);
     await tap(renameIconButton);
     await longWait();
