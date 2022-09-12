@@ -14,15 +14,28 @@ void main() {
 
   if (isAndroid) {
     /// default android parameters
-    startupParams = {'dlg.beta.enabled': false, 'delay.startup': 5};
+    startupParams = {
+      'dlg.beta.enabled': false,
+      'delay.startup': 5,
+      /// we need to ignore serial numbers until we collect it
+      'ignore_serial_number': true
+    };
     testWidgets('Android app boot', (WidgetTester tester) async {
       /// delay first start
       await tester.startUp(startupParams);
 
       /// remove delay.startup
-      startupParams = {'dlg.beta.enabled': false};
+      startupParams.remove('delay.startup');
     });
   }
+
+  testWidgets('Collect device info', (WidgetTester tester) async {
+    await tester.startUp(startupParams);
+    /// parses the YubiKey information from UI elements
+    await tester.getDeviceInfo();
+    startupParams.remove('ignore_serial_number');
+    /// from now only approved serial numbers will be allowed to run the tests
+  });
 
   group('OATH UI validation', () {
     testWidgets('Menu items exist', (WidgetTester tester) async {

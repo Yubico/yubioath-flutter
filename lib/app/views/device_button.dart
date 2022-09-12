@@ -9,6 +9,7 @@ import '../state.dart';
 import 'device_avatar.dart';
 import 'device_picker_dialog.dart';
 import 'device_utils.dart';
+import 'keys.dart';
 
 class _CircledDeviceAvatar extends ConsumerWidget {
   final double radius;
@@ -115,6 +116,7 @@ class _SlideInWidgetState extends ConsumerState<_SlideInWidget>
     return SlideTransition(
       position: _offsetAnimation,
       child: ListTile(
+        key: deviceInfoListTile,
         dense: true,
         contentPadding: EdgeInsets.zero,
         minLeadingWidth: 0,
