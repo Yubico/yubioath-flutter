@@ -30,7 +30,7 @@ class FidoUnlockedPage extends ConsumerWidget {
     if (state.credMgmt) {
       final data = ref.watch(credentialProvider(node.path)).asData;
       if (data == null) {
-        return _buildLoadingPage();
+        return _buildLoadingPage(context);
       }
       final creds = data.value;
       if (creds.isNotEmpty) {
@@ -77,7 +77,7 @@ class FidoUnlockedPage extends ConsumerWidget {
     if (state.bioEnroll != null) {
       final data = ref.watch(fingerprintProvider(node.path)).asData;
       if (data == null) {
-        return _buildLoadingPage();
+        return _buildLoadingPage(context);
       }
       final fingerprints = data.value;
       if (fingerprints.isNotEmpty) {
@@ -150,7 +150,7 @@ class FidoUnlockedPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildLoadingPage() => AppPage(
+  Widget _buildLoadingPage(BuildContext context) => AppPage(
         title: Text(AppLocalizations.of(context)!.fido_webauthn),
         centered: true,
         child: const CircularProgressIndicator(),
