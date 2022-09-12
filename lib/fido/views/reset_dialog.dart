@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/app/logging.dart';
@@ -32,23 +33,23 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     switch (_interaction) {
       case InteractionEvent.remove:
         return nfc
-            ? 'Remove your YubiKey from the NFC reader'
-            : 'Unplug your YubiKey';
+            ? AppLocalizations.of(context)!.fido_remove_from_reader
+            : AppLocalizations.of(context)!.fido_unplug_yubikey;
       case InteractionEvent.insert:
         return nfc
-            ? 'Place your YubiKey back on the reader'
-            : 'Re-insert your YubiKey';
+            ? AppLocalizations.of(context)!.fido_place_back_on_reader
+            : AppLocalizations.of(context)!.fido_reinsert_yubikey;
       case InteractionEvent.touch:
-        return 'Touch your YubiKey now';
+        return AppLocalizations.of(context)!.fido_touch_yubikey;
       case null:
-        return 'Press reset to begin...';
+        return AppLocalizations.of(context)!.fido_press_reset;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveDialog(
-      title: const Text('Factory reset'),
+      title: Text(AppLocalizations.of(context)!.fido_factory_reset),
       onCancel: () {
         _subscription?.cancel();
       },
@@ -66,7 +67,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                   }, onDone: () {
                     _subscription = null;
                     Navigator.of(context).pop();
-                    showMessage(context, 'FIDO application reset');
+                    showMessage(context,
+                        AppLocalizations.of(context)!.fido_fido_app_reset);
                   }, onError: (e) {
                     _log.error('Error performing FIDO reset', e);
                     Navigator.of(context).pop();
@@ -79,13 +81,13 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                     }
                     showMessage(
                       context,
-                      'Error performing reset: $errorMessage',
+                      '${AppLocalizations.of(context)!.fido_error_reset}: $errorMessage',
                       duration: const Duration(seconds: 4),
                     );
                   });
                 }
               : null,
-          child: const Text('Reset'),
+          child: Text(AppLocalizations.of(context)!.fido_reset),
         ),
       ],
       child: Padding(
@@ -93,10 +95,10 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-                'Warning! This will irrevocably delete all U2F and FIDO2 accounts from your YubiKey.'),
+            Text(AppLocalizations.of(context)!
+                .fido_warning_will_delete_accounts),
             Text(
-              'Your credentials, as well as any PIN set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.',
+              AppLocalizations.of(context)!.fido_warning_disable_these_creds,
               style: Theme.of(context).textTheme.bodyText1,
             ),
             Center(

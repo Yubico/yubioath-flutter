@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
@@ -33,7 +34,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       }
       final creds = data.value;
       if (creds.isNotEmpty) {
-        children.add(const ListTitle('Credentials'));
+        children.add(ListTitle(AppLocalizations.of(context)!.fido_credentials));
         children.addAll(
           creds.map(
             (cred) => ListTile(
@@ -81,7 +82,8 @@ class FidoUnlockedPage extends ConsumerWidget {
       final fingerprints = data.value;
       if (fingerprints.isNotEmpty) {
         nFingerprints = fingerprints.length;
-        children.add(const ListTitle('Fingerprints'));
+        children
+            .add(ListTitle(AppLocalizations.of(context)!.fido_fingerprints));
         children.addAll(fingerprints.map((fp) => ListTile(
               leading: CircleAvatar(
                 foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -122,7 +124,7 @@ class FidoUnlockedPage extends ConsumerWidget {
 
     if (children.isNotEmpty) {
       return AppPage(
-        title: const Text('WebAuthn'),
+        title: Text(AppLocalizations.of(context)!.fido_webauthn),
         keyActions: _buildKeyActions(context, nFingerprints),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, children: children),
@@ -131,25 +133,25 @@ class FidoUnlockedPage extends ConsumerWidget {
 
     if (state.bioEnroll != null) {
       return MessagePage(
-        title: const Text('WebAuthn'),
+        title: Text(AppLocalizations.of(context)!.fido_webauthn),
         graphic: noFingerprints,
-        header: 'No fingerprints',
-        message: 'Add one or more (up to five) fingerprints',
+        header: AppLocalizations.of(context)!.fido_no_fingerprints,
+        message: AppLocalizations.of(context)!.fido_add_one_or_more,
         keyActions: _buildKeyActions(context, 0),
       );
     }
 
     return MessagePage(
-      title: const Text('WebAuthn'),
+      title: Text(AppLocalizations.of(context)!.fido_webauthn),
       graphic: manageAccounts,
-      header: 'No discoverable accounts',
-      message: 'Register as a Security Key on websites',
+      header: AppLocalizations.of(context)!.fido_no_discoverable_acc,
+      message: AppLocalizations.of(context)!.fido_register_as_a_key,
       keyActions: _buildKeyActions(context, 0),
     );
   }
 
-  Widget _buildLoadingPage() => AppPage(
-        title: const Text('WebAuthn'),
+  Widget _buildLoadingPage(BuildContext context) => AppPage(
+        title: Text(AppLocalizations.of(context)!.fido_webauthn),
         centered: true,
         child: const CircularProgressIndicator(),
       );
@@ -159,7 +161,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       [
         if (state.bioEnroll != null)
           buildMenuItem(
-            title: const Text('Add fingerprint'),
+            title: Text(AppLocalizations.of(context)!.fido_add_fingerprint),
             leading: const Icon(Icons.fingerprint),
             trailing: '$fingerprints/5',
             action: fingerprints < 5
@@ -172,7 +174,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                 : null,
           ),
         buildMenuItem(
-          title: const Text('Change PIN'),
+          title: Text(AppLocalizations.of(context)!.fido_change_pin),
           leading: const Icon(Icons.pin),
           action: () {
             showBlurDialog(
@@ -182,7 +184,7 @@ class FidoUnlockedPage extends ConsumerWidget {
           },
         ),
         buildMenuItem(
-          title: const Text('Reset FIDO'),
+          title: Text(AppLocalizations.of(context)!.fido_reset_fido),
           leading: const Icon(Icons.delete),
           action: () {
             showBlurDialog(

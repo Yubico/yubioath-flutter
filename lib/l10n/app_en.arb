@@ -126,7 +126,77 @@
     "fido_register_as_a_key": "Register as a Security Key on websites",
     "fido_fido_disabled": "FIDO2 disabled",
     "fido_webauthn_req_fido": "WebAuthn requires the FIDO2 application to be enabled on your YubiKey",
-
+    "fido_wrong_pin_attempts": "Wrong PIN. {retries} attempt(s) remaining.",
+    "@fido_wrong_pin_attempts" : {
+        "placeholders": {
+            "retries": {}
+        }
+    },
+    "fido_no_fingerprints": "No fingerprints",
+    "fido_set_pin_fingerprints": "Set a PIN to register fingerprints",
+    "fido_no_discoverable_acc": "No discoverable accounts",
+    "fido_optionally_set_a_pin": "Optionally set a PIN to protect access to your YubiKey\nRegister as a Security Key on websites",
+    "fido_set_pin": "Set PIN",
+    "fido_reset_fido": "Reset FIDO",
+    "fido_pin_blocked_factory_reset": "PIN is blocked. Factory reset the FIDO application.",
+    "fido_pin_temp_blocked": "PIN temporarily blocked, remove and reinsert your YubiKey.",
+    "fido_enter_fido2_pin": "Enter the FIDO2 PIN for your YubiKey",
+    "fido_pin": "PIN",
+    "fido_no_fp_added": "No fingerprints have been added",
+    "fido_unlock": "Unlock",
+    "fido_change_pin": "Change PIN",
+    "fido_enter_current_pin": "Enter your current PIN. If you don't know your PIN, you'll need to reset the YubiKey.",
+    "fido_current_pin": "Current PIN",
+    "fido_enter_new_pin": "Enter your new PIN. A PIN must be at least {length} characters long and may contain letters, numbers and special characters.",
+    "@fido_enter_new_pin" : {
+        "placeholders": {
+            "length": {}
+        }
+    },
+    "fido_new_pin": "New PIN",
+    "fido_confirm_pin": "Confirm PIN",
+    "fido_new_pin_chars": "New PIN must be at least {length} characters",
+    "@fido_new_pin_chars" : {
+        "placeholders": {
+            "length": {}
+        }
+    },
+    "fido_pin_set": "PIN set",
+    "fido_pin_blocked": "PIN has been blocked until the YubiKey is removed and reinserted",
+    "fido_wrong_pin_retries_remaining": "Wrong PIN ({length} tries remaining)",
+    "@fido_wrong_pin_retries_remaining" : {
+        "placeholders": {
+            "length": {}
+        }
+    },
+    "fido_fail_set_pin": "Failed to set PIN",
+    "fido_fingerprint_renamed": "Fingerprint renamed",
+    "fido_error_renaming": "Error renaming",
+    "fido_rename_fingerprint": "Rename fingerprint",
+    "fido_rename": "Rename {label}?",
+    "@fido_rename" : {
+        "placeholders": {
+            "label": {}
+        }
+    },
+    "fido_will_change_label_fp": "This will change the label of the fingerprint.",
+    "fido_label": "Label",
+    "fido_remove_from_reader": "Remove your YubiKey from the NFC reader",
+    "fido_unplug_yubikey": "Unplug your YubiKey",
+    "fido_place_back_on_reader": "Place your YubiKey back on the reader",
+    "fido_reinsert_yubikey": "Re-insert your YubiKey",
+    "fido_touch_yubikey": "Touch your YubiKey now",
+    "fido_press_reset": "Press reset to begin...",
+    "fido_factory_reset": "Factory reset",
+    "fido_fido_app_reset": "FIDO application reset",
+    "fido_error_reset": "Error performing reset",
+    "fido_reset": "Reset",
+    "fido_warning_will_delete_accounts": "Warning! This will irrevocably delete all U2F and FIDO2 accounts from your YubiKey.",
+    "fido_warning_disable_these_creds": "Your credentials, as well as any PIN set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.",
+    "fido_credentials": "Credentials",
+    "fido_fingerprints": "Fingerprints",
+    "fido_add_one_or_more": "Add one or more (up to five) fingerprints",
+    
 
 
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
@@ -36,7 +37,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           .renameFingerprint(widget.fingerprint, _label);
       if (!mounted) return;
       Navigator.of(context).pop(renamed);
-      showMessage(context, 'Fingerprint renamed');
+      showMessage(
+          context, AppLocalizations.of(context)!.fido_fingerprint_renamed);
     } catch (e) {
       final String errorMessage;
       // TODO: Make this cleaner than importing desktop specific RpcError.
@@ -47,7 +49,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
       }
       showMessage(
         context,
-        'Error renaming: $errorMessage',
+        '${AppLocalizations.of(context)!.fido_error_renaming}: $errorMessage',
         duration: const Duration(seconds: 4),
       );
     }
@@ -56,11 +58,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
   @override
   Widget build(BuildContext context) {
     return ResponsiveDialog(
-      title: const Text('Rename fingerprint'),
+      title: Text(AppLocalizations.of(context)!.fido_rename_fingerprint),
       actions: [
         TextButton(
           onPressed: _label.isNotEmpty ? _submit : null,
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.fido_save),
         ),
       ],
       child: Padding(
@@ -68,17 +70,18 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Rename ${widget.fingerprint.label}?'),
-            const Text('This will change the label of the fingerprint.'),
+            Text(AppLocalizations.of(context)!
+                .fido_rename(widget.fingerprint.label)),
+            Text(AppLocalizations.of(context)!.fido_will_change_label_fp),
             TextFormField(
               initialValue: _label,
               maxLength: 15,
               inputFormatters: [limitBytesLength(15)],
               buildCounter: buildByteCounterFor(_label),
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Label',
-                prefixIcon: Icon(Icons.fingerprint_outlined),
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.fido_label,
+                prefixIcon: const Icon(Icons.fingerprint_outlined),
               ),
               onChanged: (value) {
                 setState(() {
