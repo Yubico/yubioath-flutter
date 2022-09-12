@@ -50,6 +50,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
+          key: const Key('save oath password changes'),
           child: Text(AppLocalizations.of(context)!.oath_save),
         )
       ],
@@ -63,6 +64,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               TextField(
                 autofocus: true,
                 obscureText: true,
+                key: const Key('current oath password'),
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
                     labelText:
@@ -85,6 +87,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 runSpacing: 8.0,
                 children: [
                   OutlinedButton(
+                    key: const Key('remove oath password btn'),
                     onPressed: _currentPassword.isNotEmpty
                         ? () async {
                             final result = await ref
@@ -128,7 +131,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             ],
             Text(AppLocalizations.of(context)!.oath_enter_new_password),
             TextField(
-              key: const Key('current oath password'),
+              key: const Key('new oath password'),
               autofocus: !widget.state.hasKey,
               obscureText: true,
               decoration: InputDecoration(

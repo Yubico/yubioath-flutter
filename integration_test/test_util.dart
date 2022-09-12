@@ -13,13 +13,36 @@ Future<Widget> getAuthenticatorApp() async => isDesktop
         ? await android.initialize()
         : throw UnimplementedError('Platform not supported');
 
-extension TestHelper on WidgetTester {
+const shortestWaitMs = 10;
+const shortWaitMs = 50;
+const longWaitMs = 200;
+const veryLongWaitS = 10; // seconds
+
+extension AppWidgetTester on WidgetTester {
+
+  /// pumping
+  Future<void> shortestWait() async {
+    await pump(const Duration(milliseconds: shortestWaitMs));
+  }
+
+  Future<void> shortWait() async {
+    await pump(const Duration(milliseconds: shortWaitMs));
+  }
+
+  Future<void> longWait() async {
+    await pump(const Duration(milliseconds: longWaitMs));
+  }
+
+  Future<void> veryLongWait() async {
+    await pump(const Duration(seconds: veryLongWaitS));
+  }
+
+
   /// Taps the device button
   Future<void> tapDeviceButton() async {
     await tap(find.byType(DeviceButton).hitTestable());
     await pump(const Duration(milliseconds: 500));
   }
-
 
   Future<void> startUp([Map<dynamic, dynamic>? startUpParams]) async {
     if (isAndroid) {
@@ -28,6 +51,12 @@ extension TestHelper on WidgetTester {
       // desktop
       return await pumpWidget(
           await getAuthenticatorApp(), const Duration(milliseconds: 2000));
+    }
+  }
+
+  void testLog(bool quiet, String message) {
+    if (!quiet) {
+      printToConsole(message);
     }
   }
 }
