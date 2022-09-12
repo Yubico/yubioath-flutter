@@ -47,34 +47,36 @@ class AppPage extends ConsumerWidget {
         },
       );
 
-  Widget _buildScrollView() => SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: SizedBox(
-              width: 700,
-              child: Column(
-                children: [
-                  child,
-                  if (actions.isNotEmpty)
-                    Align(
-                      alignment:
-                          centered ? Alignment.center : Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 16.0, horizontal: 18.0),
-                        child: Wrap(
-                          spacing: 4,
-                          runSpacing: 4,
-                          children: actions,
-                        ),
+  Widget _buildScrollView() {
+    return SingleChildScrollView(
+      child: SafeArea(
+        child: Center(
+          child: SizedBox(
+            width: 700,
+            child: Column(
+              children: [
+                child,
+                if (actions.isNotEmpty)
+                  Align(
+                    alignment:
+                        centered ? Alignment.center : Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 16.0, horizontal: 18.0),
+                      child: Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: actions,
                       ),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 
   Scaffold _buildScaffold(BuildContext context, WidgetRef ref, bool hasDrawer) {
     return Scaffold(

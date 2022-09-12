@@ -38,7 +38,8 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               ),
             ),
             body: SingleChildScrollView(
-              child: Container(key: _childKey, child: widget.child),
+              child: SafeArea(
+                  child: Container(key: _childKey, child: widget.child)),
             ),
           );
         } else {

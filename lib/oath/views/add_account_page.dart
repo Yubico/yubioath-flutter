@@ -104,11 +104,14 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       } else {
         errorMessage = e.toString();
       }
-      showMessage(
-        context,
-        '${AppLocalizations.of(context)!.oath_failed_reading_qr}: $errorMessage',
-        duration: const Duration(seconds: 4),
-      );
+
+      if (e is! CancellationException) {
+        showMessage(
+          context,
+          '${AppLocalizations.of(context)!.oath_failed_reading_qr}: $errorMessage',
+          duration: const Duration(seconds: 4),
+        );
+      }
       setState(() {
         _qrState = _QrScanState.failed;
       });
