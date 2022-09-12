@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yubico_authenticator/app/views/message_page.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/oath/views/account_list.dart';
 import 'package:yubico_authenticator/oath/views/account_view.dart';
@@ -29,7 +28,6 @@ const deviceMenuSetManagePasswordKey = Key('set or manage oath password');
 const deviceMenuResetOathKey = Key('reset oath app');
 
 const noAccountsMessagePage = Key('oath.message_page.no_accounts');
-
 
 class Account {
   final String? issuer;
@@ -120,7 +118,6 @@ extension OathFunctions on WidgetTester {
   }
 
   Future<AccountView?> findAccount(Account a, {bool quiet = true}) async {
-
     if (find.byKey(noAccountsMessagePage).hitTestable().evaluate().isNotEmpty) {
       /// if there is no OATH account on the YubiKey, the app shows
       /// No accounts [MessagePage]
