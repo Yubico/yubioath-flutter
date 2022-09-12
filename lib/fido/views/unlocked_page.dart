@@ -150,7 +150,7 @@ class FidoUnlockedPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildLoadingPage(BuildContext context) => AppPage(
+  Widget _buildLoadingPage() => AppPage(
         title: Text(AppLocalizations.of(context)!.fido_webauthn),
         centered: true,
         child: const CircularProgressIndicator(),
