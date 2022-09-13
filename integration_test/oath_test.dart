@@ -10,23 +10,8 @@ void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
-  var startupParams = {};
-
-  if (isAndroid) {
-    /// default android parameters
-    startupParams.addAll({
-      'dlg.beta.enabled': false,
-      'delay.startup': 5,
-    });
-    testWidgets('Android app boot', (WidgetTester tester) async {
-      /// delay first start
-      await tester.startUp(startupParams);
-    });
-  }
-
-  group('OATH UI validation', () {
-    testWidgets('Menu items exist', (WidgetTester tester) async {
-      await tester.startUp(startupParams);
+  group('OATH UI tests', () {
+    appTest('Menu items exist', (WidgetTester tester) async {
       await tester.tapDeviceButton();
       expect(find.byKey(keys.addAccountAction), findsOneWidget);
       expect(find.byKey(keys.setOrManagePasswordAction), findsOneWidget);
@@ -35,9 +20,7 @@ void main() {
   });
 
   group('OATH Account tests', () {
-    testWidgets('Create account', (WidgetTester tester) async {
-      await tester.startUp(startupParams);
-
+    appTest('Create account', (WidgetTester tester) async {
       // account with issuer
       var testAccount = const Account(
         issuer: 'IssuerForTests',
@@ -59,9 +42,7 @@ void main() {
     });
 
     /// deletes accounts created in previous test
-    testWidgets('Delete account', (WidgetTester tester) async {
-      await tester.startUp(startupParams);
-
+    appTest('Delete account', (WidgetTester tester) async {
       var testAccount =
           const Account(issuer: 'IssuerForTests', name: 'NameForTests');
 
@@ -74,9 +55,7 @@ void main() {
     });
 
     /// adds an account, renames, verifies
-    testWidgets('Rename account', (WidgetTester tester) async {
-      await tester.startUp(startupParams);
-
+    appTest('Rename account', (WidgetTester tester) async {
       var testAccount =
           const Account(issuer: 'IssuerToRename', name: 'NameToRename');
 
@@ -90,24 +69,38 @@ void main() {
     });
   });
 
-  group('OATH Password Quick tests', () {
+  group('OATH Password tests', () {
     /// note that the password groups should be run as whole
-    /// this is quick test as we cannot restart android app during 1 testrun
-    testWidgets('OATH: set oath password', (WidgetTester tester) async {
-      await tester.startUp(startupParams);
-      await tester.setOathPassword('aaa111');
-    });
 
-    /// note - we cannot 'restart' the app to [unlockOathApp]
-
-    /// testWidgets('OATH: replace oath password', (WidgetTester tester) async {
-    ///   await tester.startUp(startupParams);
-    ///   await tester.replaceOathPassword('aaa111', 'bbb222');
+    /// TODO implement test for password replacement
+    /// appTest('OATH: replace oath password', (WidgetTester tester) async {
+    ///    await tester.replaceOathPassword('aaa111', 'bbb222');
     /// });
 
-    testWidgets('OATH: remove oath password', (WidgetTester tester) async {
-      await tester.startUp(startupParams);
-      await tester.removeOathPassword('aaa111');
+    // cannot restart the app on Android to be able to unlock
+    group('OATH: remove oath password when unlocked', skip: isAndroid, () {
+      var testPassword = 'testPassword';
+
+      appTest('OATH: set oath password', (WidgetTester tester) async {
+        await tester.setOathPassword(testPassword);
+      });
+
+      appTest('OATH: remove oath password', (WidgetTester tester) async {
+        await tester.unlockOathSession(testPassword);
+        await tester.removeOathPassword(testPassword);
+      });
+    });
+
+    group('OATH: remove oath password when locked', () {
+      var testPassword = 'testPasswordX';
+
+      appTest('OATH: set oath password', (WidgetTester tester) async {
+        await tester.setOathPassword(testPassword);
+      });
+
+      appTest('OATH: remove oath password', (WidgetTester tester) async {
+        await tester.removeOathPassword(testPassword);
+      });
     });
   });
 }

@@ -1,21 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yubico_authenticator/android/init.dart' as android;
 import 'package:yubico_authenticator/app/views/device_button.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 import 'package:yubico_authenticator/core/state.dart';
-import 'package:yubico_authenticator/desktop/init.dart' as desktop;
 
-import 'android/util.dart';
+import 'android/util.dart' as android_test_util;
 import 'approved_yubikeys.dart';
-
-Future<Widget> getAuthenticatorApp() async => isDesktop
-    ? await desktop.initialize([])
-    : isAndroid
-        ? await android.initialize()
-        : throw UnimplementedError('Platform not supported');
+import 'desktop/util.dart' as desktop_test_util;
 
 const shortestWaitMs = 10;
 const shortWaitMs = 50;
@@ -55,13 +46,12 @@ extension AppWidgetTester on WidgetTester {
     await pump(const Duration(milliseconds: 500));
   }
 
-  Future<void> startUp([Map<dynamic, dynamic>? startUpParams]) async {
+  Future<void> startUp([Map<dynamic, dynamic> startUpParams = const {}]) async {
     var result = isAndroid == true
-        ? await AndroidTestUtils.startUp(this, startUpParams)
-        : await pumpWidget(
-            await getAuthenticatorApp(), const Duration(milliseconds: 2000));
+        ? await android_test_util.startUp(this, startUpParams)
+        : await desktop_test_util.startUp(this, startUpParams);
 
-    await getDeviceInfo();
+    await collectYubiKeyInformation();
 
     if (!approvedYubiKeys.contains(yubiKeySerialNumber)) {
       testLog(false,
@@ -79,7 +69,7 @@ extension AppWidgetTester on WidgetTester {
   }
 
   /// get key information
-  Future<void> getDeviceInfo() async {
+  Future<void> collectYubiKeyInformation() async {
     if (collectedYubiKeyInformation) {
       return;
     }
@@ -115,11 +105,28 @@ extension AppWidgetTester on WidgetTester {
         'Connected YubiKey: $yubiKeySerialNumber/$yubiKeyFirmware - $yubiKeyName');
 
     if (!approvedYubiKeys.contains(yubiKeySerialNumber)) {
-      testLog(false,
-          'Connected YubiKey (SN: $yubiKeySerialNumber) is not approved for integration tests');
-      exit(-1);
+      if (yubiKeySerialNumber == null) {
+        expect(approvedYubiKeys.contains(yubiKeySerialNumber), equals(true),
+            reason: 'No YubiKey connected');
+      } else {
+        expect(approvedYubiKeys.contains(yubiKeySerialNumber), equals(true),
+            reason:
+                'YubiKey with S/N $yubiKeySerialNumber is not approved for integration tests.');
+      }
     }
 
     collectedYubiKeyInformation = true;
   }
+}
+
+void appTest(
+  String description,
+  WidgetTesterCallback callback, {
+  bool? skip,
+  Map startUpParams = const {},
+}) {
+  testWidgets(description, (WidgetTester tester) async {
+    await tester.startUp(startUpParams);
+    await callback(tester);
+  });
 }

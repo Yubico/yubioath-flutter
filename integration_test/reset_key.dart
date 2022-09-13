@@ -9,11 +9,11 @@ void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
-  group('Reset Key', () {
+  group('Reset Key', skip: 'Not reviewed', () {
     testWidgets('Reset OATH', (WidgetTester tester) async {
       /// this test works if there is an oath credential on the key
       /// else it will fail on tap 'Authenticator' widget
-      await tester.pumpWidget(await getAuthenticatorApp());
+      await tester.startUp({});
       await tester.pump(const Duration(milliseconds: 500));
 
       /// QUESTION: I want to click the DrawerItem named 'WebAuthn' | 'Authenticator'
@@ -50,10 +50,10 @@ void main() {
       await tester.pump(const Duration(seconds: 3));
     });
 
-    testWidgets('Reset FIDO', (WidgetTester tester) async {
+    testWidgets('Reset FIDO', skip: true, (WidgetTester tester) async {
       /// this test works if there is an oath credential on the key
       /// else it will fail on tap 'Authenticator' widget
-      await tester.pumpWidget(await getAuthenticatorApp());
+      await tester.startUp({});
       await tester.pump(const Duration(milliseconds: 500));
 
       /// QUESTION: I want to click the DrawerItem named 'WebAuthn' | 'Authenticator'

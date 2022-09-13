@@ -11,10 +11,11 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   group('Beta welcome dialog', () {
+
+    // this is here to make sure yubikey is connected before we test the dialog
     testWidgets('startup', (WidgetTester tester) async {
       await tester.startUp({
         'dlg.beta.enabled': false,
-        'delay.startup': 5,
       });
     });
 
@@ -22,6 +23,7 @@ void main() {
       await tester.startUp({
         'dlg.beta.enabled': true,
       });
+
       expect(find.byKey(keys.betaDialogView), findsOneWidget);
     });
 
