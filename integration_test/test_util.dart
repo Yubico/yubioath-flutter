@@ -26,6 +26,7 @@ const veryLongWaitS = 10; // seconds
 String? yubiKeyName;
 String? yubiKeyFirmware;
 String? yubiKeySerialNumber;
+bool collectedYubiKeyInformation = false;
 
 extension AppWidgetTester on WidgetTester {
   Future<void> shortestWait() async {
@@ -55,23 +56,20 @@ extension AppWidgetTester on WidgetTester {
   }
 
   Future<void> startUp([Map<dynamic, dynamic>? startUpParams]) async {
-    var ignoreSerialNumber =
-        startUpParams?.containsKey('ignore_serial_number') ?? false;
-    if (!ignoreSerialNumber) {
-      if (!approvedYubiKeys.contains(yubiKeySerialNumber)) {
-        testLog(false,
-            'The connected key is refused by the tests: $yubiKeySerialNumber');
-        expect(approvedYubiKeys.contains(yubiKeySerialNumber), equals(true));
-      }
+    var result = isAndroid == true
+        ? await AndroidTestUtils.startUp(this, startUpParams)
+        : await pumpWidget(
+            await getAuthenticatorApp(), const Duration(milliseconds: 2000));
+
+    await getDeviceInfo();
+
+    if (!approvedYubiKeys.contains(yubiKeySerialNumber)) {
+      testLog(false,
+          'The connected key is refused by the tests: $yubiKeySerialNumber');
+      expect(approvedYubiKeys.contains(yubiKeySerialNumber), equals(true));
     }
 
-    if (isAndroid) {
-      return AndroidTestUtils.startUp(this, startUpParams);
-    } else {
-      /// desktop
-      return await pumpWidget(
-          await getAuthenticatorApp(), const Duration(milliseconds: 2000));
-    }
+    return result;
   }
 
   void testLog(bool quiet, String message) {
@@ -82,6 +80,10 @@ extension AppWidgetTester on WidgetTester {
 
   /// get key information
   Future<void> getDeviceInfo() async {
+    if (collectedYubiKeyInformation) {
+      return;
+    }
+
     await tapDeviceButton();
 
     var deviceInfo = find.byKey(app_keys.deviceInfoListTile);
@@ -105,10 +107,19 @@ extension AppWidgetTester on WidgetTester {
       }
     }
 
+    // close the opened menu
+    await tapAt(const Offset(0, 0));
+    await longWait();
+
+    testLog(false,
+        'Connected YubiKey: $yubiKeySerialNumber/$yubiKeyFirmware - $yubiKeyName');
+
     if (!approvedYubiKeys.contains(yubiKeySerialNumber)) {
       testLog(false,
           'Connected YubiKey (SN: $yubiKeySerialNumber) is not approved for integration tests');
       exit(-1);
     }
+
+    collectedYubiKeyInformation = true;
   }
 }
