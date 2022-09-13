@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yubico_authenticator/android/init.dart' as android;
@@ -106,6 +108,7 @@ extension AppWidgetTester on WidgetTester {
     if (!approvedYubiKeys.contains(yubiKeySerialNumber)) {
       testLog(false,
           'Connected YubiKey (SN: $yubiKeySerialNumber) is not approved for integration tests');
+      exit(-1);
     }
   }
 }
