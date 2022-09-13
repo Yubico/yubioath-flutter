@@ -11,6 +11,7 @@ class AppPage extends ConsumerWidget {
   final List<Widget> actions;
   final List<PopupMenuEntry> keyActions;
   final bool centered;
+  final Widget Function(List<PopupMenuEntry>)? actionButtonBuilder;
   AppPage({
     super.key,
     this.title,
@@ -18,6 +19,7 @@ class AppPage extends ConsumerWidget {
     this.actions = const [],
     this.keyActions = const [],
     this.centered = false,
+    this.actionButtonBuilder,
   });
 
   @override
@@ -89,7 +91,8 @@ class AppPage extends ConsumerWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12),
-            child: DeviceButton(actions: keyActions),
+            child: actionButtonBuilder?.call(keyActions) ??
+                DeviceButton(actions: keyActions),
           ),
         ],
       ),

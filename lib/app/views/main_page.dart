@@ -7,7 +7,9 @@ import 'message_page.dart';
 import 'device_error_screen.dart';
 import '../models.dart';
 import '../state.dart';
+import '../message.dart';
 import '../../fido/views/fido_screen.dart';
+import '../../oath/views/add_account_page.dart';
 import '../../oath/views/oath_screen.dart';
 
 class MainPage extends ConsumerWidget {
@@ -31,13 +33,50 @@ class MainPage extends ConsumerWidget {
               'settings',
               'about',
               'licenses',
+              'user_interaction_prompt',
             ].contains(route.settings.name);
       });
     });
 
     final deviceNode = ref.watch(currentDeviceProvider);
     if (deviceNode == null) {
-      return MessagePage(message: Platform.isAndroid ? 'Insert or tap your YubiKey' : 'Insert your YubiKey');
+      return MessagePage(
+        message: Platform.isAndroid
+            ? 'Insert or tap your YubiKey'
+            : 'Insert your YubiKey',
+        actionButtonBuilder: (keyActions) => IconButton(
+          icon: OverflowBox(
+            maxWidth: 44,
+            maxHeight: 44,
+            child: CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              radius: 16,
+              child: CircleAvatar(
+                backgroundColor: Theme.of(context).colorScheme.background,
+                radius: 15,
+                child: Icon(
+                  Icons.person_add_alt_1,
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
+              ),
+            ),
+          ),
+          tooltip: 'Add account',
+          onPressed: () {
+            showBlurDialog(
+              context: context,
+              // TODO: Change from 'about', but make sure it stays open
+              routeSettings: const RouteSettings(name: 'about'),
+              builder: (context) => OathAddAccountPage(
+                null,
+                null,
+                openQrScanner: Platform.isAndroid,
+                credentials: null,
+              ),
+            );
+          },
+        ),
+      );
     } else {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
@@ -45,12 +84,14 @@ class MainPage extends ConsumerWidget {
               if (app.getAvailability(data) == Availability.unsupported) {
                 return MessagePage(
                   header: 'Application not supported',
-                  message: 'The used YubiKey does not support \'${app.name}\' application',
+                  message:
+                      'The used YubiKey does not support \'${app.name}\' application',
                 );
               } else if (app.getAvailability(data) != Availability.enabled) {
                 return MessagePage(
                   header: 'Application disabled',
-                  message: 'Enable the \'${app.name}\' application on your YubiKey to access',
+                  message:
+                      'Enable the \'${app.name}\' application on your YubiKey to access',
                 );
               }
 

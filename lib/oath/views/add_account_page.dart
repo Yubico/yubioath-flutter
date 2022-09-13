@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -11,8 +12,10 @@ import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../app/views/user_interaction.dart';
 import '../../cancellation_exception.dart';
 import '../../desktop/models.dart';
+import '../../management/models.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -30,8 +33,8 @@ final _secretFormatterPattern =
 enum _QrScanState { none, scanning, success, failed }
 
 class OathAddAccountPage extends ConsumerStatefulWidget {
-  final DevicePath devicePath;
-  final OathState state;
+  final DevicePath? devicePath;
+  final OathState? state;
   final List<OathCredential>? credentials;
   final bool openQrScanner;
   const OathAddAccountPage(
@@ -52,6 +55,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   final _accountController = TextEditingController();
   final _secretController = TextEditingController();
   final _periodController = TextEditingController(text: '$defaultPeriod');
+  UserInteractionController? _promptController;
+  Uri? _otpauthUri;
   bool _touch = false;
   OathType _oathType = defaultOathType;
   HashAlgorithm _hashAlgorithm = defaultHashAlgorithm;
@@ -147,8 +152,94 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     }
   }
 
+  Future<void> _doAddCredential(DevicePath devicePath, Uri credUri) async {
+    try {
+      await ref
+          .read(credentialListProvider(devicePath).notifier)
+          .addAccount(credUri, requireTouch: _touch);
+    } on CancellationException catch (_) {
+      // ignored
+    } catch (e) {
+      _log.error('Failed to add account', e);
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (e is RpcError) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      showMessage(
+        context,
+        '${AppLocalizations.of(context)!.oath_fail_add_account}: $errorMessage',
+        duration: const Duration(seconds: 4),
+      );
+    }
+    if (!mounted) return;
+    Navigator.of(context).pop();
+    showMessage(
+        context, AppLocalizations.of(context)!.oath_success_add_account);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final deviceNode = ref.watch(currentDeviceProvider);
+    if (widget.devicePath != null && widget.devicePath != deviceNode?.path) {
+      // If the dialog was started for a specific device and it was
+      // changed/removed, close the dialog.
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
+
+    final OathState? oathState;
+    if (widget.state == null && deviceNode != null) {
+      oathState = ref
+          .watch(oathStateProvider(deviceNode.path))
+          .maybeWhen(data: (data) => data, orElse: () => null);
+    } else {
+      oathState = widget.state;
+    }
+
+    final otpauthUri = _otpauthUri;
+    _promptController?.updateContent(title: 'Insert YubiKey');
+    if (otpauthUri != null && deviceNode != null) {
+      final deviceData = ref.watch(currentDeviceDataProvider);
+      deviceData.when(data: (data) {
+        if (Capability.oath.value ^
+                (data.info.config.enabledCapabilities[deviceNode.transport] ??
+                    0) !=
+            0) {
+          if (oathState == null) {
+            _promptController?.updateContent(title: 'Please wait...');
+          } else if (oathState.locked) {
+            _promptController?.updateContent(title: 'YubiKey is locked');
+          } else {
+            _otpauthUri = null;
+            _promptController?.close();
+            Timer.run(() => _doAddCredential(deviceNode.path, otpauthUri));
+          }
+        } else {
+          _promptController?.updateContent(title: 'Unsupported YubiKey');
+        }
+      }, error: (error, _) {
+        _promptController?.updateContent(title: 'Unsupported YubiKey');
+      }, loading: () {
+        _promptController?.updateContent(title: 'Please wait...');
+      });
+
+      /*
+      if (oathState == null) {
+        _promptController?.updateContent(title: 'Unsupported YubiKey');
+      } else if (oathState.locked) {
+        _promptController?.updateContent(title: 'YubiKey is locked');
+      } else {
+        _promptController?.updateContent(title: 'Please wait...');
+        _otpauthUri = null;
+        // This is already closed by main_page.dart, don't close it twice.
+        _promptController?.close();
+        Timer.run(() => _doAddCredential(deviceNode.path, otpauthUri));
+      }
+      */
+    }
+
     final period = int.tryParse(_periodController.text) ?? -1;
     final remaining = getRemainingKeySpace(
       oathType: _oathType,
@@ -179,6 +270,13 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     final qrScanner = ref.watch(qrScannerProvider);
 
+    final hashAlgorithms = HashAlgorithm.values.where((alg) =>
+        alg != HashAlgorithm.sha512 ||
+        (oathState?.version.isAtLeast(4, 3, 1) ?? true));
+    if (!hashAlgorithms.contains(_hashAlgorithm)) {
+      _hashAlgorithm = HashAlgorithm.sha1;
+    }
+
     void submit() async {
       if (secretLengthValid) {
         final issuer = _issuerController.text.trim();
@@ -193,29 +291,20 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           period: period,
         );
 
-        try {
-          await ref
-              .read(credentialListProvider(widget.devicePath).notifier)
-              .addAccount(cred.toUri(), requireTouch: _touch);
-          if (!mounted) return;
-          Navigator.of(context).pop();
-          showMessage(
-              context, AppLocalizations.of(context)!.oath_success_add_account);
-        } on CancellationException catch (_) {
-          // ignored
-        } catch (e) {
-          _log.error('Failed to add account', e);
-          final String errorMessage;
-          // TODO: Make this cleaner than importing desktop specific RpcError.
-          if (e is RpcError) {
-            errorMessage = e.message;
-          } else {
-            errorMessage = e.toString();
-          }
-          showMessage(
+        final devicePath = deviceNode?.path;
+        if (devicePath != null) {
+          await _doAddCredential(devicePath, cred.toUri());
+        } else {
+          // No YubiKey, prompt and store the cred.
+          _otpauthUri = cred.toUri();
+          _promptController = promptUserInteraction(
             context,
-            '${AppLocalizations.of(context)!.oath_fail_add_account}: $errorMessage',
-            duration: const Duration(seconds: 4),
+            title: 'Insert YubiKey',
+            description: 'Add account',
+            icon: const Icon(Icons.usb),
+            onCancel: () {
+              _otpauthUri = null;
+            },
           );
         }
       } else {
@@ -363,7 +452,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 spacing: 4.0,
                 runSpacing: 8.0,
                 children: [
-                  if (widget.state.version.isAtLeast(4, 2))
+                  if (widget.state?.version.isAtLeast(4, 2) ?? true)
                     FilterChip(
                       label: Text(
                           AppLocalizations.of(context)!.oath_require_touch),
