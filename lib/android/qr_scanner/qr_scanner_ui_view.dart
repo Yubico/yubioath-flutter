@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../keys.dart' as keys;
 import 'qr_scanner_scan_status.dart';
 import 'qr_scanner_util.dart';
 
@@ -52,6 +53,7 @@ class QRScannerUI extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
+                key: keys.manualEntryButton,
                 child: const Text('Enter manually',
                     style: TextStyle(color: Colors.white))),
           ],

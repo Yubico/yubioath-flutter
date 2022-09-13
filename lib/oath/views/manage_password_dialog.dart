@@ -7,6 +7,7 @@ import '../../app/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
+import '../keys.dart' as keys;
 
 class ManagePasswordDialog extends ConsumerStatefulWidget {
   final DevicePath path;
@@ -50,6 +51,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
+          key: keys.savePasswordButton,
           child: Text(AppLocalizations.of(context)!.oath_save),
         )
       ],
@@ -63,6 +65,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               TextField(
                 autofocus: true,
                 obscureText: true,
+                key: keys.currentPasswordField,
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
                     labelText:
@@ -85,6 +88,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 runSpacing: 8.0,
                 children: [
                   OutlinedButton(
+                    key: keys.removePasswordButton,
                     onPressed: _currentPassword.isNotEmpty
                         ? () async {
                             final result = await ref
@@ -128,6 +132,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             ],
             Text(AppLocalizations.of(context)!.oath_enter_new_password),
             TextField(
+              key: keys.newPasswordField,
               autofocus: !widget.state.hasKey,
               obscureText: true,
               decoration: InputDecoration(
@@ -149,6 +154,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               },
             ),
             TextField(
+              key: keys.confirmPasswordField,
               obscureText: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),

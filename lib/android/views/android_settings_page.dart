@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../core/state.dart';
 import '../../app/state.dart';
+import '../../core/state.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../keys.dart' as keys;
 
 const String _prefNfcOpenApp = 'prefNfcOpenApp';
 const String _prefNfcBypassTouch = 'prefNfcBypassTouch';
@@ -29,6 +30,17 @@ enum _TapAction {
         return 'Copy OTP to clipboard';
       case _TapAction.both:
         return 'Launch app and copy OTP';
+    }
+  }
+
+  Key get key {
+    switch (this) {
+      case _TapAction.launch:
+        return keys.launchTapAction;
+      case _TapAction.copy:
+        return keys.copyTapAction;
+      case _TapAction.both:
+        return keys.bothTapAction;
     }
   }
 
@@ -103,6 +115,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
             ListTile(
               title: const Text('On YubiKey NFC tap'),
               subtitle: Text(tapAction.description),
+              key: keys.nfcTapSetting,
               onTap: () async {
                 final newTapAction = await _selectTapAction(context, tapAction);
                 newTapAction.save(prefs);
@@ -112,6 +125,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
             ListTile(
               title: const Text('Keyboard Layout (for static password)'),
               subtitle: Text(clipKbdLayout),
+              key: keys.nfcKeyboardLayoutSetting,
               enabled: tapAction != _TapAction.launch,
               onTap: () async {
                 var newValue = await _selectKbdLayout(context, clipKbdLayout);
@@ -129,6 +143,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                     : const Text(
                         'Accounts that require touch need an additional tap over NFC.'),
                 value: nfcBypassTouch,
+                key: keys.nfcBypassTouchSetting,
                 onChanged: (value) {
                   prefs.setBool(_prefNfcBypassTouch, value);
                   setState(() {});
@@ -159,8 +174,10 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                   .map(
                     (e) => RadioListTile<_TapAction>(
                         title: Text(e.description),
+                        key: e.key,
                         value: e,
                         groupValue: tapAction,
+                        toggleable: true,
                         onChanged: (mode) {
                           Navigator.pop(context, e);
                         }),
@@ -182,6 +199,8 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                     (e) => RadioListTile<String>(
                         title: Text(e),
                         value: e,
+                        key: keys.keyboardLayoutOption(e),
+                        toggleable: true,
                         groupValue: currentKbdLayout,
                         onChanged: (mode) {
                           Navigator.pop(context, e);
@@ -204,6 +223,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                         title: Text(e.displayName),
                         value: e,
                         groupValue: themeMode,
+                        toggleable: true,
                         onChanged: (mode) {
                           Navigator.pop(context, e);
                         },

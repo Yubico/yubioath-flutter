@@ -12,6 +12,7 @@ import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../models.dart';
 import '../state.dart';
+import '../keys.dart' as keys;
 import 'utils.dart';
 
 final _log = Logger('oath.view.rename_account_dialog');
@@ -116,6 +117,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
       actions: [
         TextButton(
           onPressed: didChange && isValid ? _submit : null,
+          key: keys.saveButton,
           child: Text(AppLocalizations.of(context)!.oath_save),
         ),
       ],
@@ -133,6 +135,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               maxLength: issuerRemaining > 0 ? issuerRemaining : null,
               buildCounter: buildByteCounterFor(_issuer),
               inputFormatters: [limitBytesLength(issuerRemaining)],
+              key: keys.issuerField,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: AppLocalizations.of(context)!.oath_issuer_optional,
@@ -151,6 +154,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               maxLength: nameRemaining,
               inputFormatters: [limitBytesLength(nameRemaining)],
               buildCounter: buildByteCounterFor(_account),
+              key: keys.nameField,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: AppLocalizations.of(context)!.oath_account_name,

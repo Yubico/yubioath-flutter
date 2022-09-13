@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../core/state.dart';
+import '../keys.dart' as keys;
 
 class BetaDialog {
   final BuildContext context;
@@ -12,11 +13,12 @@ class BetaDialog {
 
   void request() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ref.read(prefProvider).reload();
+      var sharedPrefs = ref.read(prefProvider);
+      await sharedPrefs.reload();
       var dialogShouldBeShown =
-          ref.read(prefProvider).getBool(prefBetaDialogShouldBeShown) ?? true;
+          sharedPrefs.getBool(prefBetaDialogShouldBeShown) ?? true;
       if (dialogShouldBeShown) {
-        Future.delayed(Duration.zero, () async {
+        Future.delayed(const Duration(milliseconds: 100), () async {
           await showBetaDialog();
         });
       }
@@ -31,6 +33,7 @@ class BetaDialog {
         return WillPopScope(
           onWillPop: () async => false,
           child: AlertDialog(
+            key: keys.betaDialogView,
             content: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -75,6 +78,7 @@ class BetaDialog {
               //   },
               // ),
               TextButton(
+                key: keys.okButton,
                 style: TextButton.styleFrom(
                   textStyle: Theme.of(context)
                       .textTheme
