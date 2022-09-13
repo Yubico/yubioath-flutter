@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -39,11 +40,13 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final minPinLength = widget.state.minPinLength;
 
     return ResponsiveDialog(
-      title: Text(hasPin ? 'Change PIN' : 'Set PIN'),
+      title: Text(hasPin
+          ? AppLocalizations.of(context)!.fido_change_pin
+          : AppLocalizations.of(context)!.fido_set_pin),
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.fido_save),
         ),
       ],
       child: Padding(
@@ -52,15 +55,14 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (hasPin) ...[
-              const Text(
-                  "Enter your current PIN. If you don't know your PIN, you'll need to reset the YubiKey."),
+              Text(AppLocalizations.of(context)!.fido_enter_current_pin),
               TextFormField(
                 initialValue: _currentPin,
                 autofocus: true,
                 obscureText: true,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  labelText: 'Current PIN',
+                  labelText: AppLocalizations.of(context)!.fido_current_pin,
                   errorText: _currentIsWrong ? _currentPinError : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Icons.pin_outlined),
@@ -74,7 +76,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               ),
             ],
             Text(
-                'Enter your new PIN. A PIN must be at least $minPinLength characters long and may contain letters, numbers and special characters.'),
+                AppLocalizations.of(context)!.fido_enter_new_pin(minPinLength)),
             // TODO: Set max characters based on UTF-8 bytes
             TextFormField(
               initialValue: _newPin,
@@ -82,7 +84,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               obscureText: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: 'New PIN',
+                labelText: AppLocalizations.of(context)!.fido_new_pin,
                 enabled: !hasPin || _currentPin.isNotEmpty,
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
@@ -100,7 +102,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               obscureText: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: 'Confirm PIN',
+                labelText: AppLocalizations.of(context)!.fido_confirm_pin,
                 prefixIcon: const Icon(Icons.pin_outlined),
                 enabled:
                     (!hasPin || _currentPin.isNotEmpty) && _newPin.isNotEmpty,
@@ -132,7 +134,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final oldPin = _currentPin.isNotEmpty ? _currentPin : null;
     if (_newPin.length < minPinLength) {
       setState(() {
-        _newPinError = 'New PIN must be at least $minPinLength characters';
+        _newPinError =
+            AppLocalizations.of(context)!.fido_new_pin_chars(minPinLength);
         _newIsWrong = true;
       });
       return;
@@ -143,15 +146,15 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           .setPin(_newPin, oldPin: oldPin);
       result.when(success: () {
         Navigator.of(context).pop(true);
-        showMessage(context, 'PIN set');
+        showMessage(context, AppLocalizations.of(context)!.fido_pin_set);
       }, failed: (retries, authBlocked) {
         setState(() {
           if (authBlocked) {
-            _currentPinError =
-                'PIN has been blocked until the YubiKey is removed and reinserted';
+            _currentPinError = AppLocalizations.of(context)!.fido_pin_blocked;
             _currentIsWrong = true;
           } else {
-            _currentPinError = 'Wrong PIN ($retries tries remaining)';
+            _currentPinError = AppLocalizations.of(context)!
+                .fido_wrong_pin_retries_remaining(retries);
             _currentIsWrong = true;
           }
         });
@@ -167,7 +170,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       }
       showMessage(
         context,
-        'Failed to set PIN: $errorMessage',
+        '${AppLocalizations.of(context)!.fido_fail_set_pin}: $errorMessage',
         duration: const Duration(seconds: 4),
       );
     }

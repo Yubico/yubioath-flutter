@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
@@ -23,19 +24,20 @@ class FidoLockedPage extends ConsumerWidget {
     if (!state.hasPin) {
       if (state.bioEnroll != null) {
         return MessagePage(
-          title: const Text('WebAuthn'),
+          title: Text(AppLocalizations.of(context)!.fido_webauthn),
           graphic: noFingerprints,
-          header: 'No fingerprints',
-          message: 'Set a PIN to register fingerprints',
+          header: AppLocalizations.of(context)!.fido_no_fingerprints,
+          message: AppLocalizations.of(context)!.fido_set_pin_fingerprints,
           keyActions: _buildActions(context),
         );
       } else {
         return MessagePage(
-          title: const Text('WebAuthn'),
+          title: Text(AppLocalizations.of(context)!.fido_webauthn),
           graphic: manageAccounts,
-          header: state.credMgmt ? 'No discoverable accounts' : 'Ready to use',
-          message:
-              'Optionally set a PIN to protect access to your YubiKey\nRegister as a Security Key on websites',
+          header: state.credMgmt
+              ? AppLocalizations.of(context)!.fido_no_discoverable_acc
+              : AppLocalizations.of(context)!.fido_ready_to_use,
+          message: AppLocalizations.of(context)!.fido_optionally_set_a_pin,
           keyActions: _buildActions(context),
         );
       }
@@ -43,16 +45,16 @@ class FidoLockedPage extends ConsumerWidget {
 
     if (!state.credMgmt && state.bioEnroll == null) {
       return MessagePage(
-        title: const Text('WebAuthn'),
+        title: Text(AppLocalizations.of(context)!.fido_webauthn),
         graphic: manageAccounts,
-        header: 'Ready to use',
-        message: 'Register as a Security Key on websites',
+        header: AppLocalizations.of(context)!.fido_ready_to_use,
+        message: AppLocalizations.of(context)!.fido_register_as_a_key,
         keyActions: _buildActions(context),
       );
     }
 
     return AppPage(
-      title: const Text('WebAuthn'),
+      title: Text(AppLocalizations.of(context)!.fido_webauthn),
       keyActions: _buildActions(context),
       child: Column(
         children: [
@@ -65,7 +67,7 @@ class FidoLockedPage extends ConsumerWidget {
   List<PopupMenuEntry> _buildActions(BuildContext context) => [
         if (!state.hasPin)
           buildMenuItem(
-            title: const Text('Set PIN'),
+            title: Text(AppLocalizations.of(context)!.fido_set_pin),
             leading: const Icon(Icons.pin),
             action: () {
               showBlurDialog(
@@ -75,7 +77,7 @@ class FidoLockedPage extends ConsumerWidget {
             },
           ),
         buildMenuItem(
-          title: const Text('Reset FIDO'),
+          title: Text(AppLocalizations.of(context)!.fido_reset_fido),
           leading: const Icon(Icons.delete),
           action: () {
             showBlurDialog(
@@ -123,13 +125,13 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
 
   String? _getErrorText() {
     if (_retries == 0) {
-      return 'PIN is blocked. Factory reset the FIDO application.';
+      return AppLocalizations.of(context)!.fido_pin_blocked_factory_reset;
     }
     if (_blocked) {
-      return 'PIN temporarily blocked, remove and reinsert your YubiKey.';
+      return AppLocalizations.of(context)!.fido_pin_temp_blocked;
     }
     if (_retries != null) {
-      return 'Wrong PIN. $_retries attempt(s) remaining.';
+      return AppLocalizations.of(context)!.fido_wrong_pin_attempts(_retries!);
     }
     return null;
   }
@@ -142,7 +144,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Enter the FIDO2 PIN for your YubiKey'),
+          Text(AppLocalizations.of(context)!.fido_enter_fido2_pin),
           Padding(
             padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
             child: TextField(
@@ -151,7 +153,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
               controller: _pinController,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: 'PIN',
+                labelText: AppLocalizations.of(context)!.fido_pin,
                 helperText: '', // Prevents dialog resizing
                 errorText: _pinIsWrong ? _getErrorText() : null,
                 errorMaxLines: 3,
@@ -180,8 +182,8 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
             leading:
                 noFingerprints ? const Icon(Icons.warning_amber_rounded) : null,
             title: noFingerprints
-                ? const Text(
-                    'No fingerprints have been added',
+                ? Text(
+                    AppLocalizations.of(context)!.fido_no_fp_added,
                     overflow: TextOverflow.fade,
                   )
                 : null,
@@ -190,7 +192,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
             minLeadingWidth: 0,
             trailing: ElevatedButton.icon(
               icon: const Icon(Icons.lock_open),
-              label: const Text('Unlock'),
+              label: Text(AppLocalizations.of(context)!.fido_unlock),
               onPressed:
                   _pinController.text.isNotEmpty && !_blocked ? _submit : null,
             ),
