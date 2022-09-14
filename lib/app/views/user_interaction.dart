@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../message.dart';
@@ -50,7 +52,7 @@ class _UserInteractionDialog extends StatefulWidget {
 
 class _UserInteractionDialogState extends State<_UserInteractionDialog> {
   void _rebuild() {
-    setState(() {});
+    Timer.run(() => setState(() {}));
   }
 
   @override
@@ -126,6 +128,7 @@ UserInteractionController promptUserInteraction(
   );
   showBlurDialog(
       context: context,
+      routeSettings: const RouteSettings(name: 'user_interaction_prompt'),
       builder: (context) {
         return WillPopScope(
           onWillPop: () async {

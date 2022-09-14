@@ -9,6 +9,7 @@ class MessagePage extends StatelessWidget {
   final String? message;
   final List<Widget> actions;
   final List<PopupMenuEntry> keyActions;
+  final Widget Function(List<PopupMenuEntry> keyActions)? actionButtonBuilder;
 
   const MessagePage({
     super.key,
@@ -18,6 +19,7 @@ class MessagePage extends StatelessWidget {
     this.message,
     this.actions = const [],
     this.keyActions = const [],
+    this.actionButtonBuilder,
   });
 
   @override
@@ -26,6 +28,7 @@ class MessagePage extends StatelessWidget {
         centered: true,
         actions: actions,
         keyActions: keyActions,
+        actionButtonBuilder: actionButtonBuilder,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

@@ -2,12 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/core/state.dart';
 
 import 'message_page.dart';
 import 'device_error_screen.dart';
 import '../models.dart';
 import '../state.dart';
+import '../message.dart';
 import '../../fido/views/fido_screen.dart';
+import '../../oath/views/add_account_page.dart';
 import '../../oath/views/oath_screen.dart';
 
 class MainPage extends ConsumerWidget {
@@ -31,13 +34,37 @@ class MainPage extends ConsumerWidget {
               'settings',
               'about',
               'licenses',
+              'user_interaction_prompt',
+              'oath_add_account',
             ].contains(route.settings.name);
       });
     });
 
     final deviceNode = ref.watch(currentDeviceProvider);
     if (deviceNode == null) {
-      return MessagePage(message: Platform.isAndroid ? 'Insert or tap your YubiKey' : 'Insert your YubiKey');
+      if (isAndroid) {
+        return MessagePage(
+          message: 'Insert or tap your YubiKey',
+          actionButtonBuilder: (keyActions) => IconButton(
+            icon: const Icon(Icons.person_add_alt_1),
+            tooltip: 'Add account',
+            onPressed: () {
+              showBlurDialog(
+                context: context,
+                routeSettings: const RouteSettings(name: 'oath_add_account'),
+                builder: (context) => OathAddAccountPage(
+                  null,
+                  null,
+                  openQrScanner: Platform.isAndroid,
+                  credentials: null,
+                ),
+              );
+            },
+          ),
+        );
+      } else {
+        return const MessagePage(message: 'Insert your YubiKey');
+      }
     } else {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
@@ -45,12 +72,14 @@ class MainPage extends ConsumerWidget {
               if (app.getAvailability(data) == Availability.unsupported) {
                 return MessagePage(
                   header: 'Application not supported',
-                  message: 'The used YubiKey does not support \'${app.name}\' application',
+                  message:
+                      'The used YubiKey does not support \'${app.name}\' application',
                 );
               } else if (app.getAvailability(data) != Availability.enabled) {
                 return MessagePage(
                   header: 'Application disabled',
-                  message: 'Enable the \'${app.name}\' application on your YubiKey to access',
+                  message:
+                      'Enable the \'${app.name}\' application on your YubiKey to access',
                 );
               }
 

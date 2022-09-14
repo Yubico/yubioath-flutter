@@ -52,6 +52,7 @@ class OathManager(
 
     private var pendingAction: OathAction? = null
     private var refreshJob: Job? = null
+    private var addToAny = false
 
     // provides actions for lifecycle events
     private val lifecycleObserver = object : DefaultLifecycleObserver {
@@ -61,14 +62,16 @@ class OathManager(
         override fun onPause(owner: LifecycleOwner) {
             startTimeMs = currentTimeMs
 
-            // cancel any pending actions
-            pendingAction?.let {
-                Log.d(TAG, "Cancelling pending action/closing nfc dialog.")
-                it.invoke(Result.failure(CancellationException()))
-                coroutineScope.launch {
-                    dialogManager.closeDialog()
+            // cancel any pending actions, except for addToAny
+            if(!addToAny) {
+                pendingAction?.let {
+                    Log.d(TAG, "Cancelling pending action/closing nfc dialog.")
+                    it.invoke(Result.failure(CancellationException()))
+                    coroutineScope.launch {
+                        dialogManager.closeDialog()
+                    }
+                    pendingAction = null
                 }
-                pendingAction = null
             }
 
             super.onPause(owner)
@@ -150,6 +153,10 @@ class OathManager(
                     args["issuer"] as String?
                 )
                 "deleteAccount" -> deleteAccount(args["credentialId"] as String)
+                "addAccountToAny" -> addAccountToAny(
+                    args["uri"] as String,
+                    args["requireTouch"] as Boolean
+                )
                 else -> throw NotImplementedError()
             }
         }
@@ -190,13 +197,6 @@ class OathManager(
                         }
                     }
                 } else {
-                    // Awaiting an action for a different device? Fail it and stop processing.
-                    pendingAction?.let { action ->
-                        action.invoke(Result.failure(IllegalStateException("Wrong deviceId")))
-                        pendingAction = null
-                        return@withConnection
-                    }
-
                     // Clear in-memory password for any previous device
                     if (connection.transport == Transport.NFC && previousId != null) {
                         memoryKeyProvider.removeKey(previousId)
@@ -208,6 +208,20 @@ class OathManager(
                         oathViewModel.updateCredentials(
                             calculateOathCodes(oath).model(oath.deviceId)
                         )
+                    }
+
+                    // Awaiting an action for a different or no device?
+                    pendingAction?.let { action ->
+                        pendingAction = null
+                        if(addToAny) {
+                            // Special "add to any YubiKey" action, process
+                            addToAny = false
+                            action.invoke(Result.success(oath))
+                        } else {
+                            // Awaiting an action for a different device? Fail it and stop processing.
+                            action.invoke(Result.failure(IllegalStateException("Wrong deviceId")))
+                            return@withConnection
+                        }
                     }
 
                     // Update deviceInfo since the deviceId has changed
@@ -256,6 +270,32 @@ class OathManager(
 
             // Clear any cached OATH state
             oathViewModel.setSessionState(null)
+        }
+    }
+
+    private suspend fun addAccountToAny(
+        uri: String,
+        requireTouch: Boolean,
+    ): String {
+        val credentialData: CredentialData =
+            CredentialData.parseUri(URI.create(uri))
+        addToAny = true
+        return useOathSessionNfc("Add account") { session ->
+            val credential = session.putCredential(credentialData, requireTouch)
+
+            val code =
+                if (credentialData.oathType == OathType.TOTP && !requireTouch) {
+                    // recalculate the code
+                    calculateCode(session, credential)
+                } else null
+
+            val addedCred = oathViewModel.addCredential(
+                credential.model(session.deviceId),
+                code?.model()
+            )
+
+            Log.d(TAG, "Added cred $credential")
+            jsonSerializer.encodeToString(addedCred)
         }
     }
 
