@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_label">Yubico Authenticator Preview</string>
+    <string name="app_label">Yubico Authenticator</string>
     <string name="otp_success_set_otp_to_clipboard">Successfully copied OTP code from YubiKey to clipboard.</string>
     <string name="otp_success_set_password_to_clipboard">Successfully copied password from YubiKey to clipboard.</string>
     <string name="otp_parse_failure">Failed to parse OTP code from YubiKey.</string>
