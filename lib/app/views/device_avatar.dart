@@ -6,6 +6,7 @@ import '../../widgets/custom_icons.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_images.dart';
+import 'keys.dart';
 
 class DeviceAvatar extends StatelessWidget {
   final Widget child;
@@ -57,6 +58,7 @@ class DeviceAvatar extends StatelessWidget {
     } else {
       return DeviceAvatar(
         radius: radius,
+        key: noDeviceAvatar,
         child: const Icon(Icons.usb),
       );
     }

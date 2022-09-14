@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:yubico_authenticator/app/views/device_button.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 import 'package:yubico_authenticator/core/state.dart';
@@ -34,6 +35,26 @@ extension AppWidgetTester on WidgetTester {
 
   Future<void> veryLongWait() async {
     await pump(const Duration(seconds: veryLongWaitS));
+  }
+
+  /// waits up to [timeOutSec] seconds evaluating whether [Finder] f is
+  /// visible
+  Future<Finder> waitForFinder(Finder f, [int timeOutSec = 20]) async {
+    int delayMs = 500;
+    int elapsedTime = 0;
+
+    var evaluated = f.evaluate();
+    while (evaluated.isEmpty && elapsedTime < timeOutSec * 1000) {
+      await pump(Duration(milliseconds: delayMs));
+      elapsedTime += delayMs;
+      evaluated = f.evaluate();
+    }
+
+    if (evaluated.isEmpty) {
+      testLog(false, 'Failed to find ${f.description} in $timeOutSec seconds.');
+    }
+
+    return f;
   }
 
   Finder findDeviceButton() {
@@ -119,6 +140,7 @@ extension AppWidgetTester on WidgetTester {
   }
 }
 
+@isTest
 void appTest(
   String description,
   WidgetTesterCallback callback, {

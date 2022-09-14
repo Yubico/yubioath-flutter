@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yubico_authenticator/android/keys.dart' as android_keys;
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/oath/keys.dart' as keys;
 import 'package:yubico_authenticator/oath/views/account_list.dart';
 import 'package:yubico_authenticator/oath/views/account_view.dart';
 
+import 'android/util.dart';
 import 'test_util.dart';
 
 class Account {
@@ -48,19 +48,7 @@ extension OathFunctions on WidgetTester {
     await tapAddAccount();
 
     if (isAndroid) {
-      /// on android a QR Scanner starts
-      /// we want to do a manual addition
-      var manualEntryBtn =
-          find.byKey(android_keys.manualEntryButton).hitTestable();
-      if (manualEntryBtn.evaluate().isEmpty) {
-        printToConsole('Allow camera permission');
-        await pump(const Duration(seconds: 2));
-        manualEntryBtn =
-            find.byKey(android_keys.manualEntryButton).hitTestable();
-      }
-
-      await tap(manualEntryBtn);
-      await longWait();
+      await grantCameraPermissions(this);
     }
 
     var issuerText = find.byKey(keys.issuerField).hitTestable();
@@ -78,7 +66,9 @@ extension OathFunctions on WidgetTester {
 
     await tap(find.byKey(keys.saveButton));
 
-    await longWait();
+    /// TODO:
+    /// the following pump is because of NEO keys
+    await pump(const Duration(seconds: 1));
 
     accountView = await findAccount(a);
     expect(accountView, isNotNull);
@@ -154,12 +144,16 @@ extension OathFunctions on WidgetTester {
     }
 
     await openAccountDialog(a);
+
+    /// click the delete IconButton in the account dialog
     var deleteIconButton = find.byIcon(Icons.delete_outline).hitTestable();
     expect(deleteIconButton, findsOneWidget);
     await tap(deleteIconButton);
     await longWait();
 
     /// TODO check dialog shows correct information about account
+
+    /// click the delete Button in the delete dialog
     var deleteButton = find.byKey(keys.deleteButton).hitTestable();
     expect(deleteButton, findsOneWidget);
     await tap(deleteButton);
@@ -249,7 +243,10 @@ extension OathFunctions on WidgetTester {
     await shortWait();
 
     await tap(find.byKey(keys.savePasswordButton));
-    await longWait();
+
+    /// TODO:
+    /// the following pause is because of NEO keys
+    await pump(const Duration(seconds: 1));
 
     /// after tapping Save, the dialog is closed and the save button does not exist
     expect(find.byKey(keys.savePasswordButton).hitTestable(), findsNothing);
