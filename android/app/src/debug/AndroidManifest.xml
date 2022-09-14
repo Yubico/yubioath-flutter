@@ -1,7 +1,23 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.yubico.authenticator">
     <!-- Flutter needs it to communicate with the running application
          to allow setting breakpoints, to provide hot reload, etc.
     -->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- support ACTION_RUN for debug builds -->
+    <application
+        android:icon="@mipmap/ic_launcher"
+        tools:node="merge">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            tools:node="merge">
+            <intent-filter>
+                <action android:name="android.intent.action.RUN" />
+
+            </intent-filter>
+        </activity>
+    </application>
 </manifest>

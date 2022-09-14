@@ -65,8 +65,8 @@ Future<Widget> initialize() async {
           /// initializes global handler for dialogs
           ref.read(androidDialogProvider);
 
-          var betaDialog = BetaDialog(context, ref);
-          betaDialog.request();
+          /// if the beta dialog was not shown yet, this will show it
+          requestBetaDialog(ref);
 
           return const MainPage();
         },
