@@ -7,7 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/core/state.dart';
 
+import '../../android/oath/state.dart';
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -152,11 +154,23 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     }
   }
 
-  Future<void> _doAddCredential(DevicePath devicePath, Uri credUri) async {
+  Future<void> _doAddCredential(
+      {DevicePath? devicePath, required Uri credUri}) async {
     try {
-      await ref
-          .read(credentialListProvider(devicePath).notifier)
-          .addAccount(credUri, requireTouch: _touch);
+      if (devicePath == null) {
+        assert(isAndroid, 'devicePath is only optional for Android');
+        await ref
+            .read(addCredentialToAnyProvider)
+            .call(credUri, requireTouch: _touch);
+      } else {
+        await ref
+            .read(credentialListProvider(devicePath).notifier)
+            .addAccount(credUri, requireTouch: _touch);
+      }
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      showMessage(
+          context, AppLocalizations.of(context)!.oath_success_add_account);
     } on CancellationException catch (_) {
       // ignored
     } catch (e) {
@@ -174,10 +188,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         duration: const Duration(seconds: 4),
       );
     }
-    if (!mounted) return;
-    Navigator.of(context).pop();
-    showMessage(
-        context, AppLocalizations.of(context)!.oath_success_add_account);
   }
 
   @override
@@ -214,7 +224,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           } else {
             _otpauthUri = null;
             _promptController?.close();
-            Timer.run(() => _doAddCredential(deviceNode.path, otpauthUri));
+            Timer.run(() => _doAddCredential(
+                devicePath: deviceNode.path, credUri: otpauthUri));
           }
         } else {
           _promptController?.updateContent(title: 'Unsupported YubiKey');
@@ -224,20 +235,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       }, loading: () {
         _promptController?.updateContent(title: 'Please wait...');
       });
-
-      /*
-      if (oathState == null) {
-        _promptController?.updateContent(title: 'Unsupported YubiKey');
-      } else if (oathState.locked) {
-        _promptController?.updateContent(title: 'YubiKey is locked');
-      } else {
-        _promptController?.updateContent(title: 'Please wait...');
-        _otpauthUri = null;
-        // This is already closed by main_page.dart, don't close it twice.
-        _promptController?.close();
-        Timer.run(() => _doAddCredential(deviceNode.path, otpauthUri));
-      }
-      */
     }
 
     final period = int.tryParse(_periodController.text) ?? -1;
@@ -293,9 +290,12 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
         final devicePath = deviceNode?.path;
         if (devicePath != null) {
-          await _doAddCredential(devicePath, cred.toUri());
+          await _doAddCredential(devicePath: devicePath, credUri: cred.toUri());
+        } else if (isAndroid) {
+          // Send the credential to Android to be added to the next YubiKey
+          await _doAddCredential(devicePath: null, credUri: cred.toUri());
         } else {
-          // No YubiKey, prompt and store the cred.
+          // Desktop. No YubiKey, prompt and store the cred.
           _otpauthUri = cred.toUri();
           _promptController = promptUserInteraction(
             context,

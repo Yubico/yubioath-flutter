@@ -108,6 +108,26 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   }
 }
 
+final addCredentialToAnyProvider =
+    Provider((ref) => (Uri credentialUri, {bool requireTouch = false}) async {
+          try {
+            String resultString = await _methods.invokeMethod(
+                'addAccountToAny', {
+              'uri': credentialUri.toString(),
+              'requireTouch': requireTouch
+            });
+
+            var result = jsonDecode(resultString);
+            return OathCredential.fromJson(result['credential']);
+          } on PlatformException catch (pe) {
+            if (CancellationException.isCancellation(pe)) {
+              throw CancellationException();
+            }
+            _log.error('Failed to add account.', pe);
+            rethrow;
+          }
+        });
+
 final androidCredentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
