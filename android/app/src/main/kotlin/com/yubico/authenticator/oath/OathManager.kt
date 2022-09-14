@@ -63,7 +63,7 @@ class OathManager(
             startTimeMs = currentTimeMs
 
             // cancel any pending actions, except for addToAny
-            if(!addToAny) {
+            if (!addToAny) {
                 pendingAction?.let {
                     Log.d(TAG, "Cancelling pending action/closing nfc dialog.")
                     it.invoke(Result.failure(CancellationException()))
@@ -213,7 +213,7 @@ class OathManager(
                     // Awaiting an action for a different or no device?
                     pendingAction?.let { action ->
                         pendingAction = null
-                        if(addToAny) {
+                        if (addToAny) {
                             // Special "add to any YubiKey" action, process
                             addToAny = false
                             action.invoke(Result.success(oath))
@@ -281,8 +281,12 @@ class OathManager(
             CredentialData.parseUri(URI.create(uri))
         addToAny = true
         return useOathSessionNfc("Add account") { session ->
-            val credential = session.putCredential(credentialData, requireTouch)
+            // We need to check for duplicates here since we haven't yet read the credentials
+            if (session.credentials.any { it.id.contentEquals(credentialData.id) }) {
+                throw Exception("A credential with this ID already exists!")
+            }
 
+            val credential = session.putCredential(credentialData, requireTouch)
             val code =
                 if (credentialData.oathType == OathType.TOTP && !requireTouch) {
                     // recalculate the code

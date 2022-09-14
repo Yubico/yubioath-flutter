@@ -69,6 +69,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   bool _isObscure = true;
   List<int> _periodValues = [20, 30, 45, 60];
   List<int> _digitsValues = [6, 8];
+  List<OathCredential>? _credentials;
 
   @override
   void dispose() {
@@ -205,8 +206,13 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       oathState = ref
           .watch(oathStateProvider(deviceNode.path))
           .maybeWhen(data: (data) => data, orElse: () => null);
+      _credentials = ref
+          .watch(credentialListProvider(deviceNode.path))
+          ?.map((e) => e.credential)
+          .toList();
     } else {
       oathState = widget.state;
+      _credentials = widget.credentials;
     }
 
     final otpauthUri = _otpauthUri;
@@ -254,7 +260,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     final secretLengthValid = secret.length * 5 % 8 < 5;
 
     // is this credentials name/issuer pair different from all other?
-    final isUnique = widget.credentials
+    final isUnique = _credentials
             ?.where((element) =>
                 element.name == _accountController.text.trim() &&
                 (element.issuer ?? '') == _issuerController.text.trim())
