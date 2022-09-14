@@ -106,18 +106,20 @@ void Function() showToast(
   }
 
   entry = OverlayEntry(builder: (context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        height: 50,
-        width: 400,
-        margin: const EdgeInsets.all(8),
-        child: Toast(
-          message,
-          duration,
-          backgroundColor: backgroundColor,
-          textStyle: textStyle,
-          onComplete: close,
+    return SafeArea(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          height: 50,
+          width: 400,
+          margin: const EdgeInsets.all(8),
+          child: Toast(
+            message,
+            duration,
+            backgroundColor: backgroundColor,
+            textStyle: textStyle,
+            onComplete: close,
+          ),
         ),
       ),
     );
