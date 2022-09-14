@@ -46,22 +46,7 @@ class MainPage extends ConsumerWidget {
         return MessagePage(
           message: 'Insert or tap your YubiKey',
           actionButtonBuilder: (keyActions) => IconButton(
-            icon: OverflowBox(
-              maxWidth: 44,
-              maxHeight: 44,
-              child: CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                radius: 16,
-                child: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.background,
-                  radius: 15,
-                  child: Icon(
-                    Icons.person_add_alt_1,
-                    color: Theme.of(context).colorScheme.onBackground,
-                  ),
-                ),
-              ),
-            ),
+            icon: const Icon(Icons.person_add_alt_1),
             tooltip: 'Add account',
             onPressed: () {
               showBlurDialog(
