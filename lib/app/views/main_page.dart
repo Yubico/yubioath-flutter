@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/core/state.dart';
 
 import 'message_page.dart';
 import 'device_error_screen.dart';
@@ -34,49 +35,51 @@ class MainPage extends ConsumerWidget {
               'about',
               'licenses',
               'user_interaction_prompt',
+              'oath_add_account',
             ].contains(route.settings.name);
       });
     });
 
     final deviceNode = ref.watch(currentDeviceProvider);
     if (deviceNode == null) {
-      return MessagePage(
-        message: Platform.isAndroid
-            ? 'Insert or tap your YubiKey'
-            : 'Insert your YubiKey',
-        actionButtonBuilder: (keyActions) => IconButton(
-          icon: OverflowBox(
-            maxWidth: 44,
-            maxHeight: 44,
-            child: CircleAvatar(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              radius: 16,
+      if (isAndroid) {
+        return MessagePage(
+          message: 'Insert or tap your YubiKey',
+          actionButtonBuilder: (keyActions) => IconButton(
+            icon: OverflowBox(
+              maxWidth: 44,
+              maxHeight: 44,
               child: CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.background,
-                radius: 15,
-                child: Icon(
-                  Icons.person_add_alt_1,
-                  color: Theme.of(context).colorScheme.onBackground,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                radius: 16,
+                child: CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.background,
+                  radius: 15,
+                  child: Icon(
+                    Icons.person_add_alt_1,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
                 ),
               ),
             ),
+            tooltip: 'Add account',
+            onPressed: () {
+              showBlurDialog(
+                context: context,
+                routeSettings: const RouteSettings(name: 'oath_add_account'),
+                builder: (context) => OathAddAccountPage(
+                  null,
+                  null,
+                  openQrScanner: Platform.isAndroid,
+                  credentials: null,
+                ),
+              );
+            },
           ),
-          tooltip: 'Add account',
-          onPressed: () {
-            showBlurDialog(
-              context: context,
-              // TODO: Change from 'about', but make sure it stays open
-              routeSettings: const RouteSettings(name: 'about'),
-              builder: (context) => OathAddAccountPage(
-                null,
-                null,
-                openQrScanner: Platform.isAndroid,
-                credentials: null,
-              ),
-            );
-          },
-        ),
-      );
+        );
+      } else {
+        return const MessagePage(message: 'Insert your YubiKey');
+      }
     } else {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
