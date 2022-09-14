@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/core/state.dart';
 
 import '../../android/oath/state.dart';
 import '../../app/logging.dart';
@@ -159,7 +159,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       {DevicePath? devicePath, required Uri credUri}) async {
     try {
       if (devicePath == null) {
-        assert(isAndroid, 'devicePath is only optional for Android');
+        assert(Platform.isAndroid, 'devicePath is only optional for Android');
         await ref
             .read(addCredentialToAnyProvider)
             .call(credUri, requireTouch: _touch);
@@ -221,12 +221,14 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           if (oathState == null) {
             _promptController?.updateContent(title: 'Please wait...');
           } else if (oathState.locked) {
-            _promptController?.updateContent(title: 'YubiKey is locked');
+            _promptController?.close();
           } else {
             _otpauthUri = null;
             _promptController?.close();
             Timer.run(() => _doAddCredential(
-                devicePath: deviceNode.path, credUri: otpauthUri));
+                  devicePath: deviceNode.path,
+                  credUri: otpauthUri,
+                ));
           }
         } else {
           _promptController?.updateContent(title: 'Unsupported YubiKey');
@@ -302,7 +304,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         final devicePath = deviceNode?.path;
         if (devicePath != null) {
           await _doAddCredential(devicePath: devicePath, credUri: cred.toUri());
-        } else if (isAndroid) {
+        } else if (Platform.isAndroid) {
           // Send the credential to Android to be added to the next YubiKey
           await _doAddCredential(devicePath: null, credUri: cred.toUri());
         } else {
@@ -349,11 +351,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             }
           }
         },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18.0),
-          child: isLocked
-              ? UnlockForm(deviceNode!.path, keystore: oathState!.keystore)
-              : Column(
+        child: isLocked
+            ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                child:
+                    UnlockForm(deviceNode!.path, keystore: oathState!.keystore),
+              )
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextField(
@@ -555,7 +561,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                           ))
                       .toList(),
                 ),
-        ),
+              ),
       ),
     );
   }

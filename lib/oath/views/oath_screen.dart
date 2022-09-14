@@ -79,13 +79,12 @@ class _LockedView extends ConsumerWidget {
             },
           ),
         ],
-        child: Column(
-          children: [
-            UnlockForm(
-              devicePath,
-              keystore: oathState.keystore,
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          child: UnlockForm(
+            devicePath,
+            keystore: oathState.keystore,
+          ),
         ),
       );
 }

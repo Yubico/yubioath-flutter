@@ -48,7 +48,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 18.0, right: 18, top: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -89,7 +89,6 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
             ],
           ),
         ),
-        const SizedBox(height: 8.0),
         keystoreFailed
             ? ListTile(
                 leading: const Icon(Icons.warning_amber_rounded),
@@ -111,7 +110,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 },
               ),
         Padding(
-          padding: const EdgeInsets.only(top: 12.0, right: 18.0, bottom: 4.0),
+          padding: const EdgeInsets.symmetric(horizontal: 18),
           child: Align(
             alignment: Alignment.centerRight,
             child: ElevatedButton.icon(
