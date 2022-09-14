@@ -22,11 +22,15 @@ Future<void> startUp(WidgetTester tester,
 
   await tester.pumpWidget(await initialize());
 
-  // wait for a YubiKey connection
-  await tester.waitForFinder(find.descendant(
-      of: tester.findDeviceButton(),
-      matching: find.byWidgetPredicate((widget) =>
-          widget is DeviceAvatar && widget.key != app_keys.noDeviceAvatar)));
+  // only wait for yubikey connection when needed
+  // needs_yubikey defaults to true
+  if (startUpParams['needs_yubikey'] != false) {
+    // wait for a YubiKey connection
+    await tester.waitForFinder(find.descendant(
+        of: tester.findDeviceButton(),
+        matching: find.byWidgetPredicate((widget) =>
+            widget is DeviceAvatar && widget.key != app_keys.noDeviceAvatar)));
+  }
 
   await tester.pump(const Duration(milliseconds: 500));
 }

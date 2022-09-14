@@ -26,6 +26,7 @@ class MainPage extends ConsumerWidget {
       Navigator.of(context).popUntil((route) {
         return route.isFirst ||
             [
+              'android_beta_dialog',
               'device_picker',
               'settings',
               'about',
