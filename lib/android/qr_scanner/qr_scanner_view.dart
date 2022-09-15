@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:qrscanner_zxing/qrscanner_zxing_view.dart';
 
 import '../../oath/models.dart';
@@ -82,14 +81,6 @@ class _QrScannerViewState extends State<QrScannerView> {
   void initState() {
     super.initState();
     _status = ScanStatus.scanning;
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-  }
-
-  @override
-  void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
-        overlays: SystemUiOverlay.values);
-    super.dispose();
   }
 
   @override
