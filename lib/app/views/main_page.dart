@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/cancellation_exception.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
 import '../../oath/models.dart';
@@ -51,9 +52,14 @@ class MainPage extends ConsumerWidget {
               CredentialData? otpauth;
               final scanner = ref.read(qrScannerProvider);
               if (scanner != null) {
-                final url = await scanner.scanQr();
-                if (url != null) {
-                  otpauth = CredentialData.fromUri(Uri.parse(url));
+                try {
+                  final url = await scanner.scanQr();
+                  if (url != null) {
+                    otpauth = CredentialData.fromUri(Uri.parse(url));
+                  }
+                } on CancellationException catch (_) {
+                  // ignored - user cancelled
+                  return;
                 }
               }
               await showBlurDialog(
