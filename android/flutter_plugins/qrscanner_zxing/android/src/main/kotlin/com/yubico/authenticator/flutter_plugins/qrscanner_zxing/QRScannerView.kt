@@ -112,10 +112,19 @@ internal class QRScannerView(
 
     private var imageAnalysis: ImageAnalysis? = null
     private var preview: Preview? = null
+    private var barcodeAnalyzer : BarcodeAnalyzer = BarcodeAnalyzer(marginPct) { analyzeResult ->
+        if (analyzeResult.isSuccess) {
+            analyzeResult.getOrNull()?.let { result ->
+                reportCodeFound(result)
+            }
+        }
+    }
 
     override fun getView(): View {
+        barcodeAnalyzer.analysisPaused = false;
         return qrScannerView
     }
+
 
     override fun dispose() {
         cameraProvider?.unbindAll()
@@ -161,6 +170,8 @@ internal class QRScannerView(
                     intent.addCategory(Intent.CATEGORY_DEFAULT)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(context, intent, null)
+                } else if (call.method == "resumeScanning") {
+                    barcodeAnalyzer.analysisPaused = false;
                 }
             }
         }
@@ -231,13 +242,7 @@ internal class QRScannerView(
                 .setTargetAspectRatio(QR_SCANNER_ASPECT_RATIO)
                 .build()
                 .also {
-                    it.setAnalyzer(cameraExecutor, BarcodeAnalyzer(marginPct) { analyzeResult ->
-                        if (analyzeResult.isSuccess) {
-                            analyzeResult.getOrNull()?.let { result ->
-                                reportCodeFound(result)
-                            }
-                        }
-                    })
+                    it.setAnalyzer(cameraExecutor, barcodeAnalyzer)
                 }
 
             preview = Preview.Builder()
@@ -266,6 +271,8 @@ internal class QRScannerView(
         private val marginPct: Double?, private val listener: BarcodeAnalyzerListener
     ) : ImageAnalysis.Analyzer {
 
+        var analysisPaused = false;
+
         val multiFormatReader = MultiFormatReader().also {
             it.setHints(mapOf(DecodeHintType.POSSIBLE_FORMATS to listOf(BarcodeFormat.QR_CODE)))
         }
@@ -279,6 +286,11 @@ internal class QRScannerView(
 
         override fun analyze(imageProxy: ImageProxy) {
             try {
+
+                if (analysisPaused) {
+                    return;
+                }
+
                 val buffer = imageProxy.planes[0].buffer
                 val intArray = buffer.toByteArray().map { it.toInt() }.toIntArray()
 
@@ -304,6 +316,7 @@ internal class QRScannerView(
                 }
 
                 val result: com.google.zxing.Result = multiFormatReader.decode(bitmapToProcess)
+                analysisPaused = true // pause
                 Log.d(TAG, "Analysis result: ${result.text}")
                 listener.invoke(Result.success(result.text))
             } catch (_: NotFoundException) {

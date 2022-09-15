@@ -43,6 +43,9 @@ class _QrScannerViewState extends State<QrScannerView> {
       _credentialData = null;
       _scannedString = null;
       _status = ScanStatus.scanning;
+
+      _zxingViewKey.currentState?.resumeScanning();
+
     });
   }
 
