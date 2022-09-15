@@ -263,10 +263,12 @@ internal class QRScannerView(
     }
 
     private class BarcodeAnalyzer(
-        private val marginPct: Double?,
-        private val listener: BarcodeAnalyzerListener
-    ) :
-        ImageAnalysis.Analyzer {
+        private val marginPct: Double?, private val listener: BarcodeAnalyzerListener
+    ) : ImageAnalysis.Analyzer {
+
+        val multiFormatReader = MultiFormatReader().also {
+            it.setHints(mapOf(DecodeHintType.POSSIBLE_FORMATS to listOf(BarcodeFormat.QR_CODE)))
+        }
 
         private fun ByteBuffer.toByteArray(): ByteArray {
             rewind()
@@ -301,9 +303,8 @@ internal class QRScannerView(
                     fullSize
                 }
 
-                val reader = MultiFormatReader()
-                val result: com.google.zxing.Result = reader.decode(bitmapToProcess)
-                Log.d(TAG, "Result text: ${result.text}")
+                val result: com.google.zxing.Result = multiFormatReader.decode(bitmapToProcess)
+                Log.d(TAG, "Analysis result: ${result.text}")
                 listener.invoke(Result.success(result.text))
             } catch (_: NotFoundException) {
                 // ignored: no code was found
