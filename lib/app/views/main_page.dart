@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
+import '../../oath/models.dart';
 import 'message_page.dart';
 import 'device_error_screen.dart';
 import '../models.dart';
@@ -48,16 +49,26 @@ class MainPage extends ConsumerWidget {
           actionButtonBuilder: (keyActions) => IconButton(
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: 'Add account',
-            onPressed: () {
-              showBlurDialog(
+            onPressed: () async {
+              CredentialData? otpauth;
+              final scanner = ref.read(qrScannerProvider);
+              if (scanner != null) {
+                final url = await scanner.scanQr();
+                if (url != null) {
+                  otpauth = CredentialData.fromUri(Uri.parse(url));
+                }
+              }
+              await showBlurDialog(
                 context: context,
                 routeSettings: const RouteSettings(name: 'oath_add_account'),
-                builder: (context) => OathAddAccountPage(
-                  null,
-                  null,
-                  openQrScanner: Platform.isAndroid,
-                  credentials: null,
-                ),
+                builder: (context) {
+                  return OathAddAccountPage(
+                    null,
+                    null,
+                    credentials: null,
+                    credentialData: otpauth,
+                  );
+                },
               );
             },
           ),

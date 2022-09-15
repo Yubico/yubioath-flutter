@@ -51,7 +51,7 @@ class QRScannerUI extends StatelessWidget {
             ),
             OutlinedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop('');
                 },
                 key: keys.manualEntryButton,
                 child: const Text('Enter manually',

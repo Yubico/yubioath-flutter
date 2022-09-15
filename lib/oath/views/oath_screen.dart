@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
+import '../../app/state.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
@@ -204,14 +205,24 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         leading: const Icon(Icons.person_add_alt_1),
         trailing: capacity != null ? '$used/$capacity' : null,
         action: capacity == null || capacity > used
-            ? () {
-                showBlurDialog(
+            ? () async {
+                CredentialData? otpauth;
+                if (Platform.isAndroid) {
+                  final scanner = ref.read(qrScannerProvider);
+                  if (scanner != null) {
+                    final url = await scanner.scanQr();
+                    if (url != null) {
+                      otpauth = CredentialData.fromUri(Uri.parse(url));
+                    }
+                  }
+                }
+                await showBlurDialog(
                   context: context,
                   builder: (context) => OathAddAccountPage(
                     widget.devicePath,
                     widget.oathState,
                     credentials: credentials,
-                    openQrScanner: Platform.isAndroid,
+                    credentialData: otpauth,
                   ),
                 );
               }
