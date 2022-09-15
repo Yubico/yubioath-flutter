@@ -34,7 +34,9 @@ class _QrScannerViewState extends State<QrScannerView> {
     _status = ScanStatus.error;
 
     Future.delayed(const Duration(milliseconds: 2000), () {
-      resetError();
+      if (mounted) {
+        resetError();
+      }
     });
   }
 
