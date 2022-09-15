@@ -120,6 +120,7 @@ internal class QRScannerView(
     override fun dispose() {
         cameraProvider?.unbindAll()
         preview = null
+        imageAnalyzer?.clearAnalyzer();
         imageAnalyzer = null
         cameraExecutor.shutdown()
         methodChannel.setMethodCallHandler(null)
