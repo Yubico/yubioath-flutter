@@ -110,7 +110,7 @@ internal class QRScannerView(
     private var cameraProvider: ProcessCameraProvider? = null
     private val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-    private var imageAnalyzer: ImageAnalysis? = null
+    private var imageAnalysis: ImageAnalysis? = null
     private var preview: Preview? = null
 
     override fun getView(): View {
@@ -120,8 +120,8 @@ internal class QRScannerView(
     override fun dispose() {
         cameraProvider?.unbindAll()
         preview = null
-        imageAnalyzer?.clearAnalyzer();
-        imageAnalyzer = null
+        imageAnalysis?.clearAnalyzer();
+        imageAnalysis = null
         cameraExecutor.shutdown()
         methodChannel.setMethodCallHandler(null)
         Log.d(TAG, "View disposed")
@@ -226,7 +226,7 @@ internal class QRScannerView(
 
             cameraProvider?.unbindAll()
 
-            imageAnalyzer = ImageAnalysis.Builder()
+            imageAnalysis = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .setTargetAspectRatio(QR_SCANNER_ASPECT_RATIO)
                 .build()
@@ -250,7 +250,7 @@ internal class QRScannerView(
             val camera = cameraProvider?.bindToLifecycle(
                 context as LifecycleOwner,
                 cameraSelector,
-                preview, imageAnalyzer
+                preview, imageAnalysis
             )
 
             camera?.cameraInfo?.cameraState?.let {
