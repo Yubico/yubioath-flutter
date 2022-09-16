@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <style name="LaunchTheme" parent="LaunchThemeBase">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
     <style name="NormalTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="android:defaultFocusHighlightEnabled">false</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>

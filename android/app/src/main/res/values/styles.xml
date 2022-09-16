@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources  xmlns:tools="http://schemas.android.com/tools">
-    <style name="LaunchTheme" parent="Theme.MaterialComponents.DayNight">
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="LaunchThemeBase" parent="Theme.MaterialComponents.DayNight">
         <item name="colorPrimary">@color/yubico_green</item>
         <item name="colorPrimaryVariant">@color/yubico_green</item>
         <item name="colorPrimaryDark">@color/yubico_green</item>
         <item name="android:windowBackground">@drawable/launch_background</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:navigationBarColor">@color/yubico_green</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
         <item name="android:fitsSystemWindows">false</item>
+    </style>
+
+    <style name="LaunchTheme" parent="LaunchThemeBase">
+        <item name="android:navigationBarColor">@color/yubico_green</item>
     </style>
 
     <style name="NormalTheme" parent="Theme.MaterialComponents.DayNight">
