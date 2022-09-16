@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:qrscanner_zxing/qrscanner_zxing_view.dart';
 
 import '../../oath/models.dart';
@@ -35,7 +34,9 @@ class _QrScannerViewState extends State<QrScannerView> {
     _status = ScanStatus.error;
 
     Future.delayed(const Duration(milliseconds: 2000), () {
-      resetError();
+      if (mounted) {
+        resetError();
+      }
     });
   }
 
@@ -44,6 +45,9 @@ class _QrScannerViewState extends State<QrScannerView> {
       _credentialData = null;
       _scannedString = null;
       _status = ScanStatus.scanning;
+
+      _zxingViewKey.currentState?.resumeScanning();
+
     });
   }
 
@@ -82,14 +86,6 @@ class _QrScannerViewState extends State<QrScannerView> {
   void initState() {
     super.initState();
     _status = ScanStatus.scanning;
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-  }
-
-  @override
-  void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
-        overlays: SystemUiOverlay.values);
-    super.dispose();
   }
 
   @override

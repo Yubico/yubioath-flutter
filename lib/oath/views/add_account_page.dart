@@ -16,6 +16,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../cancellation_exception.dart';
+import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../management/models.dart';
 import '../../widgets/choice_filter_chip.dart';
@@ -39,13 +40,13 @@ class OathAddAccountPage extends ConsumerStatefulWidget {
   final DevicePath? devicePath;
   final OathState? state;
   final List<OathCredential>? credentials;
-  final bool openQrScanner;
+  final CredentialData? credentialData;
   const OathAddAccountPage(
     this.devicePath,
     this.state, {
     super.key,
-    required this.openQrScanner,
     required this.credentials,
+    this.credentialData,
   });
 
   @override
@@ -78,6 +79,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     _secretController.dispose();
     _periodController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final cred = widget.credentialData;
+    if (cred != null) {
+      _loadCredentialData(cred);
+    }
   }
 
   _scanQrCode(QrScanner qrScanner) async {
@@ -142,18 +152,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       _isObscure = true;
       _qrState = _QrScanState.success;
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    final qrScanner = ref.read(qrScannerProvider);
-    if (qrScanner != null && widget.openQrScanner) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scanQrCode(qrScanner);
-      });
-    }
   }
 
   Future<void> _doAddCredential(
@@ -371,7 +369,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     TextField(
                       key: keys.issuerField,
                       controller: _issuerController,
-                      autofocus: !widget.openQrScanner,
+                      autofocus: widget.credentialData == null,
                       enabled: issuerRemaining > 0,
                       maxLength: max(issuerRemaining, 1),
                       inputFormatters: [limitBytesLength(issuerRemaining)],
@@ -464,7 +462,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         if (isValid) submit();
                       },
                     ),
-                    if (qrScanner != null)
+                    if (isDesktop && qrScanner != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: ActionChip(

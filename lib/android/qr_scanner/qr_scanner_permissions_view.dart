@@ -8,12 +8,11 @@ class QRScannerPermissionsUI extends StatelessWidget {
   final Size screenSize;
   final Function onPermissionRequest;
 
-  const QRScannerPermissionsUI({
-    super.key,
-    required this.status,
-    required this.screenSize,
-    required this.onPermissionRequest
-  });
+  const QRScannerPermissionsUI(
+      {super.key,
+      required this.status,
+      required this.screenSize,
+      required this.onPermissionRequest});
 
   @override
   Widget build(BuildContext context) {
@@ -46,21 +45,21 @@ class QRScannerPermissionsUI extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-          Column(
-            children: [
-              const Text(
-                'Have account info?',
-                textScaleFactor: 0.7,
-                style: TextStyle(color: Colors.white),
+              Column(
+                children: [
+                  const Text(
+                    'Have account info?',
+                    textScaleFactor: 0.7,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  OutlinedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop('');
+                      },
+                      child: const Text('Enter manually',
+                          style: TextStyle(color: Colors.white))),
+                ],
               ),
-              OutlinedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Enter manually',
-                      style: TextStyle(color: Colors.white))),
-            ],
-          ),
               Column(
                 children: [
                   const Text(
@@ -76,7 +75,7 @@ class QRScannerPermissionsUI extends StatelessWidget {
                           style: TextStyle(color: Colors.white))),
                 ],
               )
-        ]),
+            ]),
       ),
     ]);
   }
