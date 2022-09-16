@@ -120,17 +120,14 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
   @override
   Widget build(BuildContext context) {
-    final credentials = ref.watch(credentialsProvider);
+    final credentials = ref.watch(credentialListProvider(widget.devicePath));
     if (credentials?.isEmpty == true) {
       return MessagePage(
         title: Text(AppLocalizations.of(context)!.oath_authenticator),
         key: keys.noAccountsView,
         graphic: noAccounts,
         header: AppLocalizations.of(context)!.oath_no_accounts,
-        keyActions: _buildActions(
-          context,
-          credentials: null,
-        ),
+        keyActions: _buildActions(context, credentials: null),
       );
     }
     return Actions(
@@ -183,9 +180,12 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         ),
         keyActions: _buildActions(
           context,
-          credentials: credentials,
+          credentials: credentials?.map((e) => e.credential).toList(),
         ),
-        child: AccountList(widget.devicePath, widget.oathState),
+        centered: credentials == null,
+        child: credentials != null
+            ? AccountList(credentials)
+            : const CircularProgressIndicator(),
       ),
     );
   }
