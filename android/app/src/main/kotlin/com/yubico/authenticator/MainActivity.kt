@@ -9,6 +9,7 @@ import android.nfc.Tag
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.viewModels
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.logging.Log
@@ -46,6 +47,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         allowScreenshots(false)
 
