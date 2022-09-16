@@ -54,6 +54,11 @@ class QRScannerZxingViewState extends State<QRScannerZxingView> {
     channel.invokeMethod("requestCameraPermissions", null);
   }
 
+  void resumeScanning() async {
+    debugPrint("Resuming QR code scanning");
+    await channel.invokeMethod("resumeScanning", null);
+  }
+
   @override
   void dispose() {
     super.dispose();

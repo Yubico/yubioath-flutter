@@ -16,6 +16,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../cancellation_exception.dart';
+import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../management/models.dart';
 import '../../widgets/choice_filter_chip.dart';
@@ -39,13 +40,13 @@ class OathAddAccountPage extends ConsumerStatefulWidget {
   final DevicePath? devicePath;
   final OathState? state;
   final List<OathCredential>? credentials;
-  final bool openQrScanner;
+  final CredentialData? credentialData;
   const OathAddAccountPage(
     this.devicePath,
     this.state, {
     super.key,
-    required this.openQrScanner,
     required this.credentials,
+    this.credentialData,
   });
 
   @override
@@ -69,6 +70,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   bool _isObscure = true;
   List<int> _periodValues = [20, 30, 45, 60];
   List<int> _digitsValues = [6, 8];
+  List<OathCredential>? _credentials;
 
   @override
   void dispose() {
@@ -77,6 +79,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     _secretController.dispose();
     _periodController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final cred = widget.credentialData;
+    if (cred != null) {
+      _loadCredentialData(cred);
+    }
   }
 
   _scanQrCode(QrScanner qrScanner) async {
@@ -143,18 +154,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-
-    final qrScanner = ref.read(qrScannerProvider);
-    if (qrScanner != null && widget.openQrScanner) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scanQrCode(qrScanner);
-      });
-    }
-  }
-
   Future<void> _doAddCredential(
       {DevicePath? devicePath, required Uri credUri}) async {
     try {
@@ -205,8 +204,13 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       oathState = ref
           .watch(oathStateProvider(deviceNode.path))
           .maybeWhen(data: (data) => data, orElse: () => null);
+      _credentials = ref
+          .watch(credentialListProvider(deviceNode.path))
+          ?.map((e) => e.credential)
+          .toList();
     } else {
       oathState = widget.state;
+      _credentials = widget.credentials;
     }
 
     final otpauthUri = _otpauthUri;
@@ -254,7 +258,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     final secretLengthValid = secret.length * 5 % 8 < 5;
 
     // is this credentials name/issuer pair different from all other?
-    final isUnique = widget.credentials
+    final isUnique = _credentials
             ?.where((element) =>
                 element.name == _accountController.text.trim() &&
                 (element.issuer ?? '') == _issuerController.text.trim())
@@ -365,7 +369,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     TextField(
                       key: keys.issuerField,
                       controller: _issuerController,
-                      autofocus: !widget.openQrScanner,
+                      autofocus: widget.credentialData == null,
                       enabled: issuerRemaining > 0,
                       maxLength: max(issuerRemaining, 1),
                       inputFormatters: [limitBytesLength(issuerRemaining)],
@@ -458,7 +462,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         if (isValid) submit();
                       },
                     ),
-                    if (qrScanner != null)
+                    if (isDesktop && qrScanner != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: ActionChip(
