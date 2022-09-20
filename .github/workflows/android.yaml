@@ -78,7 +78,7 @@ jobs:
           zip -r sym-armeabi-v7a.zip armeabi-v7a/*so
           zip -r sym-x86_64.zip x86_64/*so
           popd
-          mv "${NATIVE_LIBS}/*zip" artifacts/
+          mv "${NATIVE_LIBS}/"*zip artifacts/
         working-directory: ./app
 
       - uses: actions/upload-artifact@v2
