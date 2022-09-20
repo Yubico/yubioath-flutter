@@ -25,12 +25,6 @@ jobs:
         with:
           path: 'app'
 
-      - name: Check app versions
-        run: |
-          python set-version.py
-          git diff --exit-code
-        working-directory: ./app
-
       - name: Run flutter tests
         run: |
           flutter test
