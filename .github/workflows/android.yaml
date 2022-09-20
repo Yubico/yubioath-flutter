@@ -68,6 +68,12 @@ jobs:
           mv build/app/outputs/flutter-apk/app-x86_64-release.apk      artifacts/yubico-authenticator-x86_64-${REF}.apk
           mv build/app/outputs/flutter-apk/app-release.apk             artifacts/yubico-authenticator-${REF}.apk
           mv build/app/outputs/mapping/release/mapping.txt artifacts/
+          pushd build/app/intermediates/merged_native_libs/release/out/lib/
+          zip -r sym-arm64-v8a.zip arm64-v8a/*so
+          zip -r sym-armeabi-v7a.zip armeabi-v7a/*so
+          zip -r sym-x86_64.zip x86_64/*so
+          popd
+          mv build/app/intermediates/merged_native_libs/release/out/lib/*zip artifacts/
         working-directory: ./app
 
       - uses: actions/upload-artifact@v2
