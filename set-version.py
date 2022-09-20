@@ -85,8 +85,8 @@ short_version = re.search("(\d+\.\d+\.\d+)", version).group()
 # pubspec.yaml
 def update_pubspec(buf):
     return sub1(
-        r'version:\s+\d+\.\d+\.\d+\+\d+',
-        f'version: {short_version}+{build}',
+        r'version:\s+\d+\.\d+\.\d+.*\+\d+',
+        f'version: {version}+{build}',
         buf,
     )
 
