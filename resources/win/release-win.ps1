@@ -1,4 +1,4 @@
-$version=6.0.0-beta.2
+$version=6.0.0-dev.1
 
 echo "Renaming the Actions folder and moving it"
 mv yubioath-desktop-* release
