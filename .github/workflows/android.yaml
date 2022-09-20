@@ -67,6 +67,7 @@ jobs:
           mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/yubico-authenticator-armeabi-v7a-${REF}.apk
           mv build/app/outputs/flutter-apk/app-x86_64-release.apk      artifacts/yubico-authenticator-x86_64-${REF}.apk
           mv build/app/outputs/flutter-apk/app-release.apk             artifacts/yubico-authenticator-${REF}.apk
+          mv build/app/outputs/mapping/release/mapping.txt artifacts/
         working-directory: ./app
 
       - uses: actions/upload-artifact@v2
