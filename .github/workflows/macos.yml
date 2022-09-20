@@ -15,6 +15,11 @@ jobs:
       with:
         python-version: '3.9'
 
+    - name: Check app versions
+      run: |
+        python set-version.py
+        git diff --exit-code
+
     - name: Install dependencies
       run: |
         brew update
