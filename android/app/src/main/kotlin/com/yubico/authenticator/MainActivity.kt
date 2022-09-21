@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.viewModels
@@ -130,7 +131,7 @@ class MainActivity : FlutterFragmentActivity() {
 
         // Handle existing tag when launched from NDEF
         val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
-        if(tag != null) {
+        if (tag != null) {
             intent.removeExtra(NfcAdapter.EXTRA_TAG)
 
             val executor = Executors.newSingleThreadExecutor()
@@ -190,8 +191,15 @@ class MainActivity : FlutterFragmentActivity() {
 
         viewModel.appContext.observe(this) {
             contextManager?.dispose()
-            contextManager = when(it) {
-                OperationContext.Oath -> OathManager(this, messenger, viewModel, oathViewModel, dialogManager, appPreferences)
+            contextManager = when (it) {
+                OperationContext.Oath -> OathManager(
+                    this,
+                    messenger,
+                    viewModel,
+                    oathViewModel,
+                    dialogManager,
+                    appPreferences
+                )
                 else -> null
             }
             viewModel.connectedYubiKey.value?.let(::processYubiKey)
@@ -234,6 +242,21 @@ class MainActivity : FlutterFragmentActivity() {
                             methodCall.arguments as Boolean,
                         )
                     )
+                    "getAndroidSdkVersion" -> result.success(
+                        Build.VERSION.SDK_INT
+                    )
+                    "setPrimaryClip" -> {
+                        val toClipboard = methodCall.argument<String>("toClipboard")
+                        val isSensitive = methodCall.argument<Boolean>("isSensitive")
+                        if (toClipboard != null && isSensitive != null) {
+                            ClipboardUtil.setPrimaryClip(
+                                this@MainActivity,
+                                toClipboard,
+                                isSensitive
+                            )
+                        }
+                        result.success(true)
+                    }
                     else -> Log.w(TAG, "Unknown app method: ${methodCall.method}")
                 }
             }

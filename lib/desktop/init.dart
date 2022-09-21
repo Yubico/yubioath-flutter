@@ -118,6 +118,7 @@ Future<Widget> initialize(List<String> argv) async {
       fidoStateProvider.overrideWithProvider(desktopFidoState),
       fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
       credentialProvider.overrideWithProvider(desktopCredentialProvider),
+      clipboardProvider.overrideWithProvider(desktopClipboardProvider)
     ],
     child: YubicoAuthenticatorApp(
       page: Consumer(

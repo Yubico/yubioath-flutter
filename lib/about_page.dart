@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -168,7 +167,7 @@ class AboutPage extends ConsumerWidget {
                     'dart': Platform.version,
                   });
                   final text = const JsonEncoder.withIndent('  ').convert(data);
-                  await Clipboard.setData(ClipboardData(text: text));
+                  await ref.read(clipboardProvider).setText(text);
                   await ref.read(withContextProvider)(
                     (context) async {
                       showMessage(
@@ -236,13 +235,17 @@ class LoggingPanel extends ConsumerWidget {
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');
             final logs = await ref.read(logLevelProvider.notifier).getLogs();
-            await Clipboard.setData(ClipboardData(text: logs.join('\n')));
-            await ref.read(withContextProvider)(
-              (context) async {
-                showMessage(
-                    context, AppLocalizations.of(context)!.general_log_copied);
-              },
-            );
+            var clipboard = ref.read(clipboardProvider);
+            await clipboard.setText(logs.join('\n'));
+            if (!clipboard.platformGivesFeedback()) {
+              await ref.read(withContextProvider)(
+                    (context) async {
+                  showMessage(
+                      context,
+                      AppLocalizations.of(context)!.general_log_copied);
+                },
+              );
+            }
           },
         ),
       ],

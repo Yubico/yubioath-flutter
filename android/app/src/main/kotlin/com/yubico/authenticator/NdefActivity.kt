@@ -40,7 +40,7 @@ class NdefActivity : Activity() {
             if (appPreferences.copyOtpOnNfcTap) {
                 try {
                     val otpSlotContent = parseOtpFromIntent()
-                    setPrimaryClip(otpSlotContent.content)
+                    ClipboardUtil.setPrimaryClip(this, otpSlotContent.content, true)
 
                     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
                         showToast(
@@ -93,16 +93,6 @@ class NdefActivity : Activity() {
             }
         }
         throw IllegalArgumentException("Failed to parse OTP from the intent")
-    }
-
-    private fun setPrimaryClip(otp: String) {
-        try {
-            val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboardManager.setPrimaryClip(ClipData.newPlainText(otp, otp))
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to copy otp string to clipboard", e.stackTraceToString())
-            throw UnsupportedOperationException()
-        }
     }
 
     companion object {

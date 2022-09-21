@@ -19,6 +19,7 @@ import '../app/views/main_page.dart';
 import '../core/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
+import 'app_methods.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
@@ -33,6 +34,9 @@ Future<Widget> initialize() async {
   }
 
   _initLicenses();
+
+  //initialize sdkInt value
+  int androidSdkVersion = await getAndroidSdkVersion();
 
   return ProviderScope(
     overrides: [
@@ -51,7 +55,9 @@ Future<Widget> initialize() async {
       managementStateProvider.overrideWithProvider(androidManagementState),
       currentDeviceProvider.overrideWithProvider(androidCurrentDeviceProvider),
       qrScannerProvider.overrideWithProvider(androidQrScannerProvider),
-      windowStateProvider.overrideWithProvider(androidWindowStateProvider)
+      windowStateProvider.overrideWithProvider(androidWindowStateProvider),
+      clipboardProvider.overrideWithProvider(androidClipboardProvider),
+      supportedThemesProvider.overrideWithProvider(androidSupportedThemesProvider)
     ],
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(
@@ -64,6 +70,9 @@ Future<Widget> initialize() async {
 
           /// initializes global handler for dialogs
           ref.read(androidDialogProvider);
+
+          /// set the platform version
+          ref.read(androidSdkVersionProvider).setVersion(androidSdkVersion);
 
           /// if the beta dialog was not shown yet, this will show it
           requestBetaDialog(ref);
