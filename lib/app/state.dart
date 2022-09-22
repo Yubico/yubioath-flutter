@@ -26,17 +26,15 @@ final supportedThemesProvider =
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
   (ref) => ThemeModeNotifier(
       ref.watch(prefProvider),
-
-      /// theme on index 0 is the default
-      ref.read(supportedThemesProvider)[0]),
+      ref.read(supportedThemesProvider)),
 );
 
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   static const String _key = 'APP_STATE_THEME';
   final SharedPreferences _prefs;
 
-  ThemeModeNotifier(this._prefs, ThemeMode defaultTheme)
-      : super(_fromName(_prefs.getString(_key), defaultTheme));
+  ThemeModeNotifier(this._prefs, List<ThemeMode> supportedThemes)
+      : super(_fromName(_prefs.getString(_key), supportedThemes));
 
   void setThemeMode(ThemeMode mode) {
     _log.debug('Set theme to $mode');
@@ -44,16 +42,9 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
     _prefs.setString(_key, mode.name);
   }
 
-  static ThemeMode _fromName(String? name, ThemeMode defaultTheme) {
-    switch (name) {
-      case 'light':
-        return ThemeMode.light;
-      case 'dark':
-        return ThemeMode.dark;
-      default:
-        return defaultTheme;
-    }
-  }
+  static ThemeMode _fromName(String? name, List<ThemeMode> supportedThemes) =>
+      supportedThemes.firstWhere((element) => element.name == name,
+          orElse: () => supportedThemes.first);
 }
 
 // Override with platform implementation
