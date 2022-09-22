@@ -37,7 +37,7 @@ class _AndroidClipboard extends AppClipboard {
 
   @override
   bool platformGivesFeedback() {
-    return _ref.read(androidSdkVersionProvider).getVersion() >= 33;
+    return _ref.read(androidSdkVersionProvider) >= 33;
   }
 
   @override
@@ -46,24 +46,10 @@ class _AndroidClipboard extends AppClipboard {
   }
 }
 
-final androidSdkVersionProvider = StateProvider<_AndroidSdkVersion>(
-  (ref) => _AndroidSdkVersion(),
-);
-
-class _AndroidSdkVersion {
-  int _sdkVersion = -1;
-
-  int getVersion() {
-    return _sdkVersion;
-  }
-
-  void setVersion(int value) {
-    _sdkVersion = value;
-  }
-}
+final androidSdkVersionProvider = Provider<int>((ref) => -1);
 
 final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
-  if (ref.read(androidSdkVersionProvider).getVersion() < 29) {
+  if (ref.read(androidSdkVersionProvider) < 29) {
     /// the user can select from light or dark theme of the app
     return [ThemeMode.light, ThemeMode.dark];
   } else {

@@ -34,9 +34,6 @@ Future<Widget> initialize() async {
 
   _initLicenses();
 
-  //initialize sdkInt value
-  int androidSdkVersion = await getAndroidSdkVersion();
-
   return ProviderScope(
     overrides: [
       supportedAppsProvider.overrideWithValue([
@@ -56,6 +53,7 @@ Future<Widget> initialize() async {
       qrScannerProvider.overrideWithProvider(androidQrScannerProvider),
       windowStateProvider.overrideWithProvider(androidWindowStateProvider),
       clipboardProvider.overrideWithProvider(androidClipboardProvider),
+      androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
       supportedThemesProvider.overrideWithProvider(androidSupportedThemesProvider)
     ],
     child: DismissKeyboard(
@@ -69,9 +67,6 @@ Future<Widget> initialize() async {
 
           /// initializes global handler for dialogs
           ref.read(androidDialogProvider);
-
-          /// set the platform version
-          ref.read(androidSdkVersionProvider).setVersion(androidSdkVersion);
 
           return const MainPage();
         },
