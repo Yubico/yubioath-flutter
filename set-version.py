@@ -66,7 +66,7 @@ def update_lib(buf):
 args = sys.argv[1:]
 if not args:
     version, build = read_lib_version()
-    print(f"Using version: {version}, build: {build}...")
+    print(f"{version}\n{build}")
 elif len(args) == 2:
     version = args[0]
     if not re.fullmatch(version_pattern, version):
@@ -85,8 +85,8 @@ short_version = re.search("(\d+\.\d+\.\d+)", version).group()
 # pubspec.yaml
 def update_pubspec(buf):
     return sub1(
-        r'version:\s+\d+\.\d+\.\d+\+\d+',
-        f'version: {short_version}+{build}',
+        r'version:\s+\d+\.\d+\.\d+.*\+\d+',
+        f'version: {version}+{build}',
         buf,
     )
 
