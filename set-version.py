@@ -66,7 +66,7 @@ def update_lib(buf):
 args = sys.argv[1:]
 if not args:
     version, build = read_lib_version()
-    print(f"Using version: {version}, build: {build}...")
+    print(f"{version}\n{build}")
 elif len(args) == 2:
     version = args[0]
     if not re.fullmatch(version_pattern, version):
