@@ -44,7 +44,9 @@ jobs:
       run: ./build-helper.sh
 
     - name: Build the app
-      run: flutter build macos
+      run: |
+        export VERSION_NAME=`./set-version.py | head -n 1 | sed 's/-.*$//g'`
+        flutter build macos --build-name=$VERSION_NAME
 
     - name: Check generated files
       run: git diff --exit-code

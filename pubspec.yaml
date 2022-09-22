@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # This field is updated by running ./set-version.py <version>
 # DO NOT MANUALLY EDIT THIS!
-version: 6.0.0+59901
+version: 6.0.0-dev.1+59902
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
@@ -48,7 +48,7 @@ dependencies:
   flutter_riverpod: ^1.0.0
   json_annotation: ^4.6.0
   freezed_annotation: ^2.0.3
-  window_manager: ^0.2.0
+  window_manager: ^0.2.7
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
   desktop_drop: ^0.3.3
@@ -67,9 +67,9 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.1
 
-  build_runner: ^2.2.0
+  build_runner: ^2.2.1
   freezed: ^2.1.0+1
-  json_serializable: ^6.3.1
+  json_serializable: ^6.3.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

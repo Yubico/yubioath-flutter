@@ -29,6 +29,8 @@ apply plugin: 'kotlinx-serialization'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
+import com.android.build.OutputFile
+
 android {
 
     compileSdkVersion project.compileSdkVersion
@@ -64,6 +66,14 @@ android {
     }
     lint {
         abortOnError false
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def abiCodes = ['armeabi-v7a': 1, 'arm64-v8a': 2, x86: 3, x86_64: 4]
+            def abiCode = abiCodes.get(output.getFilter(OutputFile.ABI))
+            output.versionCodeOverride = variant.versionCode * 10 + (abiCode != null ? abiCode : 0)
+        }
     }
 
 }
