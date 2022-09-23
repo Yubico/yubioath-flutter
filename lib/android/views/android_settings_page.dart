@@ -152,6 +152,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
             ListTile(
               title: const Text('App theme'),
               subtitle: Text(themeMode.displayName),
+              key: keys.themeModeSetting,
               onTap: () async {
                 final newMode = await _selectAppearance(
                     ref.read(supportedThemesProvider), context, themeMode);
@@ -223,6 +224,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                   .map((e) => RadioListTile(
                         title: Text(e.displayName),
                         value: e,
+                        key: Key('android.keys.theme_mode_${e.name}'),
                         groupValue: themeMode,
                         toggleable: true,
                         onChanged: (mode) {

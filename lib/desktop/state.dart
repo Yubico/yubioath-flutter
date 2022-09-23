@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -129,6 +130,10 @@ class _DesktopClipboard extends AppClipboard {
     await Clipboard.setData(ClipboardData(text: toClipboard));
   }
 }
+
+final desktopSupportedThemesProvider = StateProvider<List<ThemeMode>>(
+  (ref) => ThemeMode.values,
+);
 
 final desktopCurrentDeviceProvider =
     StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {

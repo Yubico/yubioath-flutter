@@ -20,8 +20,9 @@ final windowStateProvider = Provider<WindowState>(
   (ref) => WindowState(focused: true, visible: true, active: true),
 );
 
-final supportedThemesProvider =
-    StateProvider<List<ThemeMode>>((ref) => ThemeMode.values);
+final supportedThemesProvider = StateProvider<List<ThemeMode>>(
+  (ref) => throw UnimplementedError(),
+);
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
   (ref) => ThemeModeNotifier(
