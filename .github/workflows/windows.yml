@@ -29,7 +29,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.0.5'
+          flutter-version: '3.3.2'
       - run: flutter config --enable-windows-desktop
       - run: flutter --version
 
@@ -42,7 +42,9 @@ jobs:
         run: .\build-helper.bat
 
       - name: Build the app
-        run: flutter build windows
+        run: |
+          $version = python set-version.py | select-object -first 1
+          flutter build windows --build-name=$version
 
       - name: Check generated files
         run: git diff -I '.*android.*flutter_plugins.*qrscanner_zxing' --exit-code
