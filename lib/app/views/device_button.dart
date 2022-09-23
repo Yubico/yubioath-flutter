@@ -36,12 +36,7 @@ class DeviceButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
       tooltip: 'More actions',
-      // TODO: Remove OverflowBox on Flutter 3.3
-      icon: OverflowBox(
-        maxHeight: 44,
-        maxWidth: 44,
-        child: _CircledDeviceAvatar(radius),
-      ),
+      icon: _CircledDeviceAvatar(radius),
       onPressed: () {
         final withContext = ref.read(withContextProvider);
 
