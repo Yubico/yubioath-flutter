@@ -40,7 +40,7 @@ class OathManager(
 ) : AppContextManager {
     companion object {
         const val TAG = "OathManager"
-        const val NFC_DATA_CLEANUP_DELAY = 30L * 1000; // 30s
+        const val NFC_DATA_CLEANUP_DELAY = 30L * 1000 // 30s
     }
 
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
