@@ -51,15 +51,11 @@ Future<Widget> initialize(List<String> argv) async {
 
   unawaited(windowManager.waitUntilReadyToShow().then((_) async {
     await windowManager.setMinimumSize(const Size(270, 0));
-    // Linux doesn't currently support hiding the window at start currently.
-    // For now, size on Linux is in linux/flutter/my_application.cc to avoid window flicker at startup.
-    if (!Platform.isLinux) {
-      final width = prefs.getDouble(_keyWidth) ?? 400;
-      final height = prefs.getDouble(_keyHeight) ?? 720;
-      await windowManager.setSize(Size(width, height));
-      await windowManager.show();
-      windowManager.addListener(_WindowResizeListener(prefs));
-    }
+    final width = prefs.getDouble(_keyWidth) ?? 400;
+    final height = prefs.getDouble(_keyHeight) ?? 720;
+    await windowManager.setSize(Size(width, height));
+    await windowManager.show();
+    windowManager.addListener(_WindowResizeListener(prefs));
   }));
 
   // Either use the _HELPER_PATH environment variable, or look relative to executable.
