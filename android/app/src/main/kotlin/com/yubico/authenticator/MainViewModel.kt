@@ -15,9 +15,6 @@ enum class OperationContext(val value: Int) {
 }
 
 class MainViewModel : ViewModel() {
-    private val _handleYubiKey = MutableLiveData(true)
-    val handleYubiKey: LiveData<Boolean> = _handleYubiKey
-
     private var _appContext = MutableLiveData(OperationContext.Oath)
     val appContext: LiveData<OperationContext> = _appContext
     fun setAppContext(appContext: OperationContext) {
@@ -29,9 +26,12 @@ class MainViewModel : ViewModel() {
 
     private val _connectedYubiKey = MutableLiveData<UsbYubiKeyDevice?>()
     val connectedYubiKey: LiveData<UsbYubiKeyDevice?> = _connectedYubiKey
-    fun setConnectedYubiKey(device: UsbYubiKeyDevice) {
+    fun setConnectedYubiKey(device: UsbYubiKeyDevice, onDisconnect: () -> Unit ) {
         _connectedYubiKey.postValue(device)
-        device.setOnClosed { _connectedYubiKey.postValue(null) }
+        device.setOnClosed {
+            _connectedYubiKey.postValue(null)
+            onDisconnect()
+        }
     }
 
     private val _deviceInfo = MutableLiveData<Info?>()

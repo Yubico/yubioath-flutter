@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.hardware.usb.UsbManager
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Bundle
@@ -29,8 +30,6 @@ import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.launch
 import java.io.Closeable
 import java.util.concurrent.Executors
-import kotlin.properties.Delegates
-
 
 class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -38,7 +37,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     private val nfcConfiguration = NfcConfiguration()
 
-    private var hasNfc by Delegates.notNull<Boolean>()
+    private var hasNfc: Boolean = false
 
     private lateinit var yubikit: YubiKitManager
 
@@ -53,7 +52,6 @@ class MainActivity : FlutterFragmentActivity() {
 
         yubikit = YubiKitManager(this)
 
-        setupYubiKeyDiscovery()
         setupYubiKitLogger()
     }
 
@@ -62,30 +60,13 @@ class MainActivity : FlutterFragmentActivity() {
         setIntent(intent)
     }
 
-    private fun setupYubiKeyDiscovery() {
-        viewModel.handleYubiKey.observe(this) {
-            if (it) {
-                Log.d(TAG, "Starting usb discovery")
-                yubikit.startUsbDiscovery(UsbConfiguration()) { device ->
-                    viewModel.setConnectedYubiKey(device)
-                    processYubiKey(device)
-                }
-                hasNfc = startNfcDiscovery()
-            } else {
-                stopNfcDiscovery()
-                yubikit.stopUsbDiscovery()
-                Log.d(TAG, "Stopped usb discovery")
-            }
-        }
-    }
-
-    fun startNfcDiscovery(): Boolean =
+    private fun startNfcDiscovery() =
         try {
             Log.d(TAG, "Starting nfc discovery")
             yubikit.startNfcDiscovery(nfcConfiguration, this, ::processYubiKey)
-            true
+            hasNfc = true
         } catch (e: NfcNotAvailable) {
-            false
+            hasNfc = false
         }
 
     private fun stopNfcDiscovery() {
@@ -93,6 +74,23 @@ class MainActivity : FlutterFragmentActivity() {
             yubikit.stopNfcDiscovery(this)
             Log.d(TAG, "Stopped nfc discovery")
         }
+    }
+
+    private fun startUsbDiscovery() {
+        Log.d(TAG, "Starting usb discovery")
+        val usbConfiguration = UsbConfiguration().handlePermissions(true)
+        yubikit.startUsbDiscovery(usbConfiguration) { device ->
+            viewModel.setConnectedYubiKey(device) {
+                Log.d(TAG, "YubiKey was disconnected, stopping usb discovery")
+                stopUsbDiscovery()
+            }
+            processYubiKey(device)
+        }
+    }
+
+    private fun stopUsbDiscovery() {
+        yubikit.stopUsbDiscovery()
+        Log.d(TAG, "Stopped usb discovery")
     }
 
     private fun setupYubiKitLogger() {
@@ -130,7 +128,7 @@ class MainActivity : FlutterFragmentActivity() {
 
         // Handle existing tag when launched from NDEF
         val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
-        if(tag != null) {
+        if (tag != null) {
             intent.removeExtra(NfcAdapter.EXTRA_TAG)
 
             val executor = Executors.newSingleThreadExecutor()
@@ -148,6 +146,10 @@ class MainActivity : FlutterFragmentActivity() {
             }
         } else {
             startNfcDiscovery()
+        }
+
+        if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
+            startUsbDiscovery()
         }
     }
 
