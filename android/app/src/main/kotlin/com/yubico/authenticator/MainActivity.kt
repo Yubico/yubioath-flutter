@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.nfc.NfcAdapter
 import android.nfc.Tag
@@ -149,7 +150,13 @@ class MainActivity : FlutterFragmentActivity() {
         }
 
         if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
-            startUsbDiscovery()
+            val device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE) as UsbDevice?
+            if (device != null) {
+                val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+                if (usbManager.hasPermission(device)) {
+                    startUsbDiscovery()
+                }
+            }
         }
     }
 
