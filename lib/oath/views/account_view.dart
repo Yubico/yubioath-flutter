@@ -55,6 +55,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
                 });
               }
             : null,
+        trailing: e.trailing,
       );
     }).toList();
   }
