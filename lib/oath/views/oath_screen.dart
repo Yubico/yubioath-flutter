@@ -120,14 +120,16 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
   @override
   Widget build(BuildContext context) {
-    final credentials = ref.watch(credentialListProvider(widget.devicePath));
-    if (credentials?.isEmpty == true) {
+    // ONLY rebuild if the number of credentials changes.
+    final numCreds = ref.watch(credentialListProvider(widget.devicePath)
+        .select((value) => value?.length));
+    if (numCreds == 0) {
       return MessagePage(
         title: Text(AppLocalizations.of(context)!.oath_authenticator),
         key: keys.noAccountsView,
         graphic: noAccounts,
         header: AppLocalizations.of(context)!.oath_no_accounts,
-        keyActions: _buildActions(context, credentials: null),
+        keyActions: _buildActions(context, ref, used: 0),
       );
     }
     return Actions(
@@ -180,21 +182,28 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         ),
         keyActions: _buildActions(
           context,
-          credentials: credentials?.map((e) => e.credential).toList(),
+          ref,
+          used: numCreds ?? 0,
         ),
-        centered: credentials == null,
-        child: credentials != null
-            ? AccountList(credentials)
+        centered: numCreds == null,
+        child: numCreds != null
+            ? Consumer(
+                builder: (context, ref, _) {
+                  return AccountList(
+                    ref.watch(credentialListProvider(widget.devicePath))!,
+                  );
+                },
+              )
             : const CircularProgressIndicator(),
       ),
     );
   }
 
   List<PopupMenuEntry> _buildActions(
-    BuildContext context, {
-    required List<OathCredential>? credentials,
+    BuildContext context,
+    WidgetRef ref, {
+    required int used,
   }) {
-    final used = credentials?.length ?? 0;
     final capacity = widget.oathState.version.isAtLeast(4) ? 32 : null;
     return [
       buildMenuItem(
@@ -221,7 +230,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   builder: (context) => OathAddAccountPage(
                     widget.devicePath,
                     widget.oathState,
-                    credentials: credentials,
+                    credentials: ref.watch(credentialsProvider),
                     credentialData: otpauth,
                   ),
                 );
