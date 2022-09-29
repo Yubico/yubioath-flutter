@@ -1,9 +1,7 @@
 package com.yubico.authenticator
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
+import android.content.pm.PackageManager
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.nfc.NfcAdapter
@@ -54,6 +52,27 @@ class MainActivity : FlutterFragmentActivity() {
         yubikit = YubiKitManager(this)
 
         setupYubiKitLogger()
+    }
+
+    /**
+     * Enables or disables .AliasMainActivity component. This activity alias adds intent-filter
+     * for android.hardware.usb.action.USB_DEVICE_ATTACHED. When enabled, the app will be opened
+     * when a compliant USB device (defined in `res/xml/device_filter.xml`) is attached.
+     *
+     * By default the activity alias is disabled through AndroidManifest.xml.
+     *
+     * @param enable if true, alias activity will be enabled
+     */
+    private fun enableAliasMainActivityComponent(enable: Boolean) {
+        val componentName = ComponentName(packageName, "com.yubico.authenticator.AliasMainActivity")
+        applicationContext.packageManager.setComponentEnabledSetting(
+            componentName,
+            if (enable)
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+            else
+                PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
+            PackageManager.DONT_KILL_APP
+        )
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -121,11 +140,14 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onPause() {
         stopNfcDiscovery()
+        enableAliasMainActivityComponent(false)
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
+
+        enableAliasMainActivityComponent(true)
 
         // Handle existing tag when launched from NDEF
         val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
@@ -149,12 +171,25 @@ class MainActivity : FlutterFragmentActivity() {
             startNfcDiscovery()
         }
 
+        val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
         if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
             val device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE) as UsbDevice?
             if (device != null) {
-                val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+                // start the USB discover only if the user approved the app to use the device
                 if (usbManager.hasPermission(device)) {
                     startUsbDiscovery()
+                }
+            }
+        } else if (viewModel.connectedYubiKey.value == null) {
+            // if any YubiKeys are connected, use them directly
+            val deviceIterator = usbManager.deviceList.values.iterator()
+            while (deviceIterator.hasNext()) {
+                val device = deviceIterator.next()
+                if (device.vendorId == YUBICO_VENDOR_ID) {
+                    // the device might not have a USB permission
+                    // it will be requested during during the UsbDiscovery
+                    startUsbDiscovery()
+                    break
                 }
             }
         }
@@ -199,8 +234,15 @@ class MainActivity : FlutterFragmentActivity() {
 
         viewModel.appContext.observe(this) {
             contextManager?.dispose()
-            contextManager = when(it) {
-                OperationContext.Oath -> OathManager(this, messenger, viewModel, oathViewModel, dialogManager, appPreferences)
+            contextManager = when (it) {
+                OperationContext.Oath -> OathManager(
+                    this,
+                    messenger,
+                    viewModel,
+                    oathViewModel,
+                    dialogManager,
+                    appPreferences
+                )
                 else -> null
             }
             viewModel.connectedYubiKey.value?.let(::processYubiKey)
@@ -214,6 +256,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     companion object {
         const val TAG = "MainActivity"
+        const val YUBICO_VENDOR_ID = 4176
         const val FLAG_SECURE = WindowManager.LayoutParams.FLAG_SECURE
     }
 
