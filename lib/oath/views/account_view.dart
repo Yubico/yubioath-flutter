@@ -80,8 +80,8 @@ class AccountView extends ConsumerWidget with AccountMixin {
                     ref,
                   )
                 : getCode(ref);
-            await withContext(
-                (context) async => copyToClipboard(context, code));
+            await withContext((context) async =>
+                copyToClipboard(ref.watch(clipboardProvider), context, code));
           },
         );
       } on CancellationException catch (_) {

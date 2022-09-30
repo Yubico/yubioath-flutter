@@ -1,12 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
+import 'app_methods.dart';
 import 'devices.dart';
 
 const _contextChannel = MethodChannel('android.state.appContext');
-const _methodsChannel = MethodChannel('app.methods');
 
 final androidAllowScreenshotsProvider =
     StateNotifierProvider<AllowScreenshotsNotifier, bool>(
@@ -18,12 +19,44 @@ class AllowScreenshotsNotifier extends StateNotifier<bool> {
 
   void setAllowScreenshots(bool value) async {
     final result =
-        await _methodsChannel.invokeMethod('allowScreenshots', value);
+        await appMethodsChannel.invokeMethod('allowScreenshots', value);
     if (mounted) {
       state = result;
     }
   }
 }
+
+final androidClipboardProvider = Provider<AppClipboard>(
+  (ref) => _AndroidClipboard(ref),
+);
+
+class _AndroidClipboard extends AppClipboard {
+  final ProviderRef<AppClipboard> _ref;
+
+  const _AndroidClipboard(this._ref);
+
+  @override
+  bool platformGivesFeedback() {
+    return _ref.read(androidSdkVersionProvider) >= 33;
+  }
+
+  @override
+  Future<void> setText(String toClipboard, {bool isSensitive = false}) async {
+    await setPrimaryClip(toClipboard, isSensitive);
+  }
+}
+
+final androidSdkVersionProvider = Provider<int>((ref) => -1);
+
+final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
+  if (ref.read(androidSdkVersionProvider) < 29) {
+    /// the user can select from light or dark theme of the app
+    return [ThemeMode.light, ThemeMode.dark];
+  } else {
+    /// the user can also select system theme on newer Android versions
+    return ThemeMode.values;
+  }
+});
 
 final androidSubPageProvider =
     StateNotifierProvider<CurrentAppNotifier, Application>((ref) {

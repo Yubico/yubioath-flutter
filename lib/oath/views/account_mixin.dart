@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -68,11 +67,14 @@ mixin AccountMixin {
   }
 
   @protected
-  void copyToClipboard(BuildContext context, OathCode? code) {
+  void copyToClipboard(
+      AppClipboard clipboard, BuildContext context, OathCode? code) {
     if (code != null) {
-      Clipboard.setData(ClipboardData(text: code.value));
-      showMessage(
-          context, AppLocalizations.of(context)!.oath_copied_to_clipboard);
+      clipboard.setText(code.value, isSensitive: true);
+      if (!clipboard.platformGivesFeedback()) {
+        showMessage(
+            context, AppLocalizations.of(context)!.oath_copied_to_clipboard);
+      }
     }
   }
 
@@ -117,11 +119,14 @@ mixin AccountMixin {
                   action: code == null || expired
                       ? null
                       : (context) {
-                          Clipboard.setData(ClipboardData(text: code.value));
-                          showMessage(
-                              context,
-                              AppLocalizations.of(context)!
-                                  .oath_copied_to_clipboard);
+                          var clipboard = ref.read(clipboardProvider);
+                          clipboard.setText(code.value, isSensitive: true);
+                          if (!clipboard.platformGivesFeedback()) {
+                            showMessage(
+                                context,
+                                AppLocalizations.of(context)!
+                                    .oath_copied_to_clipboard);
+                          }
                         },
                 ),
                 if (manual)

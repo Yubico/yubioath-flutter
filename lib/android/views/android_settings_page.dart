@@ -152,8 +152,10 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
             ListTile(
               title: const Text('App theme'),
               subtitle: Text(themeMode.displayName),
+              key: keys.themeModeSetting,
               onTap: () async {
-                final newMode = await _selectAppearance(context, themeMode);
+                final newMode = await _selectAppearance(
+                    ref.read(supportedThemesProvider), context, themeMode);
                 ref.read(themeModeProvider.notifier).setThemeMode(newMode);
               },
             ),
@@ -211,17 +213,18 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
           }) ??
       _defaultClipKbdLayout;
 
-  Future<ThemeMode> _selectAppearance(
+  Future<ThemeMode> _selectAppearance(List<ThemeMode> supportedThemes,
           BuildContext context, ThemeMode themeMode) async =>
       await showDialog<ThemeMode>(
           context: context,
           builder: (BuildContext context) {
             return SimpleDialog(
               title: const Text('Choose app theme'),
-              children: ThemeMode.values
+              children: supportedThemes
                   .map((e) => RadioListTile(
                         title: Text(e.displayName),
                         value: e,
+                        key: Key('android.keys.theme_mode_${e.name}'),
                         groupValue: themeMode,
                         toggleable: true,
                         onChanged: (mode) {
@@ -231,5 +234,5 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                   .toList(),
             );
           }) ??
-      ThemeMode.system;
+      themeMode;
 }

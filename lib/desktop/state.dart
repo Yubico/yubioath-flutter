@@ -1,15 +1,17 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:logging/logging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
+import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
-import '../app/models.dart';
 import 'models.dart';
 import 'rpc.dart';
 
@@ -26,6 +28,7 @@ final rpcStateProvider = StateNotifierProvider<_RpcStateNotifier, RpcState>(
 
 class _RpcStateNotifier extends StateNotifier<RpcState> {
   final RpcSession rpc;
+
   _RpcStateNotifier(this.rpc) : super(const RpcState('unknown', false)) {
     _init();
   }
@@ -49,6 +52,7 @@ final desktopWindowStateProvider = Provider<WindowState>(
 class _WindowStateNotifier extends StateNotifier<WindowState>
     with WindowListener {
   Timer? _idleTimer;
+
   _WindowStateNotifier()
       : super(WindowState(focused: true, visible: true, active: true)) {
     _init();
@@ -111,6 +115,26 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
   }
 }
 
+final desktopClipboardProvider = Provider<AppClipboard>(
+  (ref) => _DesktopClipboard(),
+);
+
+class _DesktopClipboard extends AppClipboard {
+  @override
+  bool platformGivesFeedback() {
+    return false;
+  }
+
+  @override
+  Future<void> setText(String toClipboard, {bool isSensitive = false}) async {
+    await Clipboard.setData(ClipboardData(text: toClipboard));
+  }
+}
+
+final desktopSupportedThemesProvider = StateProvider<List<ThemeMode>>(
+  (ref) => ThemeMode.values,
+);
+
 final desktopCurrentDeviceProvider =
     StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {
   final provider = _DesktopCurrentDeviceNotifier(ref.watch(prefProvider));
@@ -121,6 +145,7 @@ final desktopCurrentDeviceProvider =
 class _DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
   static const String _lastDevice = 'APP_STATE_LAST_DEVICE';
   final SharedPreferences _prefs;
+
   _DesktopCurrentDeviceNotifier(this._prefs) : super(null);
 
   _updateAttachedDevices(List<DeviceNode>? previous, List<DeviceNode> devices) {

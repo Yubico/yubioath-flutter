@@ -18,6 +18,7 @@ import '../app/views/main_page.dart';
 import '../core/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
+import 'app_methods.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
@@ -50,7 +51,10 @@ Future<Widget> initialize() async {
       managementStateProvider.overrideWithProvider(androidManagementState),
       currentDeviceProvider.overrideWithProvider(androidCurrentDeviceProvider),
       qrScannerProvider.overrideWithProvider(androidQrScannerProvider),
-      windowStateProvider.overrideWithProvider(androidWindowStateProvider)
+      windowStateProvider.overrideWithProvider(androidWindowStateProvider),
+      clipboardProvider.overrideWithProvider(androidClipboardProvider),
+      androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
+      supportedThemesProvider.overrideWithProvider(androidSupportedThemesProvider)
     ],
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(

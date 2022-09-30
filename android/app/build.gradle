@@ -33,7 +33,7 @@ import com.android.build.OutputFile
 
 android {
 
-    compileSdkVersion 33
+    compileSdkVersion project.compileSdkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

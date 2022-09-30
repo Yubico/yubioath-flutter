@@ -20,13 +20,22 @@ final windowStateProvider = Provider<WindowState>(
   (ref) => WindowState(focused: true, visible: true, active: true),
 );
 
+final supportedThemesProvider = StateProvider<List<ThemeMode>>(
+  (ref) => throw UnimplementedError(),
+);
+
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
-    (ref) => ThemeModeNotifier(ref.watch(prefProvider)));
+  (ref) => ThemeModeNotifier(
+      ref.watch(prefProvider),
+      ref.read(supportedThemesProvider)),
+);
 
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   static const String _key = 'APP_STATE_THEME';
   final SharedPreferences _prefs;
-  ThemeModeNotifier(this._prefs) : super(_fromName(_prefs.getString(_key)));
+
+  ThemeModeNotifier(this._prefs, List<ThemeMode> supportedThemes)
+      : super(_fromName(_prefs.getString(_key), supportedThemes));
 
   void setThemeMode(ThemeMode mode) {
     _log.debug('Set theme to $mode');
@@ -34,16 +43,9 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
     _prefs.setString(_key, mode.name);
   }
 
-  static ThemeMode _fromName(String? name) {
-    switch (name) {
-      case 'light':
-        return ThemeMode.light;
-      case 'dark':
-        return ThemeMode.dark;
-      default:
-        return ThemeMode.system;
-    }
-  }
+  static ThemeMode _fromName(String? name, List<ThemeMode> supportedThemes) =>
+      supportedThemes.firstWhere((element) => element.name == name,
+          orElse: () => supportedThemes.first);
 }
 
 // Override with platform implementation
@@ -71,6 +73,7 @@ final currentDeviceProvider =
 
 abstract class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
   CurrentDeviceNotifier(super.state);
+
   setCurrentDevice(DeviceNode? device);
 }
 
@@ -85,6 +88,7 @@ final currentAppProvider =
 
 class CurrentAppNotifier extends StateNotifier<Application> {
   final List<Application> _supportedApps;
+
   CurrentAppNotifier(this._supportedApps) : super(_supportedApps.first);
 
   void setCurrentApp(Application app) {
@@ -136,6 +140,18 @@ class ContextConsumer extends StateNotifier<Function(BuildContext)?> {
     return completer.future;
   }
 }
+
+abstract class AppClipboard {
+  const AppClipboard();
+
+  Future<void> setText(String toClipboard, {bool isSensitive = false});
+
+  bool platformGivesFeedback();
+}
+
+final clipboardProvider = Provider<AppClipboard>(
+  (ref) => throw UnimplementedError(),
+);
 
 /// A callback which will be invoked with a [BuildContext] that can be used to
 /// open dialogs, show Snackbars, etc.

@@ -14,6 +14,7 @@ import 'account_mixin.dart';
 class AccountDialog extends ConsumerWidget with AccountMixin {
   @override
   final OathCredential credential;
+
   const AccountDialog(this.credential, {super.key});
 
   @override
@@ -119,7 +120,8 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
           }
           await ref.read(withContextProvider)(
             (context) async {
-              copyToClipboard(context, getCode(ref));
+              copyToClipboard(
+                  ref.watch(clipboardProvider), context, getCode(ref));
             },
           );
           return null;
