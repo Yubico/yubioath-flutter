@@ -14,6 +14,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.logging.Log
+import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
 import com.yubico.yubikit.android.YubiKitManager
@@ -150,6 +151,13 @@ class MainActivity : FlutterFragmentActivity() {
 
         enableAliasMainActivityComponent(true)
 
+        // Handle opening through otpauth:// link
+        val intentData = intent.data
+        if (intentData != null && intentData.scheme == "otpauth") {
+            intent.data = null
+            appLinkMethodChannel.handleUri(intentData)
+        }
+
         // Handle existing tag when launched from NDEF
         val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
         if (tag != null) {
@@ -215,6 +223,7 @@ class MainActivity : FlutterFragmentActivity() {
     private lateinit var flutterLog: FlutterLog
     private lateinit var flutterStreams: List<Closeable>
     private lateinit var appMethodChannel: AppMethodChannel
+    private lateinit var appLinkMethodChannel: AppLinkMethodChannel
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -226,6 +235,7 @@ class MainActivity : FlutterFragmentActivity() {
         dialogManager = DialogManager(messenger, this.lifecycleScope)
         appPreferences = AppPreferences(this)
         appMethodChannel = AppMethodChannel(messenger)
+        appLinkMethodChannel = AppLinkMethodChannel(messenger)
 
         flutterStreams = listOf(
             viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),
