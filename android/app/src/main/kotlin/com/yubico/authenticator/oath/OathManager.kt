@@ -15,6 +15,8 @@ import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyType
 import com.yubico.yubikit.core.application.ApplicationNotAvailableException
+import com.yubico.yubikit.core.smartcard.ApduException
+import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.oath.*
@@ -39,7 +41,7 @@ class OathManager(
 ) : AppContextManager {
     companion object {
         const val TAG = "OathManager"
-        const val NFC_DATA_CLEANUP_DELAY = 30L * 1000; // 30s
+        const val NFC_DATA_CLEANUP_DELAY = 30L * 1000 // 30s
     }
 
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
@@ -461,10 +463,19 @@ class OathManager(
     ): Code {
         // Manual calculate, need to pad timer to avoid immediate expiration
         val timestamp = System.currentTimeMillis() + 10000
-        return if (credential.isSteamCredential()) {
-            session.calculateSteamCode(credential, timestamp)
-        } else {
-            session.calculateCode(credential, timestamp)
+        try {
+            return if (credential.isSteamCredential()) {
+                session.calculateSteamCode(credential, timestamp)
+            } else {
+                session.calculateCode(credential, timestamp)
+            }
+        } catch (apduException: ApduException) {
+            if (credential.isTouchRequired && apduException.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
+                // the most probable reason for this exception
+                // is that the user did not touch the key
+                throw CancellationException()
+            }
+            throw  apduException
         }
     }
 
