@@ -71,7 +71,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
     return actions.map((e) {
       final action = e.action;
       final color = colors[e] ?? Pair(theme.secondary, theme.onSecondary);
-      final tooltip = e.trailing != null ? '${e.text} (${e.trailing})' : e.text;
+      final tooltip = e.trailing != null ? '${e.text}\n${e.trailing}' : e.text;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6.0),
         child: CircleAvatar(
