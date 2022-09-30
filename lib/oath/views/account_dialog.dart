@@ -71,6 +71,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
     return actions.map((e) {
       final action = e.action;
       final color = colors[e] ?? Pair(theme.secondary, theme.onSecondary);
+      final tooltip = e.trailing != null ? '${e.text}\n${e.trailing}' : e.text;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6.0),
         child: CircleAvatar(
@@ -85,7 +86,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
             ),
             icon: e.icon,
             iconSize: 22,
-            tooltip: e.text,
+            tooltip: tooltip,
             onPressed: action != null
                 ? () {
                     action(context);
@@ -106,7 +107,6 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
       // This will never be shown, as the dialog will be immediately closed
       return const SizedBox();
     }
-
 
     final code = getCode(ref);
     if (code == null) {

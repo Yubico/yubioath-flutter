@@ -626,6 +626,7 @@ abstract class NfcReaderNode extends DeviceNode {
 mixin _$MenuAction {
   String get text => throw _privateConstructorUsedError;
   Widget get icon => throw _privateConstructorUsedError;
+  String? get trailing => throw _privateConstructorUsedError;
   void Function(BuildContext)? get action => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -638,7 +639,11 @@ abstract class $MenuActionCopyWith<$Res> {
   factory $MenuActionCopyWith(
           MenuAction value, $Res Function(MenuAction) then) =
       _$MenuActionCopyWithImpl<$Res>;
-  $Res call({String text, Widget icon, void Function(BuildContext)? action});
+  $Res call(
+      {String text,
+      Widget icon,
+      String? trailing,
+      void Function(BuildContext)? action});
 }
 
 /// @nodoc
@@ -653,6 +658,7 @@ class _$MenuActionCopyWithImpl<$Res> implements $MenuActionCopyWith<$Res> {
   $Res call({
     Object? text = freezed,
     Object? icon = freezed,
+    Object? trailing = freezed,
     Object? action = freezed,
   }) {
     return _then(_value.copyWith(
@@ -664,6 +670,10 @@ class _$MenuActionCopyWithImpl<$Res> implements $MenuActionCopyWith<$Res> {
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as Widget,
+      trailing: trailing == freezed
+          ? _value.trailing
+          : trailing // ignore: cast_nullable_to_non_nullable
+              as String?,
       action: action == freezed
           ? _value.action
           : action // ignore: cast_nullable_to_non_nullable
@@ -679,7 +689,11 @@ abstract class _$$_MenuActionCopyWith<$Res>
           _$_MenuAction value, $Res Function(_$_MenuAction) then) =
       __$$_MenuActionCopyWithImpl<$Res>;
   @override
-  $Res call({String text, Widget icon, void Function(BuildContext)? action});
+  $Res call(
+      {String text,
+      Widget icon,
+      String? trailing,
+      void Function(BuildContext)? action});
 }
 
 /// @nodoc
@@ -696,6 +710,7 @@ class __$$_MenuActionCopyWithImpl<$Res> extends _$MenuActionCopyWithImpl<$Res>
   $Res call({
     Object? text = freezed,
     Object? icon = freezed,
+    Object? trailing = freezed,
     Object? action = freezed,
   }) {
     return _then(_$_MenuAction(
@@ -707,6 +722,10 @@ class __$$_MenuActionCopyWithImpl<$Res> extends _$MenuActionCopyWithImpl<$Res>
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as Widget,
+      trailing: trailing == freezed
+          ? _value.trailing
+          : trailing // ignore: cast_nullable_to_non_nullable
+              as String?,
       action: action == freezed
           ? _value.action
           : action // ignore: cast_nullable_to_non_nullable
@@ -718,18 +737,21 @@ class __$$_MenuActionCopyWithImpl<$Res> extends _$MenuActionCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_MenuAction implements _MenuAction {
-  _$_MenuAction({required this.text, required this.icon, this.action});
+  _$_MenuAction(
+      {required this.text, required this.icon, this.trailing, this.action});
 
   @override
   final String text;
   @override
   final Widget icon;
   @override
+  final String? trailing;
+  @override
   final void Function(BuildContext)? action;
 
   @override
   String toString() {
-    return 'MenuAction(text: $text, icon: $icon, action: $action)';
+    return 'MenuAction(text: $text, icon: $icon, trailing: $trailing, action: $action)';
   }
 
   @override
@@ -739,6 +761,7 @@ class _$_MenuAction implements _MenuAction {
             other is _$_MenuAction &&
             const DeepCollectionEquality().equals(other.text, text) &&
             const DeepCollectionEquality().equals(other.icon, icon) &&
+            const DeepCollectionEquality().equals(other.trailing, trailing) &&
             (identical(other.action, action) || other.action == action));
   }
 
@@ -747,6 +770,7 @@ class _$_MenuAction implements _MenuAction {
       runtimeType,
       const DeepCollectionEquality().hash(text),
       const DeepCollectionEquality().hash(icon),
+      const DeepCollectionEquality().hash(trailing),
       action);
 
   @JsonKey(ignore: true)
@@ -759,12 +783,15 @@ abstract class _MenuAction implements MenuAction {
   factory _MenuAction(
       {required final String text,
       required final Widget icon,
+      final String? trailing,
       final void Function(BuildContext)? action}) = _$_MenuAction;
 
   @override
   String get text;
   @override
   Widget get icon;
+  @override
+  String? get trailing;
   @override
   void Function(BuildContext)? get action;
   @override

@@ -44,7 +44,6 @@ enum Application {
   }
 
   Availability getAvailability(YubiKeyData data) {
-
     if (this == Application.management) {
       final version = data.info.version;
       final available = (version.major > 4 || // YK5 and up
@@ -105,10 +104,12 @@ class DeviceNode with _$DeviceNode {
 
 @freezed
 class MenuAction with _$MenuAction {
-  factory MenuAction(
-      {required String text,
-      required Widget icon,
-      void Function(BuildContext context)? action}) = _MenuAction;
+  factory MenuAction({
+    required String text,
+    required Widget icon,
+    String? trailing,
+    void Function(BuildContext context)? action,
+  }) = _MenuAction;
 }
 
 @freezed

@@ -113,8 +113,7 @@ mixin AccountMixin {
               final shortcut = Platform.isMacOS ? '\u2318 C' : 'Ctrl+C';
               return [
                 MenuAction(
-                  text:
-                      '${AppLocalizations.of(context)!.oath_copy_to_clipboard} ($shortcut)',
+                  text: AppLocalizations.of(context)!.oath_copy_to_clipboard,
                   icon: const Icon(Icons.copy),
                   action: code == null || expired
                       ? null
@@ -128,6 +127,7 @@ mixin AccountMixin {
                                     .oath_copied_to_clipboard);
                           }
                         },
+                  trailing: shortcut,
                 ),
                 if (manual)
                   MenuAction(
