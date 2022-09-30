@@ -1,9 +1,9 @@
 package com.yubico.authenticator
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
+import android.content.pm.PackageManager
+import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbManager
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Build
@@ -30,8 +30,6 @@ import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.launch
 import java.io.Closeable
 import java.util.concurrent.Executors
-import kotlin.properties.Delegates
-
 
 class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -39,7 +37,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     private val nfcConfiguration = NfcConfiguration()
 
-    private var hasNfc by Delegates.notNull<Boolean>()
+    private var hasNfc: Boolean = false
 
     private lateinit var yubikit: YubiKitManager
 
@@ -54,8 +52,28 @@ class MainActivity : FlutterFragmentActivity() {
 
         yubikit = YubiKitManager(this)
 
-        setupYubiKeyDiscovery()
         setupYubiKitLogger()
+    }
+
+    /**
+     * Enables or disables .AliasMainActivity component. This activity alias adds intent-filter
+     * for android.hardware.usb.action.USB_DEVICE_ATTACHED. When enabled, the app will be opened
+     * when a compliant USB device (defined in `res/xml/device_filter.xml`) is attached.
+     *
+     * By default the activity alias is disabled through AndroidManifest.xml.
+     *
+     * @param enable if true, alias activity will be enabled
+     */
+    private fun enableAliasMainActivityComponent(enable: Boolean) {
+        val componentName = ComponentName(packageName, "com.yubico.authenticator.AliasMainActivity")
+        applicationContext.packageManager.setComponentEnabledSetting(
+            componentName,
+            if (enable)
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+            else
+                PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
+            PackageManager.DONT_KILL_APP
+        )
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -63,30 +81,13 @@ class MainActivity : FlutterFragmentActivity() {
         setIntent(intent)
     }
 
-    private fun setupYubiKeyDiscovery() {
-        viewModel.handleYubiKey.observe(this) {
-            if (it) {
-                Log.d(TAG, "Starting usb discovery")
-                yubikit.startUsbDiscovery(UsbConfiguration()) { device ->
-                    viewModel.setConnectedYubiKey(device)
-                    processYubiKey(device)
-                }
-                hasNfc = startNfcDiscovery()
-            } else {
-                stopNfcDiscovery()
-                yubikit.stopUsbDiscovery()
-                Log.d(TAG, "Stopped usb discovery")
-            }
-        }
-    }
-
-    fun startNfcDiscovery(): Boolean =
+    private fun startNfcDiscovery() =
         try {
             Log.d(TAG, "Starting nfc discovery")
             yubikit.startNfcDiscovery(nfcConfiguration, this, ::processYubiKey)
-            true
+            hasNfc = true
         } catch (e: NfcNotAvailable) {
-            false
+            hasNfc = false
         }
 
     private fun stopNfcDiscovery() {
@@ -94,6 +95,23 @@ class MainActivity : FlutterFragmentActivity() {
             yubikit.stopNfcDiscovery(this)
             Log.d(TAG, "Stopped nfc discovery")
         }
+    }
+
+    private fun startUsbDiscovery() {
+        Log.d(TAG, "Starting usb discovery")
+        val usbConfiguration = UsbConfiguration().handlePermissions(true)
+        yubikit.startUsbDiscovery(usbConfiguration) { device ->
+            viewModel.setConnectedYubiKey(device) {
+                Log.d(TAG, "YubiKey was disconnected, stopping usb discovery")
+                stopUsbDiscovery()
+            }
+            processYubiKey(device)
+        }
+    }
+
+    private fun stopUsbDiscovery() {
+        yubikit.stopUsbDiscovery()
+        Log.d(TAG, "Stopped usb discovery")
     }
 
     private fun setupYubiKitLogger() {
@@ -123,11 +141,14 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onPause() {
         stopNfcDiscovery()
+        enableAliasMainActivityComponent(false)
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
+
+        enableAliasMainActivityComponent(true)
 
         // Handle existing tag when launched from NDEF
         val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
@@ -149,6 +170,29 @@ class MainActivity : FlutterFragmentActivity() {
             }
         } else {
             startNfcDiscovery()
+        }
+
+        val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+        if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
+            val device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE) as UsbDevice?
+            if (device != null) {
+                // start the USB discover only if the user approved the app to use the device
+                if (usbManager.hasPermission(device)) {
+                    startUsbDiscovery()
+                }
+            }
+        } else if (viewModel.connectedYubiKey.value == null) {
+            // if any YubiKeys are connected, use them directly
+            val deviceIterator = usbManager.deviceList.values.iterator()
+            while (deviceIterator.hasNext()) {
+                val device = deviceIterator.next()
+                if (device.vendorId == YUBICO_VENDOR_ID) {
+                    // the device might not have a USB permission
+                    // it will be requested during during the UsbDiscovery
+                    startUsbDiscovery()
+                    break
+                }
+            }
         }
     }
 
@@ -213,6 +257,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     companion object {
         const val TAG = "MainActivity"
+        const val YUBICO_VENDOR_ID = 4176
         const val FLAG_SECURE = WindowManager.LayoutParams.FLAG_SECURE
     }
 

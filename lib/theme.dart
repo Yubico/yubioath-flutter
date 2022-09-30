@@ -24,17 +24,15 @@ class AppTheme {
         //backgroundColor: Colors.white,
         toggleableActiveColor: accentGreen,
         appBarTheme: AppBarTheme(
-          elevation: 0,
-          toolbarHeight: 48,
-          //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.grey.shade800,
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.dark,
-            systemNavigationBarIconBrightness: Brightness.dark
-          )
-        ),
+            elevation: 0,
+            toolbarHeight: 48,
+            //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.grey.shade800,
+            systemOverlayStyle: const SystemUiOverlayStyle(
+                statusBarColor: Colors.transparent,
+                statusBarIconBrightness: Brightness.dark,
+                systemNavigationBarIconBrightness: Brightness.dark)),
         // Mainly used for the OATH dialog view at the moment
         buttonTheme: ButtonThemeData(
           colorScheme: ColorScheme.light(
@@ -48,8 +46,8 @@ class AppTheme {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: primaryBlue,
+          foregroundColor: Colors.white,
+          backgroundColor: primaryBlue,
         )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
@@ -59,11 +57,8 @@ class AppTheme {
           color: Colors.grey.shade300,
         ),
         chipTheme: ChipThemeData(
-          backgroundColor: Colors.transparent, // Remove 3.3
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8)), // Remove 3.3
           selectedColor: const Color(0xffd2dbdf),
-          side: _ChipBorder(color: Colors.grey.shade400),
+          side: _chipBorder(Colors.grey.shade400),
           checkmarkColor: Colors.black,
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -84,9 +79,7 @@ class AppTheme {
           //labelLarge: TextStyle(color: Colors.cyan.shade500),
           //titleSmall: TextStyle(color: Colors.grey.shade600),
           //titleMedium: const TextStyle(),
-          titleMedium: TextStyle(
-              fontWeight: FontWeight.w300,
-              fontSize: 16),
+          titleMedium: TextStyle(fontWeight: FontWeight.w300, fontSize: 16),
           titleLarge: TextStyle(
               //color: Colors.grey.shade500,
               fontWeight: FontWeight.w400,
@@ -114,17 +107,15 @@ class AppTheme {
         ),
         toggleableActiveColor: primaryGreen,
         appBarTheme: AppBarTheme(
-          elevation: 0,
-          toolbarHeight: 48,
-          //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.grey.shade400,
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.light,
-            systemNavigationBarIconBrightness: Brightness.light
-          )
-        ),
+            elevation: 0,
+            toolbarHeight: 48,
+            //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.grey.shade400,
+            systemOverlayStyle: const SystemUiOverlayStyle(
+                statusBarColor: Colors.transparent,
+                statusBarIconBrightness: Brightness.light,
+                systemNavigationBarIconBrightness: Brightness.light)),
         // Mainly used for the OATH dialog view at the moment
         buttonTheme: ButtonThemeData(
           colorScheme: ColorScheme.dark(
@@ -138,8 +129,8 @@ class AppTheme {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-          onPrimary: Colors.black,
-          primary: primaryGreen,
+          foregroundColor: Colors.black,
+          backgroundColor: primaryGreen,
         )),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
@@ -149,11 +140,8 @@ class AppTheme {
           color: Colors.grey.shade800,
         ),
         chipTheme: ChipThemeData(
-          backgroundColor: Colors.transparent, // Remove 3.3
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8)), // Remove 3.3
           selectedColor: Colors.white12,
-          side: const _ChipBorder(color: Colors.white12),
+          side: _chipBorder(Colors.white12),
           labelStyle: TextStyle(
             color: Colors.grey.shade200,
           ),
@@ -197,14 +185,9 @@ class AppTheme {
 }
 
 /// This fixes the issue with FilterChip resizing vertically on toggle.
-class _ChipBorder extends BorderSide implements MaterialStateBorderSide {
-  const _ChipBorder({super.color});
-
-  @override
-  BorderSide? resolve(Set<MaterialState> states) {
-    if (states.contains(MaterialState.selected)) {
-      return const BorderSide(width: 1, color: Colors.transparent);
-    }
-    return BorderSide(width: 1, color: color);
-  }
-}
+BorderSide? _chipBorder(Color color) =>
+    MaterialStateBorderSide.resolveWith((states) => BorderSide(
+        width: 1,
+        color: states.contains(MaterialState.selected)
+            ? Colors.transparent
+            : color));
