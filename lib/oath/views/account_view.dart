@@ -151,18 +151,24 @@ class AccountView extends ConsumerWidget with AccountMixin {
                     softWrap: false,
                   )
                 : null,
-            trailing: DecoratedBox(
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                color: CardTheme.of(context).color,
-                borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-              ),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-                child: DefaultTextStyle.merge(
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  child: buildCodeView(ref),
+            trailing: GestureDetector(
+              onTap: () {
+                // Block opening the dialog.
+              },
+              onDoubleTap: triggerCopy,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: CardTheme.of(context).color,
+                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 2.0),
+                  child: DefaultTextStyle.merge(
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    child: buildCodeView(ref),
+                  ),
                 ),
               ),
             ),
