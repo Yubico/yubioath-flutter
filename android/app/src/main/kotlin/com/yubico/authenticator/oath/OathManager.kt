@@ -16,6 +16,7 @@ import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyType
 import com.yubico.yubikit.core.application.ApplicationNotAvailableException
 import com.yubico.yubikit.core.smartcard.ApduException
+import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.oath.*
@@ -469,7 +470,7 @@ class OathManager(
                 session.calculateCode(credential, timestamp)
             }
         } catch (apduException: ApduException) {
-            if (credential.isTouchRequired && apduException.sw.toInt() == 0x6982) {
+            if (credential.isTouchRequired && apduException.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
                 // the most probable reason for this exception
                 // is that the user did not touch the key
                 throw CancellationException()
