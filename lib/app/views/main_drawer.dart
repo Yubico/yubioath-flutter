@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/management/views/keys.dart';
 
 import '../../about_page.dart';
 import '../../android/views/android_settings_page.dart';
@@ -100,10 +99,7 @@ class MainPageDrawer extends ConsumerWidget {
                   if (shouldPop) Navigator.of(context).pop();
                   showBlurDialog(
                     context: context,
-                    builder: (context) => ManagementScreen(
-                      data,
-                      key: screenKey,
-                    ),
+                    builder: (context) => ManagementScreen(data),
                   );
                 },
               ),

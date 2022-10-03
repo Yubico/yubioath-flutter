@@ -11,7 +11,7 @@ import '../../widgets/custom_icons.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
-import 'keys.dart';
+import 'keys.dart' as management_keys;
 
 final _mapEquals = const DeepCollectionEquality().equals;
 
@@ -34,8 +34,8 @@ class _CapabilityForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final keyPrefix = (type == _CapabilityType.usb)
-        ? usbCapabilityKeyPrefix
-        : nfcCapabilityKeyPrefix;
+        ? management_keys.usbCapabilityKeyPrefix
+        : management_keys.nfcCapabilityKeyPrefix;
     return Wrap(
       spacing: 8,
       runSpacing: 16,
@@ -141,7 +141,9 @@ class _CapabilitiesForm extends StatelessWidget {
 
 class ManagementScreen extends ConsumerStatefulWidget {
   final YubiKeyData deviceData;
-  const ManagementScreen(this.deviceData, {super.key});
+
+  const ManagementScreen(this.deviceData)
+      : super(key: management_keys.screenKey);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -298,7 +300,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       actions: [
         TextButton(
           onPressed: canSave ? _submitForm : null,
-          key: saveButtonKey,
+          key: management_keys.saveButtonKey,
           child: Text(AppLocalizations.of(context)!.mgmt_save),
         ),
       ],
