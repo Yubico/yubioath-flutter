@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'device_button.dart';
+import 'keys.dart';
 import 'main_drawer.dart';
 
 class AppPage extends ConsumerWidget {
-  final Key _scaffoldKey = GlobalKey();
   final Widget? title;
   final Widget child;
   final List<Widget> actions;
   final List<PopupMenuEntry> keyActions;
   final bool centered;
   final Widget Function(List<PopupMenuEntry>)? actionButtonBuilder;
-  AppPage({
+  const AppPage({
     super.key,
     this.title,
     required this.child,
@@ -82,7 +82,7 @@ class AppPage extends ConsumerWidget {
 
   Scaffold _buildScaffold(BuildContext context, WidgetRef ref, bool hasDrawer) {
     return Scaffold(
-      key: _scaffoldKey,
+      key: scaffoldGlobalKey,
       appBar: AppBar(
         titleSpacing: 8,
         title: title,

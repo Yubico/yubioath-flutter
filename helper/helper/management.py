@@ -31,7 +31,7 @@ from yubikit.core import require_version, NotSupportedError, TRANSPORT
 from yubikit.core.smartcard import SmartCardConnection
 from yubikit.core.otp import OtpConnection
 from yubikit.core.fido import FidoConnection
-from yubikit.management import ManagementSession, DeviceConfig, Mode
+from yubikit.management import ManagementSession, DeviceConfig, Mode, CAPABILITY
 from ykman.device import list_all_devices
 from dataclasses import asdict
 from time import sleep
@@ -62,7 +62,7 @@ class ManagementNode(RpcNode):
         return actions
 
     def _await_reboot(self, serial, usb_enabled):
-        ifaces = usb_enabled.usb_interfaces
+        ifaces = CAPABILITY(usb_enabled).usb_interfaces
 
         # Prefer to use the "same" connection type as before
         if self._connection_type.usb_interface in ifaces:

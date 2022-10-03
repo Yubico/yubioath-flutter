@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/management/views/keys.dart';
 
 import '../../about_page.dart';
 import '../../android/views/android_settings_page.dart';
@@ -11,6 +12,7 @@ import '../../settings_page.dart';
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
+import 'keys.dart';
 
 extension on Application {
   IconData get _icon {
@@ -93,11 +95,15 @@ class MainPageDrawer extends ConsumerWidget {
                 titleText:
                     AppLocalizations.of(context)!.mainDrawer_txt_applications,
                 icon: Icon(Application.management._icon),
+                key: managementAppDrawer,
                 onTap: () {
                   if (shouldPop) Navigator.of(context).pop();
                   showBlurDialog(
                     context: context,
-                    builder: (context) => ManagementScreen(data),
+                    builder: (context) => ManagementScreen(
+                      data,
+                      key: screenKey,
+                    ),
                   );
                 },
               ),

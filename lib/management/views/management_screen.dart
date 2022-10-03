@@ -1,7 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:collection/collection.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -11,14 +11,21 @@ import '../../widgets/custom_icons.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
+import 'keys.dart';
 
 final _mapEquals = const DeepCollectionEquality().equals;
 
+enum _CapabilityType {
+  usb, nfc
+}
+
 class _CapabilityForm extends StatelessWidget {
+  final _CapabilityType type;
   final int capabilities;
   final int enabled;
   final Function(int) onChanged;
   const _CapabilityForm({
+    required this.type,
     required this.capabilities,
     required this.enabled,
     required this.onChanged,
@@ -26,6 +33,9 @@ class _CapabilityForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final keyPrefix = (type == _CapabilityType.usb)
+        ? usbCapabilityKeyPrefix
+        : nfcCapabilityKeyPrefix;
     return Wrap(
       spacing: 8,
       runSpacing: 16,
@@ -33,6 +43,7 @@ class _CapabilityForm extends StatelessWidget {
           .where((c) => capabilities & c.value != 0)
           .map((c) => FilterChip(
                 label: Text(c.name),
+                key: Key('$keyPrefix.${c.name}'),
                 selected: enabled & c.value != 0,
                 onSelected: (_) {
                   onChanged(enabled ^ c.value);
@@ -94,6 +105,7 @@ class _CapabilitiesForm extends StatelessWidget {
             horizontalTitleGap: 0,
           ),
           _CapabilityForm(
+            type: _CapabilityType.usb,
             capabilities: usbCapabilities,
             enabled: enabled[Transport.usb] ?? 0,
             onChanged: (value) {
@@ -114,6 +126,7 @@ class _CapabilitiesForm extends StatelessWidget {
             horizontalTitleGap: 0,
           ),
           _CapabilityForm(
+            type: _CapabilityType.nfc,
             capabilities: nfcCapabilities,
             enabled: enabled[Transport.nfc] ?? 0,
             onChanged: (value) {
@@ -285,6 +298,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       actions: [
         TextButton(
           onPressed: canSave ? _submitForm : null,
+          key: saveButtonKey,
           child: Text(AppLocalizations.of(context)!.mgmt_save),
         ),
       ],
