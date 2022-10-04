@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yubico_authenticator/android/logger.dart';
+import 'package:yubico_authenticator/android/oath/otp_auth_link_handler.dart';
 import 'package:yubico_authenticator/android/window_state_provider.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
@@ -54,7 +55,8 @@ Future<Widget> initialize() async {
       windowStateProvider.overrideWithProvider(androidWindowStateProvider),
       clipboardProvider.overrideWithProvider(androidClipboardProvider),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
-      supportedThemesProvider.overrideWithProvider(androidSupportedThemesProvider)
+      supportedThemesProvider
+          .overrideWithProvider(androidSupportedThemesProvider)
     ],
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(
@@ -67,6 +69,9 @@ Future<Widget> initialize() async {
 
           /// initializes global handler for dialogs
           ref.read(androidDialogProvider);
+
+          /// set context which will handle otpauth links
+          setupOtpAuthLinkHandler(context);
 
           return const MainPage();
         },
