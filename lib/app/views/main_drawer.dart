@@ -11,6 +11,7 @@ import '../../settings_page.dart';
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
+import 'keys.dart';
 
 extension on Application {
   IconData get _icon {
@@ -93,6 +94,7 @@ class MainPageDrawer extends ConsumerWidget {
                 titleText:
                     AppLocalizations.of(context)!.mainDrawer_txt_applications,
                 icon: Icon(Application.management._icon),
+                key: managementAppDrawer,
                 onTap: () {
                   if (shouldPop) Navigator.of(context).pop();
                   showBlurDialog(

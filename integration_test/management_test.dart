@@ -1,0 +1,70 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
+import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
+import 'package:yubico_authenticator/management/views/keys.dart'
+    as management_keys;
+
+import 'test_util.dart';
+
+Key _getCapabilityWidgetKey(bool isUsb, String name) =>
+    Key('management.keys.capability.${isUsb ? 'usb' : 'nfc'}.$name');
+
+Future<FilterChip?> _getCapabilityWidget(Key key) async {
+  return find.byKey(key).hitTestable().evaluate().single.widget as FilterChip;
+}
+
+void main() {
+  var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
+
+  group('Management UI tests', () {
+    appTest('Drawer items exist', (WidgetTester tester) async {
+      await tester.openDrawer();
+      expect(find.byKey(app_keys.managementAppDrawer), findsOneWidget);
+    });
+  });
+
+  group('Change OTP', () {
+    appTest('Disable OTP', (WidgetTester tester) async {
+      await tester.openManagementScreen();
+
+      // find USB OTP capability
+      var usbOtpKey = _getCapabilityWidgetKey(true, 'OTP');
+      var otpChip = await _getCapabilityWidget(usbOtpKey);
+      if (otpChip != null) {
+        // we expect OTP to be enabled on the Key for this test
+        expect(otpChip.selected, equals(true));
+        await tester.tap(find.byKey(usbOtpKey));
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.tap(find.byKey(management_keys.saveButtonKey));
+        // long wait
+        await tester.pump(const Duration(milliseconds: 2500));
+
+        // no management screen visible now
+        expect(find.byKey(management_keys.screenKey), findsNothing);
+        await tester.longWait();
+      }
+    });
+
+    appTest('Enable OTP', (WidgetTester tester) async {
+      await tester.openManagementScreen();
+
+      // find USB OTP capability
+      var usbOtpKey = _getCapabilityWidgetKey(true, 'OTP');
+      var otpChip = await _getCapabilityWidget(usbOtpKey);
+      if (otpChip != null) {
+        expect(otpChip.selected, equals(false));
+        await tester.tap(find.byKey(usbOtpKey));
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.tap(find.byKey(management_keys.saveButtonKey));
+        // long wait
+        await tester.pump(const Duration(milliseconds: 2500));
+
+        // no management screen visible now
+        expect(find.byKey(management_keys.screenKey), findsNothing);
+        await tester.longWait();
+      }
+    });
+  });
+}

@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:yubico_authenticator/app/views/device_button.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
+import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
+import 'package:yubico_authenticator/management/views/keys.dart';
 
 import 'android/util.dart' as android_test_util;
 import 'approved_yubikeys.dart';
@@ -65,6 +67,42 @@ extension AppWidgetTester on WidgetTester {
   Future<void> tapDeviceButton() async {
     await tap(findDeviceButton());
     await pump(const Duration(milliseconds: 500));
+  }
+
+  /// Drawer helpers
+  bool hasDrawer() => scaffoldGlobalKey.currentState!.hasDrawer;
+
+  /// Open drawer
+  Future<void> openDrawer() async {
+    if (hasDrawer()) {
+      scaffoldGlobalKey.currentState!.openDrawer();
+      await pump(const Duration(milliseconds: 500));
+    }
+  }
+
+  /// Close drawer
+  Future<void> closeDrawer() async {
+    if (hasDrawer()) {
+      scaffoldGlobalKey.currentState!.closeDrawer();
+      await pump(const Duration(milliseconds: 500));
+    }
+  }
+
+  /// Is drawer opened?
+  /// If there is no drawer say it is open (all items are available)
+  bool isDrawerOpened() =>
+      hasDrawer() == false || scaffoldGlobalKey.currentState!.isDrawerOpen;
+
+  /// Management screen
+  Future<void> openManagementScreen() async {
+    if (!isDrawerOpened()) {
+      await openDrawer();
+    }
+
+    await tap(find.byKey(managementAppDrawer));
+    await pump(const Duration(milliseconds: 500));
+
+    expect(find.byKey(screenKey), findsOneWidget);
   }
 
   Future<void> startUp([Map<dynamic, dynamic> startUpParams = const {}]) async {
