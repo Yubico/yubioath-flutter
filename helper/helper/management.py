@@ -62,7 +62,7 @@ class ManagementNode(RpcNode):
         return actions
 
     def _await_reboot(self, serial, usb_enabled):
-        ifaces = CAPABILITY(usb_enabled).usb_interfaces
+        ifaces = CAPABILITY(usb_enabled or 0).usb_interfaces
 
         # Prefer to use the "same" connection type as before
         if self._connection_type.usb_interface in ifaces:
