@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator.yubiclip.scancode;
+package com.yubico.authenticator.ndef;
 
 /**
  * Created by dain on 2/17/14.

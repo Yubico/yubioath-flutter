@@ -25,7 +25,7 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import com.yubico.authenticator.logging.Log
-import com.yubico.authenticator.yubiclip.scancode.KeyboardLayout
+import com.yubico.authenticator.ndef.KeyboardLayout
 import com.yubico.yubikit.core.util.NdefUtils
 import java.nio.charset.StandardCharsets
 

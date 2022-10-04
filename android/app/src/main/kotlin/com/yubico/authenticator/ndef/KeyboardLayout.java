@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator.yubiclip.scancode;
+package com.yubico.authenticator.ndef;
 
 import java.util.HashMap;
 import java.util.Map;
