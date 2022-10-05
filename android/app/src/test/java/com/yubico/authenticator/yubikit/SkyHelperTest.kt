@@ -1,6 +1,8 @@
 package com.yubico.authenticator.yubikit
 
 import android.hardware.usb.UsbDevice
+import android.os.Build
+import com.yubico.authenticator.TestUtil
 import com.yubico.authenticator.device.Version
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -12,6 +14,11 @@ import org.mockito.Mockito.mock
 
 
 class SkyHelperTest {
+
+    init {
+        // TODO: test lower APIs
+        TestUtil.setFinalStatic(Build.VERSION::class.java.getField("SDK_INT"), 23)
+    }
 
     @Test
     fun `passing NfcYubiKeyDevice will throw`() {
@@ -47,29 +54,29 @@ class SkyHelperTest {
 
         `when`(ykDevice.usbDevice.version).thenReturn("3.00")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, Version(3, 0, 0))
+            assertEquals(Version(3, 0, 0), it.version)
         }
 
         `when`(ykDevice.usbDevice.version).thenReturn("3.47")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, Version(3, 4, 7))
+            assertEquals(Version(3, 4, 7), it.version)
         }
 
         // lower than 3 should return 0.0.0
         `when`(ykDevice.usbDevice.version).thenReturn("2.10")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, VERSION_0)
+            assertEquals(VERSION_0, it.version)
         }
 
         // greater or equal 4.0.0 should return 0.0.0
         `when`(ykDevice.usbDevice.version).thenReturn("4.00")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, VERSION_0)
+            assertEquals(VERSION_0, it.version)
         }
 
         `when`(ykDevice.usbDevice.version).thenReturn("4.37")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, VERSION_0)
+            assertEquals(VERSION_0, it.version)
         }
     }
 
@@ -81,28 +88,28 @@ class SkyHelperTest {
 
         `when`(ykDevice.usbDevice.version).thenReturn("3.00")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, Version(3, 0, 0))
+            assertEquals(Version(3, 0, 0), it.version)
         }
 
         `when`(ykDevice.usbDevice.version).thenReturn("3.47")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, Version(3, 4, 7))
+            assertEquals(Version(3, 4, 7), it.version)
         }
 
         `when`(ykDevice.usbDevice.version).thenReturn("4.00")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, Version(4, 0, 0))
+            assertEquals(Version(4, 0, 0), it.version)
         }
 
         `when`(ykDevice.usbDevice.version).thenReturn("4.37")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, Version(4, 3, 7))
+            assertEquals(Version(4, 3, 7), it.version)
         }
 
         // lower than 3 should return 0.0.0
         `when`(ykDevice.usbDevice.version).thenReturn("2.10")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, VERSION_0)
+            assertEquals(VERSION_0, it.version)
         }
 
     }
@@ -115,18 +122,18 @@ class SkyHelperTest {
 
         `when`(ykDevice.usbDevice.version).thenReturn("4.00")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, Version(4, 0, 0))
+            assertEquals(Version(4, 0, 0), it.version)
         }
 
         `when`(ykDevice.usbDevice.version).thenReturn("4.37")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, Version(4, 3, 7))
+            assertEquals(Version(4, 3, 7), it.version)
         }
 
         // lower than 4 should return 0.0.0
         `when`(ykDevice.usbDevice.version).thenReturn("3.47")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, VERSION_0)
+            assertEquals(VERSION_0, it.version)
         }
     }
 
@@ -138,32 +145,32 @@ class SkyHelperTest {
 
         `when`(ykDevice.usbDevice.version).thenReturn("")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, VERSION_0)
+            assertEquals(VERSION_0, it.version)
         }
 
         `when`(ykDevice.usbDevice.version).thenReturn("yubico")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, VERSION_0)
+            assertEquals(VERSION_0, it.version)
         }
 
         `when`(ykDevice.usbDevice.version).thenReturn("4")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, VERSION_0)
+            assertEquals(VERSION_0, it.version)
         }
 
         `when`(ykDevice.usbDevice.version).thenReturn("4.")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, VERSION_0)
+            assertEquals(VERSION_0, it.version)
         }
 
         `when`(ykDevice.usbDevice.version).thenReturn("4.0")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, VERSION_0)
+            assertEquals(VERSION_0, it.version)
         }
 
         `when`(ykDevice.usbDevice.version).thenReturn("4.0.0")
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.version, VERSION_0)
+            assertEquals(VERSION_0, it.version)
         }
 
     }
