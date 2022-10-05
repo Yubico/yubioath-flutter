@@ -121,7 +121,7 @@ internal class QRScannerView(
     }
 
     override fun getView(): View {
-        barcodeAnalyzer.analysisPaused = false;
+        barcodeAnalyzer.analysisPaused = false
         return qrScannerView
     }
 
@@ -171,7 +171,7 @@ internal class QRScannerView(
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(context, intent, null)
                 } else if (call.method == "resumeScanning") {
-                    barcodeAnalyzer.analysisPaused = false;
+                    barcodeAnalyzer.analysisPaused = false
                 }
             }
         }
@@ -271,7 +271,7 @@ internal class QRScannerView(
         private val marginPct: Double?, private val listener: BarcodeAnalyzerListener
     ) : ImageAnalysis.Analyzer {
 
-        var analysisPaused = false;
+        var analysisPaused = false
 
         val multiFormatReader = MultiFormatReader().also {
             it.setHints(mapOf(DecodeHintType.POSSIBLE_FORMATS to listOf(BarcodeFormat.QR_CODE)))
@@ -288,7 +288,7 @@ internal class QRScannerView(
             try {
 
                 if (analysisPaused) {
-                    return;
+                    return
                 }
 
                 val buffer = imageProxy.planes[0].buffer
