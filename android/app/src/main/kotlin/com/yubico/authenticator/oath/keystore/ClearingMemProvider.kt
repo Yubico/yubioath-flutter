@@ -32,7 +32,7 @@ class ClearingMemProvider : KeyProvider {
 
     override fun putKey(deviceId: String, secret: ByteArray) {
         current = Pair(deviceId,
-            Mac.getInstance(KeyProperties.KEY_ALGORITHM_HMAC_SHA1)
+            Mac.getInstance(KEY_ALGORITHM_HMAC_SHA1)
                 .apply {
                     init(SecretKeySpec(secret, algorithm))
                 }

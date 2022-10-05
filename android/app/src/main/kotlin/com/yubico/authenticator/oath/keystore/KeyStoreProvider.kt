@@ -1,12 +1,15 @@
 package com.yubico.authenticator.oath.keystore
 
+import android.os.Build
 import android.security.keystore.KeyProperties
 import android.security.keystore.KeyProtection
+import androidx.annotation.RequiresApi
 import com.yubico.yubikit.oath.AccessKey
 import java.security.KeyStore
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
+@RequiresApi(Build.VERSION_CODES.M)
 class KeyStoreProvider : KeyProvider {
     private val keystore = KeyStore.getInstance("AndroidKeyStore")
 
@@ -27,7 +30,7 @@ class KeyStoreProvider : KeyProvider {
         keystore.setEntry(
             getAlias(deviceId),
             KeyStore.SecretKeyEntry(
-                SecretKeySpec(secret, KeyProperties.KEY_ALGORITHM_HMAC_SHA1)
+                SecretKeySpec(secret, KEY_ALGORITHM_HMAC_SHA1)
             ),
             KeyProtection.Builder(KeyProperties.PURPOSE_SIGN).build()
         )
@@ -44,14 +47,10 @@ class KeyStoreProvider : KeyProvider {
 
     private inner class KeyStoreStoredSigner(val deviceId: String) :
         AccessKey {
-        val mac: Mac = Mac.getInstance(KeyProperties.KEY_ALGORITHM_HMAC_SHA1).apply {
+        val mac: Mac = Mac.getInstance(KEY_ALGORITHM_HMAC_SHA1).apply {
             init(keystore.getKey(getAlias(deviceId), null))
         }
 
         override fun calculateResponse(challenge: ByteArray): ByteArray = mac.doFinal(challenge)
     }
-
-    // return key alias used in legacy app
-    private fun getAlias(deviceId: String) = "$deviceId,0"
-
 }
