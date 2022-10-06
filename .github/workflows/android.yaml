@@ -16,7 +16,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.3.3'
+          flutter-version: '3.3.4'
       - run: |
           flutter config
           flutter --version
