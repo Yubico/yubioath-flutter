@@ -16,6 +16,8 @@
 
 package com.yubico.authenticator.oath
 
+import android.content.Context
+import android.os.Build
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -24,6 +26,7 @@ import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.management.model
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
+import com.yubico.authenticator.oath.keystore.SharedPrefProvider
 import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -66,7 +69,15 @@ class OathManager(
     private val oathChannel = MethodChannel(messenger, "android.oath.methods")
 
     private val memoryKeyProvider = ClearingMemProvider()
-    private val keyManager = KeyManager(KeyStoreProvider(), memoryKeyProvider)
+    private val keyManager by lazy {
+        KeyManager(
+            if (SdkVersion.ge(Build.VERSION_CODES.M)) {
+                KeyStoreProvider()
+            } else {
+                SharedPrefProvider(lifecycleOwner as Context)
+            }, memoryKeyProvider
+        )
+    }
 
     private var pendingAction: OathAction? = null
     private var refreshJob: Job? = null

@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator
+package com.yubico.authenticator;
 
-import com.yubico.yubikit.core.YubiKeyDevice
-import com.yubico.yubikit.core.util.Result
+import android.os.Build;
 
-data class YubiKeyAction(
-    val message: String,
-    val action: suspend (Result<YubiKeyDevice, Exception>) -> Unit
-)
+public class SdkVersion {
+    static public int version = Build.VERSION.SDK_INT;
+
+    @SuppressWarnings("unused")
+    static public boolean eq(int other) {
+        return version == other;
+    }
+
+    static public boolean ge(int other) {
+        return version >= other;
+    }
+
+    static public boolean lt(int other) {
+        return !ge(other);
+    }
+}

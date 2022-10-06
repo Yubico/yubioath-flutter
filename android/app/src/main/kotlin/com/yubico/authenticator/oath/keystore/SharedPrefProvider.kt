@@ -16,57 +16,49 @@
 
 package com.yubico.authenticator.oath.keystore
 
-import android.os.Build
-import android.security.keystore.KeyProperties
-import android.security.keystore.KeyProtection
-import androidx.annotation.RequiresApi
+import android.content.Context
+import android.util.Base64
 import com.yubico.yubikit.oath.AccessKey
-import java.security.KeyStore
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-@RequiresApi(Build.VERSION_CODES.M)
-class KeyStoreProvider : KeyProvider {
-    private val keystore = KeyStore.getInstance("AndroidKeyStore")
+class SharedPrefProvider(context: Context) : KeyProvider {
 
-    init {
-        keystore.load(null)
-    }
+    private val prefs = context.getSharedPreferences(SP_STORED_AUTH_KEYS, Context.MODE_PRIVATE)
 
-    override fun hasKey(deviceId: String): Boolean = keystore.containsAlias(getAlias(deviceId))
+    override fun hasKey(deviceId: String) = prefs.contains(getAlias(deviceId))
 
     override fun getKey(deviceId: String): AccessKey? =
-        if (hasKey(deviceId)) {
-            KeyStoreStoredSigner(deviceId)
-        } else {
-            null
+        prefs.getStringSet(getAlias(deviceId), null)?.firstOrNull()?.let {
+            StringSigner(it)
         }
 
     override fun putKey(deviceId: String, secret: ByteArray) {
-        keystore.setEntry(
-            getAlias(deviceId),
-            KeyStore.SecretKeyEntry(
-                SecretKeySpec(secret, KEY_ALGORITHM_HMAC_SHA1)
-            ),
-            KeyProtection.Builder(KeyProperties.PURPOSE_SIGN).build()
-        )
+        prefs.edit().putStringSet(getAlias(deviceId), setOf(encode(secret))).apply()
     }
 
-
     override fun removeKey(deviceId: String) {
-        keystore.deleteEntry(getAlias(deviceId))
+        prefs.edit().remove(getAlias(deviceId)).apply()
     }
 
     override fun clearAll() {
-        keystore.aliases().asSequence().forEach { keystore.deleteEntry(it) }
+        prefs.edit().clear().apply()
     }
 
-    private inner class KeyStoreStoredSigner(val deviceId: String) :
-        AccessKey {
+    private inner class StringSigner(val secret: String) : AccessKey {
         val mac: Mac = Mac.getInstance(KEY_ALGORITHM_HMAC_SHA1).apply {
-            init(keystore.getKey(getAlias(deviceId), null))
+            init(SecretKeySpec(decode(secret), algorithm))
         }
 
         override fun calculateResponse(challenge: ByteArray): ByteArray = mac.doFinal(challenge)
+    }
+
+    companion object {
+        private fun encode(input: ByteArray) =
+            Base64.encodeToString(input, Base64.NO_WRAP or Base64.NO_PADDING)
+
+        private fun decode(input: String) = Base64.decode(input, Base64.DEFAULT)
+
+        private const val SP_STORED_AUTH_KEYS = "com.yubico.yubioath.SP_STORED_AUTH_KEYS"
     }
 }

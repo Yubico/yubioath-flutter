@@ -181,7 +181,7 @@ class ModelTest {
         val totpCode: Model.Code? = null
 
         val hotp = hotp(d, name = "hotpCred")
-        val hotpCode: Model.Code? = code(value = "098765")
+        val hotpCode = code(value = "098765")
 
         val m1 = mapOf(hotp to hotpCode, totp to totpCode)
 
@@ -283,7 +283,7 @@ class ModelTest {
     @Test
     fun `adds credential only to correct device`() {
         val d1 = "device1"
-        val d2 = "device2"
+
         connectDevice(d1)
         viewModel.updateCredentials(mapOf(totp(d1) to code()))
 

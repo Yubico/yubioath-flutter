@@ -22,7 +22,6 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.nfc.NfcAdapter
 import android.nfc.Tag
-import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.viewModels
@@ -314,7 +313,7 @@ class MainActivity : FlutterFragmentActivity() {
                         )
                     )
                     "getAndroidSdkVersion" -> result.success(
-                        Build.VERSION.SDK_INT
+                        SdkVersion.version
                     )
                     "setPrimaryClip" -> {
                         val toClipboard = methodCall.argument<String>("toClipboard")
