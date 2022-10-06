@@ -15,7 +15,6 @@
  */
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -72,20 +71,13 @@ Future<T?> showBlurDialog<T>({
       barrierColor: Colors.black12,
       pageBuilder: (ctx, anim1, anim2) => builder(ctx),
       transitionDuration: const Duration(milliseconds: 150),
-      transitionBuilder: (ctx, anim1, anim2, child) {
-        var sigma = 20 * anim1.value;
-        // Flutter 3.3 has an issue with rendering this on Android.
-        // Workaround: Don't animate the un-blur.
-        if (Platform.isAndroid && anim1.status == AnimationStatus.reverse) {
-          sigma = 0;
-        }
-        return BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
-          child: FadeTransition(
-            opacity: anim1,
-            child: child,
-          ),
-        );
-      },
+      transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
+        filter: ImageFilter.blur(
+            sigmaX: 20 * anim1.value, sigmaY: 20 * anim1.value),
+        child: FadeTransition(
+          opacity: anim1,
+          child: child,
+        ),
+      ),
       routeSettings: routeSettings,
     );
