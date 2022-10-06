@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator
+package com.yubico.authenticator;
 
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
+import android.os.Build;
 
-object TestUtil {
-    fun setFinalStatic(field: Field, newValue: Any?) {
-        field.isAccessible = true
-        val modifiersField = Field::class.java.getDeclaredField("modifiers")
-        modifiersField.isAccessible = true
-        modifiersField.setInt(field, field.modifiers and Modifier.FINAL.inv())
-        field.set(null, newValue)
+public class SdkVersion {
+    static public int version = Build.VERSION.SDK_INT;
+
+    @SuppressWarnings("unused")
+    static public boolean eq(int other) {
+        return version == other;
+    }
+
+    static public boolean ge(int other) {
+        return version >= other;
+    }
+
+    static public boolean lt(int other) {
+        return !ge(other);
     }
 }

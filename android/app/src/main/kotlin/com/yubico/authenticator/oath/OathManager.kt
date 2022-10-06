@@ -71,7 +71,7 @@ class OathManager(
     private val memoryKeyProvider = ClearingMemProvider()
     private val keyManager by lazy {
         KeyManager(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (SdkVersion.ge(Build.VERSION_CODES.M)) {
                 KeyStoreProvider()
             } else {
                 SharedPrefProvider(lifecycleOwner as Context)

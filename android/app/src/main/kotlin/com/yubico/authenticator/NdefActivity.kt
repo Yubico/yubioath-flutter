@@ -58,7 +58,7 @@ class NdefActivity : Activity() {
                     val otpSlotContent = parseOtpFromIntent()
                     ClipboardUtil.setPrimaryClip(this, otpSlotContent.content, true)
 
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                    if (SdkVersion.lt(Build.VERSION_CODES.TIRAMISU)) {
                         showToast(
                             when (otpSlotContent.type) {
                                 OtpType.Otp -> R.string.otp_success_set_otp_to_clipboard

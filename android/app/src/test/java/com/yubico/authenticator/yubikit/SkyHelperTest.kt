@@ -17,24 +17,17 @@
 package com.yubico.authenticator.yubikit
 
 import android.hardware.usb.UsbDevice
-import android.os.Build
-import com.yubico.authenticator.TestUtil
+import com.yubico.authenticator.SdkVersion
 import com.yubico.authenticator.device.Version
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.UsbPid
 import org.junit.Assert.*
 import org.junit.Test
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
-
+import org.mockito.Mockito.`when`
 
 class SkyHelperTest {
-
-    init {
-        // TODO: test lower APIs
-        TestUtil.setFinalStatic(Build.VERSION::class.java.getField("SDK_INT"), 23)
-    }
 
     @Test
     fun `passing NfcYubiKeyDevice will throw`() {
@@ -64,6 +57,9 @@ class SkyHelperTest {
 
     @Test
     fun `handles NEO_FIDO versions`() {
+
+        SdkVersion.version = 23
+
         val ykDevice = getUsbYubiKeyDeviceMock().also {
             `when`(it.pid).thenReturn(UsbPid.NEO_FIDO)
         }
@@ -98,6 +94,9 @@ class SkyHelperTest {
 
     @Test
     fun `handles SKY_FIDO versions`() {
+
+        SdkVersion.version = 23
+
         val ykDevice = getUsbYubiKeyDeviceMock().also {
             `when`(it.pid).thenReturn(UsbPid.SKY_FIDO)
         }
@@ -132,6 +131,9 @@ class SkyHelperTest {
 
     @Test
     fun `handles YK4_FIDO versions`() {
+
+        SdkVersion.version = 23
+
         val ykDevice = getUsbYubiKeyDeviceMock().also {
             `when`(it.pid).thenReturn(UsbPid.YK4_FIDO)
         }

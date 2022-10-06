@@ -35,7 +35,7 @@ object ClipboardUtil {
 
             val clipData = ClipData.newPlainText(toClipboard, toClipboard)
             clipData.apply {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (SdkVersion.ge(Build.VERSION_CODES.TIRAMISU)) {
                     description.extras = PersistableBundle().apply {
                         putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, isSensitive)
                     }

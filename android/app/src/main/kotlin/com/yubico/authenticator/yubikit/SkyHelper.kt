@@ -17,6 +17,7 @@
 package com.yubico.authenticator.yubikit
 
 import android.os.Build
+import com.yubico.authenticator.SdkVersion
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.management.model
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -78,19 +79,16 @@ class SkyHelper {
 
         // try to convert USB version to YubiKey version
         private fun getVersionFromUsbDescriptor(device: UsbYubiKeyDevice): Version {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                // UsbDevice.version needs Marshmallow
-                return VERSION_0
-            }
+            if (SdkVersion.ge(Build.VERSION_CODES.M)) {
+                val version = device.usbDevice.version
+                val match = USB_VERSION_STRING_PATTERN.matcher(version)
 
-            val version = device.usbDevice.version
-            val match = USB_VERSION_STRING_PATTERN.matcher(version)
-
-            if (match.find()) {
-                val major = match.group(1)?.toByte() ?: 0
-                val minor = match.group(2)?.toByte() ?: 0
-                val patch = match.group(3)?.toByte() ?: 0
-                return Version(major, minor, patch)
+                if (match.find()) {
+                    val major = match.group(1)?.toByte() ?: 0
+                    val minor = match.group(2)?.toByte() ?: 0
+                    val patch = match.group(3)?.toByte() ?: 0
+                    return Version(major, minor, patch)
+                }
             }
 
             return VERSION_0
