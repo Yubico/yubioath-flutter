@@ -83,10 +83,10 @@ Future<Widget> initialize() async {
           // activates window state provider
           ref.read(androidWindowStateProvider);
 
-          /// initializes global handler for dialogs
+          // initializes global handler for dialogs
           ref.read(androidDialogProvider);
 
-          /// set context which will handle otpauth links
+          // set context which will handle otpauth links
           setupOtpAuthLinkHandler(context);
 
           return const MainPage();

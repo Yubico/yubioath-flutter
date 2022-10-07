@@ -66,10 +66,10 @@ final androidSdkVersionProvider = Provider<int>((ref) => -1);
 
 final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   if (ref.read(androidSdkVersionProvider) < 29) {
-    /// the user can select from light or dark theme of the app
+    // the user can select from light or dark theme of the app
     return [ThemeMode.light, ThemeMode.dark];
   } else {
-    /// the user can also select system theme on newer Android versions
+    // the user can also select system theme on newer Android versions
     return ThemeMode.values;
   }
 });
