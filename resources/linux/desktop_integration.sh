@@ -16,16 +16,14 @@
 # limitations under the License.
 #
 
-VERSION="6.0.0"
-PRODUCT_NAME="Yubico Authenticator $VERSION"
-
 DESKTOP_FILENAME="com.yubico.authenticator.desktop"
 DESKTOP_FILE="${HOME}/.local/share/applications/${DESKTOP_FILENAME}"
 
-EXEC_PATH=$(pwd)
+EXEC_DIRNAME=$(dirname "$0")
+EXEC_PATH=$(cd "$EXEC_DIRNAME" && pwd)
 
 help() {
-  echo "Integrate Yubico Authenticator 6.0 with common desktop environments."
+  echo "Integrate Yubico Authenticator with common desktop environments."
   echo
   echo "Usage: -i | --install    -- install desktop file"
   echo "       -u | --uninstall  -- uninstall desktop file"
@@ -33,7 +31,9 @@ help() {
 }
 
 install() {
-  cat "./linux_support/${DESKTOP_FILENAME}" | sed -e "s|@EXEC_PATH|${EXEC_PATH}|g" >"${DESKTOP_FILE}"
+  sed -e "s|@EXEC_PATH|${EXEC_PATH}|g" \
+    <"${EXEC_PATH}/linux_support/${DESKTOP_FILENAME}" \
+    >"${DESKTOP_FILE}"
   echo "Created file: ${DESKTOP_FILE}"
 }
 

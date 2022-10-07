@@ -121,6 +121,11 @@ install(DIRECTORY "../build/linux/helper" DESTINATION "${BUILD_BUNDLE_DIR}" USE_
 # Copy Linux support files
 install(DIRECTORY "../resources/linux/linux_support" DESTINATION "${BUILD_BUNDLE_DIR}" USE_SOURCE_PERMISSIONS)
 install(FILES "../resources/linux/README.adoc" DESTINATION "${BUILD_BUNDLE_DIR}")
+
+install(FILES "../assets/graphics/app-icon.png"
+        DESTINATION "${BUILD_BUNDLE_DIR}/linux_support"
+        RENAME "com.yubico.yubioath.png")
+
 install(FILES "../resources/linux/desktop_integration.sh"
         DESTINATION "${BUILD_BUNDLE_DIR}"
         PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE)
