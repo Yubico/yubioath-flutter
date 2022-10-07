@@ -1,5 +1,6 @@
 == Instructions for Linux
 
+=== Basic usage
 To run Yubico Authenticator, execute the authenticator binary by double clicking or running it from command line:
 
   ./authenticator
@@ -12,3 +13,8 @@ On Ubuntu:
 Note that the QR scanning feature requires gnome-screenshot when using Wayland.
 
   sudo apt install gnome-screenshot
+
+=== Integration with desktop environments
+Execute following command to integrate Yubico Authenticator to your environment:
+
+    desktop_integration.sh --install

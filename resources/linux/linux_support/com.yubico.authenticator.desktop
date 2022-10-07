@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=Yubico Authenticator
 GenericName=Yubico Authenticator
-Exec=authenticator
-Icon=com.yubico.yubioath
+Exec="@EXEC_PATH/authenticator"
+Icon=@EXEC_PATH/linux_support/com.yubico.yubioath.png
 Type=Application
 Categories=Utility;
 Keywords=Yubico;Authenticator;
