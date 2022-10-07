@@ -206,7 +206,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             ? Consumer(
                 builder: (context, ref, _) {
                   return AccountList(
-                    ref.watch(credentialListProvider(widget.devicePath))!,
+                    ref.watch(credentialListProvider(widget.devicePath)) ?? [],
                   );
                 },
               )
