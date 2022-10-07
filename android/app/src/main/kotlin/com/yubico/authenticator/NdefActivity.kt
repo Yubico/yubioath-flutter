@@ -17,12 +17,13 @@
 package com.yubico.authenticator
 
 import android.app.Activity
-import android.content.*
+import android.content.Intent
 import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import android.widget.Toast
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.ndef.KeyboardLayout
@@ -82,7 +83,7 @@ class NdefActivity : Activity() {
             if (appPreferences.openAppOnNfcTap) {
                 val mainAppIntent = Intent(this, MainActivity::class.java).apply {
                     // Pass the NFC Tag to the main Activity.
-                    putExtra(NfcAdapter.EXTRA_TAG, intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG))
+                    putExtra(NfcAdapter.EXTRA_TAG, intent.parcelableExtra<Tag>(NfcAdapter.EXTRA_TAG))
                 }
                 startActivity(mainAppIntent)
             }
@@ -96,10 +97,10 @@ class NdefActivity : Activity() {
     }
 
     private fun parseOtpFromIntent(): OtpSlotValue {
-        val parcelable = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
+        val parcelable = intent.parcelableArrayExtra<NdefMessage>(NfcAdapter.EXTRA_NDEF_MESSAGES)
         if (parcelable != null && parcelable.isNotEmpty()) {
             val ndefPayloadBytes =
-                NdefUtils.getNdefPayloadBytes((parcelable[0] as NdefMessage).toByteArray())
+                NdefUtils.getNdefPayloadBytes((parcelable[0]).toByteArray())
 
             return if (ndefPayloadBytes.all { it in 32..126 }) {
                 OtpSlotValue(OtpType.Otp, String(ndefPayloadBytes, StandardCharsets.US_ASCII))

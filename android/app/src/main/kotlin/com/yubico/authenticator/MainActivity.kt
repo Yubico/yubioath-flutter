@@ -174,7 +174,7 @@ class MainActivity : FlutterFragmentActivity() {
         }
 
         // Handle existing tag when launched from NDEF
-        val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+        val tag = intent.parcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
         if (tag != null) {
             intent.removeExtra(NfcAdapter.EXTRA_TAG)
 
@@ -197,7 +197,7 @@ class MainActivity : FlutterFragmentActivity() {
 
         val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
         if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
-            val device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE) as UsbDevice?
+            val device = intent.parcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
             if (device != null) {
                 // start the USB discover only if the user approved the app to use the device
                 if (usbManager.hasPermission(device)) {
