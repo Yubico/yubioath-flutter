@@ -55,9 +55,6 @@ jobs:
       run: |
         export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
         mkdir deploy
-        mv resources/com.yubico.authenticator.desktop build/linux/x64/release/bundle
-        mv resources/icons/com.yubico.yubioath.png build/linux/x64/release/bundle
-        mv resources/README.adoc build/linux/x64/release/bundle
         tar -czf deploy/yubioath-desktop-${REF}-linux-${{matrix.os}}.tar.gz -C build/linux/x64/release/bundle .
 
     - name: Upload artifact
