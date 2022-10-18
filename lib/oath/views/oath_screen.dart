@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/widgets/delayed_visibility.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -42,6 +43,7 @@ import 'unlock_form.dart';
 
 class OathScreen extends ConsumerWidget {
   final DevicePath devicePath;
+
   const OathScreen(this.devicePath, {super.key});
 
   @override
@@ -210,7 +212,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   );
                 },
               )
-            : const CircularProgressIndicator(),
+            : const DelayedVisibility(
+                delay: Duration(milliseconds: 200),
+                child: CircularProgressIndicator(),
+              ),
       ),
     );
   }
