@@ -37,14 +37,12 @@ class _DelayedVisibilityState extends State<DelayedVisibility> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(widget.delay, (timer) {
+    _timer = Timer(widget.delay, () {
       if (mounted) {
         setState(() {
           _visible = true;
         });
       }
-      timer.cancel();
-      _timer = null;
     });
   }
 
