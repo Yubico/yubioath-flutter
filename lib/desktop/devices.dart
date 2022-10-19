@@ -243,7 +243,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
       if (info != null) {
         state = AsyncValue.data(YubiKeyData(dev, dev.name, info));
       } else {
-        state = const AsyncValue.error('device-inaccessible');
+        state = AsyncValue.error('device-inaccessible', StackTrace.current);
       }
     }
   }
@@ -277,7 +277,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
           state = AsyncValue.data(YubiKeyData(node, result['data']['name'],
               DeviceInfo.fromJson(result['data']['info'])));
         } else {
-          state = AsyncValue.error(result['data']['status']);
+          state = AsyncValue.error(result['data']['status'], StackTrace.current);
         }
       }
     } on RpcError catch (e) {
