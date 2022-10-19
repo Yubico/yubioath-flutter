@@ -53,7 +53,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
   UsbDeviceNotifier(this._rpc) : super([]);
 
   void refresh() {
-    _log.debug('Refreshing all USB devics');
+    _log.debug('Refreshing all USB devices');
     _usbState = -1;
     _pollDevices();
   }
