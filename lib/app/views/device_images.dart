@@ -28,6 +28,7 @@ const _imagesForName = {
   'Security Key by Yubico': 'sky2',
   'Security Key NFC': 'sky3',
   'Security Key C NFC': 'skycnfc',
+  'YubiKey FIDO': 'skycnfc',
   'YubiKey NEO': 'neo',
   'YubiKey Standard': 'standard',
 };
@@ -49,7 +50,8 @@ const _imagesForFormFactorNfc = {
 
 Image getProductImage(DeviceInfo info, String name) {
   var image = _imagesForName[name];
-  image ??= info.supportedCapabilities.containsKey(Transport.nfc)
+  image ??= (info.supportedCapabilities.containsKey(Transport.nfc) &&
+          info.supportedCapabilities[Transport.nfc] != 0)
       ? _imagesForFormFactorNfc[info.formFactor]
       : _imagesForFormFactor[info.formFactor];
   image ??= 'yk5series';
