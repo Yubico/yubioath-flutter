@@ -50,8 +50,7 @@ const _imagesForFormFactorNfc = {
 
 Image getProductImage(DeviceInfo info, String name) {
   var image = _imagesForName[name];
-  image ??= (info.supportedCapabilities.containsKey(Transport.nfc) &&
-          info.supportedCapabilities[Transport.nfc] != 0)
+  image ??= info.supportedCapabilities.containsKey(Transport.nfc)
       ? _imagesForFormFactorNfc[info.formFactor]
       : _imagesForFormFactor[info.formFactor];
   image ??= 'yk5series';
