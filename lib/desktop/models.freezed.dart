@@ -43,9 +43,9 @@ mixin _$RpcResponse {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> body)? success,
-    TResult Function(String status, Map<String, dynamic> body)? signal,
-    TResult Function(String status, String message, Map<String, dynamic> body)?
+    TResult? Function(Map<String, dynamic> body)? success,
+    TResult? Function(String status, Map<String, dynamic> body)? signal,
+    TResult? Function(String status, String message, Map<String, dynamic> body)?
         error,
   }) =>
       throw _privateConstructorUsedError;
@@ -67,9 +67,9 @@ mixin _$RpcResponse {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(Success value)? success,
-    TResult Function(Signal value)? signal,
-    TResult Function(RpcError value)? error,
+    TResult? Function(Success value)? success,
+    TResult? Function(Signal value)? signal,
+    TResult? Function(RpcError value)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -90,28 +90,32 @@ mixin _$RpcResponse {
 abstract class $RpcResponseCopyWith<$Res> {
   factory $RpcResponseCopyWith(
           RpcResponse value, $Res Function(RpcResponse) then) =
-      _$RpcResponseCopyWithImpl<$Res>;
+      _$RpcResponseCopyWithImpl<$Res, RpcResponse>;
+  @useResult
   $Res call({Map<String, dynamic> body});
 }
 
 /// @nodoc
-class _$RpcResponseCopyWithImpl<$Res> implements $RpcResponseCopyWith<$Res> {
+class _$RpcResponseCopyWithImpl<$Res, $Val extends RpcResponse>
+    implements $RpcResponseCopyWith<$Res> {
   _$RpcResponseCopyWithImpl(this._value, this._then);
 
-  final RpcResponse _value;
   // ignore: unused_field
-  final $Res Function(RpcResponse) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? body = freezed,
+    Object? body = null,
   }) {
     return _then(_value.copyWith(
-      body: body == freezed
+      body: null == body
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
-    ));
+    ) as $Val);
   }
 }
 
@@ -120,24 +124,24 @@ abstract class _$$SuccessCopyWith<$Res> implements $RpcResponseCopyWith<$Res> {
   factory _$$SuccessCopyWith(_$Success value, $Res Function(_$Success) then) =
       __$$SuccessCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({Map<String, dynamic> body});
 }
 
 /// @nodoc
-class __$$SuccessCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
+class __$$SuccessCopyWithImpl<$Res>
+    extends _$RpcResponseCopyWithImpl<$Res, _$Success>
     implements _$$SuccessCopyWith<$Res> {
   __$$SuccessCopyWithImpl(_$Success _value, $Res Function(_$Success) _then)
-      : super(_value, (v) => _then(v as _$Success));
+      : super(_value, _then);
 
-  @override
-  _$Success get _value => super._value as _$Success;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? body = freezed,
+    Object? body = null,
   }) {
     return _then(_$Success(
-      body == freezed
+      null == body
           ? _value._body
           : body // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
@@ -185,6 +189,7 @@ class _$Success implements Success {
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$SuccessCopyWith<_$Success> get copyWith =>
       __$$SuccessCopyWithImpl<_$Success>(this, _$identity);
 
@@ -203,9 +208,9 @@ class _$Success implements Success {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> body)? success,
-    TResult Function(String status, Map<String, dynamic> body)? signal,
-    TResult Function(String status, String message, Map<String, dynamic> body)?
+    TResult? Function(Map<String, dynamic> body)? success,
+    TResult? Function(String status, Map<String, dynamic> body)? signal,
+    TResult? Function(String status, String message, Map<String, dynamic> body)?
         error,
   }) {
     return success?.call(body);
@@ -239,9 +244,9 @@ class _$Success implements Success {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(Success value)? success,
-    TResult Function(Signal value)? signal,
-    TResult Function(RpcError value)? error,
+    TResult? Function(Success value)? success,
+    TResult? Function(Signal value)? signal,
+    TResult? Function(RpcError value)? error,
   }) {
     return success?.call(this);
   }
@@ -286,29 +291,29 @@ abstract class _$$SignalCopyWith<$Res> implements $RpcResponseCopyWith<$Res> {
   factory _$$SignalCopyWith(_$Signal value, $Res Function(_$Signal) then) =
       __$$SignalCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String status, Map<String, dynamic> body});
 }
 
 /// @nodoc
-class __$$SignalCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
+class __$$SignalCopyWithImpl<$Res>
+    extends _$RpcResponseCopyWithImpl<$Res, _$Signal>
     implements _$$SignalCopyWith<$Res> {
   __$$SignalCopyWithImpl(_$Signal _value, $Res Function(_$Signal) _then)
-      : super(_value, (v) => _then(v as _$Signal));
+      : super(_value, _then);
 
-  @override
-  _$Signal get _value => super._value as _$Signal;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? status = freezed,
-    Object? body = freezed,
+    Object? status = null,
+    Object? body = null,
   }) {
     return _then(_$Signal(
-      status == freezed
+      null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String,
-      body == freezed
+      null == body
           ? _value._body
           : body // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
@@ -348,19 +353,18 @@ class _$Signal implements Signal {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$Signal &&
-            const DeepCollectionEquality().equals(other.status, status) &&
+            (identical(other.status, status) || other.status == status) &&
             const DeepCollectionEquality().equals(other._body, _body));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(status),
-      const DeepCollectionEquality().hash(_body));
+      runtimeType, status, const DeepCollectionEquality().hash(_body));
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$SignalCopyWith<_$Signal> get copyWith =>
       __$$SignalCopyWithImpl<_$Signal>(this, _$identity);
 
@@ -379,9 +383,9 @@ class _$Signal implements Signal {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> body)? success,
-    TResult Function(String status, Map<String, dynamic> body)? signal,
-    TResult Function(String status, String message, Map<String, dynamic> body)?
+    TResult? Function(Map<String, dynamic> body)? success,
+    TResult? Function(String status, Map<String, dynamic> body)? signal,
+    TResult? Function(String status, String message, Map<String, dynamic> body)?
         error,
   }) {
     return signal?.call(status, body);
@@ -415,9 +419,9 @@ class _$Signal implements Signal {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(Success value)? success,
-    TResult Function(Signal value)? signal,
-    TResult Function(RpcError value)? error,
+    TResult? Function(Success value)? success,
+    TResult? Function(Signal value)? signal,
+    TResult? Function(RpcError value)? error,
   }) {
     return signal?.call(this);
   }
@@ -465,34 +469,34 @@ abstract class _$$RpcErrorCopyWith<$Res> implements $RpcResponseCopyWith<$Res> {
           _$RpcError value, $Res Function(_$RpcError) then) =
       __$$RpcErrorCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String status, String message, Map<String, dynamic> body});
 }
 
 /// @nodoc
-class __$$RpcErrorCopyWithImpl<$Res> extends _$RpcResponseCopyWithImpl<$Res>
+class __$$RpcErrorCopyWithImpl<$Res>
+    extends _$RpcResponseCopyWithImpl<$Res, _$RpcError>
     implements _$$RpcErrorCopyWith<$Res> {
   __$$RpcErrorCopyWithImpl(_$RpcError _value, $Res Function(_$RpcError) _then)
-      : super(_value, (v) => _then(v as _$RpcError));
+      : super(_value, _then);
 
-  @override
-  _$RpcError get _value => super._value as _$RpcError;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? status = freezed,
-    Object? message = freezed,
-    Object? body = freezed,
+    Object? status = null,
+    Object? message = null,
+    Object? body = null,
   }) {
     return _then(_$RpcError(
-      status == freezed
+      null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String,
-      message == freezed
+      null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
-      body == freezed
+      null == body
           ? _value._body
           : body // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
@@ -535,21 +539,19 @@ class _$RpcError implements RpcError {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$RpcError &&
-            const DeepCollectionEquality().equals(other.status, status) &&
-            const DeepCollectionEquality().equals(other.message, message) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.message, message) || other.message == message) &&
             const DeepCollectionEquality().equals(other._body, _body));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(status),
-      const DeepCollectionEquality().hash(message),
-      const DeepCollectionEquality().hash(_body));
+      runtimeType, status, message, const DeepCollectionEquality().hash(_body));
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$RpcErrorCopyWith<_$RpcError> get copyWith =>
       __$$RpcErrorCopyWithImpl<_$RpcError>(this, _$identity);
 
@@ -568,9 +570,9 @@ class _$RpcError implements RpcError {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> body)? success,
-    TResult Function(String status, Map<String, dynamic> body)? signal,
-    TResult Function(String status, String message, Map<String, dynamic> body)?
+    TResult? Function(Map<String, dynamic> body)? success,
+    TResult? Function(String status, Map<String, dynamic> body)? signal,
+    TResult? Function(String status, String message, Map<String, dynamic> body)?
         error,
   }) {
     return error?.call(status, message, body);
@@ -604,9 +606,9 @@ class _$RpcError implements RpcError {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(Success value)? success,
-    TResult Function(Signal value)? signal,
-    TResult Function(RpcError value)? error,
+    TResult? Function(Success value)? success,
+    TResult? Function(Signal value)? signal,
+    TResult? Function(RpcError value)? error,
   }) {
     return error?.call(this);
   }
@@ -667,33 +669,37 @@ mixin _$RpcState {
 /// @nodoc
 abstract class $RpcStateCopyWith<$Res> {
   factory $RpcStateCopyWith(RpcState value, $Res Function(RpcState) then) =
-      _$RpcStateCopyWithImpl<$Res>;
+      _$RpcStateCopyWithImpl<$Res, RpcState>;
+  @useResult
   $Res call({String version, bool isAdmin});
 }
 
 /// @nodoc
-class _$RpcStateCopyWithImpl<$Res> implements $RpcStateCopyWith<$Res> {
+class _$RpcStateCopyWithImpl<$Res, $Val extends RpcState>
+    implements $RpcStateCopyWith<$Res> {
   _$RpcStateCopyWithImpl(this._value, this._then);
 
-  final RpcState _value;
   // ignore: unused_field
-  final $Res Function(RpcState) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? version = freezed,
-    Object? isAdmin = freezed,
+    Object? version = null,
+    Object? isAdmin = null,
   }) {
     return _then(_value.copyWith(
-      version: version == freezed
+      version: null == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as String,
-      isAdmin: isAdmin == freezed
+      isAdmin: null == isAdmin
           ? _value.isAdmin
           : isAdmin // ignore: cast_nullable_to_non_nullable
               as bool,
-    ));
+    ) as $Val);
   }
 }
 
@@ -703,30 +709,30 @@ abstract class _$$_RpcStateCopyWith<$Res> implements $RpcStateCopyWith<$Res> {
           _$_RpcState value, $Res Function(_$_RpcState) then) =
       __$$_RpcStateCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String version, bool isAdmin});
 }
 
 /// @nodoc
-class __$$_RpcStateCopyWithImpl<$Res> extends _$RpcStateCopyWithImpl<$Res>
+class __$$_RpcStateCopyWithImpl<$Res>
+    extends _$RpcStateCopyWithImpl<$Res, _$_RpcState>
     implements _$$_RpcStateCopyWith<$Res> {
   __$$_RpcStateCopyWithImpl(
       _$_RpcState _value, $Res Function(_$_RpcState) _then)
-      : super(_value, (v) => _then(v as _$_RpcState));
+      : super(_value, _then);
 
-  @override
-  _$_RpcState get _value => super._value as _$_RpcState;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? version = freezed,
-    Object? isAdmin = freezed,
+    Object? version = null,
+    Object? isAdmin = null,
   }) {
     return _then(_$_RpcState(
-      version == freezed
+      null == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as String,
-      isAdmin == freezed
+      null == isAdmin
           ? _value.isAdmin
           : isAdmin // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -757,19 +763,17 @@ class _$_RpcState implements _RpcState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_RpcState &&
-            const DeepCollectionEquality().equals(other.version, version) &&
-            const DeepCollectionEquality().equals(other.isAdmin, isAdmin));
+            (identical(other.version, version) || other.version == version) &&
+            (identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(version),
-      const DeepCollectionEquality().hash(isAdmin));
+  int get hashCode => Object.hash(runtimeType, version, isAdmin);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_RpcStateCopyWith<_$_RpcState> get copyWith =>
       __$$_RpcStateCopyWithImpl<_$_RpcState>(this, _$identity);
 

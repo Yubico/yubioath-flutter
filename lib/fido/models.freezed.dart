@@ -32,33 +32,37 @@ mixin _$FidoState {
 /// @nodoc
 abstract class $FidoStateCopyWith<$Res> {
   factory $FidoStateCopyWith(FidoState value, $Res Function(FidoState) then) =
-      _$FidoStateCopyWithImpl<$Res>;
+      _$FidoStateCopyWithImpl<$Res, FidoState>;
+  @useResult
   $Res call({Map<String, dynamic> info, bool unlocked});
 }
 
 /// @nodoc
-class _$FidoStateCopyWithImpl<$Res> implements $FidoStateCopyWith<$Res> {
+class _$FidoStateCopyWithImpl<$Res, $Val extends FidoState>
+    implements $FidoStateCopyWith<$Res> {
   _$FidoStateCopyWithImpl(this._value, this._then);
 
-  final FidoState _value;
   // ignore: unused_field
-  final $Res Function(FidoState) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? info = freezed,
-    Object? unlocked = freezed,
+    Object? info = null,
+    Object? unlocked = null,
   }) {
     return _then(_value.copyWith(
-      info: info == freezed
+      info: null == info
           ? _value.info
           : info // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
-      unlocked: unlocked == freezed
+      unlocked: null == unlocked
           ? _value.unlocked
           : unlocked // ignore: cast_nullable_to_non_nullable
               as bool,
-    ));
+    ) as $Val);
   }
 }
 
@@ -68,30 +72,30 @@ abstract class _$$_FidoStateCopyWith<$Res> implements $FidoStateCopyWith<$Res> {
           _$_FidoState value, $Res Function(_$_FidoState) then) =
       __$$_FidoStateCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({Map<String, dynamic> info, bool unlocked});
 }
 
 /// @nodoc
-class __$$_FidoStateCopyWithImpl<$Res> extends _$FidoStateCopyWithImpl<$Res>
+class __$$_FidoStateCopyWithImpl<$Res>
+    extends _$FidoStateCopyWithImpl<$Res, _$_FidoState>
     implements _$$_FidoStateCopyWith<$Res> {
   __$$_FidoStateCopyWithImpl(
       _$_FidoState _value, $Res Function(_$_FidoState) _then)
-      : super(_value, (v) => _then(v as _$_FidoState));
+      : super(_value, _then);
 
-  @override
-  _$_FidoState get _value => super._value as _$_FidoState;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? info = freezed,
-    Object? unlocked = freezed,
+    Object? info = null,
+    Object? unlocked = null,
   }) {
     return _then(_$_FidoState(
-      info: info == freezed
+      info: null == info
           ? _value._info
           : info // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
-      unlocked: unlocked == freezed
+      unlocked: null == unlocked
           ? _value.unlocked
           : unlocked // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -131,18 +135,18 @@ class _$_FidoState extends _FidoState {
         (other.runtimeType == runtimeType &&
             other is _$_FidoState &&
             const DeepCollectionEquality().equals(other._info, _info) &&
-            const DeepCollectionEquality().equals(other.unlocked, unlocked));
+            (identical(other.unlocked, unlocked) ||
+                other.unlocked == unlocked));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(_info),
-      const DeepCollectionEquality().hash(unlocked));
+      runtimeType, const DeepCollectionEquality().hash(_info), unlocked);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_FidoStateCopyWith<_$_FidoState> get copyWith =>
       __$$_FidoStateCopyWithImpl<_$_FidoState>(this, _$identity);
 
@@ -183,8 +187,8 @@ mixin _$PinResult {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? success,
-    TResult Function(int retries, bool authBlocked)? failed,
+    TResult? Function()? success,
+    TResult? Function(int retries, bool authBlocked)? failed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -202,8 +206,8 @@ mixin _$PinResult {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_PinSuccess value)? success,
-    TResult Function(_PinFailure value)? failed,
+    TResult? Function(_PinSuccess value)? success,
+    TResult? Function(_PinFailure value)? failed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -218,16 +222,18 @@ mixin _$PinResult {
 /// @nodoc
 abstract class $PinResultCopyWith<$Res> {
   factory $PinResultCopyWith(PinResult value, $Res Function(PinResult) then) =
-      _$PinResultCopyWithImpl<$Res>;
+      _$PinResultCopyWithImpl<$Res, PinResult>;
 }
 
 /// @nodoc
-class _$PinResultCopyWithImpl<$Res> implements $PinResultCopyWith<$Res> {
+class _$PinResultCopyWithImpl<$Res, $Val extends PinResult>
+    implements $PinResultCopyWith<$Res> {
   _$PinResultCopyWithImpl(this._value, this._then);
 
-  final PinResult _value;
   // ignore: unused_field
-  final $Res Function(PinResult) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 }
 
 /// @nodoc
@@ -238,14 +244,12 @@ abstract class _$$_PinSuccessCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_PinSuccessCopyWithImpl<$Res> extends _$PinResultCopyWithImpl<$Res>
+class __$$_PinSuccessCopyWithImpl<$Res>
+    extends _$PinResultCopyWithImpl<$Res, _$_PinSuccess>
     implements _$$_PinSuccessCopyWith<$Res> {
   __$$_PinSuccessCopyWithImpl(
       _$_PinSuccess _value, $Res Function(_$_PinSuccess) _then)
-      : super(_value, (v) => _then(v as _$_PinSuccess));
-
-  @override
-  _$_PinSuccess get _value => super._value as _$_PinSuccess;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -279,8 +283,8 @@ class _$_PinSuccess implements _PinSuccess {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? success,
-    TResult Function(int retries, bool authBlocked)? failed,
+    TResult? Function()? success,
+    TResult? Function(int retries, bool authBlocked)? failed,
   }) {
     return success?.call();
   }
@@ -310,8 +314,8 @@ class _$_PinSuccess implements _PinSuccess {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_PinSuccess value)? success,
-    TResult Function(_PinFailure value)? failed,
+    TResult? Function(_PinSuccess value)? success,
+    TResult? Function(_PinFailure value)? failed,
   }) {
     return success?.call(this);
   }
@@ -339,30 +343,30 @@ abstract class _$$_PinFailureCopyWith<$Res> {
   factory _$$_PinFailureCopyWith(
           _$_PinFailure value, $Res Function(_$_PinFailure) then) =
       __$$_PinFailureCopyWithImpl<$Res>;
+  @useResult
   $Res call({int retries, bool authBlocked});
 }
 
 /// @nodoc
-class __$$_PinFailureCopyWithImpl<$Res> extends _$PinResultCopyWithImpl<$Res>
+class __$$_PinFailureCopyWithImpl<$Res>
+    extends _$PinResultCopyWithImpl<$Res, _$_PinFailure>
     implements _$$_PinFailureCopyWith<$Res> {
   __$$_PinFailureCopyWithImpl(
       _$_PinFailure _value, $Res Function(_$_PinFailure) _then)
-      : super(_value, (v) => _then(v as _$_PinFailure));
+      : super(_value, _then);
 
-  @override
-  _$_PinFailure get _value => super._value as _$_PinFailure;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? retries = freezed,
-    Object? authBlocked = freezed,
+    Object? retries = null,
+    Object? authBlocked = null,
   }) {
     return _then(_$_PinFailure(
-      retries == freezed
+      null == retries
           ? _value.retries
           : retries // ignore: cast_nullable_to_non_nullable
               as int,
-      authBlocked == freezed
+      null == authBlocked
           ? _value.authBlocked
           : authBlocked // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -390,19 +394,17 @@ class _$_PinFailure implements _PinFailure {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_PinFailure &&
-            const DeepCollectionEquality().equals(other.retries, retries) &&
-            const DeepCollectionEquality()
-                .equals(other.authBlocked, authBlocked));
+            (identical(other.retries, retries) || other.retries == retries) &&
+            (identical(other.authBlocked, authBlocked) ||
+                other.authBlocked == authBlocked));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(retries),
-      const DeepCollectionEquality().hash(authBlocked));
+  int get hashCode => Object.hash(runtimeType, retries, authBlocked);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_PinFailureCopyWith<_$_PinFailure> get copyWith =>
       __$$_PinFailureCopyWithImpl<_$_PinFailure>(this, _$identity);
 
@@ -418,8 +420,8 @@ class _$_PinFailure implements _PinFailure {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? success,
-    TResult Function(int retries, bool authBlocked)? failed,
+    TResult? Function()? success,
+    TResult? Function(int retries, bool authBlocked)? failed,
   }) {
     return failed?.call(retries, authBlocked);
   }
@@ -449,8 +451,8 @@ class _$_PinFailure implements _PinFailure {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_PinSuccess value)? success,
-    TResult Function(_PinFailure value)? failed,
+    TResult? Function(_PinSuccess value)? success,
+    TResult? Function(_PinFailure value)? failed,
   }) {
     return failed?.call(this);
   }
@@ -499,33 +501,37 @@ mixin _$Fingerprint {
 abstract class $FingerprintCopyWith<$Res> {
   factory $FingerprintCopyWith(
           Fingerprint value, $Res Function(Fingerprint) then) =
-      _$FingerprintCopyWithImpl<$Res>;
+      _$FingerprintCopyWithImpl<$Res, Fingerprint>;
+  @useResult
   $Res call({String templateId, String? name});
 }
 
 /// @nodoc
-class _$FingerprintCopyWithImpl<$Res> implements $FingerprintCopyWith<$Res> {
+class _$FingerprintCopyWithImpl<$Res, $Val extends Fingerprint>
+    implements $FingerprintCopyWith<$Res> {
   _$FingerprintCopyWithImpl(this._value, this._then);
 
-  final Fingerprint _value;
   // ignore: unused_field
-  final $Res Function(Fingerprint) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? templateId = freezed,
+    Object? templateId = null,
     Object? name = freezed,
   }) {
     return _then(_value.copyWith(
-      templateId: templateId == freezed
+      templateId: null == templateId
           ? _value.templateId
           : templateId // ignore: cast_nullable_to_non_nullable
               as String,
-      name: name == freezed
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -536,30 +542,30 @@ abstract class _$$_FingerprintCopyWith<$Res>
           _$_Fingerprint value, $Res Function(_$_Fingerprint) then) =
       __$$_FingerprintCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String templateId, String? name});
 }
 
 /// @nodoc
-class __$$_FingerprintCopyWithImpl<$Res> extends _$FingerprintCopyWithImpl<$Res>
+class __$$_FingerprintCopyWithImpl<$Res>
+    extends _$FingerprintCopyWithImpl<$Res, _$_Fingerprint>
     implements _$$_FingerprintCopyWith<$Res> {
   __$$_FingerprintCopyWithImpl(
       _$_Fingerprint _value, $Res Function(_$_Fingerprint) _then)
-      : super(_value, (v) => _then(v as _$_Fingerprint));
+      : super(_value, _then);
 
-  @override
-  _$_Fingerprint get _value => super._value as _$_Fingerprint;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? templateId = freezed,
+    Object? templateId = null,
     Object? name = freezed,
   }) {
     return _then(_$_Fingerprint(
-      templateId == freezed
+      null == templateId
           ? _value.templateId
           : templateId // ignore: cast_nullable_to_non_nullable
               as String,
-      name == freezed
+      freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -590,20 +596,18 @@ class _$_Fingerprint extends _Fingerprint {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Fingerprint &&
-            const DeepCollectionEquality()
-                .equals(other.templateId, templateId) &&
-            const DeepCollectionEquality().equals(other.name, name));
+            (identical(other.templateId, templateId) ||
+                other.templateId == templateId) &&
+            (identical(other.name, name) || other.name == name));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(templateId),
-      const DeepCollectionEquality().hash(name));
+  int get hashCode => Object.hash(runtimeType, templateId, name);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_FingerprintCopyWith<_$_Fingerprint> get copyWith =>
       __$$_FingerprintCopyWithImpl<_$_Fingerprint>(this, _$identity);
 
@@ -644,9 +648,9 @@ mixin _$FingerprintEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(int remaining)? capture,
-    TResult Function(Fingerprint fingerprint)? complete,
-    TResult Function(int code)? error,
+    TResult? Function(int remaining)? capture,
+    TResult? Function(Fingerprint fingerprint)? complete,
+    TResult? Function(int code)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -666,9 +670,9 @@ mixin _$FingerprintEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_EventCapture value)? capture,
-    TResult Function(_EventComplete value)? complete,
-    TResult Function(_EventError value)? error,
+    TResult? Function(_EventCapture value)? capture,
+    TResult? Function(_EventComplete value)? complete,
+    TResult? Function(_EventError value)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -685,17 +689,18 @@ mixin _$FingerprintEvent {
 abstract class $FingerprintEventCopyWith<$Res> {
   factory $FingerprintEventCopyWith(
           FingerprintEvent value, $Res Function(FingerprintEvent) then) =
-      _$FingerprintEventCopyWithImpl<$Res>;
+      _$FingerprintEventCopyWithImpl<$Res, FingerprintEvent>;
 }
 
 /// @nodoc
-class _$FingerprintEventCopyWithImpl<$Res>
+class _$FingerprintEventCopyWithImpl<$Res, $Val extends FingerprintEvent>
     implements $FingerprintEventCopyWith<$Res> {
   _$FingerprintEventCopyWithImpl(this._value, this._then);
 
-  final FingerprintEvent _value;
   // ignore: unused_field
-  final $Res Function(FingerprintEvent) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 }
 
 /// @nodoc
@@ -703,26 +708,25 @@ abstract class _$$_EventCaptureCopyWith<$Res> {
   factory _$$_EventCaptureCopyWith(
           _$_EventCapture value, $Res Function(_$_EventCapture) then) =
       __$$_EventCaptureCopyWithImpl<$Res>;
+  @useResult
   $Res call({int remaining});
 }
 
 /// @nodoc
 class __$$_EventCaptureCopyWithImpl<$Res>
-    extends _$FingerprintEventCopyWithImpl<$Res>
+    extends _$FingerprintEventCopyWithImpl<$Res, _$_EventCapture>
     implements _$$_EventCaptureCopyWith<$Res> {
   __$$_EventCaptureCopyWithImpl(
       _$_EventCapture _value, $Res Function(_$_EventCapture) _then)
-      : super(_value, (v) => _then(v as _$_EventCapture));
+      : super(_value, _then);
 
-  @override
-  _$_EventCapture get _value => super._value as _$_EventCapture;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? remaining = freezed,
+    Object? remaining = null,
   }) {
     return _then(_$_EventCapture(
-      remaining == freezed
+      null == remaining
           ? _value.remaining
           : remaining // ignore: cast_nullable_to_non_nullable
               as int,
@@ -748,15 +752,16 @@ class _$_EventCapture implements _EventCapture {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_EventCapture &&
-            const DeepCollectionEquality().equals(other.remaining, remaining));
+            (identical(other.remaining, remaining) ||
+                other.remaining == remaining));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(remaining));
+  int get hashCode => Object.hash(runtimeType, remaining);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_EventCaptureCopyWith<_$_EventCapture> get copyWith =>
       __$$_EventCaptureCopyWithImpl<_$_EventCapture>(this, _$identity);
 
@@ -773,9 +778,9 @@ class _$_EventCapture implements _EventCapture {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(int remaining)? capture,
-    TResult Function(Fingerprint fingerprint)? complete,
-    TResult Function(int code)? error,
+    TResult? Function(int remaining)? capture,
+    TResult? Function(Fingerprint fingerprint)? complete,
+    TResult? Function(int code)? error,
   }) {
     return capture?.call(remaining);
   }
@@ -807,9 +812,9 @@ class _$_EventCapture implements _EventCapture {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_EventCapture value)? capture,
-    TResult Function(_EventComplete value)? complete,
-    TResult Function(_EventError value)? error,
+    TResult? Function(_EventCapture value)? capture,
+    TResult? Function(_EventComplete value)? complete,
+    TResult? Function(_EventError value)? error,
   }) {
     return capture?.call(this);
   }
@@ -843,6 +848,7 @@ abstract class _$$_EventCompleteCopyWith<$Res> {
   factory _$$_EventCompleteCopyWith(
           _$_EventComplete value, $Res Function(_$_EventComplete) then) =
       __$$_EventCompleteCopyWithImpl<$Res>;
+  @useResult
   $Res call({Fingerprint fingerprint});
 
   $FingerprintCopyWith<$Res> get fingerprint;
@@ -850,21 +856,19 @@ abstract class _$$_EventCompleteCopyWith<$Res> {
 
 /// @nodoc
 class __$$_EventCompleteCopyWithImpl<$Res>
-    extends _$FingerprintEventCopyWithImpl<$Res>
+    extends _$FingerprintEventCopyWithImpl<$Res, _$_EventComplete>
     implements _$$_EventCompleteCopyWith<$Res> {
   __$$_EventCompleteCopyWithImpl(
       _$_EventComplete _value, $Res Function(_$_EventComplete) _then)
-      : super(_value, (v) => _then(v as _$_EventComplete));
+      : super(_value, _then);
 
-  @override
-  _$_EventComplete get _value => super._value as _$_EventComplete;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? fingerprint = freezed,
+    Object? fingerprint = null,
   }) {
     return _then(_$_EventComplete(
-      fingerprint == freezed
+      null == fingerprint
           ? _value.fingerprint
           : fingerprint // ignore: cast_nullable_to_non_nullable
               as Fingerprint,
@@ -872,6 +876,7 @@ class __$$_EventCompleteCopyWithImpl<$Res>
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $FingerprintCopyWith<$Res> get fingerprint {
     return $FingerprintCopyWith<$Res>(_value.fingerprint, (value) {
       return _then(_value.copyWith(fingerprint: value));
@@ -897,16 +902,16 @@ class _$_EventComplete implements _EventComplete {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_EventComplete &&
-            const DeepCollectionEquality()
-                .equals(other.fingerprint, fingerprint));
+            (identical(other.fingerprint, fingerprint) ||
+                other.fingerprint == fingerprint));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(fingerprint));
+  int get hashCode => Object.hash(runtimeType, fingerprint);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_EventCompleteCopyWith<_$_EventComplete> get copyWith =>
       __$$_EventCompleteCopyWithImpl<_$_EventComplete>(this, _$identity);
 
@@ -923,9 +928,9 @@ class _$_EventComplete implements _EventComplete {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(int remaining)? capture,
-    TResult Function(Fingerprint fingerprint)? complete,
-    TResult Function(int code)? error,
+    TResult? Function(int remaining)? capture,
+    TResult? Function(Fingerprint fingerprint)? complete,
+    TResult? Function(int code)? error,
   }) {
     return complete?.call(fingerprint);
   }
@@ -957,9 +962,9 @@ class _$_EventComplete implements _EventComplete {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_EventCapture value)? capture,
-    TResult Function(_EventComplete value)? complete,
-    TResult Function(_EventError value)? error,
+    TResult? Function(_EventCapture value)? capture,
+    TResult? Function(_EventComplete value)? complete,
+    TResult? Function(_EventError value)? error,
   }) {
     return complete?.call(this);
   }
@@ -993,26 +998,25 @@ abstract class _$$_EventErrorCopyWith<$Res> {
   factory _$$_EventErrorCopyWith(
           _$_EventError value, $Res Function(_$_EventError) then) =
       __$$_EventErrorCopyWithImpl<$Res>;
+  @useResult
   $Res call({int code});
 }
 
 /// @nodoc
 class __$$_EventErrorCopyWithImpl<$Res>
-    extends _$FingerprintEventCopyWithImpl<$Res>
+    extends _$FingerprintEventCopyWithImpl<$Res, _$_EventError>
     implements _$$_EventErrorCopyWith<$Res> {
   __$$_EventErrorCopyWithImpl(
       _$_EventError _value, $Res Function(_$_EventError) _then)
-      : super(_value, (v) => _then(v as _$_EventError));
+      : super(_value, _then);
 
-  @override
-  _$_EventError get _value => super._value as _$_EventError;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? code = freezed,
+    Object? code = null,
   }) {
     return _then(_$_EventError(
-      code == freezed
+      null == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
               as int,
@@ -1038,15 +1042,15 @@ class _$_EventError implements _EventError {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_EventError &&
-            const DeepCollectionEquality().equals(other.code, code));
+            (identical(other.code, code) || other.code == code));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(code));
+  int get hashCode => Object.hash(runtimeType, code);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_EventErrorCopyWith<_$_EventError> get copyWith =>
       __$$_EventErrorCopyWithImpl<_$_EventError>(this, _$identity);
 
@@ -1063,9 +1067,9 @@ class _$_EventError implements _EventError {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(int remaining)? capture,
-    TResult Function(Fingerprint fingerprint)? complete,
-    TResult Function(int code)? error,
+    TResult? Function(int remaining)? capture,
+    TResult? Function(Fingerprint fingerprint)? complete,
+    TResult? Function(int code)? error,
   }) {
     return error?.call(code);
   }
@@ -1097,9 +1101,9 @@ class _$_EventError implements _EventError {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_EventCapture value)? capture,
-    TResult Function(_EventComplete value)? complete,
-    TResult Function(_EventError value)? error,
+    TResult? Function(_EventCapture value)? capture,
+    TResult? Function(_EventComplete value)? complete,
+    TResult? Function(_EventError value)? error,
   }) {
     return error?.call(this);
   }
@@ -1149,44 +1153,47 @@ mixin _$FidoCredential {
 abstract class $FidoCredentialCopyWith<$Res> {
   factory $FidoCredentialCopyWith(
           FidoCredential value, $Res Function(FidoCredential) then) =
-      _$FidoCredentialCopyWithImpl<$Res>;
+      _$FidoCredentialCopyWithImpl<$Res, FidoCredential>;
+  @useResult
   $Res call({String rpId, String credentialId, String userId, String userName});
 }
 
 /// @nodoc
-class _$FidoCredentialCopyWithImpl<$Res>
+class _$FidoCredentialCopyWithImpl<$Res, $Val extends FidoCredential>
     implements $FidoCredentialCopyWith<$Res> {
   _$FidoCredentialCopyWithImpl(this._value, this._then);
 
-  final FidoCredential _value;
   // ignore: unused_field
-  final $Res Function(FidoCredential) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? rpId = freezed,
-    Object? credentialId = freezed,
-    Object? userId = freezed,
-    Object? userName = freezed,
+    Object? rpId = null,
+    Object? credentialId = null,
+    Object? userId = null,
+    Object? userName = null,
   }) {
     return _then(_value.copyWith(
-      rpId: rpId == freezed
+      rpId: null == rpId
           ? _value.rpId
           : rpId // ignore: cast_nullable_to_non_nullable
               as String,
-      credentialId: credentialId == freezed
+      credentialId: null == credentialId
           ? _value.credentialId
           : credentialId // ignore: cast_nullable_to_non_nullable
               as String,
-      userId: userId == freezed
+      userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
-      userName: userName == freezed
+      userName: null == userName
           ? _value.userName
           : userName // ignore: cast_nullable_to_non_nullable
               as String,
-    ));
+    ) as $Val);
   }
 }
 
@@ -1197,41 +1204,40 @@ abstract class _$$_FidoCredentialCopyWith<$Res>
           _$_FidoCredential value, $Res Function(_$_FidoCredential) then) =
       __$$_FidoCredentialCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String rpId, String credentialId, String userId, String userName});
 }
 
 /// @nodoc
 class __$$_FidoCredentialCopyWithImpl<$Res>
-    extends _$FidoCredentialCopyWithImpl<$Res>
+    extends _$FidoCredentialCopyWithImpl<$Res, _$_FidoCredential>
     implements _$$_FidoCredentialCopyWith<$Res> {
   __$$_FidoCredentialCopyWithImpl(
       _$_FidoCredential _value, $Res Function(_$_FidoCredential) _then)
-      : super(_value, (v) => _then(v as _$_FidoCredential));
+      : super(_value, _then);
 
-  @override
-  _$_FidoCredential get _value => super._value as _$_FidoCredential;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? rpId = freezed,
-    Object? credentialId = freezed,
-    Object? userId = freezed,
-    Object? userName = freezed,
+    Object? rpId = null,
+    Object? credentialId = null,
+    Object? userId = null,
+    Object? userName = null,
   }) {
     return _then(_$_FidoCredential(
-      rpId: rpId == freezed
+      rpId: null == rpId
           ? _value.rpId
           : rpId // ignore: cast_nullable_to_non_nullable
               as String,
-      credentialId: credentialId == freezed
+      credentialId: null == credentialId
           ? _value.credentialId
           : credentialId // ignore: cast_nullable_to_non_nullable
               as String,
-      userId: userId == freezed
+      userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
-      userName: userName == freezed
+      userName: null == userName
           ? _value.userName
           : userName // ignore: cast_nullable_to_non_nullable
               as String,
@@ -1270,24 +1276,22 @@ class _$_FidoCredential implements _FidoCredential {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_FidoCredential &&
-            const DeepCollectionEquality().equals(other.rpId, rpId) &&
-            const DeepCollectionEquality()
-                .equals(other.credentialId, credentialId) &&
-            const DeepCollectionEquality().equals(other.userId, userId) &&
-            const DeepCollectionEquality().equals(other.userName, userName));
+            (identical(other.rpId, rpId) || other.rpId == rpId) &&
+            (identical(other.credentialId, credentialId) ||
+                other.credentialId == credentialId) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.userName, userName) ||
+                other.userName == userName));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(rpId),
-      const DeepCollectionEquality().hash(credentialId),
-      const DeepCollectionEquality().hash(userId),
-      const DeepCollectionEquality().hash(userName));
+  int get hashCode =>
+      Object.hash(runtimeType, rpId, credentialId, userId, userName);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_FidoCredentialCopyWith<_$_FidoCredential> get copyWith =>
       __$$_FidoCredentialCopyWithImpl<_$_FidoCredential>(this, _$identity);
 

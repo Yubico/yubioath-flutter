@@ -29,7 +29,8 @@ mixin _$YubiKeyData {
 abstract class $YubiKeyDataCopyWith<$Res> {
   factory $YubiKeyDataCopyWith(
           YubiKeyData value, $Res Function(YubiKeyData) then) =
-      _$YubiKeyDataCopyWithImpl<$Res>;
+      _$YubiKeyDataCopyWithImpl<$Res, YubiKeyData>;
+  @useResult
   $Res call({DeviceNode node, String name, DeviceInfo info});
 
   $DeviceNodeCopyWith<$Res> get node;
@@ -37,46 +38,51 @@ abstract class $YubiKeyDataCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$YubiKeyDataCopyWithImpl<$Res> implements $YubiKeyDataCopyWith<$Res> {
+class _$YubiKeyDataCopyWithImpl<$Res, $Val extends YubiKeyData>
+    implements $YubiKeyDataCopyWith<$Res> {
   _$YubiKeyDataCopyWithImpl(this._value, this._then);
 
-  final YubiKeyData _value;
   // ignore: unused_field
-  final $Res Function(YubiKeyData) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? node = freezed,
-    Object? name = freezed,
-    Object? info = freezed,
+    Object? node = null,
+    Object? name = null,
+    Object? info = null,
   }) {
     return _then(_value.copyWith(
-      node: node == freezed
+      node: null == node
           ? _value.node
           : node // ignore: cast_nullable_to_non_nullable
               as DeviceNode,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      info: info == freezed
+      info: null == info
           ? _value.info
           : info // ignore: cast_nullable_to_non_nullable
               as DeviceInfo,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $DeviceNodeCopyWith<$Res> get node {
     return $DeviceNodeCopyWith<$Res>(_value.node, (value) {
-      return _then(_value.copyWith(node: value));
+      return _then(_value.copyWith(node: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $DeviceInfoCopyWith<$Res> get info {
     return $DeviceInfoCopyWith<$Res>(_value.info, (value) {
-      return _then(_value.copyWith(info: value));
+      return _then(_value.copyWith(info: value) as $Val);
     });
   }
 }
@@ -88,6 +94,7 @@ abstract class _$$_YubiKeyDataCopyWith<$Res>
           _$_YubiKeyData value, $Res Function(_$_YubiKeyData) then) =
       __$$_YubiKeyDataCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({DeviceNode node, String name, DeviceInfo info});
 
   @override
@@ -97,31 +104,30 @@ abstract class _$$_YubiKeyDataCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_YubiKeyDataCopyWithImpl<$Res> extends _$YubiKeyDataCopyWithImpl<$Res>
+class __$$_YubiKeyDataCopyWithImpl<$Res>
+    extends _$YubiKeyDataCopyWithImpl<$Res, _$_YubiKeyData>
     implements _$$_YubiKeyDataCopyWith<$Res> {
   __$$_YubiKeyDataCopyWithImpl(
       _$_YubiKeyData _value, $Res Function(_$_YubiKeyData) _then)
-      : super(_value, (v) => _then(v as _$_YubiKeyData));
+      : super(_value, _then);
 
-  @override
-  _$_YubiKeyData get _value => super._value as _$_YubiKeyData;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? node = freezed,
-    Object? name = freezed,
-    Object? info = freezed,
+    Object? node = null,
+    Object? name = null,
+    Object? info = null,
   }) {
     return _then(_$_YubiKeyData(
-      node == freezed
+      null == node
           ? _value.node
           : node // ignore: cast_nullable_to_non_nullable
               as DeviceNode,
-      name == freezed
+      null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      info == freezed
+      null == info
           ? _value.info
           : info // ignore: cast_nullable_to_non_nullable
               as DeviceInfo,
@@ -151,20 +157,17 @@ class _$_YubiKeyData implements _YubiKeyData {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_YubiKeyData &&
-            const DeepCollectionEquality().equals(other.node, node) &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.info, info));
+            (identical(other.node, node) || other.node == node) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.info, info) || other.info == info));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(node),
-      const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(info));
+  int get hashCode => Object.hash(runtimeType, node, name, info);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_YubiKeyDataCopyWith<_$_YubiKeyData> get copyWith =>
       __$$_YubiKeyDataCopyWithImpl<_$_YubiKeyData>(this, _$identity);
 }
@@ -200,10 +203,10 @@ mixin _$DeviceNode {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(
+    TResult? Function(
             DevicePath path, String name, UsbPid pid, DeviceInfo? info)?
         usbYubiKey,
-    TResult Function(DevicePath path, String name)? nfcReader,
+    TResult? Function(DevicePath path, String name)? nfcReader,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -223,8 +226,8 @@ mixin _$DeviceNode {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(UsbYubiKeyNode value)? usbYubiKey,
-    TResult Function(NfcReaderNode value)? nfcReader,
+    TResult? Function(UsbYubiKeyNode value)? usbYubiKey,
+    TResult? Function(NfcReaderNode value)? nfcReader,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -244,33 +247,37 @@ mixin _$DeviceNode {
 abstract class $DeviceNodeCopyWith<$Res> {
   factory $DeviceNodeCopyWith(
           DeviceNode value, $Res Function(DeviceNode) then) =
-      _$DeviceNodeCopyWithImpl<$Res>;
+      _$DeviceNodeCopyWithImpl<$Res, DeviceNode>;
+  @useResult
   $Res call({DevicePath path, String name});
 }
 
 /// @nodoc
-class _$DeviceNodeCopyWithImpl<$Res> implements $DeviceNodeCopyWith<$Res> {
+class _$DeviceNodeCopyWithImpl<$Res, $Val extends DeviceNode>
+    implements $DeviceNodeCopyWith<$Res> {
   _$DeviceNodeCopyWithImpl(this._value, this._then);
 
-  final DeviceNode _value;
   // ignore: unused_field
-  final $Res Function(DeviceNode) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? path = freezed,
-    Object? name = freezed,
+    Object? path = null,
+    Object? name = null,
   }) {
     return _then(_value.copyWith(
-      path: path == freezed
+      path: null == path
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
               as DevicePath,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-    ));
+    ) as $Val);
   }
 }
 
@@ -281,6 +288,7 @@ abstract class _$$UsbYubiKeyNodeCopyWith<$Res>
           _$UsbYubiKeyNode value, $Res Function(_$UsbYubiKeyNode) then) =
       __$$UsbYubiKeyNodeCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({DevicePath path, String name, UsbPid pid, DeviceInfo? info});
 
   $DeviceInfoCopyWith<$Res>? get info;
@@ -288,36 +296,34 @@ abstract class _$$UsbYubiKeyNodeCopyWith<$Res>
 
 /// @nodoc
 class __$$UsbYubiKeyNodeCopyWithImpl<$Res>
-    extends _$DeviceNodeCopyWithImpl<$Res>
+    extends _$DeviceNodeCopyWithImpl<$Res, _$UsbYubiKeyNode>
     implements _$$UsbYubiKeyNodeCopyWith<$Res> {
   __$$UsbYubiKeyNodeCopyWithImpl(
       _$UsbYubiKeyNode _value, $Res Function(_$UsbYubiKeyNode) _then)
-      : super(_value, (v) => _then(v as _$UsbYubiKeyNode));
+      : super(_value, _then);
 
-  @override
-  _$UsbYubiKeyNode get _value => super._value as _$UsbYubiKeyNode;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? path = freezed,
-    Object? name = freezed,
-    Object? pid = freezed,
+    Object? path = null,
+    Object? name = null,
+    Object? pid = null,
     Object? info = freezed,
   }) {
     return _then(_$UsbYubiKeyNode(
-      path == freezed
+      null == path
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
               as DevicePath,
-      name == freezed
+      null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      pid == freezed
+      null == pid
           ? _value.pid
           : pid // ignore: cast_nullable_to_non_nullable
               as UsbPid,
-      info == freezed
+      freezed == info
           ? _value.info
           : info // ignore: cast_nullable_to_non_nullable
               as DeviceInfo?,
@@ -325,6 +331,7 @@ class __$$UsbYubiKeyNodeCopyWithImpl<$Res>
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $DeviceInfoCopyWith<$Res>? get info {
     if (_value.info == null) {
       return null;
@@ -360,22 +367,18 @@ class _$UsbYubiKeyNode extends UsbYubiKeyNode {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UsbYubiKeyNode &&
-            const DeepCollectionEquality().equals(other.path, path) &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.pid, pid) &&
-            const DeepCollectionEquality().equals(other.info, info));
+            (identical(other.path, path) || other.path == path) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.pid, pid) || other.pid == pid) &&
+            (identical(other.info, info) || other.info == info));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(path),
-      const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(pid),
-      const DeepCollectionEquality().hash(info));
+  int get hashCode => Object.hash(runtimeType, path, name, pid, info);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$UsbYubiKeyNodeCopyWith<_$UsbYubiKeyNode> get copyWith =>
       __$$UsbYubiKeyNodeCopyWithImpl<_$UsbYubiKeyNode>(this, _$identity);
 
@@ -393,10 +396,10 @@ class _$UsbYubiKeyNode extends UsbYubiKeyNode {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(
+    TResult? Function(
             DevicePath path, String name, UsbPid pid, DeviceInfo? info)?
         usbYubiKey,
-    TResult Function(DevicePath path, String name)? nfcReader,
+    TResult? Function(DevicePath path, String name)? nfcReader,
   }) {
     return usbYubiKey?.call(path, name, pid, info);
   }
@@ -428,8 +431,8 @@ class _$UsbYubiKeyNode extends UsbYubiKeyNode {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(UsbYubiKeyNode value)? usbYubiKey,
-    TResult Function(NfcReaderNode value)? nfcReader,
+    TResult? Function(UsbYubiKeyNode value)? usbYubiKey,
+    TResult? Function(NfcReaderNode value)? nfcReader,
   }) {
     return usbYubiKey?.call(this);
   }
@@ -472,30 +475,30 @@ abstract class _$$NfcReaderNodeCopyWith<$Res>
           _$NfcReaderNode value, $Res Function(_$NfcReaderNode) then) =
       __$$NfcReaderNodeCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({DevicePath path, String name});
 }
 
 /// @nodoc
-class __$$NfcReaderNodeCopyWithImpl<$Res> extends _$DeviceNodeCopyWithImpl<$Res>
+class __$$NfcReaderNodeCopyWithImpl<$Res>
+    extends _$DeviceNodeCopyWithImpl<$Res, _$NfcReaderNode>
     implements _$$NfcReaderNodeCopyWith<$Res> {
   __$$NfcReaderNodeCopyWithImpl(
       _$NfcReaderNode _value, $Res Function(_$NfcReaderNode) _then)
-      : super(_value, (v) => _then(v as _$NfcReaderNode));
+      : super(_value, _then);
 
-  @override
-  _$NfcReaderNode get _value => super._value as _$NfcReaderNode;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? path = freezed,
-    Object? name = freezed,
+    Object? path = null,
+    Object? name = null,
   }) {
     return _then(_$NfcReaderNode(
-      path == freezed
+      null == path
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
               as DevicePath,
-      name == freezed
+      null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
@@ -523,18 +526,16 @@ class _$NfcReaderNode extends NfcReaderNode {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$NfcReaderNode &&
-            const DeepCollectionEquality().equals(other.path, path) &&
-            const DeepCollectionEquality().equals(other.name, name));
+            (identical(other.path, path) || other.path == path) &&
+            (identical(other.name, name) || other.name == name));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(path),
-      const DeepCollectionEquality().hash(name));
+  int get hashCode => Object.hash(runtimeType, path, name);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$NfcReaderNodeCopyWith<_$NfcReaderNode> get copyWith =>
       __$$NfcReaderNodeCopyWithImpl<_$NfcReaderNode>(this, _$identity);
 
@@ -552,10 +553,10 @@ class _$NfcReaderNode extends NfcReaderNode {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(
+    TResult? Function(
             DevicePath path, String name, UsbPid pid, DeviceInfo? info)?
         usbYubiKey,
-    TResult Function(DevicePath path, String name)? nfcReader,
+    TResult? Function(DevicePath path, String name)? nfcReader,
   }) {
     return nfcReader?.call(path, name);
   }
@@ -587,8 +588,8 @@ class _$NfcReaderNode extends NfcReaderNode {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(UsbYubiKeyNode value)? usbYubiKey,
-    TResult Function(NfcReaderNode value)? nfcReader,
+    TResult? Function(UsbYubiKeyNode value)? usbYubiKey,
+    TResult? Function(NfcReaderNode value)? nfcReader,
   }) {
     return nfcReader?.call(this);
   }
@@ -638,7 +639,8 @@ mixin _$MenuAction {
 abstract class $MenuActionCopyWith<$Res> {
   factory $MenuActionCopyWith(
           MenuAction value, $Res Function(MenuAction) then) =
-      _$MenuActionCopyWithImpl<$Res>;
+      _$MenuActionCopyWithImpl<$Res, MenuAction>;
+  @useResult
   $Res call(
       {String text,
       Widget icon,
@@ -647,38 +649,41 @@ abstract class $MenuActionCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$MenuActionCopyWithImpl<$Res> implements $MenuActionCopyWith<$Res> {
+class _$MenuActionCopyWithImpl<$Res, $Val extends MenuAction>
+    implements $MenuActionCopyWith<$Res> {
   _$MenuActionCopyWithImpl(this._value, this._then);
 
-  final MenuAction _value;
   // ignore: unused_field
-  final $Res Function(MenuAction) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? text = freezed,
-    Object? icon = freezed,
+    Object? text = null,
+    Object? icon = null,
     Object? trailing = freezed,
     Object? action = freezed,
   }) {
     return _then(_value.copyWith(
-      text: text == freezed
+      text: null == text
           ? _value.text
           : text // ignore: cast_nullable_to_non_nullable
               as String,
-      icon: icon == freezed
+      icon: null == icon
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as Widget,
-      trailing: trailing == freezed
+      trailing: freezed == trailing
           ? _value.trailing
           : trailing // ignore: cast_nullable_to_non_nullable
               as String?,
-      action: action == freezed
+      action: freezed == action
           ? _value.action
           : action // ignore: cast_nullable_to_non_nullable
               as void Function(BuildContext)?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -689,6 +694,7 @@ abstract class _$$_MenuActionCopyWith<$Res>
           _$_MenuAction value, $Res Function(_$_MenuAction) then) =
       __$$_MenuActionCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {String text,
       Widget icon,
@@ -697,36 +703,35 @@ abstract class _$$_MenuActionCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_MenuActionCopyWithImpl<$Res> extends _$MenuActionCopyWithImpl<$Res>
+class __$$_MenuActionCopyWithImpl<$Res>
+    extends _$MenuActionCopyWithImpl<$Res, _$_MenuAction>
     implements _$$_MenuActionCopyWith<$Res> {
   __$$_MenuActionCopyWithImpl(
       _$_MenuAction _value, $Res Function(_$_MenuAction) _then)
-      : super(_value, (v) => _then(v as _$_MenuAction));
+      : super(_value, _then);
 
-  @override
-  _$_MenuAction get _value => super._value as _$_MenuAction;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? text = freezed,
-    Object? icon = freezed,
+    Object? text = null,
+    Object? icon = null,
     Object? trailing = freezed,
     Object? action = freezed,
   }) {
     return _then(_$_MenuAction(
-      text: text == freezed
+      text: null == text
           ? _value.text
           : text // ignore: cast_nullable_to_non_nullable
               as String,
-      icon: icon == freezed
+      icon: null == icon
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as Widget,
-      trailing: trailing == freezed
+      trailing: freezed == trailing
           ? _value.trailing
           : trailing // ignore: cast_nullable_to_non_nullable
               as String?,
-      action: action == freezed
+      action: freezed == action
           ? _value.action
           : action // ignore: cast_nullable_to_non_nullable
               as void Function(BuildContext)?,
@@ -759,22 +764,19 @@ class _$_MenuAction implements _MenuAction {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_MenuAction &&
-            const DeepCollectionEquality().equals(other.text, text) &&
-            const DeepCollectionEquality().equals(other.icon, icon) &&
-            const DeepCollectionEquality().equals(other.trailing, trailing) &&
+            (identical(other.text, text) || other.text == text) &&
+            (identical(other.icon, icon) || other.icon == icon) &&
+            (identical(other.trailing, trailing) ||
+                other.trailing == trailing) &&
             (identical(other.action, action) || other.action == action));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(text),
-      const DeepCollectionEquality().hash(icon),
-      const DeepCollectionEquality().hash(trailing),
-      action);
+  int get hashCode => Object.hash(runtimeType, text, icon, trailing, action);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_MenuActionCopyWith<_$_MenuAction> get copyWith =>
       __$$_MenuActionCopyWithImpl<_$_MenuAction>(this, _$identity);
 }
@@ -815,38 +817,42 @@ mixin _$WindowState {
 abstract class $WindowStateCopyWith<$Res> {
   factory $WindowStateCopyWith(
           WindowState value, $Res Function(WindowState) then) =
-      _$WindowStateCopyWithImpl<$Res>;
+      _$WindowStateCopyWithImpl<$Res, WindowState>;
+  @useResult
   $Res call({bool focused, bool visible, bool active});
 }
 
 /// @nodoc
-class _$WindowStateCopyWithImpl<$Res> implements $WindowStateCopyWith<$Res> {
+class _$WindowStateCopyWithImpl<$Res, $Val extends WindowState>
+    implements $WindowStateCopyWith<$Res> {
   _$WindowStateCopyWithImpl(this._value, this._then);
 
-  final WindowState _value;
   // ignore: unused_field
-  final $Res Function(WindowState) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? focused = freezed,
-    Object? visible = freezed,
-    Object? active = freezed,
+    Object? focused = null,
+    Object? visible = null,
+    Object? active = null,
   }) {
     return _then(_value.copyWith(
-      focused: focused == freezed
+      focused: null == focused
           ? _value.focused
           : focused // ignore: cast_nullable_to_non_nullable
               as bool,
-      visible: visible == freezed
+      visible: null == visible
           ? _value.visible
           : visible // ignore: cast_nullable_to_non_nullable
               as bool,
-      active: active == freezed
+      active: null == active
           ? _value.active
           : active // ignore: cast_nullable_to_non_nullable
               as bool,
-    ));
+    ) as $Val);
   }
 }
 
@@ -857,35 +863,35 @@ abstract class _$$_WindowStateCopyWith<$Res>
           _$_WindowState value, $Res Function(_$_WindowState) then) =
       __$$_WindowStateCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({bool focused, bool visible, bool active});
 }
 
 /// @nodoc
-class __$$_WindowStateCopyWithImpl<$Res> extends _$WindowStateCopyWithImpl<$Res>
+class __$$_WindowStateCopyWithImpl<$Res>
+    extends _$WindowStateCopyWithImpl<$Res, _$_WindowState>
     implements _$$_WindowStateCopyWith<$Res> {
   __$$_WindowStateCopyWithImpl(
       _$_WindowState _value, $Res Function(_$_WindowState) _then)
-      : super(_value, (v) => _then(v as _$_WindowState));
+      : super(_value, _then);
 
-  @override
-  _$_WindowState get _value => super._value as _$_WindowState;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? focused = freezed,
-    Object? visible = freezed,
-    Object? active = freezed,
+    Object? focused = null,
+    Object? visible = null,
+    Object? active = null,
   }) {
     return _then(_$_WindowState(
-      focused: focused == freezed
+      focused: null == focused
           ? _value.focused
           : focused // ignore: cast_nullable_to_non_nullable
               as bool,
-      visible: visible == freezed
+      visible: null == visible
           ? _value.visible
           : visible // ignore: cast_nullable_to_non_nullable
               as bool,
-      active: active == freezed
+      active: null == active
           ? _value.active
           : active // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -916,20 +922,17 @@ class _$_WindowState implements _WindowState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_WindowState &&
-            const DeepCollectionEquality().equals(other.focused, focused) &&
-            const DeepCollectionEquality().equals(other.visible, visible) &&
-            const DeepCollectionEquality().equals(other.active, active));
+            (identical(other.focused, focused) || other.focused == focused) &&
+            (identical(other.visible, visible) || other.visible == visible) &&
+            (identical(other.active, active) || other.active == active));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(focused),
-      const DeepCollectionEquality().hash(visible),
-      const DeepCollectionEquality().hash(active));
+  int get hashCode => Object.hash(runtimeType, focused, visible, active);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_WindowStateCopyWith<_$_WindowState> get copyWith =>
       __$$_WindowStateCopyWithImpl<_$_WindowState>(this, _$identity);
 }

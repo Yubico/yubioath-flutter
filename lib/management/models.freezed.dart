@@ -36,7 +36,8 @@ mixin _$DeviceConfig {
 abstract class $DeviceConfigCopyWith<$Res> {
   factory $DeviceConfigCopyWith(
           DeviceConfig value, $Res Function(DeviceConfig) then) =
-      _$DeviceConfigCopyWithImpl<$Res>;
+      _$DeviceConfigCopyWithImpl<$Res, DeviceConfig>;
+  @useResult
   $Res call(
       {Map<Transport, int> enabledCapabilities,
       int? autoEjectTimeout,
@@ -45,38 +46,41 @@ abstract class $DeviceConfigCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$DeviceConfigCopyWithImpl<$Res> implements $DeviceConfigCopyWith<$Res> {
+class _$DeviceConfigCopyWithImpl<$Res, $Val extends DeviceConfig>
+    implements $DeviceConfigCopyWith<$Res> {
   _$DeviceConfigCopyWithImpl(this._value, this._then);
 
-  final DeviceConfig _value;
   // ignore: unused_field
-  final $Res Function(DeviceConfig) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? enabledCapabilities = freezed,
+    Object? enabledCapabilities = null,
     Object? autoEjectTimeout = freezed,
     Object? challengeResponseTimeout = freezed,
     Object? deviceFlags = freezed,
   }) {
     return _then(_value.copyWith(
-      enabledCapabilities: enabledCapabilities == freezed
+      enabledCapabilities: null == enabledCapabilities
           ? _value.enabledCapabilities
           : enabledCapabilities // ignore: cast_nullable_to_non_nullable
               as Map<Transport, int>,
-      autoEjectTimeout: autoEjectTimeout == freezed
+      autoEjectTimeout: freezed == autoEjectTimeout
           ? _value.autoEjectTimeout
           : autoEjectTimeout // ignore: cast_nullable_to_non_nullable
               as int?,
-      challengeResponseTimeout: challengeResponseTimeout == freezed
+      challengeResponseTimeout: freezed == challengeResponseTimeout
           ? _value.challengeResponseTimeout
           : challengeResponseTimeout // ignore: cast_nullable_to_non_nullable
               as int?,
-      deviceFlags: deviceFlags == freezed
+      deviceFlags: freezed == deviceFlags
           ? _value.deviceFlags
           : deviceFlags // ignore: cast_nullable_to_non_nullable
               as int?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -87,6 +91,7 @@ abstract class _$$_DeviceConfigCopyWith<$Res>
           _$_DeviceConfig value, $Res Function(_$_DeviceConfig) then) =
       __$$_DeviceConfigCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {Map<Transport, int> enabledCapabilities,
       int? autoEjectTimeout,
@@ -96,36 +101,34 @@ abstract class _$$_DeviceConfigCopyWith<$Res>
 
 /// @nodoc
 class __$$_DeviceConfigCopyWithImpl<$Res>
-    extends _$DeviceConfigCopyWithImpl<$Res>
+    extends _$DeviceConfigCopyWithImpl<$Res, _$_DeviceConfig>
     implements _$$_DeviceConfigCopyWith<$Res> {
   __$$_DeviceConfigCopyWithImpl(
       _$_DeviceConfig _value, $Res Function(_$_DeviceConfig) _then)
-      : super(_value, (v) => _then(v as _$_DeviceConfig));
+      : super(_value, _then);
 
-  @override
-  _$_DeviceConfig get _value => super._value as _$_DeviceConfig;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? enabledCapabilities = freezed,
+    Object? enabledCapabilities = null,
     Object? autoEjectTimeout = freezed,
     Object? challengeResponseTimeout = freezed,
     Object? deviceFlags = freezed,
   }) {
     return _then(_$_DeviceConfig(
-      enabledCapabilities == freezed
+      null == enabledCapabilities
           ? _value._enabledCapabilities
           : enabledCapabilities // ignore: cast_nullable_to_non_nullable
               as Map<Transport, int>,
-      autoEjectTimeout == freezed
+      freezed == autoEjectTimeout
           ? _value.autoEjectTimeout
           : autoEjectTimeout // ignore: cast_nullable_to_non_nullable
               as int?,
-      challengeResponseTimeout == freezed
+      freezed == challengeResponseTimeout
           ? _value.challengeResponseTimeout
           : challengeResponseTimeout // ignore: cast_nullable_to_non_nullable
               as int?,
-      deviceFlags == freezed
+      freezed == deviceFlags
           ? _value.deviceFlags
           : deviceFlags // ignore: cast_nullable_to_non_nullable
               as int?,
@@ -169,12 +172,13 @@ class _$_DeviceConfig implements _DeviceConfig {
             other is _$_DeviceConfig &&
             const DeepCollectionEquality()
                 .equals(other._enabledCapabilities, _enabledCapabilities) &&
-            const DeepCollectionEquality()
-                .equals(other.autoEjectTimeout, autoEjectTimeout) &&
-            const DeepCollectionEquality().equals(
-                other.challengeResponseTimeout, challengeResponseTimeout) &&
-            const DeepCollectionEquality()
-                .equals(other.deviceFlags, deviceFlags));
+            (identical(other.autoEjectTimeout, autoEjectTimeout) ||
+                other.autoEjectTimeout == autoEjectTimeout) &&
+            (identical(
+                    other.challengeResponseTimeout, challengeResponseTimeout) ||
+                other.challengeResponseTimeout == challengeResponseTimeout) &&
+            (identical(other.deviceFlags, deviceFlags) ||
+                other.deviceFlags == deviceFlags));
   }
 
   @JsonKey(ignore: true)
@@ -182,12 +186,13 @@ class _$_DeviceConfig implements _DeviceConfig {
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_enabledCapabilities),
-      const DeepCollectionEquality().hash(autoEjectTimeout),
-      const DeepCollectionEquality().hash(challengeResponseTimeout),
-      const DeepCollectionEquality().hash(deviceFlags));
+      autoEjectTimeout,
+      challengeResponseTimeout,
+      deviceFlags);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_DeviceConfigCopyWith<_$_DeviceConfig> get copyWith =>
       __$$_DeviceConfigCopyWithImpl<_$_DeviceConfig>(this, _$identity);
 
@@ -249,7 +254,8 @@ mixin _$DeviceInfo {
 abstract class $DeviceInfoCopyWith<$Res> {
   factory $DeviceInfoCopyWith(
           DeviceInfo value, $Res Function(DeviceInfo) then) =
-      _$DeviceInfoCopyWithImpl<$Res>;
+      _$DeviceInfoCopyWithImpl<$Res, DeviceInfo>;
+  @useResult
   $Res call(
       {DeviceConfig config,
       int? serial,
@@ -265,71 +271,76 @@ abstract class $DeviceInfoCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$DeviceInfoCopyWithImpl<$Res> implements $DeviceInfoCopyWith<$Res> {
+class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
+    implements $DeviceInfoCopyWith<$Res> {
   _$DeviceInfoCopyWithImpl(this._value, this._then);
 
-  final DeviceInfo _value;
   // ignore: unused_field
-  final $Res Function(DeviceInfo) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? config = freezed,
+    Object? config = null,
     Object? serial = freezed,
-    Object? version = freezed,
-    Object? formFactor = freezed,
-    Object? supportedCapabilities = freezed,
-    Object? isLocked = freezed,
-    Object? isFips = freezed,
-    Object? isSky = freezed,
+    Object? version = null,
+    Object? formFactor = null,
+    Object? supportedCapabilities = null,
+    Object? isLocked = null,
+    Object? isFips = null,
+    Object? isSky = null,
   }) {
     return _then(_value.copyWith(
-      config: config == freezed
+      config: null == config
           ? _value.config
           : config // ignore: cast_nullable_to_non_nullable
               as DeviceConfig,
-      serial: serial == freezed
+      serial: freezed == serial
           ? _value.serial
           : serial // ignore: cast_nullable_to_non_nullable
               as int?,
-      version: version == freezed
+      version: null == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as Version,
-      formFactor: formFactor == freezed
+      formFactor: null == formFactor
           ? _value.formFactor
           : formFactor // ignore: cast_nullable_to_non_nullable
               as FormFactor,
-      supportedCapabilities: supportedCapabilities == freezed
+      supportedCapabilities: null == supportedCapabilities
           ? _value.supportedCapabilities
           : supportedCapabilities // ignore: cast_nullable_to_non_nullable
               as Map<Transport, int>,
-      isLocked: isLocked == freezed
+      isLocked: null == isLocked
           ? _value.isLocked
           : isLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      isFips: isFips == freezed
+      isFips: null == isFips
           ? _value.isFips
           : isFips // ignore: cast_nullable_to_non_nullable
               as bool,
-      isSky: isSky == freezed
+      isSky: null == isSky
           ? _value.isSky
           : isSky // ignore: cast_nullable_to_non_nullable
               as bool,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $DeviceConfigCopyWith<$Res> get config {
     return $DeviceConfigCopyWith<$Res>(_value.config, (value) {
-      return _then(_value.copyWith(config: value));
+      return _then(_value.copyWith(config: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $VersionCopyWith<$Res> get version {
     return $VersionCopyWith<$Res>(_value.version, (value) {
-      return _then(_value.copyWith(version: value));
+      return _then(_value.copyWith(version: value) as $Val);
     });
   }
 }
@@ -341,6 +352,7 @@ abstract class _$$_DeviceInfoCopyWith<$Res>
           _$_DeviceInfo value, $Res Function(_$_DeviceInfo) then) =
       __$$_DeviceInfoCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {DeviceConfig config,
       int? serial,
@@ -358,56 +370,55 @@ abstract class _$$_DeviceInfoCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_DeviceInfoCopyWithImpl<$Res> extends _$DeviceInfoCopyWithImpl<$Res>
+class __$$_DeviceInfoCopyWithImpl<$Res>
+    extends _$DeviceInfoCopyWithImpl<$Res, _$_DeviceInfo>
     implements _$$_DeviceInfoCopyWith<$Res> {
   __$$_DeviceInfoCopyWithImpl(
       _$_DeviceInfo _value, $Res Function(_$_DeviceInfo) _then)
-      : super(_value, (v) => _then(v as _$_DeviceInfo));
+      : super(_value, _then);
 
-  @override
-  _$_DeviceInfo get _value => super._value as _$_DeviceInfo;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? config = freezed,
+    Object? config = null,
     Object? serial = freezed,
-    Object? version = freezed,
-    Object? formFactor = freezed,
-    Object? supportedCapabilities = freezed,
-    Object? isLocked = freezed,
-    Object? isFips = freezed,
-    Object? isSky = freezed,
+    Object? version = null,
+    Object? formFactor = null,
+    Object? supportedCapabilities = null,
+    Object? isLocked = null,
+    Object? isFips = null,
+    Object? isSky = null,
   }) {
     return _then(_$_DeviceInfo(
-      config == freezed
+      null == config
           ? _value.config
           : config // ignore: cast_nullable_to_non_nullable
               as DeviceConfig,
-      serial == freezed
+      freezed == serial
           ? _value.serial
           : serial // ignore: cast_nullable_to_non_nullable
               as int?,
-      version == freezed
+      null == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as Version,
-      formFactor == freezed
+      null == formFactor
           ? _value.formFactor
           : formFactor // ignore: cast_nullable_to_non_nullable
               as FormFactor,
-      supportedCapabilities == freezed
+      null == supportedCapabilities
           ? _value._supportedCapabilities
           : supportedCapabilities // ignore: cast_nullable_to_non_nullable
               as Map<Transport, int>,
-      isLocked == freezed
+      null == isLocked
           ? _value.isLocked
           : isLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      isFips == freezed
+      null == isFips
           ? _value.isFips
           : isFips // ignore: cast_nullable_to_non_nullable
               as bool,
-      isSky == freezed
+      null == isSky
           ? _value.isSky
           : isSky // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -464,33 +475,35 @@ class _$_DeviceInfo implements _DeviceInfo {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_DeviceInfo &&
-            const DeepCollectionEquality().equals(other.config, config) &&
-            const DeepCollectionEquality().equals(other.serial, serial) &&
-            const DeepCollectionEquality().equals(other.version, version) &&
-            const DeepCollectionEquality()
-                .equals(other.formFactor, formFactor) &&
+            (identical(other.config, config) || other.config == config) &&
+            (identical(other.serial, serial) || other.serial == serial) &&
+            (identical(other.version, version) || other.version == version) &&
+            (identical(other.formFactor, formFactor) ||
+                other.formFactor == formFactor) &&
             const DeepCollectionEquality()
                 .equals(other._supportedCapabilities, _supportedCapabilities) &&
-            const DeepCollectionEquality().equals(other.isLocked, isLocked) &&
-            const DeepCollectionEquality().equals(other.isFips, isFips) &&
-            const DeepCollectionEquality().equals(other.isSky, isSky));
+            (identical(other.isLocked, isLocked) ||
+                other.isLocked == isLocked) &&
+            (identical(other.isFips, isFips) || other.isFips == isFips) &&
+            (identical(other.isSky, isSky) || other.isSky == isSky));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(config),
-      const DeepCollectionEquality().hash(serial),
-      const DeepCollectionEquality().hash(version),
-      const DeepCollectionEquality().hash(formFactor),
+      config,
+      serial,
+      version,
+      formFactor,
       const DeepCollectionEquality().hash(_supportedCapabilities),
-      const DeepCollectionEquality().hash(isLocked),
-      const DeepCollectionEquality().hash(isFips),
-      const DeepCollectionEquality().hash(isSky));
+      isLocked,
+      isFips,
+      isSky);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_DeviceInfoCopyWith<_$_DeviceInfo> get copyWith =>
       __$$_DeviceInfoCopyWithImpl<_$_DeviceInfo>(this, _$identity);
 

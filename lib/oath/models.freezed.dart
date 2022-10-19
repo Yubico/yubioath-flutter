@@ -38,7 +38,8 @@ mixin _$OathCredential {
 abstract class $OathCredentialCopyWith<$Res> {
   factory $OathCredentialCopyWith(
           OathCredential value, $Res Function(OathCredential) then) =
-      _$OathCredentialCopyWithImpl<$Res>;
+      _$OathCredentialCopyWithImpl<$Res, OathCredential>;
+  @useResult
   $Res call(
       {String deviceId,
       String id,
@@ -50,54 +51,56 @@ abstract class $OathCredentialCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$OathCredentialCopyWithImpl<$Res>
+class _$OathCredentialCopyWithImpl<$Res, $Val extends OathCredential>
     implements $OathCredentialCopyWith<$Res> {
   _$OathCredentialCopyWithImpl(this._value, this._then);
 
-  final OathCredential _value;
   // ignore: unused_field
-  final $Res Function(OathCredential) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? deviceId = freezed,
-    Object? id = freezed,
+    Object? deviceId = null,
+    Object? id = null,
     Object? issuer = freezed,
-    Object? name = freezed,
-    Object? oathType = freezed,
-    Object? period = freezed,
-    Object? touchRequired = freezed,
+    Object? name = null,
+    Object? oathType = null,
+    Object? period = null,
+    Object? touchRequired = null,
   }) {
     return _then(_value.copyWith(
-      deviceId: deviceId == freezed
+      deviceId: null == deviceId
           ? _value.deviceId
           : deviceId // ignore: cast_nullable_to_non_nullable
               as String,
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      issuer: issuer == freezed
+      issuer: freezed == issuer
           ? _value.issuer
           : issuer // ignore: cast_nullable_to_non_nullable
               as String?,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      oathType: oathType == freezed
+      oathType: null == oathType
           ? _value.oathType
           : oathType // ignore: cast_nullable_to_non_nullable
               as OathType,
-      period: period == freezed
+      period: null == period
           ? _value.period
           : period // ignore: cast_nullable_to_non_nullable
               as int,
-      touchRequired: touchRequired == freezed
+      touchRequired: null == touchRequired
           ? _value.touchRequired
           : touchRequired // ignore: cast_nullable_to_non_nullable
               as bool,
-    ));
+    ) as $Val);
   }
 }
 
@@ -108,6 +111,7 @@ abstract class _$$_OathCredentialCopyWith<$Res>
           _$_OathCredential value, $Res Function(_$_OathCredential) then) =
       __$$_OathCredentialCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {String deviceId,
       String id,
@@ -120,51 +124,49 @@ abstract class _$$_OathCredentialCopyWith<$Res>
 
 /// @nodoc
 class __$$_OathCredentialCopyWithImpl<$Res>
-    extends _$OathCredentialCopyWithImpl<$Res>
+    extends _$OathCredentialCopyWithImpl<$Res, _$_OathCredential>
     implements _$$_OathCredentialCopyWith<$Res> {
   __$$_OathCredentialCopyWithImpl(
       _$_OathCredential _value, $Res Function(_$_OathCredential) _then)
-      : super(_value, (v) => _then(v as _$_OathCredential));
+      : super(_value, _then);
 
-  @override
-  _$_OathCredential get _value => super._value as _$_OathCredential;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? deviceId = freezed,
-    Object? id = freezed,
+    Object? deviceId = null,
+    Object? id = null,
     Object? issuer = freezed,
-    Object? name = freezed,
-    Object? oathType = freezed,
-    Object? period = freezed,
-    Object? touchRequired = freezed,
+    Object? name = null,
+    Object? oathType = null,
+    Object? period = null,
+    Object? touchRequired = null,
   }) {
     return _then(_$_OathCredential(
-      deviceId == freezed
+      null == deviceId
           ? _value.deviceId
           : deviceId // ignore: cast_nullable_to_non_nullable
               as String,
-      id == freezed
+      null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      issuer == freezed
+      freezed == issuer
           ? _value.issuer
           : issuer // ignore: cast_nullable_to_non_nullable
               as String?,
-      name == freezed
+      null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      oathType == freezed
+      null == oathType
           ? _value.oathType
           : oathType // ignore: cast_nullable_to_non_nullable
               as OathType,
-      period == freezed
+      null == period
           ? _value.period
           : period // ignore: cast_nullable_to_non_nullable
               as int,
-      touchRequired == freezed
+      null == touchRequired
           ? _value.touchRequired
           : touchRequired // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -206,30 +208,26 @@ class _$_OathCredential implements _OathCredential {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_OathCredential &&
-            const DeepCollectionEquality().equals(other.deviceId, deviceId) &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.issuer, issuer) &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.oathType, oathType) &&
-            const DeepCollectionEquality().equals(other.period, period) &&
-            const DeepCollectionEquality()
-                .equals(other.touchRequired, touchRequired));
+            (identical(other.deviceId, deviceId) ||
+                other.deviceId == deviceId) &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.issuer, issuer) || other.issuer == issuer) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.oathType, oathType) ||
+                other.oathType == oathType) &&
+            (identical(other.period, period) || other.period == period) &&
+            (identical(other.touchRequired, touchRequired) ||
+                other.touchRequired == touchRequired));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(deviceId),
-      const DeepCollectionEquality().hash(id),
-      const DeepCollectionEquality().hash(issuer),
-      const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(oathType),
-      const DeepCollectionEquality().hash(period),
-      const DeepCollectionEquality().hash(touchRequired));
+      runtimeType, deviceId, id, issuer, name, oathType, period, touchRequired);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_OathCredentialCopyWith<_$_OathCredential> get copyWith =>
       __$$_OathCredentialCopyWithImpl<_$_OathCredential>(this, _$identity);
 
@@ -293,38 +291,42 @@ mixin _$OathCode {
 /// @nodoc
 abstract class $OathCodeCopyWith<$Res> {
   factory $OathCodeCopyWith(OathCode value, $Res Function(OathCode) then) =
-      _$OathCodeCopyWithImpl<$Res>;
+      _$OathCodeCopyWithImpl<$Res, OathCode>;
+  @useResult
   $Res call({String value, int validFrom, int validTo});
 }
 
 /// @nodoc
-class _$OathCodeCopyWithImpl<$Res> implements $OathCodeCopyWith<$Res> {
+class _$OathCodeCopyWithImpl<$Res, $Val extends OathCode>
+    implements $OathCodeCopyWith<$Res> {
   _$OathCodeCopyWithImpl(this._value, this._then);
 
-  final OathCode _value;
   // ignore: unused_field
-  final $Res Function(OathCode) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? value = freezed,
-    Object? validFrom = freezed,
-    Object? validTo = freezed,
+    Object? value = null,
+    Object? validFrom = null,
+    Object? validTo = null,
   }) {
     return _then(_value.copyWith(
-      value: value == freezed
+      value: null == value
           ? _value.value
           : value // ignore: cast_nullable_to_non_nullable
               as String,
-      validFrom: validFrom == freezed
+      validFrom: null == validFrom
           ? _value.validFrom
           : validFrom // ignore: cast_nullable_to_non_nullable
               as int,
-      validTo: validTo == freezed
+      validTo: null == validTo
           ? _value.validTo
           : validTo // ignore: cast_nullable_to_non_nullable
               as int,
-    ));
+    ) as $Val);
   }
 }
 
@@ -334,35 +336,35 @@ abstract class _$$_OathCodeCopyWith<$Res> implements $OathCodeCopyWith<$Res> {
           _$_OathCode value, $Res Function(_$_OathCode) then) =
       __$$_OathCodeCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String value, int validFrom, int validTo});
 }
 
 /// @nodoc
-class __$$_OathCodeCopyWithImpl<$Res> extends _$OathCodeCopyWithImpl<$Res>
+class __$$_OathCodeCopyWithImpl<$Res>
+    extends _$OathCodeCopyWithImpl<$Res, _$_OathCode>
     implements _$$_OathCodeCopyWith<$Res> {
   __$$_OathCodeCopyWithImpl(
       _$_OathCode _value, $Res Function(_$_OathCode) _then)
-      : super(_value, (v) => _then(v as _$_OathCode));
+      : super(_value, _then);
 
-  @override
-  _$_OathCode get _value => super._value as _$_OathCode;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? value = freezed,
-    Object? validFrom = freezed,
-    Object? validTo = freezed,
+    Object? value = null,
+    Object? validFrom = null,
+    Object? validTo = null,
   }) {
     return _then(_$_OathCode(
-      value == freezed
+      null == value
           ? _value.value
           : value // ignore: cast_nullable_to_non_nullable
               as String,
-      validFrom == freezed
+      null == validFrom
           ? _value.validFrom
           : validFrom // ignore: cast_nullable_to_non_nullable
               as int,
-      validTo == freezed
+      null == validTo
           ? _value.validTo
           : validTo // ignore: cast_nullable_to_non_nullable
               as int,
@@ -395,21 +397,19 @@ class _$_OathCode implements _OathCode {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_OathCode &&
-            const DeepCollectionEquality().equals(other.value, value) &&
-            const DeepCollectionEquality().equals(other.validFrom, validFrom) &&
-            const DeepCollectionEquality().equals(other.validTo, validTo));
+            (identical(other.value, value) || other.value == value) &&
+            (identical(other.validFrom, validFrom) ||
+                other.validFrom == validFrom) &&
+            (identical(other.validTo, validTo) || other.validTo == validTo));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(value),
-      const DeepCollectionEquality().hash(validFrom),
-      const DeepCollectionEquality().hash(validTo));
+  int get hashCode => Object.hash(runtimeType, value, validFrom, validTo);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_OathCodeCopyWith<_$_OathCode> get copyWith =>
       __$$_OathCodeCopyWithImpl<_$_OathCode>(this, _$identity);
 
@@ -457,7 +457,8 @@ mixin _$OathPair {
 /// @nodoc
 abstract class $OathPairCopyWith<$Res> {
   factory $OathPairCopyWith(OathPair value, $Res Function(OathPair) then) =
-      _$OathPairCopyWithImpl<$Res>;
+      _$OathPairCopyWithImpl<$Res, OathPair>;
+  @useResult
   $Res call({OathCredential credential, OathCode? code});
 
   $OathCredentialCopyWith<$Res> get credential;
@@ -465,45 +466,50 @@ abstract class $OathPairCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$OathPairCopyWithImpl<$Res> implements $OathPairCopyWith<$Res> {
+class _$OathPairCopyWithImpl<$Res, $Val extends OathPair>
+    implements $OathPairCopyWith<$Res> {
   _$OathPairCopyWithImpl(this._value, this._then);
 
-  final OathPair _value;
   // ignore: unused_field
-  final $Res Function(OathPair) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? credential = freezed,
+    Object? credential = null,
     Object? code = freezed,
   }) {
     return _then(_value.copyWith(
-      credential: credential == freezed
+      credential: null == credential
           ? _value.credential
           : credential // ignore: cast_nullable_to_non_nullable
               as OathCredential,
-      code: code == freezed
+      code: freezed == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
               as OathCode?,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $OathCredentialCopyWith<$Res> get credential {
     return $OathCredentialCopyWith<$Res>(_value.credential, (value) {
-      return _then(_value.copyWith(credential: value));
+      return _then(_value.copyWith(credential: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $OathCodeCopyWith<$Res>? get code {
     if (_value.code == null) {
       return null;
     }
 
     return $OathCodeCopyWith<$Res>(_value.code!, (value) {
-      return _then(_value.copyWith(code: value));
+      return _then(_value.copyWith(code: value) as $Val);
     });
   }
 }
@@ -514,6 +520,7 @@ abstract class _$$_OathPairCopyWith<$Res> implements $OathPairCopyWith<$Res> {
           _$_OathPair value, $Res Function(_$_OathPair) then) =
       __$$_OathPairCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({OathCredential credential, OathCode? code});
 
   @override
@@ -523,26 +530,25 @@ abstract class _$$_OathPairCopyWith<$Res> implements $OathPairCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_OathPairCopyWithImpl<$Res> extends _$OathPairCopyWithImpl<$Res>
+class __$$_OathPairCopyWithImpl<$Res>
+    extends _$OathPairCopyWithImpl<$Res, _$_OathPair>
     implements _$$_OathPairCopyWith<$Res> {
   __$$_OathPairCopyWithImpl(
       _$_OathPair _value, $Res Function(_$_OathPair) _then)
-      : super(_value, (v) => _then(v as _$_OathPair));
+      : super(_value, _then);
 
-  @override
-  _$_OathPair get _value => super._value as _$_OathPair;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? credential = freezed,
+    Object? credential = null,
     Object? code = freezed,
   }) {
     return _then(_$_OathPair(
-      credential == freezed
+      null == credential
           ? _value.credential
           : credential // ignore: cast_nullable_to_non_nullable
               as OathCredential,
-      code == freezed
+      freezed == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
               as OathCode?,
@@ -573,20 +579,18 @@ class _$_OathPair implements _OathPair {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_OathPair &&
-            const DeepCollectionEquality()
-                .equals(other.credential, credential) &&
-            const DeepCollectionEquality().equals(other.code, code));
+            (identical(other.credential, credential) ||
+                other.credential == credential) &&
+            (identical(other.code, code) || other.code == code));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(credential),
-      const DeepCollectionEquality().hash(code));
+  int get hashCode => Object.hash(runtimeType, credential, code);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_OathPairCopyWith<_$_OathPair> get copyWith =>
       __$$_OathPairCopyWithImpl<_$_OathPair>(this, _$identity);
 
@@ -636,7 +640,8 @@ mixin _$OathState {
 /// @nodoc
 abstract class $OathStateCopyWith<$Res> {
   factory $OathStateCopyWith(OathState value, $Res Function(OathState) then) =
-      _$OathStateCopyWithImpl<$Res>;
+      _$OathStateCopyWithImpl<$Res, OathState>;
+  @useResult
   $Res call(
       {String deviceId,
       Version version,
@@ -649,54 +654,58 @@ abstract class $OathStateCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$OathStateCopyWithImpl<$Res> implements $OathStateCopyWith<$Res> {
+class _$OathStateCopyWithImpl<$Res, $Val extends OathState>
+    implements $OathStateCopyWith<$Res> {
   _$OathStateCopyWithImpl(this._value, this._then);
 
-  final OathState _value;
   // ignore: unused_field
-  final $Res Function(OathState) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? deviceId = freezed,
-    Object? version = freezed,
-    Object? hasKey = freezed,
-    Object? remembered = freezed,
-    Object? locked = freezed,
-    Object? keystore = freezed,
+    Object? deviceId = null,
+    Object? version = null,
+    Object? hasKey = null,
+    Object? remembered = null,
+    Object? locked = null,
+    Object? keystore = null,
   }) {
     return _then(_value.copyWith(
-      deviceId: deviceId == freezed
+      deviceId: null == deviceId
           ? _value.deviceId
           : deviceId // ignore: cast_nullable_to_non_nullable
               as String,
-      version: version == freezed
+      version: null == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as Version,
-      hasKey: hasKey == freezed
+      hasKey: null == hasKey
           ? _value.hasKey
           : hasKey // ignore: cast_nullable_to_non_nullable
               as bool,
-      remembered: remembered == freezed
+      remembered: null == remembered
           ? _value.remembered
           : remembered // ignore: cast_nullable_to_non_nullable
               as bool,
-      locked: locked == freezed
+      locked: null == locked
           ? _value.locked
           : locked // ignore: cast_nullable_to_non_nullable
               as bool,
-      keystore: keystore == freezed
+      keystore: null == keystore
           ? _value.keystore
           : keystore // ignore: cast_nullable_to_non_nullable
               as KeystoreState,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $VersionCopyWith<$Res> get version {
     return $VersionCopyWith<$Res>(_value.version, (value) {
-      return _then(_value.copyWith(version: value));
+      return _then(_value.copyWith(version: value) as $Val);
     });
   }
 }
@@ -707,6 +716,7 @@ abstract class _$$_OathStateCopyWith<$Res> implements $OathStateCopyWith<$Res> {
           _$_OathState value, $Res Function(_$_OathState) then) =
       __$$_OathStateCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {String deviceId,
       Version version,
@@ -720,46 +730,45 @@ abstract class _$$_OathStateCopyWith<$Res> implements $OathStateCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_OathStateCopyWithImpl<$Res> extends _$OathStateCopyWithImpl<$Res>
+class __$$_OathStateCopyWithImpl<$Res>
+    extends _$OathStateCopyWithImpl<$Res, _$_OathState>
     implements _$$_OathStateCopyWith<$Res> {
   __$$_OathStateCopyWithImpl(
       _$_OathState _value, $Res Function(_$_OathState) _then)
-      : super(_value, (v) => _then(v as _$_OathState));
+      : super(_value, _then);
 
-  @override
-  _$_OathState get _value => super._value as _$_OathState;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? deviceId = freezed,
-    Object? version = freezed,
-    Object? hasKey = freezed,
-    Object? remembered = freezed,
-    Object? locked = freezed,
-    Object? keystore = freezed,
+    Object? deviceId = null,
+    Object? version = null,
+    Object? hasKey = null,
+    Object? remembered = null,
+    Object? locked = null,
+    Object? keystore = null,
   }) {
     return _then(_$_OathState(
-      deviceId == freezed
+      null == deviceId
           ? _value.deviceId
           : deviceId // ignore: cast_nullable_to_non_nullable
               as String,
-      version == freezed
+      null == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as Version,
-      hasKey: hasKey == freezed
+      hasKey: null == hasKey
           ? _value.hasKey
           : hasKey // ignore: cast_nullable_to_non_nullable
               as bool,
-      remembered: remembered == freezed
+      remembered: null == remembered
           ? _value.remembered
           : remembered // ignore: cast_nullable_to_non_nullable
               as bool,
-      locked: locked == freezed
+      locked: null == locked
           ? _value.locked
           : locked // ignore: cast_nullable_to_non_nullable
               as bool,
-      keystore: keystore == freezed
+      keystore: null == keystore
           ? _value.keystore
           : keystore // ignore: cast_nullable_to_non_nullable
               as KeystoreState,
@@ -802,28 +811,25 @@ class _$_OathState implements _OathState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_OathState &&
-            const DeepCollectionEquality().equals(other.deviceId, deviceId) &&
-            const DeepCollectionEquality().equals(other.version, version) &&
-            const DeepCollectionEquality().equals(other.hasKey, hasKey) &&
-            const DeepCollectionEquality()
-                .equals(other.remembered, remembered) &&
-            const DeepCollectionEquality().equals(other.locked, locked) &&
-            const DeepCollectionEquality().equals(other.keystore, keystore));
+            (identical(other.deviceId, deviceId) ||
+                other.deviceId == deviceId) &&
+            (identical(other.version, version) || other.version == version) &&
+            (identical(other.hasKey, hasKey) || other.hasKey == hasKey) &&
+            (identical(other.remembered, remembered) ||
+                other.remembered == remembered) &&
+            (identical(other.locked, locked) || other.locked == locked) &&
+            (identical(other.keystore, keystore) ||
+                other.keystore == keystore));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(deviceId),
-      const DeepCollectionEquality().hash(version),
-      const DeepCollectionEquality().hash(hasKey),
-      const DeepCollectionEquality().hash(remembered),
-      const DeepCollectionEquality().hash(locked),
-      const DeepCollectionEquality().hash(keystore));
+      runtimeType, deviceId, version, hasKey, remembered, locked, keystore);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_OathStateCopyWith<_$_OathState> get copyWith =>
       __$$_OathStateCopyWithImpl<_$_OathState>(this, _$identity);
 
@@ -888,7 +894,8 @@ mixin _$CredentialData {
 abstract class $CredentialDataCopyWith<$Res> {
   factory $CredentialDataCopyWith(
           CredentialData value, $Res Function(CredentialData) then) =
-      _$CredentialDataCopyWithImpl<$Res>;
+      _$CredentialDataCopyWithImpl<$Res, CredentialData>;
+  @useResult
   $Res call(
       {String? issuer,
       String name,
@@ -901,59 +908,61 @@ abstract class $CredentialDataCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$CredentialDataCopyWithImpl<$Res>
+class _$CredentialDataCopyWithImpl<$Res, $Val extends CredentialData>
     implements $CredentialDataCopyWith<$Res> {
   _$CredentialDataCopyWithImpl(this._value, this._then);
 
-  final CredentialData _value;
   // ignore: unused_field
-  final $Res Function(CredentialData) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? issuer = freezed,
-    Object? name = freezed,
-    Object? secret = freezed,
-    Object? oathType = freezed,
-    Object? hashAlgorithm = freezed,
-    Object? digits = freezed,
-    Object? period = freezed,
-    Object? counter = freezed,
+    Object? name = null,
+    Object? secret = null,
+    Object? oathType = null,
+    Object? hashAlgorithm = null,
+    Object? digits = null,
+    Object? period = null,
+    Object? counter = null,
   }) {
     return _then(_value.copyWith(
-      issuer: issuer == freezed
+      issuer: freezed == issuer
           ? _value.issuer
           : issuer // ignore: cast_nullable_to_non_nullable
               as String?,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      secret: secret == freezed
+      secret: null == secret
           ? _value.secret
           : secret // ignore: cast_nullable_to_non_nullable
               as String,
-      oathType: oathType == freezed
+      oathType: null == oathType
           ? _value.oathType
           : oathType // ignore: cast_nullable_to_non_nullable
               as OathType,
-      hashAlgorithm: hashAlgorithm == freezed
+      hashAlgorithm: null == hashAlgorithm
           ? _value.hashAlgorithm
           : hashAlgorithm // ignore: cast_nullable_to_non_nullable
               as HashAlgorithm,
-      digits: digits == freezed
+      digits: null == digits
           ? _value.digits
           : digits // ignore: cast_nullable_to_non_nullable
               as int,
-      period: period == freezed
+      period: null == period
           ? _value.period
           : period // ignore: cast_nullable_to_non_nullable
               as int,
-      counter: counter == freezed
+      counter: null == counter
           ? _value.counter
           : counter // ignore: cast_nullable_to_non_nullable
               as int,
-    ));
+    ) as $Val);
   }
 }
 
@@ -964,6 +973,7 @@ abstract class _$$_CredentialDataCopyWith<$Res>
           _$_CredentialData value, $Res Function(_$_CredentialData) then) =
       __$$_CredentialDataCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {String? issuer,
       String name,
@@ -977,56 +987,54 @@ abstract class _$$_CredentialDataCopyWith<$Res>
 
 /// @nodoc
 class __$$_CredentialDataCopyWithImpl<$Res>
-    extends _$CredentialDataCopyWithImpl<$Res>
+    extends _$CredentialDataCopyWithImpl<$Res, _$_CredentialData>
     implements _$$_CredentialDataCopyWith<$Res> {
   __$$_CredentialDataCopyWithImpl(
       _$_CredentialData _value, $Res Function(_$_CredentialData) _then)
-      : super(_value, (v) => _then(v as _$_CredentialData));
+      : super(_value, _then);
 
-  @override
-  _$_CredentialData get _value => super._value as _$_CredentialData;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? issuer = freezed,
-    Object? name = freezed,
-    Object? secret = freezed,
-    Object? oathType = freezed,
-    Object? hashAlgorithm = freezed,
-    Object? digits = freezed,
-    Object? period = freezed,
-    Object? counter = freezed,
+    Object? name = null,
+    Object? secret = null,
+    Object? oathType = null,
+    Object? hashAlgorithm = null,
+    Object? digits = null,
+    Object? period = null,
+    Object? counter = null,
   }) {
     return _then(_$_CredentialData(
-      issuer: issuer == freezed
+      issuer: freezed == issuer
           ? _value.issuer
           : issuer // ignore: cast_nullable_to_non_nullable
               as String?,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      secret: secret == freezed
+      secret: null == secret
           ? _value.secret
           : secret // ignore: cast_nullable_to_non_nullable
               as String,
-      oathType: oathType == freezed
+      oathType: null == oathType
           ? _value.oathType
           : oathType // ignore: cast_nullable_to_non_nullable
               as OathType,
-      hashAlgorithm: hashAlgorithm == freezed
+      hashAlgorithm: null == hashAlgorithm
           ? _value.hashAlgorithm
           : hashAlgorithm // ignore: cast_nullable_to_non_nullable
               as HashAlgorithm,
-      digits: digits == freezed
+      digits: null == digits
           ? _value.digits
           : digits // ignore: cast_nullable_to_non_nullable
               as int,
-      period: period == freezed
+      period: null == period
           ? _value.period
           : period // ignore: cast_nullable_to_non_nullable
               as int,
-      counter: counter == freezed
+      counter: null == counter
           ? _value.counter
           : counter // ignore: cast_nullable_to_non_nullable
               as int,
@@ -1083,32 +1091,26 @@ class _$_CredentialData extends _CredentialData {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_CredentialData &&
-            const DeepCollectionEquality().equals(other.issuer, issuer) &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.secret, secret) &&
-            const DeepCollectionEquality().equals(other.oathType, oathType) &&
-            const DeepCollectionEquality()
-                .equals(other.hashAlgorithm, hashAlgorithm) &&
-            const DeepCollectionEquality().equals(other.digits, digits) &&
-            const DeepCollectionEquality().equals(other.period, period) &&
-            const DeepCollectionEquality().equals(other.counter, counter));
+            (identical(other.issuer, issuer) || other.issuer == issuer) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.secret, secret) || other.secret == secret) &&
+            (identical(other.oathType, oathType) ||
+                other.oathType == oathType) &&
+            (identical(other.hashAlgorithm, hashAlgorithm) ||
+                other.hashAlgorithm == hashAlgorithm) &&
+            (identical(other.digits, digits) || other.digits == digits) &&
+            (identical(other.period, period) || other.period == period) &&
+            (identical(other.counter, counter) || other.counter == counter));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(issuer),
-      const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(secret),
-      const DeepCollectionEquality().hash(oathType),
-      const DeepCollectionEquality().hash(hashAlgorithm),
-      const DeepCollectionEquality().hash(digits),
-      const DeepCollectionEquality().hash(period),
-      const DeepCollectionEquality().hash(counter));
+  int get hashCode => Object.hash(runtimeType, issuer, name, secret, oathType,
+      hashAlgorithm, digits, period, counter);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_CredentialDataCopyWith<_$_CredentialData> get copyWith =>
       __$$_CredentialDataCopyWithImpl<_$_CredentialData>(this, _$identity);
 

@@ -27,38 +27,42 @@ mixin _$Version {
 /// @nodoc
 abstract class $VersionCopyWith<$Res> {
   factory $VersionCopyWith(Version value, $Res Function(Version) then) =
-      _$VersionCopyWithImpl<$Res>;
+      _$VersionCopyWithImpl<$Res, Version>;
+  @useResult
   $Res call({int major, int minor, int patch});
 }
 
 /// @nodoc
-class _$VersionCopyWithImpl<$Res> implements $VersionCopyWith<$Res> {
+class _$VersionCopyWithImpl<$Res, $Val extends Version>
+    implements $VersionCopyWith<$Res> {
   _$VersionCopyWithImpl(this._value, this._then);
 
-  final Version _value;
   // ignore: unused_field
-  final $Res Function(Version) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? major = freezed,
-    Object? minor = freezed,
-    Object? patch = freezed,
+    Object? major = null,
+    Object? minor = null,
+    Object? patch = null,
   }) {
     return _then(_value.copyWith(
-      major: major == freezed
+      major: null == major
           ? _value.major
           : major // ignore: cast_nullable_to_non_nullable
               as int,
-      minor: minor == freezed
+      minor: null == minor
           ? _value.minor
           : minor // ignore: cast_nullable_to_non_nullable
               as int,
-      patch: patch == freezed
+      patch: null == patch
           ? _value.patch
           : patch // ignore: cast_nullable_to_non_nullable
               as int,
-    ));
+    ) as $Val);
   }
 }
 
@@ -68,34 +72,34 @@ abstract class _$$_VersionCopyWith<$Res> implements $VersionCopyWith<$Res> {
           _$_Version value, $Res Function(_$_Version) then) =
       __$$_VersionCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({int major, int minor, int patch});
 }
 
 /// @nodoc
-class __$$_VersionCopyWithImpl<$Res> extends _$VersionCopyWithImpl<$Res>
+class __$$_VersionCopyWithImpl<$Res>
+    extends _$VersionCopyWithImpl<$Res, _$_Version>
     implements _$$_VersionCopyWith<$Res> {
   __$$_VersionCopyWithImpl(_$_Version _value, $Res Function(_$_Version) _then)
-      : super(_value, (v) => _then(v as _$_Version));
+      : super(_value, _then);
 
-  @override
-  _$_Version get _value => super._value as _$_Version;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? major = freezed,
-    Object? minor = freezed,
-    Object? patch = freezed,
+    Object? major = null,
+    Object? minor = null,
+    Object? patch = null,
   }) {
     return _then(_$_Version(
-      major == freezed
+      null == major
           ? _value.major
           : major // ignore: cast_nullable_to_non_nullable
               as int,
-      minor == freezed
+      null == minor
           ? _value.minor
           : minor // ignore: cast_nullable_to_non_nullable
               as int,
-      patch == freezed
+      null == patch
           ? _value.patch
           : patch // ignore: cast_nullable_to_non_nullable
               as int,
@@ -127,20 +131,17 @@ class _$_Version extends _Version {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Version &&
-            const DeepCollectionEquality().equals(other.major, major) &&
-            const DeepCollectionEquality().equals(other.minor, minor) &&
-            const DeepCollectionEquality().equals(other.patch, patch));
+            (identical(other.major, major) || other.major == major) &&
+            (identical(other.minor, minor) || other.minor == minor) &&
+            (identical(other.patch, patch) || other.patch == patch));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(major),
-      const DeepCollectionEquality().hash(minor),
-      const DeepCollectionEquality().hash(patch));
+  int get hashCode => Object.hash(runtimeType, major, minor, patch);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_VersionCopyWith<_$_Version> get copyWith =>
       __$$_VersionCopyWithImpl<_$_Version>(this, _$identity);
 }
@@ -175,33 +176,37 @@ mixin _$Pair<T1, T2> {
 /// @nodoc
 abstract class $PairCopyWith<T1, T2, $Res> {
   factory $PairCopyWith(Pair<T1, T2> value, $Res Function(Pair<T1, T2>) then) =
-      _$PairCopyWithImpl<T1, T2, $Res>;
+      _$PairCopyWithImpl<T1, T2, $Res, Pair<T1, T2>>;
+  @useResult
   $Res call({T1 first, T2 second});
 }
 
 /// @nodoc
-class _$PairCopyWithImpl<T1, T2, $Res> implements $PairCopyWith<T1, T2, $Res> {
+class _$PairCopyWithImpl<T1, T2, $Res, $Val extends Pair<T1, T2>>
+    implements $PairCopyWith<T1, T2, $Res> {
   _$PairCopyWithImpl(this._value, this._then);
 
-  final Pair<T1, T2> _value;
   // ignore: unused_field
-  final $Res Function(Pair<T1, T2>) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? first = freezed,
-    Object? second = freezed,
+    Object? first = null,
+    Object? second = null,
   }) {
     return _then(_value.copyWith(
-      first: first == freezed
+      first: null == first
           ? _value.first
           : first // ignore: cast_nullable_to_non_nullable
               as T1,
-      second: second == freezed
+      second: null == second
           ? _value.second
           : second // ignore: cast_nullable_to_non_nullable
               as T2,
-    ));
+    ) as $Val);
   }
 }
 
@@ -212,31 +217,30 @@ abstract class _$$_PairCopyWith<T1, T2, $Res>
           _$_Pair<T1, T2> value, $Res Function(_$_Pair<T1, T2>) then) =
       __$$_PairCopyWithImpl<T1, T2, $Res>;
   @override
+  @useResult
   $Res call({T1 first, T2 second});
 }
 
 /// @nodoc
 class __$$_PairCopyWithImpl<T1, T2, $Res>
-    extends _$PairCopyWithImpl<T1, T2, $Res>
+    extends _$PairCopyWithImpl<T1, T2, $Res, _$_Pair<T1, T2>>
     implements _$$_PairCopyWith<T1, T2, $Res> {
   __$$_PairCopyWithImpl(
       _$_Pair<T1, T2> _value, $Res Function(_$_Pair<T1, T2>) _then)
-      : super(_value, (v) => _then(v as _$_Pair<T1, T2>));
+      : super(_value, _then);
 
-  @override
-  _$_Pair<T1, T2> get _value => super._value as _$_Pair<T1, T2>;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? first = freezed,
-    Object? second = freezed,
+    Object? first = null,
+    Object? second = null,
   }) {
     return _then(_$_Pair<T1, T2>(
-      first == freezed
+      null == first
           ? _value.first
           : first // ignore: cast_nullable_to_non_nullable
               as T1,
-      second == freezed
+      null == second
           ? _value.second
           : second // ignore: cast_nullable_to_non_nullable
               as T2,
@@ -276,6 +280,7 @@ class _$_Pair<T1, T2> implements _Pair<T1, T2> {
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_PairCopyWith<T1, T2, _$_Pair<T1, T2>> get copyWith =>
       __$$_PairCopyWithImpl<T1, T2, _$_Pair<T1, T2>>(this, _$identity);
 }
