@@ -174,7 +174,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
   void initState() {
     super.initState();
     _enabled = widget.deviceData.info.config.enabledCapabilities;
-    _interfaces = UsbInterface.forCapabilites(
+    _interfaces = UsbInterface.forCapabilities(
         widget.deviceData.info.config.enabledCapabilities[Transport.usb] ?? 0);
   }
 
@@ -195,11 +195,11 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     final bool reboot;
     if (widget.deviceData.node is UsbYubiKeyNode) {
       // Reboot if USB device descriptor is changed.
-      final oldInterfaces = UsbInterface.forCapabilites(
+      final oldInterfaces = UsbInterface.forCapabilities(
           widget.deviceData.info.config.enabledCapabilities[Transport.usb] ??
               0);
       final newInterfaces =
-          UsbInterface.forCapabilites(_enabled[Transport.usb] ?? 0);
+          UsbInterface.forCapabilities(_enabled[Transport.usb] ?? 0);
       reboot = oldInterfaces != newInterfaces;
     } else {
       reboot = false;
@@ -294,7 +294,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
             } else {
               canSave = _interfaces != 0 &&
                   _interfaces !=
-                      UsbInterface.forCapabilites(widget.deviceData.info.config
+                      UsbInterface.forCapabilities(widget.deviceData.info.config
                               .enabledCapabilities[Transport.usb] ??
                           0);
             }

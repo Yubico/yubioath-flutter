@@ -32,7 +32,7 @@ enum UsbInterface {
   final int value;
   const UsbInterface(this.value);
 
-  static int forCapabilites(int capabilities) {
+  static int forCapabilities(int capabilities) {
     var interfaces = 0;
     if (capabilities & Capability.otp.value != 0) {
       interfaces |= UsbInterface.otp.value;
