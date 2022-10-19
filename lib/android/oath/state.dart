@@ -54,7 +54,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
         }
       }
     }, onError: (err, stackTrace) {
-      state = AsyncValue.error(err, stackTrace: stackTrace);
+      state = AsyncValue.error(err, stackTrace);
     });
   }
 

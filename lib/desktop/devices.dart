@@ -53,7 +53,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
   UsbDeviceNotifier(this._rpc) : super([]);
 
   void refresh() {
-    _log.debug('Refreshing all USB devics');
+    _log.debug('Refreshing all USB devices');
     _usbState = -1;
     _pollDevices();
   }
@@ -243,7 +243,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
       if (info != null) {
         state = AsyncValue.data(YubiKeyData(dev, dev.name, info));
       } else {
-        state = const AsyncValue.error('device-inaccessible');
+        state = AsyncValue.error('device-inaccessible', StackTrace.current);
       }
     }
   }
@@ -277,7 +277,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
           state = AsyncValue.data(YubiKeyData(node, result['data']['name'],
               DeviceInfo.fromJson(result['data']['info'])));
         } else {
-          state = AsyncValue.error(result['data']['status']);
+          state = AsyncValue.error(result['data']['status'], StackTrace.current);
         }
       }
     } on RpcError catch (e) {
