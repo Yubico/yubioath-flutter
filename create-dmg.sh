@@ -1,6 +1,6 @@
 create-dmg \
 --volname "Yubico Authenticator" \
---background "resources/icons/yubico-msi-background.png" \
+--background "resources/icons/dmg-background.png" \
 --window-pos 200 120 \
 --window-size 800 400 \
 --icon-size 100 \
