@@ -40,8 +40,8 @@ fun OathSession.calculateSteamCode(
     timestamp: Long,
 ): Code {
     val timeSlotMs = 30_000
-    if (!credential.isSteamCredential()) {
-        throw IllegalArgumentException("This is not steam credential")
+    require(credential.isSteamCredential()) {
+        "This is not steam credential"
     }
 
     val currentTimeSlot = timestamp / timeSlotMs

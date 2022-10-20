@@ -48,8 +48,8 @@ class OathViewModel: ViewModel() {
     }
 
     fun addCredential(credential: Model.Credential, code: Model.Code?): Model.CredentialWithCode {
-        if(credential.deviceId != _sessionState.value?.deviceId) {
-            throw IllegalArgumentException("Cannot add credential for different deviceId")
+        require(credential.deviceId == _sessionState.value?.deviceId) {
+            "Cannot add credential for different deviceId"
         }
         return Model.CredentialWithCode(credential, code).also {
             _credentials.postValue(_credentials.value?.plus(it))
@@ -62,8 +62,8 @@ class OathViewModel: ViewModel() {
     ) {
         val existing = _credentials.value!!
         val entry = existing.find { it.credential == oldCredential }!!
-        if(entry.credential.deviceId != newCredential.deviceId) {
-            throw IllegalArgumentException("Cannot rename credential for different deviceId")
+        require(entry.credential.deviceId == newCredential.deviceId) {
+            "Cannot rename credential for different deviceId"
         }
         _credentials.postValue(existing.minus(entry).plus(Model.CredentialWithCode(newCredential, entry.code)))
     }

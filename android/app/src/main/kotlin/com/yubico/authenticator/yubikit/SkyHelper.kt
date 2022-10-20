@@ -51,15 +51,11 @@ class SkyHelper {
          * if the USB device has wrong PID
          */
         fun getDeviceInfo(device: YubiKeyDevice): Info {
-            if (device !is UsbYubiKeyDevice) {
-                throw IllegalArgumentException()
-            }
+            require(device is UsbYubiKeyDevice)
 
             val pid = device.pid
 
-            if (pid !in listOf(UsbPid.YK4_FIDO, UsbPid.SKY_FIDO, UsbPid.NEO_FIDO)) {
-                throw IllegalArgumentException()
-            }
+            require(pid in listOf(UsbPid.YK4_FIDO, UsbPid.SKY_FIDO, UsbPid.NEO_FIDO))
 
             val usbVersion = validateVersionForPid(getVersionFromUsbDescriptor(device), pid)
 
