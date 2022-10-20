@@ -16,12 +16,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/widgets/product_image.dart';
 
+import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../widgets/custom_icons.dart';
 import '../models.dart';
 import '../state.dart';
-import 'device_images.dart';
 import 'keys.dart';
 
 class DeviceAvatar extends StatelessWidget {
@@ -34,7 +35,10 @@ class DeviceAvatar extends StatelessWidget {
       DeviceAvatar(
         badge: isDesktop && data.node is NfcReaderNode ? nfcIcon : null,
         radius: radius,
-        child: getProductImage(data.info, data.name),
+        child: ProductImage(
+            name: data.name,
+            formFactor: data.info.formFactor,
+            isNfc: data.info.supportedCapabilities.containsKey(Transport.nfc)),
       );
 
   factory DeviceAvatar.deviceNode(DeviceNode node, {double? radius}) =>

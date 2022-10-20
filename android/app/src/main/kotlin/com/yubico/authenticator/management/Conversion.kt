@@ -47,5 +47,6 @@ fun DeviceInfo.model(name: String, isNfc: Boolean, usbPid: Int?) = Info(
     supportedCapabilities = mapOf(
         "usb" to getSupportedCapabilities(Transport.USB),
         "nfc" to getSupportedCapabilities(Transport.NFC),
-    )
+    ).filter { it.value > 0 }
 )
+
