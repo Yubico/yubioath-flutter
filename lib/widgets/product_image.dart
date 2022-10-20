@@ -16,8 +16,9 @@
 
 import 'package:flutter/material.dart';
 
-import '../../core/models.dart';
-import '../../management/models.dart';
+import '../management/models.dart';
+
+const _genericYubiKeyImageName = 'generic';
 
 const _imagesForName = {
   'YubiKey 4': 'yk4series',
@@ -28,7 +29,7 @@ const _imagesForName = {
   'Security Key by Yubico': 'sky2',
   'Security Key NFC': 'sky3',
   'Security Key C NFC': 'skycnfc',
-  'YubiKey FIDO': 'skycnfc',
+  'YubiKey FIDO': _genericYubiKeyImageName,
   'YubiKey NEO': 'neo',
   'YubiKey Standard': 'standard',
 };
@@ -48,16 +49,35 @@ const _imagesForFormFactorNfc = {
   FormFactor.usbCKeychain: 'yk5cnfc',
 };
 
-Image getProductImage(DeviceInfo info, String name) {
-  var image = _imagesForName[name];
-  image ??= info.supportedCapabilities.containsKey(Transport.nfc)
-      ? _imagesForFormFactorNfc[info.formFactor]
-      : _imagesForFormFactor[info.formFactor];
-  image ??= 'yk5series';
+class ProductImage extends StatelessWidget {
+  final String name;
+  final FormFactor formFactor;
+  final bool isNfc;
 
-  return Image.asset(
-    'assets/product-images/$image.png',
-    // Medium provides the best results when scaling down
-    filterQuality: FilterQuality.medium,
-  );
+  const ProductImage(
+      {super.key,
+      required this.name,
+      required this.formFactor,
+      required this.isNfc});
+
+  @override
+  Widget build(BuildContext context) {
+    var image = _imagesForName[name];
+    image ??= isNfc
+        ? _imagesForFormFactorNfc[formFactor]
+        : _imagesForFormFactor[formFactor];
+    image ??= 'yk5series';
+
+    // generic image has theme variants
+    if (image == _genericYubiKeyImageName &&
+        Theme.of(context).brightness == Brightness.dark) {
+      image = '${_genericYubiKeyImageName}_dark';
+    }
+
+    return Image.asset(
+      'assets/product-images/$image.png',
+      // Medium provides the best results when scaling down
+      filterQuality: FilterQuality.medium,
+    );
+  }
 }
