@@ -18,8 +18,6 @@ import 'package:flutter/material.dart';
 
 import '../management/models.dart';
 
-const _genericYubiKeyImageName = 'generic';
-
 const _imagesForName = {
   'YubiKey 4': 'yk4series',
   'YubiKey Edge': 'ykedge',
@@ -29,7 +27,6 @@ const _imagesForName = {
   'Security Key by Yubico': 'sky2',
   'Security Key NFC': 'sky3',
   'Security Key C NFC': 'skycnfc',
-  'YubiKey FIDO': _genericYubiKeyImageName,
   'YubiKey NEO': 'neo',
   'YubiKey Standard': 'standard',
 };
@@ -66,13 +63,9 @@ class ProductImage extends StatelessWidget {
     image ??= isNfc
         ? _imagesForFormFactorNfc[formFactor]
         : _imagesForFormFactor[formFactor];
-    image ??= 'yk5series';
-
-    // generic image has theme variants
-    if (image == _genericYubiKeyImageName &&
-        Theme.of(context).brightness == Brightness.dark) {
-      image = '${_genericYubiKeyImageName}_dark';
-    }
+    image ??= Theme.of(context).brightness == Brightness.dark
+        ? 'generic_dark'
+        : 'generic';
 
     return Image.asset(
       'assets/product-images/$image.png',
