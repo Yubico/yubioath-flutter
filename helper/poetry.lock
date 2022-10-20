@@ -52,7 +52,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "cryptography"
-version = "38.0.2"
+version = "38.0.1"
 description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
 category = "main"
 optional = false
@@ -366,7 +366,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "yubikey-manager"
-version = "5.0.0rc1"
+version = "5.0.0"
 description = "Tool for managing your YubiKey configuration."
 category = "main"
 optional = false
@@ -406,7 +406,7 @@ numpy = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "10c87673054adf4367cc4bf1acb21f203e0b81fcd9d0a42de0537ba7a24a8de1"
+content-hash = "8d2f22ef77e35977b17317feb0bbf272a1deb1f2df84af3f71b64619442f3e0e"
 
 [metadata.files]
 altgraph = []
