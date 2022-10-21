@@ -18,6 +18,7 @@ package com.yubico.authenticator.yubikit
 
 import android.hardware.usb.UsbDevice
 import com.yubico.authenticator.SdkVersion
+import com.yubico.authenticator.TestUtil
 import com.yubico.authenticator.device.Version
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -58,7 +59,7 @@ class SkyHelperTest {
     @Test
     fun `handles NEO_FIDO versions`() {
 
-        SdkVersion.version = 23
+        TestUtil.mockSdkInt(23)
 
         val ykDevice = getUsbYubiKeyDeviceMock().also {
             `when`(it.pid).thenReturn(UsbPid.NEO_FIDO)
@@ -95,7 +96,7 @@ class SkyHelperTest {
     @Test
     fun `handles SKY_FIDO versions`() {
 
-        SdkVersion.version = 23
+        TestUtil.mockSdkInt(23)
 
         val ykDevice = getUsbYubiKeyDeviceMock().also {
             `when`(it.pid).thenReturn(UsbPid.SKY_FIDO)
@@ -132,7 +133,7 @@ class SkyHelperTest {
     @Test
     fun `handles YK4_FIDO versions`() {
 
-        SdkVersion.version = 23
+        TestUtil.mockSdkInt(23)
 
         val ykDevice = getUsbYubiKeyDeviceMock().also {
             `when`(it.pid).thenReturn(UsbPid.YK4_FIDO)
@@ -154,9 +155,43 @@ class SkyHelperTest {
             assertEquals(VERSION_0, it.version)
         }
     }
-
     @Test
-    fun `returns Version 0 for invalid input`() {
+    fun `returns VERSION_0 for older APIs`() {
+
+        // below API 23, there is no UsbDevice.version
+        // therefore we expect deviceInfo to have VERSION_0
+        // for every FIDO key
+        TestUtil.mockSdkInt(22)
+
+        val neoFidoDevice = getUsbYubiKeyDeviceMock().also {
+            `when`(it.pid).thenReturn(UsbPid.NEO_FIDO)
+        }
+
+        `when`(neoFidoDevice.usbDevice.version).thenReturn("3.47") // valid NEO_FIDO version
+        SkyHelper.getDeviceInfo(neoFidoDevice).also {
+            assertEquals(VERSION_0, it.version)
+        }
+
+        val skyFidoDevice = getUsbYubiKeyDeviceMock().also {
+            `when`(it.pid).thenReturn(UsbPid.SKY_FIDO)
+        }
+
+        `when`(skyFidoDevice.usbDevice.version).thenReturn("3.47") // valid SKY_FIDO version
+        SkyHelper.getDeviceInfo(skyFidoDevice).also {
+            assertEquals(VERSION_0, it.version)
+        }
+
+        val yk4FidoDevice = getUsbYubiKeyDeviceMock().also {
+            `when`(it.pid).thenReturn(UsbPid.YK4_FIDO)
+        }
+
+        `when`(yk4FidoDevice.usbDevice.version).thenReturn("4.37") // valid YK4_FIDO version
+        SkyHelper.getDeviceInfo(yk4FidoDevice).also {
+            assertEquals(VERSION_0, it.version)
+        }
+    }
+    @Test
+    fun `returns VERSION_0 for invalid input`() {
         val ykDevice = getUsbYubiKeyDeviceMock().also {
             `when`(it.pid).thenReturn(UsbPid.SKY_FIDO)
         }

@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.yubico.authenticator
 
-package com.yubico.authenticator;
+import android.os.Build
 
-import android.os.Build;
-
-public class SdkVersion {
-    static public int version = Build.VERSION.SDK_INT;
-
-    @SuppressWarnings("unused")
-    static public boolean eq(int other) {
-        return version == other;
+object SdkVersion {
+    fun ge(other: Int): Boolean {
+        return Build.VERSION.SDK_INT >= other
     }
 
-    static public boolean ge(int other) {
-        return version >= other;
-    }
-
-    static public boolean lt(int other) {
-        return !ge(other);
+    fun lt(other: Int): Boolean {
+        return !ge(other)
     }
 }
