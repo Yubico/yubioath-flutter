@@ -280,6 +280,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 (element.issuer ?? '') == _issuerController.text.trim())
             .isEmpty ??
         true;
+    final issuerNoColon = !_issuerController.text.contains(':');
 
     final isLocked = oathState?.locked ?? false;
 
@@ -287,6 +288,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         _accountController.text.trim().isNotEmpty &&
         secret.isNotEmpty &&
         isUnique &&
+        issuerNoColon &&
         issuerRemaining >= -1 &&
         nameRemaining >= 0 &&
         period > 0;
@@ -388,7 +390,10 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       autofocus: widget.credentialData == null,
                       enabled: issuerRemaining > 0,
                       maxLength: max(issuerRemaining, 1),
-                      inputFormatters: [limitBytesLength(issuerRemaining)],
+                      inputFormatters: [
+                        limitBytesLength(issuerRemaining),
+                        FilteringTextInputFormatter.deny(':'),
+                      ],
                       buildCounter:
                           buildByteCounterFor(_issuerController.text.trim()),
                       decoration: InputDecoration(
@@ -398,6 +403,10 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         helperText:
                             '', // Prevents dialog resizing when disabled
                         prefixIcon: const Icon(Icons.business_outlined),
+                        errorText: issuerNoColon
+                            ? null
+                            : AppLocalizations.of(context)!
+                                .oath_invalid_character_issuer,
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {
