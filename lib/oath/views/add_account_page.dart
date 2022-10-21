@@ -392,7 +392,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       maxLength: max(issuerRemaining, 1),
                       inputFormatters: [
                         limitBytesLength(issuerRemaining),
-                        FilteringTextInputFormatter.deny(':'),
                       ],
                       buildCounter:
                           buildByteCounterFor(_issuerController.text.trim()),
