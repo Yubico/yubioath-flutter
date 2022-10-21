@@ -23,7 +23,6 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
 import android.widget.Toast
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.ndef.KeyboardLayout
@@ -98,18 +97,18 @@ class NdefActivity : Activity() {
 
     private fun parseOtpFromIntent(): OtpSlotValue {
         val parcelable = intent.parcelableArrayExtra<NdefMessage>(NfcAdapter.EXTRA_NDEF_MESSAGES)
-        if (parcelable != null && parcelable.isNotEmpty()) {
-            val ndefPayloadBytes =
-                NdefUtils.getNdefPayloadBytes((parcelable[0]).toByteArray())
+        requireNotNull(parcelable) { "Null NDEF message" }
+        require(parcelable.isNotEmpty()) { "Empty NDEF message" }
 
-            return if (ndefPayloadBytes.all { it in 32..126 }) {
-                OtpSlotValue(OtpType.Otp, String(ndefPayloadBytes, StandardCharsets.US_ASCII))
-            } else {
-                val kbd: KeyboardLayout = KeyboardLayout.forName(appPreferences.clipKbdLayout)
-                OtpSlotValue(OtpType.Password, kbd.fromScanCodes(ndefPayloadBytes))
-            }
+        val ndefPayloadBytes =
+            NdefUtils.getNdefPayloadBytes((parcelable[0]).toByteArray())
+
+        return if (ndefPayloadBytes.all { it in 32..126 }) {
+            OtpSlotValue(OtpType.Otp, String(ndefPayloadBytes, StandardCharsets.US_ASCII))
+        } else {
+            val kbd: KeyboardLayout = KeyboardLayout.forName(appPreferences.clipKbdLayout)
+            OtpSlotValue(OtpType.Password, kbd.fromScanCodes(ndefPayloadBytes))
         }
-        throw IllegalArgumentException("Failed to parse OTP from the intent")
     }
 
     companion object {
