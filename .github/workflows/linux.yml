@@ -11,10 +11,10 @@ jobs:
         os: [ubuntu-18.04, ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
 
@@ -58,7 +58,7 @@ jobs:
         tar -czf deploy/yubioath-desktop-${REF}-linux-${{matrix.os}}.tar.gz -C build/linux/x64/release/bundle .
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3
       with:
         name: yubioath-desktop-linux
         path: deploy

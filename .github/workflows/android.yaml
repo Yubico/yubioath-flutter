@@ -8,8 +8,9 @@ jobs:
 
     steps:
       - name: set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: '11'
 
       - name: Install Flutter
@@ -21,7 +22,7 @@ jobs:
           flutter config
           flutter --version
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: 'app'
 
@@ -81,7 +82,7 @@ jobs:
           mv "${NATIVE_LIBS}/"*zip artifacts/
         working-directory: ./app
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: yubico-authenticator-android
           path: app/artifacts/*
