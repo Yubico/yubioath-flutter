@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:url_launcher/url_launcher.dart';
 
-import 'app_url.dart';
+void launchFeedbackUrl() => _launchUrl(Platform.isAndroid
+    ? 'https://yubi.co/ya-feedback-android'
+    : 'https://yubi.co/ya-feedback-desktop');
 
-Future<bool> _launchUrl(String url) => launchUrl(
+void launchHelpUrl() => _launchUrl(Platform.isAndroid
+    ? 'https://yubi.co/ya-help-android'
+    : 'https://yubi.co/ya-help-desktop');
+
+void launchTermsUrl() => _launchUrl('https://yubi.co/terms');
+
+void launchPrivacyUrl() => _launchUrl('https://yubi.co/privacy');
+
+Future<bool> _launchUrl(String url) async => await launchUrl(
       Uri.parse(url),
       mode: LaunchMode.externalApplication,
     );
-
-Future<bool> launchFeedbackUrl() async {
-  return _launchUrl(AppUrl.feedbackUrl);
-}
-
-Future<bool> launchHelpUrl() async {
-  return _launchUrl(AppUrl.helpUrl);
-}
-
-Future<bool> launchTermsUrl() async {
-  return _launchUrl(AppUrl.termsUrl);
-}
-
-Future<bool> launchPrivacyUrl() async {
-  return _launchUrl(AppUrl.privacyUrl);
-}
