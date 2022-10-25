@@ -21,17 +21,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import 'android/state.dart';
+import 'app/app_url_launcher.dart';
 import 'app/logging.dart';
 import 'app/message.dart';
 import 'app/state.dart';
 import 'core/state.dart';
-import 'android/state.dart';
 import 'desktop/state.dart';
 import 'version.dart';
-import 'widgets/responsive_dialog.dart';
 import 'widgets/choice_filter_chip.dart';
+import 'widgets/responsive_dialog.dart';
 
 final _log = Logger('about');
 
@@ -70,11 +70,7 @@ class AboutPage extends ConsumerWidget {
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
-                    launchUrl(
-                      Uri.parse(
-                          'https://www.yubico.com/support/terms-conditions/yubico-license-agreement/'),
-                      mode: LaunchMode.externalApplication,
-                    );
+                    launchTermsUrl();
                   },
                 ),
                 TextButton(
@@ -84,11 +80,7 @@ class AboutPage extends ConsumerWidget {
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
-                    launchUrl(
-                      Uri.parse(
-                          'https://www.yubico.com/support/terms-conditions/privacy-notice/'),
-                      mode: LaunchMode.externalApplication,
-                    );
+                    launchPrivacyUrl();
                   },
                 ),
               ],
@@ -128,14 +120,7 @@ class AboutPage extends ConsumerWidget {
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
-                    launchUrl(
-                      Platform.isAndroid
-                          // Android Beta feedback form
-                          ? Uri.parse('https://forms.gle/2J81Kh8rnzBrtNc69')
-                          // Desktop Beta feedback form
-                          : Uri.parse('https://forms.gle/nYPVWcFnqoprZX1S9'),
-                      mode: LaunchMode.externalApplication,
-                    );
+                    launchFeedbackUrl();
                   },
                 ),
                 TextButton(
@@ -145,10 +130,7 @@ class AboutPage extends ConsumerWidget {
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
-                    launchUrl(
-                      Uri.parse('https://support.yubico.com/support/home'),
-                      mode: LaunchMode.externalApplication,
-                    );
+                    launchHelpUrl();
                   },
                 ),
               ],
