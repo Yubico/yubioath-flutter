@@ -30,10 +30,9 @@ import '../state.dart';
 import 'keys.dart' as management_keys;
 
 final _mapEquals = const DeepCollectionEquality().equals;
+const _usbCcid = 0x04;
 
-enum _CapabilityType {
-  usb, nfc
-}
+enum _CapabilityType { usb, nfc }
 
 class _CapabilityForm extends StatelessWidget {
   final _CapabilityType type;
@@ -285,8 +284,10 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
           ),
           data: (info) {
             bool hasConfig = info.version.major > 4;
+            int usbEnabled = _enabled[Transport.usb] ?? 0;
             if (hasConfig) {
-              canSave = _enabled[Transport.usb] != 0 &&
+              // Ignore the _usbCcid bit:
+              canSave = (usbEnabled & ~_usbCcid) != 0 &&
                   !_mapEquals(
                     _enabled,
                     info.config.enabledCapabilities,
