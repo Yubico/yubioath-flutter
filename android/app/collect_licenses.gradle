@@ -86,6 +86,6 @@ task collectLicenses() {
     dependsOn(":app:releaseOssLicensesTask")
     doLast {
         def ossPluginResDir = new File(project.buildDir, "generated/third_party_licenses/release/res/raw/")
-        collectLicenses(project.rootDir, ossPluginResDir, new File(project.rootDir.parent, "assets/licenses/android/"))
+        collectLicenses(project.rootDir, ossPluginResDir, new File(project.rootDir.parent, "assets/licenses/raw/"))
     }
 }

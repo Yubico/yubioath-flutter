@@ -175,8 +175,11 @@ void _initLogging(List<String> argv) {
 
 void _initLicenses() async {
   LicenseRegistry.addLicense(() async* {
-    final python = await rootBundle.loadString('assets/licenses/python.txt');
+    final python = await rootBundle.loadString('assets/licenses/raw/python.txt');
     yield LicenseEntryWithLineBreaks(['Python'], python);
+
+    final zxingcpp = await rootBundle.loadString('assets/licenses/raw/apache-2.0.txt');
+    yield LicenseEntryWithLineBreaks(['zxing-cpp'], zxingcpp);
 
     final helper = await rootBundle.loadStructuredData<List>(
       'assets/licenses/helper.json',
