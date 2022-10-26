@@ -123,7 +123,7 @@ void _initSystemUi() async {
 }
 
 void _initLicenses() async {
-  const licenseDir = 'assets/licenses/android';
+  const licenseDir = 'assets/licenses/raw';
 
   final androidProjectsToLicenseUrl = await rootBundle.loadStructuredData<List>(
     '$licenseDir/android.json',
