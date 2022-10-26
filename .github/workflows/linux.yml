@@ -16,7 +16,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: '3.11'
 
     - name: Check app versions
       run: |
@@ -43,6 +43,8 @@ jobs:
         flutter analyze
 
     - name: Build the Helper
+      env:
+        _PIP_USE_IMPORTLIB_METADATA: 0
       run: ./build-helper.sh
 
     - name: Build the app
