@@ -39,6 +39,8 @@ jobs:
           flutter analyze
 
       - name: Build the Helper
+        env:
+          _PIP_USE_IMPORTLIB_METADATA: 0
         run: .\build-helper.bat
 
       - name: Build the app
