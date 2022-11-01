@@ -33,7 +33,7 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
-        flutter-version: '3.3.4'
+        flutter-version: '3.3.6'
     - run: flutter config --enable-linux-desktop
     - run: flutter --version
 
