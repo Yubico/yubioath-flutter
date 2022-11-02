@@ -137,6 +137,7 @@ internal class QRScannerView(
     }
 
     override fun getView(): View {
+        Log.v(TAG, "getView()")
         barcodeAnalyzer.analysisPaused = false
         return qrScannerView
     }
@@ -149,7 +150,7 @@ internal class QRScannerView(
         imageAnalysis = null
         cameraExecutor.shutdown()
         methodChannel.setMethodCallHandler(null)
-        Log.d(TAG, "View disposed")
+        Log.v(TAG, "dispose()")
     }
 
     private val methodChannel: MethodChannel = MethodChannel(binaryMessenger, CHANNEL_NAME)
@@ -166,12 +167,16 @@ internal class QRScannerView(
             }
         }
 
+        Log.v(TAG, "marginPct: $marginPct")
+
         if (context is Activity) {
             permissionsGranted = allPermissionsGranted(context)
 
             if (!permissionsGranted) {
+                Log.v(TAG, "permissionsGranted = false -> requesting permission")
                 requestPermissionsFromUser(context)
             } else {
+                Log.v(TAG, "permissionsGranted = true -> binding use cases")
                 bindUseCases(context)
             }
 
@@ -293,6 +298,8 @@ internal class QRScannerView(
             it.setHints(mapOf(DecodeHintType.POSSIBLE_FORMATS to listOf(BarcodeFormat.QR_CODE)))
         }
 
+        var analyzedImagesCount = 0
+
         private fun ByteBuffer.toByteArray(): ByteArray {
             rewind()
             val data = ByteArray(remaining())
@@ -307,7 +314,33 @@ internal class QRScannerView(
                     return
                 }
 
-                val buffer = imageProxy.planes[0].buffer
+                val plane0 = imageProxy.planes[0]
+
+                if (analyzedImagesCount == 0) {
+                    Log.v(TAG, "First image received for analysis:")
+                    Log.v(TAG, "  Image format: ${imageProxy.format}")
+                    Log.v(TAG, "  WxH: ${imageProxy.width}x${imageProxy.height}")
+
+                    for (indexedPlane in imageProxy.planes.withIndex()) {
+                        val index = indexedPlane.index
+                        val plane = indexedPlane.value
+
+                        try {
+                            Log.v(TAG, "  plane[$index].rawStride: ${plane.rowStride} ")
+                        } catch (_: UnsupportedOperationException) {
+                            Log.v(TAG, "  plane[$index].rawStride: Unsupported Operation")
+                        }
+                        try {
+                            Log.v(TAG, "  plane[$index].pixelStride: ${plane.pixelStride}")
+                        } catch (_: UnsupportedOperationException) {
+                            Log.v(TAG, "  plane[$index].pixelStride: Unsupported Operation")
+                        }
+
+                        Log.v(TAG, "  plane[$index].buffer.size: ${plane.buffer.toByteArray().size}")
+                    }
+                }
+
+                val buffer = plane0.buffer
                 val intArray = buffer.toByteArray().map { it.toInt() }.toIntArray()
 
                 val source: LuminanceSource =
@@ -321,6 +354,9 @@ internal class QRScannerView(
                     val cropWH = shorterDim - 2.0 * cropMargin
                     val cropT = (imageProxy.height - cropWH) / 2.0
                     val cropL = (imageProxy.width - cropWH) / 2.0
+                    if(analyzedImagesCount == 0) {
+                        Log.v(TAG, "  bitmap l:t:w:h $cropL:$cropT:$cropWH:$cropWH")
+                    }
                     fullSize.crop(
                         cropL.toInt(),
                         cropT.toInt(),
@@ -328,18 +364,31 @@ internal class QRScannerView(
                         cropWH.toInt()
                     )
                 } else {
+                    if(analyzedImagesCount == 0) {
+                        Log.v(
+                            TAG,
+                            "  bitmap l:t:w:h 0:0:${imageProxy.width}:${imageProxy.height} (full size)"
+                        )
+                    }
                     fullSize
                 }
 
                 val result: com.google.zxing.Result = multiFormatReader.decode(bitmapToProcess)
                 analysisPaused = true // pause
-                Log.d(TAG, "Analysis result: ${result.text}")
+                Log.v(TAG, "Analysis result: ${result.text}")
                 listener.invoke(Result.success(result.text))
             } catch (_: NotFoundException) {
-                // ignored: no code was found
+                if (analyzedImagesCount == 0) {
+                    Log.v(TAG, "  No QR code found (NotFoundException)")
+                }
             } finally {
                 // important call
                 imageProxy.close()
+                analyzedImagesCount++
+
+                if (analyzedImagesCount % 50 == 0) {
+                    Log.v(TAG, "Count of analyzed images so far: $analyzedImagesCount")
+                }
             }
         }
     }
@@ -348,14 +397,14 @@ internal class QRScannerView(
         private var cameraOpened: Boolean = false
 
         override fun onChanged(t: CameraState) {
-            Log.d(TAG, "Camera state changed to ${t.type}")
+            Log.v(TAG, "Camera state changed to ${t.type}")
 
             if (t.type == CameraState.Type.OPEN) {
                 cameraOpened = true
             }
 
             if (cameraOpened && t.type == CameraState.Type.CLOSED) {
-                Log.d(TAG, "Camera closed")
+                Log.v(TAG, "Camera closed")
                 val stateChangedIntent =
                     Intent("com.yubico.authenticator.QRScannerView.CameraClosed")
                 context.sendBroadcast(stateChangedIntent)
