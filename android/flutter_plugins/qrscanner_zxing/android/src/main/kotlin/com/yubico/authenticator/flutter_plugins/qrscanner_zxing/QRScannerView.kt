@@ -299,10 +299,13 @@ internal class QRScannerView(
 
         var analyzedImagesCount = 0
 
-        private fun ByteBuffer.toByteArray(): ByteArray {
+        private fun ByteBuffer.toByteArray(lastRowPadding: Int): ByteArray {
             rewind()
-            val data = ByteArray(remaining())
-            get(data)
+            val size = remaining()
+            val paddedSize = size + lastRowPadding
+            val data = ByteArray(paddedSize)
+            get(data, 0, size)
+            data.fill(0, size, paddedSize)
             return data
         }
 
@@ -325,9 +328,9 @@ internal class QRScannerView(
                         val plane = indexedPlane.value
 
                         try {
-                            Log.v(TAG, "  plane[$index].rawStride: ${plane.rowStride} ")
+                            Log.v(TAG, "  plane[$index].rowStride: ${plane.rowStride} ")
                         } catch (_: UnsupportedOperationException) {
-                            Log.v(TAG, "  plane[$index].rawStride: Unsupported Operation")
+                            Log.v(TAG, "  plane[$index].rowStride: Unsupported Operation")
                         }
                         try {
                             Log.v(TAG, "  plane[$index].pixelStride: ${plane.pixelStride}")
@@ -335,18 +338,22 @@ internal class QRScannerView(
                             Log.v(TAG, "  plane[$index].pixelStride: Unsupported Operation")
                         }
 
-                        Log.v(TAG, "  plane[$index].buffer.size: ${plane.buffer.toByteArray().size}")
+                        Log.v(TAG, "  plane[$index].buffer.size: ${plane.buffer.toByteArray(0).size}")
                     }
                 }
 
                 val buffer = plane0.buffer
-                val intArray = buffer.toByteArray().map { it.toInt() }.toIntArray()
+                val rowStride = plane0.rowStride
+
+                // the new array has to pad extra size for situation when rowStride > image width
+                val intArray =
+                    buffer.toByteArray(rowStride - imageProxy.width).map { it.toInt() }.toIntArray()
 
                 val planeLuminanceSource =
-                    RGBLuminanceSource(plane0.rowStride, imageProxy.height, intArray)
+                    RGBLuminanceSource(rowStride, imageProxy.height, intArray)
 
                 val luminanceSource =
-                    if (plane0.rowStride > imageProxy.width && planeLuminanceSource.isCropSupported) {
+                    if (rowStride > imageProxy.width && planeLuminanceSource.isCropSupported) {
                         if (analyzedImagesCount == 0) {
                             Log.v(
                                 TAG, "  row stride greater than image -> "+
