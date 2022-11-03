@@ -2,7 +2,7 @@
     package="com.yubico.authenticator.flutter_plugins.qrscanner_zxing_example">
    <application
         android:label="qrscanner_zxing_example"
-        android:name="${applicationName}"
+        android:name=".App"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
