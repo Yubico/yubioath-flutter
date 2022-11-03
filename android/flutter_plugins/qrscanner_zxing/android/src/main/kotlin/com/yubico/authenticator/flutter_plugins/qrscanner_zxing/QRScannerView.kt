@@ -137,7 +137,6 @@ internal class QRScannerView(
     }
 
     override fun getView(): View {
-        Log.v(TAG, "getView()")
         barcodeAnalyzer.analysisPaused = false
         return qrScannerView
     }
@@ -343,10 +342,25 @@ internal class QRScannerView(
                 val buffer = plane0.buffer
                 val intArray = buffer.toByteArray().map { it.toInt() }.toIntArray()
 
-                val source: LuminanceSource =
-                    RGBLuminanceSource(imageProxy.width, imageProxy.height, intArray)
+                val planeLuminanceSource =
+                    RGBLuminanceSource(plane0.rowStride, imageProxy.height, intArray)
 
-                val fullSize = BinaryBitmap(HybridBinarizer(source))
+                val luminanceSource =
+                    if (plane0.rowStride > imageProxy.width && planeLuminanceSource.isCropSupported) {
+                        if (analyzedImagesCount == 0) {
+                            Log.v(
+                                TAG, "  row stride greater than image -> "+
+                                        "cropping luminance source of size " +
+                                        "${plane0.rowStride}x${imageProxy.height} to " +
+                                        "${imageProxy.width}x${imageProxy.height}"
+                            )
+                        }
+                        planeLuminanceSource.crop(0, 0, imageProxy.width, imageProxy.height)
+                    } else {
+                        planeLuminanceSource
+                    }
+
+                val fullSize = BinaryBitmap(HybridBinarizer(luminanceSource))
 
                 val bitmapToProcess = if (marginPct != null) {
                     val shorterDim = min(imageProxy.width, imageProxy.height)
