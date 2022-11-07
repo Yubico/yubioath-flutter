@@ -57,16 +57,17 @@ class MainPage extends ConsumerWidget {
 
     final deviceNode = ref.watch(currentDeviceProvider);
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final noKeyImage = Image.asset(
+      isDarkTheme
+          ? 'assets/graphics/no-key_dark.png'
+          : 'assets/graphics/no-key.png',
+      filterQuality: FilterQuality.medium,
+      scale: 2,
+    );
     if (deviceNode == null) {
       if (isAndroid) {
         return MessagePage(
-          graphic: Image.asset(
-            isDarkTheme
-                ? 'assets/graphics/no-key_dark.png'
-                : 'assets/graphics/no-key.png',
-            filterQuality: FilterQuality.medium,
-            scale: 2,
-          ),
+          graphic: noKeyImage,
           message: 'Insert or tap your YubiKey',
           actionButtonBuilder: (keyActions) => IconButton(
             icon: const Icon(Icons.person_add_alt_1),
@@ -101,7 +102,10 @@ class MainPage extends ConsumerWidget {
           ),
         );
       } else {
-        return const MessagePage(message: 'Insert your YubiKey');
+        return MessagePage(
+          graphic: noKeyImage,
+          message: 'Insert your YubiKey',
+        );
       }
     } else {
       return ref.watch(currentDeviceDataProvider).when(
