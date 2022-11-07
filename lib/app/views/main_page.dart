@@ -56,9 +56,17 @@ class MainPage extends ConsumerWidget {
     });
 
     final deviceNode = ref.watch(currentDeviceProvider);
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     if (deviceNode == null) {
       if (isAndroid) {
         return MessagePage(
+          graphic: Image.asset(
+            isDarkTheme
+                ? 'assets/graphics/no-key_dark.png'
+                : 'assets/graphics/no-key.png',
+            filterQuality: FilterQuality.medium,
+            scale: 2,
+          ),
           message: 'Insert or tap your YubiKey',
           actionButtonBuilder: (keyActions) => IconButton(
             icon: const Icon(Icons.person_add_alt_1),
