@@ -20,7 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/android/state.dart';
 import 'package:yubico_authenticator/widgets/delayed_visibility.dart';
 
 import '../../app/message.dart';
@@ -238,7 +237,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         action: capacity == null || capacity > used
             ? () async {
                 CredentialData? otpauth;
-                if (Platform.isAndroid && ref.read(androidHasCameraProvider)) {
+                if (Platform.isAndroid) {
                   final scanner = ref.read(qrScannerProvider);
                   if (scanner != null) {
                     final url = await scanner.scanQr();

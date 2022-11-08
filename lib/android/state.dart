@@ -64,8 +64,6 @@ class _AndroidClipboard extends AppClipboard {
 
 final androidSdkVersionProvider = Provider<int>((ref) => -1);
 
-final androidHasCameraProvider = Provider<bool>((ref) => false);
-
 final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   if (ref.read(androidSdkVersionProvider) < 29) {
     // the user can select from light or dark theme of the app

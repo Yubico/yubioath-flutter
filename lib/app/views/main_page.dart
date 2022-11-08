@@ -16,7 +16,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/android/state.dart';
 import 'package:yubico_authenticator/cancellation_exception.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
@@ -75,18 +74,16 @@ class MainPage extends ConsumerWidget {
             tooltip: 'Add account',
             onPressed: () async {
               CredentialData? otpauth;
-              if (ref.read(androidHasCameraProvider)) {
-                final scanner = ref.read(qrScannerProvider);
-                if (scanner != null) {
-                  try {
-                    final url = await scanner.scanQr();
-                    if (url != null) {
-                      otpauth = CredentialData.fromUri(Uri.parse(url));
-                    }
-                  } on CancellationException catch (_) {
-                    // ignored - user cancelled
-                    return;
+              final scanner = ref.read(qrScannerProvider);
+              if (scanner != null) {
+                try {
+                  final url = await scanner.scanQr();
+                  if (url != null) {
+                    otpauth = CredentialData.fromUri(Uri.parse(url));
                   }
+                } on CancellationException catch (_) {
+                  // ignored - user cancelled
+                  return;
                 }
               }
               await showBlurDialog(
