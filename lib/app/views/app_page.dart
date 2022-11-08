@@ -15,13 +15,12 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'device_button.dart';
 import 'keys.dart';
 import 'main_drawer.dart';
 
-class AppPage extends ConsumerWidget {
+class AppPage extends StatelessWidget {
   final Widget? title;
   final Widget child;
   final List<Widget> actions;
@@ -39,11 +38,11 @@ class AppPage extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => LayoutBuilder(
+  Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 540) {
             // Single column layout
-            return _buildScaffold(context, ref, true);
+            return _buildScaffold(context, true);
           } else {
             // Two-column layout
             return Scaffold(
@@ -56,7 +55,7 @@ class AppPage extends ConsumerWidget {
                         child: MainPageDrawer(shouldPop: false)),
                   ),
                   Expanded(
-                    child: _buildScaffold(context, ref, false),
+                    child: _buildScaffold(context, false),
                   ),
                 ],
               ),
@@ -96,7 +95,7 @@ class AppPage extends ConsumerWidget {
     );
   }
 
-  Scaffold _buildScaffold(BuildContext context, WidgetRef ref, bool hasDrawer) {
+  Scaffold _buildScaffold(BuildContext context, bool hasDrawer) {
     return Scaffold(
       key: scaffoldGlobalKey,
       appBar: AppBar(
