@@ -134,7 +134,7 @@ class _SlideInWidgetState extends ConsumerState<_SlideInWidget>
         horizontalTitleGap: 13,
         leading: _CircledDeviceAvatar(widget.radius),
         title: Text(messages.removeAt(0)),
-        subtitle: Text(messages.first),
+        subtitle: Text(messages.isNotEmpty ? messages.first : ''),
       ),
     );
   }

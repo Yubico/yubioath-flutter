@@ -277,7 +277,11 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
           state = AsyncValue.data(YubiKeyData(node, result['data']['name'],
               DeviceInfo.fromJson(result['data']['info'])));
         } else {
-          state = AsyncValue.error(result['data']['status'], StackTrace.current);
+          final status = result['data']['status'];
+          // Only update if status is not changed
+          if (state.asError?.error != status) {
+            state = AsyncValue.error(status, StackTrace.current);
+          }
         }
       }
     } on RpcError catch (e) {
