@@ -19,15 +19,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/cancellation_exception.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
-import '../../oath/models.dart';
-import 'message_page.dart';
-import 'device_error_screen.dart';
-import '../models.dart';
-import '../state.dart';
-import '../message.dart';
 import '../../fido/views/fido_screen.dart';
+import '../../oath/models.dart';
 import '../../oath/views/add_account_page.dart';
 import '../../oath/views/oath_screen.dart';
+import '../message.dart';
+import '../models.dart';
+import '../state.dart';
+import 'device_error_screen.dart';
+import 'message_page.dart';
 
 class MainPage extends ConsumerWidget {
   const MainPage({super.key});
