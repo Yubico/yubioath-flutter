@@ -71,6 +71,7 @@ Future<Widget> initialize() async {
       windowStateProvider.overrideWithProvider(androidWindowStateProvider),
       clipboardProvider.overrideWithProvider(androidClipboardProvider),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
+      androidHasCameraProvider.overrideWithValue(await getHasCamera()),
       supportedThemesProvider
           .overrideWithProvider(androidSupportedThemesProvider)
     ],

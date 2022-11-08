@@ -16,18 +16,19 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/android/state.dart';
 import 'package:yubico_authenticator/cancellation_exception.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
-import '../../oath/models.dart';
-import 'message_page.dart';
-import 'device_error_screen.dart';
-import '../models.dart';
-import '../state.dart';
-import '../message.dart';
 import '../../fido/views/fido_screen.dart';
+import '../../oath/models.dart';
 import '../../oath/views/add_account_page.dart';
 import '../../oath/views/oath_screen.dart';
+import '../message.dart';
+import '../models.dart';
+import '../state.dart';
+import 'device_error_screen.dart';
+import 'message_page.dart';
 
 class MainPage extends ConsumerWidget {
   const MainPage({super.key});
@@ -74,16 +75,18 @@ class MainPage extends ConsumerWidget {
             tooltip: 'Add account',
             onPressed: () async {
               CredentialData? otpauth;
-              final scanner = ref.read(qrScannerProvider);
-              if (scanner != null) {
-                try {
-                  final url = await scanner.scanQr();
-                  if (url != null) {
-                    otpauth = CredentialData.fromUri(Uri.parse(url));
+              if (ref.read(androidHasCameraProvider)) {
+                final scanner = ref.read(qrScannerProvider);
+                if (scanner != null) {
+                  try {
+                    final url = await scanner.scanQr();
+                    if (url != null) {
+                      otpauth = CredentialData.fromUri(Uri.parse(url));
+                    }
+                  } on CancellationException catch (_) {
+                    // ignored - user cancelled
+                    return;
                   }
-                } on CancellationException catch (_) {
-                  // ignored - user cancelled
-                  return;
                 }
               }
               await showBlurDialog(
