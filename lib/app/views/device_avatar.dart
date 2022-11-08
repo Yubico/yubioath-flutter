@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/management/models.dart';
 import 'package:yubico_authenticator/widgets/product_image.dart';
 
 import '../../core/models.dart';
@@ -53,7 +54,8 @@ class DeviceAvatar extends StatelessWidget {
           }
           return DeviceAvatar(
             radius: radius,
-            child: const Icon(Icons.device_unknown),
+            child: const ProductImage(
+                name: '', formFactor: FormFactor.unknown, isNfc: false),
           );
         },
         nfcReader: (_) => DeviceAvatar(
