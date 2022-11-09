@@ -18,6 +18,7 @@ package com.yubico.authenticator
 
 import android.content.*
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraManager
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.nfc.NfcAdapter
@@ -327,6 +328,13 @@ class MainActivity : FlutterFragmentActivity() {
                             )
                         }
                         result.success(true)
+                    }
+                    "hasCamera" -> {
+                        val cameraService =
+                            getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                        result.success(
+                            cameraService.cameraIdList.isNotEmpty()
+                        )
                     }
                     else -> Log.w(TAG, "Unknown app method: ${methodCall.method}")
                 }

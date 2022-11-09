@@ -67,7 +67,8 @@ Future<Widget> initialize() async {
       currentAppProvider.overrideWithProvider(androidSubPageProvider),
       managementStateProvider.overrideWithProvider(androidManagementState),
       currentDeviceProvider.overrideWithProvider(androidCurrentDeviceProvider),
-      qrScannerProvider.overrideWithProvider(androidQrScannerProvider),
+      qrScannerProvider
+          .overrideWithProvider(androidQrScannerProvider(await getHasCamera())),
       windowStateProvider.overrideWithProvider(androidWindowStateProvider),
       clipboardProvider.overrideWithProvider(androidClipboardProvider),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),

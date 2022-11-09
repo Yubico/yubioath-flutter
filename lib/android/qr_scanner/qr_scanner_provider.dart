@@ -46,6 +46,6 @@ class AndroidQrScanner implements QrScanner {
   }
 }
 
-final androidQrScannerProvider = Provider<QrScanner?>(
-  (ref) => AndroidQrScanner(ref.watch(withContextProvider)),
-);
+final androidQrScannerProvider = Provider.family<QrScanner?, bool>(
+    (ref, hasCamera) =>
+        hasCamera ? AndroidQrScanner(ref.watch(withContextProvider)) : null);
