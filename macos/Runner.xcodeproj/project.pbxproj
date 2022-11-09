@@ -429,7 +429,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.authenticator;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.yubioath;
 				PRODUCT_NAME = "Yubico Authenticator";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -557,7 +557,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.authenticator;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.yubioath;
 				PRODUCT_NAME = "Yubico Authenticator";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -579,7 +579,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.authenticator;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.yubioath;
 				PRODUCT_NAME = "Yubico Authenticator";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
