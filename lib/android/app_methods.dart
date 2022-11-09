@@ -18,6 +18,10 @@ import 'package:flutter/services.dart';
 
 const appMethodsChannel = MethodChannel('app.methods');
 
+Future<bool> getHasCamera() async {
+  return await appMethodsChannel.invokeMethod('hasCamera');
+}
+
 Future<int> getAndroidSdkVersion() async {
   return await appMethodsChannel.invokeMethod('getAndroidSdkVersion');
 }
