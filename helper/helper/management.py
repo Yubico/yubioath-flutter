@@ -57,7 +57,7 @@ class ManagementNode(RpcNode):
             connection_types = [
                 t
                 for t in [SmartCardConnection, OtpConnection, FidoConnection]
-                if ifaces.supports_connection(t)
+                if t.usb_interface in ifaces
             ]
 
         self.session.close()
