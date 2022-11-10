@@ -56,6 +56,7 @@ jobs:
         brew install create-dmg
         mkdir source_folder
         cp -R build/macos/Build/Products/Release/"Yubico Authenticator.app" source_folder
+        cp resources/icons/dmg-background.png .
         sh create-dmg.sh
 
     - name: Rename and archive app bundle
@@ -63,7 +64,9 @@ jobs:
         export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
         mkdir deploy
         mv yubioath-desktop.dmg deploy
-        tar -czf deploy/yubioath-desktop-${REF}.app.tar.gz -C build/macos/Build/Products/Release "Yubico Authenticator.app"
+        mv build/macos/Build/Products/Release/"Yubico Authenticator.app" deploy
+        mv create-dmg.sh deploy
+        mv resources/icons/dmg-background.png deploy
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
