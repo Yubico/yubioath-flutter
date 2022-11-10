@@ -1,43 +1,49 @@
-== Yubico Authenticator for Desktop
+== Yubico Authenticator for Desktop and Android
 
-=== Requirements
-You will need the Flutter SDK with enabled desktop support, see:
-https://flutter.dev/desktop
+image:screenshot.png[]
 
-Development has been done using the "Install from git" method of installing the
-SDK, from the "beta" channel.
+Store your unique credential on a hardware-backed security key and take it
+wherever you go from mobile to desktop. No more storing sensitive secrets on
+your mobile phone, leaving your account vulnerable to takeovers. With the
+Yubico Authenticator you can raise the bar for security.
 
-You will also need to provide a compiled version of the Helper, as described in
-the next section.
+* The Yubico Authenticator will work with any USB or NFC-enabled YubiKeys
 
+The Yubico Authenticator securely generates a code used to verify your identity
+as you are logging into various services. No connectivity needed!
 
-=== Building the Yubico Authenticator Helper
-Requirements: Python >= 3.8 and Poetry.
+=== Features include
+* Secure - Hardware-backed strong two-factor authentication with secret stored
+  on the YubiKey, not on your phone or computer
+* Portable - Get the same set of codes across our other Yubico Authenticator
+  apps for desktops as well as for all leading mobile platforms
+* Flexible - Support for time-based and counter-based code generation
+* USB or NFC usage - Insert the YubiKey into the USB port, or use the YubiKey
+  with NFC with a mobile phone that is NFC-enabled or a desktop NFC reader to
+  store your credential on the YubiKey
+* Easy Setup - QR codes available from the services you wish to protect with
+  strong authentication
+* User Presence - Require a touch on the YubiKey sensor to generate new codes
+  for sensitive accounts
+* Compatible - Secure all the services currently compatible with other
+  Authenticator apps
+* Versatile - Support for multiple work and personal accounts
 
-The GUI requires a compiled version of Helper to run, which is built from the
-sources in helper/ in this repository. This needs to be build prior to running
-`flutter build` or `flutter run`, by running `build-helper.sh` (or
-`build-helper.bat` on Windows).
+Experience security the modern way with the Yubico Authenticator.
+Visit https://yubico.com to learn more.
 
-NOTE: You will need to re-run `ykman-helper.sh` if changes have been made to
-Helper's code, or if `flutter clean` has been run.
+=== Installation
+Downloads for all supported operating systems are available
+https://www.yubico.com/products/yubico-authenticator/[here].
 
+=== Command line interface
+Looking for a command line option? Try our
+https://github.com/Yubico/yubikey-manager/[YubiKey Manager CLI] tool.
 
-=== Running the app
-To start the app, run:
+=== iOS
+The iOS version of this app is available
+https://github.com/Yubico/yubioath-ios[here].
 
-  flutter run -d <os>
-
-where <os> is "windows", "macos", or "linux". You can add the `--release` flag
-to run a release build instead of debug. Builds of the app will be create under
-`build/<os>/`.
-
-
-=== Running tests
-Tests can be run with the command:
-
-  flutter test
-
-
-=== Packaging for MacOS
-See link:doc/MacOS_Packaging.adoc[MacOS Packaging].
+=== Build instructions (for developers)
+Instructions on building and packaging the app is available
+link:doc/Development.adoc[here].
