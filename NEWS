@@ -1,0 +1,267 @@
+* Version 6.0.0 (unreleased)
+ ** Complete redesign of the UI using Flutter.
+ ** Add support for Android.
+ ** Add native ARM support for MacOS.
+ ** Add in-app elevation to Administrator for FIDO on Windows.
+
+* Version 5.1.0 (released 2021-10-05)
+ ** Support and manage FIDO-enabled YubiKeys.
+ ** Toggle applications over USB and NFC.
+ ** Major UI improvements.
+
+* Version 5.0.5 (released 2021-04-14)
+ ** Compatibility update for ykman 4.0.
+ ** Add additional product names.
+ ** Linux: Use the embedded version of ykman in AppImage.
+
+* Version 5.0.4 (released 2020-05-14)
+ ** New app icons on all platforms
+ ** Adjust the behaviour of the search bar, do not search accounts without having focus
+ ** Bugfix: Fix keyboard shortcut to copy account code
+ ** Bugfix: Show firmware version for YubiKey NEO correctly
+ ** Windows: Show correct version number in .msi installers
+ ** macOS: Fix issue with window positioning
+ ** macOS: Fix occacional crashes on startup
+ ** Linux: Fix the app icon and desktop entry for the Snap package.
+
+* Version 5.0.3 (released 2020-04-14)
+ ** macOS: Make the app available in the macOS App Store
+ ** Windows: Make the app available in the Microsoft Store (for Windows 10 20.04 and higher)
+ ** Linux: Make the app available in the Snap Store
+ ** Add support for YubiKey 5C NFC
+ ** Bugfix: Make sure the application is always visible on Windows
+
+* Version 5.0.2 (released 2020-01-29)
+ ** Allow spaces in secret key when adding accounts
+ ** UI: Move favorite button to the credential card
+ ** UI: Improved scrolling behaviour
+ ** Windows: Improve how .dll files are loaded, thanks to Marius Gabriel Mihai for reporting this!
+ ** Windows: Initial support for .msi installers. If upgrading from the .exe installer, make sure
+to uninstall the older version before using the .msi
+
+* Version 5.0.1 (released 2019-10-16)
+ ** New colors for the account icons.
+ ** Use Roboto font on all platforms.
+ ** Increase some text sizes for better readability.
+ ** Change icon for the Settings button and move it to the left.
+ ** SysTray: Open application on double-click.
+ ** Terminology: Use "Accounts" instead of "Credentials".
+ ** Bugfix: Clear old accounts correctly when switching between devices.
+ ** Add keyboard shortcut (Ctrl/Cmd + i) for info popup.
+
+* Version 5.0.0 (released 2019-09-23)
+ ** New UI based on Material Design and Qt Quick Controls 2
+ ** Add Dark Mode and Light Mode
+ ** Feature: Allow switching between connected YubiKeys
+ ** Feature: Select favorite credentials, available from the System Tray/Menu Bar
+ ** Show some information about the connected YubiKey, such as firmware version and serial number
+ ** Add experimental support for external smart card readers, enabling the use of a YubiKey over NFC
+ ** Add initial accessability support
+
+* Version 4.3.6b (released 2019-06-11)
+ ** Fixes problem where YubiKey was not being detected on macOS.
+
+* Version 4.3.6 (released 2019-05-29)
+ ** Windows: improve support for YubiKey NEO on Windows 10
+
+* Version 4.3.5 (released 2019-01-02)
+ ** Bugfix: Show correct message when YubiKey doesn't have the correct transport enabled.
+ ** Improve error handling in Slot Mode.
+ ** Linux: Add experimental support for .AppImage
+
+* Version 4.3.4 (released 2018-05-07)
+ ** Support YubiKey Preview
+ ** Add credential: allow space in secret key.
+ ** Bugfix: Don't show "No credentials found..." incorrectly.
+ ** Bugfix: Forget the password when removing the device.
+ ** Windows: 64-bit version added.
+
+* Version 4.3.3 (released 2018-02-15)
+ ** Focus is not locked on the search field.
+ ** Pressing ESC now clears the search field and deselects all credentials.
+ ** Copying the code with a keyboard shortcut now works even if the search field has focus.
+ ** The top progress bar is now only displayed when needed.
+ ** Scanning QR codes should now work better on some multiple monitor setups.
+ ** Improve the handling of touch credentials when the YubiKey is never touched.
+ ** The application should no longer refresh credentials to often on slower systems.
+ ** Credentials with a custom time period should now autorefresh correctly.
+ ** Logging: The command line option --log-file is now supported, which writes the log to a file. The --log-file option is ignored unless preceded by the --log-level option.
+ ** Bugfix: The arrow key navigation is no longer broken after deleting a credential.
+ ** Windows: OpenGL rendering is now chosen dynamically. It's possible to override it with the QT_OPENGL environment variable.
+
+* Version 4.3.2+1 (released 2017-12-20)
+ ** Re-release of 4.3.2 for Mac, because package signature was missing from 4.3.2 release
+
+* Version 4.3.1+1 (released 2017-12-20)
+ ** Re-release of 4.3.1 for Mac, because package signature was missing from 4.3.1 release
+
+* Version 4.3.2 (released 2017-12-19)
+ ** Bugfix: Fixed crash on attempt to generate code for touch credential in YubiKey Slots mode
+ ** Bugfix: Fixed crash in QR scan
+
+* Version 4.3.1 (released 2017-12-17)
+ ** Bugfix: Removed references to QML Array prototype methods added in Qt 5.9 (unavailable in Ubuntu Zesty and earlier)
+
+* Version 4.3.0 (released 2017-12-15)
+ ** Now requires ykman version >= 0.5.0
+ ** Feature: New icon
+ ** Feature: Remembered passwords are now shared with ykman.
+ ** Feature: Added option to hide window on launch
+  *** Thanks to Steven Stallion for contributing!
+ ** Feature: "About" dialog now shows OATH applet version instead of overall firmware version
+ ** Feature: Touch credentials generate a code for the next period if current period ends in less than 10s
+ ** Feature: Arrow keys now navigate the list while search field has focus
+  *** Thanks to Arthur Burkart for contributing!
+ ** Feature: Focus now starts on the search field, and ESC no longer removes focus from search field
+ ** Feature: Added `--log-level` CLI option with same function as `--log-level` option to `ykman` version 0.5.0; see `ykman --help` for usage
+ ** Bugfix: Reduced idle CPU usage
+ ** Bugfix: Improved error handling to prevent hanging UI
+ ** Bugfix: Fixed tray icon remaining after exit on Windows
+ ** Bugfix: Fixed sorting when some credentials have nonstandard periods
+ ** Bugfix: Selection now stable across refreshes and searches
+ ** Bugfix: Arrow keys now scroll the view only if the selection changes
+
+* Version 4.2.0+deps.2 (de-published)
+ ** Identical to release 4.2.0+deps except it unpacks to a directory with the same name as the archive
+
+* Version 4.2.0+deps (de-published)
+ ** Identical to release 4.2.0b, but renamed to a valid Semantic Versioning version number
+
+* Version 4.2.0b (de-published)
+ ** Source re-release with dependencies bundled in the archive
+
+* Version 4.2.0+2 (released 2017-11-17)
+ ** Identical to release 4.2.0 except it unpacks to a directory with the same name as the archive
+
+* Version 4.2.0 (released 2017-09-14)
+ ** Added support for 7 digit credentials.
+ ** Added support for credentials with a non 30-second period.
+ ** Moved "Scan QR code" functionality, now available directly from main view.
+ ** Flip moving direction of the time left indicator.
+ ** Win 7: Fixed issue with OpenGL rendering.
+ ** macOS: Allow OpenGL to use integrated GPU.
+ ** Bugfix: Issuer was not displayed correctly on Ubuntu.
+
+* Version 4.1.4 (released 2017-08-17)
+ ** Double-click on system tray icon now shows the credentials. Not supported on macOS.
+ ** Windows: An issue with the video drivers on some machines have been resolved.
+ ** The About dialog now closes when the ESC key is pressed.
+ ** UI: The credential codes should now follow any font scaling done by the operating system.
+ ** UI: Codes now have a space in them for better readability.
+
+* Version 4.1.3 (released 2017-08-03)
+ ** Feature: Double-click to generate a code and copy it to the clipboard.
+ ** Feature: When searching, press the ESC key to clear the search field and press Enter to generate and copy a code.
+ ** Added an error message for adding a credential when there is no storage space left on the device.
+ ** Added an error message for adding a too large key when in Slot mode.
+ ** Clicking outside the search field now removes focus from it.
+ ** Names on new credentials can't be longer than 64 bytes.
+ ** UI: Don't show timer when there is no credentials.
+ ** The default button in the password prompt is now OK.
+ ** Bugfix: Fixed crash caused by some QR codes.
+ ** Bugfix: The selected credential was not being updated correctly.
+ ** macOS: Remove sandbox entitlements to work better when running on a system with gpg-agent.
+
+* Version 4.1.2 (released 2017-05-12)
+ ** Ubuntu: Fixed crash after entering password on Ubuntu 17.04
+ ** Windows: Fixed issue with window spawning outside desktop.
+
+* Version 4.1.1 (released 2017-05-09)
+ ** Windows: Fixed issue with missing OpenGL drivers, include ANGLE in windows build.
+ ** macOS: Fixed issue with incorrect linking to OpenSSL, causing the application to freeze when reading credentials.
+ ** Bugfix: Touch credentials were not being selected correctly.
+ ** Bugfix: Steam credentials were incorrect when read from a YubiKey 4.
+
+* Version 4.1.0 (released 2017-04-10)
+ ** Added a optional system tray shortcut.
+ ** Sort credentials based on name.
+ ** Improved scrolling, keep scroll position when credentials are reloaded.
+ ** Bugfix: new passwords was always being cleared.
+ ** Removed custom coloring of progress bar, use system theming.
+
+* Version 4.0.1 (released 2017-03-27)
+ ** Bugfix: Follow color schemes better.
+ ** Removed some spacing thath caused the layout to be slightly off.
+ ** Improved focus switching between search bar and credentials.
+ ** Added keyboard shortcut (Ctrl/Cmd + F) for focus on the search bar.
+ ** Select the top credential during search.
+ ** Remember window location and dimensions between launches.
+ ** Add a Edit menu in the menu bar for credentials.
+ ** Improved error logging.
+ ** macOS: Close app with Cmd + W.
+ ** Windows installer: install Visual C++ redistributable packages if needed.
+
+* Version 4.0.0 (released 2017-03-20)
+ ** The UI has been completely rewritten, to allow us to use a more modern technology stack.
+    All main functionality and concepts are kept the same.
+ ** CLI version has been removed from this project, the functionality is now found in the YubiKey Manager (ykman) tool.
+ ** Slot mode and CCID mode are now kept separated, choose which mode to use under "Settings".
+ ** Added keyboard shortcuts for copy code, generate code, delete credential, add credential and settings.
+ ** Added support for resetting all OATH credentials and password.
+
+* Version 3.1.0b (released 2016-12-16)
+ ** Fix crash on macOS related to how the application was built.
+    New installer for macOS based on previous release.
+
+* Version 3.1.0 (released 2016-11-22)
+ ** Added a search bar for credentials.
+ ** Added support for adding SHA256 credentials in the GUI.
+ ** Smart card is now being disconnected when the application is hidden.
+ ** Bugfix: QR codes were sometimes not being parsed.
+
+* Version 3.0.1 (released 2016-06-13)
+ ** Bugfix release:
+    - Don't import OSX libs outside of OSX.
+    - Packaging related fixes.
+
+* Version 3.0.0 (released 2016-06-09)
+ ** Added compatibility with Python 3 (Python 2 is still supported).
+ ** Added support for generating alphanumeric Steam authenticator codes for entries prefixed with "Steam:".
+ ** Added a confirmation dialog box when overwriting entries.
+ ** Added the capability to delete slot-based credentials.
+ ** UX enhancements: split up issuer and name; added larger OTP codes.
+ ** CLI was rewritten using the "click" library.
+ ** CLI gained a "gui" subcommand which launches the full GUI.
+ ** Binaries were renamed (yubioath -> yubioath-gui, yubioath-cli -> yubioath).
+
+* Version 2.3.0 (released 2015-11-20)
+ ** Re-schedule timer each time period based on system time to prevent Qt timer
+    drift.
+ ** Clear password memory cache on minimize to prevent accidentally leaving the
+    YubiKey unlocked unattended.
+ ** Support for credentials which require touch (YubiKey 4 only).
+
+* Version 2.2.1 (released 2015-08-20)
+ ** Bugfix release: Fix adding credentials via the UI.
+
+* Version 2.2.0 (released 2015-08-18)
+ ** Allow spaces in OATH keys.
+ ** Don't crash if smartcard subsystem isn't available.
+ ** Disable systray icon by default.
+ ** Added a flag to start the application minimized to the systray.
+ ** Added the ability to scan QR codes from the screen.
+
+* Version 2.1.1 (released 2015-07-02)
+ ** Added man pages.
+ ** Fixed bug with non-CCID YubiKeys not displaying slot-based credentials.
+ ** Windows installer/uninstaller checks for running instance, and closes it.
+
+* Version 2.1.0 (released 2015-06-26)
+ ** Added setting to kill scdaemon on show, to release the device (GUI only).
+ ** Added the ability to program standard YubiKeys with slot-based TOTP
+    credentials.
+ ** Added functionality to the CLI for programming YubiKeys.
+ ** Added the reset command for wiping a device (CLI only).
+ ** Better handling of composite modes.
+ ** Support non-ascii characters in card reader names.
+
+* Version 2.0.2 (released 2015-06-16)
+ ** Minor packaging related fixes.
+
+* Version 2.0.1 (released 2015-06-16)
+ ** Minor fixes to platform specific quirks.
+
+* Version 2.0.0 (released 2015-06-15)
+ ** Complete rewrite:
+    - Supports all OATH-enabled YubiKeys, including YubiKey Standard.
+    - New overhauled UI.
