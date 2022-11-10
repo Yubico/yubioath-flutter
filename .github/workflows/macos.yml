@@ -67,6 +67,9 @@ jobs:
         mv build/macos/Build/Products/Release/"Yubico Authenticator.app" deploy
         mv create-dmg.sh deploy
         mv resources/icons/dmg-background.png deploy
+        mv macos/helper.entitlements deploy
+        mv macos/helper-sandbox.entitlements deploy
+        mv macos/Runner/Release.entitlements deploy
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
