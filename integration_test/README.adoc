@@ -1,0 +1,46 @@
+== Integration tests
+
+This directory contains a set of semi-automated tests which are to be run on a physical device with a real YubiKey. The tests are divided by test area into several files:
+
+|===
+|Test file | Test area | Notes
+
+|`management_test.dart`
+|Test turning OTP app off and on
+|Currently only Desktop
+
+|`oath_test.dart`
+|Test oath app functionality: add, update and remove account, set, change and remove password
+|
+|===
+
+To run the tests:
+
+1. connect your YubiKey via USB to your host
+
+2. pass a specific test file into the flutter test framework. The command needs to be run in the repository root. Example:
+
+    flutter test integration_test/oath_test.dart
+
+
+=== Notes
+
+==== USB only
+Currently the tests work only with USB connected keys on both desktop and Android.
+
+==== Avoiding data loss
+To avoid data loss, only approved YubiKeys will be accepted by the framework. Update `approved_yubikeys.dart` file with serial numbers of your testing YubiKeys:
+
+    var approvedYubiKeys = <String>['12345678', '98765432'];
+
+==== Preparing YubiKeys for testing
+Before running the tests, remove passwords from the YubiKeys used for testing.
+
+==== Android permission
+On Android, you have to confirm USB permissions when the first test is executed and Camera permission first time we are adding account. We implemented a custom test driver which can be used to avoid the Camera permission grant dialog. Use this command to run with the test driver:
+
+    flutter drive --driver=integration_test/android/test_driver.dart --target=integration_test/oath_test.dart -d DEVICE
+
+where DEVICE is obtained with
+
+    flutter devices
