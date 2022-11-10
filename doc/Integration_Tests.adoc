@@ -1,6 +1,6 @@
 == Integration tests
 
-This directory contains a set of semi-automated tests which are to be run on a physical device with a real YubiKey. The tests are divided by test area into several files:
+The `integration_test` directory contains a set of semi-automated tests which are to be run on a physical device with a real YubiKey. The tests are divided by test area into several files:
 
 |===
 |Test file | Test area | Notes
