@@ -10,7 +10,7 @@
 
       <WixVariable Id="WixUIDialogBmp" Value="resources\icons\yubico-msi-background.png" />
       <WixVariable Id="WixUIBannerBmp" Value="resources\icons\yubico-msi-y-banner.png" />
-      <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
+      <WixVariable Id="WixUILicenseRtf" Value="resources\win\license.rtf" />
 
       <Icon Id="icon.ico" SourceFile="resources\icons\com.yubico.yubioath.ico"/>
       <Property Id="ARPPRODUCTICON" Value="icon.ico" />

@@ -133,8 +133,8 @@ def update_helper_version(buf):
 # release-win.ps1
 def update_release_win(buf):
     return sub1(
-        rf'\$version={version_pattern}',
-        f'$version={version}',
+        rf'\$version="{version_pattern}"',
+        f'$version="{version}"',
         buf,
     )
 
