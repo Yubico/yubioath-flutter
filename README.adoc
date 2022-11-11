@@ -32,6 +32,16 @@ as you are logging into various services. No connectivity needed!
 Experience security the modern way with the Yubico Authenticator.
 Visit https://yubico.com to learn more.
 
+=== System Requirements
+The following operating systems are supported. The application may still run on other platforms.
+
+* Windows 8.1 or later
+* macOS High Sierra 10.13 or later
+* Ubuntu 18.04 LTS or later
+* Android 5.0 Lollipop or later
+
+On Linux systems, make sure the `pcscd` service is installed and running.
+
 === Installation
 Downloads for all supported operating systems are available
 https://www.yubico.com/products/yubico-authenticator/[here].
