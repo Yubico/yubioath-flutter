@@ -61,7 +61,8 @@ jobs:
         run: |
           $env:PATH += ";$env:WIX\bin"
           $env:SRCDIR = "build\windows\runner\Release\"
-          cp resources\win\license.rtf .\
+          cp resources\win\license.rtf .
+          cp resources\win\yubioath-desktop.wxs .
           heat dir .\build\windows\runner\Release\ -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
           candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs -ext WixUtilExtension -arch x64
           light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop.msi
@@ -74,7 +75,9 @@ jobs:
           mkdir $dest
           mv build\windows\runner\Release\* $dest\
           mv yubioath-desktop.msi deploy
-          mv resources deploy
+          mv resources\win\yubioath-desktop.wxs deploy
+          mv resources\win\release-win.ps1 deploy
+          mv resources\win\license.rtf deploy
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
