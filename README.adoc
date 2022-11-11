@@ -1,6 +1,6 @@
 == Yubico Authenticator for Desktop and Android
 
-image:screenshot.png[]
+image:splash.png[]
 
 Store your unique credential on a hardware-backed security key and take it
 wherever you go from mobile to desktop. No more storing sensitive secrets on
