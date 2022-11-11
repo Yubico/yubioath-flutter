@@ -84,8 +84,10 @@ jobs:
     - name: Rename and archive app
       run: |
         export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
+        export BASENAME="yubioath-desktop-${REF}-linux"
         mkdir deploy
-        tar -czf deploy/yubioath-desktop-${REF}-linux.tar.gz -C build/linux/x64/release/bundle .
+        mv build/linux/x64/release/bundle "build/${BASENAME}"
+        tar -czf deploy/${BASENAME}.tar.gz -C build "${BASENAME}"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
