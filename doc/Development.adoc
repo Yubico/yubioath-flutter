@@ -1,0 +1,68 @@
+== Building and developing Yubico Authenticator
+This document describes how to build and package Yubico Authenticator from
+source.
+
+=== Requirements
+You will need the Flutter SDK with enabled desktop support, see:
+https://flutter.dev/desktop
+
+Development has been done using the "Install from git" method of installing the
+SDK, from the "stable" channel.
+
+=== Dependencies
+This project uses several dependencies specified in the pubspec.yaml file, as
+well as in the helper/pyproject.toml file. These files specify version ranges
+which should be compatible. The corresponding pubspec.lock and
+helper/poetry.lock files contain the exact versions which are currently being
+used when building the app.
+
+==== Versioning (important for package maintainers!)
+We recommend that this application be bundled with all its dependencies, using
+the exact versions specified in the lock files. If this approach isn't viable,
+we strongly urge that upper bounds be set on the dependencies in accordance
+with the pubspec and pyproject files. For example, the current version depends
+on `yubikey-manager >=5, <6`. It will likely not work with versions outside
+this range!
+
+=== Building the Yubico Authenticator Helper
+Requirements: Python >= 3.8 and Poetry.
+
+The GUI requires a compiled version of Helper to run, which is built from the
+sources in helper/ in this repository. This needs to be build prior to running
+`flutter build` or `flutter run`, by running `build-helper.sh` (or
+`build-helper.bat` on Windows).
+
+NOTE: You will need to re-run the build script if changes have been made to
+Helper's code, or if `flutter clean` has been run.
+
+=== Running the app
+Before you can build or run the app using the flutter command you need to build
+the helper, as described in the previous section!
+
+To start the app, run:
+
+  flutter run -d <os>
+
+where <os> is "windows", "macos", "linux", or an attached Android device name.
+use `flutter devices` to list available devices.
+
+You can add the `--release` flag to run a release build instead of debug.
+Builds of the app will be create under `build/<os>/`.
+
+=== Running tests
+This project uses both unit tests and integration tests.
+
+The unit tests can be run with the command:
+
+  flutter test
+
+These do not require a YubiKey, and are relatively quick to run.
+
+The integration tests are slower but cover more end-to-end functionality. The
+require an attached YubiKey to run, and will make modifications to the data
+stored on that YubiKey. For instructions on running these tests, see
+link:Integration_Tests.adoc[these instructions].
+
+
+=== Packaging for MacOS
+See link:MacOS_Packaging.adoc[MacOS Packaging].
