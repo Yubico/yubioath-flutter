@@ -18,20 +18,26 @@ it. For Notarization to work, we must enable "hardened runtime" by setting the
 The following commands can be done to re-sign the files using the Yubico
 signing key:
 
-  # Sign the main binary, with the entitlements:
-  codesign -f --timestamp --options runtime --entitlements macos/helper.entitlements --sign 'Application' build/macos/helper/authenticator-helper
+  # Sign the main binaries, with the entitlements:
+  codesign -f --timestamp --options runtime --entitlements helper.entitlements --sign 'Application' Yubico\ Authenticator.app/Contents/Resources/helper/authenticator-helper
+
+  codesign -f --timestamp --options runtime --entitlements helper.entitlements --sign 'Application' Yubico\ Authenticator.app/Contents/Resources/helper-arm64/authenticator-helper
 
   # Sign the dylib and so files, without entitlements:
-  codesign -f --timestamp --options runtime --sign 'Application' $(find build/macos/helper/ -name "*.dylib" -o -name "*.so")
+  codesign -f --timestamp --options runtime --sign 'Application' $(find Yubico\ Authenticator.app/Contents/Resources/helper/ -name "*.dylib" -o -name "*.so")
+
+  codesign -f --timestamp --options runtime --sign 'Application' $(find Yubico\ Authenticator.app/Contents/Resources/helper-arm64/ -name "*.dylib" -o -name "*.so")
 
   # Sign the Python binary (if it exists), without entitlements:
-  codesign -f --timestamp --options runtime --sign 'Application' build/macos/helper/Python
+  codesign -f --timestamp --options runtime --sign 'Application' Yubico\ Authenticator.app/Contents/Resources/helper/Python
+
+  codesign -f --timestamp --options runtime --sign 'Application' Yubico\ Authenticator.app/Contents/Resources/helper-arm64/Python
 
 ==== Signing the GUI
 After signing the Helper, make a release build of the GUI and then re-sign it
 with the Yubico key:
 
-  codesign --timestamp --options runtime --sign 'Application' --entitlements macos/Runner/Release.entitlements --deep "build/macos/Build/Products/Release/Yubico Authenticator.app"
+  codesign --timestamp --options runtime --sign 'Application' --entitlements Release.entitlements --deep "Yubico Authenticator.app"
 
 The app should now be properly signed, and needs to be Notarized. Create a zip file with the .app, and:
 
@@ -45,30 +51,14 @@ To check if notarization is complete:
 
 When the notarization is complete, and successful, the original .app bundle (not the .zip archive) needs to be stapled.
 
-  xcrun stapler staple -v "build/macos/Build/Products/Release/Yubico Authenticator.app"
+  xcrun stapler staple -v "Yubico Authenticator.app"
 
-Create the installer with productbuild.
-
-  productbuild --sign 'Installer' --component "build/macos/Build/Products/Release/Yubico Authenticator.app" /Applications/ output-file-xyz.pkg
-
-Then notarize and staple (when ready) the .pkg as well:
-
-  xcrun altool -t osx -f output-file-xyz.pkg --primary-bundle-id com.yubico.authenticator --notarize-app -u $APPLE_ID -p $PASSWORD
-  xcrun altool --notarization-info $APP_GUID -u $APPLE_ID -p $PASSWORD
-  xcrun stapler staple -v <pkg file>
-
-Finally, we're done! The .pkg is ready for distribution.
-
+Everything has now been signed and we can create a dmg.
 
 ==== Creating a dmg
-Repeat all the steps from above until (and including) notarization of the .zip.
-Afterwards create a directory containing the .app and the following shortcut:
-
-  ln -s /Applications/ Applications
-
-Open Disk Utility. Press File > New image > Image from Folder.
-Choose the folder you just created.
-
+Create a directory called `source_folder` and move the .app to it.
+Install `create-dmg` by running `brew install create-dmg`.
+Run the `create-dmg.sh` script.
 
 === Signing for the App Store
 All binaries must have sandbox enabled for the Apple App Store, but the Helper
@@ -80,14 +70,16 @@ different code signing key than the standalone distribution.
 ==== Signing the Yubico Authenticator Helper
 Follow the same steps as for "standalone", with the exception of signing the `authenticator-helper` binary:
 
-  # Sign the main binary, with sandbox enabled, without hardened runtime:
-  codesign -f --timestamp --entitlements macos/helper-sandbox.entitlements --sign 'Application' build/macos/helper/authenticator-helper
+  # Sign the main binaries, with sandbox enabled, without hardened runtime:
+  codesign -f --timestamp --entitlements helper-sandbox.entitlements --sign 'Application' Yubico\ Authenticator.app/Contents/Resources/helper/authenticator-helper
+
+  codesign -f --timestamp --entitlements helper-sandbox.entitlements --sign 'Application' Yubico\ Authenticator.app/Contents/Resources/helper-arm64/authenticator-helper
 
 NOTE: This sandboxed Helper will not run on its own, it has to be run as a
 subprocess to the main application.
 
 Once you have the signed .app, (no Notarization required) build the package for AppStore submission:
 
-  productbuild --sign 'Installer' --component build/macos/Build/Products/Release/flutter_rpc_test.app /Applications/ output-appstore.pkg
+  productbuild --sign 'Installer' --component "Yubico Authenticator.app" /Applications/ output-appstore.pkg
 
 Use the Transporter app to upload the package to Apple.
