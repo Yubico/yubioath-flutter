@@ -2,6 +2,9 @@
 This document describes how to build and package Yubico Authenticator from
 source.
 
+NOTE: Yubico Authenticator 6 uses a new codebase built using the Flutter
+framework. The previous Qt codebase can be found in the `legacy` branch.
+
 === Requirements
 You will need the Flutter SDK with enabled desktop support, see:
 https://flutter.dev/desktop
@@ -47,7 +50,15 @@ where <os> is "windows", "macos", "linux", or an attached Android device name.
 use `flutter devices` to list available devices.
 
 You can add the `--release` flag to run a release build instead of debug.
-Builds of the app will be create under `build/<os>/`.
+
+=== Building the app
+To build the app without running it, use:
+
+  flutter build <os>
+
+where <os> is "windows", "macos", "linux", or "apk".
+Builds of the app will be create under `build/<os>/` for desktop, or
+`build/app/` for Android.
 
 === Running tests
 This project uses both unit tests and integration tests.
