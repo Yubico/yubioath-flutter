@@ -32,6 +32,9 @@ as you are logging into various services. No connectivity needed!
 Experience security the modern way with the Yubico Authenticator.
 Visit https://yubico.com to learn more.
 
+NOTE: Yubico Authenticator 6 uses a new codebase built using the Flutter
+framework. The previous Qt codebase can be found in the `legacy` branch.
+
 === System Requirements
 The following operating systems are supported. The application may still run on other platforms.
 
