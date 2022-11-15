@@ -35,13 +35,31 @@ Visit https://yubico.com to learn more.
 NOTE: Yubico Authenticator 6 uses a new codebase built using the Flutter
 framework. The previous Qt codebase can be found in the `legacy` branch.
 
-=== System Requirements
-The following operating systems are supported. The application may still run on other platforms.
+=== Supported platforms
 
-* Windows 8.1 or later
-* macOS High Sierra 10.13 or later
-* Ubuntu 18.04 LTS or later
-* Android 5.0 Lollipop or later
+*Supported* - these are platforms we build and test on and commit to supporting.
+
+*Best-effort* - the app is expected to work, but development is supported through community testing and full functionality cannot be guaranteed.
+
+|===
+||Supported|Best-effort
+
+|Windows
+|Windows 10 & above, 64-bit
+|Windows 8.1, 64-bit
+
+|macOS
+|macOS 11 (Big Sur) & above
+|macOS 10.15 (Catalina)
+
+|Linux
+|Ubuntu 22.04 & above
+|Ubuntu 18.04 (or equivalent)
+
+|Android
+|Android 11 & above
+|Android 5 (Lollipop)
+|===
 
 On Linux systems, make sure the `pcscd` service is installed and running.
 
