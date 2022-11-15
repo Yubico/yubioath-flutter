@@ -1,4 +1,4 @@
-* Version 6.0.0 (unreleased)
+* Version 6.0.0 (released 2022-11-15)
  ** Complete redesign of the UI using Flutter.
  ** Add support for Android.
  ** Add native ARM support for MacOS.
