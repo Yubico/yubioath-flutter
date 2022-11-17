@@ -32,11 +32,11 @@ import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
-import com.yubico.yubikit.core.YubiKeyType
 import com.yubico.yubikit.core.application.ApplicationNotAvailableException
 import com.yubico.yubikit.core.smartcard.ApduException
 import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
+import com.yubico.yubikit.core.smartcard.SmartCardProtocol
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.oath.*
 import com.yubico.yubikit.support.DeviceUtil
@@ -61,6 +61,7 @@ class OathManager(
     companion object {
         const val TAG = "OathManager"
         const val NFC_DATA_CLEANUP_DELAY = 30L * 1000 // 30s
+        val OTP_AID = byteArrayOf(0xa0.toByte(), 0x00, 0x00, 0x05, 0x27, 0x20, 0x01, 0x01)
     }
 
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
@@ -253,35 +254,22 @@ class OathManager(
                         }
                     }
 
-                    // Update deviceInfo since the deviceId has changed
                     if (oath.version.isLessThan(4, 0, 0) && connection.transport == Transport.NFC) {
-                        // NEO over NFC, need a new connection to select another applet
-                        device.requestConnection(SmartCardConnection::class.java) {
-                            try {
-                                val deviceInfo = DeviceUtil.readInfo(it.value, null)
-                                appViewModel.setDeviceInfo(
-                                    deviceInfo.model(
-                                        DeviceUtil.getName(deviceInfo, YubiKeyType.NEO),
-                                        true,
-                                        null
-                                    )
-                                )
-                            } catch (e: Exception) {
-                                Log.e(TAG, "Failed to read device info", e.toString())
-                            }
-                        }
-                    } else {
-                        // Not a NEO over NFC, reuse existing connection
-                        val pid = (device as? UsbYubiKeyDevice)?.pid
-                        val deviceInfo = DeviceUtil.readInfo(connection, pid)
-                        appViewModel.setDeviceInfo(
-                            deviceInfo.model(
-                                DeviceUtil.getName(deviceInfo, pid?.type),
-                                device.transport == Transport.NFC,
-                                pid?.value
-                            )
-                        )
+                        // NEO over NFC, select OTP applet before reading info
+                        SmartCardProtocol(connection).select(OTP_AID)
                     }
+
+                    // Update deviceInfo since the deviceId has changed
+                    val pid = (device as? UsbYubiKeyDevice)?.pid
+                    val deviceInfo = DeviceUtil.readInfo(connection, pid)
+                    appViewModel.setDeviceInfo(
+                        deviceInfo.model(
+                            DeviceUtil.getName(deviceInfo, pid?.type),
+                            device.transport == Transport.NFC,
+                            pid?.value
+                        )
+                    )
+
                 }
             }
             Log.d(
