@@ -24,11 +24,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-          # Needed to shorten the path for zxing-cpp build
-          poetry config virtualenvs.path C:\e
 
       - name: Build the Helper
-        run: .\build-helper.bat
+        run: |
+          # Needed to shorten the path for zxing-cpp build
+          $env:TMPDIR = "C:\e"
+          poetry config virtualenvs.path C:\e
+          .\build-helper.bat
 
       - uses: subosito/flutter-action@v2
         with:
