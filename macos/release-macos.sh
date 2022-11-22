@@ -1,3 +1,24 @@
+#!/bin/sh
+
+if [ -z "$1" ]
+then
+	echo "No username given"
+	exit
+fi
+
+if [ -z "$2" ]
+then
+	echo "No password given"
+	exit
+fi
+
+if ! command -v create-dmg &> /dev/null
+then
+	echo "create-dmg could not be found"
+	exit
+fi
+
+
 echo "# Extract .app from .tar.gz"
 tar -xzvf yubioath-desktop*.tar.gz
 
