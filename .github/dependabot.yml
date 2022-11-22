@@ -7,6 +7,11 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "gradle"
-    directory: "/"
+    directory: "/android/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/android/flutter_plugins/qrscanner_zxing/android/"
     schedule:
       interval: "weekly"
