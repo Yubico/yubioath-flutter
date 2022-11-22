@@ -261,14 +261,19 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     }
 
     final period = int.tryParse(_periodController.text) ?? -1;
+    final issuerText = _issuerController.text.trim();
+    final nameText = _accountController.text.trim();
     final remaining = getRemainingKeySpace(
       oathType: _oathType,
       period: period,
-      issuer: _issuerController.text.trim(),
-      name: _accountController.text.trim(),
+      issuer: issuerText,
+      name: nameText,
     );
     final issuerRemaining = remaining.first;
     final nameRemaining = remaining.second;
+
+    final issuerMaxLength = max(issuerRemaining, 1);
+    final nameMaxLength = max(nameRemaining, 1);
 
     final secret = _secretController.text.replaceAll(' ', '');
     final secretLengthValid = secret.length * 5 % 8 < 5;
@@ -276,8 +281,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     // is this credentials name/issuer pair different from all other?
     final isUnique = _credentials
             ?.where((element) =>
-                element.name == _accountController.text.trim() &&
-                (element.issuer ?? '') == _issuerController.text.trim())
+                element.name == nameText &&
+                (element.issuer ?? '') == issuerText)
             .isEmpty ??
         true;
     final issuerNoColon = !_issuerController.text.contains(':');
@@ -285,7 +290,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     final isLocked = oathState?.locked ?? false;
 
     final isValid = !isLocked &&
-        _accountController.text.trim().isNotEmpty &&
+        nameText.isNotEmpty &&
         secret.isNotEmpty &&
         isUnique &&
         issuerNoColon &&
@@ -311,11 +316,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     void submit() async {
       if (secretLengthValid) {
-        final issuer = _issuerController.text.trim();
-
         final cred = CredentialData(
-          issuer: issuer.isEmpty ? null : issuer,
-          name: _accountController.text.trim(),
+          issuer: issuerText.isEmpty ? null : issuerText,
+          name: nameText,
           secret: secret,
           oathType: _oathType,
           hashAlgorithm: _hashAlgorithm,
@@ -389,12 +392,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       controller: _issuerController,
                       autofocus: widget.credentialData == null,
                       enabled: issuerRemaining > 0,
-                      maxLength: max(issuerRemaining, 1),
+                      maxLength: issuerMaxLength,
                       inputFormatters: [
                         limitBytesLength(issuerRemaining),
                       ],
-                      buildCounter:
-                          buildByteCounterFor(_issuerController.text.trim()),
+                      buildCounter: buildByteCounterFor(issuerText),
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         labelText:
@@ -402,10 +404,12 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         helperText:
                             '', // Prevents dialog resizing when disabled
                         prefixIcon: const Icon(Icons.business_outlined),
-                        errorText: issuerNoColon
-                            ? null
-                            : AppLocalizations.of(context)!
-                                .oath_invalid_character_issuer,
+                        errorText: (byteLength(issuerText) > issuerMaxLength)
+                            ? '' // needs empty string to render as error
+                            : issuerNoColon
+                                ? null
+                                : AppLocalizations.of(context)!
+                                    .oath_invalid_character_issuer,
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {
@@ -420,9 +424,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     TextField(
                       key: keys.nameField,
                       controller: _accountController,
-                      maxLength: max(nameRemaining, 1),
-                      buildCounter:
-                          buildByteCounterFor(_accountController.text.trim()),
+                      maxLength: nameMaxLength,
+                      buildCounter: buildByteCounterFor(nameText),
                       inputFormatters: [limitBytesLength(nameRemaining)],
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
@@ -431,9 +434,12 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             AppLocalizations.of(context)!.oath_account_name,
                         helperText:
                             '', // Prevents dialog resizing when disabled
-                        errorText: isUnique
-                            ? null
-                            : AppLocalizations.of(context)!.oath_duplicate_name,
+                        errorText: (byteLength(nameText) > nameMaxLength)
+                            ? '' // needs empty string to render as error
+                            : isUnique
+                                ? null
+                                : AppLocalizations.of(context)!
+                                    .oath_duplicate_name,
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {

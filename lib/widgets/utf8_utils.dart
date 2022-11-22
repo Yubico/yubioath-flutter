@@ -28,10 +28,18 @@ int byteLength(String value) => utf8.encode(value).length;
 /// used rather than number of characters. [currentValue] should always match
 /// the input text value to measure.
 InputCounterWidgetBuilder buildByteCounterFor(String currentValue) =>
-    (context, {required currentLength, required isFocused, maxLength}) => Text(
-          maxLength != null ? '${byteLength(currentValue)}/$maxLength' : '',
-          style: Theme.of(context).textTheme.caption,
-        );
+    (context, {required currentLength, required isFocused, maxLength}) {
+      final theme = Theme.of(context);
+      final caption = theme.textTheme.caption;
+      final style = (byteLength(currentValue) <= (maxLength ?? 0))
+          ? caption
+          : caption?.copyWith(color: theme.errorColor);
+      return Text(
+        maxLength != null ? '${byteLength(currentValue)}/$maxLength' : '',
+        style: style,
+        semanticsLabel: 'Character count',
+      );
+    };
 
 /// Limits the input in length based on the byte length when encoded.
 /// This is generally used together with [buildByteCounterFor].
