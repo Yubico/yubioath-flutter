@@ -15,3 +15,8 @@ updates:
     directory: "/android/flutter_plugins/qrscanner_zxing/android/"
     schedule:
       interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/helper/"
+    schedule:
+      interval: "weekly"
