@@ -1,12 +1,12 @@
 buildscript {
-    ext.kotlin_version = '1.7.10'
+    ext.kotlin_version = '1.7.21'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath 'com.android.tools.build:gradle:7.3.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath 'com.google.android.gms:oss-licenses-plugin:0.10.5'
@@ -27,7 +27,7 @@ allprojects {
 
         yubiKitVersion = "2.1.0"
         junitVersion = "4.13.2"
-        mockitoVersion = "3.9.0"
+        mockitoVersion = "4.9.0"
     }
 }
 
