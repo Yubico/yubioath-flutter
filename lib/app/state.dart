@@ -27,6 +27,21 @@ import 'models.dart';
 
 final _log = Logger('app.state');
 
+// When non-null, an unrecoverable error preventing the app from functioning has occurred.
+final applicationError =
+    StateNotifierProvider<ApplicationErrorNotifier, String?>(
+  (ref) => ApplicationErrorNotifier(),
+);
+
+class ApplicationErrorNotifier extends StateNotifier<String?> {
+  ApplicationErrorNotifier() : super(null);
+
+  void setApplicationError(String? error) {
+    _log.debug('Set ApplicationError to $error');
+    state = error;
+  }
+}
+
 // Override this to alter the set of supported apps.
 final supportedAppsProvider =
     Provider<List<Application>>((ref) => Application.values);
@@ -42,8 +57,7 @@ final supportedThemesProvider = StateProvider<List<ThemeMode>>(
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
   (ref) => ThemeModeNotifier(
-      ref.watch(prefProvider),
-      ref.read(supportedThemesProvider)),
+      ref.watch(prefProvider), ref.read(supportedThemesProvider)),
 );
 
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
