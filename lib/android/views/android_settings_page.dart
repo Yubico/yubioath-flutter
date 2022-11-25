@@ -28,6 +28,7 @@ const String _prefNfcOpenApp = 'prefNfcOpenApp';
 const String _prefNfcBypassTouch = 'prefNfcBypassTouch';
 const String _prefNfcCopyOtp = 'prefNfcCopyOtp';
 const String _prefClipKbdLayout = 'prefClipKbdLayout';
+const String _prefUsbOpenApp = 'prefUsbOpenApp';
 
 // TODO: Get these from Android
 const List<String> _keyboardLayouts = ['US', 'DE', 'DE-CH'];
@@ -109,6 +110,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
     final clipKbdLayout =
         prefs.getString(_prefClipKbdLayout) ?? _defaultClipKbdLayout;
     final nfcBypassTouch = prefs.getBool(_prefNfcBypassTouch) ?? false;
+    final usbOpenApp = prefs.getBool(_prefUsbOpenApp) ?? false;
     final themeMode = ref.watch(themeModeProvider);
 
     final theme = Theme.of(context);
@@ -162,6 +164,15 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                 key: keys.nfcBypassTouchSetting,
                 onChanged: (value) {
                   prefs.setBool(_prefNfcBypassTouch, value);
+                  setState(() {});
+                }),
+            const ListTitle('USB options'),
+            SwitchListTile(
+                title: const Text('Open application when YubiKey is connected'),
+                value: usbOpenApp,
+                key: keys.usbOpenApp,
+                onChanged: (value) {
+                  prefs.setBool(_prefUsbOpenApp, value);
                   setState(() {});
                 }),
             const ListTitle('Appearance'),

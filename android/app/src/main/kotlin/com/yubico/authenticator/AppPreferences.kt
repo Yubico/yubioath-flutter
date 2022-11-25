@@ -25,6 +25,7 @@ class AppPreferences(context: Context) {
         const val PREF_NFC_OPEN_APP = "flutter.prefNfcOpenApp"
         const val PREF_NFC_BYPASS_TOUCH = "flutter.prefNfcBypassTouch"
         const val PREF_NFC_COPY_OTP = "flutter.prefNfcCopyOtp"
+        const val PREF_USB_OPEN_APP = "flutter.prefUsbOpenApp"
 
         const val PREF_CLIP_KBD_LAYOUT = "flutter.prefClipKbdLayout"
         const val DEFAULT_CLIP_KBD_LAYOUT = "US"
@@ -47,4 +48,7 @@ class AppPreferences(context: Context) {
             PREF_CLIP_KBD_LAYOUT,
             DEFAULT_CLIP_KBD_LAYOUT
         )!!
+
+    val openAppOnUsb: Boolean
+        get() = prefs.getBoolean(PREF_USB_OPEN_APP, false)
 }
