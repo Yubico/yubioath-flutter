@@ -6,6 +6,8 @@ jobs:
   helper:
     name: Build helper
     runs-on: ubuntu-latest
+    env:
+      PYVER: 3.11
     container:
       image: ubuntu:18.04
       env:
@@ -14,20 +16,30 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Cache helper
+      id: cache-helper
+      uses: actions/cache@v3
+      with:
+        path: helper.tar.gz
+        key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
+
     - name: Install dependencies
+      if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
         apt-get update
         apt-get install -qq swig libpcsclite-dev software-properties-common build-essential cmake git
         add-apt-repository -y ppa:deadsnakes/ppa
-        apt-get install -qq python3.11-dev python3.11-venv
-        python3.11 -m ensurepip --user
-        python3.11 -m pip install -U pip
-        python3.11 -m pip install poetry
+        apt-get install -qq python$PYVER-dev python$PYVER-venv
+        python$PYVER -m ensurepip --user
+        python$PYVER -m pip install -U pip
+        python$PYVER -m pip install poetry
 
     - name: Build the Helper
+      if: steps.cache-helper.outputs.cache-hit != 'true'
       run: ./build-helper.sh
 
     - name: Create archive
+      if: steps.cache-helper.outputs.cache-hit != 'true'
       run: tar -czf helper.tar.gz build/linux/helper assets/licenses/helper.json
 
     - name: Upload artifact
@@ -44,6 +56,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Check app versions
+      run: |
+        python set-version.py
+        git diff --exit-code
+
     - name: Download helper
       uses: actions/download-artifact@v3
       with:
@@ -52,11 +69,6 @@ jobs:
     - name: Unpack helper
       run: |
         tar -xf helper.tar.gz
-
-    - name: Check app versions
-      run: |
-        python set-version.py
-        git diff --exit-code
 
     - name: Install dependencies
       run: |

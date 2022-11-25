@@ -6,26 +6,40 @@ jobs:
   build:
 
     runs-on: windows-latest
+    env:
+      PYVER: 3.11
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
 
       - name: Check app versions
         run: |
           python set-version.py
           git diff --exit-code
 
+      - name: Cache helper
+        id: cache-helper
+        uses: actions/cache@v3
+        with:
+          path: |
+            build/windows/helper
+            assets/licenses/helper.json
+          key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
+
+      - name: Set up Python
+        if: steps.cache-helper.outputs.cache-hit != 'true'
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYVER }}
+
       - name: Install dependencies
+        if: steps.cache-helper.outputs.cache-hit != 'true'
         run: |
           python -m pip install --upgrade pip
           pip install poetry
 
       - name: Build the Helper
+        if: steps.cache-helper.outputs.cache-hit != 'true'
         run: |
           # Needed to shorten the path for zxing-cpp build
           $env:TMPDIR = "C:\e"
@@ -58,7 +72,6 @@ jobs:
           cp $dest\helper\MSVCP140.dll $dest\
           cp $dest\helper\VCRUNTIME140.dll $dest\
           cp $dest\helper\VCRUNTIME140_1.dll $dest\
-
 
       - name: Create an unsigned .msi installer package
         run: |
