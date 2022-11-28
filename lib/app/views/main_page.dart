@@ -16,6 +16,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/cancellation_exception.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
@@ -23,11 +25,15 @@ import '../../fido/views/fido_screen.dart';
 import '../../oath/models.dart';
 import '../../oath/views/add_account_page.dart';
 import '../../oath/views/oath_screen.dart';
+import '../../version.dart';
+import '../logging.dart';
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_error_screen.dart';
 import 'message_page.dart';
+
+final _log = Logger('app.views.main_page');
 
 class MainPage extends ConsumerWidget {
   const MainPage({super.key});
@@ -40,6 +46,35 @@ class MainPage extends ConsumerWidget {
         next?.call(context);
       },
     );
+
+    final appError = ref.watch(applicationError);
+    if (appError != null) {
+      return MessagePage(
+        header: 'An unrecoverable error has occured',
+        message: appError,
+        actions: [
+          ActionChip(
+            avatar: const Icon(Icons.copy),
+            label: Text(AppLocalizations.of(context)!.general_copy_log),
+            onPressed: () async {
+              _log.info('Copying log to clipboard ($version)...');
+              final logs = await ref.read(logLevelProvider.notifier).getLogs();
+              var clipboard = ref.read(clipboardProvider);
+              await clipboard.setText(logs.join('\n'));
+              if (!clipboard.platformGivesFeedback()) {
+                await ref.read(withContextProvider)(
+                  (context) async {
+                    showMessage(context,
+                        AppLocalizations.of(context)!.general_log_copied);
+                  },
+                );
+              }
+            },
+          ),
+        ],
+      );
+    }
+
     // If the current device changes, we need to pop any open dialogs.
     ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, __) {
       Navigator.of(context).popUntil((route) {
