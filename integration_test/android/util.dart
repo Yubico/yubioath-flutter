@@ -19,11 +19,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yubico_authenticator/android/init.dart';
 import 'package:yubico_authenticator/android/keys.dart' as android_keys;
 import 'package:yubico_authenticator/android/qr_scanner/qr_scanner_view.dart';
+import 'package:yubico_authenticator/android/preferences.dart';
 import 'package:yubico_authenticator/app/views/device_avatar.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 
 import '../test_util.dart';
-import 'constants.dart';
 
 void _setShowBetaDialogPref(bool value) async {
   SharedPreferences.setMockInitialValues({betaDialogPrefName: value});
