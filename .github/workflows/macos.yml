@@ -9,6 +9,9 @@ jobs:
     env:
       PYVER: 3.11
 
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "10.15"
+
     steps:
     - uses: actions/checkout@v3
 
@@ -48,7 +51,7 @@ jobs:
       with:
         channel: 'stable'
         architecture: 'x64'
-        flutter-version: '3.3.7'
+        flutter-version: '3.3.9'
     - run: flutter config --enable-macos-desktop
     - run: flutter --version
 
@@ -78,12 +81,13 @@ jobs:
         export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
         mkdir deploy
         mv yubioath-desktop.dmg deploy
-        mv build/macos/Build/Products/Release/"Yubico Authenticator.app" deploy
+        tar -czf deploy/yubioath-desktop-${REF}.app.tar.gz -C build/macos/Build/Products/Release "Yubico Authenticator.app"
         mv create-dmg.sh deploy
         mv resources/icons/dmg-background.png deploy
         mv macos/helper.entitlements deploy
         mv macos/helper-sandbox.entitlements deploy
         mv macos/Runner/Release.entitlements deploy
+        mv macos/release-macos.sh deploy
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3

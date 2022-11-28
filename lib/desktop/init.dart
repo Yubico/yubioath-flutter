@@ -102,7 +102,11 @@ Future<Widget> initialize(List<String> argv) async {
   final rpc = RpcSession(exe!);
   await rpc.initialize();
   _log.info('Helper process started', exe);
-  rpc.setLogLevel(Logger.root.level);
+
+  // Set the initial logging level. As this is the first message to the RPC,
+  // it also serves to check that the Helper is functioning correctly.
+  // The future will be awaited further down.
+  final initRpcLogFuture = rpc.setLogLevel(Logger.root.level);
 
   _initLicenses();
 
@@ -131,7 +135,8 @@ Future<Widget> initialize(List<String> argv) async {
       fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
       credentialProvider.overrideWithProvider(desktopCredentialProvider),
       clipboardProvider.overrideWithProvider(desktopClipboardProvider),
-      supportedThemesProvider.overrideWithProvider(desktopSupportedThemesProvider)
+      supportedThemesProvider
+          .overrideWithProvider(desktopSupportedThemesProvider)
     ],
     child: YubicoAuthenticatorApp(
       page: Consumer(
@@ -140,6 +145,17 @@ Future<Widget> initialize(List<String> argv) async {
           ref.listen<Level>(logLevelProvider, (_, level) {
             rpc.setLogLevel(level);
           });
+
+          // Ensure the initial log level was successfully set within 5s, or
+          // assume the Helper isn't functional.
+          initRpcLogFuture.timeout(const Duration(seconds: 5)).onError(
+            (error, stackTrace) {
+              _log.error('Helper is not responsive.');
+              ref
+                  .read(applicationError.notifier)
+                  .setApplicationError('Helper subprocess failed to start');
+            },
+          );
 
           return const MainPage();
         }),
@@ -175,10 +191,12 @@ void _initLogging(List<String> argv) {
 
 void _initLicenses() async {
   LicenseRegistry.addLicense(() async* {
-    final python = await rootBundle.loadString('assets/licenses/raw/python.txt');
+    final python =
+        await rootBundle.loadString('assets/licenses/raw/python.txt');
     yield LicenseEntryWithLineBreaks(['Python'], python);
 
-    final zxingcpp = await rootBundle.loadString('assets/licenses/raw/apache-2.0.txt');
+    final zxingcpp =
+        await rootBundle.loadString('assets/licenses/raw/apache-2.0.txt');
     yield LicenseEntryWithLineBreaks(['zxing-cpp'], zxingcpp);
 
     final helper = await rootBundle.loadStructuredData<List>(

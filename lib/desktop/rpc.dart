@@ -121,7 +121,7 @@ class RpcSession {
         );
       }
     } catch (e) {
-      _log.error(e.toString(), entry);
+      _log.error(entry);
     }
   }
 
@@ -235,7 +235,7 @@ class RpcSession {
     return request.completer.future;
   }
 
-  void setLogLevel(Level level) async {
+  Future<void> setLogLevel(Level level) async {
     final name = Levels.LEVELS
         .firstWhere((e) => level.value <= e.value, orElse: () => Level.OFF)
         .name

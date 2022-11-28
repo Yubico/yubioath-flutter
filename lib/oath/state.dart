@@ -195,7 +195,8 @@ class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
               .where((pair) => pair.credential.issuer != '_hidden')
               .toList()
             ..sort((a, b) {
-              String searchKey(OathCredential c) => (c.issuer ?? '') + c.name;
+              String searchKey(OathCredential c) =>
+                  ((c.issuer ?? '') + c.name).toLowerCase();
               return searchKey(a.credential).compareTo(searchKey(b.credential));
             }),
         );

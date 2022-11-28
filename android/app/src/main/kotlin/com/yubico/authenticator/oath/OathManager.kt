@@ -444,9 +444,22 @@ class OathManager(
     private suspend fun requestRefresh() =
         appViewModel.connectedYubiKey.value?.let { usbYubiKeyDevice ->
             useOathSessionUsb(usbYubiKeyDevice) { session ->
-                oathViewModel.updateCredentials(
-                    calculateOathCodes(session).model(session.deviceId)
-                )
+                try {
+                    oathViewModel.updateCredentials(
+                        calculateOathCodes(session).model(session.deviceId)
+                    )
+                } catch(apduException: ApduException) {
+                    if (apduException.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
+                        Log.d(TAG, "Handled oath credential refresh on locked session.")
+                        oathViewModel.setSessionState(session.model(keyManager.isRemembered(session.deviceId)))
+                    } else {
+                        Log.e(
+                            TAG,
+                            "Unexpected sw when refreshing oath credentials",
+                            apduException.message
+                        )
+                    }
+                }
             }
         }
 
