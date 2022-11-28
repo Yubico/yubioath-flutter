@@ -1,3 +1,10 @@
+* Version 6.0.2 (released 2022-11-28)
+ ** Android: Fix USB connectivity issues after returning from sleep.
+ ** MacOS: Fix helper subprocess compatibility on older MacOS versions.
+ ** Better indicate if there is an error starting the helper subprocess.
+ ** OATH: Better indicate error for too long issuer/name when scanning a QR code.
+ ** OATH: Sorting of credential names is now case-insensitive.
+
 * Version 6.0.1 (released 2022-11-17)
  ** Android: Fix issues of YubiKey NEO NFC connectivity on certain phones
 
