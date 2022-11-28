@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
+import '../../widgets/adjustable_scroll_controller.dart';
 
 import 'device_button.dart';
 import 'keys.dart';
@@ -66,6 +67,8 @@ class AppPage extends StatelessWidget {
 
   Widget _buildScrollView() {
     return SingleChildScrollView(
+      // Adjusts the speed of the scroll wheel
+      controller: AdjustableScrollController(40),
       child: SafeArea(
         child: Center(
           child: SizedBox(
