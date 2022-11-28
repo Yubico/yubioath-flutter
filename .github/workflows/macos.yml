@@ -8,8 +8,6 @@ jobs:
     runs-on: macos-latest
     env:
       PYVER: 3.11
-
-    env:
       MACOSX_DEPLOYMENT_TARGET: "10.15"
 
     steps:
