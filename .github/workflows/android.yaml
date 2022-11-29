@@ -38,12 +38,8 @@ jobs:
           flutter analyze
         working-directory: ./app
 
-      - name: Generate Third party licenses
-        run: ./gradlew collectLicenses
-        working-directory: ./app/android
-
       - name: Build the App
-        run: flutter build apk --release --split-per-abi && flutter build apk --release
+        run: android/scripts/build.sh
         env:
           YUBIOATH_STORE_BASE64: ${{ secrets.YUBIOATH_STORE_BASE64 }}
           YUBIOATH_KEY_ALIAS: ${{ secrets.YUBIOATH_KEY_ALIAS }}
@@ -56,30 +52,11 @@ jobs:
         working-directory: ./app
 
       - name: Run android tests
-        run: |
-          ./gradlew test
+        run: ./gradlew test
         working-directory: ./app/android
 
-      - name: Upload artifacts
-        run: |
-          export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3,4,5,6,7 | sed -r 's/\//_/g')
-          export FLUTTER_APK=build/app/outputs/flutter-apk
-          export NATIVE_LIBS=build/app/intermediates/merged_native_libs/release/out/lib
-
-          mkdir artifacts
-          mv "${FLUTTER_APK}/app-arm64-v8a-release.apk"   artifacts/yubico-authenticator-arm64-v8a-${REF}.apk
-          mv "${FLUTTER_APK}/app-armeabi-v7a-release.apk" artifacts/yubico-authenticator-armeabi-v7a-${REF}.apk
-          mv "${FLUTTER_APK}/app-x86_64-release.apk"      artifacts/yubico-authenticator-x86_64-${REF}.apk
-          mv "${FLUTTER_APK}/app-release.apk"             artifacts/yubico-authenticator-${REF}.apk
-
-          mv build/app/outputs/mapping/release/mapping.txt artifacts/
-
-          pushd "${NATIVE_LIBS}/"
-          zip -r sym-arm64-v8a.zip arm64-v8a/*so
-          zip -r sym-armeabi-v7a.zip armeabi-v7a/*so
-          zip -r sym-x86_64.zip x86_64/*so
-          popd
-          mv "${NATIVE_LIBS}/"*zip artifacts/
+      - name: Collect artifacts
+        run: android/scripts/collect-artifacts.sh ${GITHUB_REF}
         working-directory: ./app
 
       - uses: actions/upload-artifact@v3
