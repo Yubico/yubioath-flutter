@@ -22,7 +22,7 @@ from .base import (
     encode_bytes,
     decode_bytes,
 )
-from ykman.settings import AppData
+from ykman.settings import AppData, UnwrapValueError
 from yubikit.core import require_version, NotSupportedError
 from yubikit.core.smartcard import ApduError, SW
 from yubikit.oath import OathSession, CredentialData, OATH_TYPE, HASH_ALGORITHM
@@ -71,7 +71,10 @@ class OathNode(RpcNode):
     def _get_access_key(self, device_id):
         keys = self._get_keys()
         if self.session.device_id in keys and self._unlock_keystore():
-            return bytes.fromhex(keys.get_secret(self.session.device_id))
+            try:
+                return bytes.fromhex(keys.get_secret(self.session.device_id))
+            except UnwrapValueError:
+                logger.warning("Failed to unwrap access key", exc_info=True)
         return None
 
     def __init__(self, connection):
