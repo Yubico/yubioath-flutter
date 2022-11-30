@@ -152,9 +152,9 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                 title: const Text('Bypass touch requirement'),
                 subtitle: nfcBypassTouch
                     ? const Text(
-                        'Accounts that require touch are automatically shown over NFC.')
+                        'Accounts that require touch are automatically shown over NFC')
                     : const Text(
-                        'Accounts that require touch need an additional tap over NFC.'),
+                        'Accounts that require touch need an additional tap over NFC'),
                 value: nfcBypassTouch,
                 key: keys.nfcBypassTouchSetting,
                 onChanged: (value) {
