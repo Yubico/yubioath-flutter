@@ -151,34 +151,30 @@ final desktopSupportedThemesProvider = StateProvider<List<ThemeMode>>(
   (ref) => ThemeMode.values,
 );
 
-final desktopCurrentDeviceProvider =
-    StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {
-  final provider = _DesktopCurrentDeviceNotifier(ref.watch(prefProvider));
-  ref.listen(attachedDevicesProvider, provider._updateAttachedDevices);
-  return provider;
-});
-
-class _DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
+class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
   static const String _lastDevice = 'APP_STATE_LAST_DEVICE';
-  final SharedPreferences _prefs;
+  DeviceNode? _deviceNode;
 
-  _DesktopCurrentDeviceNotifier(this._prefs) : super(null);
+  @override
+  DeviceNode? build() {
+    SharedPreferences prefs = ref.watch(prefProvider);
+    var devices = ref.watch(attachedDevicesProvider);
 
-  _updateAttachedDevices(List<DeviceNode>? previous, List<DeviceNode> devices) {
-    if (!devices.contains(state)) {
-      final lastDevice = _prefs.getString(_lastDevice) ?? '';
+    if (!devices.contains(_deviceNode)) {
+      final lastDevice = prefs.getString(_lastDevice) ?? '';
       try {
-        state = devices.firstWhere((dev) => dev.path.key == lastDevice,
+        _deviceNode = devices.firstWhere((dev) => dev.path.key == lastDevice,
             orElse: () => devices.whereType<UsbYubiKeyNode>().first);
       } on StateError {
-        state = null;
+        _deviceNode = null;
       }
     }
+    return _deviceNode;
   }
 
   @override
   setCurrentDevice(DeviceNode? device) {
     state = device;
-    _prefs.setString(_lastDevice, device?.path.key ?? '');
+    ref.read(prefProvider).setString(_lastDevice, device?.path.key ?? '');
   }
 }

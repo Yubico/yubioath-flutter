@@ -15,7 +15,6 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/cancellation_exception.dart';
 import 'package:yubico_authenticator/theme.dart';
@@ -46,6 +45,7 @@ class AndroidQrScanner implements QrScanner {
   }
 }
 
-final androidQrScannerProvider = Provider.family<QrScanner?, bool>(
-    (ref, hasCamera) =>
-        hasCamera ? AndroidQrScanner(ref.watch(withContextProvider)) : null);
+QrScanner? Function(dynamic) androidQrScannerProvider(hasCamera) {
+  return (ref) =>
+      hasCamera ? AndroidQrScanner(ref.watch(withContextProvider)) : null;
+}

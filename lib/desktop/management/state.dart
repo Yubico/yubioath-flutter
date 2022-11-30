@@ -43,7 +43,7 @@ final desktopManagementState = StateNotifierProvider.autoDispose
     final session = ref.watch(_sessionProvider(devicePath));
     final notifier = _DesktopManagementStateNotifier(ref, session);
     session.setErrorHandler('state-reset', (_) async {
-      ref.refresh(_sessionProvider(devicePath));
+      ref.invalidate(_sessionProvider(devicePath));
     });
     ref.onDispose(() {
       session.unsetErrorHandler('state-reset');

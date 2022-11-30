@@ -21,9 +21,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yubico_authenticator/android/keys.dart' as keys;
+import 'package:yubico_authenticator/android/preferences.dart';
 import 'package:yubico_authenticator/android/state.dart';
 import 'package:yubico_authenticator/android/views/android_settings_page.dart';
-import 'package:yubico_authenticator/android/preferences.dart';
 import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
@@ -146,7 +146,7 @@ Widget androidWidget({
       prefProvider.overrideWithValue(sharedPrefs),
       androidSdkVersionProvider.overrideWithValue(sdkVersion),
       supportedThemesProvider
-          .overrideWithProvider(androidSupportedThemesProvider)
+          .overrideWith((ref) => ref.watch(androidSupportedThemesProvider))
     ], child: child);
 
 void main() {
