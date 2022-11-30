@@ -163,7 +163,11 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                 }),
             const ListTitle('USB options'),
             SwitchListTile(
-                title: const Text('Open application when YubiKey is connected'),
+                title: const Text('Launch when YubiKey is connected'),
+                subtitle: usbOpenApp
+                    ? const Text(
+                        'This prevents other apps from using the YubiKey over USB')
+                    : const Text('Other apps can use the YubiKey over USB.'),
                 value: usbOpenApp,
                 key: keys.usbOpenApp,
                 onChanged: (value) {
