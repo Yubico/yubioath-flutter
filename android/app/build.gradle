@@ -28,6 +28,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 
 import com.android.build.OutputFile
 
@@ -103,6 +105,10 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     implementation 'com.google.android.material:material:1.7.0'
+
+    // Hilt
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     // testing dependencies
     testImplementation "junit:junit:$project.junitVersion"

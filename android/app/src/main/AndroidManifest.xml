@@ -17,7 +17,7 @@
         android:required="false" />
 
     <application
-        android:name="${applicationName}"
+        android:name=".YubicoAuthenticatorApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_label">
 
