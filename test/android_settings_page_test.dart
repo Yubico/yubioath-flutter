@@ -23,10 +23,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yubico_authenticator/android/keys.dart' as keys;
 import 'package:yubico_authenticator/android/state.dart';
 import 'package:yubico_authenticator/android/views/android_settings_page.dart';
+import 'package:yubico_authenticator/android/preferences.dart';
 import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/core/state.dart';
-
-import '../integration_test/android/constants.dart';
 
 Widget createMaterialApp({required Widget child}) {
   return MaterialApp(
@@ -103,10 +102,16 @@ extension _WidgetTesterHelper on WidgetTester {
     await pumpAndSettle();
   }
 
+  Future<void> tapOpenAppOnUsb() async {
+    await tap(find.byKey(keys.usbOpenApp));
+    await pumpAndSettle();
+  }
+
   ListTile themeModeListTile() =>
       find.byKey(keys.themeModeSetting).evaluate().single.widget as ListTile;
 
   Future<void> openAppThemeOptionSelection() async {
+    await ensureVisible(find.byKey(keys.themeModeSetting));
     var widget = find.byKey(keys.themeModeSetting).hitTestable();
     expect(widget, findsOneWidget);
     await tap(widget);
@@ -289,5 +294,23 @@ void main() {
       await tester.selectDarkTheme();
       expect(sharedPrefs.getString(prefTheme), equals('dark'));
     });
+  });
+
+  testWidgets('Open app on USB', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({prefUsbOpenApp: false});
+    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+
+    await tester.pumpWidget(androidWidget(
+      sharedPrefs: sharedPrefs,
+      child: widget,
+    ));
+
+    // change to true
+    await tester.tapOpenAppOnUsb();
+    expect(sharedPrefs.getBool(prefUsbOpenApp), equals(true));
+
+    // change to false
+    await tester.tapOpenAppOnUsb();
+    expect(sharedPrefs.getBool(prefUsbOpenApp), equals(false));
   });
 }

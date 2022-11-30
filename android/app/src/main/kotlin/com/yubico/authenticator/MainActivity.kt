@@ -159,7 +159,9 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onPause() {
         stopNfcDiscovery()
-        enableAliasMainActivityComponent(false)
+        if (!appPreferences.openAppOnUsb) {
+            enableAliasMainActivityComponent(false)
+        }
         super.onPause()
     }
 

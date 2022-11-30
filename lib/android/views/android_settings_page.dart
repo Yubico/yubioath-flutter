@@ -23,11 +23,7 @@ import '../../core/state.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
-
-const String _prefNfcOpenApp = 'prefNfcOpenApp';
-const String _prefNfcBypassTouch = 'prefNfcBypassTouch';
-const String _prefNfcCopyOtp = 'prefNfcCopyOtp';
-const String _prefClipKbdLayout = 'prefClipKbdLayout';
+import '../preferences.dart';
 
 // TODO: Get these from Android
 const List<String> _keyboardLayouts = ['US', 'DE', 'DE-CH'];
@@ -61,8 +57,8 @@ enum _TapAction {
   }
 
   static _TapAction load(SharedPreferences prefs) {
-    final launchApp = prefs.getBool(_prefNfcOpenApp) ?? true;
-    final copyOtp = prefs.getBool(_prefNfcCopyOtp) ?? false;
+    final launchApp = prefs.getBool(prefNfcOpenApp) ?? true;
+    final copyOtp = prefs.getBool(prefNfcCopyOtp) ?? false;
     if (launchApp && copyOtp) {
       return both;
     }
@@ -74,8 +70,8 @@ enum _TapAction {
   }
 
   void save(SharedPreferences prefs) {
-    prefs.setBool(_prefNfcOpenApp, this != copy);
-    prefs.setBool(_prefNfcCopyOtp, this != launch);
+    prefs.setBool(prefNfcOpenApp, this != copy);
+    prefs.setBool(prefNfcCopyOtp, this != launch);
   }
 }
 
@@ -107,8 +103,9 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
 
     final tapAction = _TapAction.load(prefs);
     final clipKbdLayout =
-        prefs.getString(_prefClipKbdLayout) ?? _defaultClipKbdLayout;
-    final nfcBypassTouch = prefs.getBool(_prefNfcBypassTouch) ?? false;
+        prefs.getString(prefClipKbdLayout) ?? _defaultClipKbdLayout;
+    final nfcBypassTouch = prefs.getBool(prefNfcBypassTouch) ?? false;
+    final usbOpenApp = prefs.getBool(prefUsbOpenApp) ?? false;
     final themeMode = ref.watch(themeModeProvider);
 
     final theme = Theme.of(context);
@@ -146,7 +143,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
               onTap: () async {
                 var newValue = await _selectKbdLayout(context, clipKbdLayout);
                 if (newValue != clipKbdLayout) {
-                  await prefs.setString(_prefClipKbdLayout, newValue);
+                  await prefs.setString(prefClipKbdLayout, newValue);
                   setState(() {});
                 }
               },
@@ -155,13 +152,26 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                 title: const Text('Bypass touch requirement'),
                 subtitle: nfcBypassTouch
                     ? const Text(
-                        'Accounts that require touch are automatically shown over NFC.')
+                        'Accounts that require touch are automatically shown over NFC')
                     : const Text(
-                        'Accounts that require touch need an additional tap over NFC.'),
+                        'Accounts that require touch need an additional tap over NFC'),
                 value: nfcBypassTouch,
                 key: keys.nfcBypassTouchSetting,
                 onChanged: (value) {
-                  prefs.setBool(_prefNfcBypassTouch, value);
+                  prefs.setBool(prefNfcBypassTouch, value);
+                  setState(() {});
+                }),
+            const ListTitle('USB options'),
+            SwitchListTile(
+                title: const Text('Launch when YubiKey is connected'),
+                subtitle: usbOpenApp
+                    ? const Text(
+                        'This prevents other apps from using the YubiKey over USB')
+                    : const Text('Other apps can use the YubiKey over USB.'),
+                value: usbOpenApp,
+                key: keys.usbOpenApp,
+                onChanged: (value) {
+                  prefs.setBool(prefUsbOpenApp, value);
                   setState(() {});
                 }),
             const ListTitle('Appearance'),
