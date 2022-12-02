@@ -1,5 +1,11 @@
 $version="6.0.3-dev.0"
 
+echo "Clean-up of old files"
+rm *.msi
+rm *.wixobj
+rm *.wxs
+rm *.wixpdb
+
 echo "Renaming the Actions folder and moving it"
 mv yubioath-desktop-* release
 
