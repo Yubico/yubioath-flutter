@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'models.dart';
 
@@ -194,15 +194,15 @@ class _$PairCopyWithImpl<T1, T2, $Res, $Val extends Pair<T1, T2>>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? first = null,
-    Object? second = null,
+    Object? first = freezed,
+    Object? second = freezed,
   }) {
     return _then(_value.copyWith(
-      first: null == first
+      first: freezed == first
           ? _value.first
           : first // ignore: cast_nullable_to_non_nullable
               as T1,
-      second: null == second
+      second: freezed == second
           ? _value.second
           : second // ignore: cast_nullable_to_non_nullable
               as T2,
@@ -232,15 +232,15 @@ class __$$_PairCopyWithImpl<T1, T2, $Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? first = null,
-    Object? second = null,
+    Object? first = freezed,
+    Object? second = freezed,
   }) {
     return _then(_$_Pair<T1, T2>(
-      null == first
+      freezed == first
           ? _value.first
           : first // ignore: cast_nullable_to_non_nullable
               as T1,
-      null == second
+      freezed == second
           ? _value.second
           : second // ignore: cast_nullable_to_non_nullable
               as T2,
