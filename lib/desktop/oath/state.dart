@@ -69,7 +69,7 @@ final desktopOathState = StateNotifierProvider.autoDispose
     final notifier = _DesktopOathStateNotifier(session, ref);
     session
       ..setErrorHandler('state-reset', (_) async {
-        ref.refresh(_sessionProvider(devicePath));
+        ref.invalidate(_sessionProvider(devicePath));
       })
       ..setErrorHandler('auth-required', (_) async {
         await notifier.refresh();
@@ -111,7 +111,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
   Future<void> reset() async {
     await _session.command('reset');
     _ref.read(_oathLockKeyProvider(_session.devicePath).notifier).unsetKey();
-    _ref.refresh(_sessionProvider(_session.devicePath));
+    _ref.invalidate(_sessionProvider(_session.devicePath));
   }
 
   @override

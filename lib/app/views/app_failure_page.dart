@@ -72,7 +72,7 @@ class AppFailurePage extends ConsumerWidget {
                         duration: const Duration(seconds: 30));
                     try {
                       if (await ref.read(rpcProvider).elevate()) {
-                        ref.refresh(rpcProvider);
+                        ref.invalidate(rpcProvider);
                       } else {
                         showMessage(context, 'Permission denied');
                       }

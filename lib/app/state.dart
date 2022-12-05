@@ -80,12 +80,11 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 
 // Override with platform implementation
 final attachedDevicesProvider =
-    StateNotifierProvider<AttachedDevicesNotifier, List<DeviceNode>>(
-  (ref) => AttachedDevicesNotifier([]),
+    NotifierProvider<AttachedDevicesNotifier, List<DeviceNode>>(
+  () => throw UnimplementedError(),
 );
 
-class AttachedDevicesNotifier extends StateNotifier<List<DeviceNode>> {
-  AttachedDevicesNotifier(super.state);
+abstract class AttachedDevicesNotifier extends Notifier<List<DeviceNode>> {
 
   /// Force a refresh of all device data.
   void refresh() {}
@@ -98,12 +97,10 @@ final currentDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
 
 // Override with platform implementation
 final currentDeviceProvider =
-    StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>(
-        (ref) => throw UnimplementedError());
+    NotifierProvider<CurrentDeviceNotifier, DeviceNode?>(
+        () => throw UnimplementedError());
 
-abstract class CurrentDeviceNotifier extends StateNotifier<DeviceNode?> {
-  CurrentDeviceNotifier(super.state);
-
+abstract class CurrentDeviceNotifier extends Notifier<DeviceNode?> {
   setCurrentDevice(DeviceNode? device);
 }
 

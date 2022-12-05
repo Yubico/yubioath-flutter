@@ -119,24 +119,37 @@ Future<Widget> initialize(List<String> argv) async {
       ]),
       prefProvider.overrideWithValue(prefs),
       rpcProvider.overrideWithValue(rpc),
-      windowStateProvider.overrideWithProvider(desktopWindowStateProvider),
-      attachedDevicesProvider.overrideWithProvider(desktopDevicesProvider),
-      currentDeviceProvider.overrideWithProvider(desktopCurrentDeviceProvider),
-      currentDeviceDataProvider.overrideWithProvider(desktopDeviceDataProvider),
+      windowStateProvider.overrideWith(
+            (ref) => ref.watch(desktopWindowStateProvider),
+      ),
+      attachedDevicesProvider.overrideWith(
+            () => DesktopDevicesNotifier(),
+      ),
+      currentDeviceProvider.overrideWith(
+            () => DesktopCurrentDeviceNotifier(),
+      ),
+      currentDeviceDataProvider.overrideWith(
+            (ref) => ref.watch(desktopDeviceDataProvider),
+      ),
       // OATH
       oathStateProvider.overrideWithProvider(desktopOathState),
       credentialListProvider
           .overrideWithProvider(desktopOathCredentialListProvider),
-      qrScannerProvider.overrideWithProvider(desktopQrScannerProvider),
+      qrScannerProvider.overrideWith(
+            (ref) => ref.watch(desktopQrScannerProvider),
+      ),
       // Management
       managementStateProvider.overrideWithProvider(desktopManagementState),
       // FIDO
       fidoStateProvider.overrideWithProvider(desktopFidoState),
       fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
       credentialProvider.overrideWithProvider(desktopCredentialProvider),
-      clipboardProvider.overrideWithProvider(desktopClipboardProvider),
-      supportedThemesProvider
-          .overrideWithProvider(desktopSupportedThemesProvider)
+      clipboardProvider.overrideWith(
+            (ref) => ref.watch(desktopClipboardProvider),
+      ),
+      supportedThemesProvider.overrideWith(
+            (ref) => ref.watch(desktopSupportedThemesProvider),
+      )
     ],
     child: YubicoAuthenticatorApp(
       page: Consumer(

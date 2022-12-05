@@ -95,31 +95,20 @@ class _AndroidSubPageNotifier extends CurrentAppNotifier {
   }
 }
 
-final androidAttachedDevicesProvider =
-    StateNotifierProvider<AttachedDevicesNotifier, List<DeviceNode>>((ref) {
-  var currentDeviceData = ref.watch(androidDeviceDataProvider);
-  List<DeviceNode> devs = currentDeviceData.maybeWhen(
-      data: (data) => [data.node], orElse: () => []);
-  return _AndroidAttachedDevicesNotifier(devs);
-});
-
-class _AndroidAttachedDevicesNotifier extends AttachedDevicesNotifier {
-  _AndroidAttachedDevicesNotifier(super.state);
+class AndroidAttachedDevicesNotifier extends AttachedDevicesNotifier {
+  @override
+  List<DeviceNode> build() => ref
+      .watch(androidDeviceDataProvider)
+      .maybeWhen(data: (data) => [data.node], orElse: () => []);
 }
 
 final androidDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
     (ref) => ref.watch(androidYubikeyProvider));
 
-final androidCurrentDeviceProvider =
-    StateNotifierProvider<CurrentDeviceNotifier, DeviceNode?>((ref) {
-  final provider =
-      _AndroidCurrentDeviceNotifier(ref.watch(androidYubikeyProvider));
-  return provider;
-});
-
-class _AndroidCurrentDeviceNotifier extends CurrentDeviceNotifier {
-  _AndroidCurrentDeviceNotifier(AsyncValue<YubiKeyData> device)
-      : super(device.whenOrNull(data: (data) => data.node));
+class AndroidCurrentDeviceNotifier extends CurrentDeviceNotifier {
+  @override
+  DeviceNode? build() =>
+      ref.watch(androidYubikeyProvider).whenOrNull(data: (data) => data.node);
 
   @override
   setCurrentDevice(DeviceNode? device) {

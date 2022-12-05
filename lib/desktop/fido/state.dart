@@ -58,7 +58,7 @@ final desktopFidoState = StateNotifierProvider.autoDispose
       ref.watch(_pinProvider(devicePath).notifier),
     );
     session.setErrorHandler('state-reset', (_) async {
-      ref.refresh(_sessionProvider(devicePath));
+      ref.invalidate(_sessionProvider(devicePath));
     });
     session.setErrorHandler('auth-required', (_) async {
       final pin = ref.read(_pinProvider(devicePath));

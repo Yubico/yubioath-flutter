@@ -189,22 +189,19 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
   }
 }
 
-final desktopDevicesProvider =
-    StateNotifierProvider<AttachedDevicesNotifier, List<DeviceNode>>((ref) {
-  final usbDevices = ref.watch(_usbDevicesProvider).toList();
-  final nfcDevices = ref.watch(_nfcDevicesProvider).toList();
-  usbDevices.sort((a, b) => a.name.compareTo(b.name));
-  nfcDevices.sort((a, b) => a.name.compareTo(b.name));
-  return _DesktopDevicesNotifier(ref, [...usbDevices, ...nfcDevices]);
-});
-
-class _DesktopDevicesNotifier extends AttachedDevicesNotifier {
-  final Ref _ref;
-  _DesktopDevicesNotifier(this._ref, List<DeviceNode> state) : super(state);
+class DesktopDevicesNotifier extends AttachedDevicesNotifier {
+  @override
+  List<DeviceNode> build() {
+    final usbDevices = ref.watch(_usbDevicesProvider).toList();
+    final nfcDevices = ref.watch(_nfcDevicesProvider).toList();
+    usbDevices.sort((a, b) => a.name.compareTo(b.name));
+    nfcDevices.sort((a, b) => a.name.compareTo(b.name));
+    return [...usbDevices, ...nfcDevices];
+  }
 
   @override
   refresh() {
-    _ref.read(_usbDevicesProvider.notifier).refresh();
+    ref.read(_usbDevicesProvider.notifier).refresh();
   }
 }
 
