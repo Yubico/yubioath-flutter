@@ -101,7 +101,7 @@ class _DevicePickerContent extends ConsumerWidget {
     final Widget hero;
     final bool showUsb;
     if (currentNode != null) {
-      showUsb = devices.whereType<UsbYubiKeyNode>().isEmpty;
+      showUsb = isDesktop && devices.whereType<UsbYubiKeyNode>().isEmpty;
       devices.removeWhere((e) => e.path == currentNode.path);
       hero = _CurrentDeviceRow(
         currentNode,

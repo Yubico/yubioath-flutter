@@ -29,7 +29,7 @@ import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
-import '../../widgets/menu_list_tile.dart';
+import '../../widgets/list_title.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -72,12 +72,13 @@ class _LockedView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => AppPage(
         title: Text(AppLocalizations.of(context)!.oath_authenticator),
-        keyActions: [
-          buildMenuItem(
-            title: Text(AppLocalizations.of(context)!.oath_manage_password,
-                key: keys.setOrManagePasswordAction),
-            leading: const Icon(Icons.password),
-            action: () {
+        keyActionsBuilder: (context) => SimpleDialog(children: [
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.oath_manage_password),
+            key: keys.setOrManagePasswordAction,
+            leading: const CircleAvatar(child: Icon(Icons.password)),
+            onTap: () {
+              Navigator.of(context).pop();
               showBlurDialog(
                 context: context,
                 builder: (context) =>
@@ -85,17 +86,18 @@ class _LockedView extends ConsumerWidget {
               );
             },
           ),
-          buildMenuItem(
+          ListTile(
             title: Text(AppLocalizations.of(context)!.oath_reset_oath),
             leading: const Icon(Icons.delete),
-            action: () {
+            onTap: () {
+              Navigator.of(context).pop();
               showBlurDialog(
                 context: context,
                 builder: (context) => ResetDialog(devicePath),
               );
             },
           ),
-        ],
+        ]),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 18),
           child: UnlockForm(
@@ -145,7 +147,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         key: keys.noAccountsView,
         graphic: noAccounts,
         header: AppLocalizations.of(context)!.oath_no_accounts,
-        keyActions: _buildActions(context, ref, used: 0),
+        keyActionsBuilder: (context) => _buildActions(context, ref, used: 0),
       );
     }
     return Actions(
@@ -178,13 +180,24 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.oath_search_accounts,
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32)),
+                ),
+                contentPadding: EdgeInsets.zero,
                 isDense: true,
                 prefixIcon: const Icon(Icons.search_outlined),
-                prefixIconConstraints: const BoxConstraints(
-                  minHeight: 30,
-                  minWidth: 30,
+                prefixIconConstraints:
+                    const BoxConstraints(minHeight: 30, minWidth: 30),
+                /*
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.highlight_off),
+                  iconSize: 16,
+                  color: Colors.white54,
+                  onPressed: searchController.clear,
                 ),
-                border: InputBorder.none,
+                suffixIconConstraints:
+                    const BoxConstraints(minHeight: 30, minWidth: 30),
+                    */
               ),
               onChanged: (value) {
                 ref.read(searchProvider.notifier).setFilter(value);
@@ -196,7 +209,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             );
           }),
         ),
-        keyActions: _buildActions(
+        keyActionsBuilder: (context) => _buildActions(
           context,
           ref,
           used: numCreds ?? 0,
@@ -216,68 +229,83 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     );
   }
 
-  List<PopupMenuEntry> _buildActions(
+  Widget _buildActions(
     BuildContext context,
     WidgetRef ref, {
     required int used,
   }) {
     final capacity = widget.oathState.version.isAtLeast(4) ? 32 : null;
-    return [
-      buildMenuItem(
-        title: Text(
-          AppLocalizations.of(context)!.oath_add_account,
+    final theme =
+        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
+    return SimpleDialog(
+      children: [
+        ListTitle('Setup', textStyle: Theme.of(context).textTheme.bodyLarge),
+        ListTile(
+          title: Text(AppLocalizations.of(context)!.oath_add_account),
           key: keys.addAccountAction,
-        ),
-        leading: const Icon(Icons.person_add_alt_1),
-        trailing: capacity != null ? '$used/$capacity' : null,
-        action: capacity == null || capacity > used
-            ? () async {
-                CredentialData? otpauth;
-                if (Platform.isAndroid) {
-                  final scanner = ref.read(qrScannerProvider);
-                  if (scanner != null) {
-                    final url = await scanner.scanQr();
-                    if (url != null) {
-                      otpauth = CredentialData.fromUri(Uri.parse(url));
+          leading:
+              const CircleAvatar(child: Icon(Icons.person_add_alt_1_outlined)),
+          subtitle:
+              Text(capacity != null ? '$used of $capacity accounts used' : ''),
+          enabled: capacity == null || capacity > used,
+          onTap: capacity == null || capacity > used
+              ? () async {
+                  Navigator.of(context).pop();
+                  CredentialData? otpauth;
+                  if (Platform.isAndroid) {
+                    final scanner = ref.read(qrScannerProvider);
+                    if (scanner != null) {
+                      final url = await scanner.scanQr();
+                      if (url != null) {
+                        otpauth = CredentialData.fromUri(Uri.parse(url));
+                      }
                     }
                   }
+                  await showBlurDialog(
+                    context: context,
+                    builder: (context) => OathAddAccountPage(
+                      widget.devicePath,
+                      widget.oathState,
+                      credentials: ref.watch(credentialsProvider),
+                      credentialData: otpauth,
+                    ),
+                  );
                 }
-                await showBlurDialog(
-                  context: context,
-                  builder: (context) => OathAddAccountPage(
-                    widget.devicePath,
-                    widget.oathState,
-                    credentials: ref.watch(credentialsProvider),
-                    credentialData: otpauth,
-                  ),
-                );
-              }
-            : null,
-      ),
-      buildMenuItem(
-          title: Text(
-              widget.oathState.hasKey
-                  ? AppLocalizations.of(context)!.oath_manage_password
-                  : AppLocalizations.of(context)!.oath_set_password,
-              key: keys.setOrManagePasswordAction),
-          leading: const Icon(Icons.password),
-          action: () {
-            showBlurDialog(
-              context: context,
-              builder: (context) =>
-                  ManagePasswordDialog(widget.devicePath, widget.oathState),
-            );
-          }),
-      buildMenuItem(
-          title: Text(AppLocalizations.of(context)!.oath_reset_oath,
-              key: keys.resetAction),
-          leading: const Icon(Icons.delete),
-          action: () {
-            showBlurDialog(
-              context: context,
-              builder: (context) => ResetDialog(widget.devicePath),
-            );
-          }),
-    ];
+              : null,
+        ),
+        ListTitle('Manage', textStyle: Theme.of(context).textTheme.bodyLarge),
+        ListTile(
+            key: keys.setOrManagePasswordAction,
+            title: Text(widget.oathState.hasKey
+                ? AppLocalizations.of(context)!.oath_manage_password
+                : AppLocalizations.of(context)!.oath_set_password),
+            subtitle: const Text('Optional password protection'),
+            leading: const CircleAvatar(child: Icon(Icons.password_outlined)),
+            onTap: () {
+              Navigator.of(context).pop();
+              showBlurDialog(
+                context: context,
+                builder: (context) =>
+                    ManagePasswordDialog(widget.devicePath, widget.oathState),
+              );
+            }),
+        ListTile(
+            key: keys.resetAction,
+            title: Text(AppLocalizations.of(context)!.oath_reset_oath),
+            subtitle: const Text('Factory reset this application'),
+            leading: CircleAvatar(
+              foregroundColor: theme.onError,
+              backgroundColor: theme.error,
+              child: const Icon(Icons.delete_outline),
+            ),
+            onTap: () {
+              Navigator.of(context).pop();
+              showBlurDialog(
+                context: context,
+                builder: (context) => ResetDialog(widget.devicePath),
+              );
+            }),
+      ],
+    );
   }
 }

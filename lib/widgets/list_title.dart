@@ -18,13 +18,15 @@ import 'package:flutter/material.dart';
 
 class ListTitle extends StatelessWidget {
   final String title;
+  final TextStyle? textStyle;
 
-  const ListTitle(this.title, {super.key});
+  const ListTitle(this.title, {this.textStyle, super.key});
   @override
   Widget build(BuildContext context) => ListTile(
+        dense: true,
         title: Text(
           title,
-          style: Theme.of(context).textTheme.labelLarge,
+          style: textStyle ?? Theme.of(context).textTheme.labelLarge,
         ),
       );
 }

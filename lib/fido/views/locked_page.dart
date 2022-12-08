@@ -23,7 +23,7 @@ import '../../app/models.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
-import '../../widgets/menu_list_tile.dart';
+import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
 import 'pin_dialog.dart';
@@ -44,7 +44,7 @@ class FidoLockedPage extends ConsumerWidget {
           graphic: noFingerprints,
           header: AppLocalizations.of(context)!.fido_no_fingerprints,
           message: AppLocalizations.of(context)!.fido_set_pin_fingerprints,
-          keyActions: _buildActions(context),
+          keyActionsBuilder: _buildActions,
         );
       } else {
         return MessagePage(
@@ -54,7 +54,7 @@ class FidoLockedPage extends ConsumerWidget {
               ? AppLocalizations.of(context)!.fido_no_discoverable_acc
               : AppLocalizations.of(context)!.fido_ready_to_use,
           message: AppLocalizations.of(context)!.fido_optionally_set_a_pin,
-          keyActions: _buildActions(context),
+          keyActionsBuilder: _buildActions,
         );
       }
     }
@@ -65,13 +65,13 @@ class FidoLockedPage extends ConsumerWidget {
         graphic: manageAccounts,
         header: AppLocalizations.of(context)!.fido_ready_to_use,
         message: AppLocalizations.of(context)!.fido_register_as_a_key,
-        keyActions: _buildActions(context),
+        keyActionsBuilder: _buildActions,
       );
     }
 
     return AppPage(
       title: Text(AppLocalizations.of(context)!.fido_webauthn),
-      keyActions: _buildActions(context),
+      keyActionsBuilder: _buildActions,
       child: Column(
         children: [
           _PinEntryForm(state, node),
@@ -80,29 +80,55 @@ class FidoLockedPage extends ConsumerWidget {
     );
   }
 
-  List<PopupMenuEntry> _buildActions(BuildContext context) => [
+  Widget _buildActions(BuildContext context) {
+    final theme =
+        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
+    return SimpleDialog(
+      children: [
+        if (state.bioEnroll != null) ...[
+          ListTitle('Setup', textStyle: Theme.of(context).textTheme.bodyLarge),
+          ListTile(
+            leading:
+                const CircleAvatar(child: Icon(Icons.fingerprint_outlined)),
+            title: Text(AppLocalizations.of(context)!.fido_add_fingerprint),
+            subtitle: const Text('A PIN is required first'),
+            enabled: false,
+            onTap: null,
+          ),
+        ],
+        ListTitle('Manage', textStyle: Theme.of(context).textTheme.bodyLarge),
         if (!state.hasPin)
-          buildMenuItem(
+          ListTile(
+            leading: const CircleAvatar(child: Icon(Icons.pin_outlined)),
             title: Text(AppLocalizations.of(context)!.fido_set_pin),
-            leading: const Icon(Icons.pin),
-            action: () {
+            subtitle: const Text('Optional FIDO PIN protection'),
+            onTap: () {
+              Navigator.of(context).pop();
               showBlurDialog(
                 context: context,
                 builder: (context) => FidoPinDialog(node.path, state),
               );
             },
           ),
-        buildMenuItem(
+        ListTile(
+          leading: CircleAvatar(
+            foregroundColor: theme.onError,
+            backgroundColor: theme.error,
+            child: const Icon(Icons.delete_outline),
+          ),
           title: Text(AppLocalizations.of(context)!.fido_reset_fido),
-          leading: const Icon(Icons.delete),
-          action: () {
+          subtitle: const Text('Factory reset this application'),
+          onTap: () {
+            Navigator.of(context).pop();
             showBlurDialog(
               context: context,
               builder: (context) => ResetDialog(node),
             );
           },
         ),
-      ];
+      ],
+    );
+  }
 }
 
 class _PinEntryForm extends ConsumerStatefulWidget {
