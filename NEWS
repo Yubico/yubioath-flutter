@@ -1,3 +1,6 @@
+* Version 6.0.2b (released 2022-12-14)
+ ** Linux: Fix compatibility with older glibc versions.
+
 * Version 6.0.2 (released 2022-11-28)
  ** Android: Fix USB connectivity issues after returning from sleep.
  ** MacOS: Fix helper subprocess compatibility on older MacOS versions.
