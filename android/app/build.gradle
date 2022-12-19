@@ -97,7 +97,7 @@ dependencies {
     // Lifecycle
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
 
-    implementation 'androidx.fragment:fragment-ktx:1.5.4'
+    implementation 'androidx.fragment:fragment-ktx:1.5.5'
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     implementation 'com.google.android.material:material:1.7.0'
