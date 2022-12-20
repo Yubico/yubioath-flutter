@@ -36,8 +36,8 @@ final _log = Logger('desktop.oath.state');
 
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, DevicePath>(
-  (ref, devicePath) =>
-      RpcNodeSession(ref.watch(rpcProvider), devicePath, ['ccid', 'oath']),
+  (ref, devicePath) => RpcNodeSession(
+      ref.watch(rpcProvider).requireValue, devicePath, ['ccid', 'oath']),
 );
 
 // This remembers the key for all devices for the duration of the process.

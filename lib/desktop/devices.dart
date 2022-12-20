@@ -39,7 +39,7 @@ final _log = Logger('desktop.devices');
 
 final _usbDevicesProvider =
     StateNotifierProvider<UsbDeviceNotifier, List<UsbYubiKeyNode>>((ref) {
-  final notifier = UsbDeviceNotifier(ref.watch(rpcProvider));
+  final notifier = UsbDeviceNotifier(ref.watch(rpcProvider).valueOrNull);
   ref.listen<WindowState>(windowStateProvider, (_, windowState) {
     notifier._notifyWindowState(windowState);
   }, fireImmediately: true);
@@ -47,7 +47,7 @@ final _usbDevicesProvider =
 });
 
 class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
-  final RpcSession _rpc;
+  final RpcSession? _rpc;
   Timer? _pollTimer;
   int _usbState = -1;
   UsbDeviceNotifier(this._rpc) : super([]);
@@ -64,7 +64,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
     } else {
       _pollTimer?.cancel();
       // Release any held device
-      _rpc.command('get', ['usb']);
+      _rpc?.command('get', ['usb']);
     }
   }
 
@@ -76,23 +76,27 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
 
   void _pollDevices() async {
     _pollTimer?.cancel();
+    final rpc = _rpc;
+    if (rpc == null) {
+      return;
+    }
 
     try {
-      var scan = await _rpc.command('scan', ['usb']);
+      var scan = await rpc.command('scan', ['usb']);
       final pids = {
         for (var e in (scan['pids'] as Map).entries)
           UsbPid.fromValue(int.parse(e.key)): e.value as int
       };
       final numDevices = pids.values.fold<int>(0, (a, b) => a + b);
       if (_usbState != scan['state'] || state.length != numDevices) {
-        var usbResult = await _rpc.command('get', ['usb']);
+        var usbResult = await rpc.command('get', ['usb']);
         _log.info('USB state change', jsonEncode(usbResult));
         _usbState = usbResult['data']['state'];
         List<UsbYubiKeyNode> usbDevices = [];
 
         for (String id in (usbResult['children'] as Map).keys) {
           final path = ['usb', id];
-          final deviceResult = await _rpc.command('get', path);
+          final deviceResult = await rpc.command('get', path);
           final deviceData = deviceResult['data'];
           final pid = UsbPid.fromValue(deviceData['pid'] as int);
           usbDevices.add(DeviceNode.usbYubiKey(
@@ -134,7 +138,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
 
 final _nfcDevicesProvider =
     StateNotifierProvider<NfcDeviceNotifier, List<NfcReaderNode>>((ref) {
-  final notifier = NfcDeviceNotifier(ref.watch(rpcProvider));
+  final notifier = NfcDeviceNotifier(ref.watch(rpcProvider).valueOrNull);
   ref.listen<WindowState>(windowStateProvider, (_, windowState) {
     notifier._notifyWindowState(windowState);
   }, fireImmediately: true);
@@ -142,7 +146,7 @@ final _nfcDevicesProvider =
 });
 
 class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
-  final RpcSession _rpc;
+  final RpcSession? _rpc;
   Timer? _pollTimer;
   String _nfcState = '';
   NfcDeviceNotifier(this._rpc) : super([]);
@@ -153,7 +157,7 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
     } else {
       _pollTimer?.cancel();
       // Release any held device
-      _rpc.command('get', ['nfc']);
+      _rpc?.command('get', ['nfc']);
     }
   }
 
@@ -165,9 +169,13 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
 
   void _pollReaders() async {
     _pollTimer?.cancel();
+    final rpc = _rpc;
+    if (rpc == null) {
+      return;
+    }
 
     try {
-      var children = await _rpc.command('scan', ['nfc']);
+      var children = await rpc.command('scan', ['nfc']);
       var newState = children.keys.join(':');
 
       if (mounted && newState != _nfcState) {
@@ -209,7 +217,7 @@ final _desktopDeviceDataProvider =
     StateNotifierProvider<CurrentDeviceDataNotifier, AsyncValue<YubiKeyData>>(
         (ref) {
   final notifier = CurrentDeviceDataNotifier(
-    ref.watch(rpcProvider),
+    ref.watch(rpcProvider).valueOrNull,
     ref.watch(currentDeviceProvider),
   );
   if (notifier._deviceNode is NfcReaderNode) {
@@ -228,7 +236,7 @@ final desktopDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
 );
 
 class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
-  final RpcSession _rpc;
+  final RpcSession? _rpc;
   final DeviceNode? _deviceNode;
   Timer? _pollTimer;
 
@@ -268,8 +276,8 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
     final node = _deviceNode!;
     try {
       _log.debug('Polling for USB device changes...');
-      var result = await _rpc.command('get', node.path.segments);
-      if (mounted) {
+      var result = await _rpc?.command('get', node.path.segments);
+      if (mounted && result != null) {
         if (result['data']['present']) {
           state = AsyncValue.data(YubiKeyData(node, result['data']['name'],
               DeviceInfo.fromJson(result['data']['info'])));

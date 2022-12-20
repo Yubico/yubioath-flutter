@@ -41,7 +41,7 @@ final _sessionProvider =
     // Make sure the pinProvider is held for the duration of the session.
     ref.watch(_pinProvider(devicePath));
     return RpcNodeSession(
-        ref.watch(rpcProvider), devicePath, ['fido', 'ctap2']);
+        ref.watch(rpcProvider).requireValue, devicePath, ['fido', 'ctap2']);
   },
 );
 

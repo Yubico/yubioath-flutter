@@ -34,24 +34,24 @@ import 'rpc.dart';
 final _log = Logger('state');
 
 // This must be initialized before use in initialize.dart.
-final rpcProvider = Provider<RpcSession>((ref) {
+final rpcProvider = FutureProvider<RpcSession>((ref) {
   throw UnimplementedError();
 });
 
 final rpcStateProvider = StateNotifierProvider<_RpcStateNotifier, RpcState>(
-  (ref) => _RpcStateNotifier(ref.watch(rpcProvider)),
+  (ref) => _RpcStateNotifier(ref.watch(rpcProvider).valueOrNull),
 );
 
 class _RpcStateNotifier extends StateNotifier<RpcState> {
-  final RpcSession rpc;
+  final RpcSession? _rpc;
 
-  _RpcStateNotifier(this.rpc) : super(const RpcState('unknown', false)) {
+  _RpcStateNotifier(this._rpc) : super(const RpcState('unknown', false)) {
     _init();
   }
 
   _init() async {
-    final response = await rpc.command('get', []);
-    if (mounted) {
+    final response = await _rpc?.command('get', []);
+    if (mounted && response != null) {
       state = RpcState.fromJson(response['data']);
     }
   }

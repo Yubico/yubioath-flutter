@@ -157,8 +157,10 @@ class AboutPage extends ConsumerWidget {
                     Text(AppLocalizations.of(context)!.general_run_diagnostics),
                 onPressed: () async {
                   _log.info('Running diagnostics...');
-                  final response =
-                      await ref.read(rpcProvider).command('diagnose', []);
+                  final response = await ref
+                      .read(rpcProvider)
+                      .requireValue
+                      .command('diagnose', []);
                   final data = response['diagnostics'] as List;
                   data.insert(0, {
                     'app_version': version,
@@ -237,9 +239,8 @@ class LoggingPanel extends ConsumerWidget {
             await clipboard.setText(logs.join('\n'));
             if (!clipboard.platformGivesFeedback()) {
               await ref.read(withContextProvider)(
-                    (context) async {
-                  showMessage(
-                      context,
+                (context) async {
+                  showMessage(context,
                       AppLocalizations.of(context)!.general_log_copied);
                 },
               );

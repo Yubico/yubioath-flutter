@@ -180,7 +180,7 @@ class RpcSession {
     // Accept only a single connection
     final client = await server.first;
     await server.close();
-    _log.debug('Helper connected: $client');
+    _log.debug('Helper connected from port: ${client.remotePort}');
 
     // Stop the old subprocess.
     try {

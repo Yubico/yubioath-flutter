@@ -21,20 +21,26 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/app.dart';
+import '../app/logging.dart';
+import '../app/message.dart';
+import '../app/views/app_failure_page.dart';
 import '../app/views/main_page.dart';
+import '../app/views/message_page.dart';
 import '../core/state.dart';
 import '../fido/state.dart';
 import '../oath/state.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../management/state.dart';
+import '../version.dart';
+import '../widgets/delayed_visibility.dart';
 import 'fido/state.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
@@ -98,16 +104,7 @@ Future<Widget> initialize(List<String> argv) async {
     }
   }
 
-  _log.info('Starting Helper subprocess: $exe');
-  final rpc = RpcSession(exe!);
-  await rpc.initialize();
-  _log.info('Helper process started', exe);
-
-  // Set the initial logging level. As this is the first message to the RPC,
-  // it also serves to check that the Helper is functioning correctly.
-  // The future will be awaited further down.
-  final initRpcLogFuture = rpc.setLogLevel(Logger.root.level);
-
+  final rpcFuture = _initHelper(exe!);
   _initLicenses();
 
   return ProviderScope(
@@ -118,25 +115,25 @@ Future<Widget> initialize(List<String> argv) async {
         Application.management,
       ]),
       prefProvider.overrideWithValue(prefs),
-      rpcProvider.overrideWithValue(rpc),
+      rpcProvider.overrideWith((_) => rpcFuture),
       windowStateProvider.overrideWith(
-            (ref) => ref.watch(desktopWindowStateProvider),
+        (ref) => ref.watch(desktopWindowStateProvider),
       ),
       attachedDevicesProvider.overrideWith(
-            () => DesktopDevicesNotifier(),
+        () => DesktopDevicesNotifier(),
       ),
       currentDeviceProvider.overrideWith(
-            () => DesktopCurrentDeviceNotifier(),
+        () => DesktopCurrentDeviceNotifier(),
       ),
       currentDeviceDataProvider.overrideWith(
-            (ref) => ref.watch(desktopDeviceDataProvider),
+        (ref) => ref.watch(desktopDeviceDataProvider),
       ),
       // OATH
       oathStateProvider.overrideWithProvider(desktopOathState),
       credentialListProvider
           .overrideWithProvider(desktopOathCredentialListProvider),
       qrScannerProvider.overrideWith(
-            (ref) => ref.watch(desktopQrScannerProvider),
+        (ref) => ref.watch(desktopQrScannerProvider),
       ),
       // Management
       managementStateProvider.overrideWithProvider(desktopManagementState),
@@ -145,36 +142,40 @@ Future<Widget> initialize(List<String> argv) async {
       fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
       credentialProvider.overrideWithProvider(desktopCredentialProvider),
       clipboardProvider.overrideWith(
-            (ref) => ref.watch(desktopClipboardProvider),
+        (ref) => ref.watch(desktopClipboardProvider),
       ),
       supportedThemesProvider.overrideWith(
-            (ref) => ref.watch(desktopSupportedThemesProvider),
+        (ref) => ref.watch(desktopSupportedThemesProvider),
       )
     ],
     child: YubicoAuthenticatorApp(
       page: Consumer(
-        builder: ((_, ref, child) {
+        builder: ((context, ref, child) {
           // keep RPC log level in sync with app
           ref.listen<Level>(logLevelProvider, (_, level) {
-            rpc.setLogLevel(level);
+            ref.read(rpcProvider).valueOrNull?.setLogLevel(level);
           });
 
-          // Ensure the initial log level was successfully set within 5s, or
-          // assume the Helper isn't functional.
-          initRpcLogFuture.timeout(const Duration(seconds: 5)).onError(
-            (error, stackTrace) {
-              _log.error('Helper is not responsive.');
-              ref
-                  .read(applicationError.notifier)
-                  .setApplicationError('Helper subprocess failed to start');
-            },
-          );
-
-          return const MainPage();
+          // Show a loading or error page while the Helper isn't ready
+          return ref.watch(rpcProvider).when(
+                data: (data) => const MainPage(),
+                error: (error, stackTrace) => AppFailurePage(cause: error),
+                loading: () => _HelperWaiter(),
+              );
         }),
       ),
     ),
   );
+}
+
+Future<RpcSession> _initHelper(String exe) async {
+  _log.info('Starting Helper subprocess: $exe');
+  final rpc = RpcSession(exe);
+  await rpc.initialize();
+  _log.info('Helper process started');
+  await rpc.setLogLevel(Logger.root.level);
+  _log.info('Helper log level set');
+  return rpc;
 }
 
 void _initLogging(List<String> argv) {
@@ -221,4 +222,69 @@ void _initLicenses() async {
       yield LicenseEntryWithLineBreaks([e['Name']], e['LicenseText']);
     }
   });
+}
+
+class _HelperWaiter extends ConsumerStatefulWidget {
+  @override
+  ConsumerState<_HelperWaiter> createState() => _HelperWaiterState();
+}
+
+class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
+  bool slow = false;
+  late final Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer(const Duration(seconds: 10), () {
+      setState(() {
+        slow = true;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (slow) {
+      return MessagePage(
+        graphic: const CircularProgressIndicator(),
+        message: 'The Helper process isn\'t responding',
+        actions: [
+          ActionChip(
+            avatar: const Icon(Icons.copy),
+            label: Text(AppLocalizations.of(context)!.general_copy_log),
+            onPressed: () async {
+              _log.info('Copying log to clipboard ($version)...');
+              final logs = await ref.read(logLevelProvider.notifier).getLogs();
+              var clipboard = ref.read(clipboardProvider);
+              await clipboard.setText(logs.join('\n'));
+              if (!clipboard.platformGivesFeedback()) {
+                await ref.read(withContextProvider)(
+                  (context) async {
+                    showMessage(
+                      context,
+                      AppLocalizations.of(context)!.general_log_copied,
+                    );
+                  },
+                );
+              }
+            },
+          ),
+        ],
+      );
+    } else {
+      return const MessagePage(
+        graphic: DelayedVisibility(
+          delay: Duration(seconds: 1),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+  }
 }
