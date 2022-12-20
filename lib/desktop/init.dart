@@ -40,7 +40,6 @@ import '../app/models.dart';
 import '../app/state.dart';
 import '../management/state.dart';
 import '../version.dart';
-import '../widgets/delayed_visibility.dart';
 import 'fido/state.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
@@ -280,10 +279,8 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
       );
     } else {
       return const MessagePage(
-        graphic: DelayedVisibility(
-          delay: Duration(seconds: 1),
-          child: CircularProgressIndicator(),
-        ),
+        delayedContent: true,
+        graphic: CircularProgressIndicator(),
       );
     }
   }

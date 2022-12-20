@@ -21,9 +21,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../app/views/app_loading_screen.dart';
 import '../../core/models.dart';
 import '../../widgets/custom_icons.dart';
+import '../../widgets/delayed_visibility.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
@@ -269,7 +269,11 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     final child = ref
         .watch(managementStateProvider(widget.deviceData.node.path))
         .when(
-          loading: () => const AppLoadingScreen(),
+          loading: () => const Center(
+              child: DelayedVisibility(
+            delay: Duration(milliseconds: 200),
+            child: CircularProgressIndicator(),
+          )),
           error: (error, _) => Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

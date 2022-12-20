@@ -26,6 +26,7 @@ class MessagePage extends StatelessWidget {
   final List<Widget> actions;
   final List<PopupMenuEntry> keyActions;
   final Widget Function(List<PopupMenuEntry> keyActions)? actionButtonBuilder;
+  final bool delayedContent;
 
   const MessagePage({
     super.key,
@@ -36,6 +37,7 @@ class MessagePage extends StatelessWidget {
     this.actions = const [],
     this.keyActions = const [],
     this.actionButtonBuilder,
+    this.delayedContent = false,
   });
 
   @override
@@ -45,6 +47,7 @@ class MessagePage extends StatelessWidget {
         actions: actions,
         keyActions: keyActions,
         actionButtonBuilder: actionButtonBuilder,
+        delayedContent: delayedContent,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

@@ -104,6 +104,7 @@ class MainPage extends ConsumerWidget {
         );
       } else {
         return MessagePage(
+          delayedContent: true,
           graphic: noKeyImage,
           message: 'Insert your YubiKey',
         );

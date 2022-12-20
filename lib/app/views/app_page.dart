@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../widgets/delayed_visibility.dart';
 import 'device_button.dart';
 import 'keys.dart';
 import 'main_drawer.dart';
@@ -27,6 +28,7 @@ class AppPage extends StatelessWidget {
   final List<PopupMenuEntry> keyActions;
   final bool centered;
   final Widget Function(List<PopupMenuEntry>)? actionButtonBuilder;
+  final bool delayedContent;
   const AppPage({
     super.key,
     this.title,
@@ -35,6 +37,7 @@ class AppPage extends StatelessWidget {
     this.keyActions = const [],
     this.centered = false,
     this.actionButtonBuilder,
+    this.delayedContent = false,
   });
 
   @override
@@ -65,30 +68,36 @@ class AppPage extends StatelessWidget {
       );
 
   Widget _buildScrollView() {
+    final content = Column(
+      children: [
+        child,
+        if (actions.isNotEmpty)
+          Align(
+            alignment: centered ? Alignment.center : Alignment.centerLeft,
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 18.0),
+              child: Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                children: actions,
+              ),
+            ),
+          ),
+      ],
+    );
     return SingleChildScrollView(
       child: SafeArea(
         child: Center(
           child: SizedBox(
             width: 700,
-            child: Column(
-              children: [
-                child,
-                if (actions.isNotEmpty)
-                  Align(
-                    alignment:
-                        centered ? Alignment.center : Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16.0, horizontal: 18.0),
-                      child: Wrap(
-                        spacing: 4,
-                        runSpacing: 4,
-                        children: actions,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+            child: delayedContent
+                ? DelayedVisibility(
+                    key: GlobalKey(), // Ensure we reset the delay on rebuild
+                    delay: const Duration(milliseconds: 400),
+                    child: content,
+                  )
+                : content,
           ),
         ),
       ),

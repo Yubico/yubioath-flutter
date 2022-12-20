@@ -20,14 +20,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/widgets/delayed_visibility.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/app_failure_page.dart';
-import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
@@ -49,10 +47,10 @@ class OathScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(oathStateProvider(devicePath)).when(
-          loading: () => AppPage(
+          loading: () => MessagePage(
             title: Text(AppLocalizations.of(context)!.oath_authenticator),
-            centered: true,
-            child: const AppLoadingScreen(),
+            graphic: const CircularProgressIndicator(),
+            delayedContent: true,
           ),
           error: (error, _) => AppFailurePage(
             title: Text(AppLocalizations.of(context)!.oath_authenticator),
@@ -204,6 +202,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
           used: numCreds ?? 0,
         ),
         centered: numCreds == null,
+        delayedContent: numCreds == null,
         child: numCreds != null
             ? Consumer(
                 builder: (context, ref, _) {
@@ -212,10 +211,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   );
                 },
               )
-            : const DelayedVisibility(
-                delay: Duration(milliseconds: 200),
-                child: CircularProgressIndicator(),
-              ),
+            : const CircularProgressIndicator(),
       ),
     );
   }
