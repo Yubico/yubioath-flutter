@@ -17,6 +17,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -162,11 +163,17 @@ class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
 
     if (!devices.contains(_deviceNode)) {
       final lastDevice = prefs.getString(_lastDevice) ?? '';
-      try {
-        _deviceNode = devices.firstWhere((dev) => dev.path.key == lastDevice,
-            orElse: () => devices.whereType<UsbYubiKeyNode>().first);
-      } on StateError {
-        _deviceNode = null;
+      _deviceNode =
+          devices.where((dev) => dev.path.key == lastDevice).firstOrNull;
+      if (_deviceNode == null) {
+        final parts = lastDevice.split('/');
+        if (parts.firstOrNull == 'pid') {
+          _deviceNode = devices
+              .whereType<UsbYubiKeyNode>()
+              .where((e) => e.pid.value.toString() == parts[1])
+              .firstOrNull;
+        }
+        _deviceNode ??= devices.whereType<UsbYubiKeyNode>().firstOrNull;
       }
     }
     return _deviceNode;
