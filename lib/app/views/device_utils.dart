@@ -44,7 +44,7 @@ List<String> getDeviceMessages(DeviceNode? node, AsyncValue<YubiKeyData> data) {
             case 'unknown-device':
               return ['Unrecognized device'];
             case 'device-inaccessible':
-              return ['Device inaccessible'];
+              return [node.name, 'Device inaccessible'];
           }
           return null;
         },

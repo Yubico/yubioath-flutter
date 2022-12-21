@@ -236,6 +236,10 @@ class _CurrentDeviceRow extends StatelessWidget {
       orElse: () => DeviceAvatar.deviceNode(node, radius: 64),
     );
     final messages = getDeviceMessages(node, data);
+    // Reader name is same as Device name on Android:
+    if (messages.first == messages.last) {
+      messages.removeLast();
+    }
 
     return Column(
       children: [
