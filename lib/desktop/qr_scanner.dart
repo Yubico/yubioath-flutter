@@ -32,5 +32,8 @@ class RpcQrScanner implements QrScanner {
 }
 
 final desktopQrScannerProvider = Provider<QrScanner?>(
-  (ref) => RpcQrScanner(ref.watch(rpcProvider)),
+  (ref) {
+    final rpc = ref.watch(rpcProvider).valueOrNull;
+    return rpc != null ? RpcQrScanner(rpc) : null;
+  },
 );

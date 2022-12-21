@@ -20,7 +20,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
 import '../../app/views/app_failure_page.dart';
-import '../../app/views/app_loading_screen.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
@@ -39,7 +38,8 @@ class FidoScreen extends ConsumerWidget {
           loading: () => AppPage(
                 title: Text(AppLocalizations.of(context)!.fido_webauthn),
                 centered: true,
-                child: const AppLoadingScreen(),
+                delayedContent: true,
+                child: const CircularProgressIndicator(),
               ),
           error: (error, _) {
             final supported = deviceData

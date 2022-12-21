@@ -48,7 +48,7 @@ class DeviceErrorScreen extends ConsumerWidget {
                     context, 'Elevating permissions...',
                     duration: const Duration(seconds: 30));
                 try {
-                  if (await ref.read(rpcProvider).elevate()) {
+                  if (await ref.read(rpcProvider).requireValue.elevate()) {
                     ref.invalidate(rpcProvider);
                   } else {
                     showMessage(context, 'Permission denied');
