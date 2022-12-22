@@ -19,6 +19,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../core/state.dart';
 import '../../management/models.dart';
@@ -116,10 +117,13 @@ class _DevicePickerContent extends ConsumerWidget {
             ),
           ),
           ListTile(
-            title: const Center(child: Text('No YubiKey present')),
-            subtitle: Center(
+            title: Center(
                 child: Text(
-                    Platform.isAndroid ? 'Insert or tap a YubiKey' : 'USB')),
+                    AppLocalizations.of(context)!.devicePicker_no_yubikey)),
+            subtitle: Center(
+                child: Text(Platform.isAndroid
+                    ? AppLocalizations.of(context)!.devicePicker_insert_or_tap
+                    : AppLocalizations.of(context)!.general_usb)),
           ),
         ],
       );
@@ -133,8 +137,8 @@ class _DevicePickerContent extends ConsumerWidget {
             padding: EdgeInsets.symmetric(horizontal: 4),
             child: DeviceAvatar(child: Icon(Icons.usb)),
           ),
-          title: const Text('USB'),
-          subtitle: const Text('No YubiKey present'),
+          title: Text(AppLocalizations.of(context)!.general_usb),
+          subtitle: Text(AppLocalizations.of(context)!.devicePicker_no_yubikey),
           onTap: () {
             ref.read(currentDeviceProvider.notifier).setCurrentDevice(null);
           },
@@ -164,8 +168,9 @@ class _DevicePickerContent extends ConsumerWidget {
                     onTap: () {
                       ref.read(_hiddenDevicesProvider.notifier).showAll();
                     },
-                    child: const ListTile(
-                      title: Text('Show hidden devices'),
+                    child: ListTile(
+                      title: Text(AppLocalizations.of(context)!
+                          .devicePicker_show_hidden),
                       dense: true,
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -188,36 +193,40 @@ class _DevicePickerContent extends ConsumerWidget {
   }
 }
 
-String _getDeviceInfoString(DeviceInfo info) {
+String _getDeviceInfoString(BuildContext context, DeviceInfo info) {
   final serial = info.serial;
-  var subtitle = '';
-  if (serial != null) {
-    subtitle += 'S/N: $serial ';
-  }
-  if (info.version.isAtLeast(1)) {
-    subtitle += 'F/W: ${info.version}';
-  } else {
-    subtitle += 'Unknown type';
-  }
-  return subtitle;
+  return [
+    if (serial != null) AppLocalizations.of(context)!.devicePicker_sn(serial),
+    if (info.version.isAtLeast(1))
+      AppLocalizations.of(context)!.devicePicker_fw(info.version)
+    else
+      AppLocalizations.of(context)!.devicePicker_unknown_type,
+  ].join(' ');
 }
 
-List<String> _getDeviceStrings(DeviceNode node, AsyncValue<YubiKeyData> data) {
+List<String> _getDeviceStrings(
+    BuildContext context, DeviceNode node, AsyncValue<YubiKeyData> data) {
   final messages = data.whenOrNull(
-        data: (data) => [data.name, _getDeviceInfoString(data.info)],
+        data: (data) => [data.name, _getDeviceInfoString(context, data.info)],
         error: (error, _) {
           switch (error) {
             case 'device-inaccessible':
-              return [node.name, 'Device inaccessible'];
+              return [
+                node.name,
+                AppLocalizations.of(context)!.devicePicker_inaccessible
+              ];
             case 'unknown-device':
-              return ['Unrecognized device'];
+              return [
+                AppLocalizations.of(context)!.devicePicker_unknown_device
+              ];
           }
           return null;
         },
       ) ??
-      ['No YubiKey present'];
+      [AppLocalizations.of(context)!.devicePicker_no_yubikey];
 
-  if (node is NfcReaderNode) {
+  // Add the NFC reader name, unless it's already included (as device name, like on Android)
+  if (node is NfcReaderNode && !messages.contains(node.name)) {
     messages.add(node.name);
   }
 
@@ -267,11 +276,7 @@ class _CurrentDeviceRow extends StatelessWidget {
       data: (data) => DeviceAvatar.yubiKeyData(data, radius: 64),
       orElse: () => DeviceAvatar.deviceNode(node, radius: 64),
     );
-    final messages = _getDeviceStrings(node, data);
-    // Reader name is same as Device name on Android:
-    if (messages.first == messages.last) {
-      messages.removeLast();
-    }
+    final messages = _getDeviceStrings(context, node, data);
 
     return Column(
       children: [
@@ -302,9 +307,11 @@ class _DeviceRow extends ConsumerWidget {
       title: Text(node.name),
       subtitle: Text(
         node.when(
-          usbYubiKey: (_, __, ___, info) =>
-              info == null ? 'Device inaccessible' : _getDeviceInfoString(info),
-          nfcReader: (_, __) => 'Select to scan',
+          usbYubiKey: (_, __, ___, info) => info == null
+              ? AppLocalizations.of(context)!.devicePicker_inaccessible
+              : _getDeviceInfoString(context, info),
+          nfcReader: (_, __) =>
+              AppLocalizations.of(context)!.devicePicker_select_to_scan,
         ),
       ),
       onTap: () {
@@ -339,7 +346,8 @@ class _NfcDeviceRow extends ConsumerWidget {
                 ref.read(_hiddenDevicesProvider.notifier).showAll();
               },
               child: ListTile(
-                title: const Text('Show hidden devices'),
+                title: Text(
+                    AppLocalizations.of(context)!.devicePicker_show_hidden),
                 dense: true,
                 contentPadding: EdgeInsets.zero,
                 enabled: hidden.isNotEmpty,
@@ -349,8 +357,9 @@ class _NfcDeviceRow extends ConsumerWidget {
               onTap: () {
                 ref.read(_hiddenDevicesProvider.notifier).hideDevice(node.path);
               },
-              child: const ListTile(
-                title: Text('Hide device'),
+              child: ListTile(
+                title: Text(
+                    AppLocalizations.of(context)!.devicePicker_hide_device),
                 dense: true,
                 contentPadding: EdgeInsets.zero,
               ),

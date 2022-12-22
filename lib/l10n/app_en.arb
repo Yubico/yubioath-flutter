@@ -102,6 +102,8 @@
     "general_light_mode": "Light mode",
     "general_dark_mode": "Dark mode",
     "general_allow_screenshots": "Allow screenshots",
+    "general_usb": "USB",
+    "general_nfc": "NFC",
 
     "fido_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
     "fido_keep_touching_yubikey": "Keep touching your YubiKey repeatedly...",
@@ -212,5 +214,26 @@
 
     "mainDrawer_txt_applications": "Toggle applications",
     "mainDrawer_txt_settings": "Settings",
-    "mainDrawer_txt_help": "Help and about"
+    "mainDrawer_txt_help": "Help and about",
+
+    "devicePicker_no_yubikey": "No YubiKey present",
+    "devicePicker_insert_or_tap": "Insert or tap a YubiKey",
+    "devicePicker_select_to_scan": "Select to scan",
+    "devicePicker_inaccessible": "Device inaccessible",
+    "devicePicker_unknown_type": "Unknown type",
+    "devicePicker_unknown_device": "Unrecognized device",
+    "devicePicker_hide_device": "Hide device",
+    "devicePicker_show_hidden": "Show hidden devices",
+    "devicePicker_sn": "S/N: {serial}",
+    "@devicePicker_sn" : {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "devicePicker_fw": "F/W: {version}",
+    "@devicePicker_fw" : {
+        "placeholders": {
+            "version": {}
+        }
+    }
 }
