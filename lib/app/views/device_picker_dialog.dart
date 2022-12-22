@@ -25,7 +25,6 @@ import '../../management/models.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
-import 'device_utils.dart';
 
 final _hiddenDevicesProvider =
     StateNotifierProvider<_HiddenDevicesNotifier, List<String>>(
@@ -117,13 +116,10 @@ class _DevicePickerContent extends ConsumerWidget {
             ),
           ),
           ListTile(
-            title:
-                Center(child: Text(Platform.isAndroid ? 'No YubiKey' : 'USB')),
+            title: const Center(child: Text('No YubiKey present')),
             subtitle: Center(
-              child: Text(Platform.isAndroid
-                  ? 'Insert or tap a YubiKey'
-                  : 'Insert a YubiKey'),
-            ),
+                child: Text(
+                    Platform.isAndroid ? 'Insert or tap a YubiKey' : 'USB')),
           ),
         ],
       );
@@ -192,6 +188,42 @@ class _DevicePickerContent extends ConsumerWidget {
   }
 }
 
+String _getDeviceInfoString(DeviceInfo info) {
+  final serial = info.serial;
+  var subtitle = '';
+  if (serial != null) {
+    subtitle += 'S/N: $serial ';
+  }
+  if (info.version.isAtLeast(1)) {
+    subtitle += 'F/W: ${info.version}';
+  } else {
+    subtitle += 'Unknown type';
+  }
+  return subtitle;
+}
+
+List<String> _getDeviceStrings(DeviceNode node, AsyncValue<YubiKeyData> data) {
+  final messages = data.whenOrNull(
+        data: (data) => [data.name, _getDeviceInfoString(data.info)],
+        error: (error, _) {
+          switch (error) {
+            case 'device-inaccessible':
+              return [node.name, 'Device inaccessible'];
+            case 'unknown-device':
+              return ['Unrecognized device'];
+          }
+          return null;
+        },
+      ) ??
+      ['No YubiKey present'];
+
+  if (node is NfcReaderNode) {
+    messages.add(node.name);
+  }
+
+  return messages;
+}
+
 class _HeroAvatar extends StatelessWidget {
   final Widget child;
   const _HeroAvatar({required this.child});
@@ -235,7 +267,7 @@ class _CurrentDeviceRow extends StatelessWidget {
       data: (data) => DeviceAvatar.yubiKeyData(data, radius: 64),
       orElse: () => DeviceAvatar.deviceNode(node, radius: 64),
     );
-    final messages = getDeviceMessages(node, data);
+    final messages = _getDeviceStrings(node, data);
     // Reader name is same as Device name on Android:
     if (messages.first == messages.last) {
       messages.removeLast();
@@ -271,7 +303,7 @@ class _DeviceRow extends ConsumerWidget {
       subtitle: Text(
         node.when(
           usbYubiKey: (_, __, ___, info) =>
-              info == null ? 'Device inaccessible' : getDeviceInfoString(info),
+              info == null ? 'Device inaccessible' : _getDeviceInfoString(info),
           nfcReader: (_, __) => 'Select to scan',
         ),
       ),
