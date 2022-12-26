@@ -45,7 +45,7 @@ dependencies:
   logging: ^1.1.0
   collection: ^1.16.0
   shared_preferences: ^2.0.12
-  flutter_riverpod: ^2.1.1
+  flutter_riverpod: ^2.1.3
   json_annotation: ^4.7.0
   freezed_annotation: ^2.2.0
   window_manager: ^0.2.7
