@@ -111,6 +111,7 @@ extension OathFunctions on WidgetTester {
       return null;
     }
 
+    await shortWait();
     /// find an AccountView with issuer/name in the account list
     var matchingAccounts = find.descendant(
         of: findAccountList(),
@@ -174,6 +175,7 @@ extension OathFunctions on WidgetTester {
     expect(deleteButton, findsOneWidget);
     await tap(deleteButton);
     await longWait();
+    await longWait();
 
     /// try to find account
     var deletedAccountView = await findAccount(a);
@@ -202,6 +204,7 @@ extension OathFunctions on WidgetTester {
     /// TODO verify this is correct for the FW of the YubiKey
     if (renameIconButton.evaluate().isEmpty) {
       /// close the dialog and return
+      testLog(false, 'This YubiKey does not support account renaming');
       await tapAt(const Offset(10, 10));
       await shortWait();
       return;
@@ -218,7 +221,7 @@ extension OathFunctions on WidgetTester {
     var nameTextField = find.byKey(keys.nameField).hitTestable();
     await tap(nameTextField);
     await enterText(nameTextField, newName);
-    await shortestWait();
+    await shortWait();
 
     var saveButton = find.byKey(keys.saveButton).hitTestable();
     expect(saveButton, findsOneWidget);
@@ -300,7 +303,10 @@ extension OathFunctions on WidgetTester {
     await shortWait();
     var unlockButton = find.byKey(keys.unlockButton);
     await tap(unlockButton);
-    await longWait();
+
+    /// TODO:
+    /// the following pump is because of NEO keys
+    await pump(const Duration(seconds: 1));
 
     expect(find.byKey(keys.unlockButton).hitTestable(), findsNothing);
   }
@@ -315,7 +321,10 @@ extension OathFunctions on WidgetTester {
     await enterText(currentPasswordEntry, currentPassword);
     await shortWait();
     await tap(find.byKey(keys.removePasswordButton));
-    await longWait();
+
+    /// TODO:
+    /// the following pump is because of NEO keys
+    await pump(const Duration(seconds: 1));
 
     expect(find.byKey(keys.removePasswordButton).hitTestable(), findsNothing);
   }

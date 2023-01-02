@@ -26,8 +26,8 @@ void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
-  group('OATH UI tests', () {
-    appTest('Menu items exist', (WidgetTester tester) async {
+  group('UI tests', () {
+    appTest('OATH Menu items exist', (WidgetTester tester) async {
       await tester.tapDeviceButton();
       expect(find.byKey(keys.addAccountAction), findsOneWidget);
       expect(find.byKey(keys.setOrManagePasswordAction), findsOneWidget);
@@ -35,8 +35,8 @@ void main() {
     });
   });
 
-  group('OATH Account tests', () {
-    appTest('Create account', (WidgetTester tester) async {
+  group('Account tests', () {
+    appTest('Create OATH account', (WidgetTester tester) async {
       // account with issuer
       var testAccount = const Account(
         issuer: 'IssuerForTests',
@@ -45,7 +45,7 @@ void main() {
       );
 
       await tester.deleteAccount(testAccount);
-      await tester.addAccount(testAccount, quiet: false);
+      await tester.addAccount(testAccount);
 
       // account without issuer
       testAccount = const Account(
@@ -54,24 +54,24 @@ void main() {
       );
 
       await tester.deleteAccount(testAccount);
-      await tester.addAccount(testAccount, quiet: false);
+      await tester.addAccount(testAccount);
     });
 
     /// deletes accounts created in previous test
-    appTest('Delete account', (WidgetTester tester) async {
+    appTest('Delete OATH account', (WidgetTester tester) async {
       var testAccount =
           const Account(issuer: 'IssuerForTests', name: 'NameForTests');
 
-      await tester.deleteAccount(testAccount, quiet: false);
+      await tester.deleteAccount(testAccount);
       expect(await tester.findAccount(testAccount), isNull);
 
       testAccount = const Account(issuer: null, name: 'NoIssuerName');
-      await tester.deleteAccount(testAccount, quiet: false);
+      await tester.deleteAccount(testAccount);
       expect(await tester.findAccount(testAccount), isNull);
     });
 
     /// adds an account, renames, verifies
-    appTest('Rename account', (WidgetTester tester) async {
+    appTest('Rename OATH account', (WidgetTester tester) async {
       var testAccount =
           const Account(issuer: 'IssuerToRename', name: 'NameToRename');
 
@@ -85,7 +85,7 @@ void main() {
     });
   });
 
-  group('OATH Password tests', () {
+  group('Password tests', () {
     /// note that the password groups should be run as whole
 
     /// TODO implement test for password replacement
@@ -94,27 +94,27 @@ void main() {
     /// });
 
     // cannot restart the app on Android to be able to unlock
-    group('OATH: remove oath password when unlocked', skip: isAndroid, () {
+    group('Desktop password tests', skip: isAndroid, () {
       var testPassword = 'testPassword';
 
-      appTest('OATH: set oath password', (WidgetTester tester) async {
+      appTest('Set OATH password', (WidgetTester tester) async {
         await tester.setOathPassword(testPassword);
       });
 
-      appTest('OATH: remove oath password', (WidgetTester tester) async {
+      appTest('Remove OATH password', (WidgetTester tester) async {
         await tester.unlockOathSession(testPassword);
         await tester.removeOathPassword(testPassword);
       });
     });
 
-    group('OATH: remove oath password when locked', () {
+    group('All password tests', () {
       var testPassword = 'testPasswordX';
 
-      appTest('OATH: set oath password', (WidgetTester tester) async {
+      appTest('Set OATH password', (WidgetTester tester) async {
         await tester.setOathPassword(testPassword);
       });
 
-      appTest('OATH: remove oath password', (WidgetTester tester) async {
+      appTest('Remove OATH password', (WidgetTester tester) async {
         await tester.removeOathPassword(testPassword);
       });
     });

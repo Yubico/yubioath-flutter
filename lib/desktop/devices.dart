@@ -83,6 +83,11 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
 
     try {
       var scan = await rpc.command('scan', ['usb']);
+
+      if (!mounted) {
+        return;
+      }
+
       final pids = {
         for (var e in (scan['pids'] as Map).entries)
           UsbPid.fromValue(int.parse(e.key)): e.value as int

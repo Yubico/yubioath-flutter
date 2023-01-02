@@ -125,7 +125,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
     }
 
     final code = getCode(ref);
-    if (code == null) {
+    if (isValid(ref) && code == null) {
       if (isDesktop ||
           (isAndroid &&
               currentDeviceData.value?.node.transport == Transport.usb)) {
