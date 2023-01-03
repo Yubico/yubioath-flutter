@@ -23,6 +23,7 @@ const betaDialogView = Key('$_prefix.beta_dialog');
 const nfcTapSetting = Key('$_prefix.nfc_tap');
 const nfcKeyboardLayoutSetting = Key('$_prefix.nfc_keyboard_layout');
 const nfcBypassTouchSetting = Key('$_prefix.nfc_bypass_touch');
+const nfcPlayDiscoverySoundSetting = Key('$_prefix.nfc_play_discovery_sound');
 const usbOpenApp = Key('$_prefix.usb_open_app');
 const themeModeSetting = Key('$_prefix.theme_mode');
 

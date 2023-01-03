@@ -105,6 +105,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
     final clipKbdLayout =
         prefs.getString(prefClipKbdLayout) ?? _defaultClipKbdLayout;
     final nfcBypassTouch = prefs.getBool(prefNfcBypassTouch) ?? false;
+    final nfcPlayDiscoverySound = prefs.getBool(prefNfcPlayDiscoverySound) ?? true;
     final usbOpenApp = prefs.getBool(prefUsbOpenApp) ?? false;
     final themeMode = ref.watch(themeModeProvider);
 
@@ -131,8 +132,9 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
               key: keys.nfcTapSetting,
               onTap: () async {
                 final newTapAction = await _selectTapAction(context, tapAction);
-                newTapAction.save(prefs);
-                setState(() {});
+                setState(() {
+                  newTapAction.save(prefs);
+                });
               },
             ),
             ListTile(
@@ -143,8 +145,9 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
               onTap: () async {
                 var newValue = await _selectKbdLayout(context, clipKbdLayout);
                 if (newValue != clipKbdLayout) {
-                  await prefs.setString(prefClipKbdLayout, newValue);
-                  setState(() {});
+                  setState(() {
+                    prefs.setString(prefClipKbdLayout, newValue);
+                  });
                 }
               },
             ),
@@ -158,8 +161,18 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                 value: nfcBypassTouch,
                 key: keys.nfcBypassTouchSetting,
                 onChanged: (value) {
-                  prefs.setBool(prefNfcBypassTouch, value);
-                  setState(() {});
+                  setState(() {
+                    prefs.setBool(prefNfcBypassTouch, value);
+                  });
+                }),
+            SwitchListTile(
+                title: const Text('Play sound on tap'),
+                value: nfcPlayDiscoverySound,
+                key: keys.nfcPlayDiscoverySoundSetting,
+                onChanged: (value) {
+                  setState(() {
+                    prefs.setBool(prefNfcPlayDiscoverySound, value);
+                  });
                 }),
             const ListTitle('USB options'),
             SwitchListTile(
@@ -171,8 +184,9 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                 value: usbOpenApp,
                 key: keys.usbOpenApp,
                 onChanged: (value) {
-                  prefs.setBool(prefUsbOpenApp, value);
-                  setState(() {});
+                  setState(() {
+                    prefs.setBool(prefUsbOpenApp, value);
+                  });
                 }),
             const ListTitle('Appearance'),
             ListTile(

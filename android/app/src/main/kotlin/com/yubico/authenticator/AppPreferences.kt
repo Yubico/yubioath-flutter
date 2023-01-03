@@ -18,27 +18,40 @@ package com.yubico.authenticator
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import com.yubico.authenticator.logging.Log
 
 class AppPreferences(context: Context) {
     companion object {
         const val PREFS_FILE = "FlutterSharedPreferences"
         const val PREF_NFC_OPEN_APP = "flutter.prefNfcOpenApp"
         const val PREF_NFC_BYPASS_TOUCH = "flutter.prefNfcBypassTouch"
+        const val PREF_NFC_PLAY_DISCOVERY_SOUND = "flutter.prefNfcPlayDiscoverySound"
         const val PREF_NFC_COPY_OTP = "flutter.prefNfcCopyOtp"
         const val PREF_USB_OPEN_APP = "flutter.prefUsbOpenApp"
 
         const val PREF_CLIP_KBD_LAYOUT = "flutter.prefClipKbdLayout"
         const val DEFAULT_CLIP_KBD_LAYOUT = "US"
+
+        const val TAG = "AppPreferences"
     }
 
     private val prefs: SharedPreferences =
-        context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
+        context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE).also {
+            Log.d(TAG, "Current app preferences:")
+            it.all.map { preference ->
+                Log.d(TAG, "${preference.key}: ${preference.value}")
+            }
+        }
 
     val openAppOnNfcTap: Boolean
         get() = prefs.getBoolean(PREF_NFC_OPEN_APP, true)
 
     val bypassTouchOnNfcTap: Boolean
         get() = prefs.getBoolean(PREF_NFC_BYPASS_TOUCH, false)
+
+    val playNfcDiscoverySound: Boolean
+        get() = prefs.getBoolean(PREF_NFC_PLAY_DISCOVERY_SOUND, true)
 
     val copyOtpOnNfcTap: Boolean
         get() = prefs.getBoolean(PREF_NFC_COPY_OTP, false)
@@ -51,4 +64,14 @@ class AppPreferences(context: Context) {
 
     val openAppOnUsb: Boolean
         get() = prefs.getBoolean(PREF_USB_OPEN_APP, false)
+
+    fun registerListener(listener: OnSharedPreferenceChangeListener) {
+        Log.d(TAG, "registering change listener")
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    fun unregisterListener(listener: OnSharedPreferenceChangeListener) {
+        prefs.unregisterOnSharedPreferenceChangeListener(listener)
+        Log.d(TAG, "unregistered change listener")
+    }
 }
