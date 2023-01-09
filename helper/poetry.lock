@@ -211,7 +211,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "mss"
-version = "6.1.0"
+version = "7.0.1"
 description = "An ultra fast cross-platform multiple screenshots module in pure python using ctypes."
 category = "main"
 optional = false
@@ -427,7 +427,7 @@ numpy = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "f73c4bd6b42d3b9296699691cec418afe49031be3289fc2e45b11dee95d69e8d"
+content-hash = "6fc022b23ce6a0e8a2cad0a2b0622b3c38e92c54a3fe8b5981dc4b626b03a85f"
 
 [metadata.files]
 altgraph = [
@@ -581,8 +581,8 @@ more-itertools = [
     {file = "more_itertools-9.0.0-py3-none-any.whl", hash = "sha256:250e83d7e81d0c87ca6bd942e6aeab8cc9daa6096d12c5308f3f92fa5e5c1f41"},
 ]
 mss = [
-    {file = "mss-6.1.0-py3-none-any.whl", hash = "sha256:2722c5c9211ce29b4f1497fc2c70faecf9cdcb7653fa7f0f88e2231a31949b93"},
-    {file = "mss-6.1.0.tar.gz", hash = "sha256:aebd069f3e05667fe9c7b9fa4b1771fe42a4710ce1058ce0236936ce06fa5394"},
+    {file = "mss-7.0.1-py3-none-any.whl", hash = "sha256:c8d69b5c1aefc19fb4d37802bfee9ebae5bb86fc42f1ab04cb93b32b0eaae451"},
+    {file = "mss-7.0.1.tar.gz", hash = "sha256:f14cee528903c3b01d3b8f1209cd498422f71e3d0d2d92c5b933edd3b9772022"},
 ]
 numpy = [
     {file = "numpy-1.24.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:179a7ef0889ab769cc03573b6217f54c8bd8e16cef80aad369e1e8185f994cd7"},
