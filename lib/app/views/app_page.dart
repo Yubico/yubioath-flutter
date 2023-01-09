@@ -109,8 +109,8 @@ class AppPage extends StatelessWidget {
     return Scaffold(
       key: scaffoldGlobalKey,
       appBar: AppBar(
-        titleSpacing: 8,
         title: title,
+        titleSpacing: hasDrawer ? 2 : 8,
         centerTitle: true,
         titleTextStyle: Theme.of(context).textTheme.titleLarge,
         actions: [
