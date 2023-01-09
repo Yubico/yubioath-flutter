@@ -12,13 +12,13 @@ packages = [
 python = "^3.8"
 yubikey-manager = "5.0.0"
 fido2 = "^1.0"
-mss = "^6.1.0"
+mss = "^7.0.0"
 zxing-cpp = "^2.0.0"
 Pillow = "^9.1.1"
 cryptography = "!= 38.0.2"
 
 [tool.poetry.dev-dependencies]
-pyinstaller = {version = "^5.6.2", python = "<3.12"}
+pyinstaller = {version = "^5.7", python = "<3.12"}
 pytest = "^7.2.0"
 
 [build-system]
