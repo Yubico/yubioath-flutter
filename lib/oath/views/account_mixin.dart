@@ -51,6 +51,11 @@ mixin AccountMixin {
   OathCode? getCode(WidgetRef ref) => ref.watch(codeProvider(credential));
 
   @protected
+  bool isValid(WidgetRef ref) =>
+      ref.watch(credentialsProvider)?.any((c) => credential.id == c.id) ??
+      false;
+
+  @protected
   String formatCode(OathCode? code) {
     final value = code?.value;
     if (value == null) {
