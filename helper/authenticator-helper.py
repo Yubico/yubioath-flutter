@@ -32,4 +32,8 @@ if __name__ == "__main__":
 
         run_rpc_socket(sock)
     else:
+        sys.stdin.reconfigure(encoding="utf-8")
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+
         run_rpc_pipes(sys.stdout, sys.stdin)
