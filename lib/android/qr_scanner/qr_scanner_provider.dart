@@ -16,7 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:yubico_authenticator/app/state.dart';
-import 'package:yubico_authenticator/cancellation_exception.dart';
+import 'package:yubico_authenticator/exception/cancellation_exception.dart';
 import 'package:yubico_authenticator/theme.dart';
 
 import 'qr_scanner_view.dart';

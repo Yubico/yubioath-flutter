@@ -26,8 +26,8 @@ import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
-import '../../cancellation_exception.dart';
 import '../../core/models.dart';
+import '../../exception/platform_exception_decoder.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 
@@ -136,11 +136,8 @@ final addCredentialToAnyProvider =
             var result = jsonDecode(resultString);
             return OathCredential.fromJson(result['credential']);
           } on PlatformException catch (pe) {
-            if (CancellationException.isCancellation(pe)) {
-              throw CancellationException();
-            }
             _log.error('Failed to add account.', pe);
-            rethrow;
+            throw pe.decode();
           }
         });
 
@@ -216,10 +213,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       _log.debug('Calculate', resultJson);
       return OathCode.fromJson(jsonDecode(resultJson));
     } on PlatformException catch (pe) {
-      if (CancellationException.isCancellation(pe)) {
-        throw CancellationException();
-      }
-      rethrow;
+      throw pe.decode();
     } finally {
       touchTimer?.cancel();
       controller?.close();
@@ -236,11 +230,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       var result = jsonDecode(resultString);
       return OathCredential.fromJson(result['credential']);
     } on PlatformException catch (pe) {
-      if (CancellationException.isCancellation(pe)) {
-        throw CancellationException();
-      }
       _log.error('Failed to add account.', pe);
-      rethrow;
+      throw pe.decode();
     }
   }
 
@@ -258,10 +249,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       return OathCredential.fromJson(responseJson);
     } on PlatformException catch (pe) {
       _log.debug('Failed to execute renameOathCredential: ${pe.message}');
-      if (CancellationException.isCancellation(pe)) {
-        throw CancellationException();
-      }
-      rethrow;
+      throw pe.decode();
     }
   }
 
@@ -272,10 +260,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
           .invokeMethod('deleteAccount', {'credentialId': credential.id});
     } on PlatformException catch (e) {
       _log.debug('Received exception: $e');
-      if (CancellationException.isCancellation(e)) {
-        throw CancellationException();
-      }
-      rethrow;
+      throw e.decode();
     }
   }
 }
