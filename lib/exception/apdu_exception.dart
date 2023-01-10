@@ -20,5 +20,10 @@ class ApduException implements Exception {
   final String? details;
 
   ApduException(this.sw, this.message, this.details);
+
+  @override
+  String toString() {
+    return 'ApduException[$message; dec: $sw]';
+  }
 }
 
