@@ -15,14 +15,10 @@
  */
 
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
 final _log = Logger('android.logger');
-
-final androidLogProvider =
-    StateNotifierProvider<LogLevelNotifier, Level>((ref) => AndroidLogger());
 
 class AndroidLogger extends LogLevelNotifier {
   final MethodChannel _channel = const MethodChannel('android.log.redirect');

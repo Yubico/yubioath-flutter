@@ -57,9 +57,7 @@ Future<Widget> initialize() async {
         Application.oath,
       ]),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
-      logLevelProvider.overrideWith(
-            (ref) => ref.watch(androidLogProvider.notifier),
-      ),
+      logLevelProvider.overrideWith((ref) => AndroidLogger()),
       attachedDevicesProvider
           .overrideWith(
                 () => AndroidAttachedDevicesNotifier(),
@@ -71,7 +69,7 @@ Future<Widget> initialize() async {
       credentialListProvider
           .overrideWithProvider(androidCredentialListProvider),
       currentAppProvider.overrideWith(
-            (ref) => ref.watch(androidSubPageProvider.notifier),
+            (ref) => AndroidSubPageNotifier(ref.watch(supportedAppsProvider))
       ),
       managementStateProvider.overrideWithProvider(androidManagementState),
       currentDeviceProvider.overrideWith(
@@ -92,9 +90,6 @@ Future<Widget> initialize() async {
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(
         builder: (context, ref, child) {
-          // activates the sub page provider
-          ref.read(androidSubPageProvider);
-
           // activates window state provider
           ref.read(androidWindowStateProvider);
 

@@ -25,7 +25,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../cancellation_exception.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../widgets/circle_timer.dart';
 import '../../widgets/custom_icons.dart';
 import '../models.dart';
@@ -49,6 +49,11 @@ mixin AccountMixin {
 
   @protected
   OathCode? getCode(WidgetRef ref) => ref.watch(codeProvider(credential));
+
+  @protected
+  bool isValid(WidgetRef ref) =>
+      ref.watch(credentialsProvider)?.any((c) => credential.id == c.id) ??
+      false;
 
   @protected
   String formatCode(OathCode? code) {

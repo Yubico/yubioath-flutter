@@ -31,7 +31,8 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
-import '../../cancellation_exception.dart';
+import '../../exception/apdu_exception.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../management/models.dart';
@@ -194,6 +195,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       final String errorMessage;
       // TODO: Make this cleaner than importing desktop specific RpcError.
       if (e is RpcError) {
+        errorMessage = e.message;
+      } else if (e is ApduException) {
         errorMessage = e.message;
       } else {
         errorMessage = e.toString();

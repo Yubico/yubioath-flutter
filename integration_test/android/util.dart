@@ -61,7 +61,7 @@ Future<void> grantCameraPermissions(WidgetTester tester) async {
   var manualEntryBtn = find.byKey(android_keys.manualEntryButton).hitTestable();
 
   if (manualEntryBtn.evaluate().isEmpty) {
-    tester.testLog(false, 'Allow camera permission');
+    tester.testLog(true, 'Allow camera permission');
     manualEntryBtn = await tester.waitForFinder(manualEntryBtn);
   }
 

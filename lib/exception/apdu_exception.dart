@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import 'package:flutter/services.dart';
+class ApduException implements Exception {
+  final int sw;
+  final String message;
+  final String? details;
 
-class CancellationException implements Exception {
-  CancellationException();
+  ApduException(this.sw, this.message, this.details);
 
-  static isCancellation(PlatformException pe) =>
-    pe.code == 'CancellationException';
-
+  @override
+  String toString() {
+    return 'ApduException[$message; dec: $sw]';
+  }
 }
+

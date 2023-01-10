@@ -20,7 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
-import '../../cancellation_exception.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../widgets/menu_list_tile.dart';
 import '../models.dart';
 import '../state.dart';

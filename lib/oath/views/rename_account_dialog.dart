@@ -22,7 +22,7 @@ import 'package:logging/logging.dart';
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../cancellation_exception.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
