@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.yubico.authenticator">
 
     <uses-permission android:name="android.permission.NFC" />
@@ -75,12 +76,15 @@
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/NdefActivityTheme">
-            <intent-filter>
+            <intent-filter
+                android:autoVerify="true"
+                tools:ignore="UnusedAttribute">
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data
                     android:host="my.yubico.com"
                     android:scheme="https" />
+
             </intent-filter>
 
         </activity>
