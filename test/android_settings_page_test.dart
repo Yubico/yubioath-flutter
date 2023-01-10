@@ -108,8 +108,8 @@ extension _WidgetTesterHelper on WidgetTester {
     await pumpAndSettle();
   }
 
-  Future<void> tapPlayNfcDiscoverySounds() async {
-    await tap(find.byKey(keys.nfcPlayDiscoverySoundSetting));
+  Future<void> tapSilenceNfcSounds() async {
+    await tap(find.byKey(keys.nfcSilenceSoundsSettings));
     await pumpAndSettle();
   }
 
@@ -320,8 +320,8 @@ void main() {
     expect(sharedPrefs.getBool(prefUsbOpenApp), equals(false));
   });
 
-  testWidgets('Play NFC Discovery sound', (WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues({prefNfcPlayDiscoverySound: true});
+  testWidgets('Silence NFC sound', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({prefNfcSilenceSounds: false});
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(androidWidget(
@@ -329,12 +329,12 @@ void main() {
       child: widget,
     ));
 
-    // change to false
-    await tester.tapPlayNfcDiscoverySounds();
-    expect(sharedPrefs.getBool(prefNfcPlayDiscoverySound), equals(false));
-
     // change to true
-    await tester.tapPlayNfcDiscoverySounds();
-    expect(sharedPrefs.getBool(prefNfcPlayDiscoverySound), equals(true));
+    await tester.tapSilenceNfcSounds();
+    expect(sharedPrefs.getBool(prefNfcSilenceSounds), equals(true));
+
+    // change to false
+    await tester.tapSilenceNfcSounds();
+    expect(sharedPrefs.getBool(prefNfcSilenceSounds), equals(false));
   });
 }

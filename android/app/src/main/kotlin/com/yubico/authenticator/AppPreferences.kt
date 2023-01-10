@@ -26,7 +26,7 @@ class AppPreferences(context: Context) {
         const val PREFS_FILE = "FlutterSharedPreferences"
         const val PREF_NFC_OPEN_APP = "flutter.prefNfcOpenApp"
         const val PREF_NFC_BYPASS_TOUCH = "flutter.prefNfcBypassTouch"
-        const val PREF_NFC_PLAY_DISCOVERY_SOUND = "flutter.prefNfcPlayDiscoverySound"
+        const val PREF_NFC_SILENCE_SOUNDS = "flutter.prefNfcSilenceSounds"
         const val PREF_NFC_COPY_OTP = "flutter.prefNfcCopyOtp"
         const val PREF_USB_OPEN_APP = "flutter.prefUsbOpenApp"
 
@@ -50,8 +50,8 @@ class AppPreferences(context: Context) {
     val bypassTouchOnNfcTap: Boolean
         get() = prefs.getBoolean(PREF_NFC_BYPASS_TOUCH, false)
 
-    val playNfcDiscoverySound: Boolean
-        get() = prefs.getBoolean(PREF_NFC_PLAY_DISCOVERY_SOUND, true)
+    val silenceNfcSounds: Boolean
+        get() = prefs.getBoolean(PREF_NFC_SILENCE_SOUNDS, false)
 
     val copyOtpOnNfcTap: Boolean
         get() = prefs.getBoolean(PREF_NFC_COPY_OTP, false)

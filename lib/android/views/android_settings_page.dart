@@ -105,7 +105,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
     final clipKbdLayout =
         prefs.getString(prefClipKbdLayout) ?? _defaultClipKbdLayout;
     final nfcBypassTouch = prefs.getBool(prefNfcBypassTouch) ?? false;
-    final nfcPlayDiscoverySound = prefs.getBool(prefNfcPlayDiscoverySound) ?? true;
+    final nfcSilenceSounds = prefs.getBool(prefNfcSilenceSounds) ?? false;
     final usbOpenApp = prefs.getBool(prefUsbOpenApp) ?? false;
     final themeMode = ref.watch(themeModeProvider);
 
@@ -166,12 +166,16 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                   });
                 }),
             SwitchListTile(
-                title: const Text('Play sound on tap'),
-                value: nfcPlayDiscoverySound,
-                key: keys.nfcPlayDiscoverySoundSetting,
+                title: const Text('Silence NFC sounds'),
+                subtitle: nfcSilenceSounds
+                    ? const Text(
+                        'No sounds will be played on NFC tap')
+                    : const Text('Sound will play on NFC tap'),
+                value: nfcSilenceSounds,
+                key: keys.nfcSilenceSoundsSettings,
                 onChanged: (value) {
                   setState(() {
-                    prefs.setBool(prefNfcPlayDiscoverySound, value);
+                    prefs.setBool(prefNfcSilenceSounds, value);
                   });
                 }),
             const ListTitle('USB options'),
@@ -180,7 +184,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                 subtitle: usbOpenApp
                     ? const Text(
                         'This prevents other apps from using the YubiKey over USB')
-                    : const Text('Other apps can use the YubiKey over USB.'),
+                    : const Text('Other apps can use the YubiKey over USB'),
                 value: usbOpenApp,
                 key: keys.usbOpenApp,
                 onChanged: (value) {

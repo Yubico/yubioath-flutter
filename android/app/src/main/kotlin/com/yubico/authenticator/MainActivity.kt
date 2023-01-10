@@ -104,7 +104,7 @@ class MainActivity : FlutterFragmentActivity() {
         try {
             Log.d(TAG, "Starting nfc discovery")
             yubikit.startNfcDiscovery(
-                nfcConfiguration.disableNfcDiscoverySound(!appPreferences.playNfcDiscoverySound),
+                nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
                 this,
                 ::processYubiKey
             )
@@ -315,7 +315,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private val sharedPreferencesListener = OnSharedPreferenceChangeListener { _, key ->
-        if ( AppPreferences.PREF_NFC_PLAY_DISCOVERY_SOUND == key) {
+        if ( AppPreferences.PREF_NFC_SILENCE_SOUNDS == key) {
             stopNfcDiscovery()
             startNfcDiscovery()
         }
