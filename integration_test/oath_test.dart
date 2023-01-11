@@ -26,12 +26,15 @@ void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
-  group('UI tests', () {
-    appTest('OATH Menu items exist', (WidgetTester tester) async {
-      await tester.tapDeviceButton();
+  group('OATH UI tests', () {
+    appTest('Menu items exist', (WidgetTester tester) async {
+      await tester.tapActionIconButton();
       expect(find.byKey(keys.addAccountAction), findsOneWidget);
       expect(find.byKey(keys.setOrManagePasswordAction), findsOneWidget);
       expect(find.byKey(keys.resetAction), findsOneWidget);
+
+      // close dialog
+      await tester.tapTopLeftCorner();
     });
   });
 

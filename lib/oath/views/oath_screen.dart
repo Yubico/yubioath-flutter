@@ -29,6 +29,7 @@ import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../widgets/list_title.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -255,21 +256,28 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   if (Platform.isAndroid) {
                     final scanner = ref.read(qrScannerProvider);
                     if (scanner != null) {
-                      final url = await scanner.scanQr();
-                      if (url != null) {
-                        otpauth = CredentialData.fromUri(Uri.parse(url));
+                      try {
+                        final url = await scanner.scanQr();
+                        if (url != null) {
+                          otpauth = CredentialData.fromUri(Uri.parse(url));
+                        }
+                      } on CancellationException catch (_) {
+                        // ignored - user cancelled
+                        return;
                       }
                     }
                   }
-                  await showBlurDialog(
-                    context: context,
-                    builder: (context) => OathAddAccountPage(
-                      widget.devicePath,
-                      widget.oathState,
-                      credentials: ref.watch(credentialsProvider),
-                      credentialData: otpauth,
-                    ),
-                  );
+                  await ref.read(withContextProvider)((context) async {
+                    await showBlurDialog(
+                      context: context,
+                      builder: (context) => OathAddAccountPage(
+                        widget.devicePath,
+                        widget.oathState,
+                        credentials: ref.watch(credentialsProvider),
+                        credentialData: otpauth,
+                      ),
+                    );
+                  });
                 }
               : null,
         ),

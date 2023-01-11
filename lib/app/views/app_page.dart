@@ -118,6 +118,7 @@ class AppPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 4),
               child: IconButton(
+                key: actionsIconButtonKey,
                 onPressed: () {
                   showBlurDialog(context: context, builder: keyActionsBuilder!);
                 },

@@ -26,6 +26,7 @@ import '../../management/models.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
+import 'keys.dart';
 
 final _hiddenDevicesProvider =
     StateNotifierProvider<_HiddenDevicesNotifier, List<String>>(
@@ -282,6 +283,7 @@ class _CurrentDeviceRow extends StatelessWidget {
       children: [
         _HeroAvatar(child: hero),
         ListTile(
+          key: deviceInfoListTile,
           title: Text(messages.removeAt(0), textAlign: TextAlign.center),
           isThreeLine: messages.length > 1,
           subtitle: Text(messages.join('\n'), textAlign: TextAlign.center),

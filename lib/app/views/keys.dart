@@ -22,6 +22,7 @@ final scaffoldGlobalKey = GlobalKey<ScaffoldState>();
 const _prefix = 'app.keys';
 const deviceInfoListTile = Key('$_prefix.device_info_list_tile');
 const noDeviceAvatar = Key('$_prefix.no_device_avatar');
+const actionsIconButtonKey = Key('$_prefix.actions_icon_button');
 
 // drawer items
 const managementAppDrawer = Key('$_prefix.drawer.management');

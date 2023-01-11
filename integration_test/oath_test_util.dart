@@ -42,14 +42,14 @@ class Account {
 extension OathFunctions on WidgetTester {
   /// Opens the device menu and taps the "Add account" menu item
   Future<void> tapAddAccount() async {
-    await tapDeviceButton();
+    await tapActionIconButton();
     await tap(find.byKey(keys.addAccountAction).hitTestable());
     await longWait();
   }
 
   /// Opens the device menu and taps the "Set/Manage password" menu item
   Future<void> tapSetOrManagePassword() async {
-    await tapDeviceButton();
+    await tapActionIconButton();
     await tap(find.byKey(keys.setOrManagePasswordAction));
     await longWait();
   }
