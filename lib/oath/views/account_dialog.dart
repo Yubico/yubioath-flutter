@@ -156,6 +156,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
               style: Theme.of(context).textTheme.headlineSmall,
               maxLines: 2,
               softWrap: true,
+              textAlign: TextAlign.center,
             ),
           ),
           contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -168,6 +169,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
                   subtitle!,
                   maxLines: 2,
                   softWrap: true,
+                  textAlign: TextAlign.center,
                   // This is what ListTile uses for subtitle
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(context).textTheme.caption!.color,
