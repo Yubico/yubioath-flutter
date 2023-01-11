@@ -221,7 +221,7 @@ extension OathFunctions on WidgetTester {
     var nameTextField = find.byKey(keys.nameField).hitTestable();
     await tap(nameTextField);
     await enterText(nameTextField, newName);
-    await shortWait();
+    await longWait();
 
     var saveButton = find.byKey(keys.saveButton).hitTestable();
     expect(saveButton, findsOneWidget);
@@ -238,7 +238,7 @@ extension OathFunctions on WidgetTester {
     /// verify accounts in the list
     var renamedAccount = Account(issuer: newIssuer, name: newName);
     var renamedAccountView = await findAccount(renamedAccount);
-    await shortWait();
+    await longWait();
     var originalAccountView = await findAccount(a);
     expect(renamedAccountView, isNotNull);
     expect(originalAccountView, isNull);
