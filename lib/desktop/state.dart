@@ -154,29 +154,24 @@ final desktopSupportedThemesProvider = StateProvider<List<ThemeMode>>(
 
 class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
   static const String _lastDevice = 'APP_STATE_LAST_DEVICE';
-  DeviceNode? _deviceNode;
 
   @override
   DeviceNode? build() {
     SharedPreferences prefs = ref.watch(prefProvider);
-    var devices = ref.watch(attachedDevicesProvider);
+    final devices = ref.watch(attachedDevicesProvider);
+    final lastDevice = prefs.getString(_lastDevice) ?? '';
 
-    if (!devices.contains(_deviceNode)) {
-      final lastDevice = prefs.getString(_lastDevice) ?? '';
-      _deviceNode =
-          devices.where((dev) => dev.path.key == lastDevice).firstOrNull;
-      if (_deviceNode == null) {
-        final parts = lastDevice.split('/');
-        if (parts.firstOrNull == 'pid') {
-          _deviceNode = devices
-              .whereType<UsbYubiKeyNode>()
-              .where((e) => e.pid.value.toString() == parts[1])
-              .firstOrNull;
-        }
-        _deviceNode ??= devices.whereType<UsbYubiKeyNode>().firstOrNull;
+    var node = devices.where((dev) => dev.path.key == lastDevice).firstOrNull;
+    if (node == null) {
+      final parts = lastDevice.split('/');
+      if (parts.firstOrNull == 'pid') {
+        node = devices
+            .whereType<UsbYubiKeyNode>()
+            .where((e) => e.pid.value.toString() == parts[1])
+            .firstOrNull;
       }
     }
-    return _deviceNode;
+    return node ?? devices.whereType<UsbYubiKeyNode>().firstOrNull;
   }
 
   @override
