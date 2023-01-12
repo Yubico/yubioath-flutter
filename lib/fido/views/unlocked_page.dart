@@ -26,12 +26,10 @@ import '../../app/views/message_page.dart';
 import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
-import 'add_fingerprint_dialog.dart';
 import 'delete_credential_dialog.dart';
 import 'delete_fingerprint_dialog.dart';
-import 'pin_dialog.dart';
+import 'key_actions.dart';
 import 'rename_fingerprint_dialog.dart';
-import 'reset_dialog.dart';
 
 class FidoUnlockedPage extends ConsumerWidget {
   final DeviceNode node;
@@ -141,7 +139,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       return AppPage(
         title: Text(AppLocalizations.of(context)!.fido_webauthn),
         keyActionsBuilder: (context) =>
-            _buildKeyActions(context, nFingerprints),
+            fidoBuildActions(context, node, state, nFingerprints),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, children: children),
       );
@@ -153,7 +151,8 @@ class FidoUnlockedPage extends ConsumerWidget {
         graphic: noFingerprints,
         header: AppLocalizations.of(context)!.fido_no_fingerprints,
         message: AppLocalizations.of(context)!.fido_add_one_or_more,
-        keyActionsBuilder: (context) => _buildKeyActions(context, 0),
+        keyActionsBuilder: (context) =>
+            fidoBuildActions(context, node, state, 0),
       );
     }
 
@@ -162,7 +161,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       graphic: manageAccounts,
       header: AppLocalizations.of(context)!.fido_no_discoverable_acc,
       message: AppLocalizations.of(context)!.fido_register_as_a_key,
-      keyActionsBuilder: (context) => _buildKeyActions(context, 0),
+      keyActionsBuilder: (context) => fidoBuildActions(context, node, state, 0),
     );
   }
 
@@ -172,58 +171,4 @@ class FidoUnlockedPage extends ConsumerWidget {
         delayedContent: true,
         child: const CircularProgressIndicator(),
       );
-
-  Widget _buildKeyActions(BuildContext context, int fingerprints) {
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
-    return SimpleDialog(children: [
-      if (state.bioEnroll != null) ...[
-        ListTitle('Setup', textStyle: Theme.of(context).textTheme.bodyLarge),
-        ListTile(
-          leading: const CircleAvatar(child: Icon(Icons.fingerprint_outlined)),
-          title: Text(AppLocalizations.of(context)!.fido_add_fingerprint),
-          subtitle: Text('$fingerprints/5 fingerprints registered'),
-          enabled: fingerprints < 5,
-          onTap: fingerprints < 5
-              ? () {
-                  Navigator.of(context).pop();
-                  showBlurDialog(
-                    context: context,
-                    builder: (context) => AddFingerprintDialog(node.path),
-                  );
-                }
-              : null,
-        ),
-      ],
-      ListTitle('Manage', textStyle: Theme.of(context).textTheme.bodyLarge),
-      ListTile(
-        leading: const CircleAvatar(child: Icon(Icons.pin_outlined)),
-        title: Text(AppLocalizations.of(context)!.fido_change_pin),
-        subtitle: const Text('FIDO PIN protection'),
-        onTap: () {
-          Navigator.of(context).pop();
-          showBlurDialog(
-            context: context,
-            builder: (context) => FidoPinDialog(node.path, state),
-          );
-        },
-      ),
-      ListTile(
-        leading: CircleAvatar(
-          foregroundColor: theme.onError,
-          backgroundColor: theme.error,
-          child: const Icon(Icons.delete_outline),
-        ),
-        title: Text(AppLocalizations.of(context)!.fido_reset_fido),
-        subtitle: const Text('Factory reset this application'),
-        onTap: () {
-          Navigator.of(context).pop();
-          showBlurDialog(
-            context: context,
-            builder: (context) => ResetDialog(node),
-          );
-        },
-      ),
-    ]);
-  }
 }

@@ -18,16 +18,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
-import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
-import 'pin_dialog.dart';
-import 'reset_dialog.dart';
+import 'key_actions.dart';
 
 class FidoLockedPage extends ConsumerWidget {
   final DeviceNode node;
@@ -80,55 +77,8 @@ class FidoLockedPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildActions(BuildContext context) {
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
-    return SimpleDialog(
-      children: [
-        if (state.bioEnroll != null) ...[
-          ListTitle('Setup', textStyle: Theme.of(context).textTheme.bodyLarge),
-          ListTile(
-            leading:
-                const CircleAvatar(child: Icon(Icons.fingerprint_outlined)),
-            title: Text(AppLocalizations.of(context)!.fido_add_fingerprint),
-            subtitle: const Text('A PIN is required first'),
-            enabled: false,
-            onTap: null,
-          ),
-        ],
-        ListTitle('Manage', textStyle: Theme.of(context).textTheme.bodyLarge),
-        if (!state.hasPin)
-          ListTile(
-            leading: const CircleAvatar(child: Icon(Icons.pin_outlined)),
-            title: Text(AppLocalizations.of(context)!.fido_set_pin),
-            subtitle: const Text('Optional FIDO PIN protection'),
-            onTap: () {
-              Navigator.of(context).pop();
-              showBlurDialog(
-                context: context,
-                builder: (context) => FidoPinDialog(node.path, state),
-              );
-            },
-          ),
-        ListTile(
-          leading: CircleAvatar(
-            foregroundColor: theme.onError,
-            backgroundColor: theme.error,
-            child: const Icon(Icons.delete_outline),
-          ),
-          title: Text(AppLocalizations.of(context)!.fido_reset_fido),
-          subtitle: const Text('Factory reset this application'),
-          onTap: () {
-            Navigator.of(context).pop();
-            showBlurDialog(
-              context: context,
-              builder: (context) => ResetDialog(node),
-            );
-          },
-        ),
-      ],
-    );
-  }
+  Widget _buildActions(BuildContext context) =>
+      fidoBuildActions(context, node, state, -1);
 }
 
 class _PinEntryForm extends ConsumerStatefulWidget {
