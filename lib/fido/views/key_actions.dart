@@ -58,26 +58,20 @@ Widget fidoBuildActions(
       ListTitle(AppLocalizations.of(context)!.general_manage,
           textStyle: Theme.of(context).textTheme.bodyLarge),
       ListTile(
-        leading: const CircleAvatar(child: Icon(Icons.pin_outlined)),
-        title: Text(state.hasPin
-            ? AppLocalizations.of(context)!.fido_change_pin
-            : AppLocalizations.of(context)!.fido_set_pin),
-        subtitle: Text(state.hasPin
-            ? (state.unlocked
-                ? AppLocalizations.of(context)!.fido_pin_protection
-                : AppLocalizations.of(context)!.fido_unlock_first)
-            : AppLocalizations.of(context)!.fido_pin_protection_optional),
-        enabled: state.unlocked || !state.hasPin,
-        onTap: state.unlocked || !state.hasPin
-            ? () {
-                Navigator.of(context).pop();
-                showBlurDialog(
-                  context: context,
-                  builder: (context) => FidoPinDialog(node.path, state),
-                );
-              }
-            : null,
-      ),
+          leading: const CircleAvatar(child: Icon(Icons.pin_outlined)),
+          title: Text(state.hasPin
+              ? AppLocalizations.of(context)!.fido_change_pin
+              : AppLocalizations.of(context)!.fido_set_pin),
+          subtitle: Text(state.hasPin
+              ? AppLocalizations.of(context)!.fido_pin_protection
+              : AppLocalizations.of(context)!.fido_pin_protection_optional),
+          onTap: () {
+            Navigator.of(context).pop();
+            showBlurDialog(
+              context: context,
+              builder: (context) => FidoPinDialog(node.path, state),
+            );
+          }),
       ListTile(
         leading: CircleAvatar(
           foregroundColor: theme.onError,
