@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/delayed_visibility.dart';
+import '../message.dart';
 import 'device_button.dart';
 import 'keys.dart';
 import 'main_drawer.dart';
@@ -25,17 +26,17 @@ class AppPage extends StatelessWidget {
   final Widget? title;
   final Widget child;
   final List<Widget> actions;
-  final List<PopupMenuEntry> keyActions;
+  final Widget Function(BuildContext context)? keyActionsBuilder;
   final bool centered;
-  final Widget Function(List<PopupMenuEntry>)? actionButtonBuilder;
   final bool delayedContent;
+  final Widget Function(BuildContext context)? actionButtonBuilder;
   const AppPage({
     super.key,
     this.title,
     required this.child,
     this.actions = const [],
-    this.keyActions = const [],
     this.centered = false,
+    this.keyActionsBuilder,
     this.actionButtonBuilder,
     this.delayedContent = false,
   });
@@ -108,15 +109,27 @@ class AppPage extends StatelessWidget {
     return Scaffold(
       key: scaffoldGlobalKey,
       appBar: AppBar(
-        titleSpacing: 8,
         title: title,
+        titleSpacing: hasDrawer ? 2 : 8,
         centerTitle: true,
         titleTextStyle: Theme.of(context).textTheme.titleLarge,
         actions: [
+          if (actionButtonBuilder == null && keyActionsBuilder != null)
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: IconButton(
+                key: actionsIconButtonKey,
+                onPressed: () {
+                  showBlurDialog(context: context, builder: keyActionsBuilder!);
+                },
+                icon: const Icon(Icons.tune),
+                iconSize: 24,
+                padding: const EdgeInsets.all(12),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.only(right: 12),
-            child: actionButtonBuilder?.call(keyActions) ??
-                DeviceButton(actions: keyActions),
+            child: actionButtonBuilder?.call(context) ?? const DeviceButton(),
           ),
         ],
       ),

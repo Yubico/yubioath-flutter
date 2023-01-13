@@ -75,6 +75,20 @@ extension AppWidgetTester on WidgetTester {
     await pump(const Duration(milliseconds: 500));
   }
 
+  Finder findActionIconButton() {
+    return find.byKey(actionsIconButtonKey).hitTestable();
+  }
+
+  Future<void> tapActionIconButton() async {
+    await tap(findActionIconButton());
+    await pump(const Duration(milliseconds: 500));
+  }
+
+  Future<void> tapTopLeftCorner() async {
+    await tapAt(const Offset(0, 0));
+    await longWait();
+  }
+
   /// Drawer helpers
   bool hasDrawer() => scaffoldGlobalKey.currentState!.hasDrawer;
 
@@ -148,23 +162,22 @@ extension AppWidgetTester on WidgetTester {
       var subtitle = (lt.subtitle as Text?)?.data;
 
       if (subtitle != null) {
-        RegExpMatch? match = RegExp(r'S/N: (?<SN>\d.*) F/W: (?<FW>\d\.\d\.\d)')
+        RegExpMatch? match = RegExp(r'S/N: (\d.*) F/W: (\d\.\d\.\d)')
             .firstMatch(subtitle);
         if (match != null) {
-          yubiKeySerialNumber = match.namedGroup('SN');
-          yubiKeyFirmware = match.namedGroup('FW');
+          yubiKeySerialNumber = match.group(1);
+          yubiKeyFirmware = match.group(2);
         } else {
-          match = RegExp(r'F/W: (?<FW>\d\.\d\.\d)').firstMatch(subtitle);
+          match = RegExp(r'F/W: (\d\.\d\.\d)').firstMatch(subtitle);
           if (match != null) {
-            yubiKeyFirmware = match.namedGroup('FW');
+            yubiKeyFirmware = match.group(1);
           }
         }
       }
     }
 
     // close the opened menu
-    await tapAt(const Offset(0, 0));
-    await longWait();
+    await tapTopLeftCorner();
 
     testLog(false,
         'Connected YubiKey: $yubiKeySerialNumber/$yubiKeyFirmware - $yubiKeyName');

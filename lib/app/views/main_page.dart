@@ -70,7 +70,7 @@ class MainPage extends ConsumerWidget {
         return MessagePage(
           graphic: noKeyImage,
           message: 'Insert or tap your YubiKey',
-          actionButtonBuilder: (keyActions) => IconButton(
+          actionButtonBuilder: (context) => IconButton(
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: 'Add account',
             onPressed: () async {

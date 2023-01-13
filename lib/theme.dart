@@ -116,6 +116,8 @@ class AppTheme {
           onPrimary: Colors.black,
           secondary: const Color(0xff5d7d90),
         ),
+        // Default for CircleAvatar background if foreground is light
+        primaryColorDark: Colors.white38,
         errorColor: darkRed,
         iconTheme: const IconThemeData(
           color: Colors.white70,

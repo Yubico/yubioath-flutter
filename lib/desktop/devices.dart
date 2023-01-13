@@ -118,7 +118,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
           pids.forEach((pid, count) {
             for (var i = 0; i < count; i++) {
               usbDevices.add(DeviceNode.usbYubiKey(
-                  DevicePath(['invalid', '$pid-$i']),
+                  DevicePath(['pid', pid.value.toString(), i.toString()]),
                   pid.displayName,
                   pid,
                   null) as UsbYubiKeyNode);

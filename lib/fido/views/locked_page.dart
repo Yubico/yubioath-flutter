@@ -18,16 +18,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
-import '../../widgets/menu_list_tile.dart';
 import '../models.dart';
 import '../state.dart';
-import 'pin_dialog.dart';
-import 'reset_dialog.dart';
+import 'key_actions.dart';
 
 class FidoLockedPage extends ConsumerWidget {
   final DeviceNode node;
@@ -44,7 +41,7 @@ class FidoLockedPage extends ConsumerWidget {
           graphic: noFingerprints,
           header: AppLocalizations.of(context)!.fido_no_fingerprints,
           message: AppLocalizations.of(context)!.fido_set_pin_fingerprints,
-          keyActions: _buildActions(context),
+          keyActionsBuilder: _buildActions,
         );
       } else {
         return MessagePage(
@@ -54,7 +51,7 @@ class FidoLockedPage extends ConsumerWidget {
               ? AppLocalizations.of(context)!.fido_no_discoverable_acc
               : AppLocalizations.of(context)!.fido_ready_to_use,
           message: AppLocalizations.of(context)!.fido_optionally_set_a_pin,
-          keyActions: _buildActions(context),
+          keyActionsBuilder: _buildActions,
         );
       }
     }
@@ -65,13 +62,13 @@ class FidoLockedPage extends ConsumerWidget {
         graphic: manageAccounts,
         header: AppLocalizations.of(context)!.fido_ready_to_use,
         message: AppLocalizations.of(context)!.fido_register_as_a_key,
-        keyActions: _buildActions(context),
+        keyActionsBuilder: _buildActions,
       );
     }
 
     return AppPage(
       title: Text(AppLocalizations.of(context)!.fido_webauthn),
-      keyActions: _buildActions(context),
+      keyActionsBuilder: _buildActions,
       child: Column(
         children: [
           _PinEntryForm(state, node),
@@ -80,29 +77,8 @@ class FidoLockedPage extends ConsumerWidget {
     );
   }
 
-  List<PopupMenuEntry> _buildActions(BuildContext context) => [
-        if (!state.hasPin)
-          buildMenuItem(
-            title: Text(AppLocalizations.of(context)!.fido_set_pin),
-            leading: const Icon(Icons.pin),
-            action: () {
-              showBlurDialog(
-                context: context,
-                builder: (context) => FidoPinDialog(node.path, state),
-              );
-            },
-          ),
-        buildMenuItem(
-          title: Text(AppLocalizations.of(context)!.fido_reset_fido),
-          leading: const Icon(Icons.delete),
-          action: () {
-            showBlurDialog(
-              context: context,
-              builder: (context) => ResetDialog(node),
-            );
-          },
-        ),
-      ];
+  Widget _buildActions(BuildContext context) =>
+      fidoBuildActions(context, node, state, -1);
 }
 
 class _PinEntryForm extends ConsumerStatefulWidget {

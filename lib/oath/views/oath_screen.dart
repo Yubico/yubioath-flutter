@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
-import '../../app/state.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
-import '../../widgets/menu_list_tile.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
 import 'account_list.dart';
-import 'add_account_page.dart';
-import 'manage_password_dialog.dart';
-import 'reset_dialog.dart';
+import 'key_actions.dart';
 import 'unlock_form.dart';
 
 class OathScreen extends ConsumerWidget {
@@ -70,40 +63,20 @@ class _LockedView extends ConsumerWidget {
   const _LockedView(this.devicePath, this.oathState);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => AppPage(
-        title: Text(AppLocalizations.of(context)!.oath_authenticator),
-        keyActions: [
-          buildMenuItem(
-            title: Text(AppLocalizations.of(context)!.oath_manage_password,
-                key: keys.setOrManagePasswordAction),
-            leading: const Icon(Icons.password),
-            action: () {
-              showBlurDialog(
-                context: context,
-                builder: (context) =>
-                    ManagePasswordDialog(devicePath, oathState),
-              );
-            },
-          ),
-          buildMenuItem(
-            title: Text(AppLocalizations.of(context)!.oath_reset_oath),
-            leading: const Icon(Icons.delete),
-            action: () {
-              showBlurDialog(
-                context: context,
-                builder: (context) => ResetDialog(devicePath),
-              );
-            },
-          ),
-        ],
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          child: UnlockForm(
-            devicePath,
-            keystore: oathState.keystore,
-          ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return AppPage(
+      title: Text(AppLocalizations.of(context)!.oath_authenticator),
+      keyActionsBuilder: (context) =>
+          oathBuildActions(context, devicePath, oathState, ref),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 18),
+        child: UnlockForm(
+          devicePath,
+          keystore: oathState.keystore,
         ),
-      );
+      ),
+    );
+  }
 }
 
 class _UnlockedView extends ConsumerStatefulWidget {
@@ -145,7 +118,9 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         key: keys.noAccountsView,
         graphic: noAccounts,
         header: AppLocalizations.of(context)!.oath_no_accounts,
-        keyActions: _buildActions(context, ref, used: 0),
+        keyActionsBuilder: (context) => oathBuildActions(
+            context, widget.devicePath, widget.oathState, ref,
+            used: 0),
       );
     }
     return Actions(
@@ -178,13 +153,24 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.oath_search_accounts,
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32)),
+                ),
+                contentPadding: EdgeInsets.zero,
                 isDense: true,
                 prefixIcon: const Icon(Icons.search_outlined),
-                prefixIconConstraints: const BoxConstraints(
-                  minHeight: 30,
-                  minWidth: 30,
+                prefixIconConstraints:
+                    const BoxConstraints(minHeight: 30, minWidth: 30),
+                /*
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.highlight_off),
+                  iconSize: 16,
+                  color: Colors.white54,
+                  onPressed: searchController.clear,
                 ),
-                border: InputBorder.none,
+                suffixIconConstraints:
+                    const BoxConstraints(minHeight: 30, minWidth: 30),
+                    */
               ),
               onChanged: (value) {
                 ref.read(searchProvider.notifier).setFilter(value);
@@ -196,8 +182,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             );
           }),
         ),
-        keyActions: _buildActions(
+        keyActionsBuilder: (context) => oathBuildActions(
           context,
+          widget.devicePath,
+          widget.oathState,
           ref,
           used: numCreds ?? 0,
         ),
@@ -214,70 +202,5 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             : const CircularProgressIndicator(),
       ),
     );
-  }
-
-  List<PopupMenuEntry> _buildActions(
-    BuildContext context,
-    WidgetRef ref, {
-    required int used,
-  }) {
-    final capacity = widget.oathState.version.isAtLeast(4) ? 32 : null;
-    return [
-      buildMenuItem(
-        title: Text(
-          AppLocalizations.of(context)!.oath_add_account,
-          key: keys.addAccountAction,
-        ),
-        leading: const Icon(Icons.person_add_alt_1),
-        trailing: capacity != null ? '$used/$capacity' : null,
-        action: capacity == null || capacity > used
-            ? () async {
-                CredentialData? otpauth;
-                if (Platform.isAndroid) {
-                  final scanner = ref.read(qrScannerProvider);
-                  if (scanner != null) {
-                    final url = await scanner.scanQr();
-                    if (url != null) {
-                      otpauth = CredentialData.fromUri(Uri.parse(url));
-                    }
-                  }
-                }
-                await showBlurDialog(
-                  context: context,
-                  builder: (context) => OathAddAccountPage(
-                    widget.devicePath,
-                    widget.oathState,
-                    credentials: ref.watch(credentialsProvider),
-                    credentialData: otpauth,
-                  ),
-                );
-              }
-            : null,
-      ),
-      buildMenuItem(
-          title: Text(
-              widget.oathState.hasKey
-                  ? AppLocalizations.of(context)!.oath_manage_password
-                  : AppLocalizations.of(context)!.oath_set_password,
-              key: keys.setOrManagePasswordAction),
-          leading: const Icon(Icons.password),
-          action: () {
-            showBlurDialog(
-              context: context,
-              builder: (context) =>
-                  ManagePasswordDialog(widget.devicePath, widget.oathState),
-            );
-          }),
-      buildMenuItem(
-          title: Text(AppLocalizations.of(context)!.oath_reset_oath,
-              key: keys.resetAction),
-          leading: const Icon(Icons.delete),
-          action: () {
-            showBlurDialog(
-              context: context,
-              builder: (context) => ResetDialog(widget.devicePath),
-            );
-          }),
-    ];
   }
 }
