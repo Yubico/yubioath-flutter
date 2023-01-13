@@ -19,6 +19,7 @@ package com.yubico.authenticator.oath
 import android.content.Context
 import android.os.Build
 import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.*
@@ -144,11 +145,22 @@ class OathManager(
             if (expirations.isNotEmpty()) {
                 val earliest = expirations.min() * 1000
                 val now = System.currentTimeMillis()
+
                 refreshJob = coroutineScope.launch {
-                    if (earliest > now) {
-                        delay(earliest - now)
+                    val delayMs = earliest - now
+                    Log.d(TAG, "Will execute refresh in ${delayMs}ms")
+                    if (delayMs > 0) {
+                        delay(delayMs)
                     }
-                    requestRefresh()
+                    val currentState = lifecycleOwner.lifecycle.currentState
+                    if (currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                        requestRefresh()
+                    } else {
+                        Log.d(
+                            TAG,
+                            "Cannot run credential refresh in current lifecycle state: $currentState"
+                        )
+                    }
                 }
             }
         }
@@ -448,7 +460,7 @@ class OathManager(
                     oathViewModel.updateCredentials(
                         calculateOathCodes(session).model(session.deviceId)
                     )
-                } catch(apduException: ApduException) {
+                } catch (apduException: ApduException) {
                     if (apduException.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
                         Log.d(TAG, "Handled oath credential refresh on locked session.")
                         oathViewModel.setSessionState(session.model(keyManager.isRemembered(session.deviceId)))
@@ -502,7 +514,7 @@ class OathManager(
                 // is that the user did not touch the key
                 throw CancellationException()
             }
-            throw  apduException
+            throw apduException
         }
     }
 
