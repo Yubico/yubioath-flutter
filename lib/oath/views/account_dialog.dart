@@ -154,7 +154,6 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
             child: Text(
               title,
               style: Theme.of(context).textTheme.headlineSmall,
-              maxLines: 2,
               softWrap: true,
               textAlign: TextAlign.center,
             ),
@@ -167,7 +166,6 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
               if (subtitle != null)
                 Text(
                   subtitle!,
-                  maxLines: 2,
                   softWrap: true,
                   textAlign: TextAlign.center,
                   // This is what ListTile uses for subtitle
