@@ -18,6 +18,7 @@
 const betaDialogPrefName = 'prefBetaDialogShouldBeShown';
 const prefNfcOpenApp = 'prefNfcOpenApp';
 const prefNfcBypassTouch = 'prefNfcBypassTouch';
+const prefNfcSilenceSounds = 'prefNfcSilenceSounds';
 const prefNfcCopyOtp = 'prefNfcCopyOtp';
 const prefClipKbdLayout = 'prefClipKbdLayout';
 const prefUsbOpenApp = 'prefUsbOpenApp';

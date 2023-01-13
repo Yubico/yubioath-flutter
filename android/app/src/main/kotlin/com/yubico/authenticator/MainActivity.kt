@@ -17,6 +17,7 @@
 package com.yubico.authenticator
 
 import android.content.*
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
 import android.hardware.camera2.CameraManager
 import android.hardware.usb.UsbDevice
@@ -102,7 +103,11 @@ class MainActivity : FlutterFragmentActivity() {
     private fun startNfcDiscovery() =
         try {
             Log.d(TAG, "Starting nfc discovery")
-            yubikit.startNfcDiscovery(nfcConfiguration, this, ::processYubiKey)
+            yubikit.startNfcDiscovery(
+                nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
+                this,
+                ::processYubiKey
+            )
             hasNfc = true
         } catch (e: NfcNotAvailable) {
             hasNfc = false
@@ -158,6 +163,9 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     override fun onPause() {
+
+        appPreferences.unregisterListener(sharedPreferencesListener)
+
         stopNfcDiscovery()
         if (!appPreferences.openAppOnUsb) {
             enableAliasMainActivityComponent(false)
@@ -221,6 +229,8 @@ class MainActivity : FlutterFragmentActivity() {
                 }
             }
         }
+
+        appPreferences.registerListener(sharedPreferencesListener)
     }
 
     private fun processYubiKey(device: YubiKeyDevice) {
@@ -301,6 +311,13 @@ class MainActivity : FlutterFragmentActivity() {
 
         override fun onReceive(context: Context?, intent: Intent?) {
             (context as? MainActivity)?.startNfcDiscovery()
+        }
+    }
+
+    private val sharedPreferencesListener = OnSharedPreferenceChangeListener { _, key ->
+        if ( AppPreferences.PREF_NFC_SILENCE_SOUNDS == key) {
+            stopNfcDiscovery()
+            startNfcDiscovery()
         }
     }
 

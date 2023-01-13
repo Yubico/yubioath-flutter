@@ -105,6 +105,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
     final clipKbdLayout =
         prefs.getString(prefClipKbdLayout) ?? _defaultClipKbdLayout;
     final nfcBypassTouch = prefs.getBool(prefNfcBypassTouch) ?? false;
+    final nfcSilenceSounds = prefs.getBool(prefNfcSilenceSounds) ?? false;
     final usbOpenApp = prefs.getBool(prefUsbOpenApp) ?? false;
     final themeMode = ref.watch(themeModeProvider);
 
@@ -131,8 +132,9 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
               key: keys.nfcTapSetting,
               onTap: () async {
                 final newTapAction = await _selectTapAction(context, tapAction);
-                newTapAction.save(prefs);
-                setState(() {});
+                setState(() {
+                  newTapAction.save(prefs);
+                });
               },
             ),
             ListTile(
@@ -143,8 +145,9 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
               onTap: () async {
                 var newValue = await _selectKbdLayout(context, clipKbdLayout);
                 if (newValue != clipKbdLayout) {
-                  await prefs.setString(prefClipKbdLayout, newValue);
-                  setState(() {});
+                  setState(() {
+                    prefs.setString(prefClipKbdLayout, newValue);
+                  });
                 }
               },
             ),
@@ -158,8 +161,22 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                 value: nfcBypassTouch,
                 key: keys.nfcBypassTouchSetting,
                 onChanged: (value) {
-                  prefs.setBool(prefNfcBypassTouch, value);
-                  setState(() {});
+                  setState(() {
+                    prefs.setBool(prefNfcBypassTouch, value);
+                  });
+                }),
+            SwitchListTile(
+                title: const Text('Silence NFC sounds'),
+                subtitle: nfcSilenceSounds
+                    ? const Text(
+                        'No sounds will be played on NFC tap')
+                    : const Text('Sound will play on NFC tap'),
+                value: nfcSilenceSounds,
+                key: keys.nfcSilenceSoundsSettings,
+                onChanged: (value) {
+                  setState(() {
+                    prefs.setBool(prefNfcSilenceSounds, value);
+                  });
                 }),
             const ListTitle('USB options'),
             SwitchListTile(
@@ -167,12 +184,13 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                 subtitle: usbOpenApp
                     ? const Text(
                         'This prevents other apps from using the YubiKey over USB')
-                    : const Text('Other apps can use the YubiKey over USB.'),
+                    : const Text('Other apps can use the YubiKey over USB'),
                 value: usbOpenApp,
                 key: keys.usbOpenApp,
                 onChanged: (value) {
-                  prefs.setBool(prefUsbOpenApp, value);
-                  setState(() {});
+                  setState(() {
+                    prefs.setBool(prefUsbOpenApp, value);
+                  });
                 }),
             const ListTitle('Appearance'),
             ListTile(

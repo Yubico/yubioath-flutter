@@ -103,7 +103,13 @@ extension _WidgetTesterHelper on WidgetTester {
   }
 
   Future<void> tapOpenAppOnUsb() async {
+    await ensureVisible(find.byKey(keys.usbOpenApp));
     await tap(find.byKey(keys.usbOpenApp));
+    await pumpAndSettle();
+  }
+
+  Future<void> tapSilenceNfcSounds() async {
+    await tap(find.byKey(keys.nfcSilenceSoundsSettings));
     await pumpAndSettle();
   }
 
@@ -312,5 +318,23 @@ void main() {
     // change to false
     await tester.tapOpenAppOnUsb();
     expect(sharedPrefs.getBool(prefUsbOpenApp), equals(false));
+  });
+
+  testWidgets('Silence NFC sound', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({prefNfcSilenceSounds: false});
+    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+
+    await tester.pumpWidget(androidWidget(
+      sharedPrefs: sharedPrefs,
+      child: widget,
+    ));
+
+    // change to true
+    await tester.tapSilenceNfcSounds();
+    expect(sharedPrefs.getBool(prefNfcSilenceSounds), equals(true));
+
+    // change to false
+    await tester.tapSilenceNfcSounds();
+    expect(sharedPrefs.getBool(prefNfcSilenceSounds), equals(false));
   });
 }
