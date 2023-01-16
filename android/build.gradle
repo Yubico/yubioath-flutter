@@ -27,7 +27,7 @@ allprojects {
 
         yubiKitVersion = "2.1.0"
         junitVersion = "4.13.2"
-        mockitoVersion = "4.11.0"
+        mockitoVersion = "5.0.0"
     }
 }
 
