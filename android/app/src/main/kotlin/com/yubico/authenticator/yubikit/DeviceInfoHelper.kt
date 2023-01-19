@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.yubico.authenticator.yubikit
 
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.logging.Log
-import com.yubico.authenticator.management.model
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -49,5 +48,5 @@ suspend fun getDeviceInfo(device: YubiKeyDevice): Info {
     }
 
     val name = DeviceUtil.getName(deviceInfo, pid?.type)
-    return deviceInfo.model(name, device is NfcYubiKeyDevice, pid?.value)
+    return Info(name, device is NfcYubiKeyDevice, pid?.value, deviceInfo)
 }

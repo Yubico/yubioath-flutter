@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,13 @@ package com.yubico.authenticator.yubikit
 
 import android.os.Build
 import com.yubico.authenticator.SdkVersion
+import com.yubico.authenticator.device.Capabilities
+import com.yubico.authenticator.device.Config
 import com.yubico.authenticator.device.Info
-import com.yubico.authenticator.management.model
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
-import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.UsbPid
 import com.yubico.yubikit.core.Version
 import com.yubico.yubikit.core.YubiKeyDevice
-import com.yubico.yubikit.management.DeviceConfig
 import com.yubico.yubikit.management.DeviceInfo
 import com.yubico.yubikit.management.FormFactor
 import java.util.regex.Pattern
@@ -61,16 +60,19 @@ class SkyHelper {
 
             // build DeviceInfo containing only USB product name and USB version
             // we assume this is a Security Key based on the USB PID
-            return DeviceInfo(
-                DeviceConfig.Builder().enabledCapabilities(Transport.USB, 0).build(),
-                null,
-                usbVersion,
-                FormFactor.UNKNOWN,
-                mapOf(Transport.USB to 0),
-                false,
-                false,
-                true
-            ).model(device.usbDevice.productName ?: "YubiKey Security Key", false, pid.value)
+            return Info(
+                config = Config(null, null, null, Capabilities(usb = 0)),
+                serialNumber = null,
+                version = com.yubico.authenticator.device.Version(usbVersion),
+                formFactor = FormFactor.UNKNOWN.value,
+                isLocked = false,
+                isSky = true,
+                isFips = false,
+                name = (device.usbDevice.productName ?: "Yubico Security Key"),
+                isNfc = false,
+                usbPid = pid.value,
+                supportedCapabilities = Capabilities(usb = 0)
+            )
         }
 
         // try to convert USB version to YubiKey version

@@ -23,8 +23,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.*
+import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.logging.Log
-import com.yubico.authenticator.management.model
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
@@ -275,10 +275,11 @@ class OathManager(
                     val pid = (device as? UsbYubiKeyDevice)?.pid
                     val deviceInfo = DeviceUtil.readInfo(connection, pid)
                     appViewModel.setDeviceInfo(
-                        deviceInfo.model(
-                            DeviceUtil.getName(deviceInfo, pid?.type),
-                            device.transport == Transport.NFC,
-                            pid?.value
+                        Info(
+                            name = DeviceUtil.getName(deviceInfo, pid?.type),
+                            isNfc = device.transport == Transport.NFC,
+                            usbPid = pid?.value,
+                            deviceInfo = deviceInfo
                         )
                     )
 

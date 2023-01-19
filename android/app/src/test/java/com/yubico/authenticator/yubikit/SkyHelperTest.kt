@@ -236,7 +236,7 @@ class SkyHelperTest {
         `when`(ykDevice.usbDevice.productName).thenReturn(null)
 
         SkyHelper.getDeviceInfo(ykDevice).also {
-            assertEquals(it.name, "YubiKey Security Key")
+            assertEquals(it.name, "Yubico Security Key")
         }
     }
 

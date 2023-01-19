@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,16 @@
 
 package com.yubico.authenticator.device
 
+import com.yubico.yubikit.core.Transport
+import com.yubico.yubikit.management.DeviceInfo
+import com.yubico.yubikit.management.FormFactor
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Info(
     @SerialName("config")
-    val config: Config,
+    val config : Config,
     @SerialName("serial")
     val serialNumber: Int?,
     @SerialName("version")
@@ -42,5 +45,22 @@ data class Info(
     @SerialName("usb_pid")
     val usbPid: Int?,
     @SerialName("supported_capabilities")
-    val supportedCapabilities: Map<String, Int>
-)
+    val supportedCapabilities: Capabilities
+) {
+    constructor(name: String, isNfc: Boolean, usbPid: Int?, deviceInfo: DeviceInfo) : this(
+        config = Config(deviceInfo.config),
+        serialNumber = deviceInfo.serialNumber,
+        version = Version(deviceInfo.version.major, deviceInfo.version.minor, deviceInfo.version.micro),
+        formFactor = deviceInfo.formFactor.value,
+        isLocked = deviceInfo.isLocked,
+        isSky = deviceInfo.isSky,
+        isFips = deviceInfo.isFips,
+        name = name,
+        isNfc = isNfc,
+        usbPid = usbPid,
+        supportedCapabilities = Capabilities(
+            nfc = deviceInfo.getSupportedCapabilities(Transport.NFC),
+            usb = deviceInfo.getSupportedCapabilities(Transport.USB)
+        )
+    )
+}

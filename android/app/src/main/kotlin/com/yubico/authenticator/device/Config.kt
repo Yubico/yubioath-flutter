@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.yubico.authenticator.device
 
+import com.yubico.yubikit.core.Transport
+import com.yubico.yubikit.management.DeviceConfig
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -24,9 +26,20 @@ data class Config(
     @SerialName("device_flags")
     val deviceFlags: Int?,
     @SerialName("challenge_response_timeout")
-    val challengeResponseTimeout: Byte?,
+    val challengeResponseTimeout: UByte?,
     @SerialName("auto_eject_timeout")
-    val autoEjectTimeout: Short?,
+    val autoEjectTimeout: UShort?,
     @SerialName("enabled_capabilities")
-    val enabledCapabilities: Map<String, Int>
-)
+    val enabledCapabilities: Capabilities
+) {
+    constructor(deviceConfig: DeviceConfig) : this(
+        deviceFlags = deviceConfig.deviceFlags,
+        challengeResponseTimeout = deviceConfig.challengeResponseTimeout?.toUByte(),
+        autoEjectTimeout = deviceConfig.autoEjectTimeout?.toUShort(),
+        enabledCapabilities = Capabilities(
+            nfc = deviceConfig.getEnabledCapabilities(Transport.NFC) ?: 0,
+            usb = deviceConfig.getEnabledCapabilities(Transport.USB) ?: 0
+        )
+    )
+}
+
