@@ -18,12 +18,15 @@ package com.yubico.authenticator.yubikit
 
 import android.os.Build
 import com.yubico.authenticator.SdkVersion
+import com.yubico.authenticator.device.Capabilities
+import com.yubico.authenticator.device.Config
 import com.yubico.authenticator.device.Info
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.UsbPid
 import com.yubico.yubikit.core.Version
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.management.DeviceInfo
+import com.yubico.yubikit.management.FormFactor
 import java.util.regex.Pattern
 
 class SkyHelper {
@@ -58,9 +61,17 @@ class SkyHelper {
             // build DeviceInfo containing only USB product name and USB version
             // we assume this is a Security Key based on the USB PID
             return Info(
+                config = Config(null, null, null, Capabilities(usb = 0)),
+                serialNumber = null,
                 version = com.yubico.authenticator.device.Version(usbVersion),
+                formFactor = FormFactor.UNKNOWN.value,
+                isLocked = false,
+                isSky = true,
+                isFips = false,
                 name = (device.usbDevice.productName ?: "Yubico Security Key"),
-                usbPid = pid.value
+                isNfc = false,
+                usbPid = pid.value,
+                supportedCapabilities = Capabilities(usb = 0)
             )
         }
 

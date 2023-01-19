@@ -19,6 +19,7 @@ package com.yubico.authenticator.device
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -29,7 +30,7 @@ data class Capabilities(val usb: Int? = null, val nfc: Int? = null)
 
 object CapabilitiesSerializer : KSerializer<Capabilities> {
     private val serializer =
-        MapSerializer(String.Companion.serializer(), Int.Companion.serializer())
+        MapSerializer(String.Companion.serializer(), Int.Companion.serializer().nullable)
     override val descriptor: SerialDescriptor = serializer.descriptor
 
     override fun serialize(encoder: Encoder, value: Capabilities) {

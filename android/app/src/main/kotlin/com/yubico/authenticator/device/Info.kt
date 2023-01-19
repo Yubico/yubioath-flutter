@@ -25,27 +25,27 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Info(
     @SerialName("config")
-    val config : Config = Config(),
+    val config : Config,
     @SerialName("serial")
-    val serialNumber: Int? = null,
+    val serialNumber: Int?,
     @SerialName("version")
-    val version: Version = Version(0, 0, 0),
+    val version: Version,
     @SerialName("form_factor")
-    val formFactor: Int = FormFactor.UNKNOWN.value,
+    val formFactor: Int,
     @SerialName("is_locked")
-    val isLocked: Boolean = false,
+    val isLocked: Boolean,
     @SerialName("is_sky")
-    val isSky: Boolean = false,
+    val isSky: Boolean,
     @SerialName("is_fips")
-    val isFips: Boolean = false,
+    val isFips: Boolean,
     @SerialName("name")
-    val name: String = "",
+    val name: String,
     @SerialName("is_nfc")
-    val isNfc: Boolean = false,
+    val isNfc: Boolean,
     @SerialName("usb_pid")
-    val usbPid: Int? = null,
+    val usbPid: Int?,
     @SerialName("supported_capabilities")
-    val supportedCapabilities: Capabilities = Capabilities()
+    val supportedCapabilities: Capabilities
 ) {
     constructor(name: String, isNfc: Boolean, usbPid: Int?, deviceInfo: DeviceInfo) : this(
         config = Config(deviceInfo.config),

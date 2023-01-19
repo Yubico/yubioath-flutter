@@ -24,13 +24,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Config(
     @SerialName("device_flags")
-    val deviceFlags: Int? = null,
+    val deviceFlags: Int?,
     @SerialName("challenge_response_timeout")
-    val challengeResponseTimeout: UByte? = null,
+    val challengeResponseTimeout: UByte?,
     @SerialName("auto_eject_timeout")
-    val autoEjectTimeout: UShort? = null,
+    val autoEjectTimeout: UShort?,
     @SerialName("enabled_capabilities")
-    val enabledCapabilities: Capabilities = Capabilities()
+    val enabledCapabilities: Capabilities
 ) {
     constructor(deviceConfig: DeviceConfig) : this(
         deviceFlags = deviceConfig.deviceFlags,
