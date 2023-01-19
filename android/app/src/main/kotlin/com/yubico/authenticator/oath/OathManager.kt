@@ -28,8 +28,7 @@ import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
-import com.yubico.authenticator.yubikit.DeviceInfoHelper.getDeviceInfo
-import com.yubico.authenticator.yubikit.DeviceInfoHelper.toStringEx
+import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Transport
