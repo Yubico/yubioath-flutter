@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,9 @@ data class Version(
     val major: Byte,
     val minor: Byte,
     val micro: Byte
-)
+) {
+    constructor(version: com.yubico.yubikit.core.Version) : this(version.major, version.minor, version.micro)
+}
 
 object VersionSerializer : KSerializer<Version> {
     override val descriptor: SerialDescriptor = ByteArraySerializer().descriptor
