@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.*
+import com.yubico.authenticator.device.Capabilities
+import com.yubico.authenticator.device.Config
 import com.yubico.authenticator.device.Info
+import com.yubico.authenticator.device.Version
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
@@ -39,6 +42,7 @@ import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.smartcard.SmartCardProtocol
 import com.yubico.yubikit.core.util.Result
+import com.yubico.yubikit.management.FormFactor
 import com.yubico.yubikit.oath.*
 import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
@@ -293,9 +297,35 @@ class OathManager(
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
             Log.e(TAG, "Failed to connect to CCID", e.toString())
             if (device.transport == Transport.USB || e is ApplicationNotAvailableException) {
-                val deviceInfoData = getDeviceInfo(device)
-                Log.d(TAG, "Sending device info: $deviceInfoData")
-                appViewModel.setDeviceInfo(deviceInfoData)
+                val deviceInfo = try {
+                    getDeviceInfo(device)
+                } catch (e: IllegalArgumentException) {
+                    Log.d(TAG, "Device was not recognized")
+                    Info(
+                        config = Config(
+                            deviceFlags = null,
+                            challengeResponseTimeout = null,
+                            autoEjectTimeout = null,
+                            enabledCapabilities = Capabilities()
+                        ),
+                        serialNumber = null,
+                        version = Version(0, 0, 0),
+                        formFactor = FormFactor.UNKNOWN.value,
+                        isLocked = false,
+                        isSky = false,
+                        isFips = false,
+                        name = "Unrecognized device",
+                        isNfc = device.transport == Transport.NFC,
+                        usbPid = null,
+                        supportedCapabilities = Capabilities()
+                    )
+                } catch (e: Exception) {
+                    Log.d(TAG, "Failure getting device info: ${e.message}")
+                    null
+                }
+
+                Log.d(TAG, "Setting device info: $deviceInfo")
+                appViewModel.setDeviceInfo(deviceInfo)
             }
 
             // Clear any cached OATH state

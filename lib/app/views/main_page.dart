@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,12 @@ class MainPage extends ConsumerWidget {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
               final app = ref.watch(currentAppProvider);
-              if (app.getAvailability(data) == Availability.unsupported) {
+              if (data.info.config.enabledCapabilities.isEmpty &&
+                  data.name == 'Unrecognized device') {
+                return const MessagePage(
+                  header: 'Device not recognized',
+                );
+              } else if (app.getAvailability(data) == Availability.unsupported) {
                 return MessagePage(
                   header: 'Application not supported',
                   message:
