@@ -113,7 +113,7 @@ class MainPage extends ConsumerWidget {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
               final app = ref.watch(currentAppProvider);
-              if (data.info.config.enabledCapabilities.isEmpty &&
+              if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
                 return const MessagePage(
                   header: 'Device not recognized',
