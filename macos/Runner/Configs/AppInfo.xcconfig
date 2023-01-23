@@ -11,4 +11,4 @@ PRODUCT_NAME = Yubico Authenticator
 PRODUCT_BUNDLE_IDENTIFIER = com.yubico.yubioath
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2021 Yubico. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © Yubico. All rights reserved.

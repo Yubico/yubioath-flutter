@@ -57,9 +57,6 @@ class AboutPage extends ConsumerWidget {
             ),
             const Text(version),
             const Text(''),
-            const Text('Copyright © 2022 Yubico'),
-            const Text('All rights reserved'),
-            const Text(''),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [

@@ -32,7 +32,7 @@ VSVersionInfo(
         [StringStruct('CompanyName', 'Yubico'),
         StringStruct('FileDescription', 'Yubico Authenticator Helper'),
         StringStruct('FileVersion', '6.1.0'),
-        StringStruct('LegalCopyright', 'Copyright (c) 2022 Yubico AB'),
+        StringStruct('LegalCopyright', 'Copyright (c) Yubico'),
         StringStruct('OriginalFilename', 'authenticator-helper.exe'),
         StringStruct('ProductName', 'Yubico Authenticator'),
         StringStruct('ProductVersion', '6.1.0')])
