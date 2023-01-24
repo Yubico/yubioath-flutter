@@ -21,18 +21,22 @@ import android.os.Build
 import android.os.Parcelable
 
 inline fun <reified T : Parcelable> Intent.parcelableExtra(name: String): T? =
-    if (SdkVersion.ge(Build.VERSION_CODES.TIRAMISU)) {
-        getParcelableExtra(name, T::class.java)
-    } else {
-        @Suppress("deprecation") getParcelableExtra(name) as? T
-    }
+    sdkVersion.fromVersion(Build.VERSION_CODES.TIRAMISU,
+        {
+            getParcelableExtra(name, T::class.java)
+        },
+        {
+            @Suppress("deprecation") getParcelableExtra(name) as? T
+        })
 
 inline fun <reified T : Parcelable> Intent.parcelableArrayExtra(name: String): Array<out T>? =
-    if (SdkVersion.ge(Build.VERSION_CODES.TIRAMISU)) {
-        getParcelableArrayExtra(name, T::class.java)
-    } else {
-        @Suppress("deprecation")
-        getParcelableArrayExtra(name)
-            ?.filterIsInstance<T>()
-            ?.toTypedArray()
-    }
+    sdkVersion.fromVersion(Build.VERSION_CODES.TIRAMISU,
+        {
+            getParcelableArrayExtra(name, T::class.java)
+        },
+        {
+            @Suppress("deprecation")
+            getParcelableArrayExtra(name)
+                ?.filterIsInstance<T>()
+                ?.toTypedArray()
+        })

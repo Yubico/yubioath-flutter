@@ -19,6 +19,7 @@ package com.yubico.authenticator.oath.keystore
 import android.os.Build
 import android.security.keystore.KeyProperties
 import com.yubico.authenticator.SdkVersion
+import com.yubico.authenticator.sdkVersion
 import com.yubico.yubikit.oath.AccessKey
 
 interface KeyProvider {
@@ -31,8 +32,8 @@ interface KeyProvider {
 
 fun getAlias(deviceId: String) = "$deviceId,0"
 
-val KEY_ALGORITHM_HMAC_SHA1 = if (SdkVersion.ge(Build.VERSION_CODES.M)) {
-    KeyProperties.KEY_ALGORITHM_HMAC_SHA1
-} else {
+val KEY_ALGORITHM_HMAC_SHA1 = sdkVersion.fromVersion(
+    Build.VERSION_CODES.M,
+    KeyProperties.KEY_ALGORITHM_HMAC_SHA1,
     "HmacSHA1"
-}
+)

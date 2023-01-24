@@ -17,12 +17,31 @@ package com.yubico.authenticator
 
 import android.os.Build
 
-object SdkVersion {
-    fun ge(other: Int): Boolean {
-        return Build.VERSION.SDK_INT >= other
+class SdkVersion(private val sdk: Int) {
+    fun <T> fromVersion(version: Int, block: () -> T, or: () -> T): T =
+        if (sdk >= version) {
+            block()
+        } else {
+            or()
+        }
+
+    fun <T> beforeVersion(version: Int, block: () -> T, or: () -> T): T =
+        fromVersion(version, or, block)
+
+    fun fromVersion(version: Int, block: () -> Unit) {
+        fromVersion(version, block) {}
     }
 
-    fun lt(other: Int): Boolean {
-        return !ge(other)
+    fun beforeVersion(version: Int, block: () -> Unit) {
+        fromVersion(version, {}, block)
     }
+
+    fun <T> fromVersion(version: Int, holds: T, or: T): T =
+        if (sdk >= version) {
+            holds
+        } else {
+            or
+        }
 }
+
+val sdkVersion = SdkVersion(Build.VERSION.SDK_INT)

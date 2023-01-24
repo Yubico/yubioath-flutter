@@ -16,9 +16,12 @@
 
 package com.yubico.authenticator.yubikit
 
+import android.os.Build
+import com.yubico.authenticator.SdkVersion
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.OathManager
+import com.yubico.authenticator.sdkVersion
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
@@ -43,7 +46,7 @@ suspend fun getDeviceInfo(device: YubiKeyDevice): Info {
             device.withConnection<FidoConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
         }.recoverCatching { t ->
             Log.d(OathManager.TAG, "FIDO connection not available: ${t.message}")
-            return SkyHelper.getDeviceInfo(device)
+            return SkyHelper(sdkVersion).getDeviceInfo(device)
         }.getOrElse {
             Log.e(OathManager.TAG, "Failed to recognize device: ${it.message}")
             throw it
