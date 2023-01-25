@@ -16,9 +16,9 @@
 
 package com.yubico.authenticator.yubikit
 
+import android.annotation.TargetApi
 import android.os.Build
-import androidx.annotation.RequiresApi
-import com.yubico.authenticator.SdkVersion
+import com.yubico.authenticator.CompatUtil
 import com.yubico.authenticator.device.Capabilities
 import com.yubico.authenticator.device.Config
 import com.yubico.authenticator.device.Info
@@ -30,7 +30,7 @@ import com.yubico.yubikit.management.DeviceInfo
 import com.yubico.yubikit.management.FormFactor
 import java.util.regex.Pattern
 
-class SkyHelper(private val sdkVersion: SdkVersion) {
+class SkyHelper(private val compatUtil: CompatUtil) {
     companion object {
         private val VERSION_0 = Version(0, 0, 0)
         private val VERSION_3 = Version(3, 0, 0)
@@ -80,12 +80,14 @@ class SkyHelper(private val sdkVersion: SdkVersion) {
 
     // try to convert USB version to YubiKey version
     private fun getVersionFromUsbDescriptor(device: UsbYubiKeyDevice): Version =
-        sdkVersion.fromVersion(Build.VERSION_CODES.M,
-            getVersionFromUsbDescriptorM(device),
-            VERSION_0)
+        compatUtil.from(Build.VERSION_CODES.M) {
+            getVersionFromUsbDescriptorM(device)
+        }.otherwise(
+            VERSION_0
+        )
 
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
     private fun getVersionFromUsbDescriptorM(device: UsbYubiKeyDevice): Version {
         val version = device.usbDevice.version
         val match = USB_VERSION_STRING_PATTERN.matcher(version)
