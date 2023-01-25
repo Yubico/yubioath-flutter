@@ -22,18 +22,16 @@ import android.os.Build
  *
  * Replaces runtime check with simple methods. The following code
  * ```
- *
- *   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { doFromM(); } else { doUntilM(); }
- *
+ * if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { doFromM(); } else { doUntilM(); }
  * ```
  * can be rewritten as
  * ```
- *   val compatUtil = CompatUtil(Build.VERSION.SDK_INT)
- *   compatUtil.from(Build.VERSION_CODES.M) {
- *      doFromM()
- *   }.otherwise {
- *      doUntilM()
- *   }
+ * val compatUtil = CompatUtil(Build.VERSION.SDK_INT)
+ * compatUtil.from(Build.VERSION_CODES.M) {
+ *    doFromM()
+ * }.otherwise {
+ *    doUntilM()
+ * }
  * ```
  *
  * @param sdkVersion the version this instance uses for compatibility checking. The release app
