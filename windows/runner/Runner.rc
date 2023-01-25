@@ -93,7 +93,7 @@ BEGIN
             VALUE "FileDescription", "Yubico Authenticator" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "authenticator" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2022 Yubico. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) Yubico. All rights reserved." "\0"
             VALUE "OriginalFilename", "authenticator.exe" "\0"
             VALUE "ProductName", "Yubico Authenticator" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

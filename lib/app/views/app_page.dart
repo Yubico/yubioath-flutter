@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../widgets/delayed_visibility.dart';
 import '../message.dart';
@@ -124,6 +125,8 @@ class AppPage extends StatelessWidget {
                 },
                 icon: const Icon(Icons.tune),
                 iconSize: 24,
+                tooltip:
+                    AppLocalizations.of(context)!.general_configure_yubikey,
                 padding: const EdgeInsets.all(12),
               ),
             ),

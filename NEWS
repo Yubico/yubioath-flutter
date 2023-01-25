@@ -1,3 +1,12 @@
+* Version 6.1.0 (released 2023-01-25)
+ ** UI: Split Configuration and Device Picker into two buttons.
+ ** OATH: Avoid truncation of account issuer/name in dialog view.
+ ** Android: Add option to disable NFC sounds.
+ ** Android: Add "launch on USB" setting, though it blocks other apps from accessing the key over USB.
+ ** Desktop: Fix timeout waiting for helper process to start.
+ ** Desktop: Fix handling of unrecoverable keyring data.
+ ** Desktop: Explicitly set UTF-8 encoding for passing data to/from the helper.
+
 * Version 6.0.2b (released 2022-12-14)
  ** Linux: Fix compatibility with older glibc versions.
 

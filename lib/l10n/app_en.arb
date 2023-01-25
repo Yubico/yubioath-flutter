@@ -116,6 +116,7 @@
     "general_nfc": "NFC",
     "general_setup": "Setup",
     "general_manage": "Manage",
+    "general_configure_yubikey": "Configure YubiKey",
 
     "fido_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
     "fido_keep_touching_yubikey": "Keep touching your YubiKey repeatedly...",
