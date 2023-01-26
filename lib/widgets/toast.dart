@@ -112,7 +112,7 @@ void Function() showToast(
   final textStyle =
       ThemeData(brightness: isThemeDark ? Brightness.light : Brightness.dark)
           .textTheme
-          .subtitle1;
+          .titleMedium;
 
   OverlayEntry? entry;
   void close() {
@@ -146,7 +146,7 @@ void Function() showToast(
     );
   });
   Timer.run(() {
-    Overlay.of(context)!.insert(entry!);
+    Overlay.of(context).insert(entry!);
   });
 
   return close;

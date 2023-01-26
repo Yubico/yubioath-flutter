@@ -170,7 +170,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
                   textAlign: TextAlign.center,
                   // This is what ListTile uses for subtitle
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Theme.of(context).textTheme.caption!.color,
+                        color: Theme.of(context).textTheme.bodySmall!.color,
                       ),
                 ),
               const SizedBox(height: 12.0),

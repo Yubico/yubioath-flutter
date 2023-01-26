@@ -115,7 +115,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                 .fido_warning_will_delete_accounts),
             Text(
               AppLocalizations.of(context)!.fido_warning_disable_these_creds,
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             Center(
               child: Text(_getMessage(),

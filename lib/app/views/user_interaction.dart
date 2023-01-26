@@ -92,7 +92,7 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
               ),
             Text(
               widget.controller.title,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Text(
               widget.controller.description,

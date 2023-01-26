@@ -33,7 +33,7 @@ class ErrorPage extends StatelessWidget {
           children: [
             Text(
               error,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),

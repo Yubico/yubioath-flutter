@@ -87,18 +87,20 @@ class MainPage extends ConsumerWidget {
                   return;
                 }
               }
-              await showBlurDialog(
-                context: context,
-                routeSettings: const RouteSettings(name: 'oath_add_account'),
-                builder: (context) {
-                  return OathAddAccountPage(
-                    null,
-                    null,
-                    credentials: null,
-                    credentialData: otpauth,
-                  );
-                },
-              );
+
+              await ref.read(withContextProvider)((context) => showBlurDialog(
+                    context: context,
+                    routeSettings:
+                        const RouteSettings(name: 'oath_add_account'),
+                    builder: (context) {
+                      return OathAddAccountPage(
+                        null,
+                        null,
+                        credentials: null,
+                        credentialData: otpauth,
+                      );
+                    },
+                  ));
             },
           ),
         );
@@ -118,7 +120,8 @@ class MainPage extends ConsumerWidget {
                 return const MessagePage(
                   header: 'Device not recognized',
                 );
-              } else if (app.getAvailability(data) == Availability.unsupported) {
+              } else if (app.getAvailability(data) ==
+                  Availability.unsupported) {
                 return MessagePage(
                   header: 'Application not supported',
                   message:

@@ -23,6 +23,7 @@ import '../../core/models.dart';
 import '../../desktop/state.dart';
 import '../message.dart';
 import '../models.dart';
+import '../state.dart';
 import 'device_avatar.dart';
 import 'graphics.dart';
 import 'message_page.dart';
@@ -51,7 +52,8 @@ class DeviceErrorScreen extends ConsumerWidget {
                   if (await ref.read(rpcProvider).requireValue.elevate()) {
                     ref.invalidate(rpcProvider);
                   } else {
-                    showMessage(context, 'Permission denied');
+                    await ref.read(withContextProvider)((context) async =>
+                        showMessage(context, 'Permission denied'));
                   }
                 } finally {
                   closeMessage();
