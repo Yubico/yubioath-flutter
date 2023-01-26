@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ class NdefActivity : Activity() {
                     val otpSlotContent = parseOtpFromIntent()
                     ClipboardUtil.setPrimaryClip(this, otpSlotContent.content, true)
 
-                    if (SdkVersion.lt(Build.VERSION_CODES.TIRAMISU)) {
+                    compatUtil.until(Build.VERSION_CODES.TIRAMISU) {
                         showToast(
                             when (otpSlotContent.type) {
                                 OtpType.Otp -> R.string.otp_success_set_otp_to_clipboard

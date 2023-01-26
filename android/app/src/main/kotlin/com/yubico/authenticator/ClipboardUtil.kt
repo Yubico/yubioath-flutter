@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.yubico.authenticator
 
+import android.annotation.TargetApi
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
@@ -34,12 +35,8 @@ object ClipboardUtil {
                 context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
             val clipData = ClipData.newPlainText(toClipboard, toClipboard)
-            clipData.apply {
-                if (SdkVersion.ge(Build.VERSION_CODES.TIRAMISU)) {
-                    description.extras = PersistableBundle().apply {
-                        putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, isSensitive)
-                    }
-                }
+            compatUtil.from(Build.VERSION_CODES.TIRAMISU) {
+                updateExtrasTiramisu(clipData, isSensitive)
             }
 
             clipboardManager.setPrimaryClip(clipData)
@@ -49,4 +46,10 @@ object ClipboardUtil {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.TIRAMISU)
+    private fun updateExtrasTiramisu(clipData: ClipData, isSensitive: Boolean) {
+        clipData.description.extras = PersistableBundle().apply {
+            putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, isSensitive)
+        }
+    }
 }

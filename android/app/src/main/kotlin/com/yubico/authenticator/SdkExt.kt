@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,42 @@
 
 package com.yubico.authenticator
 
+import android.annotation.TargetApi
 import android.content.Intent
 import android.os.Build
 import android.os.Parcelable
 
 inline fun <reified T : Parcelable> Intent.parcelableExtra(name: String): T? =
-    if (SdkVersion.ge(Build.VERSION_CODES.TIRAMISU)) {
-        getParcelableExtra(name, T::class.java)
-    } else {
+    compatUtil.from(Build.VERSION_CODES.TIRAMISU) {
+        CompatHelper.getParcelableExtraT(this, name, T::class.java)
+    }.otherwise(
         @Suppress("deprecation") getParcelableExtra(name) as? T
-    }
+    )
 
 inline fun <reified T : Parcelable> Intent.parcelableArrayExtra(name: String): Array<out T>? =
-    if (SdkVersion.ge(Build.VERSION_CODES.TIRAMISU)) {
-        getParcelableArrayExtra(name, T::class.java)
-    } else {
+    compatUtil.from(Build.VERSION_CODES.TIRAMISU) {
+        CompatHelper.getParcelableArrayExtraT(this, name, T::class.java)
+    }.otherwise(
         @Suppress("deprecation")
         getParcelableArrayExtra(name)
             ?.filterIsInstance<T>()
             ?.toTypedArray()
+    )
+
+class CompatHelper {
+    companion object {
+        @TargetApi(Build.VERSION_CODES.TIRAMISU)
+        inline fun <reified T : Parcelable> getParcelableExtraT(
+            intent: Intent,
+            name: String,
+            clazz: Class<T>
+        ) = intent.getParcelableExtra(name, clazz)
+
+        @TargetApi(Build.VERSION_CODES.TIRAMISU)
+        inline fun <reified T : Parcelable> getParcelableArrayExtraT(
+            intent: Intent,
+            name: String,
+            clazz: Class<T>
+        ): Array<T>? = intent.getParcelableArrayExtra(name, clazz)
     }
+}

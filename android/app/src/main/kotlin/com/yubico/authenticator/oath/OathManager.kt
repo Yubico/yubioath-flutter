@@ -16,6 +16,7 @@
 
 package com.yubico.authenticator.oath
 
+import android.annotation.TargetApi
 import android.content.Context
 import android.os.Build
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -29,6 +30,7 @@ import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.Version
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
+import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
 import com.yubico.authenticator.yubikit.getDeviceInfo
@@ -77,13 +79,16 @@ class OathManager(
     private val memoryKeyProvider = ClearingMemProvider()
     private val keyManager by lazy {
         KeyManager(
-            if (SdkVersion.ge(Build.VERSION_CODES.M)) {
-                KeyStoreProvider()
-            } else {
+            compatUtil.from(Build.VERSION_CODES.M) {
+                createKeyStoreProviderM()
+            }.otherwise(
                 SharedPrefProvider(lifecycleOwner as Context)
-            }, memoryKeyProvider
+            ), memoryKeyProvider
         )
     }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private fun createKeyStoreProviderM(): KeyProvider = KeyStoreProvider()
 
     private var pendingAction: OathAction? = null
     private var refreshJob: Job? = null
@@ -182,10 +187,12 @@ class OathManager(
                     args["password"] as String,
                     args["remember"] as Boolean
                 )
+
                 "setPassword" -> setPassword(
                     args["current"] as String?,
                     args["password"] as String
                 )
+
                 "unsetPassword" -> unsetPassword(args["current"] as String)
                 "forgetPassword" -> forgetPassword()
                 "calculate" -> calculate(args["credentialId"] as String)
@@ -193,16 +200,19 @@ class OathManager(
                     args["uri"] as String,
                     args["requireTouch"] as Boolean
                 )
+
                 "renameAccount" -> renameAccount(
                     args["credentialId"] as String,
                     args["name"] as String,
                     args["issuer"] as String?
                 )
+
                 "deleteAccount" -> deleteAccount(args["credentialId"] as String)
                 "addAccountToAny" -> addAccountToAny(
                     args["uri"] as String,
                     args["requireTouch"] as Boolean
                 )
+
                 else -> throw NotImplementedError()
             }
         }
