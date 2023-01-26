@@ -20,8 +20,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import com.yubico.authenticator.logging.Log
+import javax.inject.Inject
 
-class AppPreferences(context: Context) {
+class AppPreferences @Inject constructor(context: Context) {
     companion object {
         const val PREFS_FILE = "FlutterSharedPreferences"
         const val PREF_NFC_OPEN_APP = "flutter.prefNfcOpenApp"

@@ -21,6 +21,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.yubico.authenticator.device.Info
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 enum class OperationContext(val value: Int) {
     Oath(0), Yubikey(1), Invalid(-1);
@@ -30,7 +32,8 @@ enum class OperationContext(val value: Int) {
     }
 }
 
-class MainViewModel : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor() : ViewModel() {
     private var _appContext = MutableLiveData(OperationContext.Oath)
     val appContext: LiveData<OperationContext> = _appContext
     fun setAppContext(appContext: OperationContext) {

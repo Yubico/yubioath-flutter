@@ -16,7 +16,6 @@
 
 package com.yubico.authenticator
 
-import android.app.Activity
 import android.content.Intent
 import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
@@ -24,19 +23,23 @@ import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.ndef.KeyboardLayout
 import com.yubico.yubikit.core.util.NdefUtils
+import dagger.hilt.android.AndroidEntryPoint
 import java.nio.charset.StandardCharsets
+import javax.inject.Inject
 
 typealias ResourceId = Int
 
-class NdefActivity : Activity() {
-    private lateinit var appPreferences: AppPreferences
+@AndroidEntryPoint
+class NdefActivity : AppCompatActivity() {
+    @Inject
+    lateinit var appPreferences: AppPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appPreferences = AppPreferences(this)
         handleIntent(intent)
     }
 

@@ -42,6 +42,7 @@ import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration
 import com.yubico.yubikit.core.Logger
 import com.yubico.yubikit.core.YubiKeyDevice
+import dagger.hilt.android.AndroidEntryPoint
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
@@ -49,7 +50,9 @@ import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.launch
 import java.io.Closeable
 import java.util.concurrent.Executors
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val oathViewModel: OathViewModel by viewModels()
@@ -58,7 +61,11 @@ class MainActivity : FlutterFragmentActivity() {
 
     private var hasNfc: Boolean = false
 
-    private lateinit var yubikit: YubiKitManager
+    @Inject
+    lateinit var yubikit: YubiKitManager
+
+    @Inject
+    lateinit var appPreferences: AppPreferences
 
     // receives broadcasts when QR Scanner camera is closed
     private val qrScannerCameraClosedBR = QRScannerCameraClosedBR()
@@ -69,7 +76,7 @@ class MainActivity : FlutterFragmentActivity() {
 
         allowScreenshots(false)
 
-        yubikit = YubiKitManager(this)
+        //yubikit = YubiKitManager(this)
 
         setupYubiKitLogger()
     }
@@ -248,7 +255,6 @@ class MainActivity : FlutterFragmentActivity() {
     private var contextManager: AppContextManager? = null
     private lateinit var appContext: AppContext
     private lateinit var dialogManager: DialogManager
-    private lateinit var appPreferences: AppPreferences
     private lateinit var flutterLog: FlutterLog
     private lateinit var flutterStreams: List<Closeable>
     private lateinit var appMethodChannel: AppMethodChannel
@@ -262,7 +268,6 @@ class MainActivity : FlutterFragmentActivity() {
         flutterLog = FlutterLog(messenger)
         appContext = AppContext(messenger, this.lifecycleScope, viewModel)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
-        appPreferences = AppPreferences(this)
         appMethodChannel = AppMethodChannel(messenger)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
 
