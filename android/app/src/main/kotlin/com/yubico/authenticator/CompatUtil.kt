@@ -42,13 +42,18 @@ class CompatUtil(private val sdkVersion: Int) {
     /**
      * Wrapper class holding values computed by [CompatUtil]
      */
-    class CompatValue<T>() {
-        var value: T? = null
-        var isValid: Boolean = false
+    class CompatValue<T> private constructor() {
+        companion object {
+            fun <T> of(value: T) = CompatValue(value)
+            fun <T> empty() = CompatValue<T>()
+        }
 
-        constructor(value: T) : this() {
+        private var value: T? = null
+        private var hasValue: Boolean = false
+
+        private constructor(value: T) : this() {
             this.value = value
-            isValid = true
+            hasValue = true
         }
 
         /**
@@ -56,7 +61,7 @@ class CompatUtil(private val sdkVersion: Int) {
          */
         @Suppress("UNCHECKED_CAST")
         fun otherwise(block: () -> T): T =
-            if (isValid) {
+            if (hasValue) {
                 if (value == null) {
                     null as T
                 } else {
@@ -78,11 +83,7 @@ class CompatUtil(private val sdkVersion: Int) {
      * @return wrapped value
      */
     fun <T> until(version: Int, block: () -> T): CompatValue<T> =
-        if (sdkVersion < version) {
-            CompatValue(block())
-        } else {
-            CompatValue()
-        }
+        `when`({ sdkVersion < version }, block)
 
     /**
      * Execute [block] only on devices running higher or equal sdk version than [version]
@@ -90,11 +91,17 @@ class CompatUtil(private val sdkVersion: Int) {
      * @return wrapped value
      */
     fun <T> from(version: Int, block: () -> T): CompatValue<T> =
-        if (sdkVersion >= version) {
-            CompatValue(block())
-        } else {
-            CompatValue()
-        }
+        `when`({ sdkVersion >= version }, block)
+
+    /**
+     * Execute [block] only when predicate [p] holds
+     *
+     * @return wrapped value
+     */
+    private fun <T> `when`(p: () -> Boolean, block: () -> T): CompatValue<T> = when {
+        p() -> CompatValue.of(block())
+        else -> CompatValue.empty()
+    }
 }
 
 val compatUtil = CompatUtil(Build.VERSION.SDK_INT)
