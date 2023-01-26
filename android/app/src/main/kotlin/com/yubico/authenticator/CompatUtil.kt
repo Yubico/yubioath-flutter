@@ -22,7 +22,7 @@ import android.os.Build
  *
  * Replaces runtime check with simple methods. The following code
  * ```
- * if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { doFromM(); } else { doUntilM(); }
+ * if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { doFromM() } else { doUntilM() }
  * ```
  * can be rewritten as
  * ```
@@ -42,7 +42,7 @@ class CompatUtil(private val sdkVersion: Int) {
     /**
      * Wrapper class holding values computed by [CompatUtil]
      */
-    class CompatValue<T>() {
+    class CompatValue<T : Any?>() {
         var value: T? = null
         var isValid: Boolean = false
 
@@ -54,9 +54,14 @@ class CompatUtil(private val sdkVersion: Int) {
         /**
          * @return unwrapped value if valid or result of [block]
          */
+        @Suppress("UNCHECKED_CAST")
         fun otherwise(block: () -> T): T =
             if (isValid) {
-                value!!
+                if (value == null) {
+                    null as T
+                } else {
+                    value!!
+                }
             } else {
                 block()
             }
