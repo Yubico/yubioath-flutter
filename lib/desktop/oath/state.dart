@@ -55,11 +55,6 @@ class _LockKeyNotifier extends StateNotifier<String?> {
   unsetKey() {
     state = null;
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 }
 
 final desktopOathState = StateNotifierProvider.autoDispose

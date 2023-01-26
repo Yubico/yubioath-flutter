@@ -149,7 +149,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
               controller: searchController,
               focusNode: searchFocus,
               // Use the default style, but with a smaller font size:
-              style: textTheme.subtitle1
+              style: textTheme.titleMedium
                   ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.oath_search_accounts,

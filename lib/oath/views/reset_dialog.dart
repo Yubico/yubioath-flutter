@@ -53,7 +53,7 @@ class ResetDialog extends ConsumerWidget {
                 .oath_warning_will_delete_accounts),
             Text(
               AppLocalizations.of(context)!.oath_warning_disable_these_creds,
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ]
               .map((e) => Padding(
