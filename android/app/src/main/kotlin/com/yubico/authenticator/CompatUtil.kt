@@ -57,7 +57,7 @@ class CompatUtil(private val sdkVersion: Int) {
         }
 
         /**
-         * @return unwrapped value if valid or result of [block]
+         * @return unwrapped value or result of [block]
          */
         @Suppress("UNCHECKED_CAST")
         fun otherwise(block: () -> T): T =
@@ -72,7 +72,7 @@ class CompatUtil(private val sdkVersion: Int) {
             }
 
         /**
-         * @return unwrapped value if valid or [value]
+         * @return unwrapped value or [value]
          */
         fun otherwise(value: T): T = otherwise { value }
     }
