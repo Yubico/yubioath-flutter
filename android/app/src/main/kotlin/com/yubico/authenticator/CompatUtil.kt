@@ -42,7 +42,7 @@ class CompatUtil(private val sdkVersion: Int) {
     /**
      * Wrapper class holding values computed by [CompatUtil]
      */
-    class CompatValue<T : Any?>() {
+    class CompatValue<T>() {
         var value: T? = null
         var isValid: Boolean = false
 
