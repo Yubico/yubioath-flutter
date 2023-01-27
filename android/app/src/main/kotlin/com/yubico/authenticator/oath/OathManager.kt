@@ -29,6 +29,17 @@ import com.yubico.authenticator.device.Config
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.Version
 import com.yubico.authenticator.logging.Log
+import com.yubico.authenticator.oath.data.Code
+import com.yubico.authenticator.oath.data.CodeType
+import com.yubico.authenticator.oath.data.Credential
+import com.yubico.authenticator.oath.data.CredentialWithCode
+import com.yubico.authenticator.oath.data.Session
+import com.yubico.authenticator.oath.data.YubiKitCode
+import com.yubico.authenticator.oath.data.YubiKitCredential
+import com.yubico.authenticator.oath.data.YubiKitOathSession
+import com.yubico.authenticator.oath.data.YubiKitOathType
+import com.yubico.authenticator.oath.data.calculateSteamCode
+import com.yubico.authenticator.oath.data.isSteamCredential
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
@@ -45,7 +56,7 @@ import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.smartcard.SmartCardProtocol
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.management.FormFactor
-import com.yubico.yubikit.oath.*
+import com.yubico.yubikit.oath.CredentialData
 import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
@@ -55,7 +66,7 @@ import java.net.URI
 import java.util.concurrent.Executors
 import kotlin.coroutines.suspendCoroutine
 
-typealias OathAction = (Result<OathSession, Exception>) -> Unit
+typealias OathAction = (Result<YubiKitOathSession, Exception>) -> Unit
 
 class OathManager(
     private val lifecycleOwner: LifecycleOwner,
@@ -145,11 +156,11 @@ class OathManager(
         }
     }
 
-    private val credentialObserver = Observer<List<Model.CredentialWithCode>?> { codes ->
+    private val credentialObserver = Observer<List<CredentialWithCode>?> { codes ->
         refreshJob?.cancel()
         if (codes != null && appViewModel.connectedYubiKey.value != null) {
             val expirations = codes
-                .filter { it.credential.oathType == Model.OathType.TOTP && !it.credential.touchRequired }
+                .filter { it.credential.codeType == CodeType.TOTP && !it.credential.touchRequired }
                 .mapNotNull { it.code?.validTo }
             if (expirations.isNotEmpty()) {
                 val earliest = expirations.min() * 1000
@@ -231,23 +242,21 @@ class OathManager(
     override suspend fun processYubiKey(device: YubiKeyDevice) {
         try {
             device.withConnection<SmartCardConnection, Unit> { connection ->
-                val oath = OathSession(connection)
-                tryToUnlockOathSession(oath)
+                val session = YubiKitOathSession(connection)
+                tryToUnlockOathSession(session)
 
                 val previousId = oathViewModel.sessionState.value?.deviceId
-                if (oath.deviceId == previousId) {
+                if (session.deviceId == previousId) {
                     // Run any pending action
                     pendingAction?.let { action ->
-                        action.invoke(Result.success(oath))
+                        action.invoke(Result.success(session))
                         pendingAction = null
                     }
 
                     // Refresh codes
-                    if (!oath.isLocked) {
+                    if (!session.isLocked) {
                         try {
-                            oathViewModel.updateCredentials(
-                                calculateOathCodes(oath).model(oath.deviceId)
-                            )
+                            oathViewModel.updateCredentials(calculateOathCodes(session))
                         } catch (error: Exception) {
                             Log.e(TAG, "Failed to refresh codes", error.toString())
                         }
@@ -259,11 +268,14 @@ class OathManager(
                     }
 
                     // Update the OATH state
-                    oathViewModel.setSessionState(oath.model(keyManager.isRemembered(oath.deviceId)))
-                    if (!oath.isLocked) {
-                        oathViewModel.updateCredentials(
-                            calculateOathCodes(oath).model(oath.deviceId)
+                    oathViewModel.setSessionState(
+                        Session(
+                            session,
+                            keyManager.isRemembered(session.deviceId)
                         )
+                    )
+                    if (!session.isLocked) {
+                        oathViewModel.updateCredentials(calculateOathCodes(session))
                     }
 
                     // Awaiting an action for a different or no device?
@@ -272,7 +284,7 @@ class OathManager(
                         if (addToAny) {
                             // Special "add to any YubiKey" action, process
                             addToAny = false
-                            action.invoke(Result.success(oath))
+                            action.invoke(Result.success(session))
                         } else {
                             // Awaiting an action for a different device? Fail it and stop processing.
                             action.invoke(Result.failure(IllegalStateException("Wrong deviceId")))
@@ -280,7 +292,7 @@ class OathManager(
                         }
                     }
 
-                    if (oath.version.isLessThan(4, 0, 0) && connection.transport == Transport.NFC) {
+                    if (session.version.isLessThan(4, 0, 0) && connection.transport == Transport.NFC) {
                         // NEO over NFC, select OTP applet before reading info
                         SmartCardProtocol(connection).select(OTP_AID)
                     }
@@ -358,14 +370,14 @@ class OathManager(
 
             val credential = session.putCredential(credentialData, requireTouch)
             val code =
-                if (credentialData.oathType == OathType.TOTP && !requireTouch) {
+                if (credentialData.oathType == YubiKitOathType.TOTP && !requireTouch) {
                     // recalculate the code
                     calculateCode(session, credential)
                 } else null
 
             val addedCred = oathViewModel.addCredential(
-                credential.model(session.deviceId),
-                code?.model()
+                Credential(credential, session.deviceId),
+                Code.from(code)
             )
 
             Log.d(TAG, "Added cred $credential")
@@ -378,7 +390,7 @@ class OathManager(
             // note, it is ok to reset locked session
             it.reset()
             keyManager.removeKey(it.deviceId)
-            oathViewModel.setSessionState(it.model(false))
+            oathViewModel.setSessionState(Session(it, false))
         }
         return NULL
     }
@@ -391,8 +403,8 @@ class OathManager(
             val unlocked = tryToUnlockOathSession(it)
             val remembered = keyManager.isRemembered(it.deviceId)
             if (unlocked) {
-                oathViewModel.setSessionState(it.model(remembered))
-                oathViewModel.updateCredentials(calculateOathCodes(it).model(it.deviceId))
+                oathViewModel.setSessionState(Session(it, remembered))
+                oathViewModel.updateCredentials(calculateOathCodes(it))
             }
 
             jsonSerializer.encodeToString(mapOf("unlocked" to unlocked, "remembered" to remembered))
@@ -415,7 +427,7 @@ class OathManager(
             val accessKey = session.deriveAccessKey(newPassword.toCharArray())
             session.setAccessKey(accessKey)
             keyManager.addKey(session.deviceId, accessKey, false)
-            oathViewModel.setSessionState(session.model(false))
+            oathViewModel.setSessionState(Session(session, false))
             Log.d(TAG, "Successfully set password")
             NULL
         }
@@ -427,7 +439,7 @@ class OathManager(
                 if (session.unlock(currentPassword.toCharArray())) {
                     session.deleteAccessKey()
                     keyManager.removeKey(session.deviceId)
-                    oathViewModel.setSessionState(session.model(false))
+                    oathViewModel.setSessionState(Session(session, false))
                     Log.d(TAG, "Successfully unset password")
                     return@useOathSession NULL
                 }
@@ -460,14 +472,14 @@ class OathManager(
             val credential = session.putCredential(credentialData, requireTouch)
 
             val code =
-                if (credentialData.oathType == OathType.TOTP && !requireTouch) {
+                if (credentialData.oathType == YubiKitOathType.TOTP && !requireTouch) {
                     // recalculate the code
                     calculateCode(session, credential)
                 } else null
 
             val addedCred = oathViewModel.addCredential(
-                credential.model(session.deviceId),
-                code?.model()
+                Credential(credential, session.deviceId),
+                Code.from(code)
             )
 
             jsonSerializer.encodeToString(addedCred)
@@ -477,9 +489,9 @@ class OathManager(
         useOathSession("Rename") { session ->
             val credential = getOathCredential(session, uri)
             val renamedCredential =
-                session.renameCredential(credential, name, issuer).model(session.deviceId)
+                Credential(session.renameCredential(credential, name, issuer), session.deviceId)
             oathViewModel.renameCredential(
-                credential.model(session.deviceId),
+                Credential(credential, session.deviceId),
                 renamedCredential
             )
 
@@ -490,7 +502,7 @@ class OathManager(
         useOathSession("Delete account") { session ->
             val credential = getOathCredential(session, credentialId)
             session.deleteCredential(credential)
-            oathViewModel.removeCredential(credential.model(session.deviceId))
+            oathViewModel.removeCredential(Credential(credential, session.deviceId))
             NULL
         }
 
@@ -498,13 +510,16 @@ class OathManager(
         appViewModel.connectedYubiKey.value?.let { usbYubiKeyDevice ->
             useOathSessionUsb(usbYubiKeyDevice) { session ->
                 try {
-                    oathViewModel.updateCredentials(
-                        calculateOathCodes(session).model(session.deviceId)
-                    )
+                    oathViewModel.updateCredentials(calculateOathCodes(session))
                 } catch (apduException: ApduException) {
                     if (apduException.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
                         Log.d(TAG, "Handled oath credential refresh on locked session.")
-                        oathViewModel.setSessionState(session.model(keyManager.isRemembered(session.deviceId)))
+                        oathViewModel.setSessionState(
+                            Session(
+                                session,
+                                keyManager.isRemembered(session.deviceId)
+                            )
+                        )
                     } else {
                         Log.e(
                             TAG,
@@ -520,9 +535,9 @@ class OathManager(
         useOathSession("Calculate") { session ->
             val credential = getOathCredential(session, credentialId)
 
-            val code = calculateCode(session, credential).model()
+            val code = Code.from(calculateCode(session, credential))
             oathViewModel.updateCode(
-                credential.model(session.deviceId),
+                Credential(credential, session.deviceId),
                 code
             )
             Log.d(TAG, "Code calculated $code")
@@ -532,15 +547,15 @@ class OathManager(
 
     /**
      * Returns Steam code or standard TOTP code based on the credential.
-     * @param session OathSession which calculates the TOTP code
+     * @param session YubiKitOathSession which calculates the TOTP code
      * @param credential
      *
      * @return calculated Code
      */
     private fun calculateCode(
-        session: OathSession,
-        credential: Credential
-    ): Code {
+        session: YubiKitOathSession,
+        credential: YubiKitCredential
+    ): YubiKitCode {
         // Manual calculate, need to pad timer to avoid immediate expiration
         val timestamp = System.currentTimeMillis() + 10000
         try {
@@ -560,12 +575,12 @@ class OathManager(
     }
 
     /**
-     * Tries to unlocks [OathSession] with [AccessKey] stored in [KeyManager]. On failure clears
+     * Tries to unlocks [session] with access key stored in [KeyManager]. On failure clears
      * relevant access keys from [KeyManager]
      *
      * @return true if the session is not locked or it was successfully unlocked, false otherwise
      */
-    private fun tryToUnlockOathSession(session: OathSession): Boolean {
+    private fun tryToUnlockOathSession(session: YubiKitOathSession): Boolean {
         if (!session.isLocked) {
             return true
         }
@@ -584,7 +599,7 @@ class OathManager(
         return false // the unlock did not work, session is locked
     }
 
-    private fun calculateOathCodes(session: OathSession): Map<Credential, Code> {
+    private fun calculateOathCodes(session: YubiKitOathSession): Map<Credential, Code?> {
         val isUsbKey = appViewModel.connectedYubiKey.value != null
         var timestamp = System.currentTimeMillis()
         if (!isUsbKey) {
@@ -594,21 +609,21 @@ class OathManager(
         val bypassTouch = appPreferences.bypassTouchOnNfcTap && !isUsbKey
         return session.calculateCodes(timestamp).map { (credential, code) ->
             Pair(
-                credential,
-                if (credential.isSteamCredential() && (!credential.isTouchRequired || bypassTouch)) {
+                Credential(credential, session.deviceId),
+                Code.from(if (credential.isSteamCredential() && (!credential.isTouchRequired || bypassTouch)) {
                     session.calculateSteamCode(credential, timestamp)
                 } else if (credential.isTouchRequired && bypassTouch) {
                     session.calculateCode(credential, timestamp)
                 } else {
                     code
-                }
+                })
             )
         }.toMap()
     }
 
     private suspend fun <T> useOathSession(
         title: String,
-        action: (OathSession) -> T
+        action: (YubiKitOathSession) -> T
     ): T {
         return appViewModel.connectedYubiKey.value?.let {
             useOathSessionUsb(it, action)
@@ -617,16 +632,16 @@ class OathManager(
 
     private suspend fun <T> useOathSessionUsb(
         device: UsbYubiKeyDevice,
-        block: (OathSession) -> T
+        block: (YubiKitOathSession) -> T
     ): T = device.withConnection<SmartCardConnection, T> {
-        val oath = OathSession(it)
-        tryToUnlockOathSession(oath)
-        block(oath)
+        val session = YubiKitOathSession(it)
+        tryToUnlockOathSession(session)
+        block(session)
     }
 
     private suspend fun <T> useOathSessionNfc(
         title: String,
-        block: (OathSession) -> T
+        block: (YubiKitOathSession) -> T
     ): T {
         try {
             val result = suspendCoroutine { outer ->
@@ -664,9 +679,9 @@ class OathManager(
         }
     }
 
-    private fun getOathCredential(oathSession: OathSession, credentialId: String) =
+    private fun getOathCredential(session: YubiKitOathSession, credentialId: String) =
         // we need to use oathSession.calculateCodes() to get proper Credential.touchRequired value
-        oathSession.calculateCodes().map { e -> e.key }.firstOrNull { credential ->
+        session.calculateCodes().map { e -> e.key }.firstOrNull { credential ->
             (credential != null) && credential.id.asString() == credentialId
         } ?: throw Exception("Failed to find account")
 

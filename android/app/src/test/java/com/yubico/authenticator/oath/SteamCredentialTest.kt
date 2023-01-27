@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package com.yubico.authenticator.oath
 
-import com.yubico.yubikit.oath.Credential
-import com.yubico.yubikit.oath.OathSession
-import com.yubico.yubikit.oath.OathType
+import com.yubico.authenticator.oath.data.YubiKitCredential
+import com.yubico.authenticator.oath.data.YubiKitOathSession
+import com.yubico.authenticator.oath.data.YubiKitOathType
+import com.yubico.authenticator.oath.data.calculateSteamCode
+import com.yubico.authenticator.oath.data.isSteamCredential
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.Mockito.*
@@ -27,26 +29,26 @@ class SteamCredentialTest {
 
     @Test
     fun `recognize Steam credential`() {
-        val c = mock(Credential::class.java)
-        `when`(c.oathType).thenReturn(OathType.TOTP)
+        val c = mock(YubiKitCredential::class.java)
+        `when`(c.oathType).thenReturn(YubiKitOathType.TOTP)
         `when`(c.issuer).thenReturn("Steam")
         Assert.assertTrue(c.isSteamCredential())
 
-        `when`(c.oathType).thenReturn(OathType.HOTP)
+        `when`(c.oathType).thenReturn(YubiKitOathType.HOTP)
         `when`(c.issuer).thenReturn("Steam")
         Assert.assertFalse(c.isSteamCredential())
 
-        `when`(c.oathType).thenReturn(OathType.TOTP)
+        `when`(c.oathType).thenReturn(YubiKitOathType.TOTP)
         `when`(c.issuer).thenReturn(null)
         Assert.assertFalse(c.isSteamCredential())
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun `throw for non-Steam credential`() {
-        val s = mock(OathSession::class.java)
+        val s = mock(YubiKitOathSession::class.java)
 
-        val c = mock(Credential::class.java)
-        `when`(c.oathType).thenReturn(OathType.HOTP)
+        val c = mock(YubiKitCredential::class.java)
+        `when`(c.oathType).thenReturn(YubiKitOathType.HOTP)
         `when`(c.issuer).thenReturn("Steam")
 
         s.calculateSteamCode(c, 0)
@@ -98,7 +100,7 @@ class SteamCredentialTest {
 
     // OathSession always calculating specific response
     private fun sessionWith(response: String) =
-        mock(OathSession::class.java).also {
+        mock(YubiKitOathSession::class.java).also {
             `when`(
                 it.calculateResponse(
                     isA(ByteArray::class.java),
@@ -108,8 +110,8 @@ class SteamCredentialTest {
         }
 
     // valid Steam Credential mock
-    private fun steamCredential() = mock(Credential::class.java).also {
-        `when`(it.oathType).thenReturn(OathType.TOTP)
+    private fun steamCredential() = mock(YubiKitCredential::class.java).also {
+        `when`(it.oathType).thenReturn(YubiKitOathType.TOTP)
         `when`(it.issuer).thenReturn("Steam")
         `when`(it.id).thenReturn("id".toByteArray())
     }

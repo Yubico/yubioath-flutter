@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,21 @@ import com.yubico.authenticator.jsonSerializer
 import com.yubico.authenticator.oath.OathTestHelper.code
 import com.yubico.authenticator.oath.OathTestHelper.hotp
 import com.yubico.authenticator.oath.OathTestHelper.totp
-import kotlinx.serialization.json.*
-import org.junit.Assert.*
+import com.yubico.authenticator.oath.data.CredentialWithCode
+import com.yubico.authenticator.oath.data.Session
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonPrimitive
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SerializationTest {
 
-    private val session = Model.Session(
+    private val session = Session(
         "device",
         Version(1, 2, 3),
         isAccessKeySet = false,
@@ -49,7 +57,7 @@ class SerializationTest {
 
     @Test
     fun `session json property names`() {
-        val jsonObject : JsonObject = jsonSerializer.encodeToJsonElement(session) as JsonObject
+        val jsonObject: JsonObject = jsonSerializer.encodeToJsonElement(session) as JsonObject
         assertTrue(jsonObject.containsKey("device_id"))
         assertTrue(jsonObject.containsKey("has_key"))
         assertTrue(jsonObject.containsKey("remembered"))
@@ -59,7 +67,7 @@ class SerializationTest {
 
     @Test
     fun `keystore is unknown`() {
-        val jsonObject : JsonObject = jsonSerializer.encodeToJsonElement(session) as JsonObject
+        val jsonObject: JsonObject = jsonSerializer.encodeToJsonElement(session) as JsonObject
         assertEquals("unknown", jsonObject["keystore"]?.jsonPrimitive?.content)
     }
 
@@ -75,7 +83,7 @@ class SerializationTest {
     fun `credential json property names`() {
         val c = totp()
 
-        val jsonObject : JsonObject = jsonSerializer.encodeToJsonElement(c) as JsonObject
+        val jsonObject: JsonObject = jsonSerializer.encodeToJsonElement(c) as JsonObject
 
         assertTrue(jsonObject.containsKey("device_id"))
         assertTrue(jsonObject.containsKey("id"))
@@ -98,7 +106,7 @@ class SerializationTest {
     fun `code json property names`() {
         val c = code()
 
-        val jsonObject : JsonObject = jsonSerializer.encodeToJsonElement(c) as JsonObject
+        val jsonObject: JsonObject = jsonSerializer.encodeToJsonElement(c) as JsonObject
 
         assertTrue(jsonObject.containsKey("value"))
         assertTrue(jsonObject.containsKey("valid_from"))
@@ -109,7 +117,7 @@ class SerializationTest {
     fun `code json content`() {
         val c = code(value = "001122", from = 1000, to = 2000)
 
-        val jsonObject : JsonObject = jsonSerializer.encodeToJsonElement(c) as JsonObject
+        val jsonObject: JsonObject = jsonSerializer.encodeToJsonElement(c) as JsonObject
 
         assertEquals(JsonPrimitive(1000), jsonObject["valid_from"])
         assertEquals(JsonPrimitive(2000), jsonObject["valid_to"])
@@ -119,7 +127,7 @@ class SerializationTest {
     @Test
     fun `credentials json type`() {
         val l = listOf(
-            Model.CredentialWithCode(totp(), code()), Model.CredentialWithCode(hotp(), code()),
+            CredentialWithCode(totp(), code()), CredentialWithCode(hotp(), code()),
         )
 
         val jsonElement = jsonSerializer.encodeToJsonElement(l)
@@ -128,12 +136,12 @@ class SerializationTest {
 
     @Test
     fun `credentials json size`() {
-        val l1 = listOf<Model.CredentialWithCode>()
+        val l1 = listOf<CredentialWithCode>()
         val jsonElement1 = jsonSerializer.encodeToJsonElement(l1) as JsonArray
         assertEquals(0, jsonElement1.size)
 
         val l2 = listOf(
-            Model.CredentialWithCode(totp(), code()), Model.CredentialWithCode(hotp(), code()),
+            CredentialWithCode(totp(), code()), CredentialWithCode(hotp(), code()),
         )
         val jsonElement2 = jsonSerializer.encodeToJsonElement(l2) as JsonArray
         assertEquals(2, jsonElement2.size)

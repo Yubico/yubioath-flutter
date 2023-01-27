@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package com.yubico.authenticator.oath
 
+import com.yubico.authenticator.oath.data.Code
+import com.yubico.authenticator.oath.data.CodeType
+import com.yubico.authenticator.oath.data.Credential
+
 object OathTestHelper {
 
     // create a TOTP credential with default or custom parameters
@@ -27,7 +31,7 @@ object OathTestHelper {
         issuer: String? = nextIssuer(),
         touchRequired: Boolean = false,
         period: Int = 30
-    ) = cred(deviceId, name, issuer, Model.OathType.TOTP, touchRequired, period)
+    ) = cred(deviceId, name, issuer, CodeType.TOTP, touchRequired, period)
 
     // create a HOTP credential with default or custom parameters
     // if not specified, default values for deviceId, name and issuer will use a unique value
@@ -38,20 +42,20 @@ object OathTestHelper {
         issuer: String = nextIssuer(),
         touchRequired: Boolean = false,
         period: Int = 30
-    ) = cred(deviceId, name, issuer, Model.OathType.HOTP, touchRequired, period)
+    ) = cred(deviceId, name, issuer, CodeType.HOTP, touchRequired, period)
 
     private fun cred(
         deviceId: String = nextDevice(),
         name: String = nextName(),
         issuer: String? = nextIssuer(),
-        type: Model.OathType,
+        type: CodeType,
         touchRequired: Boolean = false,
         period: Int = 30
     ) =
-        Model.Credential(
+        Credential(
             deviceId = deviceId,
             id = """otpauth://${type.name}/${name}?secret=aabbaabbaabbaabb&issuer=${issuer}""",
-            oathType = type,
+            codeType = type,
             period = period,
             issuer = issuer,
             accountName = name,
@@ -62,9 +66,9 @@ object OathTestHelper {
         value: String = "111111",
         from: Long = 1000,
         to: Long = 2000
-    ) = Model.Code(value, from, to)
+    ) = Code(value, from, to)
 
-    fun emptyCredentials() = emptyMap<Model.Credential, Model.Code>()
+    fun emptyCredentials() = emptyMap<Credential, Code>()
 
     private var nameCounter = 0
     private fun nextName(): String {
