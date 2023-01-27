@@ -35,12 +35,8 @@ import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
-import com.yubico.yubikit.android.YubiKitManager
-import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
-import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
-import com.yubico.yubikit.android.transport.usb.UsbConfiguration
-import com.yubico.yubikit.core.Logger
+import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -54,14 +50,12 @@ class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val oathViewModel: OathViewModel by viewModels()
 
-    private val nfcConfiguration = NfcConfiguration()
-
-    private var hasNfc: Boolean = false
-
-    private lateinit var yubikit: YubiKitManager
+    private lateinit var yubiKitController: YubikitController
 
     // receives broadcasts when QR Scanner camera is closed
     private val qrScannerCameraClosedBR = QRScannerCameraClosedBR()
+
+    private lateinit var serviceLocator : ServiceLocator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +63,8 @@ class MainActivity : FlutterFragmentActivity() {
 
         allowScreenshots(false)
 
-        yubikit = YubiKitManager(this)
+        serviceLocator = (application as App).serviceLocator
+        yubiKitController = serviceLocator.provideYubiKitController()
 
         setupYubiKitLogger()
     }
@@ -99,57 +94,23 @@ class MainActivity : FlutterFragmentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
     }
-
-    private fun startNfcDiscovery() =
-        try {
-            Log.d(TAG, "Starting nfc discovery")
-            yubikit.startNfcDiscovery(
-                nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
-                this,
-                ::processYubiKey
-            )
-            hasNfc = true
-        } catch (e: NfcNotAvailable) {
-            hasNfc = false
+    private fun onUsbYubiKey(device: UsbYubiKeyDevice) {
+        viewModel.setConnectedYubiKey(device) {
+            Log.d(TAG, "YubiKey was disconnected, stopping usb discovery")
+            yubiKitController.stopUsbDiscovery()
         }
-
-    private fun stopNfcDiscovery() {
-        if (hasNfc) {
-            yubikit.stopNfcDiscovery(this)
-            Log.d(TAG, "Stopped nfc discovery")
-        }
-    }
-
-    private fun startUsbDiscovery() {
-        Log.d(TAG, "Starting usb discovery")
-        val usbConfiguration = UsbConfiguration().handlePermissions(true)
-        yubikit.startUsbDiscovery(usbConfiguration) { device ->
-            viewModel.setConnectedYubiKey(device) {
-                Log.d(TAG, "YubiKey was disconnected, stopping usb discovery")
-                stopUsbDiscovery()
-            }
-            processYubiKey(device)
-        }
-    }
-
-    private fun stopUsbDiscovery() {
-        yubikit.stopUsbDiscovery()
-        Log.d(TAG, "Stopped usb discovery")
+        processYubiKey(device)
     }
 
     private fun setupYubiKitLogger() {
-        Logger.setLogger(object : Logger() {
-            private val TAG = "yubikit"
-
-            override fun logDebug(message: String) {
+        yubiKitController.setupLogger(
+            onDebug = {
                 // redirect yubikit debug logs to traffic
-                Log.t(TAG, message)
+                Log.t("yubikit", it)
+            }, onError = { message, throwable ->
+                Log.e("yubikit", message, throwable.message ?: throwable.toString())
             }
-
-            override fun logError(message: String, throwable: Throwable) {
-                Log.e(TAG, message, throwable.message ?: throwable.toString())
-            }
-        })
+        )
     }
 
     override fun onStart() {
@@ -166,7 +127,8 @@ class MainActivity : FlutterFragmentActivity() {
 
         appPreferences.unregisterListener(sharedPreferencesListener)
 
-        stopNfcDiscovery()
+        yubiKitController.stopNfcDiscovery(this)
+
         if (!appPreferences.openAppOnUsb) {
             enableAliasMainActivityComponent(false)
         }
@@ -191,20 +153,27 @@ class MainActivity : FlutterFragmentActivity() {
             intent.removeExtra(NfcAdapter.EXTRA_TAG)
 
             val executor = Executors.newSingleThreadExecutor()
-            val device = NfcYubiKeyDevice(tag, nfcConfiguration.timeout, executor)
+            val device = NfcYubiKeyDevice(tag, yubiKitController.getNfcTimeout(), executor)
+            val activity = this
             lifecycleScope.launch {
                 try {
                     contextManager?.processYubiKey(device)
                     device.remove {
                         executor.shutdown()
-                        startNfcDiscovery()
+                        yubiKitController.startNfcDiscovery(
+                            activity,
+                            ::processYubiKey
+                        )
                     }
                 } catch (e: Throwable) {
                     Log.e(TAG, "Error processing YubiKey in AppContextManager", e.toString())
                 }
             }
         } else {
-            startNfcDiscovery()
+            yubiKitController.startNfcDiscovery(
+                this,
+                ::processYubiKey
+            )
         }
 
         val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
@@ -213,7 +182,7 @@ class MainActivity : FlutterFragmentActivity() {
             if (device != null) {
                 // start the USB discover only if the user approved the app to use the device
                 if (usbManager.hasPermission(device)) {
-                    startUsbDiscovery()
+                    yubiKitController.startUsbDiscovery(::onUsbYubiKey )
                 }
             }
         } else if (viewModel.connectedYubiKey.value == null) {
@@ -224,7 +193,7 @@ class MainActivity : FlutterFragmentActivity() {
                 if (device.vendorId == YUBICO_VENDOR_ID) {
                     // the device might not have a USB permission
                     // it will be requested during during the UsbDiscovery
-                    startUsbDiscovery()
+                    yubiKitController.startUsbDiscovery(::onUsbYubiKey )
                     break
                 }
             }
@@ -262,7 +231,7 @@ class MainActivity : FlutterFragmentActivity() {
         flutterLog = FlutterLog(messenger)
         appContext = AppContext(messenger, this.lifecycleScope, viewModel)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
-        appPreferences = AppPreferences(this)
+        appPreferences = serviceLocator.provideAppPreferences()
         appMethodChannel = AppMethodChannel(messenger)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
 
@@ -310,14 +279,19 @@ class MainActivity : FlutterFragmentActivity() {
         }
 
         override fun onReceive(context: Context?, intent: Intent?) {
-            (context as? MainActivity)?.startNfcDiscovery()
+
+            val mainActivity = context as? MainActivity
+            mainActivity?.let {
+                val yubiKitController = (it.application as App).serviceLocator.provideYubiKitController()
+                yubiKitController.startNfcDiscovery(mainActivity, mainActivity::processYubiKey)
+            }
         }
     }
 
     private val sharedPreferencesListener = OnSharedPreferenceChangeListener { _, key ->
         if ( AppPreferences.PREF_NFC_SILENCE_SOUNDS == key) {
-            stopNfcDiscovery()
-            startNfcDiscovery()
+            yubiKitController.stopNfcDiscovery(this)
+            yubiKitController.startNfcDiscovery(this, ::processYubiKey)
         }
     }
 
