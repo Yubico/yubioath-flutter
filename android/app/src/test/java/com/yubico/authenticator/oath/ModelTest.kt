@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,9 @@ import com.yubico.authenticator.oath.OathTestHelper.code
 import com.yubico.authenticator.oath.OathTestHelper.emptyCredentials
 import com.yubico.authenticator.oath.OathTestHelper.hotp
 import com.yubico.authenticator.oath.OathTestHelper.totp
+import com.yubico.authenticator.oath.data.Code
+import com.yubico.authenticator.oath.data.CodeType
+import com.yubico.authenticator.oath.data.Session
 import org.junit.Assert.*
 import org.junit.Rule
 
@@ -35,19 +38,21 @@ class ModelTest {
     private val viewModel = OathViewModel()
 
     private fun connectDevice(deviceId: String) {
-        viewModel.setSessionState(Model.Session(
+        viewModel.setSessionState(
+            Session(
             deviceId,
             Version(1, 2, 3),
             isAccessKeySet = false,
             isRemembered = false,
             isLocked = false
-        ))
+        )
+        )
     }
 
     @Test
     fun `uses RFC 6238 values`() {
-        assertEquals(0x10.toByte(), Model.OathType.HOTP.value)
-        assertEquals(0x20.toByte(), Model.OathType.TOTP.value)
+        assertEquals(0x10.toByte(), CodeType.HOTP.value)
+        assertEquals(0x20.toByte(), CodeType.TOTP.value)
     }
 
     @Test
@@ -178,7 +183,7 @@ class ModelTest {
     fun `update without code preserves existing value`() {
         val d = "device"
         val totp = totp(d, name = "totpCred")
-        val totpCode: Model.Code? = null
+        val totpCode: Code? = null
 
         val hotp = hotp(d, name = "hotpCred")
         val hotpCode = code(value = "098765")
@@ -204,7 +209,7 @@ class ModelTest {
     fun `update preserves interactive totp credentials`() {
         val d = "device"
         val totp = totp(d, name = "totpCred", touchRequired = true)
-        val totpCode: Model.Code? = null
+        val totpCode: Code? = null
 
         connectDevice(d)
         viewModel.updateCredentials(mapOf(totp to totpCode))

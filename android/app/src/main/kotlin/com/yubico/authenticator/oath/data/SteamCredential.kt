@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator.oath
+package com.yubico.authenticator.oath.data
 
-import com.yubico.yubikit.oath.Code
-import com.yubico.yubikit.oath.Credential
-import com.yubico.yubikit.oath.OathSession
-import com.yubico.yubikit.oath.OathType
 import java.nio.ByteBuffer
 import kotlin.experimental.and
 
 /**
  * Returns true if this credential is considered to be Steam credential
  */
-fun Credential.isSteamCredential(): Boolean =
-    issuer == "Steam" && oathType == OathType.TOTP
+fun YubiKitCredential.isSteamCredential(): Boolean =
+    issuer == "Steam" && oathType == YubiKitOathType.TOTP
 
 /**
  * @return Code with value formatted for use with Steam
@@ -35,10 +31,10 @@ fun Credential.isSteamCredential(): Boolean =
  * @param timestamp the timestamp which is used for TOTP calculation
  * @throws IllegalArgumentException in case when the credential is not a Steam credential
  */
-fun OathSession.calculateSteamCode(
-    credential: Credential,
+fun YubiKitOathSession.calculateSteamCode(
+    credential: YubiKitCredential,
     timestamp: Long,
-): Code {
+): YubiKitCode {
     val timeSlotMs = 30_000
     require(credential.isSteamCredential()) {
         "This is not steam credential"
@@ -46,7 +42,7 @@ fun OathSession.calculateSteamCode(
 
     val currentTimeSlot = timestamp / timeSlotMs
 
-    return Code(
+    return YubiKitCode(
         calculateResponse(credential.id, currentTimeSlot.toByteArray()).formatAsSteam(),
         currentTimeSlot * timeSlotMs,
         (currentTimeSlot + 1) * timeSlotMs
