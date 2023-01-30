@@ -1,6 +1,7 @@
 package com.yubico.authenticator
 
 import android.app.Activity
+import com.yubico.authenticator.data.DeviceRepository
 import com.yubico.authenticator.logging.Log
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
@@ -9,6 +10,11 @@ import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Logger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
 interface YubikitController {
     fun startNfcDiscovery(
@@ -32,8 +38,12 @@ interface YubikitController {
 
 class DefaultYubikitController(
     private val yubiKitManager: YubiKitManager,
+    private val deviceRepository: DeviceRepository,
     private val appPreferences: AppPreferences
 ) : YubikitController {
+
+    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 
     private val nfcConfiguration = NfcConfiguration()
     private val usbConfiguration = UsbConfiguration().handlePermissions(true)
@@ -51,9 +61,15 @@ class DefaultYubikitController(
         hasNfc = try {
             yubiKitManager.startNfcDiscovery(
                 nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
-                activity,
-                onYubiKey
-            )
+                activity
+
+            ) { device ->
+                coroutineScope.launch {
+                    deviceRepository.deviceConnected(device)
+                }
+
+                //onYubiKey(device) // TODO: figure out if we want to call any lambda at all
+            }
             true
         } catch (nfcNotAvailable: NfcNotAvailable) {
             false
@@ -69,7 +85,17 @@ class DefaultYubikitController(
 
     override fun startUsbDiscovery(onYubiKeyDevice: (device: UsbYubiKeyDevice) -> Unit) {
         Log.d(MainActivity.TAG, "Starting usb discovery")
-        yubiKitManager.startUsbDiscovery(usbConfiguration, onYubiKeyDevice)
+        yubiKitManager.startUsbDiscovery(usbConfiguration) { device ->
+            coroutineScope.launch {
+                deviceRepository.deviceConnected(device)
+            }
+            device.setOnClosed {
+                coroutineScope.launch {
+                    deviceRepository.deviceDisconnected()
+                }
+            }
+            //onYubiKeyDevice(device) // TODO: figure out if we want to call any lambda at all
+        }
     }
 
     override fun stopUsbDiscovery() {

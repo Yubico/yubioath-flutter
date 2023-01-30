@@ -16,7 +16,11 @@
 
 package com.yubico.authenticator
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
 import android.hardware.camera2.CameraManager
@@ -47,7 +51,7 @@ import java.io.Closeable
 import java.util.concurrent.Executors
 
 class MainActivity : FlutterFragmentActivity() {
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels { MainViewModel.Factory }
     private val oathViewModel: OathViewModel by viewModels()
 
     private lateinit var yubiKitController: YubikitController
@@ -55,7 +59,7 @@ class MainActivity : FlutterFragmentActivity() {
     // receives broadcasts when QR Scanner camera is closed
     private val qrScannerCameraClosedBR = QRScannerCameraClosedBR()
 
-    private lateinit var serviceLocator : ServiceLocator
+    private lateinit var serviceLocator: ServiceLocator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +98,7 @@ class MainActivity : FlutterFragmentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
     }
+
     private fun onUsbYubiKey(device: UsbYubiKeyDevice) {
         viewModel.setConnectedYubiKey(device) {
             Log.d(TAG, "YubiKey was disconnected, stopping usb discovery")
@@ -182,7 +187,7 @@ class MainActivity : FlutterFragmentActivity() {
             if (device != null) {
                 // start the USB discover only if the user approved the app to use the device
                 if (usbManager.hasPermission(device)) {
-                    yubiKitController.startUsbDiscovery(::onUsbYubiKey )
+                    yubiKitController.startUsbDiscovery(::onUsbYubiKey)
                 }
             }
         } else if (viewModel.connectedYubiKey.value == null) {
@@ -193,7 +198,7 @@ class MainActivity : FlutterFragmentActivity() {
                 if (device.vendorId == YUBICO_VENDOR_ID) {
                     // the device might not have a USB permission
                     // it will be requested during during the UsbDiscovery
-                    yubiKitController.startUsbDiscovery(::onUsbYubiKey )
+                    yubiKitController.startUsbDiscovery(::onUsbYubiKey)
                     break
                 }
             }
@@ -236,7 +241,7 @@ class MainActivity : FlutterFragmentActivity() {
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
 
         flutterStreams = listOf(
-            viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),
+            viewModel.flowDeviceInfo.flowTo(this, messenger, "android.devices.deviceInfo"),
             oathViewModel.sessionState.streamTo(this, messenger, "android.oath.sessionState"),
             oathViewModel.credentials.streamTo(this, messenger, "android.oath.credentials"),
         )
@@ -252,6 +257,7 @@ class MainActivity : FlutterFragmentActivity() {
                     dialogManager,
                     appPreferences
                 )
+
                 else -> null
             }
             viewModel.connectedYubiKey.value?.let(::processYubiKey)
@@ -282,14 +288,15 @@ class MainActivity : FlutterFragmentActivity() {
 
             val mainActivity = context as? MainActivity
             mainActivity?.let {
-                val yubiKitController = (it.application as App).serviceLocator.provideYubiKitController()
+                val yubiKitController =
+                    (it.application as App).serviceLocator.provideYubiKitController()
                 yubiKitController.startNfcDiscovery(mainActivity, mainActivity::processYubiKey)
             }
         }
     }
 
     private val sharedPreferencesListener = OnSharedPreferenceChangeListener { _, key ->
-        if ( AppPreferences.PREF_NFC_SILENCE_SOUNDS == key) {
+        if (AppPreferences.PREF_NFC_SILENCE_SOUNDS == key) {
             yubiKitController.stopNfcDiscovery(this)
             yubiKitController.startNfcDiscovery(this, ::processYubiKey)
         }
@@ -307,9 +314,11 @@ class MainActivity : FlutterFragmentActivity() {
                             methodCall.arguments as Boolean,
                         )
                     )
+
                     "getAndroidSdkVersion" -> result.success(
                         Build.VERSION.SDK_INT
                     )
+
                     "setPrimaryClip" -> {
                         val toClipboard = methodCall.argument<String>("toClipboard")
                         val isSensitive = methodCall.argument<Boolean>("isSensitive")
@@ -322,6 +331,7 @@ class MainActivity : FlutterFragmentActivity() {
                         }
                         result.success(true)
                     }
+
                     "hasCamera" -> {
                         val cameraService =
                             getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -329,6 +339,7 @@ class MainActivity : FlutterFragmentActivity() {
                             cameraService.cameraIdList.isNotEmpty()
                         )
                     }
+
                     else -> Log.w(TAG, "Unknown app method: ${methodCall.method}")
                 }
             }

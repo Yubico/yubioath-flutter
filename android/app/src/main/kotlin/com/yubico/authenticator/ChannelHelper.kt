@@ -16,14 +16,21 @@
 
 package com.yubico.authenticator
 
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.yubico.authenticator.logging.Log
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
@@ -57,6 +64,35 @@ inline fun <reified T> LiveData<T>.streamTo(lifecycleOwner: LifecycleOwner, mess
 
     return Closeable {
         removeObserver(observer)
+        channel.setStreamHandler(null)
+    }
+}
+
+inline fun <reified T> Flow<T>.flowTo(
+    lifecycleOwner: LifecycleOwner,
+    messenger: BinaryMessenger,
+    channelName: String
+): Closeable {
+    val channel = EventChannel(messenger, channelName)
+
+    channel.setStreamHandler(object : EventChannel.StreamHandler {
+        override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+            lifecycleOwner.lifecycleScope.launch {
+                lifecycleOwner.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
+                    map {
+                        Log.d("ChannelHelper", "Success event: $it")
+                        events.success(it?.let(jsonSerializer::encodeToString) ?: NULL)
+                        it
+                    }.collect()
+                }
+            }
+        }
+
+        override fun onCancel(arguments: Any?) {
+        }
+    })
+
+    return Closeable {
         channel.setStreamHandler(null)
     }
 }

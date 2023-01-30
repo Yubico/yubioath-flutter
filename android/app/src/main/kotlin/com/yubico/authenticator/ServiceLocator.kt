@@ -26,12 +26,15 @@ import com.yubico.yubikit.android.YubiKitManager
 class ServiceLocator(applicationContext: Context) {
 
     private val yubiKitManager = YubiKitManager(applicationContext)
-    private val deviceModel : DeviceModel = YubiKitDeviceModel(yubiKitManager)
-    private val deviceRepository : DeviceRepository = DefaultDeviceRepository(deviceModel)
-    private val appPreferences : AppPreferences = AppPreferences(applicationContext)
-    private val yubiKitController : YubikitController = DefaultYubikitController(yubiKitManager, appPreferences)
+    private val deviceModel: DeviceModel = YubiKitDeviceModel(yubiKitManager)
+    private val deviceRepository: DeviceRepository = DefaultDeviceRepository(deviceModel)
+    private val appPreferences: AppPreferences = AppPreferences(applicationContext)
+    private val yubiKitController: YubikitController =
+        DefaultYubikitController(yubiKitManager, deviceRepository, appPreferences)
 
 
     fun provideYubiKitController() = yubiKitController
     fun provideAppPreferences() = appPreferences
+
+    fun provideDeviceRepository() = deviceRepository
 }
