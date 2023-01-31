@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'kotlin' ]
+        language: [ 'python', 'kotlin' ]
 
     steps:
       - name: Initialize CodeQL
@@ -56,9 +56,17 @@ jobs:
           YUBIOATH_STORE_PASSWORD: ${{ secrets.YUBIOATH_STORE_PASSWORD }}
         working-directory: ./app
 
+      - if: matrix.language == 'kotlin'
+        name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
       - if: matrix.language == 'python'
         name: autobuild
-        uses: github/codeql-action/autobuild@v1
+        uses: github/codeql-action/autobuild@v2
 
-      - name: Perform CodeQL Analysis
+      - if: matrix.language == 'python'
+        name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
+        with:
+          paths:
+            - helper
