@@ -1,6 +1,10 @@
 package com.yubico.authenticator
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbManager
 import com.yubico.authenticator.data.DeviceRepository
 import com.yubico.authenticator.logging.Log
 import com.yubico.yubikit.android.YubiKitManager
@@ -10,6 +14,7 @@ import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Logger
+import com.yubico.yubikit.core.YubiKeyDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -34,9 +39,12 @@ interface YubikitController {
     )
 
     fun getNfcTimeout(): Int
+
+    fun verifyConnectedKeys(intent: Intent)
 }
 
 class DefaultYubikitController(
+    private val applicationContext: Context,
     private val yubiKitManager: YubiKitManager,
     private val deviceRepository: DeviceRepository,
     private val appPreferences: AppPreferences
@@ -51,6 +59,7 @@ class DefaultYubikitController(
 
     companion object {
         private const val TAG = "YubiKitController"
+        const val YUBICO_VENDOR_ID = 4176
     }
 
     override fun startNfcDiscovery(
@@ -64,10 +73,7 @@ class DefaultYubikitController(
                 activity
 
             ) { device ->
-                coroutineScope.launch {
-                    deviceRepository.deviceConnected(device)
-                }
-
+                onDeviceConnected(device)
                 //onYubiKey(device) // TODO: figure out if we want to call any lambda at all
             }
             true
@@ -86,9 +92,7 @@ class DefaultYubikitController(
     override fun startUsbDiscovery(onYubiKeyDevice: (device: UsbYubiKeyDevice) -> Unit) {
         Log.d(MainActivity.TAG, "Starting usb discovery")
         yubiKitManager.startUsbDiscovery(usbConfiguration) { device ->
-            coroutineScope.launch {
-                deviceRepository.deviceConnected(device)
-            }
+            onDeviceConnected(device)
             device.setOnClosed {
                 coroutineScope.launch {
                     deviceRepository.deviceDisconnected()
@@ -119,4 +123,38 @@ class DefaultYubikitController(
     }
 
     override fun getNfcTimeout(): Int = nfcConfiguration.timeout
+
+
+    private fun onDeviceConnected(device: YubiKeyDevice) {
+        coroutineScope.launch {
+            deviceRepository.deviceConnected(device)
+        }
+    }
+
+    override fun verifyConnectedKeys(intent: Intent) {
+        val usbManager = applicationContext.getSystemService(Context.USB_SERVICE) as UsbManager
+        if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
+            val device = intent.parcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
+            if (device != null) {
+                // start the USB discover only if the user approved the app to use the device
+                if (usbManager.hasPermission(device)) {
+                    startUsbDiscovery { }
+                }
+            }
+        } else {
+            if (deviceRepository.isUSBDeviceConnected()) {
+                // if any YubiKeys are connected, use them directly
+                val deviceIterator = usbManager.deviceList.values.iterator()
+                while (deviceIterator.hasNext()) {
+                    val device = deviceIterator.next()
+                    if (device.vendorId == YUBICO_VENDOR_ID) {
+                        // the device might not have a USB permission
+                        // it will be requested during during the UsbDiscovery
+                        startUsbDiscovery {}
+                        break
+                    }
+                }
+            }
+        }
+    }
 }

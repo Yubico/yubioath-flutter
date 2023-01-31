@@ -74,6 +74,7 @@ class MainViewModel(
 
     private val _connectedYubiKey = MutableLiveData<UsbYubiKeyDevice?>()
     val connectedYubiKey: LiveData<UsbYubiKeyDevice?> = _connectedYubiKey
+    @Deprecated("New architecture does not use this method")
     fun setConnectedYubiKey(device: UsbYubiKeyDevice, onDisconnect: () -> Unit) {
         _connectedYubiKey.postValue(device)
         device.setOnClosed {
@@ -85,7 +86,8 @@ class MainViewModel(
     private val _deviceInfo = MutableLiveData<Info?>()
     val deviceInfo: LiveData<Info?> = _deviceInfo
 
-    fun setDeviceInfo(info: Info?) {} // _deviceInfo.postValue(info)
+    @Deprecated("New architecture does not use this method")
+    fun setDeviceInfo(info: Info?) = _deviceInfo.postValue(info)
 
     val flowDeviceInfo = repository.device.stateIn(
         scope = viewModelScope,

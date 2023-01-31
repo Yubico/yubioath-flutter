@@ -16,25 +16,68 @@
 
 package com.yubico.authenticator
 
+import android.annotation.TargetApi
 import android.content.Context
+import android.os.Build
 import com.yubico.authenticator.data.DefaultDeviceRepository
+import com.yubico.authenticator.data.DefaultOathRepository
 import com.yubico.authenticator.data.DeviceModel
 import com.yubico.authenticator.data.DeviceRepository
+import com.yubico.authenticator.data.OathModel
+import com.yubico.authenticator.data.OathRepository
 import com.yubico.authenticator.data.YubiKitDeviceModel
+import com.yubico.authenticator.data.YubiKitOathModel
+import com.yubico.authenticator.oath.KeyManager
+import com.yubico.authenticator.oath.keystore.ClearingMemProvider
+import com.yubico.authenticator.oath.keystore.KeyProvider
+import com.yubico.authenticator.oath.keystore.KeyStoreProvider
+import com.yubico.authenticator.oath.keystore.SharedPrefProvider
 import com.yubico.yubikit.android.YubiKitManager
+import io.flutter.plugin.common.BinaryMessenger
 
 class ServiceLocator(applicationContext: Context) {
 
-    private val yubiKitManager = YubiKitManager(applicationContext)
-    private val deviceModel: DeviceModel = YubiKitDeviceModel(yubiKitManager)
-    private val deviceRepository: DeviceRepository = DefaultDeviceRepository(deviceModel)
     private val appPreferences: AppPreferences = AppPreferences(applicationContext)
+    private val yubiKitManager = YubiKitManager(applicationContext)
+
+    private val memoryKeyProvider = ClearingMemProvider()
+    private val keyManager by lazy {
+        KeyManager(
+            compatUtil.from(Build.VERSION_CODES.M) {
+                createKeyStoreProviderM()
+            }.otherwise(
+                SharedPrefProvider(applicationContext)
+            ), memoryKeyProvider
+        )
+    }
+
+    private var flutterBinaryMessenger : BinaryMessenger? = null
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private fun createKeyStoreProviderM(): KeyProvider = KeyStoreProvider()
+
+    private val deviceModel: DeviceModel = YubiKitDeviceModel()
+    private val oathModel: OathModel = YubiKitOathModel(keyManager, memoryKeyProvider, appPreferences, deviceModel)
+
+
+
+    private val deviceRepository: DeviceRepository = DefaultDeviceRepository(deviceModel, oathModel)
+    private val oathRepository: OathRepository = DefaultOathRepository(oathModel)
+
+
+
     private val yubiKitController: YubikitController =
-        DefaultYubikitController(yubiKitManager, deviceRepository, appPreferences)
+        DefaultYubikitController(applicationContext, yubiKitManager, deviceRepository, appPreferences)
 
 
     fun provideYubiKitController() = yubiKitController
     fun provideAppPreferences() = appPreferences
 
     fun provideDeviceRepository() = deviceRepository
+    fun provideOathRepository() = oathRepository
+
+    fun setFlutterBinaryMessenger(messenger: BinaryMessenger?) {
+        flutterBinaryMessenger = messenger
+    }
+    fun provideFlutterBinaryMessenger() = flutterBinaryMessenger
 }

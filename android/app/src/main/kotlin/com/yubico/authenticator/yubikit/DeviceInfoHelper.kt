@@ -18,7 +18,6 @@ package com.yubico.authenticator.yubikit
 
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.logging.Log
-import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.compatUtil
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -30,23 +29,25 @@ import com.yubico.yubikit.management.DeviceInfo
 import com.yubico.yubikit.support.DeviceUtil
 import java.io.IOException
 
+
 suspend fun getDeviceInfo(device: YubiKeyDevice): Info {
+    val tag = "getDeviceInfo"
     val pid = (device as? UsbYubiKeyDevice)?.pid
 
     val deviceInfo = try {
         device.withConnection<SmartCardConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
     } catch (e: IOException) {
         runCatching {
-            Log.d(OathManager.TAG, "Smart card connection not available: ${e.message}")
+            Log.d(tag, "Smart card connection not available: ${e.message}")
             device.withConnection<OtpConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
         }.recoverCatching { t ->
-            Log.d(OathManager.TAG, "OTP connection not available: ${t.message}")
+            Log.d(tag, "OTP connection not available: ${t.message}")
             device.withConnection<FidoConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
         }.recoverCatching { t ->
-            Log.d(OathManager.TAG, "FIDO connection not available: ${t.message}")
+            Log.d(tag, "FIDO connection not available: ${t.message}")
             return SkyHelper(compatUtil).getDeviceInfo(device)
         }.getOrElse {
-            Log.e(OathManager.TAG, "Failed to recognize device: ${it.message}")
+            Log.e(tag, "Failed to recognize device: ${it.message}")
             throw it
         }
     }
