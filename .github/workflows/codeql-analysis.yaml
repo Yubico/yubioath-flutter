@@ -56,17 +56,10 @@ jobs:
           YUBIOATH_STORE_PASSWORD: ${{ secrets.YUBIOATH_STORE_PASSWORD }}
         working-directory: ./app
 
-      - if: matrix.language == 'kotlin'
-        name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
 
       - if: matrix.language == 'python'
         name: autobuild
         uses: github/codeql-action/autobuild@v2
 
-      - if: matrix.language == 'python'
-        name: Perform CodeQL Analysis
+      - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
-        with:
-          paths:
-            - helper
