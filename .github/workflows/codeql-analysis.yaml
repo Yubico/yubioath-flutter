@@ -21,6 +21,12 @@ jobs:
         language: [ 'kotlin' ]
 
     steps:
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          setup-python-dependencies: false
+
       - name: set up JDK 11
         uses: actions/setup-java@v3
         with:
@@ -49,12 +55,6 @@ jobs:
           YUBIOATH_KEY_PASSWORD: ${{ secrets.YUBIOATH_KEY_PASSWORD }}
           YUBIOATH_STORE_PASSWORD: ${{ secrets.YUBIOATH_STORE_PASSWORD }}
         working-directory: ./app
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: ${{ matrix.language }}
-          setup-python-dependencies: false
 
       - if: matrix.language == 'python'
         name: autobuild
