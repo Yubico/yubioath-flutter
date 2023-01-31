@@ -18,8 +18,32 @@ esac
 echo "Building authenticator-helper for $OS..."
 OUTPUT="build/$OS"
 
+# Build a universal2 binary on MacOS
+if [ "$OS" = "macos" ]; then
+	export CFLAGS="-arch x86_64 -arch arm64"
+	export ARCHFLAGS="-arch x86_64 -arch arm64"
+fi
+
 cd helper
 poetry install
+
+# Replace arch specific packages with universal ones
+if [ "$OS" = "macos" ]; then
+	# Export exact versions
+	poetry export --without-hashes > requirements.txt
+	grep cryptography requirements.txt > cryptography.txt
+	grep cffi requirements.txt > source-reqs.txt
+	grep pyscard requirements.txt >> source-reqs.txt
+	# Remove non-universal packages
+	poetry run pip uninstall -y cryptography cffi pyscard
+	# Build cffi from source to get universal build
+	poetry run pip install --upgrade -r source-reqs.txt --no-binary :all:
+	# Explicitly install pre-build universal build of cryptography
+	poetry run pip download -r cryptography.txt --platform macosx_10_12_universal2 --only-binary :all: --no-deps --dest .
+	poetry run pip install -r cryptography.txt --no-cache-dir --no-index --find-links .
+	rm requirements.txt cryptography.txt source-reqs.txt
+fi
+
 rm -rf ../$OUTPUT/helper
 poetry run pyinstaller authenticator-helper.spec --distpath ../$OUTPUT
 cd ..
