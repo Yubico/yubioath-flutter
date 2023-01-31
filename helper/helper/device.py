@@ -24,7 +24,7 @@ from .oath import OathNode
 from .fido import Ctap2Node
 from .yubiotp import YubiOtpNode
 from .management import ManagementNode
-from .qr import scan_qr
+from .screenshot import capture_screen
 from ykman import __version__ as ykman_version
 from ykman.base import PID
 from ykman.device import scan_devices, list_all_devices
@@ -108,8 +108,8 @@ class RootNode(RpcNode):
         return dict()
 
     @action(closes_child=False)
-    def qr(self, params, event, signal):
-        return dict(result=scan_qr(params.get("image")))
+    def capture_screen(self, params, event, signal):
+        return dict(result=capture_screen())
 
 
 def _id_from_fingerprint(fp):

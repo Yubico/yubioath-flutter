@@ -53,6 +53,8 @@ dependencies:
     path: android/flutter_plugins/qrscanner_zxing
   desktop_drop: ^0.4.0
   url_launcher: ^6.1.7
+  image: ^4.0.13
+  zxing2: ^0.2.0
 
 dev_dependencies:
   integration_test:

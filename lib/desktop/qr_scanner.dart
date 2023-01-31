@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/app/state.dart';
-import 'package:yubico_authenticator/desktop/state.dart';
+import 'dart:convert';
+import 'dart:isolate';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+import 'package:image/image.dart' as img;
+import 'package:zxing2/qrcode.dart';
+
+import '../../app/state.dart';
+import '../../desktop/state.dart';
 import 'rpc.dart';
+
+final _log = Logger('helper');
 
 class RpcQrScanner implements QrScanner {
   final RpcSession _rpc;
@@ -26,8 +34,37 @@ class RpcQrScanner implements QrScanner {
 
   @override
   Future<String?> scanQr([String? imageData]) async {
-    final result = await _rpc.command('qr', [], params: {'image': imageData});
-    return result['result'];
+    if (imageData == null) {
+      _log.info('Get screenshot from rpc');
+      final result = await _rpc.command('capture_screen', []);
+      imageData = result['result'] as String;
+    }
+
+    final base64Image = imageData;
+    try {
+      return await Isolate.run(() async {
+        var image = img.decodePng(base64Decode(base64Image))!;
+        LuminanceSource source = RGBLuminanceSource(
+            image.width,
+            image.height,
+            image
+                .convert(numChannels: 4)
+                .getBytes(order: img.ChannelOrder.abgr)
+                .buffer
+                .asInt32List());
+        final bitmap = BinaryBitmap(GlobalHistogramBinarizer(source));
+
+        final hints = DecodeHints();
+        hints.put(DecodeHintType.possibleFormats, [BarcodeFormat.qrCode]);
+        // ignore: void_checks
+        hints.put(DecodeHintType.tryHarder, true);
+
+        final reader = QRCodeReader();
+        return reader.decode(bitmap, hints: hints).text;
+      });
+    } catch (e) {
+      rethrow;
+    }
   }
 }
 

@@ -12,25 +12,23 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import mss
-import zxingcpp
 import base64
-import io
 import os
 import sys
 import subprocess
 import tempfile
+import mss
 from mss.exception import ScreenShotError
-from PIL import Image
-import numpy.core.multiarray  # noqa
+from mss.tools import to_png
 
 
-def _capture_screen():
+def capture_screen():
     try:
         with mss.mss() as sct:
             monitor = sct.monitors[0]  # 0 is the special "all monitors" value.
             sct_img = sct.grab(monitor)  # mss format
-        return Image.frombytes("RGB", sct_img.size, sct_img.bgra, "raw", "BGRX")
+        png = to_png(sct_img.rgb, sct_img.size)
+        return base64.b64encode(png).decode()
     except ScreenShotError:
         # One common error is that mss doesn't work with Wayland
         if sys.platform.startswith("linux"):
@@ -39,23 +37,10 @@ def _capture_screen():
             try:
                 rc = subprocess.call(["gnome-screenshot", "-f", fname])  # nosec
                 if rc == 0:
-                    return Image.open(fname)
+                    with open(fname, "rb") as f:
+                        return f.read()
             except FileNotFoundError:
                 pass  # Fall through to ValueError
             finally:
                 os.unlink(fname)
     raise ValueError("Unable to capture screenshot")
-
-
-def scan_qr(image_data=None):
-    if image_data:
-        msg = base64.b64decode(image_data)
-        buf = io.BytesIO(msg)
-        img = Image.open(buf)
-    else:
-        img = _capture_screen()
-
-    result = zxingcpp.read_barcode(img)
-    if result and result.valid:
-        return result.text
-    return None

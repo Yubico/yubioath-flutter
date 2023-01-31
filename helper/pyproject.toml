@@ -12,8 +12,6 @@ packages = [
 python = "^3.8"
 yubikey-manager = "5.0.1"
 mss = "^7.0.0"
-zxing-cpp = "^2.0.0"
-Pillow = "^9.1.1"
 
 [tool.poetry.dev-dependencies]
 pyinstaller = {version = "^5.7", python = "<3.12"}
