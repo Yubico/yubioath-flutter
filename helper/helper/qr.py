@@ -34,10 +34,19 @@ def _capture_screen():
     except ScreenShotError:
         # One common error is that mss doesn't work with Wayland
         if sys.platform.startswith("linux"):
-            # Try gnome-screenshot fallback
+            # Try gnome-screenshot fallback, with original library path
+            env = dict(os.environ)
+            lp = env.get("LD_LIBRARY_PATH_ORIG")
+            if lp is not None:
+                env["LD_LIBRARY_PATH"] = lp
+            else:
+                env.pop("LD_LIBRARY_PATH", None)
             fd, fname = tempfile.mkstemp(suffix=".png")
+
             try:
-                rc = subprocess.call(["gnome-screenshot", "-f", fname])  # nosec
+                rc = subprocess.call(
+                    ["gnome-screenshot", "-f", fname], env=env
+                )  # nosec
                 if rc == 0:
                     return Image.open(fname)
             except FileNotFoundError:
