@@ -46,12 +46,15 @@ jobs:
       run: |
         apt-get install -qq swig libpcsclite-dev build-essential cmake
         python -m ensurepip --user
-        python -m pip install -U pip
-        python -m pip install poetry
+        python -m pip install -U pip pipx
+        pipx ensurepath
+        pipx install poetry
 
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
-      run: ./build-helper.sh
+      run: |
+        . ~/.bashrc  # Needed to ensure poetry on PATH
+        ./build-helper.sh
 
     - name: Install Flutter dependencies
       run: |
