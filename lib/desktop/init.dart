@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:yubico_authenticator/desktop/window_helper.dart';
 
 import '../app/app.dart';
 import '../app/logging.dart';
@@ -49,35 +50,16 @@ import 'qr_scanner.dart';
 import 'state.dart';
 
 final _log = Logger('desktop.init');
-const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
-const String _keyHeight = 'DESKTOP_WINDOW_HEIGHT';
 
-class _WindowResizeListener extends WindowListener {
-  final SharedPreferences _prefs;
-  _WindowResizeListener(this._prefs);
-
-  @override
-  void onWindowResize() async {
-    final size = await windowManager.getSize();
-    await _prefs.setDouble(_keyWidth, size.width);
-    await _prefs.setDouble(_keyHeight, size.height);
-  }
-}
 
 Future<Widget> initialize(List<String> argv) async {
   _initLogging(argv);
 
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
+  final windowHelper = WindowHelper(prefs);
 
-  unawaited(windowManager.waitUntilReadyToShow().then((_) async {
-    await windowManager.setMinimumSize(const Size(270, 0));
-    final width = prefs.getDouble(_keyWidth) ?? 400;
-    final height = prefs.getDouble(_keyHeight) ?? 720;
-    await windowManager.setSize(Size(width, height));
-    await windowManager.show();
-    windowManager.addListener(_WindowResizeListener(prefs));
-  }));
+  windowHelper.initialize();
 
   // Either use the _HELPER_PATH environment variable, or look relative to executable.
   var exe = Platform.environment['_HELPER_PATH'];

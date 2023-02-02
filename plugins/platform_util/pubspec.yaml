@@ -1,0 +1,30 @@
+name: platform_util
+description: Plugin with supportive platform-specific functions for Yubico Authenticator
+version: 0.0.1
+
+environment:
+  sdk: '>=2.19.0 <3.0.0'
+  flutter: ">=2.5.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.yubico.platform_util
+        pluginClass: PlatformUtilPlugin
+      linux:
+        pluginClass: PlatformUtilPlugin
+      macos:
+        pluginClass: PlatformUtilPlugin
+      windows:
+        pluginClass: PlatformUtilPluginCApi

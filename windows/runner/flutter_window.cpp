@@ -28,7 +28,8 @@ bool FlutterWindow::OnCreate() {
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
-    this->Show();
+    // commented - we show the window through windowManager.show() in desktop/init.dart
+    // this->Show();
   });
 
   return true;
