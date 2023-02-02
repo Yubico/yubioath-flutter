@@ -3,6 +3,7 @@ package com.yubico.authenticator.data
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.yubikit.withConnection
+import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
@@ -23,6 +24,8 @@ interface ConnectionListener {
 interface DeviceModel {
     fun getDevice(): Flow<Info?>
 
+    fun isUsbDeviceConnected() : Boolean // TODO temporary way how dependants can get the info
+
     suspend fun deviceConnected(device: YubiKeyDevice)
     suspend fun deviceDisconnected()
 
@@ -36,7 +39,7 @@ interface DeviceModel {
 
 class YubiKitDeviceModel() : DeviceModel {
 
-    private var currentDevice: YubiKeyDevice? = null
+    private var currentUsbDevice: UsbYubiKeyDevice? = null
 
     private val queue = ArrayBlockingQueue<Result<Info?>>(1)
     private val connectionListeners: MutableList<ConnectionListener> = ArrayList()
@@ -53,10 +56,14 @@ class YubiKitDeviceModel() : DeviceModel {
         }
     }.flowOn(Dispatchers.IO)
 
+    override fun isUsbDeviceConnected() : Boolean = currentUsbDevice != null
+
     override suspend fun deviceConnected(device: YubiKeyDevice) {
         Log.d(TAG, "Device connected")
 
-        currentDevice = device
+        if (device is UsbYubiKeyDevice) {
+            currentUsbDevice = device
+        }
 
         device.withConnection<SmartCardConnection, Unit> { connection ->
 
@@ -104,7 +111,7 @@ class YubiKitDeviceModel() : DeviceModel {
 
         Log.d(TAG, "Device disconnected")
 
-        currentDevice = null
+        currentUsbDevice = null
 
         queue.add(Result.success(null))
     }
@@ -118,14 +125,16 @@ class YubiKitDeviceModel() : DeviceModel {
         connectionListeners.remove(listener)
     }
 
-    // TODO: different calls for USB/NFC
-    //        return appViewModel.connectedYubiKey.value?.let {
-    //            useOathSessionUsb(it, action)
-    //        } ?: useOathSessionNfc(title, action)
     override suspend fun <T> useDevice(title: String, action: suspend (YubiKeyDevice) -> T): T =
-        currentDevice?.let {
-            action(it)
-        } ?: throw IOException("Device disconnected")
+        currentUsbDevice?.let {
+            useUsbDevice(it, action)
+        } ?: useNfcDevice(title, action)
+
+    private suspend fun <T> useUsbDevice(usbYubiKeyDevice: UsbYubiKeyDevice, action: suspend (UsbYubiKeyDevice) -> T): T =
+        action(usbYubiKeyDevice)
+
+    private suspend fun <T> useNfcDevice(title: String, action: suspend (NfcYubiKeyDevice) -> T): T =
+        TODO("Implement")
 
 
     companion object {

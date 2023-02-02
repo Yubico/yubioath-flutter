@@ -1,15 +1,8 @@
 package com.yubico.authenticator.data
 
-import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.data.CredentialWithCode
 import com.yubico.authenticator.oath.data.Session
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
-import java.util.concurrent.Executors
 
 interface OathRepository {
     val oathSession: Flow<Session?>
@@ -44,54 +37,35 @@ class DefaultOathRepository(private val oathModel: OathModel) : OathRepository {
     override val oathCredentials: Flow<List<CredentialWithCode>?>
         get() = oathModel.getCredentials()
 
-    override suspend fun reset(): String {
-        Log.d(TAG, "reset")
-        return "{}"
-    }
+    override suspend fun reset(): String =
+        oathModel.reset()
 
-    override suspend fun unlock(password: String, remember: Boolean): String {
-        Log.d(TAG, "unlock")
-        return "{}"
-    }
+    override suspend fun unlock(password: String, remember: Boolean): String =
+        oathModel.unlock(password, remember)
 
-    override suspend fun setPassword(current: String?, password: String): String {
-        Log.d(TAG, "setPassword")
-        return "{}"
-    }
+    override suspend fun setPassword(current: String?, password: String): String =
+        oathModel.setPassword(current, password)
 
-    override suspend fun unsetPassword(current: String): String {
-        Log.d(TAG, "unsetPassword")
-        return "{}"
-    }
+    override suspend fun unsetPassword(current: String): String =
+        oathModel.unsetPassword(current)
 
-    override suspend fun forgetPassword(): String {
-        Log.d(TAG, "forgetPassword")
-        return "{}"
-    }
+    override suspend fun forgetPassword(): String =
+        oathModel.forgetPassword()
 
-    override suspend fun calculate(credentialId: String): String {
-        Log.d(TAG, "calculate")
-        return "{}"
-    }
+    override suspend fun calculate(credentialId: String): String =
+        oathModel.calculate(credentialId)
 
-    override suspend fun addAccount(uri: String, requireTouch: Boolean): String {
-        Log.d(TAG, "addAccount")
-        return "{}"
-    }
+    override suspend fun addAccount(uri: String, requireTouch: Boolean): String =
+        oathModel.addAccount(uri, requireTouch)
 
     override suspend fun renameAccount(uri: String, name: String, issuer: String?): String =
         oathModel.renameAccount(uri, name, issuer)
 
-    override suspend fun deleteAccount(credentialId: String): String {
-        Log.d(TAG, "deleteAccount")
-        return "{}"
-    }
+    override suspend fun deleteAccount(credentialId: String): String =
+        oathModel.deleteAccount(credentialId)
 
-    override suspend fun addAccountToAny(uri: String, requireTouch: Boolean): String {
-        Log.d(TAG, "addAccountToAny")
-        return "{}"
-    }
-
+    override suspend fun addAccountToAny(uri: String, requireTouch: Boolean): String =
+        oathModel.addAccountToAny(uri, requireTouch)
 
     companion object {
         const val TAG = "OathRepository"
