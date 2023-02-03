@@ -66,48 +66,45 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
   List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
     final actions = buildActions(context, ref);
 
-    final theme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     final copy = actions.firstWhere(((e) => e.text.startsWith('Copy')));
     final delete = actions.firstWhere(((e) => e.text.startsWith('Delete')));
     final colors = {
-      copy: Pair(theme.primary, theme.onPrimary),
-      delete: Pair(theme.error, theme.onError),
+      copy: Pair(colorScheme.secondary, colorScheme.onSecondary),
+      delete: Pair(colorScheme.error, colorScheme.onError),
     };
 
     // If we can't copy, but can calculate, highlight that button instead
     if (copy.action == null) {
       final calculates = actions.where(((e) => e.text.startsWith('Calculate')));
       if (calculates.isNotEmpty) {
-        colors[calculates.first] = Pair(theme.primary, theme.onPrimary);
+        colors[calculates.first] =
+            Pair(colorScheme.secondary, colorScheme.onSecondary);
+        colors.remove(copy);
       }
     }
 
     return actions.map((e) {
       final action = e.action;
-      final color = colors[e] ?? Pair(theme.secondary, theme.onSecondary);
+      final Pair<Color?, Color?> color = colors[e] ??
+          Pair(colorScheme.surfaceVariant, colorScheme.onSurfaceVariant);
       final tooltip = e.trailing != null ? '${e.text}\n${e.trailing}' : e.text;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6.0),
-        child: CircleAvatar(
-          backgroundColor: action != null ? color.first : theme.secondary,
-          foregroundColor: color.second,
-          child: IconButton(
-            style: IconButton.styleFrom(
-              backgroundColor: action != null ? color.first : theme.secondary,
-              foregroundColor: color.second,
-              disabledBackgroundColor: theme.onSecondary.withOpacity(0.2),
-              fixedSize: const Size.square(38),
-            ),
-            icon: e.icon,
-            iconSize: 22,
-            tooltip: tooltip,
-            onPressed: action != null
-                ? () {
-                    action(context);
-                  }
-                : null,
+        child: IconButton(
+          style: IconButton.styleFrom(
+            backgroundColor: color.first,
+            disabledBackgroundColor: color.first?.withOpacity(0.4),
+            foregroundColor: color.second,
           ),
+          icon: e.icon,
+          tooltip: tooltip,
+          onPressed: action != null
+              ? () {
+                  action(context);
+                }
+              : null,
         ),
       );
     }).toList();

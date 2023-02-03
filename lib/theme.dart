@@ -25,8 +25,29 @@ const darkRed = Color(0xffda4d41);
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
         useMaterial3: true,
-        brightness: Brightness.light,
-        colorSchemeSeed: primaryBlue,
+        colorScheme: ColorScheme.fromSeed(
+          brightness: Brightness.light,
+          seedColor: primaryBlue,
+        ).copyWith(
+          primary: primaryBlue,
+          secondary: accentGreen,
+        ),
+      );
+
+  static ThemeData get darkTheme => ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          brightness: Brightness.dark,
+          seedColor: primaryBlue,
+        ).copyWith(
+          primary: primaryGreen,
+          onPrimary: Colors.grey.shade900,
+          secondary: accentGreen,
+          primaryContainer: Colors.grey.shade800,
+          onPrimaryContainer: Colors.grey.shade100,
+          error: darkRed,
+          onError: Colors.white.withOpacity(0.9),
+        ),
       );
 
   /* TODO: Remove this. It is left here as a reference as we adjust styles to work with Flutter 3.7.
@@ -113,12 +134,6 @@ class AppTheme {
         ),
       );
   */
-
-  static ThemeData get darkTheme => ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        colorSchemeSeed: primaryGreen,
-      );
 
   /* TODO: Remove this. It is left here as a reference as we adjust styles to work with Flutter 3.7.
   static ThemeData get darkTheme => ThemeData(
