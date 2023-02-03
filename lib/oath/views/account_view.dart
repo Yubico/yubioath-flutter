@@ -176,12 +176,12 @@ class AccountView extends ConsumerWidget with AccountMixin {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   shape: BoxShape.rectangle,
-                  color: CardTheme.of(context).color,
-                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  borderRadius: const BorderRadius.all(Radius.circular(64.0)),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 10.0, vertical: 2.0),
+                      horizontal: 8.0, vertical: 4.0),
                   child: DefaultTextStyle.merge(
                     style: Theme.of(context).textTheme.bodyLarge,
                     child: buildCodeView(ref),

@@ -66,8 +66,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
   List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
     final actions = buildActions(context, ref);
 
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
+    final theme = Theme.of(context).colorScheme;
 
     final copy = actions.firstWhere(((e) => e.text.startsWith('Copy')));
     final delete = actions.firstWhere(((e) => e.text.startsWith('Delete')));
@@ -177,7 +176,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
               DecoratedBox(
                 decoration: BoxDecoration(
                   shape: BoxShape.rectangle,
-                  color: CardTheme.of(context).color,
+                  color: Theme.of(context).colorScheme.surfaceVariant,
                   borderRadius: const BorderRadius.all(Radius.circular(30.0)),
                 ),
                 child: Center(

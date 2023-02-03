@@ -76,7 +76,6 @@ class _CircleTimerState extends State<CircleTimer>
   @override
   Widget build(BuildContext context) {
     return ProgressCircle(
-        Theme.of(context).iconTheme.color ?? Colors.grey.shade600,
-        _progress.value);
+        IconTheme.of(context).color ?? Colors.grey.shade600, _progress.value);
   }
 }

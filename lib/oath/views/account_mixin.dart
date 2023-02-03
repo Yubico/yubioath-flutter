@@ -246,6 +246,10 @@ mixin AccountMixin {
                         fontFeatures: [FontFeature.tabularFigures()],
                         //fontWeight: FontWeight.w400,
                       ),
+                      textHeightBehavior: const TextHeightBehavior(
+                        // This helps with vertical centering
+                        applyHeightToFirstAscent: false,
+                      ),
                     ),
                   ),
                 ],
