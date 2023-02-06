@@ -5,7 +5,7 @@ on:
     paths:
       - "android/**"
       - "helper/**"
-  pull_requests:
+  pull_request:
     paths:
       - "android/**"
       - "helper/**"
