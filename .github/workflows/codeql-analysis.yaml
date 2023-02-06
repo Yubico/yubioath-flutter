@@ -2,9 +2,10 @@ name: "CodeQL"
 
 on:
   push:
-    branches:
-      - main
-      - adamve/codeql
+    paths:
+      - "android/**"
+      - "helper/**"
+  pull_requests:
     paths:
       - "android/**"
       - "helper/**"
