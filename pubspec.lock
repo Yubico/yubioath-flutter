@@ -165,10 +165,10 @@ packages:
     dependency: transitive
     description:
       name: cross_file
-      sha256: f71079978789bc2fe78d79227f1f8cfe195b31bbd8db2399b0d15a4b96fb843b
+      sha256: "0b0036e8cccbfbe0555fd83c1d31a6f30b77a96b598b35a5d36dd41f718695e9"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.3+2"
+    version: "0.3.3+4"
   crypto:
     dependency: transitive
     description:
@@ -221,10 +221,10 @@ packages:
     dependency: transitive
     description:
       name: fixnum
-      sha256: "04be3e934c52e082558cc9ee21f42f5c1cd7a1262f4c63cd0357c08d5bba81ec"
+      sha256: "25517a4deb0c03aa0f32fd12db525856438902d9c16536311e76cdc57b31d7d1"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.1.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -368,10 +368,10 @@ packages:
     dependency: "direct dev"
     description:
       name: json_serializable
-      sha256: "040088d9eb2337f3a51ddabe35261e2fea1c351e3dd29d755ed1290b6b700a75"
+      sha256: dadc08bd61f72559f938dd08ec20dbfec6c709bba83515085ea943d2078d187a
       url: "https://pub.dev"
     source: hosted
-    version: "6.6.0"
+    version: "6.6.1"
   lints:
     dependency: transitive
     description:
@@ -384,10 +384,10 @@ packages:
     dependency: "direct main"
     description:
       name: logging
-      sha256: c0bbfe94d46aedf9b8b3e695cf3bd48c8e14b35e3b2c639e0aa7755d589ba946
+      sha256: "04094f2eb032cbb06c6f6e8d3607edcfcb0455e2bb6cbc010cb01171dcb64e6d"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   matcher:
     dependency: transitive
     description:
@@ -527,10 +527,10 @@ packages:
     dependency: transitive
     description:
       name: screen_retriever
-      sha256: "9c3839c4eb80807cd8210afa3c84a177ba00aef9f9b7b74ad92d3a0ab1d7e7ed"
+      sha256: "4931f226ca158123ccd765325e9fbf360bfed0af9b460a10f960f9bb13d58323"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.5"
+    version: "0.1.6"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -551,10 +551,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_foundation
-      sha256: "1ffa239043ab8baf881ec3094a3c767af9d10399b2839020b9e4d44c0bb23951"
+      sha256: "2b55c18636a4edc529fa5cd44c03d3f3100c00513f518c5127c951978efcccd0"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.2"
+    version: "2.1.3"
   shared_preferences_linux:
     dependency: transitive
     description:
@@ -612,10 +612,10 @@ packages:
     dependency: transitive
     description:
       name: source_gen
-      sha256: "2d79738b6bbf38a43920e2b8d189e9a3ce6cc201f4b8fc76be5e4fe377b1c38d"
+      sha256: c2bea18c95cfa0276a366270afaa2850b09b4a76db95d546f3d003dcc7011298
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.6"
+    version: "1.2.7"
   source_helper:
     dependency: transitive
     description:
@@ -772,10 +772,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_windows
-      sha256: "387e227c4b979034cc52afb11d66b04ed9b288ca1f45beeef39b2ea69e714fa5"
+      sha256: b6217370f8eb1fd85c8890c539f5a639a01ab209a36db82c921ebeacefc7a615
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.2"
+    version: "3.0.3"
   vector_math:
     dependency: transitive
     description:
@@ -849,5 +849,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.19.0 <4.0.0"
+  dart: ">=2.19.0 <3.0.0"
   flutter: ">=3.0.0"
