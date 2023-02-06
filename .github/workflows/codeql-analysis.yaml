@@ -2,7 +2,12 @@ name: "CodeQL"
 
 on:
   push:
-  pull_request:
+    branches:
+      - main
+      - adamve/codeql
+    paths:
+      - "android/**"
+      - "helper/**"
   schedule:
     - cron: '0 11 * * 3'
 
