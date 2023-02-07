@@ -33,6 +33,25 @@ extension on Application {
   IconData get _icon {
     switch (this) {
       case Application.oath:
+        return Icons.supervisor_account_outlined;
+      case Application.fido:
+        return Icons.security_outlined;
+      case Application.otp:
+        return Icons.password_outlined;
+      case Application.piv:
+        return Icons.approval_outlined;
+      case Application.management:
+        return Icons.construction_outlined;
+      case Application.openpgp:
+        return Icons.key_outlined;
+      case Application.hsmauth:
+        return Icons.key_outlined;
+    }
+  }
+
+  IconData get _filledIcon {
+    switch (this) {
+      case Application.oath:
         return Icons.supervisor_account;
       case Application.fido:
         return Icons.security;
@@ -57,15 +76,61 @@ class MainPageDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final supportedApps = ref.watch(supportedAppsProvider);
-    final data =
-        ref.watch(currentDeviceDataProvider).whenOrNull(data: (data) => data);
-    final currentApp = ref.watch(currentAppProvider);
-
+    final data = ref.watch(currentDeviceDataProvider).value;
     final color =
         Theme.of(context).brightness == Brightness.dark ? 'white' : 'green';
 
-    return ListView(
-      primary: false, //Prevents conflict with the MainPage scroll view.
+    final availableApps = data != null
+        ? supportedApps
+            .where(
+                (app) => app.getAvailability(data) != Availability.unsupported)
+            .toList()
+        : <Application>[];
+    final hasManagement = availableApps.remove(Application.management);
+
+    return NavigationDrawer(
+      selectedIndex: availableApps.indexOf(ref.watch(currentAppProvider)),
+      onDestinationSelected: (index) {
+        if (shouldPop) Navigator.of(context).pop();
+
+        if (index < availableApps.length) {
+          // Switch to selected app
+          final app = availableApps[index];
+          ref.read(currentAppProvider.notifier).setCurrentApp(app);
+        } else {
+          // Handle action
+          index -= availableApps.length;
+
+          if (!hasManagement) {
+            index++;
+          }
+
+          Widget Function(BuildContext) dialogBuilder;
+          RouteSettings? routeSettings;
+          switch (index) {
+            case 0:
+              dialogBuilder = (context) => ManagementScreen(data!);
+              break;
+            case 1:
+              dialogBuilder = (context) => Platform.isAndroid
+                  ? const AndroidSettingsPage()
+                  : const SettingsPage();
+              routeSettings = const RouteSettings(name: 'settings');
+              break;
+            case 2:
+              dialogBuilder = (context) => const AboutPage();
+              routeSettings = const RouteSettings(name: 'about');
+              break;
+            default:
+              return;
+          }
+          showBlurDialog(
+            context: context,
+            builder: dialogBuilder,
+            routeSettings: routeSettings,
+          );
+        }
+      },
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 19.0, left: 30.0, bottom: 12.0),
@@ -79,141 +144,34 @@ class MainPageDrawer extends ConsumerWidget {
         const Divider(indent: 16.0, endIndent: 28.0),
         if (data != null) ...[
           // Normal YubiKey Applications
-          ...supportedApps
-              .where((app) =>
-                  app != Application.management &&
-                  app.getAvailability(data) != Availability.unsupported)
-              .map((app) => ApplicationItem(
-                    app: app,
-                    available:
-                        app.getAvailability(data) == Availability.enabled,
-                    selected: app == currentApp,
-                    onSelect: () {
-                      if (shouldPop) Navigator.of(context).pop();
-                    },
-                  )),
+          ...availableApps.map((app) => NavigationDrawerDestination(
+                label: Text(app.displayName),
+                icon: Icon(app._icon),
+                selectedIcon: Icon(app._filledIcon),
+              )),
           // Management app
-          if (supportedApps.contains(Application.management) &&
-              Application.management.getAvailability(data) ==
-                  Availability.enabled) ...[
-            DrawerItem(
-              titleText:
-                  AppLocalizations.of(context)!.mainDrawer_txt_applications,
-              icon: Icon(Application.management._icon),
+          if (hasManagement) ...[
+            NavigationDrawerDestination(
               key: managementAppDrawer,
-              onTap: () {
-                if (shouldPop) Navigator.of(context).pop();
-                showBlurDialog(
-                  context: context,
-                  builder: (context) => ManagementScreen(data),
-                );
-              },
+              label: Text(
+                AppLocalizations.of(context)!.mainDrawer_txt_applications,
+              ),
+              icon: Icon(Application.management._icon),
+              selectedIcon: Icon(Application.management._filledIcon),
             ),
           ],
           const Divider(indent: 16.0, endIndent: 28.0),
         ],
         // Non-YubiKey pages
-        DrawerItem(
-          titleText: AppLocalizations.of(context)!.mainDrawer_txt_settings,
-          icon: const Icon(Icons.settings),
-          onTap: () {
-            final nav = Navigator.of(context);
-            if (shouldPop) nav.pop();
-            showBlurDialog(
-              context: context,
-              builder: (context) => Platform.isAndroid
-                  ? const AndroidSettingsPage()
-                  : const SettingsPage(),
-              routeSettings: const RouteSettings(name: 'settings'),
-            );
-          },
+        NavigationDrawerDestination(
+          label: Text(AppLocalizations.of(context)!.mainDrawer_txt_settings),
+          icon: const Icon(Icons.settings_outlined),
         ),
-        DrawerItem(
-          titleText: AppLocalizations.of(context)!.mainDrawer_txt_help,
-          icon: const Icon(Icons.help),
-          onTap: () {
-            final nav = Navigator.of(context);
-            if (shouldPop) nav.pop();
-            showBlurDialog(
-              context: context,
-              builder: (context) => const AboutPage(),
-              routeSettings: const RouteSettings(name: 'about'),
-            );
-          },
+        NavigationDrawerDestination(
+          label: Text(AppLocalizations.of(context)!.mainDrawer_txt_help),
+          icon: const Icon(Icons.help_outline),
         ),
       ],
-    );
-  }
-}
-
-class ApplicationItem extends ConsumerWidget {
-  final Application app;
-  final bool available;
-  final bool selected;
-  final Function onSelect;
-  const ApplicationItem({
-    required this.app,
-    required this.available,
-    required this.selected,
-    required this.onSelect,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return DrawerItem(
-      titleText: app.displayName,
-      icon: Icon(app._icon),
-      selected: selected,
-      enabled: available,
-      onTap: available & !selected
-          ? () {
-              ref.read(currentAppProvider.notifier).setCurrentApp(app);
-              onSelect();
-            }
-          : null,
-    );
-  }
-}
-
-class DrawerItem extends StatelessWidget {
-  final bool enabled;
-  final bool selected;
-  final String titleText;
-  final Icon icon;
-  final void Function()? onTap;
-
-  const DrawerItem({
-    required this.titleText,
-    required this.icon,
-    this.onTap,
-    this.selected = false,
-    this.enabled = true,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 12.0, right: 12.0),
-      child: ListTile(
-        enabled: enabled,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(64)),
-        ),
-        dense: true,
-        minLeadingWidth: 24,
-        minVerticalPadding: 18,
-        selected: selected,
-        selectedColor: Theme.of(context).colorScheme.onPrimary,
-        selectedTileColor: Theme.of(context).colorScheme.primary,
-        leading: IconTheme.merge(
-          data: const IconThemeData(size: 24),
-          child: icon,
-        ),
-        title: Text(titleText),
-        onTap: onTap,
-      ),
     );
   }
 }
