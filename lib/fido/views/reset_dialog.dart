@@ -111,11 +111,12 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context)!
-                .fido_warning_will_delete_accounts),
+            Text(
+              AppLocalizations.of(context)!.fido_warning_will_delete_accounts,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             Text(
               AppLocalizations.of(context)!.fido_warning_disable_these_creds,
-              style: Theme.of(context).textTheme.bodyLarge,
             ),
             Center(
               child: Text(_getMessage(),
