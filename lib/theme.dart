@@ -27,10 +27,17 @@ class AppTheme {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.light,
-          seedColor: primaryBlue,
+          seedColor: const Color(0xff2196f3),
+          //seedColor: primaryBlue,
         ).copyWith(
           primary: primaryBlue,
-          secondary: accentGreen,
+          //secondary: accentGreen,
+        ),
+        textTheme: TextTheme(
+          bodySmall: TextStyle(color: Colors.grey.shade900),
+        ),
+        dialogTheme: const DialogTheme(
+          surfaceTintColor: Colors.white70,
         ),
       );
 
@@ -38,15 +45,24 @@ class AppTheme {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.dark,
-          seedColor: primaryBlue,
+          seedColor: const Color(0xff2196f3),
+          //seedColor: const Color(0xff3f51b5),
         ).copyWith(
           primary: primaryGreen,
-          onPrimary: Colors.grey.shade900,
-          secondary: accentGreen,
-          primaryContainer: Colors.grey.shade800,
-          onPrimaryContainer: Colors.grey.shade100,
+          //onPrimary: Colors.grey.shade900,
+          //secondary: accentGreen,
+          //secondary: const Color(0xff5d7d90),
+          //onSecondary: Colors.grey.shade900,
+          //primaryContainer: Colors.grey.shade800,
+          //onPrimaryContainer: Colors.grey.shade100,
           error: darkRed,
           onError: Colors.white.withOpacity(0.9),
+        ),
+        textTheme: TextTheme(
+          bodySmall: TextStyle(color: Colors.grey.shade500),
+        ),
+        dialogTheme: DialogTheme(
+          surfaceTintColor: Colors.grey.shade700,
         ),
       );
 

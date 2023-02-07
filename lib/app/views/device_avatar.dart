@@ -97,7 +97,7 @@ class DeviceAvatar extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: radius,
-          //backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           child: IconTheme(
             data: IconTheme.of(context).copyWith(
               size: radius,

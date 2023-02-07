@@ -61,98 +61,87 @@ class MainPageDrawer extends ConsumerWidget {
         ref.watch(currentDeviceDataProvider).whenOrNull(data: (data) => data);
     final currentApp = ref.watch(currentAppProvider);
 
-    MediaQuery? mediaQuery =
-        context.findAncestorWidgetOfExactType<MediaQuery>();
-    final width = mediaQuery?.data.size.width ?? 400;
-
     final color =
         Theme.of(context).brightness == Brightness.dark ? 'white' : 'green';
 
-    return Drawer(
-      width: width < 357 ? 0.85 * width : null,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topRight: Radius.circular(20.0),
-              bottomRight: Radius.circular(20.0))),
-      child: ListView(
-        primary: false, //Prevents conflict with the MainPage scroll view.
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 19.0, left: 30.0, bottom: 12.0),
-            child: Image.asset(
-              'assets/graphics/yubico-$color.png',
-              alignment: Alignment.centerLeft,
-              height: 28,
-              filterQuality: FilterQuality.medium,
+    return ListView(
+      primary: false, //Prevents conflict with the MainPage scroll view.
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 19.0, left: 30.0, bottom: 12.0),
+          child: Image.asset(
+            'assets/graphics/yubico-$color.png',
+            alignment: Alignment.centerLeft,
+            height: 28,
+            filterQuality: FilterQuality.medium,
+          ),
+        ),
+        const Divider(indent: 16.0, endIndent: 28.0),
+        if (data != null) ...[
+          // Normal YubiKey Applications
+          ...supportedApps
+              .where((app) =>
+                  app != Application.management &&
+                  app.getAvailability(data) != Availability.unsupported)
+              .map((app) => ApplicationItem(
+                    app: app,
+                    available:
+                        app.getAvailability(data) == Availability.enabled,
+                    selected: app == currentApp,
+                    onSelect: () {
+                      if (shouldPop) Navigator.of(context).pop();
+                    },
+                  )),
+          // Management app
+          if (supportedApps.contains(Application.management) &&
+              Application.management.getAvailability(data) ==
+                  Availability.enabled) ...[
+            DrawerItem(
+              titleText:
+                  AppLocalizations.of(context)!.mainDrawer_txt_applications,
+              icon: Icon(Application.management._icon),
+              key: managementAppDrawer,
+              onTap: () {
+                if (shouldPop) Navigator.of(context).pop();
+                showBlurDialog(
+                  context: context,
+                  builder: (context) => ManagementScreen(data),
+                );
+              },
             ),
-          ),
-          const Divider(indent: 16.0, endIndent: 28.0),
-          if (data != null) ...[
-            // Normal YubiKey Applications
-            ...supportedApps
-                .where((app) =>
-                    app != Application.management &&
-                    app.getAvailability(data) != Availability.unsupported)
-                .map((app) => ApplicationItem(
-                      app: app,
-                      available:
-                          app.getAvailability(data) == Availability.enabled,
-                      selected: app == currentApp,
-                      onSelect: () {
-                        if (shouldPop) Navigator.of(context).pop();
-                      },
-                    )),
-            // Management app
-            if (supportedApps.contains(Application.management) &&
-                Application.management.getAvailability(data) ==
-                    Availability.enabled) ...[
-              DrawerItem(
-                titleText:
-                    AppLocalizations.of(context)!.mainDrawer_txt_applications,
-                icon: Icon(Application.management._icon),
-                key: managementAppDrawer,
-                onTap: () {
-                  if (shouldPop) Navigator.of(context).pop();
-                  showBlurDialog(
-                    context: context,
-                    builder: (context) => ManagementScreen(data),
-                  );
-                },
-              ),
-            ],
-            const Divider(indent: 16.0, endIndent: 28.0),
           ],
-          // Non-YubiKey pages
-          DrawerItem(
-            titleText: AppLocalizations.of(context)!.mainDrawer_txt_settings,
-            icon: const Icon(Icons.settings),
-            onTap: () {
-              final nav = Navigator.of(context);
-              if (shouldPop) nav.pop();
-              showBlurDialog(
-                context: context,
-                builder: (context) => Platform.isAndroid
-                    ? const AndroidSettingsPage()
-                    : const SettingsPage(),
-                routeSettings: const RouteSettings(name: 'settings'),
-              );
-            },
-          ),
-          DrawerItem(
-            titleText: AppLocalizations.of(context)!.mainDrawer_txt_help,
-            icon: const Icon(Icons.help),
-            onTap: () {
-              final nav = Navigator.of(context);
-              if (shouldPop) nav.pop();
-              showBlurDialog(
-                context: context,
-                builder: (context) => const AboutPage(),
-                routeSettings: const RouteSettings(name: 'about'),
-              );
-            },
-          ),
+          const Divider(indent: 16.0, endIndent: 28.0),
         ],
-      ),
+        // Non-YubiKey pages
+        DrawerItem(
+          titleText: AppLocalizations.of(context)!.mainDrawer_txt_settings,
+          icon: const Icon(Icons.settings),
+          onTap: () {
+            final nav = Navigator.of(context);
+            if (shouldPop) nav.pop();
+            showBlurDialog(
+              context: context,
+              builder: (context) => Platform.isAndroid
+                  ? const AndroidSettingsPage()
+                  : const SettingsPage(),
+              routeSettings: const RouteSettings(name: 'settings'),
+            );
+          },
+        ),
+        DrawerItem(
+          titleText: AppLocalizations.of(context)!.mainDrawer_txt_help,
+          icon: const Icon(Icons.help),
+          onTap: () {
+            final nav = Navigator.of(context);
+            if (shouldPop) nav.pop();
+            showBlurDialog(
+              context: context,
+              builder: (context) => const AboutPage(),
+              routeSettings: const RouteSettings(name: 'about'),
+            );
+          },
+        ),
+      ],
     );
   }
 }
@@ -210,7 +199,7 @@ class DrawerItem extends StatelessWidget {
       child: ListTile(
         enabled: enabled,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(30)),
+          borderRadius: BorderRadius.all(Radius.circular(64)),
         ),
         dense: true,
         minLeadingWidth: 24,

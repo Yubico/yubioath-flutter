@@ -136,7 +136,7 @@ class AppPage extends StatelessWidget {
           ),
         ],
       ),
-      drawer: hasDrawer ? const MainPageDrawer() : null,
+      drawer: hasDrawer ? const Drawer(child: MainPageDrawer()) : null,
       body: centered ? Center(child: _buildScrollView()) : _buildScrollView(),
     );
   }

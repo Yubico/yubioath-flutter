@@ -177,7 +177,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   shape: BoxShape.rectangle,
-                  color: theme.colorScheme.surfaceVariant,
+                  color: theme.colorScheme.surfaceVariant.withOpacity(0.4),
                   borderRadius: const BorderRadius.all(Radius.circular(64.0)),
                 ),
                 child: Padding(
@@ -187,7 +187,8 @@ class AccountView extends ConsumerWidget with AccountMixin {
                     style: theme.textTheme.titleMedium,
                     child: IconTheme(
                       data: IconTheme.of(context).copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                        color:
+                            theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
                       ),
                       child: buildCodeView(ref),
                     ),

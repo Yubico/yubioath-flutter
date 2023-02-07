@@ -258,8 +258,8 @@ class _HeroAvatar extends StatelessWidget {
       child: Theme(
         // Give the avatar a transparent background
         data: theme.copyWith(
-            colorScheme: theme.colorScheme
-                .copyWith(primaryContainer: Colors.transparent)),
+            colorScheme:
+                theme.colorScheme.copyWith(surfaceVariant: Colors.transparent)),
         child: child,
       ),
     );
