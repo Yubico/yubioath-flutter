@@ -130,6 +130,7 @@ class MainActivity : FlutterFragmentActivity() {
 
         appPreferences.unregisterListener(sharedPreferencesListener)
 
+        yubiKitController.stopUsbDiscovery(this)
         yubiKitController.stopNfcDiscovery(this)
 
         if (!appPreferences.openAppOnUsb) {
