@@ -16,6 +16,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/android/app_methods.dart';
+import 'package:yubico_authenticator/android/state.dart';
 
 import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
@@ -41,6 +43,10 @@ class MainPage extends ConsumerWidget {
       },
     );
 
+    if (isAndroid) {
+      isNfcEnabled().then((value) => ref.read(androidNfcStateProvider.notifier).setNfcEnabled(value));
+    }
+
     // If the current device changes, we need to pop any open dialogs.
     ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, __) {
       Navigator.of(context).popUntil((route) {
@@ -56,8 +62,9 @@ class MainPage extends ConsumerWidget {
       });
     });
 
+    final contextTheme = Theme.of(context);
     final deviceNode = ref.watch(currentDeviceProvider);
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final isDarkTheme = contextTheme.brightness == Brightness.dark;
     final noKeyImage = Image.asset(
       isDarkTheme
           ? 'assets/graphics/no-key_dark.png'
@@ -67,9 +74,27 @@ class MainPage extends ConsumerWidget {
     );
     if (deviceNode == null) {
       if (isAndroid) {
+
+        var hasNfcSupport = ref.watch(androidNfcSupportProvider);
+        var isNfcEnabled = ref.watch(androidNfcStateProvider);
         return MessagePage(
           graphic: noKeyImage,
-          message: 'Insert or tap your YubiKey',
+          message: hasNfcSupport
+              ? isNfcEnabled
+                ? const Text('Tap or insert your YubiKey')
+                : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Insert your YubiKey'),
+                    const SizedBox(height: 24,),
+                        OutlinedButton(
+                            onPressed: () {
+                              openNfcSettings();
+                            },
+                            child: const Text('Enable NFC')),
+                      ],
+                )
+              : const Text('Insert your YubiKey'),
           actionButtonBuilder: (context) => IconButton(
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: 'Add account',
@@ -108,7 +133,7 @@ class MainPage extends ConsumerWidget {
         return MessagePage(
           delayedContent: true,
           graphic: noKeyImage,
-          message: 'Insert your YubiKey',
+          message: const Text('Insert your YubiKey')
         );
       }
     } else {
@@ -123,16 +148,16 @@ class MainPage extends ConsumerWidget {
               } else if (app.getAvailability(data) ==
                   Availability.unsupported) {
                 return MessagePage(
-                  header: 'Application not supported',
-                  message:
+                    header: 'Application not supported',
+                    message: Text(
                       'The used YubiKey does not support \'${app.name}\' application',
-                );
+                    ));
               } else if (app.getAvailability(data) != Availability.enabled) {
                 return MessagePage(
-                  header: 'Application disabled',
-                  message:
+                    header: 'Application disabled',
+                    message: Text(
                       'Enable the \'${app.name}\' application on your YubiKey to access',
-                );
+                    ));
               }
 
               switch (app) {
@@ -142,9 +167,10 @@ class MainPage extends ConsumerWidget {
                   return FidoScreen(data);
                 default:
                   return const MessagePage(
-                    header: 'Not supported',
-                    message: 'This application is not supported',
-                  );
+                      header: 'Not supported',
+                      message: Text(
+                        'This application is not supported',
+                      ));
               }
             },
             loading: () => DeviceErrorScreen(deviceNode),

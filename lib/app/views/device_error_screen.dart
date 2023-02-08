@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class DeviceErrorScreen extends ConsumerWidget {
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
         return MessagePage(
           graphic: noPermission,
-          message: 'Managing this device requires elevated privileges.',
+          message: const Text('Managing this device requires elevated privileges.'),
           actions: [
             ElevatedButton.icon(
               label: const Text('Unlock'),
@@ -66,7 +66,7 @@ class DeviceErrorScreen extends ConsumerWidget {
     }
     return const MessagePage(
       graphic: DeviceAvatar(child: Icon(Icons.usb_off)),
-      message: 'This YubiKey cannot be accessed',
+      message: Text('This YubiKey cannot be accessed'),
     );
   }
 
@@ -83,7 +83,7 @@ class DeviceErrorScreen extends ConsumerWidget {
           default:
             message = 'Place your YubiKey on the NFC reader';
         }
-        return MessagePage(message: message);
+        return MessagePage(message: Text(message));
       },
     );
   }

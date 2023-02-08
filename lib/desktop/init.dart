@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -253,7 +253,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
     if (slow) {
       return MessagePage(
         graphic: const CircularProgressIndicator(),
-        message: 'The Helper process isn\'t responding',
+        message: const Text('The Helper process isn\'t responding'),
         actions: [
           ActionChip(
             avatar: const Icon(Icons.copy),

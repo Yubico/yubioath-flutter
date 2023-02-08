@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ class MessagePage extends StatelessWidget {
   final Widget? title;
   final Widget? graphic;
   final String? header;
-  final String? message;
+  final Widget? message;
   final List<Widget> actions;
   final bool delayedContent;
   final Widget Function(BuildContext context)? keyActionsBuilder;
@@ -59,7 +59,7 @@ class MessagePage extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 12.0),
               if (message != null) ...[
-                Text(message!, textAlign: TextAlign.center),
+                Center(child: message!),
               ],
             ],
           ),

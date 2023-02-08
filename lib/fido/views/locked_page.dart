@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class FidoLockedPage extends ConsumerWidget {
           title: Text(AppLocalizations.of(context)!.fido_webauthn),
           graphic: noFingerprints,
           header: AppLocalizations.of(context)!.fido_no_fingerprints,
-          message: AppLocalizations.of(context)!.fido_set_pin_fingerprints,
+          message: Text(AppLocalizations.of(context)!.fido_set_pin_fingerprints),
           keyActionsBuilder: _buildActions,
         );
       } else {
@@ -50,7 +50,7 @@ class FidoLockedPage extends ConsumerWidget {
           header: state.credMgmt
               ? AppLocalizations.of(context)!.fido_no_discoverable_acc
               : AppLocalizations.of(context)!.fido_ready_to_use,
-          message: AppLocalizations.of(context)!.fido_optionally_set_a_pin,
+          message: Text(AppLocalizations.of(context)!.fido_optionally_set_a_pin),
           keyActionsBuilder: _buildActions,
         );
       }
@@ -61,7 +61,7 @@ class FidoLockedPage extends ConsumerWidget {
         title: Text(AppLocalizations.of(context)!.fido_webauthn),
         graphic: manageAccounts,
         header: AppLocalizations.of(context)!.fido_ready_to_use,
-        message: AppLocalizations.of(context)!.fido_register_as_a_key,
+        message: Text(AppLocalizations.of(context)!.fido_register_as_a_key),
         keyActionsBuilder: _buildActions,
       );
     }

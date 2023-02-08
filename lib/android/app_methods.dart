@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,28 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/android/state.dart';
 
 const appMethodsChannel = MethodChannel('app.methods');
 
 Future<bool> getHasCamera() async {
   return await appMethodsChannel.invokeMethod('hasCamera');
+}
+
+Future<bool> getHasNfc() async {
+  return await appMethodsChannel.invokeMethod('hasNfc');
+}
+
+Future<bool> isNfcEnabled() async {
+  return await appMethodsChannel.invokeMethod('isNfcEnabled');
+}
+
+Future<void> openNfcSettings() async {
+  await appMethodsChannel.invokeMethod('openNfcSettings');
 }
 
 Future<int> getAndroidSdkVersion() async {
@@ -29,4 +45,23 @@ Future<int> getAndroidSdkVersion() async {
 Future<void> setPrimaryClip(String toClipboard, bool isSensitive) async {
   await appMethodsChannel.invokeMethod('setPrimaryClip',
       {'toClipboard': toClipboard, 'isSensitive': isSensitive});
+}
+
+void setupAppMethodsChannel(WidgetRef ref) {
+  appMethodsChannel.setMethodCallHandler((call) async {
+    final args = jsonDecode(call.arguments);
+    switch (call.method) {
+      case 'nfcAdapterStateChanged':
+        {
+          var nfcEnabled = args['nfcEnabled'];
+          ref.read(androidNfcStateProvider.notifier).setNfcEnabled(nfcEnabled);
+          break;
+        }
+      default:
+        throw PlatformException(
+          code: 'NotImplemented',
+          message: 'Method ${call.method} is not implemented',
+        );
+    }
+  });
 }

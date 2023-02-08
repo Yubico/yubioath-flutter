@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class FidoScreen extends ConsumerWidget {
                 title: Text(AppLocalizations.of(context)!.fido_webauthn),
                 graphic: manageAccounts,
                 header: AppLocalizations.of(context)!.fido_ready_to_use,
-                message: AppLocalizations.of(context)!.fido_register_as_a_key,
+                message: Text(AppLocalizations.of(context)!.fido_register_as_a_key),
               );
             }
             final enabled = deviceData.info.config
@@ -60,7 +60,7 @@ class FidoScreen extends ConsumerWidget {
               return MessagePage(
                 title: Text(AppLocalizations.of(context)!.fido_webauthn),
                 header: AppLocalizations.of(context)!.fido_fido_disabled,
-                message: AppLocalizations.of(context)!.fido_webauthn_req_fido,
+                message: Text(AppLocalizations.of(context)!.fido_webauthn_req_fido)
               );
             }
 

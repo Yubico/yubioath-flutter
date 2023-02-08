@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ class AppFailurePage extends ConsumerWidget {
       title: title,
       graphic: graphic,
       header: header,
-      message: message,
+      message: Text(message),
       actions: actions,
     );
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,6 +82,7 @@ Future<Widget> initialize() async {
             (ref) => ref.watch(androidClipboardProvider),
       ),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
+      androidNfcSupportProvider.overrideWithValue(await getHasNfc()),
       supportedThemesProvider
           .overrideWith(
             (ref) => ref.watch(androidSupportedThemesProvider),
@@ -98,6 +99,9 @@ Future<Widget> initialize() async {
 
           // set context which will handle otpauth links
           setupOtpAuthLinkHandler(context);
+
+          // set context which will handle otpauth links
+          setupAppMethodsChannel(ref);
 
           return const MainPage();
         },
