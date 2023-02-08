@@ -383,9 +383,13 @@ class MainActivity : FlutterFragmentActivity() {
                     "hasNfc" -> result.success(
                         packageManager.hasSystemFeature(PackageManager.FEATURE_NFC)
                     )
-                    "isNfcEnabled" -> result.success(
-                        NfcAdapter.getDefaultAdapter(this@MainActivity).isEnabled
-                    )
+                    "isNfcEnabled" -> {
+                        val nfcAdapter = NfcAdapter.getDefaultAdapter(this@MainActivity)
+
+                        result.success(
+                            nfcAdapter != null && nfcAdapter.isEnabled
+                        )
+                    }
                     "openNfcSettings" -> {
                         startActivity(Intent(ACTION_NFC_SETTINGS))
                         result.success(true)
