@@ -18,7 +18,7 @@ import base64
 import io
 import os
 import sys
-import subprocess
+import subprocess  # nosec
 import tempfile
 from mss.exception import ScreenShotError
 from PIL import Image
@@ -34,14 +34,32 @@ def _capture_screen():
     except ScreenShotError:
         # One common error is that mss doesn't work with Wayland
         if sys.platform.startswith("linux"):
-            # Try gnome-screenshot fallback
+            # Try calling screenshot tools, with original library path
+            env = dict(os.environ)
+            lp = env.get("LD_LIBRARY_PATH_ORIG")
+            if lp is not None:
+                env["LD_LIBRARY_PATH"] = lp
+            else:
+                env.pop("LD_LIBRARY_PATH", None)
             fd, fname = tempfile.mkstemp(suffix=".png")
+
             try:
-                rc = subprocess.call(["gnome-screenshot", "-f", fname])  # nosec
+                # Try using gnome-screenshot
+                rc = subprocess.call(  # nosec
+                    ["gnome-screenshot", "-f", fname], env=env
+                )
                 if rc == 0:
                     return Image.open(fname)
             except FileNotFoundError:
-                pass  # Fall through to ValueError
+                # Try using spectacle (KDE)
+                try:
+                    rc = subprocess.call(  # nosec
+                        ["spectacle", "-b", "-n", "-o", fname], env=env
+                    )
+                    if rc == 0:
+                        return Image.open(fname)
+                except FileNotFoundError:
+                    pass  # Fall through to ValueError
             finally:
                 os.unlink(fname)
     raise ValueError("Unable to capture screenshot")
