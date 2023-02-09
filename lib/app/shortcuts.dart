@@ -18,9 +18,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../about_page.dart';
+import '../android/views/android_settings_page.dart';
+import '../core/state.dart';
 import '../oath/keys.dart';
+import '../settings_page.dart';
+import 'message.dart';
+import 'models.dart';
+import 'state.dart';
 
 class CopyIntent extends Intent {
   const CopyIntent();
@@ -34,38 +42,103 @@ class SearchIntent extends Intent {
   const SearchIntent();
 }
 
+class NextDeviceIntent extends Intent {
+  const NextDeviceIntent();
+}
+
+class SettingsIntent extends Intent {
+  const SettingsIntent();
+}
+
+class AboutIntent extends Intent {
+  const AboutIntent();
+}
+
 final ctrlOrCmd =
     Platform.isMacOS ? LogicalKeyboardKey.meta : LogicalKeyboardKey.control;
 
-final _globalShortcuts = {
-  LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyC): const CopyIntent(),
-  if (Platform.isMacOS)
-    LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyQ): const CloseIntent(),
-  LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyW): const CloseIntent(),
-  LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyF): const SearchIntent(),
-};
-
-final _globalActions = <Type, Action<Intent>>{
-  CloseIntent: CallbackAction(onInvoke: (_) {
-    windowManager.close();
-    return null;
-  }),
-  SearchIntent: CallbackAction(onInvoke: (intent) {
-    // If the OATH view doesn't have focus, but is shown, find and select the search bar.
-    final searchContext = searchAccountsField.currentContext;
-    if (searchContext != null) {
-      if (!Navigator.of(searchContext).canPop()) {
-        return Actions.maybeInvoke(searchContext, intent);
-      }
-    }
-    return null;
-  }),
-};
-
-Widget registerGlobalShortcuts(Widget child) => Actions(
-      actions: _globalActions,
+Widget registerGlobalShortcuts(
+        {required WidgetRef ref, required Widget child}) =>
+    Actions(
+      actions: {
+        CloseIntent: CallbackAction<CloseIntent>(onInvoke: (_) {
+          windowManager.close();
+          return null;
+        }),
+        SearchIntent: CallbackAction<SearchIntent>(onInvoke: (intent) {
+          // If the OATH view doesn't have focus, but is shown, find and select the search bar.
+          final searchContext = searchAccountsField.currentContext;
+          if (searchContext != null) {
+            if (!Navigator.of(searchContext).canPop()) {
+              return Actions.maybeInvoke(searchContext, intent);
+            }
+          }
+          return null;
+        }),
+        NextDeviceIntent: CallbackAction<NextDeviceIntent>(onInvoke: (_) {
+          ref.read(withContextProvider)((context) async {
+            if (!Navigator.of(context).canPop()) {
+              final attached = ref
+                  .read(attachedDevicesProvider)
+                  .whereType<UsbYubiKeyNode>()
+                  .toList();
+              if (attached.length > 1) {
+                final current = ref.read(currentDeviceProvider);
+                if (current != null && current is UsbYubiKeyNode) {
+                  final index = attached.indexOf(current);
+                  ref.read(currentDeviceProvider.notifier).setCurrentDevice(
+                      attached[(index + 1) % attached.length]);
+                }
+              }
+            }
+          });
+          return null;
+        }),
+        SettingsIntent: CallbackAction<SettingsIntent>(onInvoke: (_) {
+          ref.read(withContextProvider)((context) async {
+            if (!Navigator.of(context).canPop()) {
+              await showBlurDialog(
+                context: context,
+                builder: (context) => Platform.isAndroid
+                    ? const AndroidSettingsPage()
+                    : const SettingsPage(),
+                routeSettings: const RouteSettings(name: 'settings'),
+              );
+            }
+          });
+          return null;
+        }),
+        AboutIntent: CallbackAction<AboutIntent>(onInvoke: (_) {
+          ref.read(withContextProvider)((context) async {
+            if (!Navigator.of(context).canPop()) {
+              await showBlurDialog(
+                context: context,
+                builder: (context) => const AboutPage(),
+                routeSettings: const RouteSettings(name: 'about'),
+              );
+            }
+          });
+          return null;
+        }),
+      },
       child: Shortcuts(
-        shortcuts: _globalShortcuts,
+        shortcuts: {
+          LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyC): const CopyIntent(),
+          LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyW):
+              const CloseIntent(),
+          LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyF):
+              const SearchIntent(),
+          if (isDesktop) ...{
+            LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.tab):
+                const NextDeviceIntent(),
+          },
+          if (Platform.isMacOS) ...{
+            LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyQ):
+                const CloseIntent(),
+            LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.comma):
+                const SettingsIntent(),
+          },
+        },
         child: child,
       ),
     );

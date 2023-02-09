@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../about_page.dart';
-import '../../android/views/android_settings_page.dart';
 import '../../management/views/management_screen.dart';
-import '../../settings_page.dart';
 import '../message.dart';
 import '../models.dart';
+import '../shortcuts.dart';
 import '../state.dart';
 import 'keys.dart';
 
@@ -76,7 +72,7 @@ class MainPageDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final supportedApps = ref.watch(supportedAppsProvider);
-    final data = ref.watch(currentDeviceDataProvider).value;
+    final data = ref.watch(currentDeviceDataProvider).valueOrNull;
     final color =
         Theme.of(context).brightness == Brightness.dark ? 'white' : 'green';
 
@@ -105,30 +101,21 @@ class MainPageDrawer extends ConsumerWidget {
             index++;
           }
 
-          Widget Function(BuildContext) dialogBuilder;
-          RouteSettings? routeSettings;
           switch (index) {
             case 0:
-              dialogBuilder = (context) => ManagementScreen(data!);
+              showBlurDialog(
+                context: context,
+                // data must be non-null when index == 0
+                builder: (context) => ManagementScreen(data!),
+              );
               break;
             case 1:
-              dialogBuilder = (context) => Platform.isAndroid
-                  ? const AndroidSettingsPage()
-                  : const SettingsPage();
-              routeSettings = const RouteSettings(name: 'settings');
+              Actions.maybeInvoke(context, const SettingsIntent());
               break;
             case 2:
-              dialogBuilder = (context) => const AboutPage();
-              routeSettings = const RouteSettings(name: 'about');
+              Actions.maybeInvoke(context, const AboutIntent());
               break;
-            default:
-              return;
           }
-          showBlurDialog(
-            context: context,
-            builder: dialogBuilder,
-            routeSettings: routeSettings,
-          );
         }
       },
       children: [
