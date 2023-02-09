@@ -79,21 +79,18 @@ class MainPage extends ConsumerWidget {
         var isNfcEnabled = ref.watch(androidNfcStateProvider);
         return MessagePage(
           graphic: noKeyImage,
-          message: hasNfcSupport
-              ? isNfcEnabled
-                ? 'Tap or insert your YubiKey'
-                : 'Insert your YubiKey'
+          message: hasNfcSupport && isNfcEnabled
+              ? 'Tap or insert your YubiKey'
               : 'Insert your YubiKey',
-          actions: hasNfcSupport && !isNfcEnabled
-              ? [
-                  ElevatedButton.icon(
-                      label: const Text('Enable NFC'),
-                      icon: nfcIcon,
-                      onPressed: () async {
-                        await openNfcSettings();
-                      })
-                ]
-              : [],
+          actions: [
+            if (hasNfcSupport && !isNfcEnabled)
+              ElevatedButton.icon(
+                  label: const Text('Enable NFC'),
+                  icon: nfcIcon,
+                  onPressed: () async {
+                    await openNfcSettings();
+                  })
+          ],
           actionButtonBuilder: (context) => IconButton(
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: 'Add account',
@@ -154,7 +151,8 @@ class MainPage extends ConsumerWidget {
               } else if (app.getAvailability(data) != Availability.enabled) {
                 return MessagePage(
                   header: 'Application disabled',
-                  message: 'Enable the \'${app.name}\' application on your YubiKey to access',
+                  message:
+                      'Enable the \'${app.name}\' application on your YubiKey to access',
                 );
               }
 
