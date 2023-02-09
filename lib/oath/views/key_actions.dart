@@ -40,8 +40,7 @@ Widget oathBuildActions(
   int? used,
 }) {
   final capacity = oathState.version.isAtLeast(4) ? 32 : null;
-  final theme =
-      ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
+  final theme = Theme.of(context).colorScheme;
   return SimpleDialog(
     children: [
       ListTitle(AppLocalizations.of(context)!.general_setup,

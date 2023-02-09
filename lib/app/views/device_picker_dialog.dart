@@ -246,9 +246,10 @@ class _HeroAvatar extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: RadialGradient(
           colors: [
-            theme.colorScheme.background,
-            theme.colorScheme.background.withOpacity(0.4),
-            (theme.dialogTheme.backgroundColor ?? theme.dialogBackgroundColor)
+            theme.colorScheme.inverseSurface.withOpacity(0.6),
+            theme.colorScheme.inverseSurface.withOpacity(0.25),
+            (DialogTheme.of(context).backgroundColor ??
+                    theme.dialogBackgroundColor)
                 .withOpacity(0),
           ],
         ),
@@ -258,7 +259,7 @@ class _HeroAvatar extends StatelessWidget {
         // Give the avatar a transparent background
         data: theme.copyWith(
             colorScheme:
-                theme.colorScheme.copyWith(background: Colors.transparent)),
+                theme.colorScheme.copyWith(surfaceVariant: Colors.transparent)),
         child: child,
       ),
     );

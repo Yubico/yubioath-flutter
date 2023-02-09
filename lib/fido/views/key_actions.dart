@@ -27,8 +27,7 @@ import 'reset_dialog.dart';
 
 Widget fidoBuildActions(
     BuildContext context, DeviceNode node, FidoState state, int fingerprints) {
-  final theme =
-      ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
+  final theme = Theme.of(context).colorScheme;
   return SimpleDialog(
     children: [
       if (state.bioEnroll != null) ...[

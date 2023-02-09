@@ -16,12 +16,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/management/models.dart';
-import 'package:yubico_authenticator/widgets/product_image.dart';
 
 import '../../core/models.dart';
 import '../../core/state.dart';
+import '../../management/models.dart';
 import '../../widgets/custom_icons.dart';
+import '../../widgets/product_image.dart';
 import '../models.dart';
 import '../state.dart';
 import 'keys.dart';
@@ -55,7 +55,10 @@ class DeviceAvatar extends StatelessWidget {
           return DeviceAvatar(
             radius: radius,
             child: const ProductImage(
-                name: '', formFactor: FormFactor.unknown, isNfc: false),
+              name: '',
+              formFactor: FormFactor.unknown,
+              isNfc: false,
+            ),
           );
         },
         nfcReader: (_) => DeviceAvatar(
@@ -94,7 +97,7 @@ class DeviceAvatar extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: radius,
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           child: IconTheme(
             data: IconTheme.of(context).copyWith(
               size: radius,
