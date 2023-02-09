@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class FidoScreen extends ConsumerWidget {
               return MessagePage(
                 title: Text(AppLocalizations.of(context)!.fido_webauthn),
                 header: AppLocalizations.of(context)!.fido_fido_disabled,
-                message: AppLocalizations.of(context)!.fido_webauthn_req_fido
+                message: AppLocalizations.of(context)!.fido_webauthn_req_fido,
               );
             }
 

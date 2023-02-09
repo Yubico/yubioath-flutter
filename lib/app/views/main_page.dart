@@ -63,9 +63,8 @@ class MainPage extends ConsumerWidget {
       });
     });
 
-    final contextTheme = Theme.of(context);
     final deviceNode = ref.watch(currentDeviceProvider);
-    final isDarkTheme = contextTheme.brightness == Brightness.dark;
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final noKeyImage = Image.asset(
       isDarkTheme
           ? 'assets/graphics/no-key_dark.png'
@@ -133,7 +132,7 @@ class MainPage extends ConsumerWidget {
         return MessagePage(
           delayedContent: true,
           graphic: noKeyImage,
-          message: 'Insert your YubiKey'
+          message: 'Insert your YubiKey',
         );
       }
     } else {
@@ -148,12 +147,15 @@ class MainPage extends ConsumerWidget {
               } else if (app.getAvailability(data) ==
                   Availability.unsupported) {
                 return MessagePage(
-                    header: 'Application not supported',
-                    message: 'The used YubiKey does not support \'${app.name}\' application');
+                  header: 'Application not supported',
+                  message:
+                      'The used YubiKey does not support \'${app.name}\' application',
+                );
               } else if (app.getAvailability(data) != Availability.enabled) {
                 return MessagePage(
-                    header: 'Application disabled',
-                    message: 'Enable the \'${app.name}\' application on your YubiKey to access');
+                  header: 'Application disabled',
+                  message: 'Enable the \'${app.name}\' application on your YubiKey to access',
+                );
               }
 
               switch (app) {
@@ -163,8 +165,9 @@ class MainPage extends ConsumerWidget {
                   return FidoScreen(data);
                 default:
                   return const MessagePage(
-                      header: 'Not supported',
-                      message: 'This application is not supported');
+                    header: 'Not supported',
+                    message: 'This application is not supported',
+                  );
               }
             },
             loading: () => DeviceErrorScreen(deviceNode),
