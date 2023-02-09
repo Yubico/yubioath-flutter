@@ -22,7 +22,7 @@ class MessagePage extends StatelessWidget {
   final Widget? title;
   final Widget? graphic;
   final String? header;
-  final Widget? message;
+  final String? message;
   final List<Widget> actions;
   final bool delayedContent;
   final Widget Function(BuildContext context)? keyActionsBuilder;
@@ -59,7 +59,7 @@ class MessagePage extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 12.0),
               if (message != null) ...[
-                Center(child: message!),
+                Text(message!, textAlign: TextAlign.center),
               ],
             ],
           ),

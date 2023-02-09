@@ -39,7 +39,7 @@ class DeviceErrorScreen extends ConsumerWidget {
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
         return MessagePage(
           graphic: noPermission,
-          message: const Text('Managing this device requires elevated privileges.'),
+          message: 'Managing this device requires elevated privileges.',
           actions: [
             ElevatedButton.icon(
               label: const Text('Unlock'),
@@ -66,7 +66,7 @@ class DeviceErrorScreen extends ConsumerWidget {
     }
     return const MessagePage(
       graphic: DeviceAvatar(child: Icon(Icons.usb_off)),
-      message: Text('This YubiKey cannot be accessed'),
+      message: 'This YubiKey cannot be accessed',
     );
   }
 
@@ -83,7 +83,7 @@ class DeviceErrorScreen extends ConsumerWidget {
           default:
             message = 'Place your YubiKey on the NFC reader';
         }
-        return MessagePage(message: Text(message));
+        return MessagePage(message: message);
       },
     );
   }

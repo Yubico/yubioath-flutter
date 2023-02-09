@@ -150,7 +150,7 @@ class FidoUnlockedPage extends ConsumerWidget {
         title: Text(AppLocalizations.of(context)!.fido_webauthn),
         graphic: noFingerprints,
         header: AppLocalizations.of(context)!.fido_no_fingerprints,
-        message: Text(AppLocalizations.of(context)!.fido_add_one_or_more),
+        message: AppLocalizations.of(context)!.fido_add_one_or_more,
         keyActionsBuilder: (context) =>
             fidoBuildActions(context, node, state, 0),
       );
@@ -160,7 +160,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       title: Text(AppLocalizations.of(context)!.fido_webauthn),
       graphic: manageAccounts,
       header: AppLocalizations.of(context)!.fido_no_discoverable_acc,
-      message: Text(AppLocalizations.of(context)!.fido_register_as_a_key),
+      message: AppLocalizations.of(context)!.fido_register_as_a_key,
       keyActionsBuilder: (context) => fidoBuildActions(context, node, state, 0),
     );
   }

@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/android/app_methods.dart';
 import 'package:yubico_authenticator/android/state.dart';
+import 'package:yubico_authenticator/widgets/custom_icons.dart';
 
 import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
@@ -81,20 +82,19 @@ class MainPage extends ConsumerWidget {
           graphic: noKeyImage,
           message: hasNfcSupport
               ? isNfcEnabled
-                ? const Text('Tap or insert your YubiKey')
-                : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Insert your YubiKey'),
-                    const SizedBox(height: 24,),
-                        OutlinedButton(
-                            onPressed: () {
-                              openNfcSettings();
-                            },
-                            child: const Text('Enable NFC')),
-                      ],
-                )
-              : const Text('Insert your YubiKey'),
+                ? 'Tap or insert your YubiKey'
+                : 'Insert your YubiKey'
+              : 'Insert your YubiKey',
+          actions: hasNfcSupport && !isNfcEnabled
+              ? [
+                  ElevatedButton.icon(
+                      label: const Text('Enable NFC'),
+                      icon: nfcIcon,
+                      onPressed: () async {
+                        await openNfcSettings();
+                      })
+                ]
+              : [],
           actionButtonBuilder: (context) => IconButton(
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: 'Add account',
@@ -133,7 +133,7 @@ class MainPage extends ConsumerWidget {
         return MessagePage(
           delayedContent: true,
           graphic: noKeyImage,
-          message: const Text('Insert your YubiKey')
+          message: 'Insert your YubiKey'
         );
       }
     } else {
@@ -149,15 +149,11 @@ class MainPage extends ConsumerWidget {
                   Availability.unsupported) {
                 return MessagePage(
                     header: 'Application not supported',
-                    message: Text(
-                      'The used YubiKey does not support \'${app.name}\' application',
-                    ));
+                    message: 'The used YubiKey does not support \'${app.name}\' application');
               } else if (app.getAvailability(data) != Availability.enabled) {
                 return MessagePage(
                     header: 'Application disabled',
-                    message: Text(
-                      'Enable the \'${app.name}\' application on your YubiKey to access',
-                    ));
+                    message: 'Enable the \'${app.name}\' application on your YubiKey to access');
               }
 
               switch (app) {
@@ -168,9 +164,7 @@ class MainPage extends ConsumerWidget {
                 default:
                   return const MessagePage(
                       header: 'Not supported',
-                      message: Text(
-                        'This application is not supported',
-                      ));
+                      message: 'This application is not supported');
               }
             },
             loading: () => DeviceErrorScreen(deviceNode),

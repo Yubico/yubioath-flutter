@@ -100,7 +100,7 @@ class AppFailurePage extends ConsumerWidget {
       title: title,
       graphic: graphic,
       header: header,
-      message: Text(message),
+      message: message,
       actions: actions,
     );
   }

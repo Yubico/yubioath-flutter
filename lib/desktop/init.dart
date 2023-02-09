@@ -253,7 +253,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
     if (slow) {
       return MessagePage(
         graphic: const CircularProgressIndicator(),
-        message: const Text('The Helper process isn\'t responding'),
+        message: 'The Helper process isn\'t responding',
         actions: [
           ActionChip(
             avatar: const Icon(Icons.copy),

@@ -50,7 +50,7 @@ class FidoScreen extends ConsumerWidget {
                 title: Text(AppLocalizations.of(context)!.fido_webauthn),
                 graphic: manageAccounts,
                 header: AppLocalizations.of(context)!.fido_ready_to_use,
-                message: Text(AppLocalizations.of(context)!.fido_register_as_a_key),
+                message: AppLocalizations.of(context)!.fido_register_as_a_key,
               );
             }
             final enabled = deviceData.info.config
@@ -60,7 +60,7 @@ class FidoScreen extends ConsumerWidget {
               return MessagePage(
                 title: Text(AppLocalizations.of(context)!.fido_webauthn),
                 header: AppLocalizations.of(context)!.fido_fido_disabled,
-                message: Text(AppLocalizations.of(context)!.fido_webauthn_req_fido)
+                message: AppLocalizations.of(context)!.fido_webauthn_req_fido
               );
             }
 
