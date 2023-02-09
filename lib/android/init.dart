@@ -100,7 +100,6 @@ Future<Widget> initialize() async {
           // set context which will handle otpauth links
           setupOtpAuthLinkHandler(context);
 
-          // set context which will handle otpauth links
           setupAppMethodsChannel(ref);
 
           return const MainPage();
