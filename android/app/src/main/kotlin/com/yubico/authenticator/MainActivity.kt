@@ -19,6 +19,7 @@ package com.yubico.authenticator
 import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
@@ -377,7 +378,10 @@ class MainActivity : FlutterFragmentActivity() {
                         val cameraService =
                             getSystemService(Context.CAMERA_SERVICE) as CameraManager
                         result.success(
-                            cameraService.cameraIdList.isNotEmpty()
+                            cameraService.cameraIdList.any {
+                                cameraService.getCameraCharacteristics(it)
+                                    .get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
+                            }
                         )
                     }
                     "hasNfc" -> result.success(
