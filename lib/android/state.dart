@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,21 @@ class _AndroidClipboard extends AppClipboard {
   }
 }
 
+class NfcStateNotifier extends StateNotifier<bool> {
+  NfcStateNotifier(): super(false);
+
+  void setNfcEnabled(bool value) {
+    state = value;
+  }
+}
+
 final androidSdkVersionProvider = Provider<int>((ref) => -1);
+
+final androidNfcSupportProvider = Provider<bool>((ref) => false);
+
+final androidNfcStateProvider = StateNotifierProvider<NfcStateNotifier, bool>((ref) =>
+  NfcStateNotifier()
+);
 
 final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   if (ref.read(androidSdkVersionProvider) < 29) {
