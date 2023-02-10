@@ -124,7 +124,7 @@ class MenuAction with _$MenuAction {
     required String text,
     required Widget icon,
     String? trailing,
-    void Function(BuildContext context)? action,
+    Intent? intent,
   }) = _MenuAction;
 }
 

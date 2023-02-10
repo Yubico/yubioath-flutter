@@ -628,7 +628,7 @@ mixin _$MenuAction {
   String get text => throw _privateConstructorUsedError;
   Widget get icon => throw _privateConstructorUsedError;
   String? get trailing => throw _privateConstructorUsedError;
-  void Function(BuildContext)? get action => throw _privateConstructorUsedError;
+  Intent? get intent => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MenuActionCopyWith<MenuAction> get copyWith =>
@@ -641,11 +641,7 @@ abstract class $MenuActionCopyWith<$Res> {
           MenuAction value, $Res Function(MenuAction) then) =
       _$MenuActionCopyWithImpl<$Res, MenuAction>;
   @useResult
-  $Res call(
-      {String text,
-      Widget icon,
-      String? trailing,
-      void Function(BuildContext)? action});
+  $Res call({String text, Widget icon, String? trailing, Intent? intent});
 }
 
 /// @nodoc
@@ -664,7 +660,7 @@ class _$MenuActionCopyWithImpl<$Res, $Val extends MenuAction>
     Object? text = null,
     Object? icon = null,
     Object? trailing = freezed,
-    Object? action = freezed,
+    Object? intent = freezed,
   }) {
     return _then(_value.copyWith(
       text: null == text
@@ -679,10 +675,10 @@ class _$MenuActionCopyWithImpl<$Res, $Val extends MenuAction>
           ? _value.trailing
           : trailing // ignore: cast_nullable_to_non_nullable
               as String?,
-      action: freezed == action
-          ? _value.action
-          : action // ignore: cast_nullable_to_non_nullable
-              as void Function(BuildContext)?,
+      intent: freezed == intent
+          ? _value.intent
+          : intent // ignore: cast_nullable_to_non_nullable
+              as Intent?,
     ) as $Val);
   }
 }
@@ -695,11 +691,7 @@ abstract class _$$_MenuActionCopyWith<$Res>
       __$$_MenuActionCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String text,
-      Widget icon,
-      String? trailing,
-      void Function(BuildContext)? action});
+  $Res call({String text, Widget icon, String? trailing, Intent? intent});
 }
 
 /// @nodoc
@@ -716,7 +708,7 @@ class __$$_MenuActionCopyWithImpl<$Res>
     Object? text = null,
     Object? icon = null,
     Object? trailing = freezed,
-    Object? action = freezed,
+    Object? intent = freezed,
   }) {
     return _then(_$_MenuAction(
       text: null == text
@@ -731,10 +723,10 @@ class __$$_MenuActionCopyWithImpl<$Res>
           ? _value.trailing
           : trailing // ignore: cast_nullable_to_non_nullable
               as String?,
-      action: freezed == action
-          ? _value.action
-          : action // ignore: cast_nullable_to_non_nullable
-              as void Function(BuildContext)?,
+      intent: freezed == intent
+          ? _value.intent
+          : intent // ignore: cast_nullable_to_non_nullable
+              as Intent?,
     ));
   }
 }
@@ -743,7 +735,7 @@ class __$$_MenuActionCopyWithImpl<$Res>
 
 class _$_MenuAction implements _MenuAction {
   _$_MenuAction(
-      {required this.text, required this.icon, this.trailing, this.action});
+      {required this.text, required this.icon, this.trailing, this.intent});
 
   @override
   final String text;
@@ -752,11 +744,11 @@ class _$_MenuAction implements _MenuAction {
   @override
   final String? trailing;
   @override
-  final void Function(BuildContext)? action;
+  final Intent? intent;
 
   @override
   String toString() {
-    return 'MenuAction(text: $text, icon: $icon, trailing: $trailing, action: $action)';
+    return 'MenuAction(text: $text, icon: $icon, trailing: $trailing, intent: $intent)';
   }
 
   @override
@@ -768,11 +760,11 @@ class _$_MenuAction implements _MenuAction {
             (identical(other.icon, icon) || other.icon == icon) &&
             (identical(other.trailing, trailing) ||
                 other.trailing == trailing) &&
-            (identical(other.action, action) || other.action == action));
+            (identical(other.intent, intent) || other.intent == intent));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, text, icon, trailing, action);
+  int get hashCode => Object.hash(runtimeType, text, icon, trailing, intent);
 
   @JsonKey(ignore: true)
   @override
@@ -786,7 +778,7 @@ abstract class _MenuAction implements MenuAction {
       {required final String text,
       required final Widget icon,
       final String? trailing,
-      final void Function(BuildContext)? action}) = _$_MenuAction;
+      final Intent? intent}) = _$_MenuAction;
 
   @override
   String get text;
@@ -795,7 +787,7 @@ abstract class _MenuAction implements MenuAction {
   @override
   String? get trailing;
   @override
-  void Function(BuildContext)? get action;
+  Intent? get intent;
   @override
   @JsonKey(ignore: true)
   _$$_MenuActionCopyWith<_$_MenuAction> get copyWith =>

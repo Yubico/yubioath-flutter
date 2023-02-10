@@ -45,12 +45,12 @@ Future<void> showBottomMenu(
                       title: Text(a.text),
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 24),
-                      enabled: a.action != null,
-                      onTap: a.action == null
+                      enabled: a.intent != null,
+                      onTap: a.intent == null
                           ? null
                           : () {
                               Navigator.pop(context);
-                              a.action?.call(context);
+                              Actions.invoke(context, a.intent!);
                             },
                     ))
                 .toList(),
