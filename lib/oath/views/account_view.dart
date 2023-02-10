@@ -14,24 +14,44 @@
  * limitations under the License.
  */
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
+import '../../core/state.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../widgets/circle_timer.dart';
 import '../../widgets/menu_list_tile.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_dialog.dart';
 import 'account_mixin.dart';
 
-class AccountView extends ConsumerWidget with AccountMixin {
-  @override
+class AccountView extends ConsumerStatefulWidget {
   final OathCredential credential;
+  const AccountView(this.credential, {super.key});
 
-  AccountView(this.credential, {super.key});
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _AccountViewState();
+}
+
+class _AccountViewState extends ConsumerState<AccountView> with AccountMixin {
+  @override
+  OathCredential get credential => widget.credential;
+
+  final _focusNode = FocusNode();
+  int _lastTap = 0;
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   Color _iconColor(int shade) {
     final colors = [
@@ -77,7 +97,7 @@ class AccountView extends ConsumerWidget with AccountMixin {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final code = getCode(ref);
     final expired = code == null ||
         (credential.oathType == OathType.totp &&
@@ -124,75 +144,123 @@ class AccountView extends ConsumerWidget with AccountMixin {
       },
       child: Actions(
         actions: {
-          CopyIntent: CallbackAction(onInvoke: (_) async {
+          CopyIntent: CallbackAction<CopyIntent>(onInvoke: (_) async {
             await triggerCopy();
+            return null;
+          }),
+          OpenIntent: CallbackAction<OpenIntent>(onInvoke: (_) async {
+            await showBlurDialog(
+              context: context,
+              builder: (context) => AccountDialog(credential),
+            );
             return null;
           }),
         },
         child: LayoutBuilder(builder: (context, constraints) {
           final showAvatar = constraints.maxWidth >= 315;
-          return ListTile(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            onTap: () {
-              showBlurDialog(
-                context: context,
-                builder: (context) => AccountDialog(credential),
-              );
+
+          return Shortcuts(
+            shortcuts: {
+              LogicalKeySet(LogicalKeyboardKey.enter): const OpenIntent(),
+              LogicalKeySet(LogicalKeyboardKey.space): const OpenIntent(),
             },
-            onLongPress: triggerCopy,
-            leading: showAvatar
-                ? CircleAvatar(
-                    foregroundColor: darkMode ? Colors.black : Colors.white,
-                    backgroundColor: _iconColor(darkMode ? 300 : 400),
-                    child: Text(
-                      (credential.issuer ?? credential.name)
-                          .characters
-                          .first
-                          .toUpperCase(),
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w300),
-                    ),
-                  )
-                : null,
-            title: Text(
-              title,
-              overflow: TextOverflow.fade,
-              maxLines: 1,
-              softWrap: false,
-            ),
-            subtitle: subtitle != null
-                ? Text(
-                    subtitle!,
-                    overflow: TextOverflow.fade,
-                    maxLines: 1,
-                    softWrap: false,
-                  )
-                : null,
-            trailing: GestureDetector(
+            child: ListTile(
+              focusNode: _focusNode,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
               onTap: () {
-                // Block opening the dialog.
+                if (isDesktop) {
+                  final now = DateTime.now().millisecondsSinceEpoch;
+                  if (now - _lastTap < 500) {
+                    setState(() {
+                      _lastTap = 0;
+                    });
+                    triggerCopy();
+                  } else {
+                    _focusNode.requestFocus();
+                    setState(() {
+                      _lastTap = now;
+                    });
+                  }
+                } else {
+                  Actions.maybeInvoke<OpenIntent>(context, const OpenIntent());
+                }
               },
-              onDoubleTap: triggerCopy,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  color: theme.colorScheme.surfaceVariant.withOpacity(0.4),
-                  borderRadius: const BorderRadius.all(Radius.circular(64.0)),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 4.0),
-                  child: DefaultTextStyle.merge(
-                    style: theme.textTheme.titleMedium,
-                    child: IconTheme(
-                      data: IconTheme.of(context).copyWith(
-                        color:
-                            theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+              onLongPress: triggerCopy,
+              leading: showAvatar
+                  ? CircleAvatar(
+                      foregroundColor: darkMode ? Colors.black : Colors.white,
+                      backgroundColor: _iconColor(darkMode ? 300 : 400),
+                      child: Text(
+                        (credential.issuer ?? credential.name)
+                            .characters
+                            .first
+                            .toUpperCase(),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w300),
                       ),
-                      child: buildCodeView(ref),
+                    )
+                  : null,
+              title: Text(
+                title,
+                overflow: TextOverflow.fade,
+                maxLines: 1,
+                softWrap: false,
+              ),
+              subtitle: subtitle != null
+                  ? Text(
+                      subtitle!,
+                      overflow: TextOverflow.fade,
+                      maxLines: 1,
+                      softWrap: false,
+                    )
+                  : null,
+              trailing: Focus(
+                skipTraversal: true,
+                descendantsAreTraversable: false,
+                child: FilledButton.tonalIcon(
+                  icon: AnimatedSize(
+                    alignment: Alignment.centerRight,
+                    duration: const Duration(milliseconds: 100),
+                    child: Opacity(
+                      opacity: 0.4,
+                      child: (credential.oathType == OathType.hotp
+                              ? (expired ? const Icon(Icons.refresh) : null)
+                              : (expired
+                                  ? (credential.touchRequired
+                                      ? const Icon(Icons.touch_app)
+                                      : null)
+                                  : SizedBox.square(
+                                      dimension:
+                                          (IconTheme.of(context).size ?? 18) *
+                                              0.8,
+                                      child: CircleTimer(
+                                        code.validFrom * 1000,
+                                        code.validTo * 1000,
+                                      ),
+                                    ))) ??
+                          const SizedBox(),
                     ),
                   ),
+                  label: Opacity(
+                    opacity: expired ? 0.4 : 1.0,
+                    child: Text(
+                      formatCode(code),
+                      style: const TextStyle(
+                        fontFeatures: [FontFeature.tabularFigures()],
+                        //fontWeight: FontWeight.w400,
+                      ),
+                      textHeightBehavior: TextHeightBehavior(
+                        // This helps with vertical centering on desktop
+                        applyHeightToFirstAscent: !isDesktop,
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    Actions.maybeInvoke<OpenIntent>(
+                        context, const OpenIntent());
+                  },
                 ),
               ),
             ),
