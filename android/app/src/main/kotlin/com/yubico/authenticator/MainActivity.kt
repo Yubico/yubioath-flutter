@@ -167,6 +167,7 @@ class MainActivity : FlutterFragmentActivity() {
 
         appPreferences.unregisterListener(sharedPreferencesListener)
 
+        stopUsbDiscovery()
         stopNfcDiscovery()
         if (!appPreferences.openAppOnUsb) {
             enableAliasMainActivityComponent(false)
