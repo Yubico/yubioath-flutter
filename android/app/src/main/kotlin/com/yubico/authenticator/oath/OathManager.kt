@@ -378,7 +378,11 @@ class OathManager(
             val remembered = keyManager.isRemembered(it.deviceId)
             if (unlocked) {
                 oathViewModel.setSessionState(it.model(remembered))
-                oathViewModel.updateCredentials(calculateOathCodes(it).model(it.deviceId))
+
+                // fetch credentials after unlocking only if the YubiKey is connected over USB
+                if ( appViewModel.connectedYubiKey.value != null) {
+                    oathViewModel.updateCredentials(calculateOathCodes(it).model(it.deviceId))
+                }
             }
 
             jsonSerializer.encodeToString(mapOf("unlocked" to unlocked, "remembered" to remembered))
