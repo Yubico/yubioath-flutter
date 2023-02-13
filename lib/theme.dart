@@ -25,8 +25,45 @@ const darkRed = Color(0xffda4d41);
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
         useMaterial3: true,
-        brightness: Brightness.light,
-        colorSchemeSeed: primaryBlue,
+        colorScheme: ColorScheme.fromSeed(
+          brightness: Brightness.light,
+          seedColor: const Color(0xff2196f3),
+          //seedColor: primaryBlue,
+        ).copyWith(
+          primary: primaryBlue,
+          //secondary: accentGreen,
+        ),
+        textTheme: TextTheme(
+          bodySmall: TextStyle(color: Colors.grey.shade900),
+        ),
+        dialogTheme: const DialogTheme(
+          surfaceTintColor: Colors.white70,
+        ),
+      );
+
+  static ThemeData get darkTheme => ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          brightness: Brightness.dark,
+          seedColor: const Color(0xff2196f3),
+          //seedColor: const Color(0xff3f51b5),
+        ).copyWith(
+          primary: primaryGreen,
+          //onPrimary: Colors.grey.shade900,
+          //secondary: accentGreen,
+          //secondary: const Color(0xff5d7d90),
+          //onSecondary: Colors.grey.shade900,
+          //primaryContainer: Colors.grey.shade800,
+          //onPrimaryContainer: Colors.grey.shade100,
+          error: darkRed,
+          onError: Colors.white.withOpacity(0.9),
+        ),
+        textTheme: TextTheme(
+          bodySmall: TextStyle(color: Colors.grey.shade500),
+        ),
+        dialogTheme: DialogTheme(
+          surfaceTintColor: Colors.grey.shade700,
+        ),
       );
 
   /* TODO: Remove this. It is left here as a reference as we adjust styles to work with Flutter 3.7.
@@ -113,12 +150,6 @@ class AppTheme {
         ),
       );
   */
-
-  static ThemeData get darkTheme => ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        colorSchemeSeed: primaryGreen,
-      );
 
   /* TODO: Remove this. It is left here as a reference as we adjust styles to work with Flutter 3.7.
   static ThemeData get darkTheme => ThemeData(

@@ -106,7 +106,8 @@ class AccountView extends ConsumerWidget with AccountMixin {
       }
     }
 
-    final darkMode = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final darkMode = theme.brightness == Brightness.dark;
 
     return GestureDetector(
       onSecondaryTapDown: (details) {
@@ -176,15 +177,21 @@ class AccountView extends ConsumerWidget with AccountMixin {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   shape: BoxShape.rectangle,
-                  color: CardTheme.of(context).color,
-                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                  color: theme.colorScheme.surfaceVariant.withOpacity(0.4),
+                  borderRadius: const BorderRadius.all(Radius.circular(64.0)),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 10.0, vertical: 2.0),
+                      horizontal: 8.0, vertical: 4.0),
                   child: DefaultTextStyle.merge(
-                    style: Theme.of(context).textTheme.bodyLarge,
-                    child: buildCodeView(ref),
+                    style: theme.textTheme.titleMedium,
+                    child: IconTheme(
+                      data: IconTheme.of(context).copyWith(
+                        color:
+                            theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                      ),
+                      child: buildCodeView(ref),
+                    ),
                   ),
                 ),
               ),

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/android/state.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/models.dart';
+import 'app_methods.dart';
 
 final _log = Logger('android.window_state_provider');
 
 final _windowStateProvider =
     StateNotifierProvider<_WindowStateNotifier, WindowState>(
-        (ref) => _WindowStateNotifier());
+        (ref) => _WindowStateNotifier(ref));
 
 final androidWindowStateProvider = Provider<WindowState>(
   (ref) => ref.watch(_windowStateProvider),
@@ -33,7 +35,8 @@ final androidWindowStateProvider = Provider<WindowState>(
 
 class _WindowStateNotifier extends StateNotifier<WindowState>
     with WidgetsBindingObserver {
-  _WindowStateNotifier()
+    final StateNotifierProviderRef<_WindowStateNotifier, WindowState> _ref;
+    _WindowStateNotifier(this._ref)
       : super(WindowState(focused: true, visible: true, active: true)) {
     _init();
   }
@@ -52,6 +55,11 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
           visible: requestedState,
           active: requestedState);
       _log.debug('Updated windowState to $state');
+      if (lifeCycleState == AppLifecycleState.resumed) {
+        _log.debug('Reading nfc enabled value');
+        isNfcEnabled().then((value) =>
+            _ref.read(androidNfcStateProvider.notifier).setNfcEnabled(value));
+      }
     } else {
       _log.debug('Ignoring appLifecycleStateChange');
     }

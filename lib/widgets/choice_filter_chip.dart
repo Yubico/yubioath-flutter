@@ -69,7 +69,7 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
           .map((e) => PopupMenuItem<T>(
                 value: e,
                 height: chipBox.size.height,
-                textStyle: Theme.of(context).chipTheme.labelStyle,
+                textStyle: ChipTheme.of(context).labelStyle,
                 child: widget.itemBuilder(e),
               ))
           .toList(),
@@ -89,7 +89,8 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
             padding: const EdgeInsets.only(left: 6),
             child: Icon(
               _showing ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-              color: Theme.of(context).chipTheme.checkmarkColor,
+              color: ChipTheme.of(context).checkmarkColor,
+              size: 18,
             ),
           ),
         ],

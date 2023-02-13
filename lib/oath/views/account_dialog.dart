@@ -177,7 +177,7 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
               DecoratedBox(
                 decoration: BoxDecoration(
                   shape: BoxShape.rectangle,
-                  color: CardTheme.of(context).color,
+                  color: Theme.of(context).colorScheme.surfaceVariant,
                   borderRadius: const BorderRadius.all(Radius.circular(30.0)),
                 ),
                 child: Center(
@@ -185,7 +185,13 @@ class AccountDialog extends ConsumerWidget with AccountMixin {
                     child: DefaultTextStyle.merge(
                       style: const TextStyle(fontSize: 28),
                       child: IconTheme(
-                        data: IconTheme.of(context).copyWith(size: 24),
+                        data: IconTheme.of(context).copyWith(
+                          size: 24,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.4),
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16.0, vertical: 8.0),

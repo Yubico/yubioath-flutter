@@ -53,11 +53,15 @@ class AppPage extends StatelessWidget {
             return Scaffold(
               body: Row(
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     width: 280,
-                    child: ListTileTheme(
-                        style: ListTileStyle.drawer,
-                        child: MainPageDrawer(shouldPop: false)),
+                    child: DrawerTheme(
+                      data: DrawerTheme.of(context).copyWith(
+                        // Don't color the drawer differently
+                        surfaceTintColor: Colors.transparent,
+                      ),
+                      child: const MainPageDrawer(shouldPop: false),
+                    ),
                   ),
                   Expanded(
                     child: _buildScaffold(context, false),

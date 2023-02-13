@@ -16,6 +16,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/android/app_methods.dart';
+import 'package:yubico_authenticator/android/state.dart';
+import 'package:yubico_authenticator/widgets/custom_icons.dart';
 
 import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
@@ -40,6 +43,10 @@ class MainPage extends ConsumerWidget {
         next?.call(context);
       },
     );
+
+    if (isAndroid) {
+      isNfcEnabled().then((value) => ref.read(androidNfcStateProvider.notifier).setNfcEnabled(value));
+    }
 
     // If the current device changes, we need to pop any open dialogs.
     ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, __) {
@@ -67,9 +74,23 @@ class MainPage extends ConsumerWidget {
     );
     if (deviceNode == null) {
       if (isAndroid) {
+
+        var hasNfcSupport = ref.watch(androidNfcSupportProvider);
+        var isNfcEnabled = ref.watch(androidNfcStateProvider);
         return MessagePage(
           graphic: noKeyImage,
-          message: 'Insert or tap your YubiKey',
+          message: hasNfcSupport && isNfcEnabled
+              ? 'Tap or insert your YubiKey'
+              : 'Insert your YubiKey',
+          actions: [
+            if (hasNfcSupport && !isNfcEnabled)
+              ElevatedButton.icon(
+                  label: const Text('Enable NFC'),
+                  icon: nfcIcon,
+                  onPressed: () async {
+                    await openNfcSettings();
+                  })
+          ],
           actionButtonBuilder: (context) => IconButton(
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: 'Add account',

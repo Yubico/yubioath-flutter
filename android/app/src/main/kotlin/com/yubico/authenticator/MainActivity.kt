@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings.ACTION_NFC_SETTINGS
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
@@ -33,7 +35,6 @@ import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.AppLinkMethodChannel
-//import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
@@ -42,6 +43,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.io.Closeable
 import java.util.concurrent.Executors
 
@@ -55,6 +57,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     // receives broadcasts when QR Scanner camera is closed
     private lateinit var qrScannerCameraClosedBR : QRScannerCameraClosedBR
+    private lateinit var nfcAdapterStateChangeBR : NfcAdapterStateChangeBR
 
     private lateinit var serviceLocator: ServiceLocator
 
@@ -119,11 +122,13 @@ class MainActivity : FlutterFragmentActivity() {
     override fun onStart() {
         super.onStart()
         registerReceiver(qrScannerCameraClosedBR, QRScannerCameraClosedBR.intentFilter)
+        registerReceiver(nfcAdapterStateChangeBR, NfcAdapterStateChangeBR.intentFilter)
     }
 
     override fun onStop() {
         super.onStop()
         unregisterReceiver(qrScannerCameraClosedBR)
+        unregisterReceiver(nfcAdapterStateChangeBR)
     }
 
     override fun onPause() {
@@ -244,6 +249,7 @@ class MainActivity : FlutterFragmentActivity() {
         appPreferences = serviceLocator.provideAppPreferences()
         appMethodChannel = AppMethodChannel(messenger)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
+        nfcAdapterStateChangeBR = NfcAdapterStateChangeBR(appMethodChannel)
 
         flutterStreams = listOf(
             viewModel.flowDeviceInfo.flowTo(this, messenger, "android.devices.deviceInfo"),
@@ -310,6 +316,23 @@ class MainActivity : FlutterFragmentActivity() {
         }
     }
 
+//    class NfcAdapterStateChangedBR : BroadcastReceiver() {
+//        companion object {
+//            val intentFilter = IntentFilter("android.nfc.action.ADAPTER_STATE_CHANGED")
+//        }
+//
+//        override fun onReceive(context: Context?, intent: Intent?) {
+//            intent?.let {
+//                val state = it.getIntExtra("android.nfc.extra.ADAPTER_STATE", 0)
+//                Log.d(TAG, "NfcAdapter state changed to $state")
+//                if (state == STATE_ON || state == STATE_TURNING_OFF) {
+//                    (context as? MainActivity)?.appMethodChannel?.nfcAdapterStateChanged(state == STATE_ON)
+//                }
+//            }
+//
+//        }
+//    }
+
     inner class AppMethodChannel(messenger: BinaryMessenger) {
 
         private val methodChannel = MethodChannel(messenger, "app.methods")
@@ -344,13 +367,38 @@ class MainActivity : FlutterFragmentActivity() {
                         val cameraService =
                             getSystemService(Context.CAMERA_SERVICE) as CameraManager
                         result.success(
-                            cameraService.cameraIdList.isNotEmpty()
+                            cameraService.cameraIdList.any {
+                                cameraService.getCameraCharacteristics(it)
+                                    .get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
+                            }
                         )
+                    }
+
+                    "hasNfc" -> result.success(
+                        packageManager.hasSystemFeature(PackageManager.FEATURE_NFC)
+                    )
+                    "isNfcEnabled" -> {
+                        val nfcAdapter = NfcAdapter.getDefaultAdapter(this@MainActivity)
+
+                        result.success(
+                            nfcAdapter != null && nfcAdapter.isEnabled
+                        )
+                    }
+                    "openNfcSettings" -> {
+                        startActivity(Intent(ACTION_NFC_SETTINGS))
+                        result.success(true)
                     }
 
                     else -> Log.w(TAG, "Unknown app method: ${methodCall.method}")
                 }
             }
+        }
+
+        fun nfcAdapterStateChanged(value: Boolean) {
+            methodChannel.invokeMethod(
+                "nfcAdapterStateChanged",
+                JSONObject(mapOf("nfcEnabled" to value)).toString()
+            )
         }
     }
 
