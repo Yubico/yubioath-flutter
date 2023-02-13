@@ -1,3 +1,9 @@
+* Version 6.1.1 (released 2023-02-13)
+ ** Android: Fix issues on Chromebooks when adding accounts.
+ ** Android: Fix to a bug when accounts might disappear from the account list when switching between apps with a YubiKey connected over USB.
+ ** Android: Improvements to performance for YubiKeys with password protected OATH applets.
+ ** Android: Improvements to compatibility with generic OATH NFC smart cards.
+
 * Version 6.1.0 (released 2023-01-25)
  ** UI: Split Configuration and Device Picker into two buttons.
  ** OATH: Avoid truncation of account issuer/name in dialog view.
