@@ -24,7 +24,9 @@ const resetAction = Key('$_prefix.reset');
 
 const noAccountsView = Key('$_prefix.no_accounts');
 
-const searchAccountsField = Key('$_prefix.search_accounts');
+// This is global so we can access it from the global Ctrl+F shortcut.
+final searchAccountsField = GlobalKey();
+
 const passwordField = Key('$_prefix.password');
 const currentPasswordField = Key('$_prefix.current_password');
 const newPasswordField = Key('$_prefix.new_password');
