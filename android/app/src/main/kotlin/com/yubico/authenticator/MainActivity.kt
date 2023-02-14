@@ -17,7 +17,11 @@
 package com.yubico.authenticator
 
 import android.app.Activity
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
 import android.hardware.camera2.CameraCharacteristics
@@ -65,6 +69,8 @@ import org.json.JSONObject
 import java.io.Closeable
 import java.util.concurrent.Executors
 
+var lastProcessingWasSuccessful : Boolean = false
+
 class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val oathViewModel: OathViewModel by viewModels()
@@ -83,7 +89,7 @@ class MainActivity : FlutterFragmentActivity() {
     class CustomNfcDispatcher(private val coroutineScope: CoroutineScope) : NfcDispatcher {
 
         private lateinit var adapter: NfcAdapter
-        private lateinit var yubikitNfcDispatcher : NfcReaderDispatcher
+        private lateinit var yubikitNfcDispatcher: NfcReaderDispatcher
 
         override fun enable(
             activity: Activity,
@@ -94,30 +100,41 @@ class MainActivity : FlutterFragmentActivity() {
             adapter = getDefaultAdapter(activity)
             yubikitNfcDispatcher = NfcReaderDispatcher(adapter)
 
-            Log.i(TAG,"enabling yubikit NFC dispatcher")
-            yubikitNfcDispatcher.enable(activity, nfcConfiguration, TagInterceptor(activity as MainActivity, coroutineScope, handler))
+            Log.i(TAG, "enabling yubikit NFC dispatcher")
+            yubikitNfcDispatcher.enable(
+                activity,
+                nfcConfiguration,
+                TagInterceptor(activity as MainActivity, coroutineScope, handler)
+            )
 
         }
 
         override fun disable(activity: Activity) {
             yubikitNfcDispatcher.disable(activity)
-            Log.i(TAG,"disabling yubikit NFC dispatcher")
+            Log.i(TAG, "disabling yubikit NFC dispatcher")
         }
 
-        class TagInterceptor(private val activity: MainActivity, private val coroutineScope: CoroutineScope, private val tagHandler: NfcDispatcher.OnTagHandler) : NfcDispatcher.OnTagHandler {
+        class TagInterceptor(
+            private val activity: MainActivity,
+            private val coroutineScope: CoroutineScope,
+            private val tagHandler: NfcDispatcher.OnTagHandler
+        ) : NfcDispatcher.OnTagHandler {
             override fun onTag(tag: Tag) {
                 activity.appMethodChannel.nfcActivityStateChanged(NfcActivity.TAG_PRESENT.value)
                 coroutineScope.launch {
                     delay(500)
                     activity.appMethodChannel.nfcActivityStateChanged(NfcActivity.PROCESSING_STARTED.value)
                     delay(500)
+                    Log.i(TAG, "Calling original onTag")
                     tagHandler.onTag(tag)
                     delay(500)
-                    activity.appMethodChannel.nfcActivityStateChanged(NfcActivity.PROCESSING_FINISHED.value)
-                    delay(500)
-                    activity.appMethodChannel.nfcActivityStateChanged(NfcActivity.TAG_PRESENT.value)
+//                    Log.i(TAG, "Marking call as successful")
+//                    activity.appMethodChannel.nfcActivityStateChanged(NfcActivity.PROCESSING_FINISHED.value)
+//                    Log.i(TAG, "Marking call as interrupted")
+//                    activity.appMethodChannel.nfcActivityStateChanged(NfcActivity.PROCESSING_INTERRUPTED.value)
+//                    delay(500)
+//                    activity.appMethodChannel.nfcActivityStateChanged(NfcActivity.TAG_PRESENT.value)
                 }
-
             }
 
         }
@@ -135,7 +152,10 @@ class MainActivity : FlutterFragmentActivity() {
 
         allowScreenshots(true)
 
-        yubikit = YubiKitManager(UsbYubiKeyManager(this), NfcYubiKeyManager(this,CustomNfcDispatcher(lifecycleScope)))
+        yubikit = YubiKitManager(
+            UsbYubiKeyManager(this),
+            NfcYubiKeyManager(this, CustomNfcDispatcher(lifecycleScope))
+        )
 
         setupYubiKitLogger()
     }
@@ -337,7 +357,7 @@ class MainActivity : FlutterFragmentActivity() {
     private lateinit var appPreferences: AppPreferences
     private lateinit var flutterLog: FlutterLog
     private lateinit var flutterStreams: List<Closeable>
-    private lateinit var appMethodChannel: AppMethodChannel
+    public lateinit var appMethodChannel: AppMethodChannel
     private lateinit var appLinkMethodChannel: AppLinkMethodChannel
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -490,6 +510,7 @@ class MainActivity : FlutterFragmentActivity() {
         private val uiThreadHandler = Handler(Looper.getMainLooper())
         fun nfcActivityStateChanged(value: Int) {
             uiThreadHandler.post {
+                Log.i(TAG, "NFC Activity state change to $value")
                 methodChannel.invokeMethod(
                     "nfcActivityChanged",
                     JSONObject(mapOf("state" to value)).toString()
