@@ -335,10 +335,19 @@ class OathManager(
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
             Log.e(TAG, "Failed to connect to CCID", e.toString())
+            Log.e(TAG, "Set nfc activity state to PROCESSING_INTERRUPTED")
             (lifecycleOwner as MainActivity).appMethodChannel.nfcActivityStateChanged(
                 MainActivity.NfcActivity.PROCESSING_INTERRUPTED.value)
+
+            coroutineScope.launch {
+                delay(2500)
+                (lifecycleOwner as MainActivity).appMethodChannel.nfcActivityStateChanged(
+                    MainActivity.NfcActivity.READY.value)
+            }
+
             delay(500)
-            Log.e(TAG, "Set nfc activity state to PROCESSING_INTERRUPTED")
+
+
             if (device.transport == Transport.USB || e is ApplicationNotAvailableException) {
                 val deviceInfo = try {
                     getDeviceInfo(device)

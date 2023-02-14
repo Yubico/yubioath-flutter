@@ -8,7 +8,7 @@ import 'package:yubico_authenticator/core/state.dart';
 
 const widgetColor = Colors.amber;
 const backgroundColor = Colors.cyan;
-const widgetWidth = 100.0;
+const widgetWidth = 400.0;
 const iconWidth = widgetWidth / 1.8;
 
 final _logger = Logger('nfc_activity_overlay');
@@ -161,7 +161,7 @@ class NfcActivityWidget extends StatelessWidget {
     final backgroundOpacity = nfcActivity == NfcActivity.processingStarted
         ? 0.6 : 0.0;
     final opacity = nfcActivity == NfcActivity.ready
-        ? 0.2
+        ? 0.0
         : nfcActivity == NfcActivity.tagPresent
             ? 0.7
             : successfulProcessing || processingError
@@ -170,17 +170,19 @@ class NfcActivityWidget extends StatelessWidget {
 
     _logger.info('Successful processing: $successfulProcessing  ProcessingError: $processingError BackgroundOpacity: $backgroundOpacity opacity: $opacity');
 
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        NfcActivityBackground(opacity: backgroundOpacity,),
-        NfcActivityIcon(opacity: opacity,),
-        if (successfulProcessing)
-          const Icon(Icons.check_rounded, color: Colors.green, size: 48,),
-        if (processingError)
-          const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 48,),
-        const SizedBox(width: widgetWidth, height: widgetWidth,)
-      ],
+    return IgnorePointer(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          NfcActivityBackground(opacity: backgroundOpacity,),
+          NfcActivityIcon(opacity: opacity,),
+          if (successfulProcessing)
+            const Icon(Icons.check_rounded, color: Colors.green, size: iconWidth / 2,),
+          if (processingError)
+            const Icon(Icons.warning_amber_rounded, color: Colors.red, size: iconWidth / 2,),
+          const SizedBox(width: widgetWidth, height: widgetWidth,)
+        ],
+      ),
     );
   }
 }
@@ -203,23 +205,17 @@ class NfcActivityOverlay extends ConsumerWidget {
         child,
         Row(
           mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               verticalDirection: VerticalDirection.down,
               children: [
                 NfcActivityWidget(nfcActivity: nfcActivity),
-                const SizedBox(
-                  height: 56,
-                )
               ],
             ),
-            const SizedBox(
-              width: 16,
-            )
           ],
         )
       ]),
