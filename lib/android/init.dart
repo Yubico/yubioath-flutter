@@ -46,7 +46,8 @@ Future<Widget> initialize() async {
   _initSystemUi();
 
   if (kDebugMode) {
-    Logger.root.level = Levels.DEBUG;
+    // force INFO LOG for easier demoing
+    Logger.root.level = Levels.INFO;
   }
 
   _initLicenses();

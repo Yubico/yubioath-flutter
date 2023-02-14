@@ -57,6 +57,12 @@ void setupAppMethodsChannel(WidgetRef ref) {
           ref.read(androidNfcStateProvider.notifier).setNfcEnabled(nfcEnabled);
           break;
         }
+      case 'nfcActivityChanged':
+        {
+          var nfcActivityState = args['state'];
+          ref.read(androidNfcActivityProvider.notifier).setActivityState(nfcActivityState);
+          break;
+        }
       default:
         throw PlatformException(
           code: 'NotImplemented',

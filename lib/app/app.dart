@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/android/nfc_activity_overlay.dart';
 
 import '../theme.dart';
 import 'logging.dart';
@@ -32,23 +33,25 @@ class YubicoAuthenticatorApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return registerGlobalShortcuts(
       ref: ref,
-      child: LogWarningOverlay(
-        child: MaterialApp(
-          title: 'Yubico Authenticator',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ref.watch(themeModeProvider),
-          home: page,
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en', ''), // English, no country code
-          ],
+      child: NfcActivityOverlay(
+        child: LogWarningOverlay(
+          child: MaterialApp(
+            title: 'Yubico Authenticator',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: ref.watch(themeModeProvider),
+            home: page,
+            debugShowCheckedModeBanner: false,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', ''), // English, no country code
+            ],
+          ),
         ),
       ),
     );
