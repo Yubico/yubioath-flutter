@@ -25,9 +25,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.*
 import com.yubico.authenticator.device.Capabilities
-import com.yubico.authenticator.device.Config
 import com.yubico.authenticator.device.Info
-import com.yubico.authenticator.device.Version
+import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.data.Code
 import com.yubico.authenticator.oath.data.CodeType
@@ -55,7 +54,6 @@ import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.smartcard.SmartCardProtocol
 import com.yubico.yubikit.core.util.Result
-import com.yubico.yubikit.management.FormFactor
 import com.yubico.yubikit.oath.CredentialData
 import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
@@ -294,7 +292,22 @@ class OathManager(
 
                     if (session.version.isLessThan(4, 0, 0) && connection.transport == Transport.NFC) {
                         // NEO over NFC, select OTP applet before reading info
-                        SmartCardProtocol(connection).select(OTP_AID)
+                        try {
+                            SmartCardProtocol(connection).select(OTP_AID)
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Failed to recognize this OATH device.")
+                            // we know this is NFC device and it supports OATH
+                            val oathCapabilities = Capabilities(nfc = 0x20)
+                            appViewModel.setDeviceInfo(
+                                UnknownDevice.copy(
+                                    config = UnknownDevice.config.copy(enabledCapabilities = oathCapabilities),
+                                    name = "Unknown OATH device",
+                                    isNfc = true,
+                                    supportedCapabilities = oathCapabilities
+                                )
+                            )
+                            return@withConnection
+                        }
                     }
 
                     // Update deviceInfo since the deviceId has changed
@@ -323,24 +336,7 @@ class OathManager(
                     getDeviceInfo(device)
                 } catch (e: IllegalArgumentException) {
                     Log.d(TAG, "Device was not recognized")
-                    Info(
-                        config = Config(
-                            deviceFlags = null,
-                            challengeResponseTimeout = null,
-                            autoEjectTimeout = null,
-                            enabledCapabilities = Capabilities()
-                        ),
-                        serialNumber = null,
-                        version = Version(0, 0, 0),
-                        formFactor = FormFactor.UNKNOWN.value,
-                        isLocked = false,
-                        isSky = false,
-                        isFips = false,
-                        name = "Unrecognized device",
-                        isNfc = device.transport == Transport.NFC,
-                        usbPid = null,
-                        supportedCapabilities = Capabilities()
-                    )
+                    UnknownDevice.copy(isNfc = device.transport == Transport.NFC)
                 } catch (e: Exception) {
                     Log.d(TAG, "Failure getting device info: ${e.message}")
                     null
@@ -404,7 +400,11 @@ class OathManager(
             val remembered = keyManager.isRemembered(it.deviceId)
             if (unlocked) {
                 oathViewModel.setSessionState(Session(it, remembered))
-                oathViewModel.updateCredentials(calculateOathCodes(it))
+
+                // fetch credentials after unlocking only if the YubiKey is connected over USB
+                if ( appViewModel.connectedYubiKey.value != null) {
+                    oathViewModel.updateCredentials(calculateOathCodes(it))
+                }
             }
 
             jsonSerializer.encodeToString(mapOf("unlocked" to unlocked, "remembered" to remembered))

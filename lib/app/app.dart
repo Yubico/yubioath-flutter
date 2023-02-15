@@ -30,9 +30,9 @@ class YubicoAuthenticatorApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return LogWarningOverlay(
-      child: Shortcuts(
-        shortcuts: globalShortcuts,
+    return registerGlobalShortcuts(
+      ref: ref,
+      child: LogWarningOverlay(
         child: MaterialApp(
           title: 'Yubico Authenticator',
           theme: AppTheme.lightTheme,

@@ -33,7 +33,7 @@ final searchProvider =
 class SearchNotifier extends StateNotifier<String> {
   SearchNotifier() : super('');
 
-  setFilter(String value) {
+  void setFilter(String value) {
     state = value;
   }
 }
@@ -143,7 +143,7 @@ class _ExpireNotifier extends StateNotifier<bool> {
   }
 
   @override
-  dispose() {
+  void dispose() {
     _timer?.cancel();
     super.dispose();
   }
@@ -158,7 +158,7 @@ class FavoritesNotifier extends StateNotifier<List<String>> {
   final SharedPreferences _prefs;
   FavoritesNotifier(this._prefs) : super(_prefs.getStringList(_key) ?? []);
 
-  toggleFavorite(String credentialId) {
+  void toggleFavorite(String credentialId) {
     if (state.contains(credentialId)) {
       state = state.toList()..remove(credentialId);
     } else {
@@ -167,7 +167,7 @@ class FavoritesNotifier extends StateNotifier<List<String>> {
     _prefs.setStringList(_key, state);
   }
 
-  renameCredential(String oldCredentialId, String newCredentialId) {
+  void renameCredential(String oldCredentialId, String newCredentialId) {
     if (state.contains(oldCredentialId)) {
       state = [newCredentialId, ...state.toList()..remove(oldCredentialId)];
       _prefs.setStringList(_key, state);

@@ -15,23 +15,41 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
-import '../../exception/cancellation_exception.dart';
+import '../../core/state.dart';
 import '../../widgets/menu_list_tile.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_dialog.dart';
-import 'account_mixin.dart';
+import 'account_helper.dart';
+import 'actions.dart';
+import 'delete_account_dialog.dart';
+import 'rename_account_dialog.dart';
 
-class AccountView extends ConsumerWidget with AccountMixin {
-  @override
+class AccountView extends ConsumerStatefulWidget {
   final OathCredential credential;
+  const AccountView(this.credential, {super.key});
 
-  AccountView(this.credential, {super.key});
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _AccountViewState();
+}
+
+class _AccountViewState extends ConsumerState<AccountView> {
+  OathCredential get credential => widget.credential;
+
+  final _focusNode = FocusNode();
+  int _lastTap = 0;
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   Color _iconColor(int shade) {
     final colors = [
@@ -55,20 +73,24 @@ class AccountView extends ConsumerWidget with AccountMixin {
       Colors.grey[shade],
       Colors.blueGrey[shade],
     ];
+
+    final label = credential.issuer != null
+        ? '${credential.issuer} (${credential.name})'
+        : credential.name;
+
     return colors[label.hashCode % colors.length]!;
   }
 
-  List<PopupMenuItem> _buildPopupMenu(BuildContext context, WidgetRef ref) {
-    return buildActions(context, ref).map((e) {
-      final action = e.action;
+  List<PopupMenuItem> _buildPopupMenu(
+      BuildContext context, AccountHelper helper) {
+    return helper.buildActions().map((e) {
+      final intent = e.intent;
       return buildMenuItem(
         leading: e.icon,
         title: Text(e.text),
-        action: action != null
+        action: intent != null
             ? () {
-                ref.read(withContextProvider)((context) async {
-                  action.call(context);
-                });
+                Actions.invoke(context, intent);
               }
             : null,
         trailing: e.trailing,
@@ -77,128 +99,145 @@ class AccountView extends ConsumerWidget with AccountMixin {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final code = getCode(ref);
-    final expired = code == null ||
-        (credential.oathType == OathType.totp &&
-            ref.watch(expiredProvider(code.validTo)));
-    final calculateReady = code == null ||
-        credential.oathType == OathType.hotp ||
-        (credential.touchRequired && expired);
-
-    Future<void> triggerCopy() async {
-      try {
-        final withContext = ref.read(withContextProvider);
-        await withContext(
-          (context) async {
-            OathCode? code = calculateReady
-                ? await calculateCode(
-                    context,
-                    ref,
-                  )
-                : getCode(ref);
-            await withContext((context) async =>
-                copyToClipboard(ref.watch(clipboardProvider), context, code));
-          },
-        );
-      } on CancellationException catch (_) {
-        // ignored
-      }
-    }
-
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final darkMode = theme.brightness == Brightness.dark;
 
-    return GestureDetector(
-      onSecondaryTapDown: (details) {
-        showMenu(
-          context: context,
-          position: RelativeRect.fromLTRB(
-            details.globalPosition.dx,
-            details.globalPosition.dy,
-            details.globalPosition.dx,
-            0,
-          ),
-          items: _buildPopupMenu(context, ref),
-        );
-      },
-      child: Actions(
-        actions: {
-          CopyIntent: CallbackAction(onInvoke: (_) async {
-            await triggerCopy();
-            return null;
-          }),
-        },
-        child: LayoutBuilder(builder: (context, constraints) {
-          final showAvatar = constraints.maxWidth >= 315;
-          return ListTile(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            onTap: () {
-              showBlurDialog(
+    return registerOathActions(
+      credential,
+      ref: ref,
+      actions: {
+        OpenIntent: CallbackAction<OpenIntent>(onInvoke: (_) async {
+          await showBlurDialog(
+            context: context,
+            builder: (context) => AccountDialog(credential),
+          );
+          return null;
+        }),
+        EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
+          final node = ref.read(currentDeviceProvider)!;
+          final credentials = ref.read(credentialsProvider);
+          return await ref.read(withContextProvider)(
+              (context) async => await showBlurDialog(
+                    context: context,
+                    builder: (context) =>
+                        RenameAccountDialog(node, credential, credentials),
+                  ));
+        }),
+        DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
+          final node = ref.read(currentDeviceProvider)!;
+          return await ref.read(withContextProvider)((context) async =>
+              await showBlurDialog(
                 context: context,
-                builder: (context) => AccountDialog(credential),
-              );
-            },
-            onLongPress: triggerCopy,
-            leading: showAvatar
-                ? CircleAvatar(
-                    foregroundColor: darkMode ? Colors.black : Colors.white,
-                    backgroundColor: _iconColor(darkMode ? 300 : 400),
-                    child: Text(
-                      (credential.issuer ?? credential.name)
-                          .characters
-                          .first
-                          .toUpperCase(),
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w300),
-                    ),
-                  )
-                : null,
-            title: Text(
-              title,
-              overflow: TextOverflow.fade,
-              maxLines: 1,
-              softWrap: false,
-            ),
-            subtitle: subtitle != null
-                ? Text(
-                    subtitle!,
-                    overflow: TextOverflow.fade,
-                    maxLines: 1,
-                    softWrap: false,
-                  )
-                : null,
-            trailing: GestureDetector(
-              onTap: () {
-                // Block opening the dialog.
+                builder: (context) => DeleteAccountDialog(node, credential),
+              ) ??
+              false);
+        }),
+      },
+      builder: (context) {
+        final helper = AccountHelper(context, ref, credential);
+        return GestureDetector(
+          onSecondaryTapDown: (details) {
+            showMenu(
+              context: context,
+              position: RelativeRect.fromLTRB(
+                details.globalPosition.dx,
+                details.globalPosition.dy,
+                details.globalPosition.dx,
+                0,
+              ),
+              items: _buildPopupMenu(context, helper),
+            );
+          },
+          child: LayoutBuilder(builder: (context, constraints) {
+            final showAvatar = constraints.maxWidth >= 315;
+
+            final subtitle = helper.subtitle;
+            return Shortcuts(
+              shortcuts: {
+                LogicalKeySet(LogicalKeyboardKey.enter): const OpenIntent(),
+                LogicalKeySet(LogicalKeyboardKey.space): const OpenIntent(),
               },
-              onDoubleTap: triggerCopy,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  color: theme.colorScheme.surfaceVariant.withOpacity(0.4),
-                  borderRadius: const BorderRadius.all(Radius.circular(64.0)),
+              child: ListTile(
+                focusNode: _focusNode,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 4.0),
-                  child: DefaultTextStyle.merge(
-                    style: theme.textTheme.titleMedium,
-                    child: IconTheme(
-                      data: IconTheme.of(context).copyWith(
-                        color:
-                            theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
-                      ),
-                      child: buildCodeView(ref),
-                    ),
-                  ),
+                onTap: () {
+                  if (isDesktop) {
+                    final now = DateTime.now().millisecondsSinceEpoch;
+                    if (now - _lastTap < 500) {
+                      setState(() {
+                        _lastTap = 0;
+                      });
+                      //triggerCopy();
+                      Actions.maybeInvoke(context, const CopyIntent());
+                    } else {
+                      _focusNode.requestFocus();
+                      setState(() {
+                        _lastTap = now;
+                      });
+                    }
+                  } else {
+                    Actions.maybeInvoke<OpenIntent>(
+                        context, const OpenIntent());
+                  }
+                },
+                onLongPress: () {
+                  Actions.maybeInvoke(context, const CopyIntent());
+                },
+                leading: showAvatar
+                    ? CircleAvatar(
+                        foregroundColor: darkMode ? Colors.black : Colors.white,
+                        backgroundColor: _iconColor(darkMode ? 300 : 400),
+                        child: Text(
+                          (credential.issuer ?? credential.name)
+                              .characters
+                              .first
+                              .toUpperCase(),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w300),
+                        ),
+                      )
+                    : null,
+                title: Text(
+                  helper.title,
+                  overflow: TextOverflow.fade,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                subtitle: subtitle != null
+                    ? Text(
+                        subtitle,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        softWrap: false,
+                      )
+                    : null,
+                trailing: Focus(
+                  skipTraversal: true,
+                  descendantsAreTraversable: false,
+                  child: helper.code != null
+                      ? FilledButton.tonalIcon(
+                          icon: helper.buildCodeIcon(),
+                          label: helper.buildCodeLabel(),
+                          onPressed: () {
+                            Actions.maybeInvoke<OpenIntent>(
+                                context, const OpenIntent());
+                          },
+                        )
+                      : FilledButton.tonal(
+                          onPressed: () {
+                            Actions.maybeInvoke<OpenIntent>(
+                                context, const OpenIntent());
+                          },
+                          child: helper.buildCodeIcon()),
                 ),
               ),
-            ),
-          );
-        }),
-      ),
+            );
+          }),
+        );
+      },
     );
   }
 }
