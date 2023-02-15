@@ -75,7 +75,7 @@ class OathManager(
     private val appPreferences: AppPreferences,
 ) : AppContextManager {
     companion object {
-        const val TAG = "OathManager"
+        private const val TAG = "OathManager"
         const val NFC_DATA_CLEANUP_DELAY = 30L * 1000 // 30s
         val OTP_AID = byteArrayOf(0xa0.toByte(), 0x00, 0x00, 0x05, 0x27, 0x20, 0x01, 0x01)
     }

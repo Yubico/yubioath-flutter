@@ -3,9 +3,13 @@ package com.yubico.authenticator.data
 import com.yubico.authenticator.AppPreferences
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.asString
+import com.yubico.authenticator.device.Capabilities
+import com.yubico.authenticator.device.Info
+import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.jsonSerializer
 import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.KeyManager
+import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.data.Code
 import com.yubico.authenticator.oath.data.Credential
 import com.yubico.authenticator.oath.data.CredentialWithCode
@@ -22,6 +26,7 @@ import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.smartcard.ApduException
 import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
+import com.yubico.yubikit.core.smartcard.SmartCardProtocol
 import com.yubico.yubikit.oath.CredentialData
 import com.yubico.yubikit.oath.OathSession
 import kotlinx.coroutines.Dispatchers
@@ -98,7 +103,7 @@ class YubiKitOathModel(
     }.flowOn(Dispatchers.IO)
 
 
-    override fun onSmartCardConnection(connection: SmartCardConnection) {
+    override fun onSmartCardConnection(connection: SmartCardConnection) : Info? {
         Log.d(TAG, "OathModel is happy")
 
 
@@ -168,10 +173,25 @@ class YubiKitOathModel(
 //                }
 //            }
 //
-//            if (session.version.isLessThan(4, 0, 0) && connection.transport == Transport.NFC) {
-//                // NEO over NFC, select OTP applet before reading info
-//                SmartCardProtocol(connection).select(OathManager.OTP_AID)
-//            }
+            if (session.version.isLessThan(4, 0, 0) && connection.transport == Transport.NFC) {
+                // NEO over NFC, select OTP applet before reading info
+                try {
+                    SmartCardProtocol(connection).select(OathManager.OTP_AID)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to recognize this OATH device.")
+
+                    // we know this is NFC device and it supports OATH
+                    val oathCapabilities = Capabilities(nfc = 0x20)
+                    return UnknownDevice.copy(
+                            config = UnknownDevice.config.copy(enabledCapabilities = oathCapabilities),
+                            name = "Unknown OATH device",
+                            isNfc = true,
+                            supportedCapabilities = oathCapabilities
+                        )
+                }
+            }
+
+
 
             // HANDLED by deviceModel
 //            // Update deviceInfo since the deviceId has changed
@@ -186,6 +206,8 @@ class YubiKitOathModel(
 //                )
 //            )
         }
+
+        return null
     }
 
 
