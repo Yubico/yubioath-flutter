@@ -30,6 +30,10 @@ import 'message.dart';
 import 'models.dart';
 import 'state.dart';
 
+class OpenIntent extends Intent {
+  const OpenIntent();
+}
+
 class CopyIntent extends Intent {
   const CopyIntent();
 }
@@ -52,6 +56,14 @@ class SettingsIntent extends Intent {
 
 class AboutIntent extends Intent {
   const AboutIntent();
+}
+
+class EditIntent extends Intent {
+  const EditIntent();
+}
+
+class DeleteIntent extends Intent {
+  const DeleteIntent();
 }
 
 final ctrlOrCmd =

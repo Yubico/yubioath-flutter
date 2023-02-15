@@ -17,8 +17,8 @@
 import 'dart:math';
 
 import '../../widgets/utf8_utils.dart';
-import '../models.dart';
 import '../../core/models.dart';
+import '../models.dart';
 
 /// Calculates the available space for issuer and account name.
 ///
