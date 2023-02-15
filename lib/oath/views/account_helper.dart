@@ -126,6 +126,14 @@ class AccountHelper {
         ),
       );
 
+  Widget buildCodeLabel() => _CodeLabel(code, expired);
+}
+
+class _CodeLabel extends StatelessWidget {
+  final OathCode? code;
+  final bool expired;
+  const _CodeLabel(this.code, this.expired);
+
   String _formatCode(OathCode? code) {
     final value = code?.value;
     if (value == null) {
@@ -138,7 +146,8 @@ class AccountHelper {
     }
   }
 
-  Widget buildCodeLabel() => Opacity(
+  @override
+  Widget build(BuildContext context) => Opacity(
         opacity: expired ? 0.4 : 1.0,
         child: Text(
           _formatCode(code),
