@@ -54,9 +54,13 @@ class Systray extends TrayListener {
     await trayManager.setIcon(Platform.isWindows
         ? 'assets/graphics/systray.ico'
         : 'assets/graphics/app-icon.png');
-    await trayManager.setToolTip('Yubico Authenticator');
-
+    if (!Platform.isLinux) {
+      await trayManager.setToolTip('Yubico Authenticator');
+    }
+    // Doesn't seem to work on Linux
     trayManager.addListener(this);
+
+    await _updateContextMenu();
   }
 
   @override
@@ -74,6 +78,11 @@ class Systray extends TrayListener {
 
   @override
   void onTrayIconRightMouseDown() async {
+    await _updateContextMenu();
+    await trayManager.popUpContextMenu();
+  }
+
+  Future<void> _updateContextMenu() async {
     final devicePath = _ref.read(currentDeviceProvider)?.path;
     Iterable<OathCredential> credentials = [];
     if (devicePath != null) {
@@ -112,6 +121,7 @@ class Systray extends TrayListener {
             label: 'Show/Hide window',
             onClick: (_) async {
               if (await windowManager.isVisible()) {
+                await _updateContextMenu();
                 await windowManager.hide();
               } else {
                 await windowManager.show();
@@ -127,6 +137,5 @@ class Systray extends TrayListener {
         ],
       ),
     );
-    await trayManager.popUpContextMenu();
   }
 }

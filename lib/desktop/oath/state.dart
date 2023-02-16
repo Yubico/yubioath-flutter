@@ -264,7 +264,9 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
     try {
       signaler.signals.listen((signal) async {
         if (signal.status == 'touch') {
-          final headless = !await windowManager.isVisible();
+          // TODO: Base on how the event was triggered (systray)
+          final headless = await windowManager.isMinimized() ||
+              !await windowManager.isVisible();
           controller = await _withContext(
             (context) async {
               return promptUserInteraction(
