@@ -380,6 +380,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  local_notifier:
+    dependency: "direct main"
+    description:
+      name: local_notifier
+      sha256: cc855aa6362c8840e3d3b35b1c3b058a3a8becdb2b03d5a9aa3f3a1e861f0a03
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   logging:
     dependency: "direct main"
     description:
@@ -404,6 +412,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
+  menu_base:
+    dependency: transitive
+    description:
+      name: menu_base
+      sha256: "820368014a171bd1241030278e6c2617354f492f5c703d7b7d4570a6b8b84405"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   meta:
     dependency: transitive
     description:
@@ -603,6 +619,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.3"
+  shortid:
+    dependency: transitive
+    description:
+      name: shortid
+      sha256: d0b40e3dbb50497dad107e19c54ca7de0d1a274eb9b4404991e443dadb9ebedb
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -704,6 +728,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+  tray_manager:
+    dependency: "direct main"
+    description:
+      name: tray_manager
+      sha256: b1975a05e0c6999e983cf9a58a6a098318c896040ccebac5398a3cc9e43b9c69
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   typed_data:
     dependency: transitive
     description:
@@ -776,6 +808,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
+  uuid:
+    dependency: transitive
+    description:
+      name: uuid
+      sha256: "648e103079f7c64a36dc7d39369cabb358d377078a051d6ae2ad3aa539519313"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.7"
   vector_math:
     dependency: transitive
     description:

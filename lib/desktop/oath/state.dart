@@ -21,6 +21,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
@@ -263,13 +264,17 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
     try {
       signaler.signals.listen((signal) async {
         if (signal.status == 'touch') {
+          final headless = !await windowManager.isVisible();
           controller = await _withContext(
-            (context) async => promptUserInteraction(
-              context,
-              icon: const Icon(Icons.touch_app),
-              title: 'Touch Required',
-              description: 'Touch the button on your YubiKey now.',
-            ),
+            (context) async {
+              return promptUserInteraction(
+                context,
+                icon: const Icon(Icons.touch_app),
+                title: 'Touch Required',
+                description: 'Touch the button on your YubiKey now.',
+                headless: headless,
+              );
+            },
           );
         }
       });
