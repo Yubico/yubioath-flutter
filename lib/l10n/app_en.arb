@@ -10,7 +10,6 @@
     "oath_unpin_account": "Unpin account",
     "oath_rename_account": "Rename account",
     "oath_delete_account": "Delete account",
-    "oath_no_qr_code": "No QR code found",
     "oath_failed_reading_qr": "Failed reading QR code",
     "oath_success_add_account": "Account added",
     "oath_fail_add_account": "Failed adding account",
@@ -62,7 +61,7 @@
     "oath_name_exists": "This name already exists for the Issuer",
     "oath_account_renamed": "Account renamed",
     "oath_rename": "Rename {label}?",
-    "@oath_rename" : {
+    "@oath_rename": {
         "placeholders": {
             "label": {}
         }
@@ -75,23 +74,20 @@
     "oath_warning_disable_these_creds": "Your OATH credentials, as well as any password set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.",
     "oath_invalid_character_issuer": "Invalid character: ':' is not allowed in issuer",
     "oath_accounts_used": "{used} of {capacity} accounts used",
-    "@oath_accounts_used" : {
+    "@oath_accounts_used": {
         "placeholders": {
             "used": {},
             "capacity": {}
         }
     },
-
     "widgets_cancel": "Cancel",
     "widgets_close": "Close",
-
     "mgmt_min_one_interface": "At least one interface must be enabled",
     "mgmt_reconfiguring_yubikey": "Reconfiguring YubiKey...",
     "mgmt_configuration_updated": "Configuration updated",
     "mgmt_configuration_updated_remove_reinsert": "Configuration updated, remove and reinsert your YubiKey",
     "mgmt_toggle_applications": "Toggle applications",
     "mgmt_save": "Save",
-
     "general_about": "About",
     "general_terms_of_use": "Terms of use",
     "general_privacy_policy": "Privacy policy",
@@ -117,7 +113,6 @@
     "general_setup": "Setup",
     "general_manage": "Manage",
     "general_configure_yubikey": "Configure YubiKey",
-
     "fido_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
     "fido_keep_touching_yubikey": "Keep touching your YubiKey repeatedly...",
     "fido_fingerprint_captured": "Fingerprint captured successfully!",
@@ -143,7 +138,7 @@
     "fido_fido_disabled": "FIDO2 disabled",
     "fido_webauthn_req_fido": "WebAuthn requires the FIDO2 application to be enabled on your YubiKey",
     "fido_wrong_pin_attempts": "Wrong PIN. {retries} attempt(s) remaining.",
-    "@fido_wrong_pin_attempts" : {
+    "@fido_wrong_pin_attempts": {
         "placeholders": {
             "retries": {}
         }
@@ -168,7 +163,7 @@
     "fido_enter_current_pin": "Enter your current PIN. If you don't know your PIN, you'll need to reset the YubiKey.",
     "fido_current_pin": "Current PIN",
     "fido_enter_new_pin": "Enter your new PIN. A PIN must be at least {length} characters long and may contain letters, numbers and special characters.",
-    "@fido_enter_new_pin" : {
+    "@fido_enter_new_pin": {
         "placeholders": {
             "length": {}
         }
@@ -176,7 +171,7 @@
     "fido_new_pin": "New PIN",
     "fido_confirm_pin": "Confirm PIN",
     "fido_new_pin_chars": "New PIN must be at least {length} characters",
-    "@fido_new_pin_chars" : {
+    "@fido_new_pin_chars": {
         "placeholders": {
             "length": {}
         }
@@ -184,7 +179,7 @@
     "fido_pin_set": "PIN set",
     "fido_pin_blocked": "PIN has been blocked until the YubiKey is removed and reinserted",
     "fido_wrong_pin_retries_remaining": "Wrong PIN ({length} tries remaining)",
-    "@fido_wrong_pin_retries_remaining" : {
+    "@fido_wrong_pin_retries_remaining": {
         "placeholders": {
             "length": {}
         }
@@ -194,7 +189,7 @@
     "fido_error_renaming": "Error renaming",
     "fido_rename_fingerprint": "Rename fingerprint",
     "fido_rename": "Rename {label}?",
-    "@fido_rename" : {
+    "@fido_rename": {
         "placeholders": {
             "label": {}
         }
@@ -223,23 +218,12 @@
             "used": {}
         }
     },
-    
-
-
-
-
-
-
-
-
     "appFailurePage_btn_unlock": "Unlock",
     "appFailurePage_txt_info": "WebAuthn management requires elevated privileges.",
     "appFailurePage_msg_permission": "Elevating permissions...",
-
     "mainDrawer_txt_applications": "Toggle applications",
     "mainDrawer_txt_settings": "Settings",
     "mainDrawer_txt_help": "Help and about",
-
     "devicePicker_no_yubikey": "No YubiKey present",
     "devicePicker_insert_or_tap": "Insert or tap a YubiKey",
     "devicePicker_select_to_scan": "Select to scan",
@@ -249,13 +233,13 @@
     "devicePicker_hide_device": "Hide device",
     "devicePicker_show_hidden": "Show hidden devices",
     "devicePicker_sn": "S/N: {serial}",
-    "@devicePicker_sn" : {
+    "@devicePicker_sn": {
         "placeholders": {
             "serial": {}
         }
     },
     "devicePicker_fw": "F/W: {version}",
-    "@devicePicker_fw" : {
+    "@devicePicker_fw": {
         "placeholders": {
             "version": {}
         }
