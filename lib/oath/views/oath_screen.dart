@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -39,6 +41,8 @@ class OathScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+    ref.read(issuerIconProvider).readPack('issuer_icons');
     return ref.watch(oathStateProvider(devicePath)).when(
           loading: () => MessagePage(
             title: Text(AppLocalizations.of(context)!.oath_authenticator),

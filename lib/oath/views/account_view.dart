@@ -153,6 +153,20 @@ class _AccountViewState extends ConsumerState<AccountView> {
             final showAvatar = constraints.maxWidth >= 315;
 
             final subtitle = helper.subtitle;
+
+            final circleAvatar = CircleAvatar(
+              foregroundColor: darkMode ? Colors.black : Colors.white,
+              backgroundColor: _iconColor(darkMode ? 300 : 400),
+              child: Text(
+                (credential.issuer ?? credential.name)
+                    .characters
+                    .first
+                    .toUpperCase(),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+              ),
+            );
+
             return Shortcuts(
               shortcuts: {
                 LogicalKeySet(LogicalKeyboardKey.enter): const OpenIntent(),
@@ -186,20 +200,15 @@ class _AccountViewState extends ConsumerState<AccountView> {
                 onLongPress: () {
                   Actions.maybeInvoke(context, const CopyIntent());
                 },
-                leading: showAvatar
-                    ? CircleAvatar(
-                        foregroundColor: darkMode ? Colors.black : Colors.white,
-                        backgroundColor: _iconColor(darkMode ? 300 : 400),
-                        child: Text(
-                          (credential.issuer ?? credential.name)
-                              .characters
-                              .first
-                              .toUpperCase(),
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w300),
-                        ),
-                      )
-                    : null,
+                leading: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: showAvatar
+                        ? ref
+                                .read(issuerIconProvider)
+                                .issuerVectorGraphic(credential.issuer ?? '', circleAvatar) ??
+                            circleAvatar
+                        : null),
                 title: Text(
                   helper.title,
                   overflow: TextOverflow.fade,
