@@ -68,7 +68,7 @@ class _Systray extends TrayListener {
   Iterable<OathCredential> _credentials = [];
   bool isHidden = false;
   _Systray(this._ref) {
-    trayManager.setIcon(_getIcon());
+    trayManager.setIcon(_getIcon(), isTemplate: true);
     if (!Platform.isLinux) {
       trayManager.setToolTip('Yubico Authenticator');
     }
