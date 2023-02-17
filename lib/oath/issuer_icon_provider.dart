@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -128,6 +129,12 @@ class IssuerIconProvider {
 
     if (!await packFile.exists()) {
       _log.debug('Failed to find icons pack ${packFile.path}');
+      _issuerIconPack = IssuerIconPack(
+          uuid: '',
+          name: '',
+          version: 0,
+          directory: Directory(''),
+          icons: []);
       return;
     }
 
@@ -147,6 +154,91 @@ class IssuerIconProvider {
         icons: icons);
     _log.debug(
         'Parsed ${_issuerIconPack.name} with ${_issuerIconPack.icons.length} icons');
+  }
+
+  Future<bool> _cleanTempDirectory(Directory tempDirectory) async {
+    if (await tempDirectory.exists()) {
+      await tempDirectory.delete(recursive: true);
+    }
+
+    if (await tempDirectory.exists()) {
+      _log.error('Failed to remove temp directory');
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<bool> importPack(String filePath) async {
+
+    final packFile = File(filePath);
+    if (!await packFile.exists()) {
+      _log.error('Input file does not exist');
+      return false;
+    }
+
+    // copy input file to temporary folder
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final tempDirectory = Directory('${documentsDirectory.path}${Platform.pathSeparator}temp${Platform.pathSeparator}');
+
+    if (!await _cleanTempDirectory(tempDirectory)) {
+      _log.error('Failed to cleanup temp directory');
+      return false;
+    }
+
+    await tempDirectory.create(recursive: true);
+    final tempCopy = await packFile.copy('${tempDirectory.path}${basename(packFile.path)}');
+    final bytes = await File(tempCopy.path).readAsBytes();
+
+    final destination = Directory('${tempDirectory.path}ex${Platform.pathSeparator}');
+
+    final archive = ZipDecoder().decodeBytes(bytes);
+    for (final file in archive) {
+      final filename = file.name;
+      if (file.isFile) {
+        final data = file.content as List<int>;
+        _log.debug('Writing file: ${destination.path}$filename');
+        final extractedFile = File('${destination.path}$filename');
+        final createdFile = await extractedFile.create(recursive: true);
+        await createdFile.writeAsBytes(data);
+      } else {
+        _log.debug('Writing directory: ${destination.path}$filename');
+        Directory('${destination.path}$filename')
+        .createSync(recursive: true);
+      }
+    }
+
+    // check that there is pack.json
+    final packJsonFile = File('${destination.path}pack.json');
+    if (!await packJsonFile.exists()) {
+      _log.error('File is not a icon pack.');
+      //await _cleanTempDirectory(tempDirectory);
+      return false;
+    }
+
+    // remove old icons pack and icon pack cache
+    final packDirectory = Directory(
+        '${documentsDirectory.path}${Platform.pathSeparator}issuer_icons${Platform.pathSeparator}');
+    if (!await _cleanTempDirectory(packDirectory)) {
+      _log.error('Could not remove old pack directory');
+      await _cleanTempDirectory(tempDirectory);
+      return false;
+    }
+
+    final packCacheDirectory = Directory(
+        '${documentsDirectory.path}${Platform.pathSeparator}issuer_icons_cache${Platform.pathSeparator}');
+    if (!await _cleanTempDirectory(packCacheDirectory)) {
+      _log.error('Could not remove old cache directory');
+      await _cleanTempDirectory(tempDirectory);
+      return false;
+    }
+
+
+    await destination.rename(packDirectory.path);
+    readPack('issuer_icons');
+
+    await _cleanTempDirectory(tempDirectory);
+    return true;
   }
 
   VectorGraphic? issuerVectorGraphic(String issuer, Widget placeHolder) {

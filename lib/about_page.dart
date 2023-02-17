@@ -17,6 +17,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +30,7 @@ import 'app/message.dart';
 import 'app/state.dart';
 import 'core/state.dart';
 import 'desktop/state.dart';
+import 'oath/state.dart';
 import 'version.dart';
 import 'widgets/choice_filter_chip.dart';
 import 'widgets/responsive_dialog.dart';
@@ -191,6 +193,36 @@ class AboutPage extends ConsumerWidget {
                 },
               ),
             ],
+
+            ... [
+              const SizedBox(height: 12.0,),
+              FilterChip(
+                label: const Text('Import icon pack'),
+                onSelected: (value) async {
+                  final result = await FilePicker.platform.pickFiles(
+                      allowedExtensions: ['zip'],
+                      type: FileType.custom,
+                      allowMultiple: false,
+                      lockParentWindow: true,
+                      dialogTitle: 'Choose icon pack');
+                  if (result != null && result.files.isNotEmpty) {
+                    final importStatus = await ref
+                        .read(issuerIconProvider)
+                        .importPack(result.paths.first!);
+
+                    await ref.read(withContextProvider)(
+                      (context) async {
+                        if (importStatus) {
+                          showMessage(context, 'Icon pack imported');
+                        } else {
+                          showMessage(context, 'Error importing icon pack');
+                        }
+                      },
+                    );
+                  }
+                },
+              ),
+            ]
           ],
         ),
       ),

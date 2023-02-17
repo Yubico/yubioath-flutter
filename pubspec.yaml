@@ -57,6 +57,8 @@ dependencies:
   vector_graphics: ^1.0.1
   vector_graphics_compiler: ^1.0.1
   path: ^1.8.2
+  file_picker: ^5.2.5
+  archive: ^3.3.2
 
 dev_dependencies:
   integration_test:
