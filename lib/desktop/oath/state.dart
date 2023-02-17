@@ -21,17 +21,19 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:window_manager/window_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
+import '../../core/state.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 import '../rpc.dart';
 import '../state.dart';
+import '../systray.dart';
 
 final _log = Logger('desktop.oath.state');
 
@@ -192,10 +194,15 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
   }
 }
 
+// The last known state of credentials, globally
+final currentOathCredentialsProvider =
+    StateProvider<List<OathCredential>>((ref) => []);
+
 final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
     var notifier = _DesktopCredentialListNotifier(
+      ref.watch(prefProvider),
       ref.watch(withContextProvider),
       ref.watch(_sessionProvider(devicePath)),
       ref.watch(oathStateProvider(devicePath)
@@ -204,6 +211,13 @@ final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
     ref.listen<WindowState>(windowStateProvider, (_, windowState) {
       notifier._notifyWindowState(windowState);
     }, fireImmediately: true);
+
+    // Keep the list of credentials up to date for the systray
+    notifier.addListener((state) {
+      ref.read(currentOathCredentialsProvider.notifier).state =
+          state?.map((e) => e.credential).toList() ?? [];
+    }, fireImmediately: false);
+
     return notifier;
   },
 );
@@ -230,8 +244,10 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
   final WithContext _withContext;
   final RpcNodeSession _session;
   final bool _locked;
+  final SharedPreferences _prefs;
   Timer? _timer;
-  _DesktopCredentialListNotifier(this._withContext, this._session, this._locked)
+  _DesktopCredentialListNotifier(
+      this._prefs, this._withContext, this._session, this._locked)
       : super();
 
   void _notifyWindowState(WindowState windowState) {
@@ -264,9 +280,6 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
     try {
       signaler.signals.listen((signal) async {
         if (signal.status == 'touch') {
-          // TODO: Base on how the event was triggered (systray)
-          final headless = await windowManager.isMinimized() ||
-              !await windowManager.isVisible();
           controller = await _withContext(
             (context) async {
               return promptUserInteraction(
@@ -274,7 +287,7 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
                 icon: const Icon(Icons.touch_app),
                 title: 'Touch Required',
                 description: 'Touch the button on your YubiKey now.',
-                headless: headless,
+                headless: _prefs.getBool(windowHidden) ?? false,
               );
             },
           );

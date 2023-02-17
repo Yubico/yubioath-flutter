@@ -24,9 +24,19 @@ import 'package:window_manager/window_manager.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
+import '../core/state.dart';
 import '../exception/cancellation_exception.dart';
 import '../oath/models.dart';
 import '../oath/state.dart';
+import 'oath/state.dart';
+
+const String windowHidden = 'DESKTOP_WINDOW_HIDDEN';
+
+final _favoriteAccounts = Provider((ref) {
+  final credentials = ref.watch(currentOathCredentialsProvider);
+  final favorites = ref.watch(favoritesProvider);
+  return credentials.where((element) => favorites.contains(element.id));
+});
 
 final systrayProvider = Provider((ref) {
   return Systray(ref);
@@ -60,16 +70,25 @@ class Systray extends TrayListener {
     // Doesn't seem to work on Linux
     trayManager.addListener(this);
 
-    await _updateContextMenu();
+    _ref.listen(
+      _favoriteAccounts,
+      (_, credentials) {
+        _updateContextMenu(credentials);
+      },
+      fireImmediately: true,
+    );
   }
 
   @override
   void onTrayIconMouseDown() async {
-    if (!await windowManager.isVisible()) {
+    final prefs = _ref.read(prefProvider);
+    if (prefs.getBool(windowHidden) ?? false) {
       final now = DateTime.now().millisecondsSinceEpoch;
       if (now - _lastClick < 500) {
         _lastClick = 0;
         await windowManager.show();
+        await windowManager.setSkipTaskbar(false);
+        await prefs.setBool(windowHidden, false);
       } else {
         _lastClick = now;
       }
@@ -78,20 +97,11 @@ class Systray extends TrayListener {
 
   @override
   void onTrayIconRightMouseDown() async {
-    await _updateContextMenu();
     await trayManager.popUpContextMenu();
   }
 
-  Future<void> _updateContextMenu() async {
+  Future<void> _updateContextMenu(Iterable<OathCredential> credentials) async {
     final devicePath = _ref.read(currentDeviceProvider)?.path;
-    Iterable<OathCredential> credentials = [];
-    if (devicePath != null) {
-      final favorites = _ref.read(favoritesProvider);
-      credentials = _ref
-              .read(credentialsProvider)
-              ?.where((element) => favorites.contains(element.id)) ??
-          [];
-    }
     await trayManager.setContextMenu(
       Menu(
         items: [
@@ -120,11 +130,15 @@ class Systray extends TrayListener {
           MenuItem(
             label: 'Show/Hide window',
             onClick: (_) async {
-              if (await windowManager.isVisible()) {
-                await _updateContextMenu();
-                await windowManager.hide();
-              } else {
+              final prefs = _ref.read(prefProvider);
+              if (prefs.getBool(windowHidden) ?? false) {
                 await windowManager.show();
+                await windowManager.setSkipTaskbar(false);
+                await prefs.setBool(windowHidden, false);
+              } else {
+                await windowManager.hide();
+                await windowManager.setSkipTaskbar(true);
+                await prefs.setBool(windowHidden, true);
               }
             },
           ),

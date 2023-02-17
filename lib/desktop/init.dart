@@ -79,12 +79,19 @@ Future<Widget> initialize(List<String> argv) async {
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
 
-  unawaited(windowManager.waitUntilReadyToShow().then((_) async {
-    await windowManager.setMinimumSize(const Size(270, 0));
-    final width = prefs.getDouble(_keyWidth) ?? 400;
-    final height = prefs.getDouble(_keyHeight) ?? 720;
-    await windowManager.setSize(Size(width, height));
-    await windowManager.show();
+  unawaited(windowManager
+      .waitUntilReadyToShow(WindowOptions(
+    minimumSize: const Size(270, 0),
+    size: Size(
+      prefs.getDouble(_keyWidth) ?? 400,
+      prefs.getDouble(_keyHeight) ?? 720,
+    ),
+    skipTaskbar: prefs.getBool(windowHidden) ?? false,
+  ))
+      .then((_) async {
+    if (prefs.getBool(windowHidden) != true) {
+      await windowManager.show();
+    }
     windowManager.addListener(_WindowEventListener(prefs));
   }));
 
