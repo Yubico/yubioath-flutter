@@ -54,15 +54,22 @@ final _log = Logger('desktop.init');
 const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
 const String _keyHeight = 'DESKTOP_WINDOW_HEIGHT';
 
-class _WindowResizeListener extends WindowListener {
+class _WindowEventListener extends WindowListener {
   final SharedPreferences _prefs;
-  _WindowResizeListener(this._prefs);
+  _WindowEventListener(this._prefs);
 
   @override
   void onWindowResize() async {
     final size = await windowManager.getSize();
     await _prefs.setDouble(_keyWidth, size.width);
     await _prefs.setDouble(_keyHeight, size.height);
+  }
+
+  @override
+  void onWindowClose() async {
+    if (Platform.isMacOS) {
+      await windowManager.destroy();
+    }
   }
 }
 
@@ -78,7 +85,7 @@ Future<Widget> initialize(List<String> argv) async {
     final height = prefs.getDouble(_keyHeight) ?? 720;
     await windowManager.setSize(Size(width, height));
     await windowManager.show();
-    windowManager.addListener(_WindowResizeListener(prefs));
+    windowManager.addListener(_WindowEventListener(prefs));
   }));
 
   // Either use the _HELPER_PATH environment variable, or look relative to executable.
