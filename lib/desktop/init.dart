@@ -78,6 +78,7 @@ Future<Widget> initialize(List<String> argv) async {
 
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
+  final isHidden = prefs.getBool(windowHidden) ?? false;
 
   unawaited(windowManager
       .waitUntilReadyToShow(WindowOptions(
@@ -86,10 +87,10 @@ Future<Widget> initialize(List<String> argv) async {
       prefs.getDouble(_keyWidth) ?? 400,
       prefs.getDouble(_keyHeight) ?? 720,
     ),
-    skipTaskbar: prefs.getBool(windowHidden) ?? false,
+    skipTaskbar: isHidden,
   ))
       .then((_) async {
-    if (prefs.getBool(windowHidden) != true) {
+    if (!isHidden) {
       await windowManager.show();
     }
     windowManager.addListener(_WindowEventListener(prefs));

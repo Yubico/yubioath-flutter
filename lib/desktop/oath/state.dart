@@ -21,19 +21,16 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
-import '../../core/state.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 import '../rpc.dart';
 import '../state.dart';
-import '../systray.dart';
 
 final _log = Logger('desktop.oath.state');
 
@@ -201,8 +198,7 @@ final currentOathCredentialsProvider =
 final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
-    var notifier = _DesktopCredentialListNotifier(
-      ref.watch(prefProvider),
+    var notifier = DesktopCredentialListNotifier(
       ref.watch(withContextProvider),
       ref.watch(_sessionProvider(devicePath)),
       ref.watch(oathStateProvider(devicePath)
@@ -240,14 +236,12 @@ String _formatSteam(String response) {
   return value;
 }
 
-class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
+class DesktopCredentialListNotifier extends OathCredentialListNotifier {
   final WithContext _withContext;
   final RpcNodeSession _session;
   final bool _locked;
-  final SharedPreferences _prefs;
   Timer? _timer;
-  _DesktopCredentialListNotifier(
-      this._prefs, this._withContext, this._session, this._locked)
+  DesktopCredentialListNotifier(this._withContext, this._session, this._locked)
       : super();
 
   void _notifyWindowState(WindowState windowState) {
@@ -268,7 +262,7 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
 
   @override
   Future<OathCode> calculate(OathCredential credential,
-      {bool update = true}) async {
+      {bool update = true, bool headless = false}) async {
     var now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     if (update) {
       // Manually triggered, need to pad timer to avoid immediate expiration
@@ -287,7 +281,7 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
                 icon: const Icon(Icons.touch_app),
                 title: 'Touch Required',
                 description: 'Touch the button on your YubiKey now.',
-                headless: _prefs.getBool(windowHidden) ?? false,
+                headless: headless,
               );
             },
           );

@@ -38,59 +38,83 @@ final _favoriteAccounts = Provider((ref) {
   return credentials.where((element) => favorites.contains(element.id));
 });
 
-final systrayProvider = Provider((ref) {
-  return Systray(ref);
-});
+final systrayProvider = Provider((ref) => _Systray(ref));
 
 Future<OathCode?> _calculateCode(
     DevicePath devicePath, OathCredential credential, Ref ref) async {
   try {
-    return await ref
-        .read(credentialListProvider(devicePath).notifier)
-        .calculate(credential);
+    return await (ref.read(credentialListProvider(devicePath).notifier)
+            as DesktopCredentialListNotifier)
+        .calculate(credential, headless: true);
   } on CancellationException catch (_) {
     return null;
   }
 }
 
-class Systray extends TrayListener {
+String _getIcon() {
+  if (Platform.isMacOS) {
+    return 'assets/graphics/systray-macos.svg';
+  }
+  if (Platform.isWindows) {
+    return 'assets/graphics/systray.ico';
+  }
+  return 'assets/graphics/app-icon.png';
+}
+
+class _Systray extends TrayListener {
   final Ref _ref;
   int _lastClick = 0;
-  Systray(this._ref) {
-    _init();
-  }
-
-  void _init() async {
-    await trayManager.setIcon(Platform.isWindows
-        ? 'assets/graphics/systray.ico'
-        : 'assets/graphics/app-icon.png');
+  DevicePath _devicePath = DevicePath([]);
+  Iterable<OathCredential> _credentials = [];
+  bool isHidden = false;
+  _Systray(this._ref) {
+    trayManager.setIcon(_getIcon());
     if (!Platform.isLinux) {
-      await trayManager.setToolTip('Yubico Authenticator');
+      trayManager.setToolTip('Yubico Authenticator');
     }
     // Doesn't seem to work on Linux
     trayManager.addListener(this);
 
+    isHidden = _ref.read(prefProvider).getBool(windowHidden) ?? false;
+
     _ref.listen(
       _favoriteAccounts,
       (_, credentials) {
-        _updateContextMenu(credentials);
+        _credentials = credentials;
+        _devicePath = _ref.read(currentDeviceProvider)?.path ?? _devicePath;
+        _updateContextMenu();
       },
       fireImmediately: true,
     );
   }
 
+  Future<void> _setHidden(bool hidden) async {
+    if (hidden) {
+      await windowManager.hide();
+    } else {
+      await windowManager.show();
+    }
+    await windowManager.setSkipTaskbar(hidden);
+    await _ref.read(prefProvider).setBool(windowHidden, hidden);
+    isHidden = hidden;
+
+    await _updateContextMenu();
+  }
+
   @override
-  void onTrayIconMouseDown() async {
-    final prefs = _ref.read(prefProvider);
-    if (prefs.getBool(windowHidden) ?? false) {
-      final now = DateTime.now().millisecondsSinceEpoch;
-      if (now - _lastClick < 500) {
-        _lastClick = 0;
-        await windowManager.show();
-        await windowManager.setSkipTaskbar(false);
-        await prefs.setBool(windowHidden, false);
-      } else {
-        _lastClick = now;
+  void onTrayIconMouseDown() {
+    if (Platform.isMacOS) {
+      trayManager.popUpContextMenu();
+    } else {
+      final prefs = _ref.read(prefProvider);
+      if (prefs.getBool(windowHidden) ?? false) {
+        final now = DateTime.now().millisecondsSinceEpoch;
+        if (now - _lastClick < 500) {
+          _lastClick = 0;
+          _setHidden(false);
+        } else {
+          _lastClick = now;
+        }
       }
     }
   }
@@ -100,16 +124,17 @@ class Systray extends TrayListener {
     await trayManager.popUpContextMenu();
   }
 
-  Future<void> _updateContextMenu(Iterable<OathCredential> credentials) async {
-    final devicePath = _ref.read(currentDeviceProvider)?.path;
+  Future<void> _updateContextMenu() async {
+    final prefs = _ref.read(prefProvider);
+    final isHidden = prefs.getBool(windowHidden) ?? false;
     await trayManager.setContextMenu(
       Menu(
         items: [
-          ...credentials.map(
+          ..._credentials.map(
             (e) => MenuItem(
               label: '${e.issuer} (${e.name})',
               onClick: (_) async {
-                final code = await _calculateCode(devicePath!, e, _ref);
+                final code = await _calculateCode(_devicePath, e, _ref);
                 if (code != null) {
                   final clipboard = _ref.read(clipboardProvider);
                   await clipboard.setText(code.value, isSensitive: true);
@@ -126,27 +151,18 @@ class Systray extends TrayListener {
               },
             ),
           ),
-          if (credentials.isNotEmpty) MenuItem.separator(),
+          if (_credentials.isNotEmpty) MenuItem.separator(),
           MenuItem(
-            label: 'Show/Hide window',
-            onClick: (_) async {
-              final prefs = _ref.read(prefProvider);
-              if (prefs.getBool(windowHidden) ?? false) {
-                await windowManager.show();
-                await windowManager.setSkipTaskbar(false);
-                await prefs.setBool(windowHidden, false);
-              } else {
-                await windowManager.hide();
-                await windowManager.setSkipTaskbar(true);
-                await prefs.setBool(windowHidden, true);
-              }
+            label: isHidden ? 'Show window' : 'Hide window',
+            onClick: (_) {
+              _setHidden(!isHidden);
             },
           ),
           MenuItem.separator(),
           MenuItem(
               label: 'Quit',
-              onClick: (_) async {
-                await windowManager.close();
+              onClick: (_) {
+                windowManager.close();
               }),
         ],
       ),
