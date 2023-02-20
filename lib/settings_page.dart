@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/app/message.dart';
 
 import 'app/logging.dart';
 import 'app/state.dart';
+import 'oath/state.dart';
 import 'widgets/list_title.dart';
 import 'widgets/responsive_dialog.dart';
 
@@ -34,6 +37,8 @@ class SettingsPage extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
 
     final theme = Theme.of(context);
+
+    final iconPackName = ref.watch(issuerIconProvider).iconPackName();
     return ResponsiveDialog(
       title: Text(AppLocalizations.of(context)!.general_settings),
       child: Theme(
@@ -76,9 +81,118 @@ class SettingsPage extends ConsumerWidget {
                 _log.debug('Set theme mode to $mode');
               },
             ),
+            const ListTitle('Account icon pack'),
+            ListTile(
+              title: (iconPackName != null) ? const Text('Icon pack imported') : const Text('Not using icon pack'),
+              subtitle: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  iconPackName != null ?
+                  Row(
+                    children: [
+                      const Text('Name: ',
+                          style: TextStyle(fontSize: 11)),
+                      Text(iconPackName,
+                          style: TextStyle(fontSize: 11, color: theme.colorScheme.primary)),
+                    ],
+                  ) : const Text('Tap to import', style: TextStyle(fontSize: 10)),
+                ],
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.info_outline_rounded),
+                onPressed: () async{
+                  await _showIconPackInfo(context, ref);
+                },
+              ),
+              onTap: () async {
+                if (iconPackName != null) {
+                  await _removeOrChangeIconPack(context, ref);
+                } else {
+                  await _importIconPack(context, ref);
+                }
+
+                await ref.read(withContextProvider)((context) async {
+                  ref.invalidate(credentialsProvider);
+                });
+              },
+            ),
           ],
         ),
       ),
     );
   }
+
+  Future<bool> _importIconPack(BuildContext context, WidgetRef ref) async {
+    final result = await FilePicker.platform.pickFiles(
+        allowedExtensions: ['zip'],
+        type: FileType.custom,
+        allowMultiple: false,
+        lockParentWindow: true,
+        dialogTitle: 'Choose icon pack');
+    if (result != null && result.files.isNotEmpty) {
+      final importStatus =
+          await ref.read(issuerIconProvider).importPack(result.paths.first!);
+
+      await ref.read(withContextProvider)((context) async {
+        if (importStatus) {
+          showMessage(context, 'Icon pack imported');
+        } else {
+          showMessage(context, 'Error importing icon pack');
+        }
+      });
+    }
+
+    return false;
+  }
+
+  Future<void> _removeOrChangeIconPack(BuildContext context, WidgetRef ref) async =>
+      await showDialog<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return SimpleDialog(
+              children: [
+                ListTile(
+                    title: const Text('Replace icon pack'),
+                    onTap: () async {
+                      await _importIconPack(context, ref);
+                      await ref.read(withContextProvider)((context) async {
+                        Navigator.pop(context);
+                      });
+                    }),
+                ListTile(
+                    title: const Text('Remove icon pack'),
+                    onTap: () async {
+                      final removePackStatus = await ref.read(issuerIconProvider).removePack('issuer_icons');
+                      await ref.read(withContextProvider)(
+                            (context) async {
+                          if (removePackStatus) {
+                            showMessage(context, 'Icon pack removed');
+                          } else {
+                            showMessage(context, 'Error removing icon pack');
+                          }
+                          Navigator.pop(context);
+                        },
+                      );
+                    }),
+              ],
+            );
+          });
+
+  Future<void> _showIconPackInfo(BuildContext context, WidgetRef ref) async =>
+      await showDialog<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return const SimpleDialog(
+              children: [
+                ListTile(
+                  title: Text('About icon packs'),
+                  subtitle: Text('Icon packs contain icons for accounts. '
+                      'To use an icon-pack, download and import one\n\n'
+                      'The supported format is aegis-icons.'),
+                )
+              ],
+
+            );
+          });
 }

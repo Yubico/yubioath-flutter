@@ -203,5 +203,5 @@ class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
         );
 }
 
-final issuerIconProvider = Provider<IssuerIconProvider>(
+final issuerIconProvider = ChangeNotifierProvider<IssuerIconProvider>(
     (ref) => IssuerIconProvider(FileSystemCache()));

@@ -39,15 +39,26 @@ class IssuerIconPack {
       required this.icons});
 }
 
+Future<bool> _deleteDirectory(Directory tempDirectory) async {
+  if (await tempDirectory.exists()) {
+    await tempDirectory.delete(recursive: true);
+  }
+
+  if (await tempDirectory.exists()) {
+    _log.error('Failed to delete directory');
+    return false;
+  }
+
+  return true;
+}
+
 class FileSystemCache {
-
   late Directory cacheDirectory;
-
-  FileSystemCache();
 
   void initialize() async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
-    cacheDirectory = Directory('${documentsDirectory.path}${Platform.pathSeparator}issuer_icons_cache${Platform.pathSeparator}');
+    cacheDirectory = Directory(
+        '${documentsDirectory.path}${Platform.pathSeparator}issuer_icons_cache${Platform.pathSeparator}');
   }
 
   File _cachedFile(String fileName) => File(
@@ -73,6 +84,9 @@ class FileSystemCache {
     await file.writeAsBytes(data, flush: true);
   }
 
+  Future<void> clear() async {
+    await _deleteDirectory(cacheDirectory);
+  }
 }
 
 class CachingFileLoader extends BytesLoader {
@@ -103,7 +117,7 @@ class CachingFileLoader extends BytesLoader {
         enableOverdrawOptimizer: false,
       );
       task.finish();
-      // for testing: await Future.delayed(const Duration(seconds: 5));
+      // for testing await Future.delayed(const Duration(seconds: 5));
 
       await _cache.writeFileData(cacheFileName, compiledBytes);
 
@@ -113,30 +127,43 @@ class CachingFileLoader extends BytesLoader {
   }
 }
 
-class IssuerIconProvider {
+class IssuerIconProvider extends ChangeNotifier {
   final FileSystemCache _cache;
-  late IssuerIconPack _issuerIconPack;
+  IssuerIconPack? _issuerIconPack;
 
   IssuerIconProvider(this._cache) {
     _cache.initialize();
   }
-  
-  void readPack(String relativePackPath) async {
+
+  String? iconPackName() => _issuerIconPack != null
+      ? '${_issuerIconPack!.name} (${_issuerIconPack!.version})'
+      : null;
+
+  Future<bool> removePack(String relativePackPath) async {
+    await _cache.clear();
+    imageCache.clear();
+    final cleanupStatus =
+        await _deleteDirectory(await _getPackDirectory(relativePackPath));
+    _issuerIconPack = null;
+    notifyListeners();
+    return cleanupStatus;
+  }
+
+  Future<Directory> _getPackDirectory(String relativePackPath) async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
-    final packDirectory = Directory(
+    return Directory(
         '${documentsDirectory.path}${Platform.pathSeparator}$relativePackPath${Platform.pathSeparator}');
+  }
+
+  void readPack(String relativePackPath) async {
+    final packDirectory = await _getPackDirectory(relativePackPath);
     final packFile = File('${packDirectory.path}pack.json');
 
     _log.debug('Looking for file: ${packFile.path}');
 
     if (!await packFile.exists()) {
       _log.debug('Failed to find icons pack ${packFile.path}');
-      _issuerIconPack = IssuerIconPack(
-          uuid: '',
-          name: '',
-          version: 0,
-          directory: Directory(''),
-          icons: []);
+      _issuerIconPack = null;
       return;
     }
 
@@ -154,25 +181,14 @@ class IssuerIconProvider {
         version: pack['version'],
         directory: packDirectory,
         icons: icons);
+
     _log.debug(
-        'Parsed ${_issuerIconPack.name} with ${_issuerIconPack.icons.length} icons');
-  }
+        'Parsed ${_issuerIconPack!.name} with ${_issuerIconPack!.icons.length} icons');
 
-  Future<bool> _cleanTempDirectory(Directory tempDirectory) async {
-    if (await tempDirectory.exists()) {
-      await tempDirectory.delete(recursive: true);
-    }
-
-    if (await tempDirectory.exists()) {
-      _log.error('Failed to remove temp directory');
-      return false;
-    }
-
-    return true;
+    notifyListeners();
   }
 
   Future<bool> importPack(String filePath) async {
-
     final packFile = File(filePath);
     if (!await packFile.exists()) {
       _log.error('Input file does not exist');
@@ -181,18 +197,21 @@ class IssuerIconProvider {
 
     // copy input file to temporary folder
     final documentsDirectory = await getApplicationDocumentsDirectory();
-    final tempDirectory = Directory('${documentsDirectory.path}${Platform.pathSeparator}temp${Platform.pathSeparator}');
+    final tempDirectory = Directory(
+        '${documentsDirectory.path}${Platform.pathSeparator}temp${Platform.pathSeparator}');
 
-    if (!await _cleanTempDirectory(tempDirectory)) {
+    if (!await _deleteDirectory(tempDirectory)) {
       _log.error('Failed to cleanup temp directory');
       return false;
     }
 
     await tempDirectory.create(recursive: true);
-    final tempCopy = await packFile.copy('${tempDirectory.path}${basename(packFile.path)}');
+    final tempCopy =
+        await packFile.copy('${tempDirectory.path}${basename(packFile.path)}');
     final bytes = await File(tempCopy.path).readAsBytes();
 
-    final destination = Directory('${tempDirectory.path}ex${Platform.pathSeparator}');
+    final destination =
+        Directory('${tempDirectory.path}ex${Platform.pathSeparator}');
 
     final archive = ZipDecoder().decodeBytes(bytes);
     for (final file in archive) {
@@ -205,8 +224,7 @@ class IssuerIconProvider {
         await createdFile.writeAsBytes(data);
       } else {
         _log.debug('Writing directory: ${destination.path}$filename');
-        Directory('${destination.path}$filename')
-        .createSync(recursive: true);
+        Directory('${destination.path}$filename').createSync(recursive: true);
       }
     }
 
@@ -221,33 +239,37 @@ class IssuerIconProvider {
     // remove old icons pack and icon pack cache
     final packDirectory = Directory(
         '${documentsDirectory.path}${Platform.pathSeparator}issuer_icons${Platform.pathSeparator}');
-    if (!await _cleanTempDirectory(packDirectory)) {
+    if (!await _deleteDirectory(packDirectory)) {
       _log.error('Could not remove old pack directory');
-      await _cleanTempDirectory(tempDirectory);
+      await _deleteDirectory(tempDirectory);
       return false;
     }
 
     final packCacheDirectory = Directory(
         '${documentsDirectory.path}${Platform.pathSeparator}issuer_icons_cache${Platform.pathSeparator}');
-    if (!await _cleanTempDirectory(packCacheDirectory)) {
+    if (!await _deleteDirectory(packCacheDirectory)) {
       _log.error('Could not remove old cache directory');
-      await _cleanTempDirectory(tempDirectory);
+      await _deleteDirectory(tempDirectory);
       return false;
     }
-
 
     await destination.rename(packDirectory.path);
     readPack('issuer_icons');
 
-    await _cleanTempDirectory(tempDirectory);
+    await _deleteDirectory(tempDirectory);
     return true;
   }
 
   VectorGraphic? issuerVectorGraphic(String issuer, Widget placeHolder) {
-    final matching = _issuerIconPack.icons
+    if (_issuerIconPack == null) {
+      return null;
+    }
+
+    final issuerIconPack = _issuerIconPack!;
+    final matching = issuerIconPack.icons
         .where((element) => element.issuer.any((element) => element == issuer));
     final issuerImageFile = matching.isNotEmpty
-        ? File('${_issuerIconPack.directory.path}${matching.first.filename}')
+        ? File('${issuerIconPack.directory.path}${matching.first.filename}')
         : null;
     return issuerImageFile != null && issuerImageFile.existsSync()
         ? VectorGraphic(
@@ -255,19 +277,15 @@ class IssuerIconProvider {
             height: 40,
             fit: BoxFit.fill,
             loader: CachingFileLoader(_cache, issuerImageFile),
-            placeholderBuilder: (BuildContext _) => placeHolder,
-          )
-        : null;
-  }
-
-  Image? issuerImage(String issuer) {
-    final matching = _issuerIconPack.icons
-        .where((element) => element.issuer.any((element) => element == issuer));
-    return matching.isNotEmpty
-        ? Image.file(
-            File(
-                '${_issuerIconPack.directory.path}${matching.first.filename}.png'),
-            filterQuality: FilterQuality.medium)
+            placeholderBuilder: (BuildContext _) {
+              return Stack(alignment: Alignment.center, children: [
+                Opacity(
+                  opacity: 0.5,
+                  child: placeHolder,
+                ),
+                const CircularProgressIndicator(),
+              ]);
+            })
         : null;
   }
 }

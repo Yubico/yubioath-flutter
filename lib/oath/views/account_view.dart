@@ -205,7 +205,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
                     height: 40,
                     child: showAvatar
                         ? ref
-                                .read(issuerIconProvider)
+                                .watch(issuerIconProvider)
                                 .issuerVectorGraphic(credential.issuer ?? '', circleAvatar) ??
                             circleAvatar
                         : null),
