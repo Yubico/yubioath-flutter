@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -49,7 +50,8 @@ class FileSystemCache {
     cacheDirectory = Directory('${documentsDirectory.path}${Platform.pathSeparator}issuer_icons_cache${Platform.pathSeparator}');
   }
 
-  File _cachedFile(String fileName) => File('${cacheDirectory.path}${fileName}_cached');
+  File _cachedFile(String fileName) => File(
+      cacheDirectory.path + sha256.convert(utf8.encode(fileName)).toString());
 
   Future<Uint8List?> getCachedFileData(String fileName) async {
     final file = _cachedFile(fileName);
