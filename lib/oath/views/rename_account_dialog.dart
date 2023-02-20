@@ -96,10 +96,6 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   Widget build(BuildContext context) {
     final credential = widget.credential;
 
-    final label = credential.issuer != null
-        ? '${credential.issuer} (${credential.name})'
-        : credential.name;
-
     final remaining = getRemainingKeySpace(
       oathType: credential.oathType,
       period: credential.period,
@@ -142,7 +138,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context)!.oath_rename(label)),
+            Text(AppLocalizations.of(context)!
+                .oath_rename(getTextName(credential))),
             Text(AppLocalizations.of(context)!
                 .oath_warning_will_change_account_displayed),
             TextFormField(

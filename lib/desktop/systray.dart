@@ -25,23 +25,47 @@ import 'package:window_manager/window_manager.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
+import '../core/models.dart';
 import '../core/state.dart';
 import '../exception/cancellation_exception.dart';
 import '../oath/models.dart';
 import '../oath/state.dart';
+import '../oath/views/utils.dart';
 import 'oath/state.dart';
 
 const String windowHidden = 'DESKTOP_WINDOW_HIDDEN';
 
-final _favoriteAccounts = Provider((ref) {
-  final credentials = ref.watch(currentOathCredentialsProvider);
-  final favorites = ref.watch(favoritesProvider);
-  return credentials
-      .where((element) => favorites.contains(element.id))
-      .toList();
-});
+final _favoriteAccounts =
+    Provider.autoDispose<Pair<DevicePath?, List<OathCredential>>>(
+  (ref) {
+    final devicePath = ref.watch(currentDeviceProvider)?.path;
+    if (devicePath != null) {
+      final credentials =
+          ref.watch(desktopOathCredentialListProvider(devicePath));
+      final favorites = ref.watch(favoritesProvider);
+      final listed = credentials
+              ?.map((e) => e.credential)
+              .where((c) => favorites.contains(c.id))
+              .toList() ??
+          [];
+      return Pair(devicePath, listed);
+    }
+    return Pair(null, []);
+  },
+);
 
-final systrayProvider = Provider((ref) => _Systray(ref));
+final systrayProvider = Provider.autoDispose((ref) {
+  final systray = _Systray(ref);
+
+  ref.listen(
+    _favoriteAccounts,
+    (_, next) {
+      systray._updateCredentials(next);
+    },
+  );
+
+  return systray;
+});
 
 Future<OathCode?> _calculateCode(
     DevicePath devicePath, OathCredential credential, Ref ref) async {
@@ -70,27 +94,28 @@ class _Systray extends TrayListener {
   DevicePath _devicePath = DevicePath([]);
   List<OathCredential> _credentials = [];
   bool isHidden = false;
-  _Systray(this._ref) {
-    trayManager.setIcon(_getIcon(), isTemplate: true);
+  _Systray(this._ref)
+      : isHidden = _ref.read(prefProvider).getBool(windowHidden) ?? false {
+    _init();
+  }
+
+  Future<void> _init() async {
+    await trayManager.setIcon(_getIcon(), isTemplate: true);
     if (!Platform.isLinux) {
-      trayManager.setToolTip('Yubico Authenticator');
+      await trayManager.setToolTip('Yubico Authenticator');
     }
+    await _updateContextMenu();
+
     // Doesn't seem to work on Linux
     trayManager.addListener(this);
+  }
 
-    isHidden = _ref.read(prefProvider).getBool(windowHidden) ?? false;
-
-    _ref.listen(
-      _favoriteAccounts,
-      (_, credentials) {
-        if (!listEquals(_credentials, credentials)) {
-          _credentials = credentials;
-          _devicePath = _ref.read(currentDeviceProvider)?.path ?? _devicePath;
-          _updateContextMenu();
-        }
-      },
-    );
-    _updateContextMenu();
+  void _updateCredentials(Pair<DevicePath?, List<OathCredential>> pair) {
+    if (!listEquals(_credentials, pair.second)) {
+      _devicePath = pair.first ?? _devicePath;
+      _credentials = pair.second;
+      _updateContextMenu();
+    }
   }
 
   Future<void> _setHidden(bool hidden) async {
@@ -136,25 +161,28 @@ class _Systray extends TrayListener {
       Menu(
         items: [
           ..._credentials.map(
-            (e) => MenuItem(
-              label: '${e.issuer} (${e.name})',
-              onClick: (_) async {
-                final code = await _calculateCode(_devicePath, e, _ref);
-                if (code != null) {
-                  final clipboard = _ref.read(clipboardProvider);
-                  await clipboard.setText(code.value, isSensitive: true);
+            (e) {
+              final label = getTextName(e);
+              return MenuItem(
+                label: label,
+                onClick: (_) async {
+                  final code = await _calculateCode(_devicePath, e, _ref);
+                  if (code != null) {
+                    final clipboard = _ref.read(clipboardProvider);
+                    await clipboard.setText(code.value, isSensitive: true);
 
-                  final notification = LocalNotification(
-                    title: 'Code copied',
-                    body: '${e.issuer} (${e.name}) copied to clipboard.',
-                    silent: true,
-                  );
-                  await notification.show();
-                  await Future.delayed(const Duration(seconds: 4));
-                  await notification.close();
-                }
-              },
-            ),
+                    final notification = LocalNotification(
+                      title: 'Code copied',
+                      body: '$label copied to clipboard.',
+                      silent: true,
+                    );
+                    await notification.show();
+                    await Future.delayed(const Duration(seconds: 4));
+                    await notification.close();
+                  }
+                },
+              );
+            },
           ),
           if (_credentials.isNotEmpty) MenuItem.separator(),
           MenuItem(

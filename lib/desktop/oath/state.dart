@@ -191,10 +191,6 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
   }
 }
 
-// The last known state of credentials, globally
-final currentOathCredentialsProvider =
-    StateProvider<List<OathCredential>>((ref) => []);
-
 final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
@@ -207,12 +203,6 @@ final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
     ref.listen<WindowState>(windowStateProvider, (_, windowState) {
       notifier._notifyWindowState(windowState);
     }, fireImmediately: true);
-
-    // Keep the list of credentials up to date for the systray
-    notifier.addListener((state) {
-      ref.read(currentOathCredentialsProvider.notifier).state =
-          state?.map((e) => e.credential).toList() ?? [];
-    }, fireImmediately: false);
 
     return notifier;
   },
