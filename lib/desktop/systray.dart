@@ -17,6 +17,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -35,7 +36,9 @@ const String windowHidden = 'DESKTOP_WINDOW_HIDDEN';
 final _favoriteAccounts = Provider((ref) {
   final credentials = ref.watch(currentOathCredentialsProvider);
   final favorites = ref.watch(favoritesProvider);
-  return credentials.where((element) => favorites.contains(element.id));
+  return credentials
+      .where((element) => favorites.contains(element.id))
+      .toList();
 });
 
 final systrayProvider = Provider((ref) => _Systray(ref));
@@ -65,7 +68,7 @@ class _Systray extends TrayListener {
   final Ref _ref;
   int _lastClick = 0;
   DevicePath _devicePath = DevicePath([]);
-  Iterable<OathCredential> _credentials = [];
+  List<OathCredential> _credentials = [];
   bool isHidden = false;
   _Systray(this._ref) {
     trayManager.setIcon(_getIcon(), isTemplate: true);
@@ -80,12 +83,14 @@ class _Systray extends TrayListener {
     _ref.listen(
       _favoriteAccounts,
       (_, credentials) {
-        _credentials = credentials;
-        _devicePath = _ref.read(currentDeviceProvider)?.path ?? _devicePath;
-        _updateContextMenu();
+        if (!listEquals(_credentials, credentials)) {
+          _credentials = credentials;
+          _devicePath = _ref.read(currentDeviceProvider)?.path ?? _devicePath;
+          _updateContextMenu();
+        }
       },
-      fireImmediately: true,
     );
+    _updateContextMenu();
   }
 
   Future<void> _setHidden(bool hidden) async {
@@ -120,8 +125,8 @@ class _Systray extends TrayListener {
   }
 
   @override
-  void onTrayIconRightMouseDown() async {
-    await trayManager.popUpContextMenu();
+  void onTrayIconRightMouseDown() {
+    trayManager.popUpContextMenu();
   }
 
   Future<void> _updateContextMenu() async {
