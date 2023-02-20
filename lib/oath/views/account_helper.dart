@@ -20,6 +20,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/oath/account_icon_provider.dart';
 
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
@@ -65,6 +66,18 @@ class AccountHelper {
           final appLocalizations = AppLocalizations.of(_context)!;
           final shortcut = Platform.isMacOS ? '\u2318 C' : 'Ctrl+C';
           return [
+            MenuAction(
+              text: 'Set custom icon',
+              icon: _ref.watch(accountIconProvider).getAccountIcon(
+                      credential.name,
+                      credential.issuer,
+                      const SizedBox(
+                        width: 20,
+                      )) ??
+                  const Icon(Icons.image),
+              intent: const ChangeAccountIconIntent(),
+              trailing: shortcut,
+            ),
             MenuAction(
               text: appLocalizations.oath_copy_to_clipboard,
               icon: const Icon(Icons.copy),

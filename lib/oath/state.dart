@@ -25,7 +25,7 @@ import '../app/models.dart';
 import '../app/state.dart';
 import '../core/models.dart';
 import '../core/state.dart';
-import 'issuer_icon_provider.dart';
+import 'account_icon_provider.dart';
 import 'models.dart';
 
 final searchProvider =
@@ -203,5 +203,5 @@ class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
         );
 }
 
-final issuerIconProvider = Provider<IssuerIconProvider>(
-    (ref) => IssuerIconProvider(FileSystemCache()));
+final accountIconProvider = ChangeNotifierProvider<AccountIconProvider>(
+    (ref) => AccountIconProvider(FileSystemCache()));

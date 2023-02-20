@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -61,6 +62,31 @@ Widget registerOathActions(
         }),
         TogglePinIntent: CallbackAction<TogglePinIntent>(onInvoke: (_) {
           ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
+          return null;
+        }),
+        ChangeAccountIconIntent: CallbackAction<ChangeAccountIconIntent>(onInvoke: (_) async {
+          final result = await FilePicker.platform.pickFiles(
+              allowedExtensions: ['jpg', 'png'],
+              type: FileType.custom,
+              allowMultiple: false,
+              lockParentWindow: true,
+              dialogTitle: 'Choose custom image');
+          if (result != null && result.files.isNotEmpty) {
+            final importStatus = await ref
+                .read(accountIconProvider)
+                .importCustomAccountImage(credential.name, credential.issuer, result.paths.first!);
+
+            await ref.read(withContextProvider)(
+                  (context) async {
+                if (importStatus) {
+                  showMessage(context, 'Custom image imported');
+                } else {
+                  showMessage(context, 'Error importing custom image');
+                }
+              },
+            );
+          }
+
           return null;
         }),
         ...actions,

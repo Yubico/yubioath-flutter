@@ -207,8 +207,8 @@ class AboutPage extends ConsumerWidget {
                       dialogTitle: 'Choose icon pack');
                   if (result != null && result.files.isNotEmpty) {
                     final importStatus = await ref
-                        .read(issuerIconProvider)
-                        .importPack(result.paths.first!);
+                        .read(accountIconProvider)
+                        .importIconPack(result.paths.first!);
 
                     await ref.read(withContextProvider)(
                       (context) async {

@@ -66,6 +66,10 @@ class DeleteIntent extends Intent {
   const DeleteIntent();
 }
 
+class ChangeAccountIconIntent extends Intent {
+  const ChangeAccountIconIntent();
+}
+
 final ctrlOrCmd =
     Platform.isMacOS ? LogicalKeyboardKey.meta : LogicalKeyboardKey.control;
 

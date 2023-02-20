@@ -12,25 +12,25 @@ import 'package:vector_graphics/vector_graphics.dart';
 import 'package:vector_graphics_compiler/vector_graphics_compiler.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
-final _log = Logger('issuer_icon_provider');
+final _log = Logger('account_icon_provider');
 
-class IssuerIcon {
+class IconPackIcon {
   final String filename;
   final String? category;
   final List<String> issuer;
 
-  const IssuerIcon(
+  const IconPackIcon(
       {required this.filename, required this.category, required this.issuer});
 }
 
-class IssuerIconPack {
+class IconPack {
   final String uuid;
   final String name;
   final int version;
   final Directory directory;
-  final List<IssuerIcon> icons;
+  final List<IconPackIcon> icons;
 
-  const IssuerIconPack(
+  const IconPack(
       {required this.uuid,
       required this.name,
       required this.version,
@@ -46,20 +46,25 @@ class FileSystemCache {
 
   void initialize() async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
-    cacheDirectory = Directory('${documentsDirectory.path}${Platform.pathSeparator}issuer_icons_cache${Platform.pathSeparator}');
+    cacheDirectory = Directory('${documentsDirectory.path}${Platform.pathSeparator}account_icons_cache${Platform.pathSeparator}');
   }
 
   File _cachedFile(String fileName) => File('${cacheDirectory.path}${fileName}_cached');
 
-  Future<Uint8List?> getCachedFileData(String fileName) async {
+  File? getFile(String fileName) {
     final file = _cachedFile(fileName);
-    final exists = await file.exists();
-    if (exists) {
+    final exists = file.existsSync();
+    return exists ? file : null;
+  }
+
+  Future<Uint8List?> getCachedFileData(String fileName) async {
+    final file = getFile(fileName);
+    if (file != null) {
       _log.debug('File $fileName exists in cache');
     } else {
       _log.debug('File $fileName does not exist in cache');
     }
-    return (exists) ? file.readAsBytes() : null;
+    return file?.readAsBytes();
   }
 
   Future<void> writeFileData(String fileName, Uint8List data) async {
@@ -111,15 +116,15 @@ class CachingFileLoader extends BytesLoader {
   }
 }
 
-class IssuerIconProvider {
+class AccountIconProvider extends ChangeNotifier {
   final FileSystemCache _cache;
-  late IssuerIconPack _issuerIconPack;
+  late IconPack _iconPack;
 
-  IssuerIconProvider(this._cache) {
+  AccountIconProvider(this._cache) {
     _cache.initialize();
   }
   
-  void readPack(String relativePackPath) async {
+  void readIconPack(String relativePackPath) async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final packDirectory = Directory(
         '${documentsDirectory.path}${Platform.pathSeparator}$relativePackPath${Platform.pathSeparator}');
@@ -129,7 +134,7 @@ class IssuerIconProvider {
 
     if (!await packFile.exists()) {
       _log.debug('Failed to find icons pack ${packFile.path}');
-      _issuerIconPack = IssuerIconPack(
+      _iconPack = IconPack(
           uuid: '',
           name: '',
           version: 0,
@@ -141,19 +146,19 @@ class IssuerIconProvider {
     var packContent = await packFile.readAsString();
     Map<String, dynamic> pack = const JsonDecoder().convert(packContent);
 
-    final icons = List<IssuerIcon>.from(pack['icons'].map((icon) => IssuerIcon(
+    final icons = List<IconPackIcon>.from(pack['icons'].map((icon) => IconPackIcon(
         filename: icon['filename'],
         category: icon['category'],
         issuer: List<String>.from(icon['issuer']))));
 
-    _issuerIconPack = IssuerIconPack(
+    _iconPack = IconPack(
         uuid: pack['uuid'],
         name: pack['name'],
         version: pack['version'],
         directory: packDirectory,
         icons: icons);
     _log.debug(
-        'Parsed ${_issuerIconPack.name} with ${_issuerIconPack.icons.length} icons');
+        'Parsed ${_iconPack.name} with ${_iconPack.icons.length} icons');
   }
 
   Future<bool> _cleanTempDirectory(Directory tempDirectory) async {
@@ -169,7 +174,7 @@ class IssuerIconProvider {
     return true;
   }
 
-  Future<bool> importPack(String filePath) async {
+  Future<bool> importIconPack(String filePath) async {
 
     final packFile = File(filePath);
     if (!await packFile.exists()) {
@@ -218,34 +223,62 @@ class IssuerIconProvider {
 
     // remove old icons pack and icon pack cache
     final packDirectory = Directory(
-        '${documentsDirectory.path}${Platform.pathSeparator}issuer_icons${Platform.pathSeparator}');
+        '${documentsDirectory.path}${Platform.pathSeparator}default_icon_pack${Platform.pathSeparator}');
     if (!await _cleanTempDirectory(packDirectory)) {
       _log.error('Could not remove old pack directory');
       await _cleanTempDirectory(tempDirectory);
       return false;
     }
 
-    final packCacheDirectory = Directory(
-        '${documentsDirectory.path}${Platform.pathSeparator}issuer_icons_cache${Platform.pathSeparator}');
+    final packCacheDirectory = _cache.cacheDirectory;
     if (!await _cleanTempDirectory(packCacheDirectory)) {
       _log.error('Could not remove old cache directory');
       await _cleanTempDirectory(tempDirectory);
       return false;
     }
 
-
     await destination.rename(packDirectory.path);
-    readPack('issuer_icons');
+    readIconPack('default_icon_pack');
+
+    notifyListeners();
 
     await _cleanTempDirectory(tempDirectory);
     return true;
   }
 
-  VectorGraphic? issuerVectorGraphic(String issuer, Widget placeHolder) {
-    final matching = _issuerIconPack.icons
+  Future<bool> importCustomAccountImage(String accountName, String? issuer, String filePath) async {
+
+    final requestedFile = File(filePath);
+    final customAccountImageFilename = '${_cache.cacheDirectory.path}${_getCustomAccountImageFilename(accountName, issuer)}_cached';
+
+    _log.debug('Copying custom image file $customAccountImageFilename');
+    final customAccountImageFile = await requestedFile.copy(customAccountImageFilename);
+
+    await FileImage(customAccountImageFile).evict();
+    notifyListeners();
+
+    return await customAccountImageFile.exists();
+  }
+
+  String _getCustomAccountImageFilename(String accountName, String? issuer) => base64Encode(utf8.encode('$accountName:$issuer'));
+
+  Widget? getAccountIcon(String accountName, String? issuer, Widget placeHolder) {
+
+    final customAccountImageFileName = _getCustomAccountImageFilename(accountName, issuer);
+
+    _log.info('Checking if custom account image for $accountName:$issuer '
+        '($customAccountImageFileName) exists...');
+
+    final customFile = _cache.getFile(customAccountImageFileName);
+    if (customFile != null) {
+      _log.debug('Using custom account image for $accountName:$issuer');
+      return Image.file(customFile, filterQuality: FilterQuality.medium);
+    }
+
+    final matching = _iconPack.icons
         .where((element) => element.issuer.any((element) => element == issuer));
     final issuerImageFile = matching.isNotEmpty
-        ? File('${_issuerIconPack.directory.path}${matching.first.filename}')
+        ? File('${_iconPack.directory.path}${matching.first.filename}')
         : null;
     return issuerImageFile != null && issuerImageFile.existsSync()
         ? VectorGraphic(
@@ -255,17 +288,6 @@ class IssuerIconProvider {
             loader: CachingFileLoader(_cache, issuerImageFile),
             placeholderBuilder: (BuildContext _) => placeHolder,
           )
-        : null;
-  }
-
-  Image? issuerImage(String issuer) {
-    final matching = _issuerIconPack.icons
-        .where((element) => element.issuer.any((element) => element == issuer));
-    return matching.isNotEmpty
-        ? Image.file(
-            File(
-                '${_issuerIconPack.directory.path}${matching.first.filename}.png'),
-            filterQuality: FilterQuality.medium)
         : null;
   }
 }
