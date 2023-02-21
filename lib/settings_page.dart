@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/oath/icon_provider/icon_pack_settings.dart';
 
 import 'app/logging.dart';
 import 'app/state.dart';
@@ -78,7 +77,6 @@ class SettingsPage extends ConsumerWidget {
                 _log.debug('Set theme mode to $mode');
               },
             ),
-            const IconPackSettings()
           ],
         ),
       ),
