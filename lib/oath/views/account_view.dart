@@ -27,6 +27,7 @@ import '../models.dart';
 import '../state.dart';
 import 'account_dialog.dart';
 import 'account_helper.dart';
+import 'account_icon.dart';
 import 'actions.dart';
 import 'delete_account_dialog.dart';
 import 'rename_account_dialog.dart';
@@ -200,15 +201,10 @@ class _AccountViewState extends ConsumerState<AccountView> {
                 onLongPress: () {
                   Actions.maybeInvoke(context, const CopyIntent());
                 },
-                leading: SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: showAvatar
-                        ? ref
-                                .watch(issuerIconProvider)
-                                .issuerVectorGraphic(credential.issuer ?? '', circleAvatar) ??
-                            circleAvatar
-                        : null),
+                leading: showAvatar
+                    ? AccountIcon(
+                        issuer: credential.issuer, defaultWidget: circleAvatar)
+                    : null,
                 title: Text(
                   helper.title,
                   overflow: TextOverflow.fade,

@@ -20,6 +20,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/app/message.dart';
+import 'package:yubico_authenticator/oath/icon_provider/icon_pack_manager.dart';
 
 import 'app/logging.dart';
 import 'app/state.dart';
@@ -38,7 +39,7 @@ class SettingsPage extends ConsumerWidget {
 
     final theme = Theme.of(context);
 
-    final iconPackName = ref.watch(issuerIconProvider).iconPackName();
+    final iconPackName = ref.watch(iconPackManager).iconPackName();
     return ResponsiveDialog(
       title: Text(AppLocalizations.of(context)!.general_settings),
       child: Theme(
@@ -132,7 +133,7 @@ class SettingsPage extends ConsumerWidget {
         dialogTitle: 'Choose icon pack');
     if (result != null && result.files.isNotEmpty) {
       final importStatus =
-          await ref.read(issuerIconProvider).importPack(result.paths.first!);
+          await ref.read(iconPackManager).importPack(result.paths.first!);
 
       await ref.read(withContextProvider)((context) async {
         if (importStatus) {
@@ -163,7 +164,7 @@ class SettingsPage extends ConsumerWidget {
                 ListTile(
                     title: const Text('Remove icon pack'),
                     onTap: () async {
-                      final removePackStatus = await ref.read(issuerIconProvider).removePack('issuer_icons');
+                      final removePackStatus = await ref.read(iconPackManager).removePack('issuer_icons');
                       await ref.read(withContextProvider)(
                             (context) async {
                           if (removePackStatus) {
