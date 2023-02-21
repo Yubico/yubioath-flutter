@@ -61,6 +61,7 @@ class IconPackManager extends ChangeNotifier {
   final IconCache _iconCache;
 
   IconPack? _pack;
+  String? _lastError;
   final _packSubDir = 'issuer_icons';
 
   IconPackManager(this._iconCache);
@@ -70,6 +71,8 @@ class IconPackManager extends ChangeNotifier {
   String? get iconPackName => _pack?.name;
 
   int? get iconPackVersion => _pack?.version;
+
+  String? get lastError => _lastError;
 
   File? getFileForIssuer(String? issuer) {
     if (_pack == null || issuer == null) {
@@ -130,6 +133,13 @@ class IconPackManager extends ChangeNotifier {
     final packFile = File(filePath);
     if (!await packFile.exists()) {
       _log.error('Input file does not exist');
+      _lastError = 'File not found';
+      return false;
+    }
+
+    if (await packFile.length() > 3 * 1024 * 1024) {
+      _log.error('File exceeds size. Max 3MB.');
+      _lastError = 'File exceeds size. Max 3MB.';
       return false;
     }
 
@@ -139,7 +149,8 @@ class IconPackManager extends ChangeNotifier {
         '${documentsDirectory.path}${Platform.pathSeparator}temp${Platform.pathSeparator}');
 
     if (!await _deleteDirectory(tempDirectory)) {
-      _log.error('Failed to cleanup temp directory');
+      _log.error('FS operation failed(1)');
+      _lastError = 'FS failure(1)';
       return false;
     }
 
@@ -169,8 +180,9 @@ class IconPackManager extends ChangeNotifier {
     // check that there is pack.json
     final packJsonFile = File('${destination.path}pack.json');
     if (!await packJsonFile.exists()) {
-      _log.error('File is not a icon pack.');
-      //await _cleanTempDirectory(tempDirectory);
+      _log.error('File is not a icon pack: missing pack.json');
+      _lastError = 'pack.json missing';
+      await _deleteDirectory(tempDirectory);
       return false;
     }
 
@@ -178,7 +190,8 @@ class IconPackManager extends ChangeNotifier {
     final packDirectory = Directory(
         '${documentsDirectory.path}${Platform.pathSeparator}issuer_icons${Platform.pathSeparator}');
     if (!await _deleteDirectory(packDirectory)) {
-      _log.error('Could not remove old pack directory');
+      _log.error('FS operation failed(2)');
+      _lastError = 'FS failure(2)';
       await _deleteDirectory(tempDirectory);
       return false;
     }
@@ -187,6 +200,7 @@ class IconPackManager extends ChangeNotifier {
     _iconCache.memCache.clear();
 
     await destination.rename(packDirectory.path);
+
     readPack();
 
     await _deleteDirectory(tempDirectory);

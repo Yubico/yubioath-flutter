@@ -141,7 +141,8 @@ class SettingsPage extends ConsumerWidget {
         if (importStatus) {
           showMessage(context, 'Icon pack imported');
         } else {
-          showMessage(context, 'Error importing icon pack');
+          showMessage(context,
+              'Error importing icon pack: ${ref.read(iconPackManager).lastError}');
         }
       });
     }
