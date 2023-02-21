@@ -77,8 +77,8 @@ class IconPackManager extends ChangeNotifier {
     }
 
     final pack = _pack!;
-    final matching = pack.icons
-        .where((element) => element.issuer.any((element) => element == issuer));
+    final matching = pack.icons.where((element) => element.issuer
+        .any((element) => element == issuer.toUpperCase()));
 
     final issuerImageFile = matching.isNotEmpty
         ? File('${pack.directory.path}${matching.first.filename}')
@@ -110,7 +110,9 @@ class IconPackManager extends ChangeNotifier {
         IconPackIcon(
             filename: icon['filename'],
             category: icon['category'],
-            issuer: List<String>.from(icon['issuer']))));
+            issuer: List<String>.from(icon['issuer'])
+                .map((e) => e.toUpperCase())
+                .toList(growable: false))));
 
     _pack = IconPack(
         uuid: pack['uuid'],
