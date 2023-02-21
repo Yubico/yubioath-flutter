@@ -18,22 +18,22 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../app/models.dart';
+import '../app/shortcuts.dart';
 import '../app/state.dart';
 import '../core/models.dart';
-import '../core/state.dart';
 import '../exception/cancellation_exception.dart';
 import '../oath/models.dart';
 import '../oath/state.dart';
 import '../oath/views/utils.dart';
 import 'oath/state.dart';
-
-const String windowHidden = 'DESKTOP_WINDOW_HIDDEN';
+import 'state.dart';
 
 final _favoriteAccounts =
     Provider.autoDispose<Pair<DevicePath?, List<OathCredential>>>(
@@ -57,6 +57,7 @@ final _favoriteAccounts =
 final systrayProvider = Provider.autoDispose((ref) {
   final systray = _Systray(ref);
 
+  // Keep track of which accounts to show
   ref.listen(
     _favoriteAccounts,
     (_, next) {
@@ -64,14 +65,21 @@ final systrayProvider = Provider.autoDispose((ref) {
     },
   );
 
+  // Keep track of the shown/hidden state of the app
+  ref.listen(windowStateProvider.select((value) => value.hidden), (_, hidden) {
+    systray._setHidden(hidden);
+  }, fireImmediately: true);
+
+  ref.onDispose(systray.dispose);
+
   return systray;
 });
 
 Future<OathCode?> _calculateCode(
     DevicePath devicePath, OathCredential credential, Ref ref) async {
   try {
-    return await (ref.read(credentialListProvider(devicePath).notifier)
-            as DesktopCredentialListNotifier)
+    return await (ref
+            .read(desktopOathCredentialListProvider(devicePath).notifier))
         .calculate(credential, headless: true);
   } on CancellationException catch (_) {
     return null;
@@ -93,9 +101,8 @@ class _Systray extends TrayListener {
   int _lastClick = 0;
   DevicePath _devicePath = DevicePath([]);
   List<OathCredential> _credentials = [];
-  bool isHidden = false;
-  _Systray(this._ref)
-      : isHidden = _ref.read(prefProvider).getBool(windowHidden) ?? false {
+  bool _isHidden = false;
+  _Systray(this._ref) {
     _init();
   }
 
@@ -110,6 +117,10 @@ class _Systray extends TrayListener {
     trayManager.addListener(this);
   }
 
+  void dispose() {
+    trayManager.destroy();
+  }
+
   void _updateCredentials(Pair<DevicePath?, List<OathCredential>> pair) {
     if (!listEquals(_credentials, pair.second)) {
       _devicePath = pair.first ?? _devicePath;
@@ -119,15 +130,7 @@ class _Systray extends TrayListener {
   }
 
   Future<void> _setHidden(bool hidden) async {
-    if (hidden) {
-      await windowManager.hide();
-    } else {
-      await windowManager.show();
-    }
-    await windowManager.setSkipTaskbar(hidden);
-    await _ref.read(prefProvider).setBool(windowHidden, hidden);
-    isHidden = hidden;
-
+    _isHidden = hidden;
     await _updateContextMenu();
   }
 
@@ -136,15 +139,16 @@ class _Systray extends TrayListener {
     if (Platform.isMacOS) {
       trayManager.popUpContextMenu();
     } else {
-      final prefs = _ref.read(prefProvider);
-      if (prefs.getBool(windowHidden) ?? false) {
-        final now = DateTime.now().millisecondsSinceEpoch;
-        if (now - _lastClick < 500) {
-          _lastClick = 0;
-          _setHidden(false);
+      final now = DateTime.now().millisecondsSinceEpoch;
+      if (now - _lastClick < 500) {
+        _lastClick = 0;
+        if (_isHidden) {
+          _ref.read(desktopWindowStateProvider.notifier).setWindowHidden(false);
         } else {
-          _lastClick = now;
+          windowManager.focus();
         }
+      } else {
+        _lastClick = now;
       }
     }
   }
@@ -155,8 +159,6 @@ class _Systray extends TrayListener {
   }
 
   Future<void> _updateContextMenu() async {
-    final prefs = _ref.read(prefProvider);
-    final isHidden = prefs.getBool(windowHidden) ?? false;
     await trayManager.setContextMenu(
       Menu(
         items: [
@@ -186,16 +188,22 @@ class _Systray extends TrayListener {
           ),
           if (_credentials.isNotEmpty) MenuItem.separator(),
           MenuItem(
-            label: isHidden ? 'Show window' : 'Hide window',
+            label: _isHidden ? 'Show window' : 'Hide window',
             onClick: (_) {
-              _setHidden(!isHidden);
+              _ref
+                  .read(desktopWindowStateProvider.notifier)
+                  .setWindowHidden(!_isHidden);
             },
           ),
           MenuItem.separator(),
           MenuItem(
               label: 'Quit',
               onClick: (_) {
-                windowManager.close();
+                _ref.read(withContextProvider)(
+                  (context) async {
+                    Actions.invoke(context, const CloseIntent());
+                  },
+                );
               }),
         ],
       ),

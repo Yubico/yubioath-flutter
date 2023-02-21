@@ -192,7 +192,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
 }
 
 final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
-    .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
+    .family<DesktopCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
     var notifier = DesktopCredentialListNotifier(
       ref.watch(withContextProvider),

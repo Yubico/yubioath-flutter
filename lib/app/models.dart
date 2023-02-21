@@ -134,5 +134,6 @@ class WindowState with _$WindowState {
     required bool focused,
     required bool visible,
     required bool active,
+    @Default(false) bool hidden,
   }) = _WindowState;
 }

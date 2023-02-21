@@ -90,7 +90,9 @@ Future<Widget> initialize(List<String> argv) async {
     skipTaskbar: isHidden,
   ))
       .then((_) async {
-    if (!isHidden) {
+    if (isHidden) {
+      await windowManager.setSkipTaskbar(true);
+    } else {
       await windowManager.show();
     }
     windowManager.addListener(_WindowEventListener(prefs));
