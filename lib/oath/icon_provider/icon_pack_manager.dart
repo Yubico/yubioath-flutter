@@ -80,8 +80,8 @@ class IconPackManager extends ChangeNotifier {
     }
 
     final pack = _pack!;
-    final matching = pack.icons.where((element) => element.issuer
-        .any((element) => element == issuer.toUpperCase()));
+    final matching = pack.icons.where((element) =>
+        element.issuer.any((element) => element == issuer.toUpperCase()));
 
     final issuerImageFile = matching.isNotEmpty
         ? File('${pack.directory.path}${matching.first.filename}')
@@ -144,41 +144,36 @@ class IconPackManager extends ChangeNotifier {
     }
 
     // copy input file to temporary folder
-    final documentsDirectory = await getApplicationDocumentsDirectory();
-    final tempDirectory = Directory(
-        '${documentsDirectory.path}${Platform.pathSeparator}temp${Platform.pathSeparator}');
-
-    if (!await _deleteDirectory(tempDirectory)) {
-      _log.error('FS operation failed(1)');
-      _lastError = 'FS failure(1)';
-      return false;
-    }
-
-    await tempDirectory.create(recursive: true);
-    final tempCopy =
-        await packFile.copy('${tempDirectory.path}${basename(packFile.path)}');
+    final tempDirectory = await Directory.systemTemp.createTemp('yubioath');
+    final tempCopy = await packFile.copy('${tempDirectory.path}'
+        '${Platform.pathSeparator}'
+        '${basename(packFile.path)}');
     final bytes = await File(tempCopy.path).readAsBytes();
 
-    final destination =
-        Directory('${tempDirectory.path}ex${Platform.pathSeparator}');
+    final unpackDirectory =
+        Directory('${tempDirectory.path}${Platform.pathSeparator}'
+            'unpack${Platform.pathSeparator}');
 
     final archive = ZipDecoder().decodeBytes(bytes, verify: true);
     for (final file in archive) {
       final filename = file.name;
       if (file.size > 0) {
         final data = file.content as List<int>;
-        _log.debug('Writing file: ${destination.path}$filename (size: ${file.size})');
-        final extractedFile = File('${destination.path}$filename');
+        _log.debug(
+            'Writing file: ${unpackDirectory.path}$filename (size: ${file.size})');
+        final extractedFile = File('${unpackDirectory.path}$filename');
         final createdFile = await extractedFile.create(recursive: true);
         await createdFile.writeAsBytes(data);
       } else {
-        _log.debug('Writing directory: ${destination.path}$filename (size: ${file.size})');
-        Directory('${destination.path}$filename').createSync(recursive: true);
+        _log.debug(
+            'Writing directory: ${unpackDirectory.path}$filename (size: ${file.size})');
+        Directory('${unpackDirectory.path}$filename')
+            .createSync(recursive: true);
       }
     }
 
     // check that there is pack.json
-    final packJsonFile = File('${destination.path}pack.json');
+    final packJsonFile = File('${unpackDirectory.path}pack.json');
     if (!await packJsonFile.exists()) {
       _log.error('File is not a icon pack: missing pack.json');
       _lastError = 'pack.json missing';
@@ -187,8 +182,7 @@ class IconPackManager extends ChangeNotifier {
     }
 
     // remove old icons pack and icon pack cache
-    final packDirectory = Directory(
-        '${documentsDirectory.path}${Platform.pathSeparator}issuer_icons${Platform.pathSeparator}');
+    final packDirectory = await _packDirectory;
     if (!await _deleteDirectory(packDirectory)) {
       _log.error('FS operation failed(2)');
       _lastError = 'FS failure(2)';
@@ -199,7 +193,8 @@ class IconPackManager extends ChangeNotifier {
     await _iconCache.fsCache.clear();
     _iconCache.memCache.clear();
 
-    await destination.rename(packDirectory.path);
+    // moves unpacked files to the directory final directory
+    await unpackDirectory.rename(packDirectory.path);
 
     readPack();
 
@@ -231,9 +226,9 @@ class IconPackManager extends ChangeNotifier {
   }
 
   Future<Directory> get _packDirectory async {
-    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final supportDirectory = await getApplicationSupportDirectory();
     return Directory(
-        '${documentsDirectory.path}${Platform.pathSeparator}$_packSubDir${Platform.pathSeparator}');
+        '${supportDirectory.path}${Platform.pathSeparator}$_packSubDir${Platform.pathSeparator}');
   }
 }
 

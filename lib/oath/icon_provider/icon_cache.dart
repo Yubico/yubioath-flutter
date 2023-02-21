@@ -48,7 +48,7 @@ class IconCacheFs {
   }
 
   Future<void> clear() async {
-    final cacheDirectory = await _getCacheDirectory();
+    final cacheDirectory = await _cacheDirectory;
     if (await cacheDirectory.exists()) {
       try {
         await cacheDirectory.delete(recursive: true);
@@ -59,15 +59,20 @@ class IconCacheFs {
     }
   }
 
-  Future<Directory> _getCacheDirectory() async {
-    final documentsDirectory = await getApplicationDocumentsDirectory();
-    return Directory(
-        '${documentsDirectory.path}${Platform.pathSeparator}issuer_icons_cache${Platform.pathSeparator}');
+  String _buildCacheDirectoryPath(String supportDirectory) =>
+      '$supportDirectory${Platform.pathSeparator}issuer_icons_cache${Platform.pathSeparator}';
+
+  Future<Directory> get _cacheDirectory async {
+    final supportDirectory = await getApplicationSupportDirectory();
+    return Directory(_buildCacheDirectoryPath(supportDirectory.path));
   }
 
-  Future<File> _getFile(String fileName) async =>
-      File((await _getCacheDirectory()).path +
-          sha256.convert(utf8.encode(fileName)).toString());
+  Future<File> _getFile(String fileName) async {
+    final supportDirectory = await getApplicationSupportDirectory();
+    final cacheDirectoryPath = _buildCacheDirectoryPath(supportDirectory.path);
+    return File(
+        cacheDirectoryPath + sha256.convert(utf8.encode(fileName)).toString());
+  }
 }
 
 class IconCacheMem {
