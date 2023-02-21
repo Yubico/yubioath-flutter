@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yubico_authenticator/oath/icon_provider/icon_pack_settings.dart';
 
 import '../../app/state.dart';
 import '../../core/state.dart';
@@ -203,6 +204,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                 ref.read(themeModeProvider.notifier).setThemeMode(newMode);
               },
             ),
+            const IconPackSettings()
           ],
         ),
       ),
