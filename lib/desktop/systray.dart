@@ -170,9 +170,9 @@ class _Systray extends TrayListener {
                 onClick: (_) async {
                   final code = await _calculateCode(_devicePath, e, _ref);
                   if (code != null) {
-                    final clipboard = _ref.read(clipboardProvider);
-                    await clipboard.setText(code.value, isSensitive: true);
-
+                    await _ref
+                        .read(clipboardProvider)
+                        .setText(code.value, isSensitive: true);
                     final notification = LocalNotification(
                       title: 'Code copied',
                       body: '$label copied to clipboard.',
