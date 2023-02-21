@@ -151,17 +151,17 @@ class IconPackManager extends ChangeNotifier {
     final destination =
         Directory('${tempDirectory.path}ex${Platform.pathSeparator}');
 
-    final archive = ZipDecoder().decodeBytes(bytes);
+    final archive = ZipDecoder().decodeBytes(bytes, verify: true);
     for (final file in archive) {
       final filename = file.name;
-      if (file.isFile) {
+      if (file.size > 0) {
         final data = file.content as List<int>;
-        _log.debug('Writing file: ${destination.path}$filename');
+        _log.debug('Writing file: ${destination.path}$filename (size: ${file.size})');
         final extractedFile = File('${destination.path}$filename');
         final createdFile = await extractedFile.create(recursive: true);
         await createdFile.writeAsBytes(data);
       } else {
-        _log.debug('Writing directory: ${destination.path}$filename');
+        _log.debug('Writing directory: ${destination.path}$filename (size: ${file.size})');
         Directory('${destination.path}$filename').createSync(recursive: true);
       }
     }
