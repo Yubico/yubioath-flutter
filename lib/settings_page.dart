@@ -39,7 +39,9 @@ class SettingsPage extends ConsumerWidget {
 
     final theme = Theme.of(context);
 
-    final iconPackName = ref.watch(iconPackManager).iconPackName();
+    final packManager = ref.watch(iconPackManager);
+    final hasIconPack = packManager.hasIconPack;
+
     return ResponsiveDialog(
       title: Text(AppLocalizations.of(context)!.general_settings),
       child: Theme(
@@ -84,17 +86,17 @@ class SettingsPage extends ConsumerWidget {
             ),
             const ListTitle('Account icon pack'),
             ListTile(
-              title: (iconPackName != null) ? const Text('Icon pack imported') : const Text('Not using icon pack'),
+              title: hasIconPack ? const Text('Icon pack imported') : const Text('Not using icon pack'),
               subtitle: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  iconPackName != null ?
+                  hasIconPack ?
                   Row(
                     children: [
                       const Text('Name: ',
                           style: TextStyle(fontSize: 11)),
-                      Text(iconPackName,
+                      Text('${packManager.iconPackName} (version: ${packManager.iconPackVersion})' ,
                           style: TextStyle(fontSize: 11, color: theme.colorScheme.primary)),
                     ],
                   ) : const Text('Tap to import', style: TextStyle(fontSize: 10)),
@@ -107,7 +109,7 @@ class SettingsPage extends ConsumerWidget {
                 },
               ),
               onTap: () async {
-                if (iconPackName != null) {
+                if (hasIconPack) {
                   await _removeOrChangeIconPack(context, ref);
                 } else {
                   await _importIconPack(context, ref);
@@ -164,7 +166,7 @@ class SettingsPage extends ConsumerWidget {
                 ListTile(
                     title: const Text('Remove icon pack'),
                     onTap: () async {
-                      final removePackStatus = await ref.read(iconPackManager).removePack('issuer_icons');
+                      final removePackStatus = await ref.read(iconPackManager).removePack();
                       await ref.read(withContextProvider)(
                             (context) async {
                           if (removePackStatus) {

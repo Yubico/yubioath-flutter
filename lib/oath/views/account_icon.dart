@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vector_graphics/vector_graphics.dart';
@@ -19,17 +17,8 @@ class AccountIcon extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final iconPack = ref.watch(iconPackManager).getIconPack();
-    if (iconPack == null || issuer == null) {
-      return defaultWidget;
-    }
-
-    final matching = iconPack.icons
-        .where((element) => element.issuer.any((element) => element == issuer));
-    final issuerImageFile = matching.isNotEmpty
-        ? File('${iconPack.directory.path}${matching.first.filename}')
-        : null;
-    return issuerImageFile != null && issuerImageFile.existsSync()
+    final issuerImageFile = ref.watch(iconPackManager).getFileForIssuer(issuer);
+    return issuerImageFile != null
         ? VectorGraphic(
             width: 40,
             height: 40,

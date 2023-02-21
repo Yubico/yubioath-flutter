@@ -27,7 +27,7 @@ import 'package:yubico_authenticator/app/logging.dart';
 
 import 'icon_cache.dart';
 
-final _log = Logger('icon_pack_provider');
+final _log = Logger('icon_pack_manager');
 
 class IconPackIcon {
   final String filename;
@@ -59,45 +59,40 @@ class IconPack {
 
 class IconPackManager extends ChangeNotifier {
   final IconCache _iconCache;
+
   IconPack? _pack;
+  final _packSubDir = 'issuer_icons';
 
   IconPackManager(this._iconCache);
 
-  String? iconPackName() =>
-      _pack != null ? '${_pack!.name} (${_pack!.version})' : null;
+  bool get hasIconPack => _pack != null;
 
-  /// removes imported icon pack
-  Future<bool> removePack(String relativePackPath) async {
-    _iconCache.memCache.clear();
-    await _iconCache.fsCache.clear();
-    final cleanupStatus =
-        await _deleteDirectory(await _getPackDirectory(relativePackPath));
-    _pack = null;
-    notifyListeners();
-    return cleanupStatus;
-  }
+  String? get iconPackName => _pack?.name;
 
-  Future<bool> _deleteDirectory(Directory directory) async {
-    if (await directory.exists()) {
-      await directory.delete(recursive: true);
+  int? get iconPackVersion => _pack?.version;
+
+  File? getFileForIssuer(String? issuer) {
+    if (_pack == null || issuer == null) {
+      return null;
     }
 
-    if (await directory.exists()) {
-      _log.error('Failed to delete directory');
-      return false;
+    final pack = _pack!;
+    final matching = pack.icons
+        .where((element) => element.issuer.any((element) => element == issuer));
+
+    final issuerImageFile = matching.isNotEmpty
+        ? File('${pack.directory.path}${matching.first.filename}')
+        : null;
+
+    if (issuerImageFile != null && !issuerImageFile.existsSync()) {
+      return null;
     }
 
-    return true;
+    return issuerImageFile;
   }
 
-  Future<Directory> _getPackDirectory(String relativePackPath) async {
-    final documentsDirectory = await getApplicationDocumentsDirectory();
-    return Directory(
-        '${documentsDirectory.path}${Platform.pathSeparator}$relativePackPath${Platform.pathSeparator}');
-  }
-
-  void readPack(String relativePackPath) async {
-    final packDirectory = await _getPackDirectory(relativePackPath);
+  void readPack() async {
+    final packDirectory = await _packDirectory;
     final packFile = File('${packDirectory.path}pack.json');
 
     _log.debug('Looking for file: ${packFile.path}');
@@ -190,17 +185,44 @@ class IconPackManager extends ChangeNotifier {
     _iconCache.memCache.clear();
 
     await destination.rename(packDirectory.path);
-    readPack('issuer_icons');
+    readPack();
 
     await _deleteDirectory(tempDirectory);
     return true;
   }
 
-  IconPack? getIconPack() => _pack;
+  /// removes imported icon pack
+  Future<bool> removePack() async {
+    _iconCache.memCache.clear();
+    await _iconCache.fsCache.clear();
+    final cleanupStatus = await _deleteDirectory(await _packDirectory);
+    _pack = null;
+    notifyListeners();
+    return cleanupStatus;
+  }
+
+  Future<bool> _deleteDirectory(Directory directory) async {
+    if (await directory.exists()) {
+      await directory.delete(recursive: true);
+    }
+
+    if (await directory.exists()) {
+      _log.error('Failed to delete directory');
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<Directory> get _packDirectory async {
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    return Directory(
+        '${documentsDirectory.path}${Platform.pathSeparator}$_packSubDir${Platform.pathSeparator}');
+  }
 }
 
 final iconPackManager = ChangeNotifierProvider<IconPackManager>((ref) {
   final manager = IconPackManager(ref.watch(iconCacheProvider));
-  manager.readPack('issuer_icons');
+  manager.readPack();
   return manager;
 });
