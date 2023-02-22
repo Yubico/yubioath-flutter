@@ -186,7 +186,12 @@ class _Systray extends TrayListener {
               );
             },
           ),
-          if (_credentials.isNotEmpty) MenuItem.separator(),
+          if (_credentials.isEmpty)
+            MenuItem(
+              label: 'No pinned accounts',
+              disabled: true,
+            ),
+          MenuItem.separator(),
           MenuItem(
             label: _isHidden ? 'Show window' : 'Hide window',
             onClick: (_) {
