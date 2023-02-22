@@ -1,0 +1,13 @@
+== Custom OATH Account Icons
+Yubico Authenticator supports displaying icons for OATH accounts based on the account's issuer value. This feature makes it easier to navigate in the account list.
+
+=== Setup
+To enable custom OATH account icons, provide an icon pack archive in the https://github.com/beemdevelopment/Aegis/blob/master/docs/iconpacks.md[Aegis Icon Pack format]. This archive can be built from scratch or one can use existing prebuilt packages from https://aegis-icons.github.io/ or https://github.com/alexbakker/aegis-simple-icons.
+
+Once the icon pack is present, use the OATH menu in the application and select "Custom Icons". In the dialog, load the icon pack file.
+
+Accounts which have icons in the icon pack will be rendered with the icons.
+
+The "Custom Icons" dialog can be used to remove or replace the currently used icon pack.
+
+NOTE: Yubico Authenticator only supports icons in the SVG format.

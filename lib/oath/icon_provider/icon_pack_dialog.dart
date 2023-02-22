@@ -145,6 +145,10 @@ class IconPackDialog extends ConsumerWidget {
     return false;
   }
 
+  Uri get _learnMoreUri =>
+      Uri.parse('https://github.com/Yubico/yubioath-flutter/blob/'
+          'feature/issuer_icons/doc/Custom_OATH_Account_Icons.adoc');
+
   TextSpan _createLearnMoreLink(BuildContext context) {
     final theme = Theme.of(context);
     return TextSpan(
@@ -153,10 +157,7 @@ class IconPackDialog extends ConsumerWidget {
           ?.copyWith(color: theme.colorScheme.primary),
       recognizer: TapGestureRecognizer()
         ..onTap = () async {
-          await launchUrl(
-              Uri.parse(
-                  'https://github.com/Yubico/yubioath-flutter/tree/main/doc'),
-              mode: LaunchMode.externalApplication);
+          await launchUrl(_learnMoreUri, mode: LaunchMode.externalApplication);
         },
       children: const [
         TextSpan(text: ' ') // without this the recognizer takes over whole row
