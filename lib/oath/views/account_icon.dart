@@ -63,7 +63,7 @@ class AccountIcon extends ConsumerWidget {
         );
       },
       icon: issuerWidget,
-      tooltip: 'Select icon',
+      tooltip: 'Manage icons',
       padding: const EdgeInsets.all(1.0),
     );
   }

@@ -33,72 +33,68 @@ class IconPackDialog extends ConsumerWidget {
     final hasIconPack = packManager.hasIconPack;
 
     return ResponsiveDialog(
-      title: const Text('Manage icons'),
+      title: const Text('Custom icons'),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('By loading an external icon pack, the avatar icons '
-                'of the accounts will be easier to distinguish throught the issuers '
+                'of the accounts will be easier to distinguish through the issuers '
                 'familiar logos and colors.\n\n'
-                'We recommend the Aegis icon packs which can be downloaded '
-                'from below.'),
+                'Read more about how to create or obtain a compatible icon pack '
+                'by clicking the link from below.'),
             TextButton(
               child: const Text(
-                'https://aegis-icons.github.io/',
-                style: TextStyle(decoration: TextDecoration.underline),
+                'Icon pack support',
+                style: TextStyle(decoration: TextDecoration.none),
               ),
               onPressed: () async {
                 await launchUrl(
-                  Uri.parse('https://aegis-icons.github.io/'),
+                  Uri.parse(
+                      'https://github.com/Yubico/yubioath-flutter/tree/main/doc'),
                   mode: LaunchMode.externalApplication,
                 );
               },
             ),
             const SizedBox(height: 8),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-              OutlinedButton(
-                onPressed: () async {
-                  await _importIconPack(context, ref);
-                },
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  const Icon(Icons.download, size: 16),
-                  const SizedBox(width: 4),
-                  hasIconPack
-                      ? const Text('Replace icon pack')
-                      : const Text('Load icon pack')
-                ]),
-              ),
-              if (hasIconPack)
-                OutlinedButton(
-                  onPressed: () async {
-                    final removePackStatus =
-                        await ref.read(iconPackManager).removePack();
-                    await ref.read(withContextProvider)(
-                      (context) async {
-                        if (removePackStatus) {
-                          showMessage(context, 'Icon pack removed');
-                        } else {
-                          showMessage(context, 'Error removing icon pack');
-                        }
-                        Navigator.pop(context);
+            Wrap(
+              spacing: 4.0,
+              runSpacing: 8.0,
+              children: [
+                ActionChip(
+                    onPressed: () async {
+                      await _importIconPack(context, ref);
+                    },
+                    avatar: const Icon(Icons.download_outlined, size: 16),
+                    label: hasIconPack
+                        ? const Text('Load icon pack')
+                        : const Text('Load icon pack')),
+                if (hasIconPack)
+                  ActionChip(
+                      onPressed: () async {
+                        final removePackStatus =
+                            await ref.read(iconPackManager).removePack();
+                        await ref.read(withContextProvider)(
+                          (context) async {
+                            if (removePackStatus) {
+                              showMessage(context, 'Icon pack removed');
+                            } else {
+                              showMessage(context, 'Error removing icon pack');
+                            }
+                            Navigator.pop(context);
+                          },
+                        );
                       },
-                    );
-                  },
-                  child: Row(mainAxisSize: MainAxisSize.min, children: const [
-                    Icon(Icons.delete_rounded, size: 16),
-                    SizedBox(width: 4),
-                    Text('Remove icon pack')
-                  ]),
-                )
-            ]),
+                      avatar: const Icon(Icons.delete_outline, size: 16),
+                      label: const Text('Remove icon pack'))
+              ],
+            ),
             const SizedBox(height: 16),
             if (hasIconPack)
               Text(
-                'Loaded: ${packManager.iconPackName} (version: ${packManager.iconPackVersion})',
-                style:
-                    TextStyle(fontSize: 11, color: theme.colorScheme.primary),
+                'Current: ${packManager.iconPackName} (version: ${packManager.iconPackVersion})',
+                style: TextStyle(fontSize: 11, color: theme.disabledColor),
               )
             else
               const Text('')
