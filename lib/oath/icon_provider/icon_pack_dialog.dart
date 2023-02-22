@@ -42,11 +42,10 @@ class IconPackDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 4),
             RichText(
               text: TextSpan(
                 text: l10n.oath_custom_icons_description,
-                style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                style: theme.textTheme.bodyMedium,
                 children: [_createLearnMoreLink(context, [])],
               ),
             ),
@@ -150,7 +149,7 @@ class IconPackDialog extends ConsumerWidget {
     final theme = Theme.of(context);
     return TextSpan(
       text: AppLocalizations.of(context)!.oath_custom_icons_learn_more,
-      style: TextStyle(color: theme.colorScheme.primary),
+      style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary),
       recognizer: TapGestureRecognizer()
         ..onTap = () async {
           await launchUrl(
