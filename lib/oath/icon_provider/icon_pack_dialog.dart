@@ -46,7 +46,7 @@ class IconPackDialog extends ConsumerWidget {
               text: TextSpan(
                 text: l10n.oath_custom_icons_description,
                 style: theme.textTheme.bodyMedium,
-                children: [_createLearnMoreLink(context, [])],
+                children: [_createLearnMoreLink(context)],
               ),
             ),
             const SizedBox(height: 4),
@@ -136,7 +136,8 @@ class IconPackDialog extends ConsumerWidget {
           showMessage(
               context,
               l10n.oath_custom_icons_err_icon_pack_import(
-                  ref.read(iconPackManager).lastError ?? l10n.oath_custom_icons_err_import_general));
+                  ref.read(iconPackManager).lastError ??
+                      l10n.oath_custom_icons_err_import_general));
         }
       });
     }
@@ -144,21 +145,22 @@ class IconPackDialog extends ConsumerWidget {
     return false;
   }
 
-  TextSpan _createLearnMoreLink(
-      BuildContext context, List<InlineSpan>? children) {
+  TextSpan _createLearnMoreLink(BuildContext context) {
     final theme = Theme.of(context);
     return TextSpan(
       text: AppLocalizations.of(context)!.oath_custom_icons_learn_more,
-      style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary),
+      style: theme.textTheme.bodyMedium
+          ?.copyWith(color: theme.colorScheme.primary),
       recognizer: TapGestureRecognizer()
         ..onTap = () async {
           await launchUrl(
-            Uri.parse(
-                'https://github.com/Yubico/yubioath-flutter/tree/main/doc'),
-            mode: LaunchMode.externalApplication,
-          );
+              Uri.parse(
+                  'https://github.com/Yubico/yubioath-flutter/tree/main/doc'),
+              mode: LaunchMode.externalApplication);
         },
-      children: children,
+      children: const [
+        TextSpan(text: ' ') // without this the recognizer takes over whole row
+      ],
     );
   }
 }
