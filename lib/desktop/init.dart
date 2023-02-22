@@ -180,7 +180,10 @@ Future<Widget> initialize(List<String> argv) async {
           });
 
           // Initialize systray
-          ref.watch(systrayProvider);
+          final disableTray = Platform.environment['DISABLE_TRAY'];
+          if (!(disableTray != null && disableTray.isNotEmpty)) {
+            ref.watch(systrayProvider);
+          }
 
           // Show a loading or error page while the Helper isn't ready
           return ref.watch(rpcProvider).when(
