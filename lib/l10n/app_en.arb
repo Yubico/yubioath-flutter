@@ -81,6 +81,27 @@
             "capacity": {}
         }
     },
+    "oath_custom_icons": "Custom icons",
+    "oath_custom_icons_description": "Icon packs can make your accounts more easily distinguishable with familiar logos and colors. ",
+    "oath_custom_icons_replace": "Replace icon pack",
+    "oath_custom_icons_load": "Load icon pack",
+    "oath_custom_icons_remove": "Remove icon pack",
+    "oath_custom_icons_icon_pack_removed": "Icon pack removed",
+    "oath_custom_icons_err_icon_pack_remove": "Error removing icon pack",
+    "oath_custom_icons_choose_icon_pack": "Choose icon pack",
+    "oath_custom_icons_icon_pack_imported": "Icon pack imported",
+    "oath_custom_icons_err_icon_pack_import": "Error importing icon pack: {message}",
+    "@oath_custom_icons_err_icon_pack_import": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "oath_custom_icons_learn_more": "Learn\u00a0more",
+    "oath_custom_icons_err_import_general": "Import error",
+    "oath_custom_icons_err_file_not_found": "File not found",
+    "oath_custom_icons_err_file_too_big": "File size too big",
+    "oath_custom_icons_err_invalid_icon_pack": "Invalid icon pack",
+    "oath_custom_icons_err_filesystem_error": "File system operation error",
 
     "widgets_cancel": "Cancel",
     "widgets_close": "Close",

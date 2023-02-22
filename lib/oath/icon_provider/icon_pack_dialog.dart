@@ -17,6 +17,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yubico_authenticator/app/message.dart';
@@ -32,9 +33,10 @@ class IconPackDialog extends ConsumerWidget {
     final theme = Theme.of(context);
     final packManager = ref.watch(iconPackManager);
     final hasIconPack = packManager.hasIconPack;
+    final l10n = AppLocalizations.of(context)!;
 
     return ResponsiveDialog(
-      title: const Text('Custom icons'),
+      title: Text(l10n.oath_custom_icons),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
@@ -43,8 +45,7 @@ class IconPackDialog extends ConsumerWidget {
             const SizedBox(height: 4),
             RichText(
               text: TextSpan(
-                text: 'Icon packs can make your accounts more easily '
-                    'distinguishable with familiar logos and colors. ',
+                text: l10n.oath_custom_icons_description,
                 style: TextStyle(color: theme.textTheme.bodyLarge?.color),
                 children: [_createLearnMoreLink(context, [])],
               ),
@@ -60,8 +61,8 @@ class IconPackDialog extends ConsumerWidget {
                     },
                     avatar: const Icon(Icons.download_outlined, size: 16),
                     label: hasIconPack
-                        ? const Text('Replace icon pack')
-                        : const Text('Load icon pack')),
+                        ? Text(l10n.oath_custom_icons_replace)
+                        : Text(l10n.oath_custom_icons_load)),
               ],
             ),
             //const SizedBox(height: 8),
@@ -83,17 +84,18 @@ class IconPackDialog extends ConsumerWidget {
                   Row(
                     children: [
                       IconButton(
-                          tooltip: 'Remove icon pack',
+                          tooltip: l10n.oath_custom_icons_remove,
                           onPressed: () async {
                             final removePackStatus =
                                 await ref.read(iconPackManager).removePack();
                             await ref.read(withContextProvider)(
                               (context) async {
                                 if (removePackStatus) {
-                                  showMessage(context, 'Icon pack removed');
+                                  showMessage(context,
+                                      l10n.oath_custom_icons_icon_pack_removed);
                                 } else {
-                                  showMessage(
-                                      context, 'Error removing icon pack');
+                                  showMessage(context,
+                                      l10n.oath_custom_icons_err_icon_pack_remove);
                                 }
                                 // don't close the dialog Navigator.pop(context);
                               },
@@ -117,22 +119,25 @@ class IconPackDialog extends ConsumerWidget {
   }
 
   Future<bool> _importIconPack(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
     final result = await FilePicker.platform.pickFiles(
         allowedExtensions: ['zip'],
         type: FileType.custom,
         allowMultiple: false,
         lockParentWindow: true,
-        dialogTitle: 'Choose icon pack');
+        dialogTitle: l10n.oath_custom_icons_choose_icon_pack);
     if (result != null && result.files.isNotEmpty) {
       final importStatus =
-          await ref.read(iconPackManager).importPack(result.paths.first!);
+          await ref.read(iconPackManager).importPack(l10n, result.paths.first!);
 
       await ref.read(withContextProvider)((context) async {
         if (importStatus) {
-          showMessage(context, 'Icon pack imported');
+          showMessage(context, l10n.oath_custom_icons_icon_pack_imported);
         } else {
-          showMessage(context,
-              'Error importing icon pack: ${ref.read(iconPackManager).lastError}');
+          showMessage(
+              context,
+              l10n.oath_custom_icons_err_icon_pack_import(
+                  ref.read(iconPackManager).lastError ?? l10n.oath_custom_icons_err_import_general));
         }
       });
     }
@@ -144,7 +149,7 @@ class IconPackDialog extends ConsumerWidget {
       BuildContext context, List<InlineSpan>? children) {
     final theme = Theme.of(context);
     return TextSpan(
-      text: 'Learn\u00a0more',
+      text: AppLocalizations.of(context)!.oath_custom_icons_learn_more,
       style: TextStyle(color: theme.colorScheme.primary),
       recognizer: TapGestureRecognizer()
         ..onTap = () async {

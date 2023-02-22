@@ -19,6 +19,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
@@ -129,17 +130,17 @@ class IconPackManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> importPack(String filePath) async {
+  Future<bool> importPack(AppLocalizations l10n, String filePath) async {
     final packFile = File(filePath);
     if (!await packFile.exists()) {
       _log.error('Input file does not exist');
-      _lastError = 'File not found';
+      _lastError = l10n.oath_custom_icons_err_file_not_found;
       return false;
     }
 
     if (await packFile.length() > 3 * 1024 * 1024) {
-      _log.error('File exceeds size. Max 3MB.');
-      _lastError = 'File exceeds size. Max 3MB.';
+      _log.error('File size too big.');
+      _lastError = l10n.oath_custom_icons_err_file_too_big;
       return false;
     }
 
@@ -176,7 +177,7 @@ class IconPackManager extends ChangeNotifier {
     final packJsonFile = File('${unpackDirectory.path}pack.json');
     if (!await packJsonFile.exists()) {
       _log.error('File is not a icon pack: missing pack.json');
-      _lastError = 'pack.json missing';
+      _lastError = l10n.oath_custom_icons_err_invalid_icon_pack;
       await _deleteDirectory(tempDirectory);
       return false;
     }
@@ -184,8 +185,8 @@ class IconPackManager extends ChangeNotifier {
     // remove old icons pack and icon pack cache
     final packDirectory = await _packDirectory;
     if (!await _deleteDirectory(packDirectory)) {
-      _log.error('FS operation failed(2)');
-      _lastError = 'FS failure(2)';
+      _log.error('Failure when deleting original pack directory');
+      _lastError = l10n.oath_custom_icons_err_filesystem_error;
       await _deleteDirectory(tempDirectory);
       return false;
     }
