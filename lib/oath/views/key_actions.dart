@@ -19,6 +19,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yubico_authenticator/oath/icon_provider/icon_pack_dialog.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -91,6 +92,20 @@ Widget oathBuildActions(
       ),
       ListTitle(AppLocalizations.of(context)!.general_manage,
           textStyle: Theme.of(context).textTheme.bodyLarge),
+      ListTile(
+          key: keys.customIconsAction,
+          title: const Text('Custom icons'),
+          subtitle: const Text('Set icons for accounts'),
+          leading: const CircleAvatar(
+            child: Icon(Icons.image_outlined),
+          ),
+          onTap: () async {
+            Navigator.of(context).pop();
+            await showBlurDialog(
+              context: context,
+              builder: (context) => const IconPackDialog(),
+            );
+          }),
       ListTile(
           key: keys.setOrManagePasswordAction,
           title: Text(oathState.hasKey

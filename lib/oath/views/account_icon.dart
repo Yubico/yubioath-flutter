@@ -17,9 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vector_graphics/vector_graphics.dart';
-import 'package:yubico_authenticator/app/message.dart';
 import 'package:yubico_authenticator/oath/icon_provider/icon_file_loader.dart';
-import 'package:yubico_authenticator/oath/icon_provider/icon_pack_dialog.dart';
 import 'package:yubico_authenticator/oath/icon_provider/icon_pack_manager.dart';
 import 'package:yubico_authenticator/widgets/delayed_visibility.dart';
 
@@ -36,7 +34,7 @@ class AccountIcon extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final issuerImageFile = ref.watch(iconPackManager).getFileForIssuer(issuer);
-    final issuerWidget = issuerImageFile != null
+    return issuerImageFile != null
         ? VectorGraphic(
             width: 40,
             height: 40,
@@ -55,16 +53,5 @@ class AccountIcon extends ConsumerWidget {
               );
             })
         : defaultWidget;
-    return IconButton(
-      onPressed: () async {
-        await showBlurDialog(
-          context: context,
-          builder: (context) => const IconPackDialog(),
-        );
-      },
-      icon: issuerWidget,
-      tooltip: 'Manage icons',
-      padding: const EdgeInsets.all(1.0),
-    );
   }
 }

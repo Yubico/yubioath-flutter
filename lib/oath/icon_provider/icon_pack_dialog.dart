@@ -71,7 +71,7 @@ class IconPackDialog extends ConsumerWidget {
                             } else {
                               showMessage(context, 'Error removing icon pack');
                             }
-                            Navigator.pop(context);
+                            // don't close the dialog Navigator.pop(context);
                           },
                         );
                       },

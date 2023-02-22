@@ -22,6 +22,8 @@ const setOrManagePasswordAction = Key('$_prefix.set_or_manage_oath_password');
 const addAccountAction = Key('$_prefix.add_account');
 const resetAction = Key('$_prefix.reset');
 
+const customIconsAction = Key('$_prefix.custom_icons');
+
 const noAccountsView = Key('$_prefix.no_accounts');
 
 // This is global so we can access it from the global Ctrl+F shortcut.
