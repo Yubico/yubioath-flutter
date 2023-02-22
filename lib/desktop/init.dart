@@ -181,24 +181,7 @@ Future<Widget> initialize(List<String> argv) async {
 
           // Initialize systray
           final disableTrayEnv = Platform.environment['YA_DISABLE_TRAY'];
-          bool enableTray;
-          if (disableTrayEnv == null) {
-            if (Platform.isMacOS) {
-              final version = Platform.operatingSystemVersion
-                  .split(' ')[1]
-                  .split('.')
-                  .map(int.parse)
-                  .toList();
-              // We know this doesn't work on 11.7.4 (latest Big Sur)
-              enableTray = version[0] > 11;
-            } else {
-              enableTray = true;
-            }
-          } else {
-            enableTray = (disableTrayEnv.toLowerCase() == 'false' ||
-                disableTrayEnv == '0');
-          }
-          if (enableTray) {
+          if (!(disableTrayEnv == 'true' || disableTrayEnv == '1')) {
             ref.watch(systrayProvider);
           }
 
