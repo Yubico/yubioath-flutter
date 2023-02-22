@@ -88,14 +88,7 @@ Future<OathCode?> _calculateCode(
 
 String _getIcon() {
   if (Platform.isMacOS) {
-    final version = Platform.operatingSystemVersion
-        .split(' ')[1]
-        .split('.')
-        .map(int.parse)
-        .toList();
-    if (version[0] > 12) {
-      return 'assets/graphics/systray-macos.svg';
-    }
+    return 'assets/graphics/systray-macos.eps';
   }
   if (Platform.isWindows) {
     return 'assets/graphics/systray.ico';

@@ -180,10 +180,7 @@ Future<Widget> initialize(List<String> argv) async {
           });
 
           // Initialize systray
-          final disableTrayEnv = Platform.environment['YA_DISABLE_TRAY'];
-          if (!(disableTrayEnv == 'true' || disableTrayEnv == '1')) {
-            ref.watch(systrayProvider);
-          }
+          ref.watch(systrayProvider);
 
           // Show a loading or error page while the Helper isn't ready
           return ref.watch(rpcProvider).when(
