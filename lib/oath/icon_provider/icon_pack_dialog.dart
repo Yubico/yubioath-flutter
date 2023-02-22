@@ -15,6 +15,7 @@
  */
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -39,25 +40,15 @@ class IconPackDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('By loading an external icon pack, the avatar icons '
-                'of the accounts will be easier to distinguish through the issuers '
-                'familiar logos and colors.\n\n'
-                'Read more about how to create or obtain a compatible icon pack '
-                'by clicking the link from below.'),
-            TextButton(
-              child: const Text(
-                'Icon pack support',
-                style: TextStyle(decoration: TextDecoration.none),
+            RichText(
+              text: TextSpan(
+                text: 'Icon packs can make your accounts more easily '
+                    'distinguishable with familiar logos and colors. ',
+                style: TextStyle(color: theme.textTheme.bodySmall?.color),
+                children: [_createLearnMoreLink(context, [])],
               ),
-              onPressed: () async {
-                await launchUrl(
-                  Uri.parse(
-                      'https://github.com/Yubico/yubioath-flutter/tree/main/doc'),
-                  mode: LaunchMode.externalApplication,
-                );
-              },
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Wrap(
               spacing: 4.0,
               runSpacing: 8.0,
@@ -67,9 +58,7 @@ class IconPackDialog extends ConsumerWidget {
                       await _importIconPack(context, ref);
                     },
                     avatar: const Icon(Icons.download_outlined, size: 16),
-                    label: hasIconPack
-                        ? const Text('Load icon pack')
-                        : const Text('Load icon pack')),
+                    label: const Text('Load icon pack')),
                 if (hasIconPack)
                   ActionChip(
                       onPressed: () async {
@@ -90,7 +79,7 @@ class IconPackDialog extends ConsumerWidget {
                       label: const Text('Remove icon pack'))
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             if (hasIconPack)
               Text(
                 'Current: ${packManager.iconPackName} (version: ${packManager.iconPackVersion})',
@@ -131,5 +120,23 @@ class IconPackDialog extends ConsumerWidget {
     }
 
     return false;
+  }
+
+  TextSpan _createLearnMoreLink(
+      BuildContext context, List<InlineSpan>? children) {
+    final theme = Theme.of(context);
+    return TextSpan(
+      text: 'Learn\u00a0more',
+      style: TextStyle(color: theme.primaryColor),
+      recognizer: TapGestureRecognizer()
+        ..onTap = () async {
+          await launchUrl(
+            Uri.parse(
+                'https://github.com/Yubico/yubioath-flutter/tree/main/doc'),
+            mode: LaunchMode.externalApplication,
+          );
+        },
+      children: children,
+    );
   }
 }
