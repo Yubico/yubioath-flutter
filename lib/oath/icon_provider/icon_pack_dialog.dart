@@ -40,11 +40,12 @@ class IconPackDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 4),
             RichText(
               text: TextSpan(
                 text: 'Icon packs can make your accounts more easily '
                     'distinguishable with familiar logos and colors. ',
-                style: TextStyle(color: theme.textTheme.bodySmall?.color),
+                style: TextStyle(color: theme.textTheme.bodyLarge?.color),
                 children: [_createLearnMoreLink(context, [])],
               ),
             ),
@@ -58,35 +59,52 @@ class IconPackDialog extends ConsumerWidget {
                       await _importIconPack(context, ref);
                     },
                     avatar: const Icon(Icons.download_outlined, size: 16),
-                    label: const Text('Load icon pack')),
-                if (hasIconPack)
-                  ActionChip(
-                      onPressed: () async {
-                        final removePackStatus =
-                            await ref.read(iconPackManager).removePack();
-                        await ref.read(withContextProvider)(
-                          (context) async {
-                            if (removePackStatus) {
-                              showMessage(context, 'Icon pack removed');
-                            } else {
-                              showMessage(context, 'Error removing icon pack');
-                            }
-                            // don't close the dialog Navigator.pop(context);
-                          },
-                        );
-                      },
-                      avatar: const Icon(Icons.delete_outline, size: 16),
-                      label: const Text('Remove icon pack'))
+                    label: hasIconPack
+                        ? const Text('Replace icon pack')
+                        : const Text('Load icon pack')),
               ],
             ),
-            const SizedBox(height: 8),
+            //const SizedBox(height: 8),
             if (hasIconPack)
-              Text(
-                'Current: ${packManager.iconPackName} (version: ${packManager.iconPackVersion})',
-                style: TextStyle(fontSize: 11, color: theme.disabledColor),
-              )
-            else
-              const Text('')
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Flexible(
+                      fit: FlexFit.loose,
+                      child: RichText(
+                          text: TextSpan(
+                              text: '${packManager.iconPackName}',
+                              style: theme.textTheme.bodyMedium,
+                              children: [
+                            TextSpan(text: ' (${packManager.iconPackVersion})')
+                          ]))),
+                  Row(
+                    children: [
+                      IconButton(
+                          tooltip: 'Remove icon pack',
+                          onPressed: () async {
+                            final removePackStatus =
+                                await ref.read(iconPackManager).removePack();
+                            await ref.read(withContextProvider)(
+                              (context) async {
+                                if (removePackStatus) {
+                                  showMessage(context, 'Icon pack removed');
+                                } else {
+                                  showMessage(
+                                      context, 'Error removing icon pack');
+                                }
+                                // don't close the dialog Navigator.pop(context);
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.delete_outline)),
+                      //const SizedBox(width: 8)
+                    ],
+                  ),
+                ],
+              ),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -127,7 +145,7 @@ class IconPackDialog extends ConsumerWidget {
     final theme = Theme.of(context);
     return TextSpan(
       text: 'Learn\u00a0more',
-      style: TextStyle(color: theme.primaryColor),
+      style: TextStyle(color: theme.colorScheme.primary),
       recognizer: TapGestureRecognizer()
         ..onTap = () async {
           await launchUrl(
