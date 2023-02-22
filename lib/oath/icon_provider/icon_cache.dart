@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
@@ -70,8 +69,7 @@ class IconCacheFs {
   Future<File> _getFile(String fileName) async {
     final supportDirectory = await getApplicationSupportDirectory();
     final cacheDirectoryPath = _buildCacheDirectoryPath(supportDirectory.path);
-    return File(
-        cacheDirectoryPath + sha256.convert(utf8.encode(fileName)).toString());
+    return File('$cacheDirectoryPath${basenameWithoutExtension(fileName)}.dat');
   }
 }
 
