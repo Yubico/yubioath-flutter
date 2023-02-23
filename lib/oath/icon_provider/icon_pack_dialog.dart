@@ -22,6 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yubico_authenticator/app/message.dart';
 import 'package:yubico_authenticator/app/state.dart';
+import 'package:yubico_authenticator/oath/icon_provider/icon_pack.dart';
 import 'package:yubico_authenticator/oath/icon_provider/icon_pack_manager.dart';
 import 'package:yubico_authenticator/widgets/responsive_dialog.dart';
 
@@ -30,11 +31,8 @@ class IconPackDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final packManager = ref.watch(iconPackManager);
-    final hasIconPack = packManager.hasIconPack;
     final l10n = AppLocalizations.of(context)!;
-
+    final iconPack = ref.watch(iconPackProvider);
     return ResponsiveDialog(
       title: Text(l10n.oath_custom_icons),
       child: Padding(
@@ -42,70 +40,10 @@ class IconPackDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            RichText(
-              text: TextSpan(
-                text: l10n.oath_custom_icons_description,
-                style: theme.textTheme.bodyMedium,
-                children: [_createLearnMoreLink(context)],
-              ),
-            ),
+            _DialogDescription(),
             const SizedBox(height: 4),
-            Wrap(
-              spacing: 4.0,
-              runSpacing: 8.0,
-              children: [
-                ActionChip(
-                    onPressed: () async {
-                      await _importIconPack(context, ref);
-                    },
-                    avatar: const Icon(Icons.download_outlined, size: 16),
-                    label: hasIconPack
-                        ? Text(l10n.oath_custom_icons_replace)
-                        : Text(l10n.oath_custom_icons_load)),
-              ],
-            ),
-            //const SizedBox(height: 8),
-            if (hasIconPack)
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Flexible(
-                      fit: FlexFit.loose,
-                      child: RichText(
-                          text: TextSpan(
-                              text: '${packManager.iconPackName}',
-                              style: theme.textTheme.bodyMedium,
-                              children: [
-                            TextSpan(text: ' (${packManager.iconPackVersion})')
-                          ]))),
-                  Row(
-                    children: [
-                      IconButton(
-                          tooltip: l10n.oath_custom_icons_remove,
-                          onPressed: () async {
-                            final removePackStatus =
-                                await ref.read(iconPackManager).removePack();
-                            await ref.read(withContextProvider)(
-                              (context) async {
-                                if (removePackStatus) {
-                                  showMessage(context,
-                                      l10n.oath_custom_icons_icon_pack_removed);
-                                } else {
-                                  showMessage(context,
-                                      l10n.oath_custom_icons_err_icon_pack_remove);
-                                }
-                                // don't close the dialog Navigator.pop(context);
-                              },
-                            );
-                          },
-                          icon: const Icon(Icons.delete_outline)),
-                      //const SizedBox(width: 8)
-                    ],
-                  ),
-                ],
-              ),
+            _action(iconPack, l10n),
+            _loadedIconPackRow(iconPack),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -117,32 +55,39 @@ class IconPackDialog extends ConsumerWidget {
     );
   }
 
-  Future<bool> _importIconPack(BuildContext context, WidgetRef ref) async {
+  Widget? _loadedIconPackRow(AsyncValue<IconPack?> iconPack) {
+    return iconPack.when(
+        data: (IconPack? data) =>
+            (data != null) ? _IconPackDescription(data) : null,
+        error: (Object error, StackTrace stackTrace) => null,
+        loading: () => null);
+  }
+
+  Widget? _action(AsyncValue<IconPack?> iconPack, AppLocalizations l10n) =>
+      iconPack.when(
+          data: (IconPack? data) => _ImportActionChip(data != null
+              ? l10n.oath_custom_icons_replace
+              : l10n.oath_custom_icons_load),
+          error: (Object error, StackTrace stackTrace) =>
+              _ImportActionChip(l10n.oath_custom_icons_load),
+          loading: () => _ImportActionChip(
+                l10n.oath_custom_icons_loading,
+                avatar: const CircularProgressIndicator(),
+              ));
+}
+
+class _DialogDescription extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final result = await FilePicker.platform.pickFiles(
-        allowedExtensions: ['zip'],
-        type: FileType.custom,
-        allowMultiple: false,
-        lockParentWindow: true,
-        dialogTitle: l10n.oath_custom_icons_choose_icon_pack);
-    if (result != null && result.files.isNotEmpty) {
-      final importStatus =
-          await ref.read(iconPackManager).importPack(l10n, result.paths.first!);
-
-      await ref.read(withContextProvider)((context) async {
-        if (importStatus) {
-          showMessage(context, l10n.oath_custom_icons_icon_pack_imported);
-        } else {
-          showMessage(
-              context,
-              l10n.oath_custom_icons_err_icon_pack_import(
-                  ref.read(iconPackManager).lastError ??
-                      l10n.oath_custom_icons_err_import_general));
-        }
-      });
-    }
-
-    return false;
+    return RichText(
+      text: TextSpan(
+        text: l10n.oath_custom_icons_description,
+        style: theme.textTheme.bodyMedium,
+        children: [_createLearnMoreLink(context)],
+      ),
+    );
   }
 
   Uri get _learnMoreUri =>
@@ -163,5 +108,96 @@ class IconPackDialog extends ConsumerWidget {
         TextSpan(text: ' ') // without this the recognizer takes over whole row
       ],
     );
+  }
+}
+
+class _IconPackDescription extends ConsumerWidget {
+  final IconPack iconPack;
+
+  const _IconPackDescription(this.iconPack);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    return Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Flexible(
+              fit: FlexFit.loose,
+              child: RichText(
+                  text: TextSpan(
+                      text: iconPack.name,
+                      style: theme.textTheme.bodyMedium,
+                      children: [TextSpan(text: ' (${iconPack.version})')]))),
+          Row(
+            children: [
+              IconButton(
+                  tooltip: l10n.oath_custom_icons_remove,
+                  onPressed: () async {
+                    final removePackStatus =
+                        await ref.read(iconPackProvider.notifier).removePack();
+                    await ref.read(withContextProvider)(
+                      (context) async {
+                        if (removePackStatus) {
+                          showMessage(context,
+                              l10n.oath_custom_icons_icon_pack_removed);
+                        } else {
+                          showMessage(context,
+                              l10n.oath_custom_icons_err_icon_pack_remove);
+                        }
+                      },
+                    );
+                  },
+                  icon: const Icon(Icons.delete_outline)),
+            ],
+          )
+        ]);
+  }
+}
+
+class _ImportActionChip extends ConsumerWidget {
+  final String _label;
+  final Widget avatar;
+
+  const _ImportActionChip(this._label,
+      {this.avatar = const Icon(Icons.download_outlined)});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ActionChip(
+        onPressed: () async {
+          _importAction(context, ref);
+        },
+        avatar: avatar,
+        label: Text(_label));
+  }
+
+  void _importAction(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    final result = await FilePicker.platform.pickFiles(
+        allowedExtensions: ['zip'],
+        type: FileType.custom,
+        allowMultiple: false,
+        lockParentWindow: true,
+        dialogTitle: l10n.oath_custom_icons_choose_icon_pack);
+    if (result != null && result.files.isNotEmpty) {
+      final importStatus = await ref
+          .read(iconPackProvider.notifier)
+          .importPack(l10n, result.paths.first!);
+      await ref.read(withContextProvider)((context) async {
+        if (importStatus) {
+          showMessage(context, l10n.oath_custom_icons_icon_pack_imported);
+        } else {
+          showMessage(
+              context,
+              l10n.oath_custom_icons_err_icon_pack_import(
+                  ref.read(iconPackProvider.notifier).lastError ??
+                      l10n.oath_custom_icons_err_import_general));
+        }
+      });
+    }
   }
 }

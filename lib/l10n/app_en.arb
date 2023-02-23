@@ -84,6 +84,7 @@
     "oath_custom_icons": "Custom icons",
     "oath_custom_icons_description": "Icon packs can make your accounts more easily distinguishable with familiar logos and colors. ",
     "oath_custom_icons_replace": "Replace icon pack",
+    "oath_custom_icons_loading": "Icon pack is loading...",
     "oath_custom_icons_load": "Load icon pack",
     "oath_custom_icons_remove": "Remove icon pack",
     "oath_custom_icons_icon_pack_removed": "Icon pack removed",
