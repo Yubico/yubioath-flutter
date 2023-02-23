@@ -85,7 +85,7 @@ class _DialogDescription extends ConsumerWidget {
       text: TextSpan(
         text: l10n.oath_custom_icons_description,
         style: theme.textTheme.bodyMedium,
-        children: [_createLearnMoreLink(context)],
+        children: [const TextSpan(text: ' '), _createLearnMoreLink(context)],
       ),
     );
   }
