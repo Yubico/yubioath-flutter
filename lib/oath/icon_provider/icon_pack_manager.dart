@@ -44,7 +44,7 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
 
   void readPack() async {
     final packDirectory = await _packDirectory;
-    final packFile = File('${packDirectory.path}pack.json');
+    final packFile = File(join(packDirectory.path, 'pack.json'));
 
     _log.debug('Looking for file: ${packFile.path}');
 
@@ -78,7 +78,6 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
   }
 
   Future<bool> importPack(AppLocalizations l10n, String filePath) async {
-
     // remove existing pack first
     await removePack();
 
@@ -102,35 +101,32 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
 
     // copy input file to temporary folder
     final tempDirectory = await Directory.systemTemp.createTemp('yubioath');
-    final tempCopy = await packFile.copy('${tempDirectory.path}'
-        '${Platform.pathSeparator}'
-        '${basename(packFile.path)}');
+    final tempCopy =
+        await packFile.copy(join(tempDirectory.path, basename(packFile.path)));
     final bytes = await File(tempCopy.path).readAsBytes();
 
-    final unpackDirectory =
-        Directory('${tempDirectory.path}${Platform.pathSeparator}'
-            'unpack${Platform.pathSeparator}');
+    final unpackDirectory = Directory(join(tempDirectory.path, 'unpack'));
 
     final archive = ZipDecoder().decodeBytes(bytes, verify: true);
     for (final file in archive) {
       final filename = file.name;
       if (file.size > 0) {
         final data = file.content as List<int>;
-        _log.debug(
-            'Writing file: ${unpackDirectory.path}$filename (size: ${file.size})');
-        final extractedFile = File('${unpackDirectory.path}$filename');
+        final extractedFile = File(join(unpackDirectory.path, filename));
+        _log.debug('Writing file: ${extractedFile.path} (size: ${file.size})');
         final createdFile = await extractedFile.create(recursive: true);
         await createdFile.writeAsBytes(data);
       } else {
-        _log.debug('Writing directory: '
-            '${unpackDirectory.path}$filename (size: ${file.size})');
-        Directory('${unpackDirectory.path}$filename')
-            .createSync(recursive: true);
+        final extractedDirectory =
+            Directory(join(unpackDirectory.path, filename));
+        _log.debug('Writing directory: ${extractedDirectory.path} '
+            '(size: ${file.size})');
+        extractedDirectory.createSync(recursive: true);
       }
     }
 
     // check that there is pack.json
-    final packJsonFile = File('${unpackDirectory.path}pack.json');
+    final packJsonFile = File(join(unpackDirectory.path, 'pack.json'));
     if (!await packJsonFile.exists()) {
       _log.error('File is not an icon pack: missing pack.json');
       _lastError = l10n.oath_custom_icons_err_invalid_icon_pack;
@@ -186,8 +182,7 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
 
   Future<Directory> get _packDirectory async {
     final supportDirectory = await getApplicationSupportDirectory();
-    return Directory('${supportDirectory.path}${Platform.pathSeparator}'
-        '$_packSubDir${Platform.pathSeparator}');
+    return Directory(join(supportDirectory.path, _packSubDir));
   }
 }
 

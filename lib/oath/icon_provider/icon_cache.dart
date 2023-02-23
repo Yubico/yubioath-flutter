@@ -59,7 +59,7 @@ class IconCacheFs {
   }
 
   String _buildCacheDirectoryPath(String supportDirectory) =>
-      '$supportDirectory${Platform.pathSeparator}issuer_icons_cache${Platform.pathSeparator}';
+      join(supportDirectory, 'issuer_icons_cache');
 
   Future<Directory> get _cacheDirectory async {
     final supportDirectory = await getApplicationSupportDirectory();
@@ -69,7 +69,8 @@ class IconCacheFs {
   Future<File> _getFile(String fileName) async {
     final supportDirectory = await getApplicationSupportDirectory();
     final cacheDirectoryPath = _buildCacheDirectoryPath(supportDirectory.path);
-    return File('$cacheDirectoryPath${basenameWithoutExtension(fileName)}.dat');
+    return File(
+        join(cacheDirectoryPath, '${basenameWithoutExtension(fileName)}.dat'));
   }
 }
 

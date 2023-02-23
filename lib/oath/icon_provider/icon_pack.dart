@@ -16,6 +16,8 @@
 
 import 'dart:io';
 
+import 'package:path/path.dart';
+
 class IconPackIcon {
   final String filename;
   final String? category;
@@ -52,7 +54,7 @@ class IconPack {
         element.issuer.any((element) => element == issuer.toUpperCase()));
 
     final issuerImageFile = matching.isNotEmpty
-        ? File('${directory.path}${matching.first.filename}')
+        ? File(join(directory.path, matching.first.filename))
         : null;
 
     if (issuerImageFile != null && !issuerImageFile.existsSync()) {
