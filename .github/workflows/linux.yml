@@ -82,6 +82,13 @@ jobs:
     - name: Check generated files
       run: git diff --exit-code
 
+    - name: Embedd appindicator
+      run: |
+        cp -L /usr/lib/x86_64-linux-gnu/libayatana-appindicator3.so.1 build/linux/x64/release/bundle/lib/
+        cp -L /usr/lib/x86_64-linux-gnu/libayatana-indicator3.so.7 build/linux/x64/release/bundle/lib/
+        mv build/linux/x64/release/bundle/authenticator build/linux/x64/release/bundle/.yubico-authenticator
+        cp linux/wrapper.sh build/linux/x64/release/bundle/authenticator
+
     - name: Rename and archive app
       run: |
         export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
