@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 import 'package:yubico_authenticator/oath/icon_provider/icon_file_loader.dart';
 import 'package:yubico_authenticator/oath/icon_provider/icon_pack.dart';
@@ -25,6 +28,9 @@ import 'package:yubico_authenticator/widgets/delayed_visibility.dart';
 class AccountIcon extends ConsumerWidget {
   final String? issuer;
   final Widget defaultWidget;
+
+  static const double _width = 40;
+  static const double _height = 40;
 
   const AccountIcon({
     super.key,
@@ -38,27 +44,81 @@ class AccountIcon extends ConsumerWidget {
     return iconPack.when(
         data: (IconPack? iconPack) {
           final issuerImageFile = iconPack?.getFileForIssuer(issuer);
-          return issuerImageFile != null
-              ? VectorGraphic(
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.fill,
-                  loader: IconFileLoader(ref, issuerImageFile),
-                  placeholderBuilder: (BuildContext _) {
-                    return DelayedVisibility(
-                      delay: const Duration(milliseconds: 10),
-                      child: Stack(alignment: Alignment.center, children: [
-                        Opacity(
-                          opacity: 0.5,
-                          child: defaultWidget,
-                        ),
-                        const CircularProgressIndicator(),
-                      ]),
-                    );
-                  })
-              : defaultWidget;
+          if (issuerImageFile == null) {
+            return defaultWidget;
+          }
+
+          switch (extension(issuerImageFile.path)) {
+            case '.svg':
+              {
+                return _decodeSvg(ref, issuerImageFile);
+              }
+            case '.png':
+            case '.jpg':
+              {
+                return _decodeRasterImage(ref, issuerImageFile);
+              }
+          }
+          return defaultWidget;
         },
         error: (_, __) => defaultWidget,
         loading: () => defaultWidget);
+  }
+
+  Widget _decodeSvg(WidgetRef ref, File file) {
+    return VectorGraphic(
+        width: _width,
+        height: _height,
+        fit: BoxFit.fill,
+        loader: IconFileLoader(ref, file),
+        placeholderBuilder: (BuildContext _) {
+          return DelayedVisibility(
+            delay: const Duration(milliseconds: 10),
+            child: Stack(alignment: Alignment.center, children: [
+              Opacity(
+                opacity: 0.5,
+                child: defaultWidget,
+              ),
+              const CircularProgressIndicator(),
+            ]),
+          );
+        });
+  }
+
+  Widget _decodeRasterImage(WidgetRef ref, File file) {
+    return ClipOval(
+      // This clipper makes the oval small enough to hide artifacts
+      // on the oval border for images not supporting transparency.
+      clipper: _AccountIconClipper(_width, _height),
+      child: Image.file(
+        file,
+        filterQuality: FilterQuality.medium,
+        fit: BoxFit.cover,
+        alignment: Alignment.center,
+        width: _width,
+        height: _height,
+      ),
+    );
+  }
+}
+
+class _AccountIconClipper extends CustomClipper<Rect> {
+  final double _width;
+  final double _height;
+
+  _AccountIconClipper(this._width, this._height);
+
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromCenter(
+        center: Offset(_width / 2, _height / 2),
+        // make the rect smaller to hide artifacts
+        width: _width - 1,
+        height: _height - 1);
+  }
+
+  @override
+  bool shouldReclip(oldClipper) {
+    return true;
   }
 }
