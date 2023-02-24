@@ -89,12 +89,12 @@ Future<OathCode?> _calculateCode(
 
 String _getIcon() {
   if (Platform.isMacOS) {
-    return 'assets/graphics/systray-macos.eps';
+    return 'resources/icons/systray-template.eps';
   }
   if (Platform.isWindows) {
-    return 'assets/graphics/systray.ico';
+    return 'resources/icons/com.yubico.yubioath.ico';
   }
-  return 'assets/graphics/app-icon.png';
+  return 'resources/icons/com.yubico.yubioath-32x32.png';
 }
 
 class _Systray extends TrayListener {
@@ -206,7 +206,7 @@ class _Systray extends TrayListener {
           ),
           MenuItem.separator(),
           MenuItem(
-              label: 'Quit',
+              label: _l10n.general_quit,
               onClick: (_) {
                 _ref.read(withContextProvider)(
                   (context) async {
