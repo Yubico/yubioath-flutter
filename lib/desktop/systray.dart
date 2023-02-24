@@ -39,17 +39,17 @@ import 'state.dart';
 final _favoriteAccounts =
     Provider.autoDispose<Pair<DevicePath?, List<OathCredential>>>(
   (ref) {
-    final devicePath = ref.watch(currentDeviceProvider)?.path;
-    if (devicePath != null) {
+    final deviceData = ref.watch(currentDeviceDataProvider).valueOrNull;
+    if (deviceData != null) {
       final credentials =
-          ref.watch(desktopOathCredentialListProvider(devicePath));
+          ref.watch(desktopOathCredentialListProvider(deviceData.node.path));
       final favorites = ref.watch(favoritesProvider);
       final listed = credentials
               ?.map((e) => e.credential)
               .where((c) => favorites.contains(c.id))
               .toList() ??
           [];
-      return Pair(devicePath, listed);
+      return Pair(deviceData.node.path, listed);
     }
     return Pair(null, []);
   },
