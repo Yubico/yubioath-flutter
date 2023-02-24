@@ -92,7 +92,7 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
       return false;
     }
 
-    if (await packFile.length() > 3 * 1024 * 1024) {
+    if (await packFile.length() > 5 * 1024 * 1024) {
       _log.error('File size too big.');
       _lastError = l10n.oath_custom_icons_err_file_too_big;
       state = AsyncValue.error('File size too big', StackTrace.current);
