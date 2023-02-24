@@ -59,6 +59,7 @@ class MainPage extends ConsumerWidget {
               'licenses',
               'user_interaction_prompt',
               'oath_add_account',
+              'oath_icon_pack_dialog',
             ].contains(route.settings.name);
       });
     });

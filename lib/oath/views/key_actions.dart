@@ -101,10 +101,12 @@ Widget oathBuildActions(
           ),
           onTap: () async {
             Navigator.of(context).pop();
-            await showBlurDialog(
+            await ref.read(withContextProvider)((context) => showBlurDialog(
               context: context,
+              routeSettings:
+              const RouteSettings(name: 'oath_icon_pack_dialog'),
               builder: (context) => const IconPackDialog(),
-            );
+            ));
           }),
       ListTile(
           key: keys.setOrManagePasswordAction,
