@@ -159,7 +159,29 @@ class _DesktopClipboard extends AppClipboard {
 
   @override
   Future<void> setText(String toClipboard, {bool isSensitive = false}) async {
-    await Clipboard.setData(ClipboardData(text: toClipboard));
+    // Wayland requires the window to be focused to copy to clipboard
+    final needsFocus = Platform.isLinux &&
+        Platform.environment['XDG_SESSION_TYPE'] == 'wayland';
+    var hidden = false;
+    try {
+      if (needsFocus && !await windowManager.isFocused()) {
+        if (!await windowManager.isVisible()) {
+          hidden = true;
+          await windowManager.setOpacity(0.0);
+          await windowManager.show();
+        }
+        await windowManager.focus();
+        // Window focus isn't immediate, wait until focused with 10s timeout
+        await Future.doWhile(() async => !await windowManager.isFocused())
+            .timeout(const Duration(seconds: 10));
+      }
+      await Clipboard.setData(ClipboardData(text: toClipboard));
+    } finally {
+      if (hidden) {
+        await windowManager.hide();
+        await windowManager.setOpacity(1.0);
+      }
+    }
   }
 }
 
