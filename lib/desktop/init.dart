@@ -48,6 +48,7 @@ import 'rpc.dart';
 import 'devices.dart';
 import 'qr_scanner.dart';
 import 'state.dart';
+import 'systray.dart';
 
 final _log = Logger('desktop.init');
 const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
@@ -177,6 +178,9 @@ Future<Widget> initialize(List<String> argv) async {
           ref.listen<Level>(logLevelProvider, (_, level) {
             ref.read(rpcProvider).valueOrNull?.setLogLevel(level);
           });
+
+          // Initialize systray
+          ref.watch(systrayProvider);
 
           // Show a loading or error page while the Helper isn't ready
           return ref.watch(rpcProvider).when(
