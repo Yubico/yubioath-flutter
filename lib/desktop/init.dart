@@ -23,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
@@ -122,6 +123,11 @@ Future<Widget> initialize(List<String> argv) async {
 
   final rpcFuture = _initHelper(exe!);
   _initLicenses();
+
+  await localNotifier.setup(
+    appName: 'Yubico Authenticator',
+    shortcutPolicy: ShortcutPolicy.ignore,
+  );
 
   return ProviderScope(
     overrides: [

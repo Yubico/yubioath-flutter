@@ -25,6 +25,8 @@
     "oath_scanned_qr": "Scanned QR code",
     "oath_scan_qr": "Scan QR code",
     "oath_require_touch": "Require touch",
+    "oath_touch_required": "Touch Required",
+    "oath_touch_now": "Touch the button on your YubiKey now",
     "oath_sec": "sec",
     "oath_digits": "digits",
     "oath_success_delete_account": "Account deleted",
