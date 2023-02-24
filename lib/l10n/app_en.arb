@@ -84,7 +84,7 @@
     "oath_custom_icons": "Custom icons",
     "oath_custom_icons_description": "Icon packs can make your accounts more easily distinguishable with familiar logos and colors.",
     "oath_custom_icons_replace": "Replace icon pack",
-    "oath_custom_icons_loading": "Loading icon pack...",
+    "oath_custom_icons_loading": "Loading icon pack\u2026",
     "oath_custom_icons_load": "Load icon pack",
     "oath_custom_icons_remove": "Remove icon pack",
     "oath_custom_icons_icon_pack_removed": "Icon pack removed",
@@ -108,7 +108,7 @@
     "widgets_close": "Close",
 
     "mgmt_min_one_interface": "At least one interface must be enabled",
-    "mgmt_reconfiguring_yubikey": "Reconfiguring YubiKey...",
+    "mgmt_reconfiguring_yubikey": "Reconfiguring YubiKey\u2026",
     "mgmt_configuration_updated": "Configuration updated",
     "mgmt_configuration_updated_remove_reinsert": "Configuration updated, remove and reinsert your YubiKey",
     "mgmt_toggle_applications": "Toggle applications",
@@ -141,7 +141,7 @@
     "general_configure_yubikey": "Configure YubiKey",
 
     "fido_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
-    "fido_keep_touching_yubikey": "Keep touching your YubiKey repeatedly...",
+    "fido_keep_touching_yubikey": "Keep touching your YubiKey repeatedly\u2026",
     "fido_fingerprint_captured": "Fingerprint captured successfully!",
     "fido_fingerprint_added": "Fingerprint added",
     "fido_error_setting_name": "Error setting name",
@@ -228,7 +228,7 @@
     "fido_place_back_on_reader": "Place your YubiKey back on the reader",
     "fido_reinsert_yubikey": "Re-insert your YubiKey",
     "fido_touch_yubikey": "Touch your YubiKey now",
-    "fido_press_reset": "Press reset to begin...",
+    "fido_press_reset": "Press reset to begin\u2026",
     "fido_factory_reset": "Factory reset",
     "fido_factory_reset_description": "Factory reset this application",
     "fido_fido_app_reset": "FIDO application reset",
@@ -256,7 +256,7 @@
 
     "appFailurePage_btn_unlock": "Unlock",
     "appFailurePage_txt_info": "WebAuthn management requires elevated privileges.",
-    "appFailurePage_msg_permission": "Elevating permissions...",
+    "appFailurePage_msg_permission": "Elevating permissions\u2026",
 
     "mainDrawer_txt_applications": "Toggle applications",
     "mainDrawer_txt_settings": "Settings",
