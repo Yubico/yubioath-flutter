@@ -24,8 +24,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
+import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
@@ -58,20 +58,23 @@ class _RpcStateNotifier extends StateNotifier<RpcState> {
   }
 }
 
-final _windowStateProvider =
-    StateNotifierProvider<_WindowStateNotifier, WindowState>(
-        (ref) => _WindowStateNotifier());
+final desktopWindowStateProvider =
+    StateNotifierProvider<DesktopWindowStateNotifier, WindowState>(
+        (ref) => DesktopWindowStateNotifier(ref.watch(prefProvider)));
 
-final desktopWindowStateProvider = Provider<WindowState>(
-  (ref) => ref.watch(_windowStateProvider),
-);
+const String windowHidden = 'DESKTOP_WINDOW_HIDDEN';
 
-class _WindowStateNotifier extends StateNotifier<WindowState>
+class DesktopWindowStateNotifier extends StateNotifier<WindowState>
     with WindowListener {
+  final SharedPreferences _prefs;
   Timer? _idleTimer;
 
-  _WindowStateNotifier()
-      : super(WindowState(focused: true, visible: true, active: true)) {
+  DesktopWindowStateNotifier(this._prefs)
+      : super(WindowState(
+            focused: true,
+            visible: true,
+            active: true,
+            hidden: _prefs.getBool(windowHidden) ?? false)) {
     _init();
   }
 
@@ -88,6 +91,17 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
     }
   }
 
+  void setWindowHidden(bool hidden) async {
+    if (hidden) {
+      await windowManager.hide();
+    } else {
+      await windowManager.show();
+    }
+    await windowManager.setSkipTaskbar(hidden);
+    await _prefs.setBool(windowHidden, hidden);
+    state = state.copyWith(hidden: hidden);
+  }
+
   @override
   void dispose() {
     windowManager.removeListener(this);
@@ -101,6 +115,7 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
   }
 
   @override
+  @protected
   void onWindowEvent(String eventName) {
     if (mounted) {
       switch (eventName) {
