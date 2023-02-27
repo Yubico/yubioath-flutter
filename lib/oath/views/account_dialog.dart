@@ -156,7 +156,10 @@ class AccountDialog extends ConsumerWidget {
         if (helper.code == null &&
             (isDesktop || node.transport == Transport.usb)) {
           Timer.run(() {
-            Actions.invoke(context, const CalculateIntent());
+            // Only call if credential hasn't been deleted/renamed
+            if (ref.read(credentialsProvider)?.contains(credential) == true) {
+              Actions.invoke(context, const CalculateIntent());
+            }
           });
         }
         return FocusScope(
