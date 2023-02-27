@@ -23,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
@@ -48,9 +49,9 @@ import 'rpc.dart';
 import 'devices.dart';
 import 'qr_scanner.dart';
 import 'state.dart';
+import 'systray.dart';
 
 final _log = Logger('desktop.init');
-
 
 Future<Widget> initialize(List<String> argv) async {
   _initLogging(argv);
@@ -58,7 +59,7 @@ Future<Widget> initialize(List<String> argv) async {
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   final windowHelper = WindowHelper(prefs);
-
+  
   windowHelper.initialize();
 
   // Either use the _HELPER_PATH environment variable, or look relative to executable.
@@ -87,6 +88,11 @@ Future<Widget> initialize(List<String> argv) async {
 
   final rpcFuture = _initHelper(exe!);
   _initLicenses();
+
+  await localNotifier.setup(
+    appName: 'Yubico Authenticator',
+    shortcutPolicy: ShortcutPolicy.ignore,
+  );
 
   return ProviderScope(
     overrides: [
@@ -136,6 +142,9 @@ Future<Widget> initialize(List<String> argv) async {
           ref.listen<Level>(logLevelProvider, (_, level) {
             ref.read(rpcProvider).valueOrNull?.setLogLevel(level);
           });
+
+          // Initialize systray
+          ref.watch(systrayProvider);
 
           // Show a loading or error page while the Helper isn't ready
           return ref.watch(rpcProvider).when(

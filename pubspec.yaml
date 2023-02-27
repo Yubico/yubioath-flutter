@@ -56,6 +56,8 @@ dependencies:
     path: plugins/platform_util
   desktop_drop: ^0.4.0
   url_launcher: ^6.1.7
+  tray_manager: ^0.2.0
+  local_notifier: ^0.1.5
 
 dev_dependencies:
   integration_test:
@@ -95,6 +97,7 @@ flutter:
     - assets/graphics/
     - assets/licenses/
     - assets/licenses/raw/
+    - resources/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

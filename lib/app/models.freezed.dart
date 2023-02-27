@@ -799,6 +799,7 @@ mixin _$WindowState {
   bool get focused => throw _privateConstructorUsedError;
   bool get visible => throw _privateConstructorUsedError;
   bool get active => throw _privateConstructorUsedError;
+  bool get hidden => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $WindowStateCopyWith<WindowState> get copyWith =>
@@ -811,7 +812,7 @@ abstract class $WindowStateCopyWith<$Res> {
           WindowState value, $Res Function(WindowState) then) =
       _$WindowStateCopyWithImpl<$Res, WindowState>;
   @useResult
-  $Res call({bool focused, bool visible, bool active});
+  $Res call({bool focused, bool visible, bool active, bool hidden});
 }
 
 /// @nodoc
@@ -830,6 +831,7 @@ class _$WindowStateCopyWithImpl<$Res, $Val extends WindowState>
     Object? focused = null,
     Object? visible = null,
     Object? active = null,
+    Object? hidden = null,
   }) {
     return _then(_value.copyWith(
       focused: null == focused
@@ -844,6 +846,10 @@ class _$WindowStateCopyWithImpl<$Res, $Val extends WindowState>
           ? _value.active
           : active // ignore: cast_nullable_to_non_nullable
               as bool,
+      hidden: null == hidden
+          ? _value.hidden
+          : hidden // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -856,7 +862,7 @@ abstract class _$$_WindowStateCopyWith<$Res>
       __$$_WindowStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({bool focused, bool visible, bool active});
+  $Res call({bool focused, bool visible, bool active, bool hidden});
 }
 
 /// @nodoc
@@ -873,6 +879,7 @@ class __$$_WindowStateCopyWithImpl<$Res>
     Object? focused = null,
     Object? visible = null,
     Object? active = null,
+    Object? hidden = null,
   }) {
     return _then(_$_WindowState(
       focused: null == focused
@@ -887,6 +894,10 @@ class __$$_WindowStateCopyWithImpl<$Res>
           ? _value.active
           : active // ignore: cast_nullable_to_non_nullable
               as bool,
+      hidden: null == hidden
+          ? _value.hidden
+          : hidden // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -895,7 +906,10 @@ class __$$_WindowStateCopyWithImpl<$Res>
 
 class _$_WindowState implements _WindowState {
   _$_WindowState(
-      {required this.focused, required this.visible, required this.active});
+      {required this.focused,
+      required this.visible,
+      required this.active,
+      this.hidden = false});
 
   @override
   final bool focused;
@@ -903,10 +917,13 @@ class _$_WindowState implements _WindowState {
   final bool visible;
   @override
   final bool active;
+  @override
+  @JsonKey()
+  final bool hidden;
 
   @override
   String toString() {
-    return 'WindowState(focused: $focused, visible: $visible, active: $active)';
+    return 'WindowState(focused: $focused, visible: $visible, active: $active, hidden: $hidden)';
   }
 
   @override
@@ -916,11 +933,13 @@ class _$_WindowState implements _WindowState {
             other is _$_WindowState &&
             (identical(other.focused, focused) || other.focused == focused) &&
             (identical(other.visible, visible) || other.visible == visible) &&
-            (identical(other.active, active) || other.active == active));
+            (identical(other.active, active) || other.active == active) &&
+            (identical(other.hidden, hidden) || other.hidden == hidden));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, focused, visible, active);
+  int get hashCode =>
+      Object.hash(runtimeType, focused, visible, active, hidden);
 
   @JsonKey(ignore: true)
   @override
@@ -933,7 +952,8 @@ abstract class _WindowState implements WindowState {
   factory _WindowState(
       {required final bool focused,
       required final bool visible,
-      required final bool active}) = _$_WindowState;
+      required final bool active,
+      final bool hidden}) = _$_WindowState;
 
   @override
   bool get focused;
@@ -941,6 +961,8 @@ abstract class _WindowState implements WindowState {
   bool get visible;
   @override
   bool get active;
+  @override
+  bool get hidden;
   @override
   @JsonKey(ignore: true)
   _$$_WindowStateCopyWith<_$_WindowState> get copyWith =>

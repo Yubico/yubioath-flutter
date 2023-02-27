@@ -18,7 +18,7 @@ jobs:
     - name: Install dependencies
       run: |
         apt-get update
-        apt-get install -qq software-properties-common
+        apt-get install -qq software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
         add-apt-repository -y ppa:git-core/ppa
         add-apt-repository -y ppa:deadsnakes/ppa
         apt-get install -qq git python$PYVER-dev python$PYVER-venv
@@ -81,6 +81,18 @@ jobs:
 
     - name: Check generated files
       run: git diff --exit-code
+
+    - name: Embedd appindicator
+      run: |
+        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libtray_manager_plugin.so
+        cp -L /usr/lib/x86_64-linux-gnu/libayatana-appindicator3.so.1 build/linux/x64/release/bundle/lib/
+        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libayatana-appindicator3.so.1
+        cp -L /usr/lib/x86_64-linux-gnu/libayatana-indicator3.so.7 build/linux/x64/release/bundle/lib/
+        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libayatana-indicator3.so.7
+        cp -L /usr/lib/x86_64-linux-gnu/libdbusmenu-glib.so.4 build/linux/x64/release/bundle/lib/
+        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libdbusmenu-glib.so.4
+        cp -L /usr/lib/x86_64-linux-gnu/libdbusmenu-gtk3.so.4 build/linux/x64/release/bundle/lib/
+        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libdbusmenu-gtk3.so.4
 
     - name: Rename and archive app
       run: |

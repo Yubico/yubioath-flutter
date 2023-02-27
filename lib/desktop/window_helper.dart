@@ -25,6 +25,7 @@ import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:yubico_authenticator/app/logging.dart';
+import 'package:yubico_authenticator/desktop/state.dart';
 
 final _log = Logger('window_helper');
 
@@ -55,6 +56,13 @@ class _WindowManagerListener extends WindowListener {
   void onWindowMoved() async {
     _log.debug('onWindowMoved');
     _windowHelper.save();
+  }
+
+  @override
+  void onWindowClose() async {
+    if (Platform.isMacOS) {
+      await windowManager.destroy();
+    }
   }
 }
 
@@ -101,6 +109,9 @@ class WindowHelper {
   }
 
   void initialize() async {
+
+    final isHidden = _prefs.getBool(windowHidden) ?? false;
+
     unawaited(windowManager.waitUntilReadyToShow().then((_) async {
       if (Platform.isWindows) {
         _loadWindows();
@@ -108,6 +119,14 @@ class WindowHelper {
         _loadMacOs();
       } else if (Platform.isLinux) {
         _loadLinux();
+      }
+
+      // TODO review merge
+      if (isHidden) {
+        await windowManager.setSkipTaskbar(true);
+      } else {
+        await windowManager.setSkipTaskbar(false);
+        await windowManager.show();
       }
 
       windowManager.addListener(_WindowManagerListener(this));
