@@ -44,7 +44,7 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
 
   void readPack() async {
     final packDirectory = await _packDirectory;
-    final packFile = File(join(packDirectory.path, 'pack.json'));
+    final packFile = File(join(packDirectory.path, getLocalIconFileName('pack.json')));
 
     _log.debug('Looking for file: ${packFile.path}');
 
@@ -112,21 +112,16 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
       final filename = file.name;
       if (file.size > 0) {
         final data = file.content as List<int>;
-        final extractedFile = File(join(unpackDirectory.path, filename));
+        final extractedFile =
+            File(join(unpackDirectory.path, getLocalIconFileName(filename)));
         _log.debug('Writing file: ${extractedFile.path} (size: ${file.size})');
         final createdFile = await extractedFile.create(recursive: true);
         await createdFile.writeAsBytes(data);
-      } else {
-        final extractedDirectory =
-            Directory(join(unpackDirectory.path, filename));
-        _log.debug('Writing directory: ${extractedDirectory.path} '
-            '(size: ${file.size})');
-        extractedDirectory.createSync(recursive: true);
       }
     }
 
     // check that there is pack.json
-    final packJsonFile = File(join(unpackDirectory.path, 'pack.json'));
+    final packJsonFile = File(join(unpackDirectory.path, getLocalIconFileName('pack.json')));
     if (!await packJsonFile.exists()) {
       _log.error('File is not an icon pack: missing pack.json');
       _lastError = l10n.oath_custom_icons_err_invalid_icon_pack;

@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:path/path.dart';
+
+String getLocalIconFileName(String iconPackFileName) {
+  final sha = sha256.convert(utf8.encode(iconPackFileName)).toString();
+  return sha.substring(0, sha.length ~/ 2) + extension(iconPackFileName);
+}
 
 class IconPackIcon {
   final String filename;
@@ -54,7 +61,7 @@ class IconPack {
         element.issuer.any((element) => element == issuer.toUpperCase()));
 
     final issuerImageFile = matching.isNotEmpty
-        ? File(join(directory.path, matching.first.filename))
+        ? File(join(directory.path, getLocalIconFileName(matching.first.filename)))
         : null;
 
     if (issuerImageFile != null && !issuerImageFile.existsSync()) {
