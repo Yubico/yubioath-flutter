@@ -94,7 +94,7 @@ dependencies {
     api "com.yubico.yubikit:support:$project.yubiKitVersion"
 
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.4.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0'
 
     // Lifecycle
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
