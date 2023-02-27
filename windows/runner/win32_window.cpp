@@ -172,7 +172,9 @@ bool Win32Window::Create(const std::wstring& title,
 }
 
 bool Win32Window::Show() {
-  return ShowWindow(window_handle_, SW_SHOWNORMAL);
+  // We show the mindow manually
+  return true;
+  //return ShowWindow(window_handle_, SW_SHOWNORMAL);
 }
 
 // static

@@ -162,6 +162,8 @@ class AboutPage extends ConsumerWidget {
                   data.insert(0, {
                     'app_version': version,
                     'dart': Platform.version,
+                    'os': Platform.operatingSystem,
+                    'os_version': Platform.operatingSystemVersion,
                   });
                   final text = const JsonEncoder.withIndent('  ').convert(data);
                   await ref.read(clipboardProvider).setText(text);

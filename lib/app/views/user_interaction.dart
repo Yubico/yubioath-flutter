@@ -17,6 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:local_notifier/local_notifier.dart';
 
 import '../message.dart';
 
@@ -130,6 +131,24 @@ UserInteractionController promptUserInteraction(
   required String description,
   Widget? icon,
   void Function()? onCancel,
+  bool headless = false,
+}) {
+  if (headless) {
+    // No support for icon or onCancel.
+    return _notificationUserInteraction(context,
+        title: title, description: description);
+  } else {
+    return _dialogUserInteraction(context,
+        title: title, description: description, icon: icon, onCancel: onCancel);
+  }
+}
+
+UserInteractionController _dialogUserInteraction(
+  BuildContext context, {
+  required String title,
+  required String description,
+  Widget? icon,
+  void Function()? onCancel,
 }) {
   var wasPopped = false;
   final controller = _UserInteractionController(
@@ -163,4 +182,61 @@ UserInteractionController promptUserInteraction(
       });
 
   return controller;
+}
+
+class _NotificationUserInteractionController extends UserInteractionController {
+  String title;
+  String description;
+  Widget? icon;
+  LocalNotification _notification;
+  _NotificationUserInteractionController({
+    required this.title,
+    required this.description,
+  }) : _notification = LocalNotification(
+          title: title,
+          body: description,
+        )..show();
+
+  @override
+  void close() {
+    _notification.close();
+  }
+
+  Future<void> _doUpdateNotification() async {
+    await _notification.close();
+    await Future.delayed(const Duration(milliseconds: 200));
+    _notification = LocalNotification(title: title, body: description);
+    await _notification.show();
+  }
+
+  @override
+  void updateContent({String? title, String? description, Widget? icon}) {
+    bool changed = false;
+    if (title != null) {
+      this.title = title;
+      changed = true;
+    }
+    if (description != null) {
+      this.description = description;
+      changed = true;
+    }
+    if (icon != null) {
+      this.icon = icon;
+    }
+
+    if (changed) {
+      _doUpdateNotification();
+    }
+  }
+}
+
+UserInteractionController _notificationUserInteraction(
+  BuildContext context, {
+  required String title,
+  required String description,
+}) {
+  return _NotificationUserInteractionController(
+    title: title,
+    description: description,
+  );
 }

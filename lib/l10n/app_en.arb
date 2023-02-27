@@ -25,6 +25,8 @@
     "oath_scanned_qr": "Scanned QR code",
     "oath_scan_qr": "Scan QR code",
     "oath_require_touch": "Require touch",
+    "oath_touch_required": "Touch Required",
+    "oath_touch_now": "Touch the button on your YubiKey now",
     "oath_sec": "sec",
     "oath_digits": "digits",
     "oath_success_delete_account": "Account deleted",
@@ -92,6 +94,7 @@
     "mgmt_toggle_applications": "Toggle applications",
     "mgmt_save": "Save",
 
+    "general_app_name": "Yubico Authenticator",
     "general_about": "About",
     "general_terms_of_use": "Terms of use",
     "general_privacy_policy": "Privacy policy",
@@ -117,6 +120,9 @@
     "general_setup": "Setup",
     "general_manage": "Manage",
     "general_configure_yubikey": "Configure YubiKey",
+    "general_show_window": "Show window",
+    "general_hide_window": "Hide window",
+    "general_quit": "Quit",
 
     "fido_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
     "fido_keep_touching_yubikey": "Keep touching your YubiKey repeatedly...",
@@ -259,5 +265,15 @@
         "placeholders": {
             "version": {}
         }
-    }
+    },
+
+
+    "systray_oath_copied": "Code copied",
+    "systray_oath_copied_to_clipboard": "{label} copied to clipboard.",
+    "@systray_oath_copied_to_clipboard" : {
+        "placeholders": {
+            "label": {}
+        }
+    },
+    "systray_no_pinned": "No pinned accounts"
 }

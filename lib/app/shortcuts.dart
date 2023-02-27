@@ -24,6 +24,7 @@ import 'package:window_manager/window_manager.dart';
 import '../about_page.dart';
 import '../android/views/android_settings_page.dart';
 import '../core/state.dart';
+import '../desktop/state.dart';
 import '../oath/keys.dart';
 import '../settings_page.dart';
 import 'message.dart';
@@ -40,6 +41,10 @@ class CopyIntent extends Intent {
 
 class CloseIntent extends Intent {
   const CloseIntent();
+}
+
+class HideIntent extends Intent {
+  const HideIntent();
 }
 
 class SearchIntent extends Intent {
@@ -75,6 +80,12 @@ Widget registerGlobalShortcuts(
       actions: {
         CloseIntent: CallbackAction<CloseIntent>(onInvoke: (_) {
           windowManager.close();
+          return null;
+        }),
+        HideIntent: CallbackAction<HideIntent>(onInvoke: (_) {
+          if (isDesktop) {
+            ref.read(desktopWindowStateProvider.notifier).setWindowHidden(true);
+          }
           return null;
         }),
         SearchIntent: CallbackAction<SearchIntent>(onInvoke: (intent) {
@@ -136,8 +147,7 @@ Widget registerGlobalShortcuts(
       child: Shortcuts(
         shortcuts: {
           LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyC): const CopyIntent(),
-          LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyW):
-              const CloseIntent(),
+          LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyW): const HideIntent(),
           LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyF):
               const SearchIntent(),
           if (isDesktop) ...{

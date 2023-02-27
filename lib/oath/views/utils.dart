@@ -47,3 +47,10 @@ Pair<int, int> getRemainingKeySpace(
     remaining - issuerSpace,
   );
 }
+
+/// Gets a textual name for the account, based on the issuer and name.
+String getTextName(OathCredential credential) {
+  return credential.issuer != null
+      ? '${credential.issuer} (${credential.name})'
+      : credential.name;
+}
