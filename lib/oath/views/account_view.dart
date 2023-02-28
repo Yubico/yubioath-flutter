@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import '../models.dart';
 import '../state.dart';
 import 'account_dialog.dart';
 import 'account_helper.dart';
+import 'account_icon.dart';
 import 'actions.dart';
 import 'delete_account_dialog.dart';
 import 'rename_account_dialog.dart';
@@ -153,6 +154,20 @@ class _AccountViewState extends ConsumerState<AccountView> {
             final showAvatar = constraints.maxWidth >= 315;
 
             final subtitle = helper.subtitle;
+
+            final circleAvatar = CircleAvatar(
+              foregroundColor: darkMode ? Colors.black : Colors.white,
+              backgroundColor: _iconColor(darkMode ? 300 : 400),
+              child: Text(
+                (credential.issuer ?? credential.name)
+                    .characters
+                    .first
+                    .toUpperCase(),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+              ),
+            );
+
             return Shortcuts(
               shortcuts: {
                 LogicalKeySet(LogicalKeyboardKey.enter): const OpenIntent(),
@@ -187,18 +202,8 @@ class _AccountViewState extends ConsumerState<AccountView> {
                   Actions.maybeInvoke(context, const CopyIntent());
                 },
                 leading: showAvatar
-                    ? CircleAvatar(
-                        foregroundColor: darkMode ? Colors.black : Colors.white,
-                        backgroundColor: _iconColor(darkMode ? 300 : 400),
-                        child: Text(
-                          (credential.issuer ?? credential.name)
-                              .characters
-                              .first
-                              .toUpperCase(),
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w300),
-                        ),
-                      )
+                    ? AccountIcon(
+                        issuer: credential.issuer, defaultWidget: circleAvatar)
                     : null,
                 title: Text(
                   helper.title,
