@@ -113,10 +113,10 @@ class _CapabilitiesForm extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (usbCapabilities != 0) ...[
-          const ListTile(
-            leading: Icon(Icons.usb),
-            title: Text('USB'),
-            contentPadding: EdgeInsets.only(bottom: 8),
+          ListTile(
+            leading: const Icon(Icons.usb),
+            title: Text(AppLocalizations.of(context)!.general_usb),
+            contentPadding: const EdgeInsets.only(bottom: 8),
             horizontalTitleGap: 0,
           ),
           _CapabilityForm(
@@ -136,7 +136,7 @@ class _CapabilitiesForm extends StatelessWidget {
             ),
           ListTile(
             leading: nfcIcon,
-            title: const Text('NFC'),
+            title: Text(AppLocalizations.of(context)!.general_nfc),
             contentPadding: const EdgeInsets.only(bottom: 8),
             horizontalTitleGap: 0,
           ),

@@ -71,6 +71,7 @@ class MainPageDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final supportedApps = ref.watch(supportedAppsProvider);
     final data = ref.watch(currentDeviceDataProvider).valueOrNull;
     final color =
@@ -132,7 +133,7 @@ class MainPageDrawer extends ConsumerWidget {
         if (data != null) ...[
           // Normal YubiKey Applications
           ...availableApps.map((app) => NavigationDrawerDestination(
-                label: Text(app.displayName),
+                label: Text(app.getDisplayName(l10n)),
                 icon: Icon(app._icon),
                 selectedIcon: Icon(app._filledIcon),
               )),
@@ -141,7 +142,7 @@ class MainPageDrawer extends ConsumerWidget {
             NavigationDrawerDestination(
               key: managementAppDrawer,
               label: Text(
-                AppLocalizations.of(context)!.mainDrawer_txt_applications,
+                l10n.mainDrawer_txt_applications,
               ),
               icon: Icon(Application.management._icon),
               selectedIcon: Icon(Application.management._filledIcon),
@@ -151,11 +152,11 @@ class MainPageDrawer extends ConsumerWidget {
         ],
         // Non-YubiKey pages
         NavigationDrawerDestination(
-          label: Text(AppLocalizations.of(context)!.mainDrawer_txt_settings),
+          label: Text(l10n.mainDrawer_txt_settings),
           icon: const Icon(Icons.settings_outlined),
         ),
         NavigationDrawerDestination(
-          label: Text(AppLocalizations.of(context)!.mainDrawer_txt_help),
+          label: Text(l10n.mainDrawer_txt_help),
           icon: const Icon(Icons.help_outline),
         ),
       ],

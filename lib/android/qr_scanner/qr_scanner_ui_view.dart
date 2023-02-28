@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../keys.dart' as keys;
 import 'qr_scanner_scan_status.dart';
@@ -32,7 +33,8 @@ class QRScannerUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var scannerAreaWidth = getScannerAreaWidth(screenSize);
+    final l10n = AppLocalizations.of(context)!;
+    final scannerAreaWidth = getScannerAreaWidth(screenSize);
 
     return Stack(children: [
       /// instruction text under the scanner area
@@ -44,8 +46,8 @@ class QRScannerUI extends StatelessWidget {
             height: screenSize.height),
         child: Text(
           status != ScanStatus.error
-              ? 'Point your camera at a QR code to scan it'
-              : 'Invalid QR code',
+              ? l10n.androidQrScanner_point_and_scan
+              : l10n.androidQrScanner_invalid_code,
           style: const TextStyle(color: Colors.white),
           textAlign: TextAlign.center,
         ),
@@ -60,18 +62,20 @@ class QRScannerUI extends StatelessWidget {
             height: screenSize.height),
         child: Column(
           children: [
-            const Text(
-              'No QR code?',
+            Text(
+              l10n.androidQrScanner_no_code,
               textScaleFactor: 0.7,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
             OutlinedButton(
                 onPressed: () {
                   Navigator.of(context).pop('');
                 },
                 key: keys.manualEntryButton,
-                child: const Text('Enter manually',
-                    style: TextStyle(color: Colors.white))),
+                child: Text(
+                  l10n.androidQrScanner_enter_manually,
+                  style: const TextStyle(color: Colors.white),
+                )),
           ],
         ),
       ),

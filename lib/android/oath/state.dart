@@ -20,6 +20,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
@@ -189,12 +190,15 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     if (_isUsbAttached) {
       void triggerTouchPrompt() async {
         controller = await _withContext(
-          (context) async => promptUserInteraction(
-            context,
-            icon: const Icon(Icons.touch_app),
-            title: 'Touch Required',
-            description: 'Touch the button on your YubiKey now.',
-          ),
+          (context) async {
+            final l10n = AppLocalizations.of(context)!;
+            return promptUserInteraction(
+              context,
+              icon: const Icon(Icons.touch_app),
+              title: l10n.oath_touch_required,
+              description: l10n.oath_touch_now,
+            );
+          },
         );
       }
 

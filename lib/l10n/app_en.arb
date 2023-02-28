@@ -16,7 +16,6 @@
     "oath_fail_add_account": "Failed adding account",
     "oath_add_account": "Add account",
     "oath_save": "Save",
-    "oath_no_qr_code": "No QR code found",
     "oath_duplicate_name": "This name already exists for the Issuer",
     "oath_issuer_optional": "Issuer (optional)",
     "oath_account_name": "Account name",
@@ -139,12 +138,20 @@
     "general_allow_screenshots": "Allow screenshots",
     "general_usb": "USB",
     "general_nfc": "NFC",
+    "general_enable_nfc": "Enable NFC",
+    "general_place_on_nfc_reader": "Place your YubiKey on the NFC reader",
     "general_setup": "Setup",
     "general_manage": "Manage",
     "general_configure_yubikey": "Configure YubiKey",
     "general_show_window": "Show window",
     "general_hide_window": "Hide window",
     "general_quit": "Quit",
+    "general_character_count": "Character count",
+    "general_please_wait": "Please wait\u2026",
+    "general_unsupported_yubikey": "Unsupported YubiKey",
+    "general_yubikey_no_access": "This YubiKey cannot be accessed",
+    "general_permission_denied": "Permission denied",
+    "general_elevated_permissions_required": "Managing this device requires elevated privileges.",
 
     "fido_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
     "fido_keep_touching_yubikey": "Keep touching your YubiKey repeatedly\u2026",
@@ -253,22 +260,39 @@
     },
     
 
-
-
-
-
-
-
+    "mainPage_not_recognized": "Device not recognized",
+    "mainPage_app_not_supported": "Application not supported",
+    "mainPage_app_not_supported_on_yubikey": "The used YubiKey does not support '${app}' application",
+    "@mainPage_app_not_supported_on_yubikey" : {
+        "placeholders": {
+            "app": {}
+        }
+    },
+    "mainPage_app_not_supported_desc": "This application is not supported",
+    "mainPage_app_not_enabled": "Application disabled",
+    "mainPage_app_not_enabled_desc": "Enable the '{app}' application on your YubiKey to access",
+    "@mainPage_app_not_enabled_desc" : {
+        "placeholders": {
+            "app": {}
+        }
+    },
 
     "appFailurePage_btn_unlock": "Unlock",
     "appFailurePage_txt_info": "WebAuthn management requires elevated privileges.",
     "appFailurePage_msg_permission": "Elevating permissions\u2026",
+    "appFailurePage_error_occured": "An error has occured",
+    "appFailurePage_failed_connection": "Failed to open connection",
+    "appFailurePage_msg_reinsert": "Try to remove and re-insert your YubiKey.",
+    "appFailurePage_ccid_failed": "Failed to open smart card connection",
+    "appFailurePage_ccid_unavailable": "Make sure your smart card service is functioning.",
+    "appFailurePage_pcscd_unavailable": "Make sure pcscd is installed and running.",
 
     "mainDrawer_txt_applications": "Toggle applications",
     "mainDrawer_txt_settings": "Settings",
     "mainDrawer_txt_help": "Help and about",
 
     "devicePicker_no_yubikey": "No YubiKey present",
+    "devicePicker_insert_yubikey": "Insert your YubiKey",
     "devicePicker_insert_or_tap": "Insert or tap a YubiKey",
     "devicePicker_select_to_scan": "Select to scan",
     "devicePicker_inaccessible": "Device inaccessible",
@@ -297,5 +321,36 @@
             "label": {}
         }
     },
-    "systray_no_pinned": "No pinned accounts"
+    "systray_no_pinned": "No pinned accounts",
+
+    "androidSettings_launch_app": "Launch Yubico Authenticator",
+    "androidSettings_copy_otp": "Copy OTP to clipboard",
+    "androidSettings_launch_and_copy": "Launch app and copy OTP",
+    "androidSettings_nfc_options": "NFC options",
+    "androidSettings_nfc_on_tap": "On YubiKey NFC tap",
+    "androidSettings_keyboard_layout": "Keyboard layout (for static password)",
+    "androidSettings_choose_keyboard_layout": "Choose keyboard layout",
+    "androidSettings_bypass_touch": "Bypass touch requirement",
+    "androidSettings_bypass_touch_on": "Accounts that require touch are automatically shown over NFC",
+    "androidSettings_bypass_touch_off": "Accounts that require touch need an additional tap over NFC",
+    "androidSettings_silence_nfc": "Silence NFC sounds",
+    "androidSettings_silence_nfc_on": "No sounds will be played on NFC tap",
+    "androidSettings_silence_nfc_off": "Sound will play on NFC tap",
+    "androidSettings_usb_options": "USB options",
+    "androidSettings_usb_launch": "Launch when YubiKey is connected",
+    "androidSettings_usb_launch_on": "This prevents other apps from using the YubiKey over USB",
+    "androidSettings_usb_launch_off": "Other apps can use the YubiKey over USB",
+    "androidSettings_app_theme": "App theme",
+    "androidSettings_choose_app_theme": "Choose app theme",
+
+    "androidQrScanner_point_and_scan": "Point your camera at a QR code to scan it",
+    "androidQrScanner_invalid_code": "Invalid QR code",
+    "androidQrScanner_no_code": "No QR code?",
+    "androidQrScanner_enter_manually": "Enter manually",
+    "androidQrScanner_need_camera_permission": "Yubico Authenticator needs Camera permissions for scanning QR codes.",
+    "androidQrScanner_have_account_info": "Have account info?",
+    "androidQrScanner_want_to_scan": "Would like to scan?",
+    "androidQrScanner_review_permissions": "Review permissions",
+
+    "@_EOF": {}
 }

@@ -18,6 +18,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../core/models.dart';
 import '../../desktop/state.dart';
@@ -34,26 +35,27 @@ class DeviceErrorScreen extends ConsumerWidget {
   const DeviceErrorScreen(this.node, {this.error, super.key});
 
   Widget _buildUsbPid(BuildContext context, WidgetRef ref, UsbPid pid) {
+    final l10n = AppLocalizations.of(context)!;
     if (pid.usbInterfaces == UsbInterface.fido.value) {
       if (Platform.isWindows &&
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
         return MessagePage(
           graphic: noPermission,
-          message: 'Managing this device requires elevated privileges.',
+          message: l10n.general_elevated_permissions_required,
           actions: [
             ElevatedButton.icon(
-              label: const Text('Unlock'),
+              label: Text(l10n.appFailurePage_btn_unlock),
               icon: const Icon(Icons.lock_open),
               onPressed: () async {
                 final closeMessage = showMessage(
-                    context, 'Elevating permissions...',
+                    context, l10n.appFailurePage_msg_permission,
                     duration: const Duration(seconds: 30));
                 try {
                   if (await ref.read(rpcProvider).requireValue.elevate()) {
                     ref.invalidate(rpcProvider);
                   } else {
                     await ref.read(withContextProvider)((context) async =>
-                        showMessage(context, 'Permission denied'));
+                        showMessage(context, l10n.general_permission_denied));
                   }
                 } finally {
                   closeMessage();
@@ -64,24 +66,25 @@ class DeviceErrorScreen extends ConsumerWidget {
         );
       }
     }
-    return const MessagePage(
-      graphic: DeviceAvatar(child: Icon(Icons.usb_off)),
-      message: 'This YubiKey cannot be accessed',
+    return MessagePage(
+      graphic: const DeviceAvatar(child: Icon(Icons.usb_off)),
+      message: l10n.general_yubikey_no_access,
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return node.map(
       usbYubiKey: (node) => _buildUsbPid(context, ref, node.pid),
       nfcReader: (node) {
         final String message;
         switch (error) {
           case 'unknown-device':
-            message = 'Unrecognized device';
+            message = l10n.devicePicker_unknown_device;
             break;
           default:
-            message = 'Place your YubiKey on the NFC reader';
+            message = l10n.general_place_on_nfc_reader;
         }
         return MessagePage(message: message);
       },
