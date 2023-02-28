@@ -92,7 +92,7 @@ class _DialogDescription extends ConsumerWidget {
 
   Uri get _learnMoreUri =>
       Uri.parse('https://github.com/Yubico/yubioath-flutter/blob/'
-          'feature/issuer_icons/doc/Custom_OATH_Account_Icons.adoc');
+          'main/doc/Custom_Account_Icons.adoc');
 
   TextSpan _createLearnMoreLink(BuildContext context) {
     final theme = Theme.of(context);
