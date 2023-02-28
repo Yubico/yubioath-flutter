@@ -37,14 +37,14 @@ class DeleteCredentialDialog extends ConsumerWidget {
     final label = credential.userName;
 
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.fido_delete_credential),
+      title: Text(AppLocalizations.of(context)!.l_delete_credential),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context)!.fido_this_will_delete_cred),
-            Text('${AppLocalizations.of(context)!.fido_credential}: $label'),
+            Text(AppLocalizations.of(context)!.p_warning_delete_credential),
+            Text('${AppLocalizations.of(context)!.w_credential}: $label'),
           ]
               .map((e) => Padding(
                     child: e,
@@ -63,11 +63,11 @@ class DeleteCredentialDialog extends ConsumerWidget {
               (context) async {
                 Navigator.of(context).pop(true);
                 showMessage(context,
-                    AppLocalizations.of(context)!.fido_credential_deleted);
+                    AppLocalizations.of(context)!.l_credential_deleted);
               },
             );
           },
-          child: Text(AppLocalizations.of(context)!.fido_delete),
+          child: Text(AppLocalizations.of(context)!.w_delete),
         ),
       ],
     );

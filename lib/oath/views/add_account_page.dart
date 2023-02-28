@@ -126,7 +126,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       final otpauth = await qrScanner.scanQr();
       if (otpauth == null) {
         if (!mounted) return;
-        showMessage(context, l10n.oath_no_qr_code);
+        showMessage(context, l10n.l_qr_not_found);
         setState(() {
           _qrState = _QrScanState.failed;
         });
@@ -146,7 +146,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       if (e is! CancellationException) {
         showMessage(
           context,
-          '${l10n.oath_failed_reading_qr}: $errorMessage',
+          '${l10n.l_qr_not_read}: $errorMessage',
           duration: const Duration(seconds: 4),
         );
       }
@@ -188,7 +188,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       }
       if (!mounted) return;
       Navigator.of(context).pop();
-      showMessage(context, l10n.oath_success_add_account);
+      showMessage(context, l10n.l_account_added);
     } on CancellationException catch (_) {
       // ignored
     } catch (e) {
@@ -204,7 +204,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       }
       showMessage(
         context,
-        '${l10n.oath_fail_add_account}: $errorMessage',
+        '${l10n.l_account_add_failed}: $errorMessage',
         duration: const Duration(seconds: 4),
       );
     }
@@ -235,7 +235,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     }
 
     final otpauthUri = _otpauthUri;
-    _promptController?.updateContent(title: l10n.devicePicker_insert_yubikey);
+    _promptController?.updateContent(title: l10n.l_insert_yk);
     if (otpauthUri != null && deviceNode != null) {
       final deviceData = ref.watch(currentDeviceDataProvider);
       deviceData.when(data: (data) {
@@ -244,7 +244,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     0) !=
             0) {
           if (oathState == null) {
-            _promptController?.updateContent(title: l10n.general_please_wait);
+            _promptController?.updateContent(title: l10n.l_please_wait);
           } else if (oathState.locked) {
             _promptController?.close();
           } else {
@@ -256,14 +256,12 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 ));
           }
         } else {
-          _promptController?.updateContent(
-              title: l10n.general_unsupported_yubikey);
+          _promptController?.updateContent(title: l10n.l_unsupported_yk);
         }
       }, error: (error, _) {
-        _promptController?.updateContent(
-            title: l10n.general_unsupported_yubikey);
+        _promptController?.updateContent(title: l10n.l_unsupported_yk);
       }, loading: () {
-        _promptController?.updateContent(title: l10n.general_please_wait);
+        _promptController?.updateContent(title: l10n.l_please_wait);
       });
     }
 
@@ -344,8 +342,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           _otpauthUri = cred.toUri();
           _promptController = promptUserInteraction(
             context,
-            title: l10n.devicePicker_insert_yubikey,
-            description: l10n.oath_add_account,
+            title: l10n.l_insert_yk,
+            description: l10n.l_add_account,
             icon: const Icon(Icons.usb),
             onCancel: () {
               _otpauthUri = null;
@@ -360,11 +358,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     }
 
     return ResponsiveDialog(
-      title: Text(l10n.oath_add_account),
+      title: Text(l10n.l_add_account),
       actions: [
         TextButton(
           onPressed: isValid ? submit : null,
-          child: Text(l10n.oath_save, key: keys.saveButton),
+          child: Text(l10n.w_save, key: keys.saveButton),
         ),
       ],
       child: FileDropTarget(
@@ -374,7 +372,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             final otpauth = await qrScanner.scanQr(b64Image);
             if (otpauth == null) {
               if (!mounted) return;
-              showMessage(context, l10n.oath_no_qr_code);
+              showMessage(context, l10n.l_qr_not_found);
             } else {
               final data = CredentialData.fromUri(Uri.parse(otpauth));
               _loadCredentialData(data);
@@ -404,7 +402,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       buildCounter: buildByteCounterFor(issuerText),
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: l10n.oath_issuer_optional,
+                        labelText: l10n.l_issuer_optional,
                         helperText:
                             '', // Prevents dialog resizing when disabled
                         prefixIcon: const Icon(Icons.business_outlined),
@@ -412,7 +410,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             ? '' // needs empty string to render as error
                             : issuerNoColon
                                 ? null
-                                : l10n.oath_invalid_character_issuer,
+                                : l10n.l_invalid_character_issuer,
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {
@@ -433,14 +431,14 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.person_outline),
-                        labelText: l10n.oath_account_name,
+                        labelText: l10n.l_account_name,
                         helperText:
                             '', // Prevents dialog resizing when disabled
                         errorText: (byteLength(nameText) > nameMaxLength)
                             ? '' // needs empty string to render as error
                             : isUnique
                                 ? null
-                                : l10n.oath_duplicate_name,
+                                : l10n.l_duplicate_name,
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {
@@ -476,9 +474,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                           ),
                           border: const OutlineInputBorder(),
                           prefixIcon: const Icon(Icons.key_outlined),
-                          labelText: l10n.oath_secret_key,
+                          labelText: l10n.l_secret_key,
                           errorText: _validateSecretLength && !secretLengthValid
-                              ? l10n.oath_invalid_length
+                              ? l10n.l_invalid_length
                               : null),
                       readOnly: _qrState == _QrScanState.success,
                       textInputAction: TextInputAction.done,
@@ -503,8 +501,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                                 : const CircularProgressIndicator(
                                     strokeWidth: 2.0),
                             label: _qrState == _QrScanState.success
-                                ? Text(l10n.oath_scanned_qr)
-                                : Text(l10n.oath_scan_qr),
+                                ? Text(l10n.l_qr_scanned)
+                                : Text(l10n.l_qr_scan),
                             onPressed: () {
                               _scanQrCode(qrScanner);
                             }),
@@ -517,7 +515,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       children: [
                         if (oathState?.version.isAtLeast(4, 2) ?? true)
                           FilterChip(
-                            label: Text(l10n.oath_require_touch),
+                            label: Text(l10n.l_require_touch),
                             selected: _touch,
                             onSelected: (value) {
                               setState(() {
@@ -559,7 +557,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             selected: int.tryParse(_periodController.text) !=
                                 defaultPeriod,
                             itemBuilder: ((value) =>
-                                Text('$value ${l10n.oath_sec}')),
+                                Text(l10n.l_num_sec(value))),
                             onChanged: _qrState != _QrScanState.success
                                 ? (period) {
                                     setState(() {
@@ -573,7 +571,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                           value: _digits,
                           selected: _digits != defaultDigits,
                           itemBuilder: (value) =>
-                              Text('$value ${l10n.oath_digits}'),
+                              Text(l10n.l_num_digits(value)),
                           onChanged: _qrState != _QrScanState.success
                               ? (digits) {
                                   setState(() {

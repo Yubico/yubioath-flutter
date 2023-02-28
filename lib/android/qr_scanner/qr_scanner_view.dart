@@ -114,7 +114,7 @@ class _QrScannerViewState extends State<QrScannerView> {
       extendBody: true,
       appBar: AppBar(
         title: Text(
-          l10n.oath_add_account,
+          l10n.l_add_account,
           style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.transparent,

@@ -111,7 +111,7 @@ class _Systray extends TrayListener {
   Future<void> _init() async {
     await trayManager.setIcon(_getIcon(), isTemplate: true);
     if (!Platform.isLinux) {
-      await trayManager.setToolTip(_l10n.general_app_name);
+      await trayManager.setToolTip(_l10n.app_name);
     }
     await _updateContextMenu();
 
@@ -176,8 +176,8 @@ class _Systray extends TrayListener {
                         .read(clipboardProvider)
                         .setText(code.value, isSensitive: true);
                     final notification = LocalNotification(
-                      title: _l10n.systray_oath_copied,
-                      body: _l10n.systray_oath_copied_to_clipboard(label),
+                      title: _l10n.l_code_copied,
+                      body: _l10n.p_target_copied_clipboard(label),
                       silent: true,
                     );
                     await notification.show();
@@ -190,14 +190,12 @@ class _Systray extends TrayListener {
           ),
           if (_credentials.isEmpty)
             MenuItem(
-              label: _l10n.systray_no_pinned,
+              label: _l10n.l_no_pinned_accounts,
               disabled: true,
             ),
           MenuItem.separator(),
           MenuItem(
-            label: _isHidden
-                ? _l10n.general_show_window
-                : _l10n.general_hide_window,
+            label: _isHidden ? _l10n.l_show_window : _l10n.l_hide_window,
             onClick: (_) {
               _ref
                   .read(desktopWindowStateProvider.notifier)
@@ -206,7 +204,7 @@ class _Systray extends TrayListener {
           ),
           MenuItem.separator(),
           MenuItem(
-              label: _l10n.general_quit,
+              label: _l10n.w_quit,
               onClick: (_) {
                 _ref.read(withContextProvider)(
                   (context) async {

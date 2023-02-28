@@ -83,12 +83,12 @@ class MainPage extends ConsumerWidget {
         return MessagePage(
           graphic: noKeyImage,
           message: hasNfcSupport && isNfcEnabled
-              ? l10n.devicePicker_insert_or_tap
-              : l10n.devicePicker_insert_yubikey,
+              ? l10n.l_insert_or_tap_yk
+              : l10n.l_insert_yk,
           actions: [
             if (hasNfcSupport && !isNfcEnabled)
               ElevatedButton.icon(
-                  label: Text(l10n.general_enable_nfc),
+                  label: Text(l10n.l_enable_nfc),
                   icon: nfcIcon,
                   onPressed: () async {
                     await openNfcSettings();
@@ -96,7 +96,7 @@ class MainPage extends ConsumerWidget {
           ],
           actionButtonBuilder: (context) => IconButton(
             icon: const Icon(Icons.person_add_alt_1),
-            tooltip: l10n.oath_add_account,
+            tooltip: l10n.l_add_account,
             onPressed: () async {
               CredentialData? otpauth;
               final scanner = ref.read(qrScannerProvider);
@@ -132,7 +132,7 @@ class MainPage extends ConsumerWidget {
         return MessagePage(
           delayedContent: true,
           graphic: noKeyImage,
-          message: l10n.devicePicker_insert_yubikey,
+          message: l10n.l_insert_yk,
         );
       }
     } else {
@@ -142,18 +142,18 @@ class MainPage extends ConsumerWidget {
               if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
                 return MessagePage(
-                  header: l10n.mainPage_not_recognized,
+                  header: l10n.l_yk_not_recognized,
                 );
               } else if (app.getAvailability(data) ==
                   Availability.unsupported) {
                 return MessagePage(
-                  header: l10n.mainPage_app_not_supported,
-                  message: l10n.mainPage_app_not_supported_on_yubikey(app.name),
+                  header: l10n.l_app_not_supported,
+                  message: l10n.l_app_not_supported_on_yk(app.name),
                 );
               } else if (app.getAvailability(data) != Availability.enabled) {
                 return MessagePage(
-                  header: l10n.mainPage_app_not_enabled,
-                  message: l10n.mainPage_app_not_enabled_desc(app.name),
+                  header: l10n.l_app_disabled,
+                  message: l10n.l_app_disabled_desc(app.name),
                 );
               }
 
@@ -164,8 +164,8 @@ class MainPage extends ConsumerWidget {
                   return FidoScreen(data);
                 default:
                   return MessagePage(
-                    header: l10n.mainPage_app_not_supported,
-                    message: l10n.mainPage_app_not_supported_desc,
+                    header: l10n.l_app_not_supported,
+                    message: l10n.l_app_not_supported_desc,
                   );
               }
             },

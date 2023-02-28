@@ -38,7 +38,7 @@ class AppFailurePage extends ConsumerWidget {
     final reason = cause;
 
     Widget? graphic = const Icon(Icons.error);
-    String? header = l10n.appFailurePage_error_occured;
+    String? header = l10n.l_error_occured;
     String? message = reason.toString();
     List<Widget> actions = [];
 
@@ -46,13 +46,13 @@ class AppFailurePage extends ConsumerWidget {
       if (reason.status == 'connection-error') {
         switch (reason.body['connection']) {
           case 'ccid':
-            header = l10n.appFailurePage_ccid_failed;
+            header = l10n.l_ccid_connection_failed;
             if (Platform.isMacOS) {
-              message = l10n.appFailurePage_msg_reinsert;
+              message = l10n.l_try_reinsert_yk;
             } else if (Platform.isLinux) {
-              message = l10n.appFailurePage_pcscd_unavailable;
+              message = l10n.p_pcscd_unavailable;
             } else {
-              message = l10n.appFailurePage_ccid_unavailable;
+              message = l10n.p_ccid_service_unavailable;
             }
             break;
           case 'fido':
@@ -60,14 +60,14 @@ class AppFailurePage extends ConsumerWidget {
                 !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
               graphic = noPermission;
               header = null;
-              message = l10n.appFailurePage_txt_info;
+              message = l10n.p_webauthn_elevated_permissions_required;
               actions = [
                 ElevatedButton.icon(
-                  label: Text(l10n.appFailurePage_btn_unlock),
+                  label: Text(l10n.w_unlock),
                   icon: const Icon(Icons.lock_open),
                   onPressed: () async {
                     final closeMessage = showMessage(
-                        context, l10n.appFailurePage_msg_permission,
+                        context, l10n.l_elevating_permissions,
                         duration: const Duration(seconds: 30));
                     try {
                       if (await ref.read(rpcProvider).requireValue.elevate()) {
@@ -77,7 +77,7 @@ class AppFailurePage extends ConsumerWidget {
                           (context) async {
                             showMessage(
                               context,
-                              l10n.general_permission_denied,
+                              l10n.l_permission_denied,
                             );
                           },
                         );
@@ -91,8 +91,8 @@ class AppFailurePage extends ConsumerWidget {
             }
             break;
           default:
-            header = l10n.appFailurePage_failed_connection;
-            message = l10n.appFailurePage_msg_reinsert;
+            header = l10n.l_open_connection_failed;
+            message = l10n.l_try_reinsert_yk;
         }
       }
     }

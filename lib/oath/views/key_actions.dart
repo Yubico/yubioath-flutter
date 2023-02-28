@@ -44,18 +44,17 @@ Widget oathBuildActions(
   final theme = Theme.of(context).colorScheme;
   return SimpleDialog(
     children: [
-      ListTitle(AppLocalizations.of(context)!.general_setup,
+      ListTitle(AppLocalizations.of(context)!.w_setup,
           textStyle: Theme.of(context).textTheme.bodyLarge),
       ListTile(
-        title: Text(AppLocalizations.of(context)!.oath_add_account),
+        title: Text(AppLocalizations.of(context)!.l_add_account),
         key: keys.addAccountAction,
         leading:
             const CircleAvatar(child: Icon(Icons.person_add_alt_1_outlined)),
         subtitle: Text(used == null
-            ? AppLocalizations.of(context)!.oath_unlock_first
+            ? AppLocalizations.of(context)!.l_unlock_first
             : (capacity != null
-                ? AppLocalizations.of(context)!
-                    .oath_accounts_used(used, capacity)
+                ? AppLocalizations.of(context)!.l_accounts_used(used, capacity)
                 : '')),
         enabled: used != null && (capacity == null || capacity > used),
         onTap: used != null && (capacity == null || capacity > used)
@@ -90,7 +89,7 @@ Widget oathBuildActions(
               }
             : null,
       ),
-      ListTitle(AppLocalizations.of(context)!.general_manage,
+      ListTitle(AppLocalizations.of(context)!.w_manage,
           textStyle: Theme.of(context).textTheme.bodyLarge),
       ListTile(
           key: keys.customIconsAction,
@@ -111,10 +110,10 @@ Widget oathBuildActions(
       ListTile(
           key: keys.setOrManagePasswordAction,
           title: Text(oathState.hasKey
-              ? AppLocalizations.of(context)!.oath_manage_password
-              : AppLocalizations.of(context)!.oath_set_password),
-          subtitle:
-              Text(AppLocalizations.of(context)!.oath_password_description),
+              ? AppLocalizations.of(context)!.l_manage_password
+              : AppLocalizations.of(context)!.l_set_password),
+          subtitle: Text(
+              AppLocalizations.of(context)!.l_optional_password_protection),
           leading: const CircleAvatar(child: Icon(Icons.password_outlined)),
           onTap: () {
             Navigator.of(context).pop();
@@ -125,9 +124,9 @@ Widget oathBuildActions(
           }),
       ListTile(
           key: keys.resetAction,
-          title: Text(AppLocalizations.of(context)!.oath_reset_oath),
-          subtitle: Text(
-              AppLocalizations.of(context)!.oath_factory_reset_description),
+          title: Text(AppLocalizations.of(context)!.l_reset_oath),
+          subtitle:
+              Text(AppLocalizations.of(context)!.l_factory_reset_this_app),
           leading: CircleAvatar(
             foregroundColor: theme.onError,
             backgroundColor: theme.error,

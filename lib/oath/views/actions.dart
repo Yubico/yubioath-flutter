@@ -53,7 +53,7 @@ Widget registerOathActions(
             if (!clipboard.platformGivesFeedback()) {
               await ref.read(withContextProvider)((context) async {
                 showMessage(context,
-                    AppLocalizations.of(context)!.oath_copied_to_clipboard);
+                    AppLocalizations.of(context)!.l_code_copied_clipboard);
               });
             }
           }

@@ -87,7 +87,7 @@ class _ModeForm extends StatelessWidget {
         ),
       ),
       Text(interfaces == 0
-          ? AppLocalizations.of(context)!.mgmt_min_one_interface
+          ? AppLocalizations.of(context)!.l_min_one_interface
           : ''),
     ]);
   }
@@ -115,7 +115,7 @@ class _CapabilitiesForm extends StatelessWidget {
         if (usbCapabilities != 0) ...[
           ListTile(
             leading: const Icon(Icons.usb),
-            title: Text(AppLocalizations.of(context)!.general_usb),
+            title: Text(AppLocalizations.of(context)!.w_usb),
             contentPadding: const EdgeInsets.only(bottom: 8),
             horizontalTitleGap: 0,
           ),
@@ -136,7 +136,7 @@ class _CapabilitiesForm extends StatelessWidget {
             ),
           ListTile(
             leading: nfcIcon,
-            title: Text(AppLocalizations.of(context)!.general_nfc),
+            title: Text(AppLocalizations.of(context)!.w_nfc),
             contentPadding: const EdgeInsets.only(bottom: 8),
             horizontalTitleGap: 0,
           ),
@@ -210,7 +210,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
         // This will take longer, show a message
         close = showMessage(
           context,
-          AppLocalizations.of(context)!.mgmt_reconfiguring_yubikey,
+          AppLocalizations.of(context)!.l_reconfiguring_yk,
           duration: const Duration(seconds: 8),
         );
       }
@@ -223,8 +223,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
           );
       if (!mounted) return;
       if (!reboot) Navigator.pop(context);
-      showMessage(
-          context, AppLocalizations.of(context)!.mgmt_configuration_updated);
+      showMessage(context, AppLocalizations.of(context)!.l_config_updated);
     } finally {
       close?.call();
     }
@@ -248,10 +247,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     showMessage(
         context,
         widget.deviceData.node.maybeMap(
-            nfcReader: (_) =>
-                AppLocalizations.of(context)!.mgmt_configuration_updated,
-            orElse: () => AppLocalizations.of(context)!
-                .mgmt_configuration_updated_remove_reinsert));
+            nfcReader: (_) => AppLocalizations.of(context)!.l_config_updated,
+            orElse: () =>
+                AppLocalizations.of(context)!.l_config_updated_reinsert));
     Navigator.pop(context);
   }
 
@@ -317,12 +315,12 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
         );
 
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.mgmt_toggle_applications),
+      title: Text(AppLocalizations.of(context)!.l_toggle_applications),
       actions: [
         TextButton(
           onPressed: canSave ? _submitForm : null,
           key: management_keys.saveButtonKey,
-          child: Text(AppLocalizations.of(context)!.mgmt_save),
+          child: Text(AppLocalizations.of(context)!.w_save),
         ),
       ],
       child: child,

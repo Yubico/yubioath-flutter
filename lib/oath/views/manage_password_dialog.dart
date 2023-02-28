@@ -48,7 +48,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
     if (result) {
       if (!mounted) return;
       Navigator.of(context).pop();
-      showMessage(context, AppLocalizations.of(context)!.oath_password_set);
+      showMessage(context, AppLocalizations.of(context)!.l_password_set);
     } else {
       setState(() {
         _currentIsWrong = true;
@@ -63,12 +63,12 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         (!widget.state.hasKey || _currentPassword.isNotEmpty);
 
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.oath_manage_password),
+      title: Text(AppLocalizations.of(context)!.l_manage_password),
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
           key: keys.savePasswordButton,
-          child: Text(AppLocalizations.of(context)!.oath_save),
+          child: Text(AppLocalizations.of(context)!.w_save),
         )
       ],
       child: Padding(
@@ -77,18 +77,18 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (widget.state.hasKey) ...[
-              Text(AppLocalizations.of(context)!.oath_enter_current_password),
+              Text(AppLocalizations.of(context)!
+                  .p_enter_current_password_or_reset),
               TextField(
                 autofocus: true,
                 obscureText: true,
                 key: keys.currentPasswordField,
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    labelText:
-                        AppLocalizations.of(context)!.oath_current_password,
+                    labelText: AppLocalizations.of(context)!.l_current_password,
                     prefixIcon: const Icon(Icons.password_outlined),
                     errorText: _currentIsWrong
-                        ? AppLocalizations.of(context)!.oath_wrong_password
+                        ? AppLocalizations.of(context)!.l_wrong_password
                         : null,
                     errorMaxLines: 3),
                 textInputAction: TextInputAction.next,
@@ -116,7 +116,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                               showMessage(
                                   context,
                                   AppLocalizations.of(context)!
-                                      .oath_password_removed);
+                                      .l_password_removed);
                             } else {
                               setState(() {
                                 _currentIsWrong = true;
@@ -124,36 +124,34 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                             }
                           }
                         : null,
-                    child: Text(
-                        AppLocalizations.of(context)!.oath_remove_password),
+                    child:
+                        Text(AppLocalizations.of(context)!.l_remove_password),
                   ),
                   if (widget.state.remembered)
                     OutlinedButton(
-                      child: Text(AppLocalizations.of(context)!
-                          .oath_clear_saved_password),
+                      child: Text(
+                          AppLocalizations.of(context)!.l_clear_saved_password),
                       onPressed: () async {
                         await ref
                             .read(oathStateProvider(widget.path).notifier)
                             .forgetPassword();
                         if (!mounted) return;
                         Navigator.of(context).pop();
-                        showMessage(
-                            context,
-                            AppLocalizations.of(context)!
-                                .oath_password_forgotten);
+                        showMessage(context,
+                            AppLocalizations.of(context)!.l_password_forgotten);
                       },
                     ),
                 ],
               ),
             ],
-            Text(AppLocalizations.of(context)!.oath_enter_new_password),
+            Text(AppLocalizations.of(context)!.p_enter_new_password),
             TextField(
               key: keys.newPasswordField,
               autofocus: !widget.state.hasKey,
               obscureText: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: AppLocalizations.of(context)!.oath_new_password,
+                labelText: AppLocalizations.of(context)!.l_new_password,
                 prefixIcon: const Icon(Icons.password_outlined),
                 enabled: !widget.state.hasKey || _currentPassword.isNotEmpty,
               ),
@@ -174,7 +172,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               obscureText: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: AppLocalizations.of(context)!.oath_confirm_password,
+                labelText: AppLocalizations.of(context)!.l_confirm_password,
                 prefixIcon: const Icon(Icons.password_outlined),
                 enabled:
                     (!widget.state.hasKey || _currentPassword.isNotEmpty) &&

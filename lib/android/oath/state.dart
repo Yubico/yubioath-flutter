@@ -195,8 +195,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
             return promptUserInteraction(
               context,
               icon: const Icon(Icons.touch_app),
-              title: l10n.oath_touch_required,
-              description: l10n.oath_touch_now,
+              title: l10n.l_touch_required,
+              description: l10n.l_touch_button_now,
             );
           },
         );

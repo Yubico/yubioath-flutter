@@ -41,12 +41,12 @@ class OathScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(oathStateProvider(devicePath)).when(
           loading: () => MessagePage(
-            title: Text(AppLocalizations.of(context)!.oath_authenticator),
+            title: Text(AppLocalizations.of(context)!.w_authenticator),
             graphic: const CircularProgressIndicator(),
             delayedContent: true,
           ),
           error: (error, _) => AppFailurePage(
-            title: Text(AppLocalizations.of(context)!.oath_authenticator),
+            title: Text(AppLocalizations.of(context)!.w_authenticator),
             cause: error,
           ),
           data: (oathState) => oathState.locked
@@ -65,7 +65,7 @@ class _LockedView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppPage(
-      title: Text(AppLocalizations.of(context)!.oath_authenticator),
+      title: Text(AppLocalizations.of(context)!.w_authenticator),
       keyActionsBuilder: (context) =>
           oathBuildActions(context, devicePath, oathState, ref),
       child: Padding(
@@ -114,10 +114,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         .select((value) => value?.length));
     if (numCreds == 0) {
       return MessagePage(
-        title: Text(AppLocalizations.of(context)!.oath_authenticator),
+        title: Text(AppLocalizations.of(context)!.w_authenticator),
         key: keys.noAccountsView,
         graphic: noAccounts,
-        header: AppLocalizations.of(context)!.oath_no_accounts,
+        header: AppLocalizations.of(context)!.l_no_accounts,
         keyActionsBuilder: (context) => oathBuildActions(
             context, widget.devicePath, widget.oathState, ref,
             used: 0),
@@ -152,7 +152,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
               style: textTheme.titleMedium
                   ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.oath_search_accounts,
+                hintText: AppLocalizations.of(context)!.l_search_accounts,
                 border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(32)),
                 ),

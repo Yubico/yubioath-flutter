@@ -119,12 +119,11 @@ class _DevicePickerContent extends ConsumerWidget {
           ),
           ListTile(
             title: Center(
-                child: Text(
-                    AppLocalizations.of(context)!.devicePicker_no_yubikey)),
+                child: Text(AppLocalizations.of(context)!.l_no_yk_present)),
             subtitle: Center(
                 child: Text(Platform.isAndroid
-                    ? AppLocalizations.of(context)!.devicePicker_insert_or_tap
-                    : AppLocalizations.of(context)!.general_usb)),
+                    ? AppLocalizations.of(context)!.l_insert_or_tap_yk
+                    : AppLocalizations.of(context)!.w_usb)),
           ),
         ],
       );
@@ -138,8 +137,8 @@ class _DevicePickerContent extends ConsumerWidget {
             padding: EdgeInsets.symmetric(horizontal: 4),
             child: DeviceAvatar(child: Icon(Icons.usb)),
           ),
-          title: Text(AppLocalizations.of(context)!.general_usb),
-          subtitle: Text(AppLocalizations.of(context)!.devicePicker_no_yubikey),
+          title: Text(AppLocalizations.of(context)!.w_usb),
+          subtitle: Text(AppLocalizations.of(context)!.l_no_yk_present),
           onTap: () {
             ref.read(currentDeviceProvider.notifier).setCurrentDevice(null);
           },
@@ -170,8 +169,8 @@ class _DevicePickerContent extends ConsumerWidget {
                       ref.read(_hiddenDevicesProvider.notifier).showAll();
                     },
                     child: ListTile(
-                      title: Text(AppLocalizations.of(context)!
-                          .devicePicker_show_hidden),
+                      title: Text(
+                          AppLocalizations.of(context)!.l_show_hidden_devices),
                       dense: true,
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -197,11 +196,11 @@ class _DevicePickerContent extends ConsumerWidget {
 String _getDeviceInfoString(BuildContext context, DeviceInfo info) {
   final serial = info.serial;
   return [
-    if (serial != null) AppLocalizations.of(context)!.devicePicker_sn(serial),
+    if (serial != null) AppLocalizations.of(context)!.l_sn_serial(serial),
     if (info.version.isAtLeast(1))
-      AppLocalizations.of(context)!.devicePicker_fw(info.version)
+      AppLocalizations.of(context)!.l_fw_version(info.version)
     else
-      AppLocalizations.of(context)!.devicePicker_unknown_type,
+      AppLocalizations.of(context)!.l_unknown_type,
   ].join(' ');
 }
 
@@ -214,17 +213,15 @@ List<String> _getDeviceStrings(
             case 'device-inaccessible':
               return [
                 node.name,
-                AppLocalizations.of(context)!.devicePicker_inaccessible
+                AppLocalizations.of(context)!.l_yk_inaccessible
               ];
             case 'unknown-device':
-              return [
-                AppLocalizations.of(context)!.devicePicker_unknown_device
-              ];
+              return [AppLocalizations.of(context)!.l_unknown_device];
           }
           return null;
         },
       ) ??
-      [AppLocalizations.of(context)!.devicePicker_no_yubikey];
+      [AppLocalizations.of(context)!.l_no_yk_present];
 
   // Add the NFC reader name, unless it's already included (as device name, like on Android)
   if (node is NfcReaderNode && !messages.contains(node.name)) {
@@ -311,10 +308,9 @@ class _DeviceRow extends ConsumerWidget {
       subtitle: Text(
         node.when(
           usbYubiKey: (_, __, ___, info) => info == null
-              ? AppLocalizations.of(context)!.devicePicker_inaccessible
+              ? AppLocalizations.of(context)!.l_yk_inaccessible
               : _getDeviceInfoString(context, info),
-          nfcReader: (_, __) =>
-              AppLocalizations.of(context)!.devicePicker_select_to_scan,
+          nfcReader: (_, __) => AppLocalizations.of(context)!.l_select_to_scan,
         ),
       ),
       onTap: () {
@@ -349,8 +345,8 @@ class _NfcDeviceRow extends ConsumerWidget {
                 ref.read(_hiddenDevicesProvider.notifier).showAll();
               },
               child: ListTile(
-                title: Text(
-                    AppLocalizations.of(context)!.devicePicker_show_hidden),
+                title:
+                    Text(AppLocalizations.of(context)!.l_show_hidden_devices),
                 dense: true,
                 contentPadding: EdgeInsets.zero,
                 enabled: hidden.isNotEmpty,
@@ -361,8 +357,7 @@ class _NfcDeviceRow extends ConsumerWidget {
                 ref.read(_hiddenDevicesProvider.notifier).hideDevice(node.path);
               },
               child: ListTile(
-                title: Text(
-                    AppLocalizations.of(context)!.devicePicker_hide_device),
+                title: Text(AppLocalizations.of(context)!.l_hide_device),
                 dense: true,
                 contentPadding: EdgeInsets.zero,
               ),

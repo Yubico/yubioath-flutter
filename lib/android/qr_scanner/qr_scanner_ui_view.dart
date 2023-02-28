@@ -46,8 +46,8 @@ class QRScannerUI extends StatelessWidget {
             height: screenSize.height),
         child: Text(
           status != ScanStatus.error
-              ? l10n.androidQrScanner_point_and_scan
-              : l10n.androidQrScanner_invalid_code,
+              ? l10n.l_point_camera_scan
+              : l10n.l_invalid_qr,
           style: const TextStyle(color: Colors.white),
           textAlign: TextAlign.center,
         ),
@@ -63,7 +63,7 @@ class QRScannerUI extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              l10n.androidQrScanner_no_code,
+              l10n.q_no_qr,
               textScaleFactor: 0.7,
               style: const TextStyle(color: Colors.white),
             ),
@@ -73,7 +73,7 @@ class QRScannerUI extends StatelessWidget {
                 },
                 key: keys.manualEntryButton,
                 child: Text(
-                  l10n.androidQrScanner_enter_manually,
+                  l10n.l_enter_manually,
                   style: const TextStyle(color: Colors.white),
                 )),
           ],

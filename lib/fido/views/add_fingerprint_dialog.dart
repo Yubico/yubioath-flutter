@@ -128,12 +128,12 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
 
   String _getMessage() {
     if (_samples == 0) {
-      return AppLocalizations.of(context)!.fido_press_fingerprint_begin;
+      return AppLocalizations.of(context)!.p_press_fingerprint_begin;
     }
     if (_fingerprint == null) {
-      return AppLocalizations.of(context)!.fido_keep_touching_yubikey;
+      return AppLocalizations.of(context)!.l_keep_touching_yk;
     } else {
-      return AppLocalizations.of(context)!.fido_fingerprint_captured;
+      return AppLocalizations.of(context)!.l_fingerprint_captured;
     }
   }
 
@@ -144,8 +144,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
           .renameFingerprint(_fingerprint!, _label);
       if (!mounted) return;
       Navigator.of(context).pop(true);
-      showMessage(
-          context, AppLocalizations.of(context)!.fido_fingerprint_added);
+      showMessage(context, AppLocalizations.of(context)!.l_fingerprint_added);
     } catch (e) {
       final String errorMessage;
       // TODO: Make this cleaner than importing desktop specific RpcError.
@@ -156,7 +155,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
       }
       showMessage(
         context,
-        '${AppLocalizations.of(context)!.fido_error_setting_name}: $errorMessage',
+        '${AppLocalizations.of(context)!.l_setting_name_failed}: $errorMessage',
         duration: const Duration(seconds: 4),
       );
     }
@@ -167,13 +166,13 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     final progress = _samples == 0 ? 0.0 : _samples / (_samples + _remaining);
 
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.fido_add_fingerprint),
+      title: Text(AppLocalizations.of(context)!.l_add_fingerprint),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context)!.fido_step_1_2),
+            Text(AppLocalizations.of(context)!.l_fp_step_1_capture),
             Column(
               children: [
                 Padding(
@@ -196,7 +195,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                 ),
               ],
             ),
-            Text(AppLocalizations.of(context)!.fido_step_2_2),
+            Text(AppLocalizations.of(context)!.l_fp_step_2_name),
             TextFormField(
               focusNode: _nameFocus,
               maxLength: 15,
@@ -206,7 +205,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
               decoration: InputDecoration(
                 enabled: _fingerprint != null,
                 border: const OutlineInputBorder(),
-                labelText: AppLocalizations.of(context)!.fido_name,
+                labelText: AppLocalizations.of(context)!.w_name,
                 prefixIcon: const Icon(Icons.fingerprint_outlined),
               ),
               onChanged: (value) {
@@ -232,7 +231,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
       actions: [
         TextButton(
           onPressed: _fingerprint != null && _label.isNotEmpty ? _submit : null,
-          child: Text(AppLocalizations.of(context)!.fido_save),
+          child: Text(AppLocalizations.of(context)!.w_save),
         ),
       ],
     );

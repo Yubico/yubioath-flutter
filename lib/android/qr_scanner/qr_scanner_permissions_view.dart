@@ -47,7 +47,7 @@ class QRScannerPermissionsUI extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 36),
             child: Text(
-              l10n.androidQrScanner_need_camera_permission,
+              l10n.p_need_camera_permission,
               style: const TextStyle(color: Colors.white),
               textAlign: TextAlign.center,
             ),
@@ -66,7 +66,7 @@ class QRScannerPermissionsUI extends StatelessWidget {
               Column(
                 children: [
                   Text(
-                    l10n.androidQrScanner_have_account_info,
+                    l10n.q_have_account_info,
                     textScaleFactor: 0.7,
                     style: const TextStyle(color: Colors.white),
                   ),
@@ -75,7 +75,7 @@ class QRScannerPermissionsUI extends StatelessWidget {
                         Navigator.of(context).pop('');
                       },
                       child: Text(
-                        l10n.androidQrScanner_enter_manually,
+                        l10n.l_enter_manually,
                         style: const TextStyle(color: Colors.white),
                       )),
                 ],
@@ -83,7 +83,7 @@ class QRScannerPermissionsUI extends StatelessWidget {
               Column(
                 children: [
                   Text(
-                    l10n.androidQrScanner_want_to_scan,
+                    l10n.q_want_to_scan,
                     textScaleFactor: 0.7,
                     style: const TextStyle(color: Colors.white),
                   ),
@@ -92,7 +92,7 @@ class QRScannerPermissionsUI extends StatelessWidget {
                         onPermissionRequest();
                       },
                       child: Text(
-                        l10n.androidQrScanner_review_permissions,
+                        l10n.l_review_permissions,
                         style: const TextStyle(color: Colors.white),
                       )),
                 ],

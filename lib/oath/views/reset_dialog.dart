@@ -30,19 +30,19 @@ class ResetDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.oath_factory_reset),
+      title: Text(l10n.l_factory_reset),
       actions: [
         TextButton(
           onPressed: () async {
             await ref.read(oathStateProvider(devicePath).notifier).reset();
             await ref.read(withContextProvider)((context) async {
               Navigator.of(context).pop();
-              showMessage(context,
-                  AppLocalizations.of(context)!.oath_oath_application_reset);
+              showMessage(context, l10n.l_oath_application_reset);
             });
           },
-          child: Text(AppLocalizations.of(context)!.oath_reset),
+          child: Text(l10n.w_reset),
         ),
       ],
       child: Padding(
@@ -50,11 +50,10 @@ class ResetDialog extends ConsumerWidget {
         child: Column(
           children: [
             Text(
-              AppLocalizations.of(context)!.oath_warning_will_delete_accounts,
+              l10n.p_warning_factory_reset,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            Text(
-                AppLocalizations.of(context)!.oath_warning_disable_these_creds),
+            Text(l10n.p_warning_disable_credentials),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

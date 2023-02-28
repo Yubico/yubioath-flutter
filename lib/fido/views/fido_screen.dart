@@ -36,7 +36,7 @@ class FidoScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) =>
       ref.watch(fidoStateProvider(deviceData.node.path)).when(
           loading: () => AppPage(
-                title: Text(AppLocalizations.of(context)!.fido_webauthn),
+                title: Text(AppLocalizations.of(context)!.w_webauthn),
                 centered: true,
                 delayedContent: true,
                 child: const CircularProgressIndicator(),
@@ -47,10 +47,11 @@ class FidoScreen extends ConsumerWidget {
                 0;
             if (Capability.fido2.value & supported == 0) {
               return MessagePage(
-                title: Text(AppLocalizations.of(context)!.fido_webauthn),
+                title: Text(AppLocalizations.of(context)!.w_webauthn),
                 graphic: manageAccounts,
-                header: AppLocalizations.of(context)!.fido_ready_to_use,
-                message: AppLocalizations.of(context)!.fido_register_as_a_key,
+                header: AppLocalizations.of(context)!.l_ready_to_use,
+                message:
+                    AppLocalizations.of(context)!.l_register_sk_on_websites,
               );
             }
             final enabled = deviceData.info.config
@@ -58,14 +59,14 @@ class FidoScreen extends ConsumerWidget {
                 0;
             if (Capability.fido2.value & enabled == 0) {
               return MessagePage(
-                title: Text(AppLocalizations.of(context)!.fido_webauthn),
-                header: AppLocalizations.of(context)!.fido_fido_disabled,
-                message: AppLocalizations.of(context)!.fido_webauthn_req_fido,
+                title: Text(AppLocalizations.of(context)!.w_webauthn),
+                header: AppLocalizations.of(context)!.l_fido_disabled,
+                message: AppLocalizations.of(context)!.l_webauthn_req_fido2,
               );
             }
 
             return AppFailurePage(
-              title: Text(AppLocalizations.of(context)!.fido_webauthn),
+              title: Text(AppLocalizations.of(context)!.w_webauthn),
               cause: error,
             );
           },

@@ -66,19 +66,19 @@ class AccountHelper {
           final shortcut = Platform.isMacOS ? '\u2318 C' : 'Ctrl+C';
           return [
             MenuAction(
-              text: l10n.oath_copy_to_clipboard,
+              text: l10n.l_copy_to_clipboard,
               icon: const Icon(Icons.copy),
               intent: code == null || expired ? null : const CopyIntent(),
               trailing: shortcut,
             ),
             if (manual)
               MenuAction(
-                text: l10n.oath_calculate,
+                text: l10n.w_calculate,
                 icon: const Icon(Icons.refresh),
                 intent: ready ? const CalculateIntent() : null,
               ),
             MenuAction(
-              text: pinned ? l10n.oath_unpin_account : l10n.oath_pin_account,
+              text: pinned ? l10n.l_unpin_account : l10n.l_pin_account,
               icon: pinned
                   ? pushPinStrokeIcon
                   : const Icon(Icons.push_pin_outlined),
@@ -87,11 +87,11 @@ class AccountHelper {
             if (data.info.version.isAtLeast(5, 3))
               MenuAction(
                 icon: const Icon(Icons.edit_outlined),
-                text: l10n.oath_rename_account,
+                text: l10n.l_rename_account,
                 intent: const EditIntent(),
               ),
             MenuAction(
-              text: l10n.oath_delete_account,
+              text: l10n.l_delete_account,
               icon: const Icon(Icons.delete_outline),
               intent: const DeleteIntent(),
             ),

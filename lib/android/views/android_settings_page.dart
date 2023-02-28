@@ -38,11 +38,11 @@ enum _TapAction {
   String getDescription(AppLocalizations l10n) {
     switch (this) {
       case _TapAction.launch:
-        return l10n.androidSettings_launch_app;
+        return l10n.l_launch_ya;
       case _TapAction.copy:
-        return l10n.androidSettings_copy_otp;
+        return l10n.l_copy_otp_clipboard;
       case _TapAction.both:
-        return l10n.androidSettings_launch_and_copy;
+        return l10n.l_launch_and_copy_otp;
     }
   }
 
@@ -80,11 +80,11 @@ extension on ThemeMode {
   String getDisplayName(AppLocalizations l10n) {
     switch (this) {
       case ThemeMode.system:
-        return l10n.general_system_default;
+        return l10n.l_system_default;
       case ThemeMode.light:
-        return l10n.general_light_mode;
+        return l10n.l_light_mode;
       case ThemeMode.dark:
-        return l10n.general_dark_mode;
+        return l10n.l_dark_mode;
     }
   }
 }
@@ -114,7 +114,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
     final theme = Theme.of(context);
 
     return ResponsiveDialog(
-      title: Text(l10n.general_settings),
+      title: Text(l10n.w_settings),
       child: Theme(
         // Make the headers use the primary color to pop a bit.
         // Once M3 is implemented this will probably not be needed.
@@ -127,9 +127,9 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListTitle(l10n.androidSettings_nfc_options),
+            ListTitle(l10n.l_nfc_options),
             ListTile(
-              title: Text(l10n.androidSettings_nfc_on_tap),
+              title: Text(l10n.l_on_yk_nfc_tap),
               subtitle: Text(tapAction.getDescription(l10n)),
               key: keys.nfcTapSetting,
               onTap: () async {
@@ -140,7 +140,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
               },
             ),
             ListTile(
-              title: Text(l10n.androidSettings_keyboard_layout),
+              title: Text(l10n.l_kbd_layout_for_static),
               subtitle: Text(clipKbdLayout),
               key: keys.nfcKeyboardLayoutSetting,
               enabled: tapAction != _TapAction.launch,
@@ -154,10 +154,10 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
               },
             ),
             SwitchListTile(
-                title: Text(l10n.androidSettings_bypass_touch),
+                title: Text(l10n.l_bypass_touch_requirement),
                 subtitle: Text(nfcBypassTouch
-                    ? l10n.androidSettings_bypass_touch_on
-                    : l10n.androidSettings_bypass_touch_off),
+                    ? l10n.l_bypass_touch_requirement_on
+                    : l10n.l_bypass_touch_requirement_off),
                 value: nfcBypassTouch,
                 key: keys.nfcBypassTouchSetting,
                 onChanged: (value) {
@@ -166,10 +166,10 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                   });
                 }),
             SwitchListTile(
-                title: Text(l10n.androidSettings_silence_nfc),
+                title: Text(l10n.l_silence_nfc_sounds),
                 subtitle: Text(nfcSilenceSounds
-                    ? l10n.androidSettings_silence_nfc_on
-                    : l10n.androidSettings_silence_nfc_off),
+                    ? l10n.l_silence_nfc_sounds_on
+                    : l10n.l_silence_nfc_sounds_off),
                 value: nfcSilenceSounds,
                 key: keys.nfcSilenceSoundsSettings,
                 onChanged: (value) {
@@ -177,12 +177,12 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                     prefs.setBool(prefNfcSilenceSounds, value);
                   });
                 }),
-            ListTitle(l10n.androidSettings_usb_options),
+            ListTitle(l10n.l_usb_options),
             SwitchListTile(
-                title: Text(l10n.androidSettings_usb_launch),
+                title: Text(l10n.l_launch_app_on_usb),
                 subtitle: Text(usbOpenApp
-                    ? l10n.androidSettings_usb_launch_on
-                    : l10n.androidSettings_usb_launch_off),
+                    ? l10n.l_launch_app_on_usb_on
+                    : l10n.l_launch_app_on_usb_off),
                 value: usbOpenApp,
                 key: keys.usbOpenApp,
                 onChanged: (value) {
@@ -190,9 +190,9 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                     prefs.setBool(prefUsbOpenApp, value);
                   });
                 }),
-            ListTitle(l10n.general_appearance),
+            ListTitle(l10n.w_appearance),
             ListTile(
-              title: Text(l10n.androidSettings_app_theme),
+              title: Text(l10n.l_app_theme),
               subtitle: Text(themeMode.getDisplayName(l10n)),
               key: keys.themeModeSetting,
               onTap: () async {
@@ -214,7 +214,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
           builder: (BuildContext context) {
             final l10n = AppLocalizations.of(context)!;
             return SimpleDialog(
-              title: Text(l10n.androidSettings_nfc_on_tap),
+              title: Text(l10n.l_on_yk_nfc_tap),
               children: _TapAction.values
                   .map(
                     (e) => RadioListTile<_TapAction>(
@@ -239,7 +239,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
           builder: (BuildContext context) {
             final l10n = AppLocalizations.of(context)!;
             return SimpleDialog(
-              title: Text(l10n.androidSettings_choose_keyboard_layout),
+              title: Text(l10n.l_choose_kbd_layout),
               children: _keyboardLayouts
                   .map(
                     (e) => RadioListTile<String>(
@@ -264,7 +264,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
           builder: (BuildContext context) {
             final l10n = AppLocalizations.of(context)!;
             return SimpleDialog(
-              title: Text(l10n.androidSettings_choose_app_theme),
+              title: Text(l10n.l_choose_app_theme),
               children: supportedThemes
                   .map((e) => RadioListTile(
                         title: Text(e.getDisplayName(l10n)),

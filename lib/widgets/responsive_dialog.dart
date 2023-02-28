@@ -61,8 +61,8 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         } else {
           // Dialog
           final cancelText = widget.onCancel == null && widget.actions.isEmpty
-              ? AppLocalizations.of(context)!.widgets_close
-              : AppLocalizations.of(context)!.widgets_cancel;
+              ? AppLocalizations.of(context)!.w_close
+              : AppLocalizations.of(context)!.w_cancel;
           return AlertDialog(
             title: widget.title,
             titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),

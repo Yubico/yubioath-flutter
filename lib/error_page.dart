@@ -25,7 +25,7 @@ class ErrorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.general_application_error),
+        title: Text(AppLocalizations.of(context)!.l_application_error),
       ),
       body: Center(
         child: Column(

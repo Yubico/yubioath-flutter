@@ -33,7 +33,7 @@ class AccountList extends ConsumerWidget {
     final favorites = ref.watch(favoritesProvider);
     if (credentials.isEmpty) {
       return Center(
-        child: Text(AppLocalizations.of(context)!.oath_no_credentials),
+        child: Text(AppLocalizations.of(context)!.l_no_accounts),
       );
     }
 
@@ -47,14 +47,14 @@ class AccountList extends ConsumerWidget {
       child: Column(
         children: [
           if (pinnedCreds.isNotEmpty)
-            ListTitle(AppLocalizations.of(context)!.oath_pinned),
+            ListTitle(AppLocalizations.of(context)!.w_pinned),
           ...pinnedCreds.map(
             (entry) => AccountView(
               entry.credential,
             ),
           ),
           if (creds.isNotEmpty)
-            ListTitle(AppLocalizations.of(context)!.oath_accounts),
+            ListTitle(AppLocalizations.of(context)!.w_accounts),
           ...creds.map(
             (entry) => AccountView(
               entry.credential,

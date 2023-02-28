@@ -36,7 +36,7 @@ class DeleteAccountDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.oath_delete_account),
+      title: Text(AppLocalizations.of(context)!.l_delete_account),
       actions: [
         TextButton(
           key: keys.deleteButton,
@@ -49,16 +49,14 @@ class DeleteAccountDialog extends ConsumerWidget {
                 (context) async {
                   Navigator.of(context).pop(true);
                   showMessage(
-                      context,
-                      AppLocalizations.of(context)!
-                          .oath_success_delete_account);
+                      context, AppLocalizations.of(context)!.l_account_deleted);
                 },
               );
             } on CancellationException catch (_) {
               // ignored
             }
           },
-          child: Text(AppLocalizations.of(context)!.oath_delete),
+          child: Text(AppLocalizations.of(context)!.w_delete),
         ),
       ],
       child: Padding(
@@ -66,14 +64,13 @@ class DeleteAccountDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context)!
-                .oath_warning_this_will_delete_account_from_key),
+            Text(AppLocalizations.of(context)!.p_warning_delete_account),
             Text(
-              AppLocalizations.of(context)!.oath_warning_disable_this_cred,
+              AppLocalizations.of(context)!.p_warning_disable_credential,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             Text(
-                '${AppLocalizations.of(context)!.oath_account} ${getTextName(credential)}'),
+                '${AppLocalizations.of(context)!.w_account} ${getTextName(credential)}'),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

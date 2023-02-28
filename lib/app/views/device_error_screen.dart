@@ -41,21 +41,21 @@ class DeviceErrorScreen extends ConsumerWidget {
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
         return MessagePage(
           graphic: noPermission,
-          message: l10n.general_elevated_permissions_required,
+          message: l10n.p_elevated_permissions_required,
           actions: [
             ElevatedButton.icon(
-              label: Text(l10n.appFailurePage_btn_unlock),
+              label: Text(l10n.w_unlock),
               icon: const Icon(Icons.lock_open),
               onPressed: () async {
                 final closeMessage = showMessage(
-                    context, l10n.appFailurePage_msg_permission,
+                    context, l10n.l_elevating_permissions,
                     duration: const Duration(seconds: 30));
                 try {
                   if (await ref.read(rpcProvider).requireValue.elevate()) {
                     ref.invalidate(rpcProvider);
                   } else {
                     await ref.read(withContextProvider)((context) async =>
-                        showMessage(context, l10n.general_permission_denied));
+                        showMessage(context, l10n.l_permission_denied));
                   }
                 } finally {
                   closeMessage();
@@ -68,7 +68,7 @@ class DeviceErrorScreen extends ConsumerWidget {
     }
     return MessagePage(
       graphic: const DeviceAvatar(child: Icon(Icons.usb_off)),
-      message: l10n.general_yubikey_no_access,
+      message: l10n.l_yk_no_access,
     );
   }
 
@@ -81,10 +81,10 @@ class DeviceErrorScreen extends ConsumerWidget {
         final String message;
         switch (error) {
           case 'unknown-device':
-            message = l10n.devicePicker_unknown_device;
+            message = l10n.l_unknown_device;
             break;
           default:
-            message = l10n.general_place_on_nfc_reader;
+            message = l10n.l_place_on_nfc_reader;
         }
         return MessagePage(message: message);
       },

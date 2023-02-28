@@ -35,7 +35,7 @@ class SettingsPage extends ConsumerWidget {
 
     final theme = Theme.of(context);
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.general_settings),
+      title: Text(AppLocalizations.of(context)!.w_settings),
       child: Theme(
         // Make the headers use the primary color to pop a bit.
         // Once M3 is implemented this will probably not be needed.
@@ -48,9 +48,9 @@ class SettingsPage extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListTitle(AppLocalizations.of(context)!.general_appearance),
+            ListTitle(AppLocalizations.of(context)!.w_appearance),
             RadioListTile<ThemeMode>(
-              title: Text(AppLocalizations.of(context)!.general_system_default),
+              title: Text(AppLocalizations.of(context)!.l_system_default),
               value: ThemeMode.system,
               groupValue: themeMode,
               onChanged: (mode) {
@@ -59,7 +59,7 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: Text(AppLocalizations.of(context)!.general_light_mode),
+              title: Text(AppLocalizations.of(context)!.l_light_mode),
               value: ThemeMode.light,
               groupValue: themeMode,
               onChanged: (mode) {
@@ -68,7 +68,7 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: Text(AppLocalizations.of(context)!.general_dark_mode),
+              title: Text(AppLocalizations.of(context)!.l_dark_mode),
               value: ThemeMode.dark,
               groupValue: themeMode,
               onChanged: (mode) {
