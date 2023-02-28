@@ -121,11 +121,8 @@ class WindowHelper {
         _loadLinux();
       }
 
-      // TODO review merge
+      await windowManager.setSkipTaskbar(isHidden);
       if (isHidden) {
-        await windowManager.setSkipTaskbar(true);
-      } else {
-        await windowManager.setSkipTaskbar(false);
         await windowManager.show();
       }
 
@@ -232,7 +229,6 @@ class WindowHelper {
         '(display configuration changed: $configChanged)');
 
     await platformUtil.setWindowRect(windowRect);
-    await windowManager.show();
   }
 
   void _loadMacOs() async {
@@ -274,8 +270,6 @@ class WindowHelper {
         }
       }
     }
-
-    await windowManager.show();
   }
 
   void _loadLinux() async {
@@ -284,6 +278,5 @@ class WindowHelper {
     final width = _prefs.getDouble(_keyWidth) ?? _defaultWidth;
     final height = _prefs.getDouble(_keyHeight) ?? _defaultHeight;
     await windowManager.setSize(Size(width, height));
-    await windowManager.show();
   }
 }
