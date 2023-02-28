@@ -34,7 +34,6 @@ class SettingsPage extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
 
     final theme = Theme.of(context);
-
     return ResponsiveDialog(
       title: Text(AppLocalizations.of(context)!.general_settings),
       child: Theme(

@@ -168,7 +168,8 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
             SwitchListTile(
                 title: const Text('Silence NFC sounds'),
                 subtitle: nfcSilenceSounds
-                    ? const Text('No sounds will be played on NFC tap')
+                    ? const Text(
+                        'No sounds will be played on NFC tap')
                     : const Text('Sound will play on NFC tap'),
                 value: nfcSilenceSounds,
                 key: keys.nfcSilenceSoundsSettings,

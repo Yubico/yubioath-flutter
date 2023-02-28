@@ -39,7 +39,6 @@ class OathScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     return ref.watch(oathStateProvider(devicePath)).when(
           loading: () => MessagePage(
             title: Text(AppLocalizations.of(context)!.oath_authenticator),
