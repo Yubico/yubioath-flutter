@@ -163,8 +163,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       List<OathPair>? newState = json != null
-          ? List.unmodifiable(
-              (json as List).map((e) => OathPair.fromJson(e)).toList())
+          ? List.from((json as List).map((e) => OathPair.fromJson(e)).toList())
           : null;
       if (state != null && newState == null) {
         // If we go from non-null to null this means we should stop listening to
