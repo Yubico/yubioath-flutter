@@ -122,7 +122,7 @@ class WindowHelper {
       }
 
       await windowManager.setSkipTaskbar(isHidden);
-      if (isHidden) {
+      if (!isHidden) {
         await windowManager.show();
       }
 
