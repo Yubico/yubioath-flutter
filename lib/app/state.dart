@@ -15,11 +15,13 @@
  */
 
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
 import '../core/state.dart';
@@ -39,6 +41,32 @@ final windowStateProvider = Provider<WindowState>(
 final supportedThemesProvider = StateProvider<List<ThemeMode>>(
   (ref) => throw UnimplementedError(),
 );
+
+final _l10nProvider = StateNotifierProvider<_L10nNotifier, AppLocalizations>(
+    (ref) => _L10nNotifier());
+
+final l10nProvider = Provider<AppLocalizations>(
+  (ref) => ref.watch(_l10nProvider),
+);
+
+class _L10nNotifier extends StateNotifier<AppLocalizations>
+    with WidgetsBindingObserver {
+  _L10nNotifier() : super(lookupAppLocalizations(window.locale)) {
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  @protected
+  void didChangeLocales(List<Locale>? locales) {
+    state = lookupAppLocalizations(window.locale);
+  }
+}
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
   (ref) => ThemeModeNotifier(

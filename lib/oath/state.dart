@@ -66,7 +66,14 @@ abstract class OathCredentialListNotifier
   @override
   @protected
   set state(List<OathPair>? value) {
-    super.state = value != null ? List.unmodifiable(value) : null;
+    super.state = value != null
+        ? List.unmodifiable(value
+          ..sort((a, b) {
+            String searchKey(OathCredential c) =>
+                ((c.issuer ?? '') + c.name).toLowerCase();
+            return searchKey(a.credential).compareTo(searchKey(b.credential));
+          }))
+        : null;
   }
 
   Future<OathCode> calculate(OathCredential credential);
@@ -193,11 +200,6 @@ class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
                       .toLowerCase()
                       .contains(query.toLowerCase()))
               .where((pair) => pair.credential.issuer != '_hidden')
-              .toList()
-            ..sort((a, b) {
-              String searchKey(OathCredential c) =>
-                  ((c.issuer ?? '') + c.name).toLowerCase();
-              return searchKey(a.credential).compareTo(searchKey(b.credential));
-            }),
+              .toList(),
         );
 }

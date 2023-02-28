@@ -126,7 +126,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     }
     return Actions(
       actions: {
-        SearchIntent: CallbackAction(onInvoke: (_) {
+        SearchIntent: CallbackAction<SearchIntent>(onInvoke: (_) {
           searchController.selection = TextSelection(
               baseOffset: 0, extentOffset: searchController.text.length);
           searchFocus.requestFocus();

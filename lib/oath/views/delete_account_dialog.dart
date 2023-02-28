@@ -26,6 +26,7 @@ import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
+import 'utils.dart';
 
 class DeleteAccountDialog extends ConsumerWidget {
   final DeviceNode device;
@@ -34,10 +35,6 @@ class DeleteAccountDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final label = credential.issuer != null
-        ? '${credential.issuer} (${credential.name})'
-        : credential.name;
-
     return ResponsiveDialog(
       title: Text(AppLocalizations.of(context)!.oath_delete_account),
       actions: [
@@ -75,7 +72,8 @@ class DeleteAccountDialog extends ConsumerWidget {
               AppLocalizations.of(context)!.oath_warning_disable_this_cred,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            Text('${AppLocalizations.of(context)!.oath_account} $label'),
+            Text(
+                '${AppLocalizations.of(context)!.oath_account} ${getTextName(credential)}'),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
