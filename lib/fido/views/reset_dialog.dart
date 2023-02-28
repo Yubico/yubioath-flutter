@@ -45,27 +45,25 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   InteractionEvent? _interaction;
 
   String _getMessage() {
+    final l10n = AppLocalizations.of(context)!;
     final nfc = widget.node.transport == Transport.nfc;
     switch (_interaction) {
       case InteractionEvent.remove:
-        return nfc
-            ? AppLocalizations.of(context)!.l_remove_yk_from_reader
-            : AppLocalizations.of(context)!.l_unplug_yk;
+        return nfc ? l10n.l_remove_yk_from_reader : l10n.l_unplug_yk;
       case InteractionEvent.insert:
-        return nfc
-            ? AppLocalizations.of(context)!.l_replace_yk_on_reader
-            : AppLocalizations.of(context)!.l_reinsert_yk;
+        return nfc ? l10n.l_replace_yk_on_reader : l10n.l_reinsert_yk;
       case InteractionEvent.touch:
-        return AppLocalizations.of(context)!.l_touch_button_now;
+        return l10n.l_touch_button_now;
       case null:
-        return AppLocalizations.of(context)!.l_press_reset_to_begin;
+        return l10n.l_press_reset_to_begin;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.l_factory_reset),
+      title: Text(l10n.l_factory_reset),
       onCancel: () {
         _subscription?.cancel();
       },
@@ -83,8 +81,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                   }, onDone: () {
                     _subscription = null;
                     Navigator.of(context).pop();
-                    showMessage(context,
-                        AppLocalizations.of(context)!.l_fido_app_reset);
+                    showMessage(context, l10n.l_fido_app_reset);
                   }, onError: (e) {
                     _log.error('Error performing FIDO reset', e);
                     Navigator.of(context).pop();
@@ -97,13 +94,13 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                     }
                     showMessage(
                       context,
-                      '${AppLocalizations.of(context)!.l_reset_failed}: $errorMessage',
+                      '${l10n.l_reset_failed}: $errorMessage',
                       duration: const Duration(seconds: 4),
                     );
                   });
                 }
               : null,
-          child: Text(AppLocalizations.of(context)!.w_reset),
+          child: Text(l10n.w_reset),
         ),
       ],
       child: Padding(
@@ -112,11 +109,11 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.of(context)!.p_warning_deletes_accounts,
+              l10n.p_warning_deletes_accounts,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
-              AppLocalizations.of(context)!.p_warning_disable_accounts,
+              l10n.p_warning_disable_accounts,
             ),
             Center(
               child: Text(_getMessage(),

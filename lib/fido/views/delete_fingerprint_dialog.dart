@@ -32,10 +32,11 @@ class DeleteFingerprintDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final label = fingerprint.label;
 
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.l_delete_fingerprint),
+      title: Text(l10n.l_delete_fingerprint),
       actions: [
         TextButton(
           onPressed: () async {
@@ -44,11 +45,10 @@ class DeleteFingerprintDialog extends ConsumerWidget {
                 .deleteFingerprint(fingerprint);
             await ref.read(withContextProvider)((context) async {
               Navigator.of(context).pop(true);
-              showMessage(
-                  context, AppLocalizations.of(context)!.l_fingerprint_deleted);
+              showMessage(context, l10n.l_fingerprint_deleted);
             });
           },
-          child: Text(AppLocalizations.of(context)!.w_delete),
+          child: Text(l10n.w_delete),
         ),
       ],
       child: Padding(
@@ -56,8 +56,8 @@ class DeleteFingerprintDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context)!.l_warning_delete_fingerprint),
-            Text('${AppLocalizations.of(context)!.w_fingerprint}: $label'),
+            Text(l10n.l_warning_delete_fingerprint),
+            Text('${l10n.w_fingerprint}: $label'),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

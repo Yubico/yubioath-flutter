@@ -29,11 +29,12 @@ class AccountList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final credentials = ref.watch(filteredCredentialsProvider(accounts));
     final favorites = ref.watch(favoritesProvider);
     if (credentials.isEmpty) {
       return Center(
-        child: Text(AppLocalizations.of(context)!.l_no_accounts),
+        child: Text(l10n.l_no_accounts),
       );
     }
 
@@ -46,15 +47,13 @@ class AccountList extends ConsumerWidget {
       policy: WidgetOrderTraversalPolicy(),
       child: Column(
         children: [
-          if (pinnedCreds.isNotEmpty)
-            ListTitle(AppLocalizations.of(context)!.w_pinned),
+          if (pinnedCreds.isNotEmpty) ListTitle(l10n.w_pinned),
           ...pinnedCreds.map(
             (entry) => AccountView(
               entry.credential,
             ),
           ),
-          if (creds.isNotEmpty)
-            ListTitle(AppLocalizations.of(context)!.w_accounts),
+          if (creds.isNotEmpty) ListTitle(l10n.w_accounts),
           ...creds.map(
             (entry) => AccountView(
               entry.credential,

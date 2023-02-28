@@ -34,23 +34,24 @@ class FidoLockedPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     if (!state.hasPin) {
       if (state.bioEnroll != null) {
         return MessagePage(
-          title: Text(AppLocalizations.of(context)!.w_webauthn),
+          title: Text(l10n.w_webauthn),
           graphic: noFingerprints,
-          header: AppLocalizations.of(context)!.l_no_fingerprints,
-          message: AppLocalizations.of(context)!.l_set_pin_fingerprints,
+          header: l10n.l_no_fingerprints,
+          message: l10n.l_set_pin_fingerprints,
           keyActionsBuilder: _buildActions,
         );
       } else {
         return MessagePage(
-          title: Text(AppLocalizations.of(context)!.w_webauthn),
+          title: Text(l10n.w_webauthn),
           graphic: manageAccounts,
           header: state.credMgmt
-              ? AppLocalizations.of(context)!.l_no_discoverable_accounts
-              : AppLocalizations.of(context)!.l_ready_to_use,
-          message: AppLocalizations.of(context)!.l_optionally_set_a_pin,
+              ? l10n.l_no_discoverable_accounts
+              : l10n.l_ready_to_use,
+          message: l10n.l_optionally_set_a_pin,
           keyActionsBuilder: _buildActions,
         );
       }
@@ -58,16 +59,16 @@ class FidoLockedPage extends ConsumerWidget {
 
     if (!state.credMgmt && state.bioEnroll == null) {
       return MessagePage(
-        title: Text(AppLocalizations.of(context)!.w_webauthn),
+        title: Text(l10n.w_webauthn),
         graphic: manageAccounts,
-        header: AppLocalizations.of(context)!.l_ready_to_use,
-        message: AppLocalizations.of(context)!.l_register_sk_on_websites,
+        header: l10n.l_ready_to_use,
+        message: l10n.l_register_sk_on_websites,
         keyActionsBuilder: _buildActions,
       );
     }
 
     return AppPage(
-      title: Text(AppLocalizations.of(context)!.w_webauthn),
+      title: Text(l10n.w_webauthn),
       keyActionsBuilder: _buildActions,
       child: Column(
         children: [
@@ -116,28 +117,29 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
   }
 
   String? _getErrorText() {
+    final l10n = AppLocalizations.of(context)!;
     if (_retries == 0) {
-      return AppLocalizations.of(context)!.l_pin_blocked_reset;
+      return l10n.l_pin_blocked_reset;
     }
     if (_blocked) {
-      return AppLocalizations.of(context)!.l_pin_soft_locked;
+      return l10n.l_pin_soft_locked;
     }
     if (_retries != null) {
-      return AppLocalizations.of(context)!
-          .l_wrong_pin_attempts_remaining(_retries!);
+      return l10n.l_wrong_pin_attempts_remaining(_retries!);
     }
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final noFingerprints = widget._state.bioEnroll == false;
     return Padding(
       padding: const EdgeInsets.only(left: 18.0, right: 18, top: 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(AppLocalizations.of(context)!.l_enter_fido2_pin),
+          Text(l10n.l_enter_fido2_pin),
           Padding(
             padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
             child: TextField(
@@ -146,7 +148,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
               controller: _pinController,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: AppLocalizations.of(context)!.w_pin,
+                labelText: l10n.w_pin,
                 helperText: '', // Prevents dialog resizing
                 errorText: _pinIsWrong ? _getErrorText() : null,
                 errorMaxLines: 3,
@@ -176,7 +178,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
                 noFingerprints ? const Icon(Icons.warning_amber_rounded) : null,
             title: noFingerprints
                 ? Text(
-                    AppLocalizations.of(context)!.l_no_fps_added,
+                    l10n.l_no_fps_added,
                     overflow: TextOverflow.fade,
                   )
                 : null,
@@ -185,7 +187,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
             minLeadingWidth: 0,
             trailing: ElevatedButton.icon(
               icon: const Icon(Icons.lock_open),
-              label: Text(AppLocalizations.of(context)!.w_unlock),
+              label: Text(l10n.w_unlock),
               onPressed:
                   _pinController.text.isNotEmpty && !_blocked ? _submit : null,
             ),

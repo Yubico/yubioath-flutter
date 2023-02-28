@@ -40,6 +40,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
   @override
   Widget build(BuildContext context) =>
       LayoutBuilder(builder: ((context, constraints) {
+        final l10n = AppLocalizations.of(context)!;
         if (constraints.maxWidth < 540) {
           // Fullscreen
           return Scaffold(
@@ -61,8 +62,8 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         } else {
           // Dialog
           final cancelText = widget.onCancel == null && widget.actions.isEmpty
-              ? AppLocalizations.of(context)!.w_close
-              : AppLocalizations.of(context)!.w_cancel;
+              ? l10n.w_close
+              : l10n.w_cancel;
           return AlertDialog(
             title: widget.title,
             titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),

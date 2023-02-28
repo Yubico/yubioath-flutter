@@ -27,21 +27,21 @@ import 'reset_dialog.dart';
 
 Widget fidoBuildActions(
     BuildContext context, DeviceNode node, FidoState state, int fingerprints) {
+  final l10n = AppLocalizations.of(context)!;
   final theme = Theme.of(context).colorScheme;
   return SimpleDialog(
     children: [
       if (state.bioEnroll != null) ...[
-        ListTitle(AppLocalizations.of(context)!.w_setup,
+        ListTitle(l10n.w_setup,
             textStyle: Theme.of(context).textTheme.bodyLarge),
         ListTile(
           leading: const CircleAvatar(child: Icon(Icons.fingerprint_outlined)),
-          title: Text(AppLocalizations.of(context)!.l_add_fingerprint),
+          title: Text(l10n.l_add_fingerprint),
           subtitle: state.unlocked
-              ? Text(AppLocalizations.of(context)!
-                  .l_fingerprints_used(fingerprints))
+              ? Text(l10n.l_fingerprints_used(fingerprints))
               : Text(state.hasPin
-                  ? AppLocalizations.of(context)!.l_unlock_pin_first
-                  : AppLocalizations.of(context)!.l_set_pin_first),
+                  ? l10n.l_unlock_pin_first
+                  : l10n.l_set_pin_first),
           enabled: state.unlocked && fingerprints < 5,
           onTap: state.unlocked && fingerprints < 5
               ? () {
@@ -54,16 +54,14 @@ Widget fidoBuildActions(
               : null,
         ),
       ],
-      ListTitle(AppLocalizations.of(context)!.w_manage,
+      ListTitle(l10n.w_manage,
           textStyle: Theme.of(context).textTheme.bodyLarge),
       ListTile(
           leading: const CircleAvatar(child: Icon(Icons.pin_outlined)),
-          title: Text(state.hasPin
-              ? AppLocalizations.of(context)!.l_change_pin
-              : AppLocalizations.of(context)!.l_set_pin),
+          title: Text(state.hasPin ? l10n.l_change_pin : l10n.l_set_pin),
           subtitle: Text(state.hasPin
-              ? AppLocalizations.of(context)!.l_fido_pin_protection
-              : AppLocalizations.of(context)!.l_fido_pin_protection_optional),
+              ? l10n.l_fido_pin_protection
+              : l10n.l_fido_pin_protection_optional),
           onTap: () {
             Navigator.of(context).pop();
             showBlurDialog(
@@ -77,8 +75,8 @@ Widget fidoBuildActions(
           backgroundColor: theme.error,
           child: const Icon(Icons.delete_outline),
         ),
-        title: Text(AppLocalizations.of(context)!.l_reset_fido),
-        subtitle: Text(AppLocalizations.of(context)!.l_factory_reset_this_app),
+        title: Text(l10n.l_reset_fido),
+        subtitle: Text(l10n.l_factory_reset_this_app),
         onTap: () {
           Navigator.of(context).pop();
           showBlurDialog(

@@ -58,6 +58,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   }
 
   void _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       // Rename credentials
       final renamed = await ref
@@ -72,7 +73,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
 
       if (!mounted) return;
       Navigator.of(context).pop(renamed);
-      showMessage(context, AppLocalizations.of(context)!.l_account_renamed);
+      showMessage(context, l10n.l_account_renamed);
     } on CancellationException catch (_) {
       // ignored
     } catch (e) {
@@ -86,7 +87,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
       }
       showMessage(
         context,
-        '${AppLocalizations.of(context)!.l_account_add_failed}: $errorMessage',
+        '${l10n.l_account_add_failed}: $errorMessage',
         duration: const Duration(seconds: 4),
       );
     }
@@ -94,6 +95,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final credential = widget.credential;
 
     final remaining = getRemainingKeySpace(
@@ -125,12 +127,12 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     final isValid = isUnique && isValidFormat;
 
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.l_rename_account),
+      title: Text(l10n.l_rename_account),
       actions: [
         TextButton(
           onPressed: didChange && isValid ? _submit : null,
           key: keys.saveButton,
-          child: Text(AppLocalizations.of(context)!.w_save),
+          child: Text(l10n.w_save),
         ),
       ],
       child: Padding(
@@ -138,10 +140,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context)!
-                .q_rename_target(getTextName(credential))),
-            Text(AppLocalizations.of(context)!
-                .p_rename_will_change_account_displayed),
+            Text(l10n.q_rename_target(getTextName(credential))),
+            Text(l10n.p_rename_will_change_account_displayed),
             TextFormField(
               initialValue: _issuer,
               enabled: issuerRemaining > 0,
@@ -151,7 +151,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               key: keys.issuerField,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: AppLocalizations.of(context)!.l_issuer_optional,
+                labelText: l10n.l_issuer_optional,
                 helperText: '', // Prevents dialog resizing when disabled
                 prefixIcon: const Icon(Icons.business_outlined),
               ),
@@ -170,12 +170,12 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               key: keys.nameField,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: AppLocalizations.of(context)!.l_account_name,
+                labelText: l10n.l_account_name,
                 helperText: '', // Prevents dialog resizing when disabled
                 errorText: !isValidFormat
-                    ? AppLocalizations.of(context)!.l_account_name_required
+                    ? l10n.l_account_name_required
                     : !isUnique
-                        ? AppLocalizations.of(context)!.l_name_already_exists
+                        ? l10n.l_name_already_exists
                         : null,
                 prefixIcon: const Icon(Icons.people_alt_outlined),
               ),
