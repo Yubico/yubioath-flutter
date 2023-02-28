@@ -97,6 +97,7 @@ class AccountIcon extends ConsumerWidget {
         alignment: Alignment.center,
         width: _width,
         height: _height,
+        errorBuilder: (_, __, ___) => defaultWidget,
       ),
     );
   }
