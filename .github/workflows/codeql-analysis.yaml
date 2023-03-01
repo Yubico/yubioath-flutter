@@ -52,6 +52,12 @@ jobs:
         with:
           path: 'app'
 
+       - name: Run flutter tests
+        run: |
+          flutter test
+          flutter analyze
+        working-directory: ./app
+
       - if: matrix.language == 'kotlin'
         name: Build the App
         run: android/scripts/build.sh
