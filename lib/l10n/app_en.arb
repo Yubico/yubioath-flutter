@@ -23,29 +23,6 @@
         }
     },
 
-    "oath_custom_icons": "Custom icons",
-    "oath_custom_icons_description": "Icon packs can make your accounts more easily distinguishable with familiar logos and colors.",
-    "oath_custom_icons_replace": "Replace icon pack",
-    "oath_custom_icons_loading": "Loading icon pack\u2026",
-    "oath_custom_icons_load": "Load icon pack",
-    "oath_custom_icons_remove": "Remove icon pack",
-    "oath_custom_icons_icon_pack_removed": "Icon pack removed",
-    "oath_custom_icons_err_icon_pack_remove": "Error removing icon pack",
-    "oath_custom_icons_choose_icon_pack": "Choose icon pack",
-    "oath_custom_icons_icon_pack_imported": "Icon pack imported",
-    "oath_custom_icons_err_icon_pack_import": "Error importing icon pack: {message}",
-    "@oath_custom_icons_err_icon_pack_import": {
-        "placeholders": {
-            "message": {}
-        }
-    },
-    "oath_custom_icons_learn_more": "Learn\u00a0more",
-    "oath_custom_icons_err_import_general": "Import error",
-    "oath_custom_icons_err_file_not_found": "File not found",
-    "oath_custom_icons_err_file_too_big": "File size too big",
-    "oath_custom_icons_err_invalid_icon_pack": "Invalid icon pack",
-    "oath_custom_icons_err_filesystem_error": "File system operation error",
-
     "w_about": "About",
     "w_appearance": "Appearance",
     "w_authenticator": "Authenticator",
@@ -70,6 +47,7 @@
     "l_run_diagnostics": "Run diagnostics",
     "l_log_level": "Log level",
     "l_character_count": "Character count",
+    "l_learn_more": "Learn\u00a0more",
 
     "@_theme": {},
     "l_app_theme": "App theme",
@@ -146,8 +124,14 @@
     "l_unknown_device": "Unrecognized device",
     "l_unsupported_yk": "Unsupported YubiKey",
     "l_yk_not_recognized": "Device not recognized",
+
+    "@_general_errors": {},
     "l_error_occured": "An error has occured",
     "l_application_error": "Application error",
+    "l_import_error": "Import error",
+    "l_file_not_found": "File not found",
+    "l_file_too_big": "File size too big",
+    "l_filesystem_error": "File system operation error",
 
     "@_pins": {},
     "w_pin": "PIN",
@@ -339,6 +323,25 @@
             "label": {}
         }
     },
+
+    "@_custom_icons": {},
+    "l_custom_icons": "Custom icons",
+    "p_custom_icons_description": "Icon packs can make your accounts more easily distinguishable with familiar logos and colors.",
+    "l_replace_icon_pack": "Replace icon pack",
+    "l_loading_icon_pack": "Loading icon pack\u2026",
+    "l_load_icon_pack": "Load icon pack",
+    "l_remove_icon_pack": "Remove icon pack",
+    "l_icon_pack_removed": "Icon pack removed",
+    "l_remove_icon_pack_failed": "Error removing icon pack",
+    "l_choose_icon_pack": "Choose icon pack",
+    "l_icon_pack_imported": "Icon pack imported",
+    "l_import_icon_pack_failed": "Error importing icon pack: {message}",
+    "@l_import_icon_pack_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_invalid_icon_pack": "Invalid icon pack",
 
     "@_android_settings": {},
     "l_nfc_options": "NFC options",
