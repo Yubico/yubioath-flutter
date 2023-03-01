@@ -49,9 +49,17 @@ final l10nProvider = Provider<AppLocalizations>(
   (ref) => ref.watch(_l10nProvider),
 );
 
+AppLocalizations _getL10n(Locale locale) {
+  try {
+    return lookupAppLocalizations(locale);
+  } catch (_) {
+    return lookupAppLocalizations(const Locale('en'));
+  }
+}
+
 class _L10nNotifier extends StateNotifier<AppLocalizations>
     with WidgetsBindingObserver {
-  _L10nNotifier() : super(lookupAppLocalizations(window.locale)) {
+  _L10nNotifier() : super(_getL10n(window.locale)) {
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -64,7 +72,7 @@ class _L10nNotifier extends StateNotifier<AppLocalizations>
   @override
   @protected
   void didChangeLocales(List<Locale>? locales) {
-    state = lookupAppLocalizations(window.locale);
+    state = _getL10n(window.locale);
   }
 }
 
