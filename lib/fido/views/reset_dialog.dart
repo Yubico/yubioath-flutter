@@ -94,7 +94,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                     }
                     showMessage(
                       context,
-                      '${l10n.l_reset_failed}: $errorMessage',
+                      l10n.l_reset_failed(errorMessage),
                       duration: const Duration(seconds: 4),
                     );
                   });

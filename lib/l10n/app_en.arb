@@ -45,7 +45,12 @@
     "l_require_touch": "Require touch",
     "q_have_account_info": "Have account info?",
     "l_run_diagnostics": "Run diagnostics",
-    "l_log_level": "Log level",
+    "l_log_level": "Log level: {level}",
+    "@l_log_level": {
+        "placeholders": {
+            "level": {}
+        }
+    },
     "l_character_count": "Character count",
     "l_learn_more": "Learn\u00a0more",
 
@@ -147,7 +152,12 @@
         }
     },
     "l_pin_set": "PIN set",
-    "l_set_pin_failed": "Failed to set PIN",
+    "l_set_pin_failed": "Failed to set PIN: {message}",
+    "@l_set_pin_failed" : {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "l_wrong_pin_attempts_remaining": "Wrong PIN. {retries} attempt(s) remaining.",
     "@l_wrong_pin_attempts_remaining" : {
         "placeholders": {
@@ -193,12 +203,22 @@
     "p_enter_new_password": "Enter your new password. A password may contain letters, numbers and special characters.",
 
     "@_oath_accounts": {},
-    "w_account": "Account",
+    "l_account": "Account: {label}",
+    "@l_account" : {
+        "placeholders": {
+            "label": {}
+        }
+    },
     "w_accounts": "Accounts",
     "l_no_accounts": "No accounts",
     "l_add_account": "Add account",
     "l_account_added": "Account added",
-    "l_account_add_failed": "Failed adding account",
+    "l_account_add_failed": "Failed adding account: {message}",
+    "@l_account_add_failed" : {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "l_account_name_required": "Your account must have a name",
     "l_name_already_exists": "This name already exists for the Issuer",
     "l_invalid_character_issuer": "Invalid character: ':' is not allowed in issuer",
@@ -238,7 +258,12 @@
     "l_issuer_optional": "Issuer (optional)",
 
     "@_fido_credentials": {},
-    "w_credential": "Credential",
+    "l_credential": "Credential: {label}",
+    "@l_credential" : {
+        "placeholders": {
+            "label": {}
+        }
+    },
     "w_credentials": "Credentials",
     "l_ready_to_use": "Ready to use",
     "l_register_sk_on_websites": "Register as a Security Key on websites",
@@ -248,11 +273,21 @@
     "p_warning_delete_credential": "This will delete the credential from your YubiKey.",
 
     "@_fingerprints": {},
-    "w_fingerprint": "Fingerprint",
+    "l_fingerprint": "Fingerprint: {label}",
+    "@l_fingerprint" : {
+        "placeholders": {
+            "label": {}
+        }
+    },
     "w_fingerprints": "Fingerprints",
     "l_fingerprint_captured": "Fingerprint captured successfully!",
     "l_fingerprint_added": "Fingerprint added",
-    "l_setting_name_failed": "Error setting name",
+    "l_setting_name_failed": "Error setting name: {message}",
+    "@l_setting_name_failed" : {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "l_add_fingerprint": "Add fingerprint",
     "l_fp_step_1_capture": "Step 1/2: Capture fingerprint",
     "l_fp_step_2_name": "Step 2/2: Name fingerprint",
@@ -263,7 +298,12 @@
     "l_set_pin_fingerprints": "Set a PIN to register fingerprints",
     "l_no_fps_added": "No fingerprints have been added",
     "l_fingerprint_renamed": "Fingerprint renamed",
-    "l_rename_fp_failed": "Error renaming",
+    "l_rename_fp_failed": "Error renaming: {message}",
+    "@l_rename_fp_failed" : {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "l_rename_fp": "Rename fingerprint",
     "l_add_one_or_more_fps": "Add one or more (up to five) fingerprints",
     "l_fingerprints_used": "{used}/5 fingerprints registered",
@@ -289,7 +329,12 @@
     "l_qr_scanned": "Scanned QR code",
     "l_invalid_qr": "Invalid QR code",
     "l_qr_not_found": "No QR code found",
-    "l_qr_not_read": "Failed reading QR code",
+    "l_qr_not_read": "Failed reading QR code: {message}",
+    "@l_qr_not_read" : {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "l_point_camera_scan": "Point your camera at a QR code to scan it",
     "q_want_to_scan": "Would like to scan?",
     "q_no_qr": "No QR code?",
@@ -304,7 +349,12 @@
     "l_reset_fido": "Reset FIDO",
     "l_fido_app_reset": "FIDO application reset",
     "l_press_reset_to_begin": "Press reset to begin\u2026",
-    "l_reset_failed": "Error performing reset",
+    "l_reset_failed": "Error performing reset: {message}",
+    "@l_reset_failed" : {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "p_warning_factory_reset": "Warning! This will irrevocably delete all OATH TOTP/HOTP accounts from your YubiKey.",
     "p_warning_disable_credentials": "Your OATH credentials, as well as any password set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.",
     "p_warning_deletes_accounts": "Warning! This will irrevocably delete all U2F and FIDO2 accounts from your YubiKey.",

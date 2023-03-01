@@ -69,7 +69,7 @@ class DeleteAccountDialog extends ConsumerWidget {
               l10n.p_warning_disable_credential,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            Text('${l10n.w_account} ${getTextName(credential)}'),
+            Text(l10n.l_account(getTextName(credential))),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

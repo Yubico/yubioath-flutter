@@ -45,7 +45,7 @@ class DeleteCredentialDialog extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.p_warning_delete_credential),
-            Text('${l10n.w_credential}: $label'),
+            Text(l10n.l_credential(label)),
           ]
               .map((e) => Padding(
                     child: e,

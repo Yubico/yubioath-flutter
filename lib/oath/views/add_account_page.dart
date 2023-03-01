@@ -146,7 +146,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       if (e is! CancellationException) {
         showMessage(
           context,
-          '${l10n.l_qr_not_read}: $errorMessage',
+          l10n.l_qr_not_read(errorMessage),
           duration: const Duration(seconds: 4),
         );
       }
@@ -204,7 +204,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       }
       showMessage(
         context,
-        '${l10n.l_account_add_failed}: $errorMessage',
+        l10n.l_account_add_failed(errorMessage),
         duration: const Duration(seconds: 4),
       );
     }

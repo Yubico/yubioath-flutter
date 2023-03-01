@@ -183,7 +183,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       }
       showMessage(
         context,
-        '${l10n.l_set_pin_failed}: $errorMessage',
+        l10n.l_set_pin_failed(errorMessage),
         duration: const Duration(seconds: 4),
       );
     }

@@ -87,7 +87,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
       }
       showMessage(
         context,
-        '${l10n.l_account_add_failed}: $errorMessage',
+        l10n.l_account_add_failed(errorMessage),
         duration: const Duration(seconds: 4),
       );
     }

@@ -216,8 +216,8 @@ class LoggingPanel extends ConsumerWidget {
           value: logLevel,
           items: Levels.LEVELS,
           selected: logLevel != Level.INFO,
-          labelBuilder: (value) => Text(
-              '${l10n.l_log_level}: ${value.name[0]}${value.name.substring(1).toLowerCase()}'),
+          labelBuilder: (value) => Text(l10n.l_log_level(
+              value.name[0] + value.name.substring(1).toLowerCase())),
           itemBuilder: (value) =>
               Text('${value.name[0]}${value.name.substring(1).toLowerCase()}'),
           onChanged: (level) {

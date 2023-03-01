@@ -65,7 +65,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
       }
       showMessage(
         context,
-        '${l10n.l_rename_fp_failed}: $errorMessage',
+        l10n.l_rename_fp_failed(errorMessage),
         duration: const Duration(seconds: 4),
       );
     }

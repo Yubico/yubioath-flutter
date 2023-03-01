@@ -157,7 +157,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
       }
       showMessage(
         context,
-        '${l10n.l_setting_name_failed}: $errorMessage',
+        l10n.l_setting_name_failed(errorMessage),
         duration: const Duration(seconds: 4),
       );
     }
