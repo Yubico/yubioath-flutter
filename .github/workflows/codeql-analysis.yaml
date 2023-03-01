@@ -52,7 +52,7 @@ jobs:
         with:
           path: 'app'
 
-       - name: Run flutter tests
+      - name: Run flutter tests
         run: |
           flutter test
           flutter analyze
