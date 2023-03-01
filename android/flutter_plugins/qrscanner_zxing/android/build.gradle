@@ -2,7 +2,7 @@ group 'com.yubico.authenticator.flutter_plugins.qrscanner_zxing'
 version '1.0'
 
 buildscript {
-    ext.kotlin_version = '1.8.0'
+    ext.kotlin_version = '1.8.10'
     repositories {
         google()
         mavenCentral()
@@ -54,7 +54,6 @@ dependencies {
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-camera2:${camerax_version}"
 
-    def zxing_version = "3.3.0"
-    implementation "com.google.zxing:core:${zxing_version}"
-    implementation "com.google.zxing:android-core:${zxing_version}"
+    implementation 'com.google.zxing:core:3.5.1'
+    implementation 'com.google.zxing:android-core:3.3.0'
 }
