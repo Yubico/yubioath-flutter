@@ -101,7 +101,6 @@
     "l_remove_yk_from_reader": "Remove your YubiKey from the NFC reader",
     "l_try_reinsert_yk": "Try to remove and reinsert your YubiKey.",
     "l_touch_required": "Touch Required",
-    "l_touch_button_now": "Touch your YubiKey now",
     "l_touch_button_now": "Touch the button on your YubiKey now",
     "l_keep_touching_yk": "Keep touching your YubiKey repeatedly\u2026",
 
