@@ -1,6 +1,19 @@
 {
     "@@locale": "en",
 
+    "@_readme": {
+        "notes": [
+            "All strings start with a Captial letter.",
+            "Group strings by category, but don't needlessly tie them to a section of the app if they can be re-used between several."
+        ],
+        "prefixes": {
+            "w_": "A single word",
+            "l_": "A single line. Should not be more than one sentence, and not end with a period.",
+            "p_": "One or more full sentences, with proper punctuation.",
+            "q_": "A question, ending in question mark."
+        }
+    },
+
     "app_name": "Yubico Authenticator",
 
     "w_save": "Save",
