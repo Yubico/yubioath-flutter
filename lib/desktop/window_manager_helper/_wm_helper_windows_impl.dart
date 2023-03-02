@@ -39,6 +39,17 @@ class WindowManagerHelperWindows {
     return await _getAllDisplays() != allDisplays;
   }
 
+  static bool displayContainsBounds(Display d, Rect rect) {
+    final displayRect = Rect.fromLTWH(
+        d.visiblePosition?.dx ?? 0.0,
+        d.visiblePosition?.dy ?? 0.0,
+        d.visibleSize?.width ?? 0.0,
+        d.visibleSize?.height ?? 0.0);
+
+    return displayRect.contains(rect.topLeft) ||
+        displayRect.contains(rect.topRight);
+  }
+
   static Future<void> setBounds(SharedPreferences prefs, Rect bounds) async {
     await windowManager.setMinimumSize(WindowDefaults.minSize);
 
@@ -46,15 +57,18 @@ class WindowManagerHelperWindows {
     final primaryScaleFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
     final savedScaleFactor = prefs.getDouble(_keyPrimaryScaleFactor) ?? 1.0;
 
+    final savedBounds = Rect.fromLTWH(
+      bounds.left,
+      bounds.top,
+      bounds.width / savedScaleFactor * primaryScaleFactor,
+      bounds.height / savedScaleFactor * primaryScaleFactor,
+    );
+
     final configChanged = await _displayConfigurationChanged(prefs);
-    final windowRect = configChanged
-        ? WindowDefaults.bounds
-        : Rect.fromLTWH(
-            bounds.left,
-            bounds.top,
-            bounds.width / savedScaleFactor * primaryScaleFactor,
-            bounds.height / savedScaleFactor * primaryScaleFactor,
-          );
+    final windowRect =
+        !configChanged || displayContainsBounds(primaryDisplay, savedBounds)
+            ? savedBounds
+            : WindowDefaults.bounds;
 
     await windowManager.setBounds(windowRect);
   }
