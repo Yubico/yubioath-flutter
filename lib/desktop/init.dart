@@ -126,10 +126,6 @@ Future<Widget> initialize(List<String> argv) async {
   unawaited(windowManager
       .waitUntilReadyToShow(WindowOptions(
     minimumSize: WindowDefaults.minSize,
-    size: Size(
-      bounds.width,
-      bounds.height,
-    ),
     skipTaskbar: isHidden,
   ))
       .then((_) async {
