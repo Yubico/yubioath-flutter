@@ -279,6 +279,8 @@
         }
     },
     "s_issuer_optional": "Issuer (optional)",
+    "s_counter_based": "Counter based",
+    "s_time_based": "Time based",
 
     "@_fido_credentials": {},
     "l_credential": "Credential: {label}",

@@ -527,7 +527,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                           items: OathType.values,
                           value: _oathType,
                           selected: _oathType != defaultOathType,
-                          itemBuilder: (value) => Text(value.displayName),
+                          itemBuilder: (value) =>
+                              Text(value.getDisplayName(l10n)),
                           onChanged: _qrState != _QrScanState.success
                               ? (value) {
                                   setState(() {
