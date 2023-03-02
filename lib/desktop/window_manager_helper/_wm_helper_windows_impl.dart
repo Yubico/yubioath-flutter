@@ -5,16 +5,11 @@ import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'window_manager_helper_default.dart';
-import 'window_manager_helper_platform_interface.dart';
+import 'defaults.dart';
 
-class WindowsImpl {
+class WindowManagerHelperWindows {
   static const _keyPrimaryScaleFactor = 'DESKTOP_PRIMARY_SCALE_FACTOR';
   static const _keyAllDisplaysValue = 'DESKTOP_SCREEN_SETUP';
-
-  static Future<String?> getPlatformVersion() {
-    return WindowManagerHelperPlatform.instance.getPlatformVersion();
-  }
 
   static Future<String> _getAllDisplays() async {
     final allDisplays = await screenRetriever.getAllDisplays();
@@ -29,44 +24,43 @@ class WindowsImpl {
   }
 
   static Future<void> setBounds(SharedPreferences prefs, Rect bounds) async {
-    await WindowManagerHelperPlatform.instance.init();
-    await windowManager.setMinimumSize(const Size(minimumWidth, 0));
+    await windowManager.setMinimumSize(WindowDefaults.minSize);
 
     final primaryDisplay = await screenRetriever.getPrimaryDisplay();
-    final double primaryScaleFactor =
-        primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
-
-    final savedPrimaryScaleFactor =
-        prefs.getDouble(_keyPrimaryScaleFactor) ?? 1.0;
+    final primaryScaleFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
+    final savedScaleFactor = prefs.getDouble(_keyPrimaryScaleFactor) ?? 1.0;
 
     final configChanged = await _displayConfigurationChanged(prefs);
-    final windowRect = (configChanged)
-        ? defaultWindowBounds
+    final windowRect = configChanged
+        ? WindowDefaults.bounds
         : Rect.fromLTWH(
             bounds.left,
             bounds.top,
-            bounds.width / savedPrimaryScaleFactor * primaryScaleFactor,
-            bounds.height / savedPrimaryScaleFactor * primaryScaleFactor,
+            bounds.width / savedScaleFactor * primaryScaleFactor,
+            bounds.height / savedScaleFactor * primaryScaleFactor,
           );
 
-    await WindowManagerHelperPlatform.instance.setWindowBounds(windowRect);
+    await windowManager.setBounds(windowRect);
   }
 
   static Future<Rect> getBounds(SharedPreferences prefs) async {
-    final windowRect =
-        await WindowManagerHelperPlatform.instance.getWindowBounds();
     final primaryDisplay = await screenRetriever.getPrimaryDisplay();
+    final primaryScaleFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
+    final windowPixelRatio = window.devicePixelRatio;
 
-    final double pdFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
-    final double pWidth = windowRect.width * pdFactor / window.devicePixelRatio;
-    final double pHeight =
-        windowRect.height * pdFactor / window.devicePixelRatio;
+    final rect = await windowManager.getBounds();
 
-    await prefs.setDouble(_keyPrimaryScaleFactor, pdFactor);
+    final windowRect = Rect.fromLTWH(
+        rect.left / primaryScaleFactor * windowPixelRatio,
+        rect.top / primaryScaleFactor * windowPixelRatio,
+        rect.width,
+        rect.height);
+
+    await prefs.setDouble(_keyPrimaryScaleFactor, primaryScaleFactor);
 
     final allDisplaysValue = await _getAllDisplays();
     await prefs.setString(_keyAllDisplaysValue, allDisplaysValue);
 
-    return Rect.fromLTWH(windowRect.left, windowRect.top, pWidth, pHeight);
+    return windowRect;
   }
 }

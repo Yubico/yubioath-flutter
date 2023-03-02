@@ -29,29 +29,29 @@ import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'package:window_manager_helper/window_manager_helper.dart';
-
 import '../app/app.dart';
 import '../app/logging.dart';
 import '../app/message.dart';
+import '../app/models.dart';
+import '../app/state.dart';
 import '../app/views/app_failure_page.dart';
 import '../app/views/main_page.dart';
 import '../app/views/message_page.dart';
 import '../core/state.dart';
 import '../fido/state.dart';
-import '../oath/state.dart';
-import '../app/models.dart';
-import '../app/state.dart';
 import '../management/state.dart';
+import '../oath/state.dart';
 import '../version.dart';
+import 'devices.dart';
 import 'fido/state.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
-import 'rpc.dart';
-import 'devices.dart';
 import 'qr_scanner.dart';
+import 'rpc.dart';
 import 'state.dart';
 import 'systray.dart';
+import 'window_manager_helper/defaults.dart';
+import 'window_manager_helper/window_manager_helper.dart';
 
 final _log = Logger('desktop.init');
 
@@ -71,6 +71,7 @@ void _saveWindowBounds(WindowManagerHelper helper) async {
 
 class _ScreenRetrieverListener extends ScreenListener {
   final WindowManagerHelper _helper;
+
   _ScreenRetrieverListener(this._helper);
 
   @override
@@ -82,6 +83,7 @@ class _ScreenRetrieverListener extends ScreenListener {
 
 class _WindowEventListener extends WindowListener {
   final WindowManagerHelper _helper;
+
   _WindowEventListener(this._helper);
 
   @override
@@ -113,17 +115,17 @@ Future<Widget> initialize(List<String> argv) async {
   final isHidden = prefs.getBool(windowHidden) ?? false;
 
   final bounds = Rect.fromLTWH(
-    prefs.getDouble(_keyLeft) ?? 10.0,
-    prefs.getDouble(_keyTop) ?? 10.0,
-    prefs.getDouble(_keyWidth) ?? 400,
-    prefs.getDouble(_keyHeight) ?? 720,
+    prefs.getDouble(_keyLeft) ?? WindowDefaults.bounds.left,
+    prefs.getDouble(_keyTop) ?? WindowDefaults.bounds.top,
+    prefs.getDouble(_keyWidth) ?? WindowDefaults.bounds.width,
+    prefs.getDouble(_keyHeight) ?? WindowDefaults.bounds.height,
   );
 
   _log.info('Saved bounds: $bounds');
 
   unawaited(windowManager
       .waitUntilReadyToShow(WindowOptions(
-    minimumSize: const Size(270, 0),
+    minimumSize: WindowDefaults.minSize,
     size: Size(
       bounds.width,
       bounds.height,
@@ -131,8 +133,7 @@ Future<Widget> initialize(List<String> argv) async {
     skipTaskbar: isHidden,
   ))
       .then((_) async {
-
-      await windowManagerHelper.setBounds(bounds);
+    await windowManagerHelper.setBounds(bounds);
 
     if (isHidden) {
       await windowManager.setSkipTaskbar(true);

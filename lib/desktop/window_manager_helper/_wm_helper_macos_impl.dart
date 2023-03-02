@@ -3,13 +3,13 @@ import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'window_manager_helper_default.dart';
+import 'defaults.dart';
 
-class MacOsImpl {
+class WindowManagerHelperMacOs {
   static const _keyPosDisplay = 'DESKTOP_WINDOW_POS_DISPLAY';
 
   static Future<void> setBounds(SharedPreferences prefs, Rect bounds) async {
-    await windowManager.setMinimumSize(const Size(minimumWidth, 0));
+    await windowManager.setMinimumSize(WindowDefaults.minSize);
 
     final width = bounds.width;
     final height = bounds.height;
@@ -68,6 +68,6 @@ class MacOsImpl {
       }
     }
 
-    return defaultWindowBounds; // default
+    return WindowDefaults.bounds;
   }
 }

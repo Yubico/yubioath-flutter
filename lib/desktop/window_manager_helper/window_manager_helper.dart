@@ -4,8 +4,8 @@ import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'window_manager_helper_windows.dart';
-import 'window_manager_helper_macos.dart';
+import '_wm_helper_windows_impl.dart';
+import '_wm_helper_macos_impl.dart';
 
 class WindowManagerHelper {
   final SharedPreferences sharedPreferences;
@@ -16,20 +16,11 @@ class WindowManagerHelper {
 
   WindowManagerHelper._(this.sharedPreferences);
 
-  Future<String?> getPlatformVersion() {
-    if (Platform.isWindows) {
-      return WindowsImpl.getPlatformVersion();
-    } else {
-      throw UnimplementedError(
-          'This platform is not supported or expected to call this method');
-    }
-  }
-
   Future<Rect> getBounds() async {
     if (Platform.isMacOS) {
-      return await MacOsImpl.getBounds(sharedPreferences);
+      return await WindowManagerHelperMacOs.getBounds(sharedPreferences);
     } else if (Platform.isWindows) {
-      return await WindowsImpl.getBounds(sharedPreferences);
+      return await WindowManagerHelperWindows.getBounds(sharedPreferences);
     } else {
       final size = await windowManager.getSize();
       return Rect.fromLTWH(10, 10, size.width, size.height);
@@ -38,9 +29,9 @@ class WindowManagerHelper {
 
   Future<void> setBounds(Rect r) async {
     if (Platform.isMacOS) {
-      await MacOsImpl.setBounds(sharedPreferences, r);
+      await WindowManagerHelperMacOs.setBounds(sharedPreferences, r);
     } else if (Platform.isWindows) {
-      await WindowsImpl.setBounds(sharedPreferences, r);
+      await WindowManagerHelperWindows.setBounds(sharedPreferences, r);
     } else {
       await windowManager.setSize(r.size);
     }

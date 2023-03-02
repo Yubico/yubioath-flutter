@@ -952,13 +952,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.1"
-  window_manager_helper:
-    dependency: "direct main"
-    description:
-      path: "plugins/window_manager_helper"
-      relative: true
-    source: path
-    version: "0.0.1"
   xdg_directories:
     dependency: transitive
     description:
@@ -984,5 +977,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.19.2 <3.0.0"
+  dart: ">=2.19.0 <3.0.0"
   flutter: ">=3.5.0-0"
