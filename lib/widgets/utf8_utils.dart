@@ -38,7 +38,7 @@ InputCounterWidgetBuilder buildByteCounterFor(String currentValue) =>
       return Text(
         maxLength != null ? '${byteLength(currentValue)}/$maxLength' : '',
         style: style,
-        semanticsLabel: AppLocalizations.of(context)!.l_character_count,
+        semanticsLabel: AppLocalizations.of(context)!.s_character_count,
       );
     };
 

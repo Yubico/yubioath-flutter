@@ -62,9 +62,9 @@ enum Application {
   String getDisplayName(AppLocalizations l10n) {
     switch (this) {
       case Application.oath:
-        return l10n.w_authenticator;
+        return l10n.s_authenticator;
       case Application.fido:
-        return l10n.w_webauthn;
+        return l10n.s_webauthn;
       default:
         return name.substring(0, 1).toUpperCase() + name.substring(1);
     }

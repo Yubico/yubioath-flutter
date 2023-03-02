@@ -129,7 +129,7 @@ class AppPage extends StatelessWidget {
                 },
                 icon: const Icon(Icons.tune),
                 iconSize: 24,
-                tooltip: AppLocalizations.of(context)!.l_configure_yk,
+                tooltip: AppLocalizations.of(context)!.s_configure_yk,
                 padding: const EdgeInsets.all(12),
               ),
             ),

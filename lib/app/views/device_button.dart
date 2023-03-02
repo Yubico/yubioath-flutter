@@ -45,7 +45,7 @@ class DeviceButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
-      tooltip: AppLocalizations.of(context)!.l_select_yk,
+      tooltip: AppLocalizations.of(context)!.s_select_yk,
       icon: _CircledDeviceAvatar(radius),
       onPressed: () async {
         await showBlurDialog(

@@ -73,12 +73,12 @@ class AccountHelper {
             ),
             if (manual)
               MenuAction(
-                text: l10n.w_calculate,
+                text: l10n.s_calculate,
                 icon: const Icon(Icons.refresh),
                 intent: ready ? const CalculateIntent() : null,
               ),
             MenuAction(
-              text: pinned ? l10n.l_unpin_account : l10n.l_pin_account,
+              text: pinned ? l10n.s_unpin_account : l10n.s_pin_account,
               icon: pinned
                   ? pushPinStrokeIcon
                   : const Icon(Icons.push_pin_outlined),
@@ -87,11 +87,11 @@ class AccountHelper {
             if (data.info.version.isAtLeast(5, 3))
               MenuAction(
                 icon: const Icon(Icons.edit_outlined),
-                text: l10n.l_rename_account,
+                text: l10n.s_rename_account,
                 intent: const EditIntent(),
               ),
             MenuAction(
-              text: l10n.l_delete_account,
+              text: l10n.s_delete_account,
               icon: const Icon(Icons.delete_outline),
               intent: const DeleteIntent(),
             ),

@@ -32,7 +32,7 @@ class ResetDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text(l10n.l_factory_reset),
+      title: Text(l10n.s_factory_reset),
       actions: [
         TextButton(
           onPressed: () async {
@@ -42,7 +42,7 @@ class ResetDialog extends ConsumerWidget {
               showMessage(context, l10n.l_oath_application_reset);
             });
           },
-          child: Text(l10n.w_reset),
+          child: Text(l10n.s_reset),
         ),
       ],
       child: Padding(

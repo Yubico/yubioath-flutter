@@ -75,7 +75,7 @@ class QRScannerPermissionsUI extends StatelessWidget {
                         Navigator.of(context).pop('');
                       },
                       child: Text(
-                        l10n.l_enter_manually,
+                        l10n.s_enter_manually,
                         style: const TextStyle(color: Colors.white),
                       )),
                 ],
@@ -92,7 +92,7 @@ class QRScannerPermissionsUI extends StatelessWidget {
                         onPermissionRequest();
                       },
                       child: Text(
-                        l10n.l_review_permissions,
+                        l10n.s_review_permissions,
                         style: const TextStyle(color: Colors.white),
                       )),
                 ],

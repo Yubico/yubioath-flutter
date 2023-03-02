@@ -79,8 +79,8 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 obscureText: _isObscure,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  labelText: l10n.w_password,
-                  errorText: _passwordIsWrong ? l10n.l_wrong_password : null,
+                  labelText: l10n.s_password,
+                  errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
                   helperText: '', // Prevents resizing when errorText shown
                   prefixIcon: const Icon(Icons.password_outlined),
                   suffixIcon: IconButton(
@@ -111,7 +111,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 minLeadingWidth: 0,
               )
             : CheckboxListTile(
-                title: Text(l10n.l_remember_password),
+                title: Text(l10n.s_remember_password),
                 dense: true,
                 controlAffinity: ListTileControlAffinity.leading,
                 value: _remember,
@@ -127,7 +127,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
             alignment: Alignment.centerRight,
             child: ElevatedButton.icon(
               key: keys.unlockButton,
-              label: Text(l10n.w_unlock),
+              label: Text(l10n.s_unlock),
               icon: const Icon(Icons.lock_open),
               onPressed: _passwordController.text.isNotEmpty ? _submit : null,
             ),

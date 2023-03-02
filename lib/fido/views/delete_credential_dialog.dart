@@ -38,7 +38,7 @@ class DeleteCredentialDialog extends ConsumerWidget {
     final label = credential.userName;
 
     return ResponsiveDialog(
-      title: Text(l10n.l_delete_credential),
+      title: Text(l10n.s_delete_credential),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
@@ -63,11 +63,11 @@ class DeleteCredentialDialog extends ConsumerWidget {
             await ref.read(withContextProvider)(
               (context) async {
                 Navigator.of(context).pop(true);
-                showMessage(context, l10n.l_credential_deleted);
+                showMessage(context, l10n.s_credential_deleted);
               },
             );
           },
-          child: Text(l10n.w_delete),
+          child: Text(l10n.s_delete),
         ),
       ],
     );

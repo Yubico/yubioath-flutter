@@ -32,11 +32,11 @@ Widget fidoBuildActions(
   return SimpleDialog(
     children: [
       if (state.bioEnroll != null) ...[
-        ListTitle(l10n.w_setup,
+        ListTitle(l10n.s_setup,
             textStyle: Theme.of(context).textTheme.bodyLarge),
         ListTile(
           leading: const CircleAvatar(child: Icon(Icons.fingerprint_outlined)),
-          title: Text(l10n.l_add_fingerprint),
+          title: Text(l10n.s_add_fingerprint),
           subtitle: state.unlocked
               ? Text(l10n.l_fingerprints_used(fingerprints))
               : Text(state.hasPin
@@ -54,13 +54,13 @@ Widget fidoBuildActions(
               : null,
         ),
       ],
-      ListTitle(l10n.w_manage,
+      ListTitle(l10n.s_manage,
           textStyle: Theme.of(context).textTheme.bodyLarge),
       ListTile(
           leading: const CircleAvatar(child: Icon(Icons.pin_outlined)),
-          title: Text(state.hasPin ? l10n.l_change_pin : l10n.l_set_pin),
+          title: Text(state.hasPin ? l10n.s_change_pin : l10n.s_set_pin),
           subtitle: Text(state.hasPin
-              ? l10n.l_fido_pin_protection
+              ? l10n.s_fido_pin_protection
               : l10n.l_fido_pin_protection_optional),
           onTap: () {
             Navigator.of(context).pop();
@@ -75,7 +75,7 @@ Widget fidoBuildActions(
           backgroundColor: theme.error,
           child: const Icon(Icons.delete_outline),
         ),
-        title: Text(l10n.l_reset_fido),
+        title: Text(l10n.s_reset_fido),
         subtitle: Text(l10n.l_factory_reset_this_app),
         onTap: () {
           Navigator.of(context).pop();

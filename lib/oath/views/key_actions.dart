@@ -45,9 +45,9 @@ Widget oathBuildActions(
   final theme = Theme.of(context).colorScheme;
   return SimpleDialog(
     children: [
-      ListTitle(l10n.w_setup, textStyle: Theme.of(context).textTheme.bodyLarge),
+      ListTitle(l10n.s_setup, textStyle: Theme.of(context).textTheme.bodyLarge),
       ListTile(
-        title: Text(l10n.l_add_account),
+        title: Text(l10n.s_add_account),
         key: keys.addAccountAction,
         leading:
             const CircleAvatar(child: Icon(Icons.person_add_alt_1_outlined)),
@@ -87,11 +87,11 @@ Widget oathBuildActions(
               }
             : null,
       ),
-      ListTitle(l10n.w_manage,
+      ListTitle(l10n.s_manage,
           textStyle: Theme.of(context).textTheme.bodyLarge),
       ListTile(
           key: keys.customIconsAction,
-          title: Text(l10n.l_custom_icons),
+          title: Text(l10n.s_custom_icons),
           subtitle: Text(l10n.l_set_icons_for_accounts),
           leading: const CircleAvatar(
             child: Icon(Icons.image_outlined),
@@ -108,7 +108,7 @@ Widget oathBuildActions(
       ListTile(
           key: keys.setOrManagePasswordAction,
           title: Text(
-              oathState.hasKey ? l10n.l_manage_password : l10n.l_set_password),
+              oathState.hasKey ? l10n.s_manage_password : l10n.s_set_password),
           subtitle: Text(l10n.l_optional_password_protection),
           leading: const CircleAvatar(child: Icon(Icons.password_outlined)),
           onTap: () {
@@ -120,7 +120,7 @@ Widget oathBuildActions(
           }),
       ListTile(
           key: keys.resetAction,
-          title: Text(l10n.l_reset_oath),
+          title: Text(l10n.s_reset_oath),
           subtitle: Text(l10n.l_factory_reset_this_app),
           leading: CircleAvatar(
             foregroundColor: theme.onError,

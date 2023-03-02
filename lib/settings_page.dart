@@ -39,7 +39,7 @@ class SettingsPage extends ConsumerWidget {
     final theme = Theme.of(context);
     final enableTranslations = ref.watch(communityTranslationsProvider);
     return ResponsiveDialog(
-      title: Text(l10n.w_settings),
+      title: Text(l10n.s_settings),
       child: Theme(
         // Make the headers use the primary color to pop a bit.
         // Once M3 is implemented this will probably not be needed.
@@ -52,9 +52,9 @@ class SettingsPage extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListTitle(l10n.w_appearance),
+            ListTitle(l10n.s_appearance),
             RadioListTile<ThemeMode>(
-              title: Text(l10n.l_system_default),
+              title: Text(l10n.s_system_default),
               value: ThemeMode.system,
               groupValue: themeMode,
               onChanged: (mode) {
@@ -63,7 +63,7 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: Text(l10n.l_light_mode),
+              title: Text(l10n.s_light_mode),
               value: ThemeMode.light,
               groupValue: themeMode,
               onChanged: (mode) {
@@ -72,7 +72,7 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: Text(l10n.l_dark_mode),
+              title: Text(l10n.s_dark_mode),
               value: ThemeMode.dark,
               groupValue: themeMode,
               onChanged: (mode) {
@@ -84,7 +84,7 @@ class SettingsPage extends ConsumerWidget {
                 basicLocaleListResolution(window.locales, officialLocales) !=
                     basicLocaleListResolution(
                         window.locales, AppLocalizations.supportedLocales)) ...[
-              ListTitle(l10n.w_language),
+              ListTitle(l10n.s_language),
               SwitchListTile(
                   title: Text(l10n.l_enable_community_translations),
                   subtitle: Text(l10n.p_community_translations_desc),

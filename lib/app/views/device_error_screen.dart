@@ -44,7 +44,7 @@ class DeviceErrorScreen extends ConsumerWidget {
           message: l10n.p_elevated_permissions_required,
           actions: [
             ElevatedButton.icon(
-              label: Text(l10n.w_unlock),
+              label: Text(l10n.s_unlock),
               icon: const Icon(Icons.lock_open),
               onPressed: () async {
                 final closeMessage = showMessage(
@@ -55,7 +55,7 @@ class DeviceErrorScreen extends ConsumerWidget {
                     ref.invalidate(rpcProvider);
                   } else {
                     await ref.read(withContextProvider)((context) async =>
-                        showMessage(context, l10n.l_permission_denied));
+                        showMessage(context, l10n.s_permission_denied));
                   }
                 } finally {
                   closeMessage();
@@ -81,7 +81,7 @@ class DeviceErrorScreen extends ConsumerWidget {
         final String message;
         switch (error) {
           case 'unknown-device':
-            message = l10n.l_unknown_device;
+            message = l10n.s_unknown_device;
             break;
           default:
             message = l10n.l_place_on_nfc_reader;

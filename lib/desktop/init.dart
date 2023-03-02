@@ -285,7 +285,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
         actions: [
           ActionChip(
             avatar: const Icon(Icons.copy),
-            label: Text(l10n.l_copy_log),
+            label: Text(l10n.s_copy_log),
             onPressed: () async {
               _log.info('Copying log to clipboard ($version)...');
               final logs = await ref.read(logLevelProvider.notifier).getLogs();

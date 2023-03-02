@@ -63,7 +63,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text(l10n.l_factory_reset),
+      title: Text(l10n.s_factory_reset),
       onCancel: () {
         _subscription?.cancel();
       },
@@ -100,7 +100,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                   });
                 }
               : null,
-          child: Text(l10n.w_reset),
+          child: Text(l10n.s_reset),
         ),
       ],
       child: Padding(

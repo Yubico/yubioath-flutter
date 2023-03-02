@@ -146,7 +146,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
           .renameFingerprint(_fingerprint!, _label);
       if (!mounted) return;
       Navigator.of(context).pop(true);
-      showMessage(context, l10n.l_fingerprint_added);
+      showMessage(context, l10n.s_fingerprint_added);
     } catch (e) {
       final String errorMessage;
       // TODO: Make this cleaner than importing desktop specific RpcError.
@@ -169,7 +169,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     final progress = _samples == 0 ? 0.0 : _samples / (_samples + _remaining);
 
     return ResponsiveDialog(
-      title: Text(l10n.l_add_fingerprint),
+      title: Text(l10n.s_add_fingerprint),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
@@ -208,7 +208,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
               decoration: InputDecoration(
                 enabled: _fingerprint != null,
                 border: const OutlineInputBorder(),
-                labelText: l10n.w_name,
+                labelText: l10n.s_name,
                 prefixIcon: const Icon(Icons.fingerprint_outlined),
               ),
               onChanged: (value) {
@@ -234,7 +234,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
       actions: [
         TextButton(
           onPressed: _fingerprint != null && _label.isNotEmpty ? _submit : null,
-          child: Text(l10n.w_save),
+          child: Text(l10n.s_save),
         ),
       ],
     );

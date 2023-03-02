@@ -48,7 +48,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
     if (result) {
       if (!mounted) return;
       Navigator.of(context).pop();
-      showMessage(context, AppLocalizations.of(context)!.l_password_set);
+      showMessage(context, AppLocalizations.of(context)!.s_password_set);
     } else {
       setState(() {
         _currentIsWrong = true;
@@ -64,12 +64,12 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         (!widget.state.hasKey || _currentPassword.isNotEmpty);
 
     return ResponsiveDialog(
-      title: Text(l10n.l_manage_password),
+      title: Text(l10n.s_manage_password),
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
           key: keys.savePasswordButton,
-          child: Text(l10n.w_save),
+          child: Text(l10n.s_save),
         )
       ],
       child: Padding(
@@ -85,9 +85,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 key: keys.currentPasswordField,
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    labelText: l10n.l_current_password,
+                    labelText: l10n.s_current_password,
                     prefixIcon: const Icon(Icons.password_outlined),
-                    errorText: _currentIsWrong ? l10n.l_wrong_password : null,
+                    errorText: _currentIsWrong ? l10n.s_wrong_password : null,
                     errorMaxLines: 3),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
@@ -111,7 +111,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                             if (result) {
                               if (!mounted) return;
                               Navigator.of(context).pop();
-                              showMessage(context, l10n.l_password_removed);
+                              showMessage(context, l10n.s_password_removed);
                             } else {
                               setState(() {
                                 _currentIsWrong = true;
@@ -119,18 +119,18 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                             }
                           }
                         : null,
-                    child: Text(l10n.l_remove_password),
+                    child: Text(l10n.s_remove_password),
                   ),
                   if (widget.state.remembered)
                     OutlinedButton(
-                      child: Text(l10n.l_clear_saved_password),
+                      child: Text(l10n.s_clear_saved_password),
                       onPressed: () async {
                         await ref
                             .read(oathStateProvider(widget.path).notifier)
                             .forgetPassword();
                         if (!mounted) return;
                         Navigator.of(context).pop();
-                        showMessage(context, l10n.l_password_forgotten);
+                        showMessage(context, l10n.s_password_forgotten);
                       },
                     ),
                 ],
@@ -143,7 +143,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               obscureText: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: l10n.l_new_password,
+                labelText: l10n.s_new_password,
                 prefixIcon: const Icon(Icons.password_outlined),
                 enabled: !widget.state.hasKey || _currentPassword.isNotEmpty,
               ),
@@ -164,7 +164,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               obscureText: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: l10n.l_confirm_password,
+                labelText: l10n.s_confirm_password,
                 prefixIcon: const Icon(Icons.password_outlined),
                 enabled:
                     (!widget.state.hasKey || _currentPassword.isNotEmpty) &&

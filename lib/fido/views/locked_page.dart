@@ -38,15 +38,15 @@ class FidoLockedPage extends ConsumerWidget {
     if (!state.hasPin) {
       if (state.bioEnroll != null) {
         return MessagePage(
-          title: Text(l10n.w_webauthn),
+          title: Text(l10n.s_webauthn),
           graphic: noFingerprints,
-          header: l10n.l_no_fingerprints,
+          header: l10n.s_no_fingerprints,
           message: l10n.l_set_pin_fingerprints,
           keyActionsBuilder: _buildActions,
         );
       } else {
         return MessagePage(
-          title: Text(l10n.w_webauthn),
+          title: Text(l10n.s_webauthn),
           graphic: manageAccounts,
           header: state.credMgmt
               ? l10n.l_no_discoverable_accounts
@@ -59,7 +59,7 @@ class FidoLockedPage extends ConsumerWidget {
 
     if (!state.credMgmt && state.bioEnroll == null) {
       return MessagePage(
-        title: Text(l10n.w_webauthn),
+        title: Text(l10n.s_webauthn),
         graphic: manageAccounts,
         header: l10n.l_ready_to_use,
         message: l10n.l_register_sk_on_websites,
@@ -68,7 +68,7 @@ class FidoLockedPage extends ConsumerWidget {
     }
 
     return AppPage(
-      title: Text(l10n.w_webauthn),
+      title: Text(l10n.s_webauthn),
       keyActionsBuilder: _buildActions,
       child: Column(
         children: [
@@ -148,7 +148,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
               controller: _pinController,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: l10n.w_pin,
+                labelText: l10n.s_pin,
                 helperText: '', // Prevents dialog resizing
                 errorText: _pinIsWrong ? _getErrorText() : null,
                 errorMaxLines: 3,
@@ -187,7 +187,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
             minLeadingWidth: 0,
             trailing: ElevatedButton.icon(
               icon: const Icon(Icons.lock_open),
-              label: Text(l10n.w_unlock),
+              label: Text(l10n.s_unlock),
               onPressed:
                   _pinController.text.isNotEmpty && !_blocked ? _submit : null,
             ),

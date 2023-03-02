@@ -73,7 +73,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
 
       if (!mounted) return;
       Navigator.of(context).pop(renamed);
-      showMessage(context, l10n.l_account_renamed);
+      showMessage(context, l10n.s_account_renamed);
     } on CancellationException catch (_) {
       // ignored
     } catch (e) {
@@ -127,12 +127,12 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     final isValid = isUnique && isValidFormat;
 
     return ResponsiveDialog(
-      title: Text(l10n.l_rename_account),
+      title: Text(l10n.s_rename_account),
       actions: [
         TextButton(
           onPressed: didChange && isValid ? _submit : null,
           key: keys.saveButton,
-          child: Text(l10n.w_save),
+          child: Text(l10n.s_save),
         ),
       ],
       child: Padding(
@@ -151,7 +151,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               key: keys.issuerField,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: l10n.l_issuer_optional,
+                labelText: l10n.s_issuer_optional,
                 helperText: '', // Prevents dialog resizing when disabled
                 prefixIcon: const Icon(Icons.business_outlined),
               ),
@@ -170,7 +170,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               key: keys.nameField,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: l10n.l_account_name,
+                labelText: l10n.s_account_name,
                 helperText: '', // Prevents dialog resizing when disabled
                 errorText: !isValidFormat
                     ? l10n.l_account_name_required

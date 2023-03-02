@@ -271,7 +271,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
               return promptUserInteraction(
                 context,
                 icon: const Icon(Icons.touch_app),
-                title: l10n.l_touch_required,
+                title: l10n.s_touch_required,
                 description: l10n.l_touch_button_now,
                 headless: headless,
               );

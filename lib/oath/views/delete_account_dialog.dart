@@ -37,7 +37,7 @@ class DeleteAccountDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text(l10n.l_delete_account),
+      title: Text(l10n.s_delete_account),
       actions: [
         TextButton(
           key: keys.deleteButton,
@@ -49,14 +49,14 @@ class DeleteAccountDialog extends ConsumerWidget {
               await ref.read(withContextProvider)(
                 (context) async {
                   Navigator.of(context).pop(true);
-                  showMessage(context, l10n.l_account_deleted);
+                  showMessage(context, l10n.s_account_deleted);
                 },
               );
             } on CancellationException catch (_) {
               // ignored
             }
           },
-          child: Text(l10n.w_delete),
+          child: Text(l10n.s_delete),
         ),
       ],
       child: Padding(

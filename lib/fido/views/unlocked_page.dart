@@ -48,7 +48,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       }
       final creds = data.value;
       if (creds.isNotEmpty) {
-        children.add(ListTitle(l10n.w_credentials));
+        children.add(ListTitle(l10n.s_credentials));
         children.addAll(
           creds.map(
             (cred) => ListTile(
@@ -96,7 +96,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       final fingerprints = data.value;
       if (fingerprints.isNotEmpty) {
         nFingerprints = fingerprints.length;
-        children.add(ListTitle(l10n.w_fingerprints));
+        children.add(ListTitle(l10n.s_fingerprints));
         children.addAll(fingerprints.map((fp) => ListTile(
               leading: CircleAvatar(
                 foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -137,7 +137,7 @@ class FidoUnlockedPage extends ConsumerWidget {
 
     if (children.isNotEmpty) {
       return AppPage(
-        title: Text(l10n.w_webauthn),
+        title: Text(l10n.s_webauthn),
         keyActionsBuilder: (context) =>
             fidoBuildActions(context, node, state, nFingerprints),
         child: Column(
@@ -147,9 +147,9 @@ class FidoUnlockedPage extends ConsumerWidget {
 
     if (state.bioEnroll != null) {
       return MessagePage(
-        title: Text(l10n.w_webauthn),
+        title: Text(l10n.s_webauthn),
         graphic: noFingerprints,
-        header: l10n.l_no_fingerprints,
+        header: l10n.s_no_fingerprints,
         message: l10n.l_add_one_or_more_fps,
         keyActionsBuilder: (context) =>
             fidoBuildActions(context, node, state, 0),
@@ -157,7 +157,7 @@ class FidoUnlockedPage extends ConsumerWidget {
     }
 
     return MessagePage(
-      title: Text(l10n.w_webauthn),
+      title: Text(l10n.s_webauthn),
       graphic: manageAccounts,
       header: l10n.l_no_discoverable_accounts,
       message: l10n.l_register_sk_on_websites,
@@ -166,7 +166,7 @@ class FidoUnlockedPage extends ConsumerWidget {
   }
 
   Widget _buildLoadingPage(BuildContext context) => AppPage(
-        title: Text(AppLocalizations.of(context)!.w_webauthn),
+        title: Text(AppLocalizations.of(context)!.s_webauthn),
         centered: true,
         delayedContent: true,
         child: const CircularProgressIndicator(),

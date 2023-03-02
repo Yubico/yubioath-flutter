@@ -176,7 +176,7 @@ class _Systray extends TrayListener {
                         .read(clipboardProvider)
                         .setText(code.value, isSensitive: true);
                     final notification = LocalNotification(
-                      title: _l10n.l_code_copied,
+                      title: _l10n.s_code_copied,
                       body: _l10n.p_target_copied_clipboard(label),
                       silent: true,
                     );
@@ -190,12 +190,12 @@ class _Systray extends TrayListener {
           ),
           if (_credentials.isEmpty)
             MenuItem(
-              label: _l10n.l_no_pinned_accounts,
+              label: _l10n.s_no_pinned_accounts,
               disabled: true,
             ),
           MenuItem.separator(),
           MenuItem(
-            label: _isHidden ? _l10n.l_show_window : _l10n.l_hide_window,
+            label: _isHidden ? _l10n.s_show_window : _l10n.s_hide_window,
             onClick: (_) {
               _ref
                   .read(desktopWindowStateProvider.notifier)
@@ -204,7 +204,7 @@ class _Systray extends TrayListener {
           ),
           MenuItem.separator(),
           MenuItem(
-              label: _l10n.w_quit,
+              label: _l10n.s_quit,
               onClick: (_) {
                 _ref.read(withContextProvider)(
                   (context) async {

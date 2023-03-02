@@ -48,7 +48,7 @@ class AppFailurePage extends ConsumerWidget {
           case 'ccid':
             header = l10n.l_ccid_connection_failed;
             if (Platform.isMacOS) {
-              message = l10n.l_try_reinsert_yk;
+              message = l10n.p_try_reinsert_yk;
             } else if (Platform.isLinux) {
               message = l10n.p_pcscd_unavailable;
             } else {
@@ -63,7 +63,7 @@ class AppFailurePage extends ConsumerWidget {
               message = l10n.p_webauthn_elevated_permissions_required;
               actions = [
                 ElevatedButton.icon(
-                  label: Text(l10n.w_unlock),
+                  label: Text(l10n.s_unlock),
                   icon: const Icon(Icons.lock_open),
                   onPressed: () async {
                     final closeMessage = showMessage(
@@ -77,7 +77,7 @@ class AppFailurePage extends ConsumerWidget {
                           (context) async {
                             showMessage(
                               context,
-                              l10n.l_permission_denied,
+                              l10n.s_permission_denied,
                             );
                           },
                         );
@@ -92,7 +92,7 @@ class AppFailurePage extends ConsumerWidget {
             break;
           default:
             header = l10n.l_open_connection_failed;
-            message = l10n.l_try_reinsert_yk;
+            message = l10n.p_try_reinsert_yk;
         }
       }
     }

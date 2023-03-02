@@ -88,7 +88,7 @@ class MainPage extends ConsumerWidget {
           actions: [
             if (hasNfcSupport && !isNfcEnabled)
               ElevatedButton.icon(
-                  label: Text(l10n.l_enable_nfc),
+                  label: Text(l10n.s_enable_nfc),
                   icon: nfcIcon,
                   onPressed: () async {
                     await openNfcSettings();
@@ -96,7 +96,7 @@ class MainPage extends ConsumerWidget {
           ],
           actionButtonBuilder: (context) => IconButton(
             icon: const Icon(Icons.person_add_alt_1),
-            tooltip: l10n.l_add_account,
+            tooltip: l10n.s_add_account,
             onPressed: () async {
               CredentialData? otpauth;
               final scanner = ref.read(qrScannerProvider);
@@ -142,17 +142,17 @@ class MainPage extends ConsumerWidget {
               if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
                 return MessagePage(
-                  header: l10n.l_yk_not_recognized,
+                  header: l10n.s_yk_not_recognized,
                 );
               } else if (app.getAvailability(data) ==
                   Availability.unsupported) {
                 return MessagePage(
-                  header: l10n.l_app_not_supported,
+                  header: l10n.s_app_not_supported,
                   message: l10n.l_app_not_supported_on_yk(app.name),
                 );
               } else if (app.getAvailability(data) != Availability.enabled) {
                 return MessagePage(
-                  header: l10n.l_app_disabled,
+                  header: l10n.s_app_disabled,
                   message: l10n.l_app_disabled_desc(app.name),
                 );
               }
@@ -164,7 +164,7 @@ class MainPage extends ConsumerWidget {
                   return FidoScreen(data);
                 default:
                   return MessagePage(
-                    header: l10n.l_app_not_supported,
+                    header: l10n.s_app_not_supported,
                     message: l10n.l_app_not_supported_desc,
                   );
               }

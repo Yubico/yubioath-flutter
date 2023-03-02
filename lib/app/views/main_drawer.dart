@@ -142,7 +142,7 @@ class MainPageDrawer extends ConsumerWidget {
             NavigationDrawerDestination(
               key: managementAppDrawer,
               label: Text(
-                l10n.l_toggle_applications,
+                l10n.s_toggle_applications,
               ),
               icon: Icon(Application.management._icon),
               selectedIcon: Icon(Application.management._filledIcon),
@@ -152,11 +152,11 @@ class MainPageDrawer extends ConsumerWidget {
         ],
         // Non-YubiKey pages
         NavigationDrawerDestination(
-          label: Text(l10n.w_settings),
+          label: Text(l10n.s_settings),
           icon: const Icon(Icons.settings_outlined),
         ),
         NavigationDrawerDestination(
-          label: Text(l10n.l_help_and_about),
+          label: Text(l10n.s_help_and_about),
           icon: const Icon(Icons.help_outline),
         ),
       ],

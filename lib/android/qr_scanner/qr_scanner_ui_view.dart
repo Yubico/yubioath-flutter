@@ -73,7 +73,7 @@ class QRScannerUI extends StatelessWidget {
                 },
                 key: keys.manualEntryButton,
                 child: Text(
-                  l10n.l_enter_manually,
+                  l10n.s_enter_manually,
                   style: const TextStyle(color: Colors.white),
                 )),
           ],

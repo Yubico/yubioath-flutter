@@ -54,7 +54,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           .renameFingerprint(widget.fingerprint, _label);
       if (!mounted) return;
       Navigator.of(context).pop(renamed);
-      showMessage(context, l10n.l_fingerprint_renamed);
+      showMessage(context, l10n.s_fingerprint_renamed);
     } catch (e) {
       final String errorMessage;
       // TODO: Make this cleaner than importing desktop specific RpcError.
@@ -75,11 +75,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text(l10n.l_rename_fp),
+      title: Text(l10n.s_rename_fp),
       actions: [
         TextButton(
           onPressed: _label.isNotEmpty ? _submit : null,
-          child: Text(l10n.w_save),
+          child: Text(l10n.s_save),
         ),
       ],
       child: Padding(
@@ -96,7 +96,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
               buildCounter: buildByteCounterFor(_label),
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: l10n.w_label,
+                labelText: l10n.s_label,
                 prefixIcon: const Icon(Icons.fingerprint_outlined),
               ),
               onChanged: (value) {

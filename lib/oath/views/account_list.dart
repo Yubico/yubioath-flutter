@@ -34,7 +34,7 @@ class AccountList extends ConsumerWidget {
     final favorites = ref.watch(favoritesProvider);
     if (credentials.isEmpty) {
       return Center(
-        child: Text(l10n.l_no_accounts),
+        child: Text(l10n.s_no_accounts),
       );
     }
 
@@ -47,13 +47,13 @@ class AccountList extends ConsumerWidget {
       policy: WidgetOrderTraversalPolicy(),
       child: Column(
         children: [
-          if (pinnedCreds.isNotEmpty) ListTitle(l10n.w_pinned),
+          if (pinnedCreds.isNotEmpty) ListTitle(l10n.s_pinned),
           ...pinnedCreds.map(
             (entry) => AccountView(
               entry.credential,
             ),
           ),
-          if (creds.isNotEmpty) ListTitle(l10n.w_accounts),
+          if (creds.isNotEmpty) ListTitle(l10n.s_accounts),
           ...creds.map(
             (entry) => AccountView(
               entry.credential,

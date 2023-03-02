@@ -122,7 +122,7 @@ class _DevicePickerContent extends ConsumerWidget {
             title: Center(child: Text(l10n.l_no_yk_present)),
             subtitle: Center(
                 child: Text(
-                    Platform.isAndroid ? l10n.l_insert_or_tap_yk : l10n.w_usb)),
+                    Platform.isAndroid ? l10n.l_insert_or_tap_yk : l10n.s_usb)),
           ),
         ],
       );
@@ -136,7 +136,7 @@ class _DevicePickerContent extends ConsumerWidget {
             padding: EdgeInsets.symmetric(horizontal: 4),
             child: DeviceAvatar(child: Icon(Icons.usb)),
           ),
-          title: Text(l10n.w_usb),
+          title: Text(l10n.s_usb),
           subtitle: Text(l10n.l_no_yk_present),
           onTap: () {
             ref.read(currentDeviceProvider.notifier).setCurrentDevice(null);
@@ -168,7 +168,7 @@ class _DevicePickerContent extends ConsumerWidget {
                       ref.read(_hiddenDevicesProvider.notifier).showAll();
                     },
                     child: ListTile(
-                      title: Text(l10n.l_show_hidden_devices),
+                      title: Text(l10n.s_show_hidden_devices),
                       dense: true,
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -195,11 +195,11 @@ String _getDeviceInfoString(BuildContext context, DeviceInfo info) {
   final l10n = AppLocalizations.of(context)!;
   final serial = info.serial;
   return [
-    if (serial != null) l10n.l_sn_serial(serial),
+    if (serial != null) l10n.s_sn_serial(serial),
     if (info.version.isAtLeast(1))
-      l10n.l_fw_version(info.version)
+      l10n.s_fw_version(info.version)
     else
-      l10n.l_unknown_type,
+      l10n.s_unknown_type,
   ].join(' ');
 }
 
@@ -211,9 +211,9 @@ List<String> _getDeviceStrings(
         error: (error, _) {
           switch (error) {
             case 'device-inaccessible':
-              return [node.name, l10n.l_yk_inaccessible];
+              return [node.name, l10n.s_yk_inaccessible];
             case 'unknown-device':
-              return [l10n.l_unknown_device];
+              return [l10n.s_unknown_device];
           }
           return null;
         },
@@ -306,9 +306,9 @@ class _DeviceRow extends ConsumerWidget {
       subtitle: Text(
         node.when(
           usbYubiKey: (_, __, ___, info) => info == null
-              ? l10n.l_yk_inaccessible
+              ? l10n.s_yk_inaccessible
               : _getDeviceInfoString(context, info),
-          nfcReader: (_, __) => l10n.l_select_to_scan,
+          nfcReader: (_, __) => l10n.s_select_to_scan,
         ),
       ),
       onTap: () {
@@ -344,7 +344,7 @@ class _NfcDeviceRow extends ConsumerWidget {
                 ref.read(_hiddenDevicesProvider.notifier).showAll();
               },
               child: ListTile(
-                title: Text(l10n.l_show_hidden_devices),
+                title: Text(l10n.s_show_hidden_devices),
                 dense: true,
                 contentPadding: EdgeInsets.zero,
                 enabled: hidden.isNotEmpty,
@@ -355,7 +355,7 @@ class _NfcDeviceRow extends ConsumerWidget {
                 ref.read(_hiddenDevicesProvider.notifier).hideDevice(node.path);
               },
               child: ListTile(
-                title: Text(l10n.l_hide_device),
+                title: Text(l10n.s_hide_device),
                 dense: true,
                 contentPadding: EdgeInsets.zero,
               ),

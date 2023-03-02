@@ -57,11 +57,11 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final minPinLength = widget.state.minPinLength;
 
     return ResponsiveDialog(
-      title: Text(hasPin ? l10n.l_change_pin : l10n.l_set_pin),
+      title: Text(hasPin ? l10n.s_change_pin : l10n.s_set_pin),
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
-          child: Text(l10n.w_save),
+          child: Text(l10n.s_save),
         ),
       ],
       child: Padding(
@@ -77,7 +77,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 obscureText: true,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  labelText: l10n.l_current_pin,
+                  labelText: l10n.s_current_pin,
                   errorText: _currentIsWrong ? _currentPinError : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Icons.pin_outlined),
@@ -98,7 +98,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               obscureText: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: l10n.l_new_pin,
+                labelText: l10n.s_new_pin,
                 enabled: !hasPin || _currentPin.isNotEmpty,
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
@@ -116,7 +116,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               obscureText: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: l10n.l_confirm_pin,
+                labelText: l10n.s_confirm_pin,
                 prefixIcon: const Icon(Icons.pin_outlined),
                 enabled:
                     (!hasPin || _currentPin.isNotEmpty) && _newPin.isNotEmpty,
@@ -160,7 +160,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           .setPin(_newPin, oldPin: oldPin);
       result.when(success: () {
         Navigator.of(context).pop(true);
-        showMessage(context, l10n.l_pin_set);
+        showMessage(context, l10n.s_pin_set);
       }, failed: (retries, authBlocked) {
         setState(() {
           if (authBlocked) {

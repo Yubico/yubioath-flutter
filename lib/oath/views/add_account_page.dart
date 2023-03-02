@@ -188,7 +188,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       }
       if (!mounted) return;
       Navigator.of(context).pop();
-      showMessage(context, l10n.l_account_added);
+      showMessage(context, l10n.s_account_added);
     } on CancellationException catch (_) {
       // ignored
     } catch (e) {
@@ -244,7 +244,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                     0) !=
             0) {
           if (oathState == null) {
-            _promptController?.updateContent(title: l10n.l_please_wait);
+            _promptController?.updateContent(title: l10n.s_please_wait);
           } else if (oathState.locked) {
             _promptController?.close();
           } else {
@@ -256,12 +256,12 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 ));
           }
         } else {
-          _promptController?.updateContent(title: l10n.l_unsupported_yk);
+          _promptController?.updateContent(title: l10n.s_unsupported_yk);
         }
       }, error: (error, _) {
-        _promptController?.updateContent(title: l10n.l_unsupported_yk);
+        _promptController?.updateContent(title: l10n.s_unsupported_yk);
       }, loading: () {
-        _promptController?.updateContent(title: l10n.l_please_wait);
+        _promptController?.updateContent(title: l10n.s_please_wait);
       });
     }
 
@@ -343,7 +343,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           _promptController = promptUserInteraction(
             context,
             title: l10n.l_insert_yk,
-            description: l10n.l_add_account,
+            description: l10n.s_add_account,
             icon: const Icon(Icons.usb),
             onCancel: () {
               _otpauthUri = null;
@@ -358,11 +358,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     }
 
     return ResponsiveDialog(
-      title: Text(l10n.l_add_account),
+      title: Text(l10n.s_add_account),
       actions: [
         TextButton(
           onPressed: isValid ? submit : null,
-          child: Text(l10n.w_save, key: keys.saveButton),
+          child: Text(l10n.s_save, key: keys.saveButton),
         ),
       ],
       child: FileDropTarget(
@@ -402,7 +402,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       buildCounter: buildByteCounterFor(issuerText),
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: l10n.l_issuer_optional,
+                        labelText: l10n.s_issuer_optional,
                         helperText:
                             '', // Prevents dialog resizing when disabled
                         prefixIcon: const Icon(Icons.business_outlined),
@@ -431,7 +431,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.person_outline),
-                        labelText: l10n.l_account_name,
+                        labelText: l10n.s_account_name,
                         helperText:
                             '', // Prevents dialog resizing when disabled
                         errorText: (byteLength(nameText) > nameMaxLength)
@@ -474,9 +474,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                           ),
                           border: const OutlineInputBorder(),
                           prefixIcon: const Icon(Icons.key_outlined),
-                          labelText: l10n.l_secret_key,
+                          labelText: l10n.s_secret_key,
                           errorText: _validateSecretLength && !secretLengthValid
-                              ? l10n.l_invalid_length
+                              ? l10n.s_invalid_length
                               : null),
                       readOnly: _qrState == _QrScanState.success,
                       textInputAction: TextInputAction.done,
@@ -502,7 +502,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                                     strokeWidth: 2.0),
                             label: _qrState == _QrScanState.success
                                 ? Text(l10n.l_qr_scanned)
-                                : Text(l10n.l_qr_scan),
+                                : Text(l10n.s_qr_scan),
                             onPressed: () {
                               _scanQrCode(qrScanner);
                             }),
@@ -515,7 +515,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       children: [
                         if (oathState?.version.isAtLeast(4, 2) ?? true)
                           FilterChip(
-                            label: Text(l10n.l_require_touch),
+                            label: Text(l10n.s_require_touch),
                             selected: _touch,
                             onSelected: (value) {
                               setState(() {
@@ -557,7 +557,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             selected: int.tryParse(_periodController.text) !=
                                 defaultPeriod,
                             itemBuilder: ((value) =>
-                                Text(l10n.l_num_sec(value))),
+                                Text(l10n.s_num_sec(value))),
                             onChanged: _qrState != _QrScanState.success
                                 ? (period) {
                                     setState(() {
@@ -571,7 +571,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                           value: _digits,
                           selected: _digits != defaultDigits,
                           itemBuilder: (value) =>
-                              Text(l10n.l_num_digits(value)),
+                              Text(l10n.s_num_digits(value)),
                           onChanged: _qrState != _QrScanState.success
                               ? (digits) {
                                   setState(() {

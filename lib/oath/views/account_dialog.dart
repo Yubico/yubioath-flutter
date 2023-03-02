@@ -46,7 +46,7 @@ class AccountDialog extends ConsumerWidget {
 
     final copy =
         actions.firstWhere(((e) => e.text == l10n.l_copy_to_clipboard));
-    final delete = actions.firstWhere(((e) => e.text == l10n.l_delete_account));
+    final delete = actions.firstWhere(((e) => e.text == l10n.s_delete_account));
     final colors = {
       copy: Pair(theme.primary, theme.onPrimary),
       delete: Pair(theme.error, theme.onError),
@@ -54,7 +54,7 @@ class AccountDialog extends ConsumerWidget {
 
     // If we can't copy, but can calculate, highlight that button instead
     if (copy.intent == null) {
-      final calculates = actions.where(((e) => e.text == l10n.w_calculate));
+      final calculates = actions.where(((e) => e.text == l10n.s_calculate));
       if (calculates.isNotEmpty) {
         colors[calculates.first] = Pair(theme.primary, theme.onPrimary);
       }
