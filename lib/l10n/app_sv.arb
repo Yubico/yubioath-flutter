@@ -1,0 +1,434 @@
+{
+    "@@locale": "sv",
+
+    "@_readme": {
+        "notes": [
+            "All strings start with a Captial letter.",
+            "Group strings by category, but don't needlessly tie them to a section of the app if they can be re-used between several."
+        ],
+        "prefixes": {
+            "s_": "A single word",
+            "l_": "A single line. Should not be more than one sentence, and not end with a period.",
+            "p_": "One or more full sentences, with proper punctuation.",
+            "q_": "A question, ending in question mark."
+        }
+    },
+
+    "app_name": "Yubico Authenticator",
+
+    "s_save": "Spara",
+    "s_cancel": "Avbryt",
+    "s_close": "Stäng",
+    "s_quit": "Avsluta",
+    "s_unlock": "Lås upp",
+    "s_calculate": "Beräkna",
+    "s_label": "Etikett",
+    "s_name": "Namn",
+    "s_usb": "USB",
+    "s_nfc": "NFC",
+    "s_show_window": "Visa fönster",
+    "s_hide_window": "Dölj fönster",
+    "q_rename_target": "Döp om {label}?",
+    "@q_rename_target" : {
+        "placeholders": {
+            "label": {}
+        }
+    },
+
+    "s_about": "Om",
+    "s_appearance": "Utseende",
+    "s_authenticator": "Autentiserare",
+    "s_manage": "Hantera",
+    "s_setup": "Upplägg",
+    "s_settings": "Inställningar",
+    "s_webauthn": "WebAuthn",
+    "s_help_and_about": "Hjälp och om",
+    "s_help_and_feedback": "Hjälp och feedback",
+    "s_send_feedback": "Skicka feedback",
+    "s_i_need_help": "Jag behöver hjälp",
+    "s_troubleshooting": "Felsökning",
+    "s_terms_of_use": "Användarvillkor",
+    "s_privacy_policy": "Integritetspolicy",
+    "s_open_src_licenses": "Källkodslicenser",
+    "s_configure_yk": "Konfigurera YubiKey",
+    "s_please_wait": "Vänligen vänta\u2026",
+    "s_secret_key": "Hemlig nyckel",
+    "s_invalid_length": "Ogiltig längd",
+    "s_require_touch": "Kräv beröring",
+    "q_have_account_info": "Har du kontoinfo?",
+    "s_run_diagnostics": "Diagnostisera",
+    "s_log_level": "Loggningsnivå: {level}",
+    "@s_log_level": {
+        "placeholders": {
+            "level": {}
+        }
+    },
+    "s_character_count": "Antal tecken",
+    "s_learn_more": "Lär\u00a0dig\u00a0mer",
+
+    "@_language": {},
+    "s_language": "Språk",
+    "l_enable_community_translations": "Tillåt användaröversättningar",
+    "p_community_translations_desc": "Dessa översättningar är skapade och underhålls av användare. De kan vara felaktiga och/eller ofullständiga.",
+
+    "@_theme": {},
+    "s_app_theme": "App-tema",
+    "s_choose_app_theme": "Välj app-tema",
+    "s_system_default": "Systemstandard",
+    "s_light_mode": "Ljust läge",
+    "s_dark_mode": "Mörkt läge",
+
+    "@_yubikey_selection": {},
+    "s_select_yk": "Välj YubiKey",
+    "s_select_to_scan": "Välj för att skanna",
+    "s_hide_device": "Dölj enhet",
+    "s_show_hidden_devices": "Visa dolda enheter",
+    "s_sn_serial": "S/N: {serial}",
+    "@s_sn_serial" : {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "s_fw_version": "F/W: {version}",
+    "@s_fw_version" : {
+        "placeholders": {
+            "version": {}
+        }
+    },
+
+    "@_yubikey_interactions": {},
+    "l_insert_yk": "Anslut din YubiKey",
+    "l_insert_or_tap_yk": "Anslut eller blippa en YubiKey",
+    "l_unplug_yk": "Koppla ur din YubiKey",
+    "l_reinsert_yk": "Återanslut din YubiKey",
+    "l_place_on_nfc_reader": "Placera din YubiKey på NFC läsaren",
+    "l_replace_yk_on_reader": "Återplacera din YubiKey på NFC läsaren",
+    "l_remove_yk_from_reader": "Ta bort din YubiKey från NFC läsaren",
+    "p_try_reinsert_yk": "Pröva att ta bort och återansluta din YubiKey.",
+    "s_touch_required": "Beröring krävs",
+    "l_touch_button_now": "Berör knappen på din YubiKey nu",
+    "l_keep_touching_yk": "Fortsätt att beröra din YubiKey flera gånger\u2026",
+
+    "@_app_configuration": {},
+    "s_toggle_applications": "Toggla applikationer",
+    "l_min_one_interface": "Minst ett gränssnitt måste vara aktiverat",
+    "s_reconfiguring_yk": "Konfigurerar YubiKey\u2026",
+    "s_config_updated": "Konfiguration uppdaterad",
+    "l_config_updated_reinsert": "Konfiguration uppdaterad, ta bort och återanslut din YubiKey",
+    "s_app_not_supported": "Applikationen stöds ej",
+    "l_app_not_supported_on_yk": "Den aktiva YubiKeyn stöder ej '${app}'-applikationen",
+    "@l_app_not_supported_on_yk" : {
+        "placeholders": {
+            "app": {}
+        }
+    },
+    "l_app_not_supported_desc": "Denna applikation stöds ej",
+    "s_app_disabled": "Applikationen är ej aktiverad",
+    "l_app_disabled_desc": "Aktivera '{app}'-applikationen på din YubiKey för åtkomst",
+    "@l_app_disabled_desc" : {
+        "placeholders": {
+            "app": {}
+        }
+    },
+    "s_fido_disabled": "FIDO2 ej aktiverad",
+    "l_webauthn_req_fido2": "WebAuthn kräver att FIDO2-applikationen är aktiverad på din YubiKey",
+
+    "@_connectivity_issues": {},
+    "l_helper_not_responding": "Helper-processen svarar inte",
+    "l_yk_no_access": "Denna YubiKey är oåtkommlig",
+    "s_yk_inaccessible": "Enheten är oåtkommlig",
+    "l_open_connection_failed": "Misslyckades med att öppna anslutning",
+    "l_ccid_connection_failed": "Misslyckades med att öppna en anslutning till smartkort",
+    "p_ccid_service_unavailable": "Säkerställ att smartkort-tjänsten fungerar som den ska.",
+    "p_pcscd_unavailable": "Säkerställ att pcscd är installerat och kör.",
+    "l_no_yk_present": "Ingen YubiKey närvarande",
+    "s_unknown_type": "Okänd typ",
+    "s_unknown_device": "Oigenkänd enhet",
+    "s_unsupported_yk": "Ej stödd YubiKey",
+    "s_yk_not_recognized": "Enheten känns ej igen",
+
+    "@_general_errors": {},
+    "l_error_occured": "Ett fel har uppstått",
+    "s_application_error": "Applikationsfel",
+    "l_import_error": "Importfel",
+    "l_file_not_found": "Fil ej funnen",
+    "l_file_too_big": "Filstorlek för stor",
+    "l_filesystem_error": "Filsystemoperationsfel",
+
+    "@_pins": {},
+    "s_pin": "PIN",
+    "s_set_pin": "Sätt PIN",
+    "s_change_pin": "Byt PIN",
+    "s_current_pin": "Nuvarande PIN",
+    "s_new_pin": "Ny PIN",
+    "s_confirm_pin": "Bekräfta PIN",
+    "l_new_pin_len": "Ny PIN måste vara minst {length} tecken lång",
+    "@l_new_pin_len" : {
+        "placeholders": {
+            "length": {}
+        }
+    },
+    "s_pin_set": "PIN satt",
+    "l_set_pin_failed": "Misslyckades med att sätta PIN: {message}",
+    "@l_set_pin_failed" : {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_wrong_pin_attempts_remaining": "Fel PIN, {retries} försök återstår",
+    "@l_wrong_pin_attempts_remaining" : {
+        "placeholders": {
+            "retries": {}
+        }
+    },
+    "s_fido_pin_protection": "FIDO PIN-skydd",
+    "l_fido_pin_protection_optional": "Valfritt FIDO PIN-skydd",
+    "l_enter_fido2_pin": "Skriv in FIDO2-PIN för din YubiKey",
+    "l_optionally_set_a_pin": "Välj om du vill sätta en PIN för at skydda åtkomst till din YubiKey\nRegistera som en Security Key på webbplatser",
+    "l_pin_blocked_reset": "PIN blockad; fabriksåterställ FIDO-applikationen",
+    "l_set_pin_first": "En PIN krävs först",
+    "l_unlock_pin_first": "Lås upp med PIN först",
+    "l_pin_soft_locked": "PIN blockad tills YubiKeyn kopplas från och återansluts",
+    "p_enter_current_pin_or_reset": "Skriv nuvarande PIN. Om du inte kan din PIN behöver du fabriksåterställa din YubiKey.",
+    "p_enter_new_fido2_pin": "Skriv din nya PIN. En PIN måste vara minst {length} tecken lång och får innehålla bokstäver, siffror och specialtecken.",
+    "@p_enter_new_fido2_pin" : {
+        "placeholders": {
+            "length": {}
+        }
+    },
+
+    "@_passwords": {},
+    "s_password": "Lösenord",
+    "s_manage_password": "Hantera lösenord",
+    "s_set_password": "Sätt lösenord",
+    "s_password_set": "Lösenord satt",
+    "l_optional_password_protection": "Valfritt lösenordsskydd",
+    "s_new_password": "Nytt lösenord",
+    "s_current_password": "Nuvarande lösenord",
+    "s_confirm_password": "Bekräfta lösenord",
+    "s_wrong_password": "Fel lösenord",
+    "s_remove_password": "Ta bort lösenord",
+    "s_password_removed": "Lösenord borttaget",
+    "s_remember_password": "Kom ihåp lösenord",
+    "s_clear_saved_password": "Rensa sparade lösenord",
+    "s_password_forgotten": "Lösenord bortglömt",
+    "l_keystore_unavailable": "Nyckellagring otillgänglig",
+    "l_remember_pw_failed": "Misslyckades med att komma ihåg lösenord",
+    "l_unlock_first": "Lås upp med lösenord först",
+    "l_enter_oath_pw": "Skriv in OATH-lösenord för din YubiKey",
+    "p_enter_current_password_or_reset": "SkriV nuvarande password. Om du inte kan lösenordet behöver du fabriksåterställa din YubiKey.",
+    "p_enter_new_password": "Skriv ditt nya lösenord. Ett lösenord får innehålla bokstäver, siffror och specialtecken.",
+
+    "@_oath_accounts": {},
+    "l_account": "Konto: {label}",
+    "@l_account" : {
+        "placeholders": {
+            "label": {}
+        }
+    },
+    "s_accounts": "Konton",
+    "s_no_accounts": "Inga konton",
+    "s_add_account": "Lägg till konto",
+    "s_account_added": "Konto tillagt",
+    "l_account_add_failed": "Misslyckades med att lägga till konto: {message}",
+    "@l_account_add_failed" : {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_account_name_required": "Ditt konto måste ha ett namn",
+    "l_name_already_exists": "Det valda namnet används redan för denna utgivare",
+    "l_invalid_character_issuer": "Ogiltigt tecken: ':' tillåts inte för utgivare",
+    "s_pinned": "Fastnålade",
+    "s_pin_account": "Nåla fast konto",
+    "s_unpin_account": "Avnåla konto",
+    "s_no_pinned_accounts": "Inga fastnålade konton",
+    "s_rename_account": "Döp om konto",
+    "s_account_renamed": "Kontonamn bytt",
+    "p_rename_will_change_account_displayed": "Detta påverkar hur kontot visas i listan.",
+    "s_delete_account": "Ta bort konto",
+    "s_account_deleted": "Konto borttaget",
+    "p_warning_delete_account": "Varning! Kontot kommer att tas bort från din YubiKey.",
+    "p_warning_disable_credential": "Du kommer inge längre kunna generera koder för kontot. Se till att först avregistrera koden från webbplatsen för att undvika att bli utelåst ur kontot.",
+    "s_account_name": "Kontonamn",
+    "s_search_accounts": "Sök efter konton",
+    "l_accounts_used": "{used} av {capacity} konton sparade",
+    "@l_accounts_used" : {
+        "placeholders": {
+            "used": {},
+            "capacity": {}
+        }
+    },
+    "s_num_digits": "{num} siffror",
+    "@s_num_digits" : {
+        "placeholders": {
+            "num": {}
+        }
+    },
+    "s_num_sec": "{num} sek",
+    "@s_num_sec" : {
+        "placeholders": {
+            "num": {}
+        }
+    },
+    "s_issuer_optional": "Utgivare (valfritt)",
+
+    "@_fido_credentials": {},
+    "l_credential": "Konto: {label}",
+    "@l_credential" : {
+        "placeholders": {
+            "label": {}
+        }
+    },
+    "s_credentials": "Konton",
+    "l_ready_to_use": "Redo att användas",
+    "l_register_sk_on_websites": "Registera som en Security Key på webbplatser",
+    "l_no_discoverable_accounts": "Inga upptäckbara konton",
+    "s_delete_credential": "Ta bort konto",
+    "s_credential_deleted": "Konto borttagen",
+    "p_warning_delete_credential": "Kontot kommer att raderas från din YubiKey.",
+
+    "@_fingerprints": {},
+    "l_fingerprint": "Fingeravtryck: {label}",
+    "@l_fingerprint" : {
+        "placeholders": {
+            "label": {}
+        }
+    },
+    "s_fingerprints": "Fingeravtryck",
+    "l_fingerprint_captured": "Fingeravtryck skannat!",
+    "s_fingerprint_added": "Fingeravtryck tillagt",
+    "l_setting_name_failed": "Misslyckades med att sätta namn: {message}",
+    "@l_setting_name_failed" : {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "s_add_fingerprint": "Lägg till fingeravtryck",
+    "l_fp_step_1_capture": "Steg 1/2: Skanna fingeravtryck",
+    "l_fp_step_2_name": "Steg 2/2: Namnge fingeravtryck",
+    "s_delete_fingerprint": "Ta bort fingeravtryck",
+    "s_fingerprint_deleted": "Fingeravtryck borttaget",
+    "p_warning_delete_fingerprint": "Fingeravtrycket kommer att tas bort från din YubiKey.",
+    "s_no_fingerprints": "Inga fingeravtryck",
+    "l_set_pin_fingerprints": "Sätt en PIN för att kunne registrera fingeravtryck",
+    "l_no_fps_added": "Inga fingeravtryck tillagda",
+    "s_fingerprint_renamed": "Fingeravtrycksnamn bytt",
+    "l_rename_fp_failed": "Misslyckades med att döpa om: {message}",
+    "@l_rename_fp_failed" : {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "s_rename_fp": "Döp om fingeravtryck",
+    "l_add_one_or_more_fps": "Lägg till ett eller fler (upp till fem) fingeravtryck",
+    "l_fingerprints_used": "{used}/5 fingeravtryck registrerade",
+    "@l_fingerprints_used": {
+        "placeholders": {
+            "used": {}
+        }
+    },
+    "p_press_fingerprint_begin": "Tryck fingeret mot YubiKeyn för att börja.",
+    "p_will_change_label_fp": "Etiketten för fingeravtrycket kommer att ändras.",
+
+    "@_permissions": {},
+    "s_enable_nfc": "Slå på NFC",
+    "s_permission_denied": "Åtkomst nekad",
+    "l_elevating_permissions": "Utökar behörigheter\u2026",
+    "s_review_permissions": "Granska behörigheter",
+    "p_elevated_permissions_required": "Hantering av denna enhet kräver utökade behörigheter.",
+    "p_webauthn_elevated_permissions_required": "WebAuthn-hantering kräver utökade behörigheter.",
+    "p_need_camera_permission": "Yubico Authenticator behöver kamerabehörigheter för att kunna skanna QR-koder.",
+
+    "@_qr_codes": {},
+    "s_qr_scan": "Skanna QR-kod",
+    "l_qr_scanned": "QR-kod skannad",
+    "l_invalid_qr": "Ogiltig QR-kod",
+    "l_qr_not_found": "Ingen QR-kod funnen",
+    "l_qr_not_read": "Misslyckades med att läsa QR-kod: {message}",
+    "@l_qr_not_read" : {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_point_camera_scan": "Rikta kameran mot en QR-kod för att skanna den",
+    "q_want_to_scan": "Vill du skanna?",
+    "q_no_qr": "Ingen QR-kod?",
+    "s_enter_manually": "Manuell inmatning",
+
+    "@_factory_reset": {},
+    "s_reset": "Återställ",
+    "s_factory_reset": "Fabriksåterställning",
+    "l_factory_reset_this_app": "Fabriksåterställ denna applikation",
+    "s_reset_oath": "Återställ OATH",
+    "l_oath_application_reset": "OATH-applikationen återställd",
+    "s_reset_fido": "Återställ FIDO",
+    "l_fido_app_reset": "FIDO-applikationen återställd",
+    "l_press_reset_to_begin": "Tryck på återställ för att börja\u2026",
+    "l_reset_failed": "Misslyckades med återställning: {message}",
+    "@l_reset_failed" : {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "p_warning_factory_reset": "Varning! Detta kommer att permanent radera alla OATH TOTP/HOTP-konton från din YubiKey.",
+    "p_warning_disable_credentials": "Dina OATH-koder, samt lösenord, kommer att raderas från denna YubiKey. Se till att först avregistrera dessa på webbplatserna för att undvika att bli utelåst ur dina konton.",
+    "p_warning_deletes_accounts": "Varning! Detta kommer att permanent radera alla U2F och FIDO2-konton från din YubiKey.",
+    "p_warning_disable_accounts": "Dina konton, samt PIN, kommer att raderas från denna YubiKey. Se till att först avregistrera dessa på webbplatserna för att undvika att bli utelåst ur dina konton.",
+
+    "@_copy_to_clipboard": {},
+    "l_copy_to_clipboard": "Kopiera till urklipp",
+    "s_code_copied": "Kod kopierad",
+    "l_code_copied_clipboard": "Kod kopierad till urklipp",
+    "s_copy_log": "Kopiera logg",
+    "l_log_copied": "Logg kopierad till urklipp",
+    "l_diagnostics_copied": "Diagnos-data kopierad till urklipp",
+    "p_target_copied_clipboard": "{label} kopierad till urklipp.",
+    "@p_target_copied_clipboard" : {
+        "placeholders": {
+            "label": {}
+        }
+    },
+
+    "@_custom_icons": {},
+    "s_custom_icons": "Egna ikoner",
+    "l_set_icons_for_accounts": "Sätt ikoner för konton",
+    "p_custom_icons_description": "Ikonpack gör dina konton lättare att urskilja med bekanta logotyper och färger.",
+    "s_replace_icon_pack": "Byt ikonpack",
+    "l_loading_icon_pack": "Laddar ikonpack\u2026",
+    "s_load_icon_pack": "Ladda ikonpack",
+    "s_remove_icon_pack": "Ta bort ikonpack",
+    "l_icon_pack_removed": "Ikonpack borttaget",
+    "l_remove_icon_pack_failed": "Misslyckades med att ta bort ikonpack",
+    "s_choose_icon_pack": "Välj ikonpack",
+    "l_icon_pack_imported": "Ikonpack importerat",
+    "l_import_icon_pack_failed": "Misslyckades med att importera ikonpack: {message}",
+    "@l_import_icon_pack_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_invalid_icon_pack": "Ogiltigt ikonpack",
+
+    "@_android_settings": {},
+    "s_nfc_options": "NFC val",
+    "l_on_yk_nfc_tap": "Vid YubiKey NFC blipp",
+    "l_launch_ya": "Starta Yubico Authenticator",
+    "l_copy_otp_clipboard": "Kopiera OTP till urklipp",
+    "l_launch_and_copy_otp": "Starta appen och kopiera OTP",
+    "l_kbd_layout_for_static": "Tangentbordslayout (för statiskt lösenord)",
+    "s_choose_kbd_layout": "Välj tangentbordslayout",
+    "l_bypass_touch_requirement": "Förbipassera krav på beröring",
+    "l_bypass_touch_requirement_on": "Konton som kräver beröring visas automatiskt via NFC",
+    "l_bypass_touch_requirement_off": "Konton som kräver beröring kräver ett extra blipp via NFC",
+    "s_silence_nfc_sounds": "Tysta NFC-ljud",
+    "l_silence_nfc_sounds_on": "Inga ljud kommer spelas vid NFC blipp",
+    "l_silence_nfc_sounds_off": "Ljud kommer spelad vid NFC blipp",
+    "s_usb_options": "USB val",
+    "l_launch_app_on_usb": "Starta när en YubiKey ansluts",
+    "l_launch_app_on_usb_on": "Detta hindrar andra appar från att använda YubiKeyn via USB",
+    "l_launch_app_on_usb_off": "Andra appar kan använda YubiKeyn via USB",
+    "s_allow_screenshots": "Tillåt skärmdumpar",
+
+    "@_eof": {}
+}

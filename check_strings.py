@@ -47,7 +47,7 @@ def check_prefixes(k, v, s_max_words, s_max_len):
             errs.append(f"Too long ({len(v)} chars)")
         if len(v.split()) > s_max_words:
             errs.append(f"Too many words ({len(v.split())})")
-    elif k.startswith("l_"):
+    if k.startswith("l_") or k.startswith("s_"):
         if v.endswith("."):
             errs.append("Ends with '.'")
         if ". " in v:
@@ -65,6 +65,8 @@ def check_misc(k, v):
     errs = []
     if "..." in v:
         errs.append("'...' should be replaced with '\\u2026'")
+    if v[0].upper() != v[0]:
+        errs.append("Starts with lowercase letter")
     return errs
 
 
@@ -96,15 +98,16 @@ with open(target) as f:
 
 strings = {k: v for k, v in values.items() if not k.startswith("@")}
 
-check_duplicate_values(strings)
+print(target, f"- checking {len(strings)} strings")
 lint_strings(strings, strings.get("@_lint_rules", {}))
-
-print(len(strings), "strings in file")
-
+check_duplicate_values(strings)
 
 if errors:
+    print()
+    print(target, "HAS ERRORS:")
     for e in errors:
         print(e)
+    print()
     sys.exit(1)
 
-print("OK")
+print(target, "OK")
