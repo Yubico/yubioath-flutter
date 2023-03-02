@@ -33,45 +33,47 @@ class FidoScreen extends ConsumerWidget {
   const FidoScreen(this.deviceData, {super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      ref.watch(fidoStateProvider(deviceData.node.path)).when(
-          loading: () => AppPage(
-                title: Text(AppLocalizations.of(context)!.fido_webauthn),
-                centered: true,
-                delayedContent: true,
-                child: const CircularProgressIndicator(),
-              ),
-          error: (error, _) {
-            final supported = deviceData
-                    .info.supportedCapabilities[deviceData.node.transport] ??
-                0;
-            if (Capability.fido2.value & supported == 0) {
-              return MessagePage(
-                title: Text(AppLocalizations.of(context)!.fido_webauthn),
-                graphic: manageAccounts,
-                header: AppLocalizations.of(context)!.fido_ready_to_use,
-                message: AppLocalizations.of(context)!.fido_register_as_a_key,
-              );
-            }
-            final enabled = deviceData.info.config
-                    .enabledCapabilities[deviceData.node.transport] ??
-                0;
-            if (Capability.fido2.value & enabled == 0) {
-              return MessagePage(
-                title: Text(AppLocalizations.of(context)!.fido_webauthn),
-                header: AppLocalizations.of(context)!.fido_fido_disabled,
-                message: AppLocalizations.of(context)!.fido_webauthn_req_fido,
-              );
-            }
-
-            return AppFailurePage(
-              title: Text(AppLocalizations.of(context)!.fido_webauthn),
-              cause: error,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    return ref.watch(fidoStateProvider(deviceData.node.path)).when(
+        loading: () => AppPage(
+              title: Text(l10n.s_webauthn),
+              centered: true,
+              delayedContent: true,
+              child: const CircularProgressIndicator(),
+            ),
+        error: (error, _) {
+          final supported = deviceData
+                  .info.supportedCapabilities[deviceData.node.transport] ??
+              0;
+          if (Capability.fido2.value & supported == 0) {
+            return MessagePage(
+              title: Text(l10n.s_webauthn),
+              graphic: manageAccounts,
+              header: l10n.l_ready_to_use,
+              message: l10n.l_register_sk_on_websites,
             );
-          },
-          data: (fidoState) {
-            return fidoState.unlocked
-                ? FidoUnlockedPage(deviceData.node, fidoState)
-                : FidoLockedPage(deviceData.node, fidoState);
-          });
+          }
+          final enabled = deviceData
+                  .info.config.enabledCapabilities[deviceData.node.transport] ??
+              0;
+          if (Capability.fido2.value & enabled == 0) {
+            return MessagePage(
+              title: Text(l10n.s_webauthn),
+              header: l10n.s_fido_disabled,
+              message: l10n.l_webauthn_req_fido2,
+            );
+          }
+
+          return AppFailurePage(
+            title: Text(l10n.s_webauthn),
+            cause: error,
+          );
+        },
+        data: (fidoState) {
+          return fidoState.unlocked
+              ? FidoUnlockedPage(deviceData.node, fidoState)
+              : FidoLockedPage(deviceData.node, fidoState);
+        });
+  }
 }

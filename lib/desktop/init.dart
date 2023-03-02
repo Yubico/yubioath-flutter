@@ -278,13 +278,14 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
   @override
   Widget build(BuildContext context) {
     if (slow) {
+      final l10n = AppLocalizations.of(context)!;
       return MessagePage(
         graphic: const CircularProgressIndicator(),
-        message: 'The Helper process isn\'t responding',
+        message: l10n.l_helper_not_responding,
         actions: [
           ActionChip(
             avatar: const Icon(Icons.copy),
-            label: Text(AppLocalizations.of(context)!.general_copy_log),
+            label: Text(l10n.s_copy_log),
             onPressed: () async {
               _log.info('Copying log to clipboard ($version)...');
               final logs = await ref.read(logLevelProvider.notifier).getLogs();
@@ -295,7 +296,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
                   (context) async {
                     showMessage(
                       context,
-                      AppLocalizations.of(context)!.general_log_copied,
+                      l10n.l_log_copied,
                     );
                   },
                 );

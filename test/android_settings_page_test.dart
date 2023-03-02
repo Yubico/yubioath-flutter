@@ -278,7 +278,7 @@ void main() {
 
       // we expect System theme default
       expect((tester.themeModeListTile().subtitle as Text).data,
-          equals('Light theme'));
+          equals('Light mode'));
     });
 
     testWidgets('Theme preferences update', (WidgetTester tester) async {

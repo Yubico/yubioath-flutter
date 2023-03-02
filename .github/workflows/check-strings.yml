@@ -1,0 +1,35 @@
+name: Check strings
+
+on: [push, pull_request]
+
+jobs:
+  strings:
+
+    runs-on: ubuntu-latest
+    env:
+      FLUTTER: '3.7.5'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Ensure main locale is correct
+      run: python check_strings.py lib/l10n/app_en.arb
+
+    - name: Check remaining locales
+      run: |
+        find lib/l10n/ -name "app_en.arb" -prune -o -name "*.arb" -print0 | xargs -r -n 1 -0 ./check_strings.py >> $GITHUB_STEP_SUMMARY || echo "::warning::Problems in locales"
+
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        flutter-version: ${{ env.FLUTTER }}
+
+    - name: Check missing strings
+      run: |
+        flutter gen-l10n
+        if [[ "$(cat missing_l10n_strings.json)" != "{}" ]]; then
+                echo "::notice::Strings missing in translations"
+                echo "" >> $GITHUB_STEP_SUMMARY
+                echo "Missing strings:" >> $GITHUB_STEP_SUMMARY
+                cat missing_l10n_strings.json >> $GITHUB_STEP_SUMMARY
+        fi

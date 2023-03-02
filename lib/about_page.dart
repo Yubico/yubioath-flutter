@@ -40,8 +40,9 @@ class AboutPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.general_about),
+      title: Text(l10n.s_about),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),
         child: Column(
@@ -51,7 +52,7 @@ class AboutPage extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(top: 24.0),
               child: Text(
-                'Yubico Authenticator',
+                l10n.app_name,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
@@ -62,7 +63,7 @@ class AboutPage extends ConsumerWidget {
               children: [
                 TextButton(
                   child: Text(
-                    AppLocalizations.of(context)!.general_terms_of_use,
+                    l10n.s_terms_of_use,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
@@ -72,7 +73,7 @@ class AboutPage extends ConsumerWidget {
                 ),
                 TextButton(
                   child: Text(
-                    AppLocalizations.of(context)!.general_privacy_policy,
+                    l10n.s_privacy_policy,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
@@ -84,7 +85,7 @@ class AboutPage extends ConsumerWidget {
             ),
             TextButton(
               child: Text(
-                AppLocalizations.of(context)!.general_open_src_licenses,
+                l10n.s_open_src_licenses,
                 style: const TextStyle(decoration: TextDecoration.underline),
               ),
               onPressed: () {
@@ -103,7 +104,7 @@ class AboutPage extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
-                AppLocalizations.of(context)!.general_help_and_feedback,
+                l10n.s_help_and_feedback,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
@@ -112,7 +113,7 @@ class AboutPage extends ConsumerWidget {
               children: [
                 TextButton(
                   child: Text(
-                    AppLocalizations.of(context)!.general_send_feedback,
+                    l10n.s_send_feedback,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
@@ -122,7 +123,7 @@ class AboutPage extends ConsumerWidget {
                 ),
                 TextButton(
                   child: Text(
-                    AppLocalizations.of(context)!.general_i_need_help,
+                    l10n.s_i_need_help,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
@@ -139,7 +140,7 @@ class AboutPage extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
-                AppLocalizations.of(context)!.general_troubleshooting,
+                l10n.s_troubleshooting,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
@@ -150,8 +151,7 @@ class AboutPage extends ConsumerWidget {
               const SizedBox(height: 12.0),
               ActionChip(
                 avatar: const Icon(Icons.bug_report_outlined),
-                label:
-                    Text(AppLocalizations.of(context)!.general_run_diagnostics),
+                label: Text(l10n.s_run_diagnostics),
                 onPressed: () async {
                   _log.info('Running diagnostics...');
                   final response = await ref
@@ -169,10 +169,7 @@ class AboutPage extends ConsumerWidget {
                   await ref.read(clipboardProvider).setText(text);
                   await ref.read(withContextProvider)(
                     (context) async {
-                      showMessage(
-                          context,
-                          AppLocalizations.of(context)!
-                              .general_diagnostics_copied);
+                      showMessage(context, l10n.l_diagnostics_copied);
                     },
                   );
                 },
@@ -183,8 +180,7 @@ class AboutPage extends ConsumerWidget {
             if (isAndroid) ...[
               const SizedBox(height: 12.0),
               FilterChip(
-                label: Text(
-                    AppLocalizations.of(context)!.general_allow_screenshots),
+                label: Text(l10n.s_allow_screenshots),
                 selected: ref.watch(androidAllowScreenshotsProvider),
                 onSelected: (value) async {
                   ref
@@ -205,6 +201,7 @@ class LoggingPanel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final logLevel = ref.watch(logLevelProvider);
     return Wrap(
       alignment: WrapAlignment.center,
@@ -219,8 +216,8 @@ class LoggingPanel extends ConsumerWidget {
           value: logLevel,
           items: Levels.LEVELS,
           selected: logLevel != Level.INFO,
-          labelBuilder: (value) => Text(
-              '${AppLocalizations.of(context)!.general_log_level}: ${value.name[0]}${value.name.substring(1).toLowerCase()}'),
+          labelBuilder: (value) => Text(l10n.s_log_level(
+              value.name[0] + value.name.substring(1).toLowerCase())),
           itemBuilder: (value) =>
               Text('${value.name[0]}${value.name.substring(1).toLowerCase()}'),
           onChanged: (level) {
@@ -230,7 +227,7 @@ class LoggingPanel extends ConsumerWidget {
         ),
         ActionChip(
           avatar: const Icon(Icons.copy),
-          label: Text(AppLocalizations.of(context)!.general_copy_log),
+          label: Text(l10n.s_copy_log),
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');
             final logs = await ref.read(logLevelProvider.notifier).getLogs();
@@ -239,8 +236,7 @@ class LoggingPanel extends ConsumerWidget {
             if (!clipboard.platformGivesFeedback()) {
               await ref.read(withContextProvider)(
                 (context) async {
-                  showMessage(context,
-                      AppLocalizations.of(context)!.general_log_copied);
+                  showMessage(context, l10n.l_log_copied);
                 },
               );
             }

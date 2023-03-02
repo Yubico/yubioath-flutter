@@ -29,6 +29,11 @@ import 'models.dart';
 
 final _log = Logger('app.state');
 
+// Officially supported translations
+const officialLocales = [
+  Locale('en', ''),
+];
+
 // Override this to alter the set of supported apps.
 final supportedAppsProvider =
     Provider<List<Application>>((ref) => Application.values);
@@ -42,31 +47,36 @@ final supportedThemesProvider = StateProvider<List<ThemeMode>>(
   (ref) => throw UnimplementedError(),
 );
 
-final _l10nProvider = StateNotifierProvider<_L10nNotifier, AppLocalizations>(
-    (ref) => _L10nNotifier());
+final communityTranslationsProvider =
+    StateNotifierProvider<CommunityTranslationsNotifier, bool>(
+        (ref) => CommunityTranslationsNotifier(ref.watch(prefProvider)));
 
-final l10nProvider = Provider<AppLocalizations>(
-  (ref) => ref.watch(_l10nProvider),
-);
+class CommunityTranslationsNotifier extends StateNotifier<bool> {
+  static const String _key = 'APP_STATE_ENABLE_COMMUNITY_TRANSLATIONS';
+  final SharedPreferences _prefs;
 
-class _L10nNotifier extends StateNotifier<AppLocalizations>
-    with WidgetsBindingObserver {
-  _L10nNotifier() : super(lookupAppLocalizations(window.locale)) {
-    WidgetsBinding.instance.addObserver(this);
-  }
+  CommunityTranslationsNotifier(this._prefs)
+      : super(_prefs.getBool(_key) == true);
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  @protected
-  void didChangeLocales(List<Locale>? locales) {
-    state = lookupAppLocalizations(window.locale);
+  void setEnableCommunityTranslations(bool value) {
+    state = value;
+    _prefs.setBool(_key, value);
   }
 }
+
+final supportedLocalesProvider = Provider<List<Locale>>((ref) =>
+    ref.watch(communityTranslationsProvider)
+        ? AppLocalizations.supportedLocales
+        : officialLocales);
+
+final currentLocaleProvider = Provider<Locale>(
+  (ref) => basicLocaleListResolution(
+      window.locales, ref.watch(supportedLocalesProvider)),
+);
+
+final l10nProvider = Provider<AppLocalizations>(
+  (ref) => lookupAppLocalizations(ref.watch(currentLocaleProvider)),
+);
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
   (ref) => ThemeModeNotifier(
