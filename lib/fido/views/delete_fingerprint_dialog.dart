@@ -56,7 +56,7 @@ class DeleteFingerprintDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.l_warning_delete_fingerprint),
+            Text(l10n.p_warning_delete_fingerprint),
             Text(l10n.l_fingerprint(label)),
           ]
               .map((e) => Padding(

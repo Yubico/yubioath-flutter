@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 
 const _prefix = 'oath.keys';
 
-const setOrManagePasswordAction = Key('$_prefix.set_or_manage_w_password');
+const setOrManagePasswordAction = Key('$_prefix.set_or_manage_password');
 const addAccountAction = Key('$_prefix.add_account');
 const resetAction = Key('$_prefix.reset');
 

@@ -75,6 +75,7 @@
     "l_dark_mode": "Dark mode",
 
     "@_yubikey_selection": {},
+    "l_select_yk": "Select YubiKey",
     "l_select_to_scan": "Select to scan",
     "l_hide_device": "Hide device",
     "l_show_hidden_devices": "Show hidden devices",
@@ -100,7 +101,7 @@
     "l_replace_yk_on_reader": "Place your YubiKey back on the reader",
     "l_remove_yk_from_reader": "Remove your YubiKey from the NFC reader",
     "l_try_reinsert_yk": "Try to remove and reinsert your YubiKey.",
-    "l_touch_required": "Touch Required",
+    "l_touch_required": "Touch required",
     "l_touch_button_now": "Touch the button on your YubiKey now",
     "l_keep_touching_yk": "Keep touching your YubiKey repeatedly\u2026",
 
@@ -180,7 +181,7 @@
     "l_fido_pin_protection_optional": "Optional FIDO PIN protection",
     "l_enter_fido2_pin": "Enter the FIDO2 PIN for your YubiKey",
     "l_optionally_set_a_pin": "Optionally set a PIN to protect access to your YubiKey\nRegister as a Security Key on websites",
-    "l_pin_blocked_reset": "PIN is blocked. Factory reset the FIDO application.",
+    "l_pin_blocked_reset": "PIN is blocked; factory reset the FIDO application",
     "l_set_pin_first": "A PIN is required first",
     "l_unlock_pin_first": "Unlock with PIN first",
     "l_pin_soft_locked": "PIN has been blocked until the YubiKey is removed and reinserted",
@@ -232,7 +233,7 @@
         }
     },
     "l_account_name_required": "Your account must have a name",
-    "l_name_already_exists": "This name already exists for the Issuer",
+    "l_name_already_exists": "This name already exists for the issuer",
     "l_invalid_character_issuer": "Invalid character: ':' is not allowed in issuer",
     "w_pinned": "Pinned",
     "l_pin_account": "Pin account",
@@ -266,7 +267,6 @@
             "num": {}
         }
     },
-    "l_duplicate_name": "This name already exists for the Issuer",
     "l_issuer_optional": "Issuer (optional)",
 
     "@_fido_credentials": {},
@@ -305,7 +305,7 @@
     "l_fp_step_2_name": "Step 2/2: Name fingerprint",
     "l_delete_fingerprint": "Delete fingerprint",
     "l_fingerprint_deleted": "Fingerprint deleted",
-    "l_warning_delete_fingerprint": "This will delete the fingerprint from your YubiKey.",
+    "p_warning_delete_fingerprint": "This will delete the fingerprint from your YubiKey.",
     "l_no_fingerprints": "No fingerprints",
     "l_set_pin_fingerprints": "Set a PIN to register fingerprints",
     "l_no_fps_added": "No fingerprints have been added",
@@ -388,6 +388,7 @@
 
     "@_custom_icons": {},
     "l_custom_icons": "Custom icons",
+    "l_set_icons_for_accounts": "Set icons for accounts",
     "p_custom_icons_description": "Icon packs can make your accounts more easily distinguishable with familiar logos and colors.",
     "l_replace_icon_pack": "Replace icon pack",
     "l_loading_icon_pack": "Loading icon pack\u2026",

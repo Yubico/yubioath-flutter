@@ -91,19 +91,19 @@ Widget oathBuildActions(
           textStyle: Theme.of(context).textTheme.bodyLarge),
       ListTile(
           key: keys.customIconsAction,
-          title: const Text('Custom icons'),
-          subtitle: const Text('Set icons for accounts'),
+          title: Text(l10n.l_custom_icons),
+          subtitle: Text(l10n.l_set_icons_for_accounts),
           leading: const CircleAvatar(
             child: Icon(Icons.image_outlined),
           ),
           onTap: () async {
             Navigator.of(context).pop();
             await ref.read(withContextProvider)((context) => showBlurDialog(
-              context: context,
-              routeSettings:
-              const RouteSettings(name: 'oath_icon_pack_dialog'),
-              builder: (context) => const IconPackDialog(),
-            ));
+                  context: context,
+                  routeSettings:
+                      const RouteSettings(name: 'oath_icon_pack_dialog'),
+                  builder: (context) => const IconPackDialog(),
+                ));
           }),
       ListTile(
           key: keys.setOrManagePasswordAction,

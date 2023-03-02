@@ -438,7 +438,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             ? '' // needs empty string to render as error
                             : isUnique
                                 ? null
-                                : l10n.l_duplicate_name,
+                                : l10n.l_name_already_exists,
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {
