@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,6 +37,7 @@ class SettingsPage extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
 
     final theme = Theme.of(context);
+    final enableTranslations = ref.watch(communityTranslationsProvider);
     return ResponsiveDialog(
       title: Text(l10n.w_settings),
       child: Theme(
@@ -77,6 +80,22 @@ class SettingsPage extends ConsumerWidget {
                 _log.debug('Set theme mode to $mode');
               },
             ),
+            if (enableTranslations ||
+                basicLocaleListResolution(window.locales, officialLocales) !=
+                    basicLocaleListResolution(
+                        window.locales, AppLocalizations.supportedLocales)) ...[
+              ListTitle(l10n.w_language),
+              SwitchListTile(
+                  title: Text(l10n.l_enable_community_translations),
+                  subtitle: Text(l10n.p_community_translations_desc),
+                  isThreeLine: true,
+                  value: enableTranslations,
+                  onChanged: (value) {
+                    ref
+                        .read(communityTranslationsProvider.notifier)
+                        .setEnableCommunityTranslations(value);
+                  }),
+            ],
           ],
         ),
       ),

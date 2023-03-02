@@ -67,6 +67,11 @@
     "l_character_count": "Character count",
     "l_learn_more": "Learn\u00a0more",
 
+    "@_language": {},
+    "w_language": "Language",
+    "l_enable_community_translations": "Enable community translations",
+    "p_community_translations_desc": "These translations are provided and maintained by the community. They may contain errors or be incomplete.",
+
     "@_theme": {},
     "l_app_theme": "App theme",
     "l_choose_app_theme": "Choose app theme",
