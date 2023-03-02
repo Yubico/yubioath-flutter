@@ -80,7 +80,7 @@ void WindowManagerHelperPlugin::RegisterWithRegistrar(
           registrar->messenger(), "window_manager_helper",
           &flutter::StandardMethodCodec::GetInstance());
 
-  auto plugin = std::make_unique<WindowManagerHelperPlugin>();
+  auto plugin = std::make_unique<WindowManagerHelperPlugin>(registrar);
 
   channel->SetMethodCallHandler(
       [plugin_pointer = plugin.get()](const auto &call, auto result) {
@@ -113,9 +113,10 @@ void WindowManagerHelperPlugin::HandleMethodCall(
   } else if (method_call.method_name().compare("init") == 0) {
         native_window = ::GetAncestor(registrar->GetView()->GetNativeWindow(), GA_ROOT);
         result->Success(true);
-  } else if (method_call.method_name().compare("getWindowRect") == 0) {
+  } else if (method_call.method_name().compare("getWindowBounds") == 0) {
         result->Success(flutter::EncodableValue(GetWindowBoundingRect(native_window)));
-  } else if (method_call.method_name().compare("setWindowRect") == 0) {
+  } else if (method_call.method_name().compare("setWindowBounds") == 0) {
+        const auto& args = std::get<flutter::EncodableMap>(*method_call.arguments());
         result->Success(flutter::EncodableValue(SetWindowRect(native_window, args)));
   } else {
     result->NotImplemented();
