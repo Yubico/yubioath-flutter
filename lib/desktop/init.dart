@@ -66,7 +66,7 @@ void _saveWindowBounds(WindowManagerHelper helper) async {
   await helper.sharedPreferences.setDouble(_keyHeight, bounds.height);
   await helper.sharedPreferences.setDouble(_keyLeft, bounds.left);
   await helper.sharedPreferences.setDouble(_keyTop, bounds.top);
-  _log.info('Saving bounds: $bounds');
+  _log.debug('Saving window bounds: $bounds');
 }
 
 class _ScreenRetrieverListener extends ScreenListener {
@@ -121,7 +121,7 @@ Future<Widget> initialize(List<String> argv) async {
     prefs.getDouble(_keyHeight) ?? WindowDefaults.bounds.height,
   );
 
-  _log.info('Saved bounds: $bounds');
+  _log.debug('Using saved window bounds (or defaults): $bounds');
 
   unawaited(windowManager
       .waitUntilReadyToShow(WindowOptions(
