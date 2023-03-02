@@ -25,8 +25,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
+import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
+
+import 'package:window_manager_helper/window_manager_helper.dart';
 
 import '../app/app.dart';
 import '../app/logging.dart';
@@ -51,18 +54,46 @@ import 'state.dart';
 import 'systray.dart';
 
 final _log = Logger('desktop.init');
+
+const String _keyLeft = 'DESKTOP_WINDOW_LEFT';
+const String _keyTop = 'DESKTOP_WINDOW_TOP';
 const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
 const String _keyHeight = 'DESKTOP_WINDOW_HEIGHT';
 
+void _saveWindowBounds(WindowManagerHelper helper) async {
+  final bounds = await helper.getBounds();
+  await helper.sharedPreferences.setDouble(_keyWidth, bounds.width);
+  await helper.sharedPreferences.setDouble(_keyHeight, bounds.height);
+  await helper.sharedPreferences.setDouble(_keyLeft, bounds.left);
+  await helper.sharedPreferences.setDouble(_keyTop, bounds.top);
+  _log.info('Saving bounds: $bounds');
+}
+
+class _ScreenRetrieverListener extends ScreenListener {
+  final WindowManagerHelper _helper;
+  _ScreenRetrieverListener(this._helper);
+
+  @override
+  void onScreenEvent(String eventName) async {
+    _log.debug('Screen event: $eventName');
+    _saveWindowBounds(_helper);
+  }
+}
+
 class _WindowEventListener extends WindowListener {
-  final SharedPreferences _prefs;
-  _WindowEventListener(this._prefs);
+  final WindowManagerHelper _helper;
+  _WindowEventListener(this._helper);
 
   @override
   void onWindowResize() async {
-    final size = await windowManager.getSize();
-    await _prefs.setDouble(_keyWidth, size.width);
-    await _prefs.setDouble(_keyHeight, size.height);
+    _log.debug('Window event: onWindowResize');
+    _saveWindowBounds(_helper);
+  }
+
+  @override
+  void onWindowMoved() async {
+    _log.debug('Window event: onWindowMoved');
+    _saveWindowBounds(_helper);
   }
 
   @override
@@ -78,24 +109,38 @@ Future<Widget> initialize(List<String> argv) async {
 
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
+  final windowManagerHelper = WindowManagerHelper.withPreferences(prefs);
   final isHidden = prefs.getBool(windowHidden) ?? false;
+
+  final bounds = Rect.fromLTWH(
+    prefs.getDouble(_keyLeft) ?? 10.0,
+    prefs.getDouble(_keyTop) ?? 10.0,
+    prefs.getDouble(_keyWidth) ?? 400,
+    prefs.getDouble(_keyHeight) ?? 720,
+  );
+
+  _log.info('Saved bounds: $bounds');
 
   unawaited(windowManager
       .waitUntilReadyToShow(WindowOptions(
     minimumSize: const Size(270, 0),
     size: Size(
-      prefs.getDouble(_keyWidth) ?? 400,
-      prefs.getDouble(_keyHeight) ?? 720,
+      bounds.width,
+      bounds.height,
     ),
     skipTaskbar: isHidden,
   ))
       .then((_) async {
+
+      await windowManagerHelper.setBounds(bounds);
+
     if (isHidden) {
       await windowManager.setSkipTaskbar(true);
     } else {
       await windowManager.show();
     }
-    windowManager.addListener(_WindowEventListener(prefs));
+    windowManager.addListener(_WindowEventListener(windowManagerHelper));
+    screenRetriever.addListener(_ScreenRetrieverListener(windowManagerHelper));
   }));
 
   // Either use the _HELPER_PATH environment variable, or look relative to executable.

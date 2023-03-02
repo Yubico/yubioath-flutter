@@ -596,7 +596,7 @@ packages:
     source: hosted
     version: "2.2.0"
   screen_retriever:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: screen_retriever
       sha256: "4931f226ca158123ccd765325e9fbf360bfed0af9b460a10f960f9bb13d58323"
@@ -952,6 +952,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.1"
+  window_manager_helper:
+    dependency: "direct main"
+    description:
+      path: "plugins/window_manager_helper"
+      relative: true
+    source: path
+    version: "0.0.1"
   xdg_directories:
     dependency: transitive
     description:
@@ -977,5 +984,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.19.0 <3.0.0"
+  dart: ">=2.19.2 <3.0.0"
   flutter: ">=3.5.0-0"
