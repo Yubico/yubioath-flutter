@@ -22,6 +22,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -46,8 +47,11 @@ class CapabilitiesTest {
         // test that keys are correct in serialized json
         assertTrue(serialize(Capabilities()).isEmpty())
         assertTrue(serialize(Capabilities(0)).containsKey(TAG_USB))
+        assertFalse(serialize(Capabilities(0)).containsKey(TAG_NFC))
         assertTrue(serialize(Capabilities(usb = 0)).containsKey(TAG_USB))
+        assertFalse(serialize(Capabilities(usb = 0)).containsKey(TAG_NFC))
         assertTrue(serialize(Capabilities(nfc = 0)).containsKey(TAG_NFC))
+        assertFalse(serialize(Capabilities(nfc = 0)).containsKey(TAG_USB))
         assertTrue(with(serialize(Capabilities(0, 0))) {
             containsKey(TAG_NFC) and containsKey(TAG_USB)
         })
