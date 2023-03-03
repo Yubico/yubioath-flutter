@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -115,14 +113,13 @@ class _DevicePickerContent extends ConsumerWidget {
           _HeroAvatar(
             child: DeviceAvatar(
               radius: 64,
-              child: Icon(Platform.isAndroid ? Icons.no_cell : Icons.usb),
+              child: Icon(isAndroid ? Icons.no_cell : Icons.usb),
             ),
           ),
           ListTile(
             title: Center(child: Text(l10n.l_no_yk_present)),
             subtitle: Center(
-                child: Text(
-                    Platform.isAndroid ? l10n.l_insert_or_tap_yk : l10n.s_usb)),
+                child: Text(isAndroid ? l10n.l_insert_or_tap_yk : l10n.s_usb)),
           ),
         ],
       );

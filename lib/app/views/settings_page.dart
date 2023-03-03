@@ -16,12 +16,12 @@
 
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../android/views/settings_views.dart';
+import '../../core/state.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../state.dart';
@@ -127,7 +127,7 @@ class SettingsPage extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (defaultTargetPlatform == TargetPlatform.android) ...[
+            if (isAndroid) ...[
               ListTitle(l10n.s_nfc_options),
               const NfcTapActionView(),
               const NfcKbdLayoutView(),
