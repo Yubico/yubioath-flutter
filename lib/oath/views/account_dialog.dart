@@ -18,6 +18,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
@@ -37,13 +38,15 @@ class AccountDialog extends ConsumerWidget {
   const AccountDialog(this.credential, {super.key});
 
   List<Widget> _buildActions(BuildContext context, AccountHelper helper) {
+    final l10n = AppLocalizations.of(context)!;
     final actions = helper.buildActions();
 
     final theme =
         ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
 
-    final copy = actions.firstWhere(((e) => e.text.startsWith('Copy')));
-    final delete = actions.firstWhere(((e) => e.text.startsWith('Delete')));
+    final copy =
+        actions.firstWhere(((e) => e.text == l10n.l_copy_to_clipboard));
+    final delete = actions.firstWhere(((e) => e.text == l10n.s_delete_account));
     final colors = {
       copy: Pair(theme.primary, theme.onPrimary),
       delete: Pair(theme.error, theme.onError),
@@ -51,7 +54,7 @@ class AccountDialog extends ConsumerWidget {
 
     // If we can't copy, but can calculate, highlight that button instead
     if (copy.intent == null) {
-      final calculates = actions.where(((e) => e.text.startsWith('Calculate')));
+      final calculates = actions.where(((e) => e.text == l10n.s_calculate));
       if (calculates.isNotEmpty) {
         colors[calculates.first] = Pair(theme.primary, theme.onPrimary);
       }
@@ -156,7 +159,10 @@ class AccountDialog extends ConsumerWidget {
         if (helper.code == null &&
             (isDesktop || node.transport == Transport.usb)) {
           Timer.run(() {
-            Actions.invoke(context, const CalculateIntent());
+            // Only call if credential hasn't been deleted/renamed
+            if (ref.read(credentialsProvider)?.contains(credential) == true) {
+              Actions.invoke(context, const CalculateIntent());
+            }
           });
         }
         return FocusScope(

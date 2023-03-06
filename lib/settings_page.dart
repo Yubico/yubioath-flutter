@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,11 +33,13 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final themeMode = ref.watch(themeModeProvider);
 
     final theme = Theme.of(context);
+    final enableTranslations = ref.watch(communityTranslationsProvider);
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.general_settings),
+      title: Text(l10n.s_settings),
       child: Theme(
         // Make the headers use the primary color to pop a bit.
         // Once M3 is implemented this will probably not be needed.
@@ -48,9 +52,9 @@ class SettingsPage extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListTitle(AppLocalizations.of(context)!.general_appearance),
+            ListTitle(l10n.s_appearance),
             RadioListTile<ThemeMode>(
-              title: Text(AppLocalizations.of(context)!.general_system_default),
+              title: Text(l10n.s_system_default),
               value: ThemeMode.system,
               groupValue: themeMode,
               onChanged: (mode) {
@@ -59,7 +63,7 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: Text(AppLocalizations.of(context)!.general_light_mode),
+              title: Text(l10n.s_light_mode),
               value: ThemeMode.light,
               groupValue: themeMode,
               onChanged: (mode) {
@@ -68,7 +72,7 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: Text(AppLocalizations.of(context)!.general_dark_mode),
+              title: Text(l10n.s_dark_mode),
               value: ThemeMode.dark,
               groupValue: themeMode,
               onChanged: (mode) {
@@ -76,6 +80,22 @@ class SettingsPage extends ConsumerWidget {
                 _log.debug('Set theme mode to $mode');
               },
             ),
+            if (enableTranslations ||
+                basicLocaleListResolution(window.locales, officialLocales) !=
+                    basicLocaleListResolution(
+                        window.locales, AppLocalizations.supportedLocales)) ...[
+              ListTitle(l10n.s_language),
+              SwitchListTile(
+                  title: Text(l10n.l_enable_community_translations),
+                  subtitle: Text(l10n.p_community_translations_desc),
+                  isThreeLine: true,
+                  value: enableTranslations,
+                  onChanged: (value) {
+                    ref
+                        .read(communityTranslationsProvider.notifier)
+                        .setEnableCommunityTranslations(value);
+                  }),
+            ],
           ],
         ),
       ),

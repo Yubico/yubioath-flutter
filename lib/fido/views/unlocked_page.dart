@@ -39,6 +39,7 @@ class FidoUnlockedPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     List<Widget> children = [];
     if (state.credMgmt) {
       final data = ref.watch(credentialProvider(node.path)).asData;
@@ -47,7 +48,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       }
       final creds = data.value;
       if (creds.isNotEmpty) {
-        children.add(ListTitle(AppLocalizations.of(context)!.fido_credentials));
+        children.add(ListTitle(l10n.s_credentials));
         children.addAll(
           creds.map(
             (cred) => ListTile(
@@ -95,8 +96,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       final fingerprints = data.value;
       if (fingerprints.isNotEmpty) {
         nFingerprints = fingerprints.length;
-        children
-            .add(ListTitle(AppLocalizations.of(context)!.fido_fingerprints));
+        children.add(ListTitle(l10n.s_fingerprints));
         children.addAll(fingerprints.map((fp) => ListTile(
               leading: CircleAvatar(
                 foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -137,7 +137,7 @@ class FidoUnlockedPage extends ConsumerWidget {
 
     if (children.isNotEmpty) {
       return AppPage(
-        title: Text(AppLocalizations.of(context)!.fido_webauthn),
+        title: Text(l10n.s_webauthn),
         keyActionsBuilder: (context) =>
             fidoBuildActions(context, node, state, nFingerprints),
         child: Column(
@@ -147,26 +147,26 @@ class FidoUnlockedPage extends ConsumerWidget {
 
     if (state.bioEnroll != null) {
       return MessagePage(
-        title: Text(AppLocalizations.of(context)!.fido_webauthn),
+        title: Text(l10n.s_webauthn),
         graphic: noFingerprints,
-        header: AppLocalizations.of(context)!.fido_no_fingerprints,
-        message: AppLocalizations.of(context)!.fido_add_one_or_more,
+        header: l10n.s_no_fingerprints,
+        message: l10n.l_add_one_or_more_fps,
         keyActionsBuilder: (context) =>
             fidoBuildActions(context, node, state, 0),
       );
     }
 
     return MessagePage(
-      title: Text(AppLocalizations.of(context)!.fido_webauthn),
+      title: Text(l10n.s_webauthn),
       graphic: manageAccounts,
-      header: AppLocalizations.of(context)!.fido_no_discoverable_acc,
-      message: AppLocalizations.of(context)!.fido_register_as_a_key,
+      header: l10n.l_no_discoverable_accounts,
+      message: l10n.l_register_sk_on_websites,
       keyActionsBuilder: (context) => fidoBuildActions(context, node, state, 0),
     );
   }
 
   Widget _buildLoadingPage(BuildContext context) => AppPage(
-        title: Text(AppLocalizations.of(context)!.fido_webauthn),
+        title: Text(AppLocalizations.of(context)!.s_webauthn),
         centered: true,
         delayedContent: true,
         child: const CircularProgressIndicator(),

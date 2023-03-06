@@ -47,14 +47,14 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
   }
 
   _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final renamed = await ref
           .read(fingerprintProvider(widget.devicePath).notifier)
           .renameFingerprint(widget.fingerprint, _label);
       if (!mounted) return;
       Navigator.of(context).pop(renamed);
-      showMessage(
-          context, AppLocalizations.of(context)!.fido_fingerprint_renamed);
+      showMessage(context, l10n.s_fingerprint_renamed);
     } catch (e) {
       final String errorMessage;
       // TODO: Make this cleaner than importing desktop specific RpcError.
@@ -65,7 +65,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
       }
       showMessage(
         context,
-        '${AppLocalizations.of(context)!.fido_error_renaming}: $errorMessage',
+        l10n.l_rename_fp_failed(errorMessage),
         duration: const Duration(seconds: 4),
       );
     }
@@ -73,12 +73,13 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.fido_rename_fingerprint),
+      title: Text(l10n.s_rename_fp),
       actions: [
         TextButton(
           onPressed: _label.isNotEmpty ? _submit : null,
-          child: Text(AppLocalizations.of(context)!.fido_save),
+          child: Text(l10n.s_save),
         ),
       ],
       child: Padding(
@@ -86,9 +87,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context)!
-                .fido_rename(widget.fingerprint.label)),
-            Text(AppLocalizations.of(context)!.fido_will_change_label_fp),
+            Text(l10n.q_rename_target(widget.fingerprint.label)),
+            Text(l10n.p_will_change_label_fp),
             TextFormField(
               initialValue: _label,
               maxLength: 15,
@@ -96,7 +96,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
               buildCounter: buildByteCounterFor(_label),
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: AppLocalizations.of(context)!.fido_label,
+                labelText: l10n.s_label,
                 prefixIcon: const Icon(Icons.fingerprint_outlined),
               ),
               onChanged: (value) {

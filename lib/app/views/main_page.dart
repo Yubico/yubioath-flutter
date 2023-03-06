@@ -16,16 +16,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/android/app_methods.dart';
-import 'package:yubico_authenticator/android/state.dart';
-import 'package:yubico_authenticator/widgets/custom_icons.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../android/app_methods.dart';
+import '../../android/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
 import '../../fido/views/fido_screen.dart';
 import '../../oath/models.dart';
 import '../../oath/views/add_account_page.dart';
 import '../../oath/views/oath_screen.dart';
+import '../../widgets/custom_icons.dart';
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
@@ -37,6 +38,7 @@ class MainPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     ref.listen<Function(BuildContext)?>(
       contextConsumer,
       (previous, next) {
@@ -45,7 +47,8 @@ class MainPage extends ConsumerWidget {
     );
 
     if (isAndroid) {
-      isNfcEnabled().then((value) => ref.read(androidNfcStateProvider.notifier).setNfcEnabled(value));
+      isNfcEnabled().then((value) =>
+          ref.read(androidNfcStateProvider.notifier).setNfcEnabled(value));
     }
 
     // If the current device changes, we need to pop any open dialogs.
@@ -59,6 +62,7 @@ class MainPage extends ConsumerWidget {
               'licenses',
               'user_interaction_prompt',
               'oath_add_account',
+              'oath_icon_pack_dialog',
             ].contains(route.settings.name);
       });
     });
@@ -74,18 +78,17 @@ class MainPage extends ConsumerWidget {
     );
     if (deviceNode == null) {
       if (isAndroid) {
-
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
         var isNfcEnabled = ref.watch(androidNfcStateProvider);
         return MessagePage(
           graphic: noKeyImage,
           message: hasNfcSupport && isNfcEnabled
-              ? 'Tap or insert your YubiKey'
-              : 'Insert your YubiKey',
+              ? l10n.l_insert_or_tap_yk
+              : l10n.l_insert_yk,
           actions: [
             if (hasNfcSupport && !isNfcEnabled)
               ElevatedButton.icon(
-                  label: const Text('Enable NFC'),
+                  label: Text(l10n.s_enable_nfc),
                   icon: nfcIcon,
                   onPressed: () async {
                     await openNfcSettings();
@@ -93,7 +96,7 @@ class MainPage extends ConsumerWidget {
           ],
           actionButtonBuilder: (context) => IconButton(
             icon: const Icon(Icons.person_add_alt_1),
-            tooltip: 'Add account',
+            tooltip: l10n.s_add_account,
             onPressed: () async {
               CredentialData? otpauth;
               final scanner = ref.read(qrScannerProvider);
@@ -129,7 +132,7 @@ class MainPage extends ConsumerWidget {
         return MessagePage(
           delayedContent: true,
           graphic: noKeyImage,
-          message: 'Insert your YubiKey',
+          message: l10n.l_insert_yk,
         );
       }
     } else {
@@ -138,21 +141,19 @@ class MainPage extends ConsumerWidget {
               final app = ref.watch(currentAppProvider);
               if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
-                return const MessagePage(
-                  header: 'Device not recognized',
+                return MessagePage(
+                  header: l10n.s_yk_not_recognized,
                 );
               } else if (app.getAvailability(data) ==
                   Availability.unsupported) {
                 return MessagePage(
-                  header: 'Application not supported',
-                  message:
-                      'The used YubiKey does not support \'${app.name}\' application',
+                  header: l10n.s_app_not_supported,
+                  message: l10n.l_app_not_supported_on_yk(app.name),
                 );
               } else if (app.getAvailability(data) != Availability.enabled) {
                 return MessagePage(
-                  header: 'Application disabled',
-                  message:
-                      'Enable the \'${app.name}\' application on your YubiKey to access',
+                  header: l10n.s_app_disabled,
+                  message: l10n.l_app_disabled_desc(app.name),
                 );
               }
 
@@ -162,9 +163,9 @@ class MainPage extends ConsumerWidget {
                 case Application.fido:
                   return FidoScreen(data);
                 default:
-                  return const MessagePage(
-                    header: 'Not supported',
-                    message: 'This application is not supported',
+                  return MessagePage(
+                    header: l10n.s_app_not_supported,
+                    message: l10n.l_app_not_supported_desc,
                   );
               }
             },

@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'qr_scanner_scan_status.dart';
 import 'qr_scanner_util.dart';
@@ -32,7 +33,8 @@ class QRScannerPermissionsUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var scannerAreaWidth = getScannerAreaWidth(screenSize);
+    final l10n = AppLocalizations.of(context)!;
+    final scannerAreaWidth = getScannerAreaWidth(screenSize);
 
     return Stack(children: [
       /// instruction text under the scanner area
@@ -42,11 +44,11 @@ class QRScannerPermissionsUI extends StatelessWidget {
                   screenSize.height - scannerAreaWidth / 2.0 + 8.0),
               width: screenSize.width,
               height: screenSize.height),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 36),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 36),
             child: Text(
-              'Yubico Authenticator needs Camera permissions for scanning QR codes.',
-              style: TextStyle(color: Colors.white),
+              l10n.p_need_camera_permission,
+              style: const TextStyle(color: Colors.white),
               textAlign: TextAlign.center,
             ),
           )),
@@ -63,32 +65,36 @@ class QRScannerPermissionsUI extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  const Text(
-                    'Have account info?',
+                  Text(
+                    l10n.q_have_account_info,
                     textScaleFactor: 0.7,
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                   OutlinedButton(
                       onPressed: () {
                         Navigator.of(context).pop('');
                       },
-                      child: const Text('Enter manually',
-                          style: TextStyle(color: Colors.white))),
+                      child: Text(
+                        l10n.s_enter_manually,
+                        style: const TextStyle(color: Colors.white),
+                      )),
                 ],
               ),
               Column(
                 children: [
-                  const Text(
-                    'Would like to scan?',
+                  Text(
+                    l10n.q_want_to_scan,
                     textScaleFactor: 0.7,
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                   OutlinedButton(
                       onPressed: () {
                         onPermissionRequest();
                       },
-                      child: const Text('Review permissions',
-                          style: TextStyle(color: Colors.white))),
+                      child: Text(
+                        l10n.s_review_permissions,
+                        style: const TextStyle(color: Colors.white),
+                      )),
                 ],
               )
             ]),

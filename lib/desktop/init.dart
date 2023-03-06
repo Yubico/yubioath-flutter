@@ -23,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
@@ -47,20 +48,28 @@ import 'rpc.dart';
 import 'devices.dart';
 import 'qr_scanner.dart';
 import 'state.dart';
+import 'systray.dart';
 
 final _log = Logger('desktop.init');
 const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
 const String _keyHeight = 'DESKTOP_WINDOW_HEIGHT';
 
-class _WindowResizeListener extends WindowListener {
+class _WindowEventListener extends WindowListener {
   final SharedPreferences _prefs;
-  _WindowResizeListener(this._prefs);
+  _WindowEventListener(this._prefs);
 
   @override
   void onWindowResize() async {
     final size = await windowManager.getSize();
     await _prefs.setDouble(_keyWidth, size.width);
     await _prefs.setDouble(_keyHeight, size.height);
+  }
+
+  @override
+  void onWindowClose() async {
+    if (Platform.isMacOS) {
+      await windowManager.destroy();
+    }
   }
 }
 
@@ -69,14 +78,24 @@ Future<Widget> initialize(List<String> argv) async {
 
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
+  final isHidden = prefs.getBool(windowHidden) ?? false;
 
-  unawaited(windowManager.waitUntilReadyToShow().then((_) async {
-    await windowManager.setMinimumSize(const Size(270, 0));
-    final width = prefs.getDouble(_keyWidth) ?? 400;
-    final height = prefs.getDouble(_keyHeight) ?? 720;
-    await windowManager.setSize(Size(width, height));
-    await windowManager.show();
-    windowManager.addListener(_WindowResizeListener(prefs));
+  unawaited(windowManager
+      .waitUntilReadyToShow(WindowOptions(
+    minimumSize: const Size(270, 0),
+    size: Size(
+      prefs.getDouble(_keyWidth) ?? 400,
+      prefs.getDouble(_keyHeight) ?? 720,
+    ),
+    skipTaskbar: isHidden,
+  ))
+      .then((_) async {
+    if (isHidden) {
+      await windowManager.setSkipTaskbar(true);
+    } else {
+      await windowManager.show();
+    }
+    windowManager.addListener(_WindowEventListener(prefs));
   }));
 
   // Either use the _HELPER_PATH environment variable, or look relative to executable.
@@ -105,6 +124,11 @@ Future<Widget> initialize(List<String> argv) async {
 
   final rpcFuture = _initHelper(exe!);
   _initLicenses();
+
+  await localNotifier.setup(
+    appName: 'Yubico Authenticator',
+    shortcutPolicy: ShortcutPolicy.ignore,
+  );
 
   return ProviderScope(
     overrides: [
@@ -154,6 +178,9 @@ Future<Widget> initialize(List<String> argv) async {
           ref.listen<Level>(logLevelProvider, (_, level) {
             ref.read(rpcProvider).valueOrNull?.setLogLevel(level);
           });
+
+          // Initialize systray
+          ref.watch(systrayProvider);
 
           // Show a loading or error page while the Helper isn't ready
           return ref.watch(rpcProvider).when(
@@ -251,13 +278,14 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
   @override
   Widget build(BuildContext context) {
     if (slow) {
+      final l10n = AppLocalizations.of(context)!;
       return MessagePage(
         graphic: const CircularProgressIndicator(),
-        message: 'The Helper process isn\'t responding',
+        message: l10n.l_helper_not_responding,
         actions: [
           ActionChip(
             avatar: const Icon(Icons.copy),
-            label: Text(AppLocalizations.of(context)!.general_copy_log),
+            label: Text(l10n.s_copy_log),
             onPressed: () async {
               _log.info('Copying log to clipboard ($version)...');
               final logs = await ref.read(logLevelProvider.notifier).getLogs();
@@ -268,7 +296,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
                   (context) async {
                     showMessage(
                       context,
-                      AppLocalizations.of(context)!.general_log_copied,
+                      l10n.l_log_copied,
                     );
                   },
                 );

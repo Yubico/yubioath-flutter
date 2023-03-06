@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../app/state.dart';
 import '../../core/state.dart';
@@ -34,14 +35,14 @@ enum _TapAction {
   copy,
   both;
 
-  String get description {
+  String getDescription(AppLocalizations l10n) {
     switch (this) {
       case _TapAction.launch:
-        return 'Launch Yubico Authenticator';
+        return l10n.l_launch_ya;
       case _TapAction.copy:
-        return 'Copy OTP to clipboard';
+        return l10n.l_copy_otp_clipboard;
       case _TapAction.both:
-        return 'Launch app and copy OTP';
+        return l10n.l_launch_and_copy_otp;
     }
   }
 
@@ -76,14 +77,14 @@ enum _TapAction {
 }
 
 extension on ThemeMode {
-  String get displayName {
+  String getDisplayName(AppLocalizations l10n) {
     switch (this) {
       case ThemeMode.system:
-        return 'System default';
+        return l10n.s_system_default;
       case ThemeMode.light:
-        return 'Light theme';
+        return l10n.s_light_mode;
       case ThemeMode.dark:
-        return 'Dark theme';
+        return l10n.s_dark_mode;
     }
   }
 }
@@ -99,6 +100,7 @@ class AndroidSettingsPage extends ConsumerStatefulWidget {
 class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final prefs = ref.watch(prefProvider);
 
     final tapAction = _TapAction.load(prefs);
@@ -112,7 +114,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
     final theme = Theme.of(context);
 
     return ResponsiveDialog(
-      title: const Text('Settings'),
+      title: Text(l10n.s_settings),
       child: Theme(
         // Make the headers use the primary color to pop a bit.
         // Once M3 is implemented this will probably not be needed.
@@ -125,10 +127,10 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const ListTitle('NFC options'),
+            ListTitle(l10n.s_nfc_options),
             ListTile(
-              title: const Text('On YubiKey NFC tap'),
-              subtitle: Text(tapAction.description),
+              title: Text(l10n.l_on_yk_nfc_tap),
+              subtitle: Text(tapAction.getDescription(l10n)),
               key: keys.nfcTapSetting,
               onTap: () async {
                 final newTapAction = await _selectTapAction(context, tapAction);
@@ -138,7 +140,7 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
               },
             ),
             ListTile(
-              title: const Text('Keyboard Layout (for static password)'),
+              title: Text(l10n.l_kbd_layout_for_static),
               subtitle: Text(clipKbdLayout),
               key: keys.nfcKeyboardLayoutSetting,
               enabled: tapAction != _TapAction.launch,
@@ -152,12 +154,10 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
               },
             ),
             SwitchListTile(
-                title: const Text('Bypass touch requirement'),
-                subtitle: nfcBypassTouch
-                    ? const Text(
-                        'Accounts that require touch are automatically shown over NFC')
-                    : const Text(
-                        'Accounts that require touch need an additional tap over NFC'),
+                title: Text(l10n.l_bypass_touch_requirement),
+                subtitle: Text(nfcBypassTouch
+                    ? l10n.l_bypass_touch_requirement_on
+                    : l10n.l_bypass_touch_requirement_off),
                 value: nfcBypassTouch,
                 key: keys.nfcBypassTouchSetting,
                 onChanged: (value) {
@@ -166,11 +166,10 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                   });
                 }),
             SwitchListTile(
-                title: const Text('Silence NFC sounds'),
-                subtitle: nfcSilenceSounds
-                    ? const Text(
-                        'No sounds will be played on NFC tap')
-                    : const Text('Sound will play on NFC tap'),
+                title: Text(l10n.s_silence_nfc_sounds),
+                subtitle: Text(nfcSilenceSounds
+                    ? l10n.l_silence_nfc_sounds_on
+                    : l10n.l_silence_nfc_sounds_off),
                 value: nfcSilenceSounds,
                 key: keys.nfcSilenceSoundsSettings,
                 onChanged: (value) {
@@ -178,13 +177,12 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                     prefs.setBool(prefNfcSilenceSounds, value);
                   });
                 }),
-            const ListTitle('USB options'),
+            ListTitle(l10n.s_usb_options),
             SwitchListTile(
-                title: const Text('Launch when YubiKey is connected'),
-                subtitle: usbOpenApp
-                    ? const Text(
-                        'This prevents other apps from using the YubiKey over USB')
-                    : const Text('Other apps can use the YubiKey over USB'),
+                title: Text(l10n.l_launch_app_on_usb),
+                subtitle: Text(usbOpenApp
+                    ? l10n.l_launch_app_on_usb_on
+                    : l10n.l_launch_app_on_usb_off),
                 value: usbOpenApp,
                 key: keys.usbOpenApp,
                 onChanged: (value) {
@@ -192,10 +190,10 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
                     prefs.setBool(prefUsbOpenApp, value);
                   });
                 }),
-            const ListTitle('Appearance'),
+            ListTitle(l10n.s_appearance),
             ListTile(
-              title: const Text('App theme'),
-              subtitle: Text(themeMode.displayName),
+              title: Text(l10n.s_app_theme),
+              subtitle: Text(themeMode.getDisplayName(l10n)),
               key: keys.themeModeSetting,
               onTap: () async {
                 final newMode = await _selectAppearance(
@@ -214,12 +212,13 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
       await showDialog<_TapAction>(
           context: context,
           builder: (BuildContext context) {
+            final l10n = AppLocalizations.of(context)!;
             return SimpleDialog(
-              title: const Text('On YubiKey NFC tap'),
+              title: Text(l10n.l_on_yk_nfc_tap),
               children: _TapAction.values
                   .map(
                     (e) => RadioListTile<_TapAction>(
-                        title: Text(e.description),
+                        title: Text(e.getDescription(l10n)),
                         key: e.key,
                         value: e,
                         groupValue: tapAction,
@@ -238,8 +237,9 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
       await showDialog<String>(
           context: context,
           builder: (BuildContext context) {
+            final l10n = AppLocalizations.of(context)!;
             return SimpleDialog(
-              title: const Text('Choose keyboard layout'),
+              title: Text(l10n.s_choose_kbd_layout),
               children: _keyboardLayouts
                   .map(
                     (e) => RadioListTile<String>(
@@ -262,11 +262,12 @@ class _AndroidSettingsPageState extends ConsumerState<AndroidSettingsPage> {
       await showDialog<ThemeMode>(
           context: context,
           builder: (BuildContext context) {
+            final l10n = AppLocalizations.of(context)!;
             return SimpleDialog(
-              title: const Text('Choose app theme'),
+              title: Text(l10n.s_choose_app_theme),
               children: supportedThemes
                   .map((e) => RadioListTile(
-                        title: Text(e.displayName),
+                        title: Text(e.getDisplayName(l10n)),
                         value: e,
                         key: Key('android.keys.theme_mode_${e.name}'),
                         groupValue: themeMode,

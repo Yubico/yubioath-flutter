@@ -62,25 +62,23 @@ class AccountHelper {
           final ready = expired || credential.oathType == OathType.hotp;
           final pinned = _ref.watch(favoritesProvider).contains(credential.id);
 
-          final appLocalizations = AppLocalizations.of(_context)!;
+          final l10n = AppLocalizations.of(_context)!;
           final shortcut = Platform.isMacOS ? '\u2318 C' : 'Ctrl+C';
           return [
             MenuAction(
-              text: appLocalizations.oath_copy_to_clipboard,
+              text: l10n.l_copy_to_clipboard,
               icon: const Icon(Icons.copy),
               intent: code == null || expired ? null : const CopyIntent(),
               trailing: shortcut,
             ),
             if (manual)
               MenuAction(
-                text: appLocalizations.oath_calculate,
+                text: l10n.s_calculate,
                 icon: const Icon(Icons.refresh),
                 intent: ready ? const CalculateIntent() : null,
               ),
             MenuAction(
-              text: pinned
-                  ? appLocalizations.oath_unpin_account
-                  : appLocalizations.oath_pin_account,
+              text: pinned ? l10n.s_unpin_account : l10n.s_pin_account,
               icon: pinned
                   ? pushPinStrokeIcon
                   : const Icon(Icons.push_pin_outlined),
@@ -89,11 +87,11 @@ class AccountHelper {
             if (data.info.version.isAtLeast(5, 3))
               MenuAction(
                 icon: const Icon(Icons.edit_outlined),
-                text: appLocalizations.oath_rename_account,
+                text: l10n.s_rename_account,
                 intent: const EditIntent(),
               ),
             MenuAction(
-              text: appLocalizations.oath_delete_account,
+              text: l10n.s_delete_account,
               icon: const Icon(Icons.delete_outline),
               intent: const DeleteIntent(),
             ),
