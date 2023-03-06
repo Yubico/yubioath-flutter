@@ -45,6 +45,7 @@ import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
 import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
+import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
@@ -244,7 +245,7 @@ class OathManager(
                 tryToUnlockOathSession(session)
 
                 val previousId = oathViewModel.sessionState.value?.deviceId
-                if (session.deviceId == previousId) {
+                if (session.deviceId == previousId && device is NfcYubiKeyDevice) {
                     // Run any pending action
                     pendingAction?.let { action ->
                         action.invoke(Result.success(session))
