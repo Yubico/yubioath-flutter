@@ -18,9 +18,14 @@ package com.yubico.authenticator.device
 
 import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.management.DeviceInfo
-import com.yubico.yubikit.management.FormFactor
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
+private fun DeviceInfo.capabilitiesFor(transport: Transport) : Int? =
+    when {
+        hasTransport(transport) -> getSupportedCapabilities(transport)
+        else -> null
+    }
 
 @Serializable
 data class Info(
@@ -59,8 +64,8 @@ data class Info(
         isNfc = isNfc,
         usbPid = usbPid,
         supportedCapabilities = Capabilities(
-            nfc = deviceInfo.getSupportedCapabilities(Transport.NFC),
-            usb = deviceInfo.getSupportedCapabilities(Transport.USB)
+            nfc = deviceInfo.capabilitiesFor(Transport.NFC),
+            usb = deviceInfo.capabilitiesFor(Transport.USB),
         )
     )
 }
