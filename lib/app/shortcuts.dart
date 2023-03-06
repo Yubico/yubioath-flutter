@@ -22,14 +22,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../about_page.dart';
-import '../android/views/android_settings_page.dart';
 import '../core/state.dart';
 import '../desktop/state.dart';
 import '../oath/keys.dart';
-import '../settings_page.dart';
 import 'message.dart';
 import 'models.dart';
 import 'state.dart';
+import 'views/settings_page.dart';
 
 class OpenIntent extends Intent {
   const OpenIntent();
@@ -122,9 +121,7 @@ Widget registerGlobalShortcuts(
             if (!Navigator.of(context).canPop()) {
               await showBlurDialog(
                 context: context,
-                builder: (context) => Platform.isAndroid
-                    ? const AndroidSettingsPage()
-                    : const SettingsPage(),
+                builder: (context) => const SettingsPage(),
                 routeSettings: const RouteSettings(name: 'settings'),
               );
             }

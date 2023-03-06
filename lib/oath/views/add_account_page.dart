@@ -16,7 +16,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -177,7 +176,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     final l10n = AppLocalizations.of(context)!;
     try {
       if (devicePath == null) {
-        assert(Platform.isAndroid, 'devicePath is only optional for Android');
+        assert(isAndroid, 'devicePath is only optional for Android');
         await ref
             .read(addCredentialToAnyProvider)
             .call(credUri, requireTouch: _touch);
@@ -334,7 +333,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         final devicePath = deviceNode?.path;
         if (devicePath != null) {
           await _doAddCredential(devicePath: devicePath, credUri: cred.toUri());
-        } else if (Platform.isAndroid) {
+        } else if (isAndroid) {
           // Send the credential to Android to be added to the next YubiKey
           await _doAddCredential(devicePath: null, credUri: cred.toUri());
         } else {

@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
-final isAndroid = Platform.isAndroid;
+bool get isDesktop {
+  return const [
+    TargetPlatform.windows,
+    TargetPlatform.macOS,
+    TargetPlatform.linux
+  ].contains(defaultTargetPlatform);
+}
+
+bool get isAndroid {
+  return defaultTargetPlatform == TargetPlatform.android;
+}
 
 // This must be initialized before use, in main.dart.
 final prefProvider = Provider<SharedPreferences>((ref) {
