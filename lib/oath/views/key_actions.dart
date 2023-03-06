@@ -57,6 +57,8 @@ Widget oathBuildActions(
         enabled: used != null && (capacity == null || capacity > used),
         onTap: used != null && (capacity == null || capacity > used)
             ? () async {
+                final credentials = ref.read(credentialsProvider);
+                final withContext = ref.read(withContextProvider);
                 Navigator.of(context).pop();
                 CredentialData? otpauth;
                 if (Platform.isAndroid) {
@@ -73,13 +75,13 @@ Widget oathBuildActions(
                     }
                   }
                 }
-                await ref.read(withContextProvider)((context) async {
+                await withContext((context) async {
                   await showBlurDialog(
                     context: context,
                     builder: (context) => OathAddAccountPage(
                       devicePath,
                       oathState,
-                      credentials: ref.watch(credentialsProvider),
+                      credentials: credentials,
                       credentialData: otpauth,
                     ),
                   );

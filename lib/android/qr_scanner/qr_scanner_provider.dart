@@ -31,6 +31,7 @@ class AndroidQrScanner implements QrScanner {
         (context) async => await Navigator.of(context).push(PageRouteBuilder(
               pageBuilder: (_, __, ___) =>
                   Theme(data: AppTheme.darkTheme, child: const QrScannerView()),
+              settings: const RouteSettings(name: 'android_qr_scanner_view'),
               transitionDuration: const Duration(seconds: 0),
               reverseTransitionDuration: const Duration(seconds: 0),
             )));
