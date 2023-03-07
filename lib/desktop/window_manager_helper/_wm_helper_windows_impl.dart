@@ -39,15 +39,18 @@ class WindowManagerHelperWindows {
     return await _getAllDisplays() != allDisplays;
   }
 
-  static bool displayContainsBounds(Display d, Rect rect) {
+  static bool _displayContainsBounds(Display d, Rect rect) {
     final displayRect = Rect.fromLTWH(
         d.visiblePosition?.dx ?? 0.0,
         d.visiblePosition?.dy ?? 0.0,
         d.visibleSize?.width ?? 0.0,
         d.visibleSize?.height ?? 0.0);
 
-    return displayRect.contains(rect.topLeft) ||
-        displayRect.contains(rect.topRight);
+    // validate top bounds of the rectangle
+    // the translations limit amount of minimum vertical and horizontal distance
+    // which needs to be present to allow mouse interaction
+    return displayRect.contains(rect.topLeft.translate(48.0, 48.0)) ||
+        displayRect.contains(rect.topCenter.translate(0.0, 48.0));
   }
 
   static Future<void> setBounds(SharedPreferences prefs, Rect bounds) async {
@@ -66,7 +69,7 @@ class WindowManagerHelperWindows {
 
     final configChanged = await _displayConfigurationChanged(prefs);
     final windowRect =
-        !configChanged || displayContainsBounds(primaryDisplay, savedBounds)
+        !configChanged || _displayContainsBounds(primaryDisplay, savedBounds)
             ? savedBounds
             : WindowDefaults.bounds;
 
