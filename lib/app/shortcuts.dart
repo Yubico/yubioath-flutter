@@ -70,8 +70,9 @@ class DeleteIntent extends Intent {
   const DeleteIntent();
 }
 
-final ctrlOrCmd =
-    Platform.isMacOS ? LogicalKeyboardKey.meta : LogicalKeyboardKey.control;
+/// Use cmd on macOS, use ctrl on the other platforms
+SingleActivator ctrlOrCmd(LogicalKeyboardKey key) =>
+    SingleActivator(key, meta: Platform.isMacOS, control: !Platform.isMacOS);
 
 Widget registerGlobalShortcuts(
         {required WidgetRef ref, required Widget child}) =>
@@ -143,18 +144,17 @@ Widget registerGlobalShortcuts(
       },
       child: Shortcuts(
         shortcuts: {
-          LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyC): const CopyIntent(),
-          LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyW): const HideIntent(),
-          LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyF):
-              const SearchIntent(),
+          ctrlOrCmd(LogicalKeyboardKey.keyC): const CopyIntent(),
+          ctrlOrCmd(LogicalKeyboardKey.keyW): const HideIntent(),
+          ctrlOrCmd(LogicalKeyboardKey.keyF): const SearchIntent(),
           if (isDesktop) ...{
-            LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.tab):
+            const SingleActivator(LogicalKeyboardKey.tab, control: true):
                 const NextDeviceIntent(),
           },
           if (Platform.isMacOS) ...{
-            LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyQ):
+            const SingleActivator(LogicalKeyboardKey.keyQ, meta: true):
                 const CloseIntent(),
-            LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.comma):
+            const SingleActivator(LogicalKeyboardKey.comma, meta: true):
                 const SettingsIntent(),
           },
         },
