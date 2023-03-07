@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../message.dart';
 import 'device_avatar.dart';
@@ -44,7 +45,7 @@ class DeviceButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
-      tooltip: 'Select YubiKey',
+      tooltip: AppLocalizations.of(context)!.s_select_yk,
       icon: _CircledDeviceAvatar(radius),
       onPressed: () async {
         await showBlurDialog(

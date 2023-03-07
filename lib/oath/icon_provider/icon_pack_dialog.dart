@@ -34,7 +34,7 @@ class IconPackDialog extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final iconPack = ref.watch(iconPackProvider);
     return ResponsiveDialog(
-      title: Text(l10n.oath_custom_icons),
+      title: Text(l10n.s_custom_icons),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
@@ -65,13 +65,12 @@ class IconPackDialog extends ConsumerWidget {
 
   Widget? _action(AsyncValue<IconPack?> iconPack, AppLocalizations l10n) =>
       iconPack.when(
-          data: (IconPack? data) => _ImportActionChip(data != null
-              ? l10n.oath_custom_icons_replace
-              : l10n.oath_custom_icons_load),
+          data: (IconPack? data) => _ImportActionChip(
+              data != null ? l10n.s_replace_icon_pack : l10n.s_load_icon_pack),
           error: (Object error, StackTrace stackTrace) =>
-              _ImportActionChip(l10n.oath_custom_icons_load),
+              _ImportActionChip(l10n.s_load_icon_pack),
           loading: () => _ImportActionChip(
-                l10n.oath_custom_icons_loading,
+                l10n.l_loading_icon_pack,
                 avatar: const CircularProgressIndicator(),
               ));
 }
@@ -83,7 +82,7 @@ class _DialogDescription extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return RichText(
       text: TextSpan(
-        text: l10n.oath_custom_icons_description,
+        text: l10n.p_custom_icons_description,
         style: theme.textTheme.bodyMedium,
         children: [const TextSpan(text: ' '), _createLearnMoreLink(context)],
       ),
@@ -97,7 +96,7 @@ class _DialogDescription extends ConsumerWidget {
   TextSpan _createLearnMoreLink(BuildContext context) {
     final theme = Theme.of(context);
     return TextSpan(
-      text: AppLocalizations.of(context)!.oath_custom_icons_learn_more,
+      text: AppLocalizations.of(context)!.s_learn_more,
       style: theme.textTheme.bodyMedium
           ?.copyWith(color: theme.colorScheme.primary),
       recognizer: TapGestureRecognizer()
@@ -135,18 +134,16 @@ class _IconPackDescription extends ConsumerWidget {
           Row(
             children: [
               IconButton(
-                  tooltip: l10n.oath_custom_icons_remove,
+                  tooltip: l10n.s_remove_icon_pack,
                   onPressed: () async {
                     final removePackStatus =
                         await ref.read(iconPackProvider.notifier).removePack();
                     await ref.read(withContextProvider)(
                       (context) async {
                         if (removePackStatus) {
-                          showMessage(context,
-                              l10n.oath_custom_icons_icon_pack_removed);
+                          showMessage(context, l10n.l_icon_pack_removed);
                         } else {
-                          showMessage(context,
-                              l10n.oath_custom_icons_err_icon_pack_remove);
+                          showMessage(context, l10n.l_remove_icon_pack_failed);
                         }
                       },
                     );
@@ -182,20 +179,20 @@ class _ImportActionChip extends ConsumerWidget {
         type: FileType.custom,
         allowMultiple: false,
         lockParentWindow: true,
-        dialogTitle: l10n.oath_custom_icons_choose_icon_pack);
+        dialogTitle: l10n.s_choose_icon_pack);
     if (result != null && result.files.isNotEmpty) {
       final importStatus = await ref
           .read(iconPackProvider.notifier)
           .importPack(l10n, result.paths.first!);
       await ref.read(withContextProvider)((context) async {
         if (importStatus) {
-          showMessage(context, l10n.oath_custom_icons_icon_pack_imported);
+          showMessage(context, l10n.l_icon_pack_imported);
         } else {
           showMessage(
               context,
-              l10n.oath_custom_icons_err_icon_pack_import(
+              l10n.l_import_icon_pack_failed(
                   ref.read(iconPackProvider.notifier).lastError ??
-                      l10n.oath_custom_icons_err_import_general));
+                      l10n.l_import_error));
         }
       });
     }

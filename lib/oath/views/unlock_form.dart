@@ -53,13 +53,13 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
         _passwordController.clear();
       });
     } else if (_remember && !result.second) {
-      showMessage(
-          context, AppLocalizations.of(context)!.oath_failed_remember_pw);
+      showMessage(context, AppLocalizations.of(context)!.l_remember_pw_failed);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final keystoreFailed = widget.keystore == KeystoreState.failed;
     return Column(
       children: [
@@ -69,7 +69,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                AppLocalizations.of(context)!.oath_enter_oath_pw,
+                l10n.l_enter_oath_pw,
               ),
               const SizedBox(height: 16.0),
               TextField(
@@ -79,10 +79,8 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 obscureText: _isObscure,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  labelText: AppLocalizations.of(context)!.oath_password,
-                  errorText: _passwordIsWrong
-                      ? AppLocalizations.of(context)!.oath_wrong_password
-                      : null,
+                  labelText: l10n.s_password,
+                  errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
                   helperText: '', // Prevents resizing when errorText shown
                   prefixIcon: const Icon(Icons.password_outlined),
                   suffixIcon: IconButton(
@@ -108,14 +106,12 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
         keystoreFailed
             ? ListTile(
                 leading: const Icon(Icons.warning_amber_rounded),
-                title: Text(
-                    AppLocalizations.of(context)!.oath_keystore_unavailable),
+                title: Text(l10n.l_keystore_unavailable),
                 dense: true,
                 minLeadingWidth: 0,
               )
             : CheckboxListTile(
-                title:
-                    Text(AppLocalizations.of(context)!.oath_remember_password),
+                title: Text(l10n.s_remember_password),
                 dense: true,
                 controlAffinity: ListTileControlAffinity.leading,
                 value: _remember,
@@ -131,7 +127,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
             alignment: Alignment.centerRight,
             child: ElevatedButton.icon(
               key: keys.unlockButton,
-              label: Text(AppLocalizations.of(context)!.oath_unlock),
+              label: Text(l10n.s_unlock),
               icon: const Icon(Icons.lock_open),
               onPressed: _passwordController.text.isNotEmpty ? _submit : null,
             ),

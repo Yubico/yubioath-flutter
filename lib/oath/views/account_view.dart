@@ -185,7 +185,6 @@ class _AccountViewState extends ConsumerState<AccountView> {
                       setState(() {
                         _lastTap = 0;
                       });
-                      //triggerCopy();
                       Actions.maybeInvoke(context, const CopyIntent());
                     } else {
                       _focusNode.requestFocus();

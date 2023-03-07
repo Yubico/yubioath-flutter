@@ -95,14 +95,14 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
 
     if (!await packFile.exists()) {
       _log.error('Input file does not exist');
-      _lastError = l10n.oath_custom_icons_err_file_not_found;
+      _lastError = l10n.l_file_not_found;
       state = AsyncValue.error('Input file does not exist', StackTrace.current);
       return false;
     }
 
     if (await packFile.length() > 5 * 1024 * 1024) {
       _log.error('File size too big.');
-      _lastError = l10n.oath_custom_icons_err_file_too_big;
+      _lastError = l10n.l_file_too_big;
       state = AsyncValue.error('File size too big', StackTrace.current);
       return false;
     }
@@ -133,7 +133,7 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
         File(join(unpackDirectory.path, getLocalIconFileName('pack.json')));
     if (!await packJsonFile.exists()) {
       _log.error('File is not an icon pack: missing pack.json');
-      _lastError = l10n.oath_custom_icons_err_invalid_icon_pack;
+      _lastError = l10n.l_invalid_icon_pack;
       state = AsyncValue.error('File is not an icon pack', StackTrace.current);
       await _deleteDirectory(tempDirectory);
       return false;
@@ -145,7 +145,7 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
       const JsonDecoder().convert(packContent);
     } catch (e) {
       _log.error('Failed to parse pack.json: $e');
-      _lastError = l10n.oath_custom_icons_err_invalid_icon_pack;
+      _lastError = l10n.l_invalid_icon_pack;
       state = AsyncValue.error('File is not an icon pack', StackTrace.current);
       await _deleteDirectory(tempDirectory);
       return false;
@@ -155,7 +155,7 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
     final packDirectory = await _packDirectory;
     if (!await _deleteDirectory(packDirectory)) {
       _log.error('Failure when deleting original pack directory');
-      _lastError = l10n.oath_custom_icons_err_filesystem_error;
+      _lastError = l10n.l_filesystem_error;
       state = AsyncValue.error(
           'Failure deleting original pack directory', StackTrace.current);
       await _deleteDirectory(tempDirectory);

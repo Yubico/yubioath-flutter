@@ -15,16 +15,18 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yubico_authenticator/android/keys.dart' as keys;
-import 'package:yubico_authenticator/android/preferences.dart';
+import 'package:yubico_authenticator/android/models.dart';
+import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
+import 'package:yubico_authenticator/android/keys.dart' as android_keys;
 import 'package:yubico_authenticator/android/state.dart';
-import 'package:yubico_authenticator/android/views/android_settings_page.dart';
 import 'package:yubico_authenticator/app/state.dart';
+import 'package:yubico_authenticator/app/views/settings_page.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
 Widget createMaterialApp({required Widget child}) {
@@ -44,7 +46,7 @@ Widget createMaterialApp({required Widget child}) {
 
 extension _WidgetTesterHelper on WidgetTester {
   Future<void> openNfcTapOptionSelection() async {
-    var widget = find.byKey(keys.nfcTapSetting).hitTestable();
+    var widget = find.byKey(android_keys.nfcTapSetting).hitTestable();
     expect(widget, findsOneWidget);
     await tap(widget);
     await pumpAndSettle();
@@ -52,28 +54,29 @@ extension _WidgetTesterHelper on WidgetTester {
 
   Future<void> selectLaunchOption() async {
     await openNfcTapOptionSelection();
-    await tap(find.byKey(keys.launchTapAction));
+    await tap(find.byKey(android_keys.nfcTapOption(NfcTapAction.launch)));
     await pumpAndSettle();
   }
 
   Future<void> selectCopyOption() async {
     await openNfcTapOptionSelection();
-    await tap(find.byKey(keys.copyTapAction));
+    await tap(find.byKey(android_keys.nfcTapOption(NfcTapAction.copy)));
     await pumpAndSettle();
   }
 
   Future<void> selectBothOption() async {
     await openNfcTapOptionSelection();
-    await tap(find.byKey(keys.bothTapAction));
+    await tap(find.byKey(android_keys.nfcTapOption(NfcTapAction.both)));
     await pumpAndSettle();
   }
 
   ListTile keyboardLayoutListTile() =>
-      find.byKey(keys.nfcKeyboardLayoutSetting).evaluate().single.widget
+      find.byKey(android_keys.nfcKeyboardLayoutSetting).evaluate().single.widget
           as ListTile;
 
   Future<void> openKeyboardLayoutOptionSelection() async {
-    var widget = find.byKey(keys.nfcKeyboardLayoutSetting).hitTestable();
+    var widget =
+        find.byKey(android_keys.nfcKeyboardLayoutSetting).hitTestable();
     expect(widget, findsOneWidget);
     await tap(widget);
     await pumpAndSettle();
@@ -81,44 +84,45 @@ extension _WidgetTesterHelper on WidgetTester {
 
   Future<void> selectKeyboardLayoutUSOption() async {
     await openKeyboardLayoutOptionSelection();
-    await tap(find.byKey(keys.keyboardLayoutOption('US')));
+    await tap(find.byKey(android_keys.keyboardLayoutOption('US')));
     await pumpAndSettle();
   }
 
   Future<void> selectKeyboardLayoutDEOption() async {
     await openKeyboardLayoutOptionSelection();
-    await tap(find.byKey(keys.keyboardLayoutOption('DE')));
+    await tap(find.byKey(android_keys.keyboardLayoutOption('DE')));
     await pumpAndSettle();
   }
 
   Future<void> selectKeyboardLayoutDECHOption() async {
     await openKeyboardLayoutOptionSelection();
-    await tap(find.byKey(keys.keyboardLayoutOption('DE-CH')));
+    await tap(find.byKey(android_keys.keyboardLayoutOption('DE-CH')));
     await pumpAndSettle();
   }
 
   Future<void> tapBypassTouch() async {
-    await tap(find.byKey(keys.nfcBypassTouchSetting));
+    await tap(find.byKey(android_keys.nfcBypassTouchSetting));
     await pumpAndSettle();
   }
 
   Future<void> tapOpenAppOnUsb() async {
-    await ensureVisible(find.byKey(keys.usbOpenApp));
-    await tap(find.byKey(keys.usbOpenApp));
+    await ensureVisible(find.byKey(android_keys.usbOpenApp));
+    await tap(find.byKey(android_keys.usbOpenApp));
     await pumpAndSettle();
   }
 
   Future<void> tapSilenceNfcSounds() async {
-    await tap(find.byKey(keys.nfcSilenceSoundsSettings));
+    await tap(find.byKey(android_keys.nfcSilenceSoundsSettings));
     await pumpAndSettle();
   }
 
   ListTile themeModeListTile() =>
-      find.byKey(keys.themeModeSetting).evaluate().single.widget as ListTile;
+      find.byKey(app_keys.themeModeSetting).evaluate().single.widget
+          as ListTile;
 
   Future<void> openAppThemeOptionSelection() async {
-    await ensureVisible(find.byKey(keys.themeModeSetting));
-    var widget = find.byKey(keys.themeModeSetting).hitTestable();
+    await ensureVisible(find.byKey(app_keys.themeModeSetting));
+    var widget = find.byKey(app_keys.themeModeSetting).hitTestable();
     expect(widget, findsOneWidget);
     await tap(widget);
     await pumpAndSettle();
@@ -126,19 +130,19 @@ extension _WidgetTesterHelper on WidgetTester {
 
   Future<void> selectSystemTheme() async {
     await openAppThemeOptionSelection();
-    await tap(find.byKey(keys.themeModeSystem));
+    await tap(find.byKey(app_keys.themeModeOption(ThemeMode.system)));
     await pumpAndSettle();
   }
 
   Future<void> selectLightTheme() async {
     await openAppThemeOptionSelection();
-    await tap(find.byKey(keys.themeModeLight));
+    await tap(find.byKey(app_keys.themeModeOption(ThemeMode.light)));
     await pumpAndSettle();
   }
 
   Future<void> selectDarkTheme() async {
     await openAppThemeOptionSelection();
-    await tap(find.byKey(keys.themeModeDark));
+    await tap(find.byKey(app_keys.themeModeOption(ThemeMode.dark)));
     await pumpAndSettle();
   }
 }
@@ -156,9 +160,12 @@ Widget androidWidget({
     ], child: child);
 
 void main() {
-  var widget = createMaterialApp(child: const AndroidSettingsPage());
+  debugDefaultTargetPlatformOverride = TargetPlatform.android;
+  var widget = createMaterialApp(child: const SettingsPage());
 
   testWidgets('NFC Tap options', (WidgetTester tester) async {
+    const prefNfcOpenApp = 'prefNfcOpenApp';
+    const prefNfcCopyOtp = 'prefNfcCopyOtp';
     SharedPreferences.setMockInitialValues(
         {prefNfcOpenApp: true, prefNfcCopyOtp: false});
 
@@ -191,6 +198,9 @@ void main() {
   });
 
   testWidgets('Static password keyboard layout', (WidgetTester tester) async {
+    const prefNfcOpenApp = 'prefNfcOpenApp';
+    const prefNfcCopyOtp = 'prefNfcCopyOtp';
+    const prefClipKbdLayout = 'prefClipKbdLayout';
     SharedPreferences.setMockInitialValues(
         {prefNfcOpenApp: true, prefNfcCopyOtp: false, prefClipKbdLayout: 'US'});
 
@@ -229,6 +239,7 @@ void main() {
   });
 
   testWidgets('Bypass touch req', (WidgetTester tester) async {
+    const prefNfcBypassTouch = 'prefNfcBypassTouch';
     SharedPreferences.setMockInitialValues({prefNfcBypassTouch: false});
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
@@ -278,13 +289,14 @@ void main() {
 
       // we expect System theme default
       expect((tester.themeModeListTile().subtitle as Text).data,
-          equals('Light theme'));
+          equals('Light mode'));
     });
 
     testWidgets('Theme preferences update', (WidgetTester tester) async {
       // no value for theme
       SharedPreferences.setMockInitialValues({});
       SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+      const prefTheme = 'APP_STATE_THEME';
 
       await tester.pumpWidget(androidWidget(
         sharedPrefs: sharedPrefs,
@@ -303,6 +315,7 @@ void main() {
   });
 
   testWidgets('Open app on USB', (WidgetTester tester) async {
+    const prefUsbOpenApp = 'prefUsbOpenApp';
     SharedPreferences.setMockInitialValues({prefUsbOpenApp: false});
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
@@ -321,6 +334,7 @@ void main() {
   });
 
   testWidgets('Silence NFC sound', (WidgetTester tester) async {
+    const prefNfcSilenceSounds = 'prefNfcSilenceSounds';
     SharedPreferences.setMockInitialValues({prefNfcSilenceSounds: false});
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
@@ -337,4 +351,6 @@ void main() {
     await tester.tapSilenceNfcSounds();
     expect(sharedPrefs.getBool(prefNfcSilenceSounds), equals(false));
   });
+
+  debugDefaultTargetPlatformOverride = null;
 }

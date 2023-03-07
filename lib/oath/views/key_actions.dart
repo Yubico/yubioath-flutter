@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -24,6 +22,7 @@ import 'package:yubico_authenticator/oath/icon_provider/icon_pack_dialog.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../core/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../widgets/list_title.dart';
 import '../models.dart';
@@ -40,29 +39,28 @@ Widget oathBuildActions(
   WidgetRef ref, {
   int? used,
 }) {
+  final l10n = AppLocalizations.of(context)!;
   final capacity = oathState.version.isAtLeast(4) ? 32 : null;
   final theme = Theme.of(context).colorScheme;
   return SimpleDialog(
     children: [
-      ListTitle(AppLocalizations.of(context)!.general_setup,
-          textStyle: Theme.of(context).textTheme.bodyLarge),
+      ListTitle(l10n.s_setup, textStyle: Theme.of(context).textTheme.bodyLarge),
       ListTile(
-        title: Text(AppLocalizations.of(context)!.oath_add_account),
+        title: Text(l10n.s_add_account),
         key: keys.addAccountAction,
         leading:
             const CircleAvatar(child: Icon(Icons.person_add_alt_1_outlined)),
         subtitle: Text(used == null
-            ? AppLocalizations.of(context)!.oath_unlock_first
-            : (capacity != null
-                ? AppLocalizations.of(context)!
-                    .oath_accounts_used(used, capacity)
-                : '')),
+            ? l10n.l_unlock_first
+            : (capacity != null ? l10n.l_accounts_used(used, capacity) : '')),
         enabled: used != null && (capacity == null || capacity > used),
         onTap: used != null && (capacity == null || capacity > used)
             ? () async {
+                final credentials = ref.read(credentialsProvider);
+                final withContext = ref.read(withContextProvider);
                 Navigator.of(context).pop();
                 CredentialData? otpauth;
-                if (Platform.isAndroid) {
+                if (isAndroid) {
                   final scanner = ref.read(qrScannerProvider);
                   if (scanner != null) {
                     try {
@@ -76,13 +74,13 @@ Widget oathBuildActions(
                     }
                   }
                 }
-                await ref.read(withContextProvider)((context) async {
+                await withContext((context) async {
                   await showBlurDialog(
                     context: context,
                     builder: (context) => OathAddAccountPage(
                       devicePath,
                       oathState,
-                      credentials: ref.watch(credentialsProvider),
+                      credentials: credentials,
                       credentialData: otpauth,
                     ),
                   );
@@ -90,31 +88,29 @@ Widget oathBuildActions(
               }
             : null,
       ),
-      ListTitle(AppLocalizations.of(context)!.general_manage,
+      ListTitle(l10n.s_manage,
           textStyle: Theme.of(context).textTheme.bodyLarge),
       ListTile(
           key: keys.customIconsAction,
-          title: const Text('Custom icons'),
-          subtitle: const Text('Set icons for accounts'),
+          title: Text(l10n.s_custom_icons),
+          subtitle: Text(l10n.l_set_icons_for_accounts),
           leading: const CircleAvatar(
             child: Icon(Icons.image_outlined),
           ),
           onTap: () async {
             Navigator.of(context).pop();
             await ref.read(withContextProvider)((context) => showBlurDialog(
-              context: context,
-              routeSettings:
-              const RouteSettings(name: 'oath_icon_pack_dialog'),
-              builder: (context) => const IconPackDialog(),
-            ));
+                  context: context,
+                  routeSettings:
+                      const RouteSettings(name: 'oath_icon_pack_dialog'),
+                  builder: (context) => const IconPackDialog(),
+                ));
           }),
       ListTile(
           key: keys.setOrManagePasswordAction,
-          title: Text(oathState.hasKey
-              ? AppLocalizations.of(context)!.oath_manage_password
-              : AppLocalizations.of(context)!.oath_set_password),
-          subtitle:
-              Text(AppLocalizations.of(context)!.oath_password_description),
+          title: Text(
+              oathState.hasKey ? l10n.s_manage_password : l10n.s_set_password),
+          subtitle: Text(l10n.l_optional_password_protection),
           leading: const CircleAvatar(child: Icon(Icons.password_outlined)),
           onTap: () {
             Navigator.of(context).pop();
@@ -125,9 +121,8 @@ Widget oathBuildActions(
           }),
       ListTile(
           key: keys.resetAction,
-          title: Text(AppLocalizations.of(context)!.oath_reset_oath),
-          subtitle: Text(
-              AppLocalizations.of(context)!.oath_factory_reset_description),
+          title: Text(l10n.s_reset_oath),
+          subtitle: Text(l10n.l_factory_reset_this_app),
           leading: CircleAvatar(
             foregroundColor: theme.onError,
             backgroundColor: theme.error,

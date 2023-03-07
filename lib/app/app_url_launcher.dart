@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import 'dart:io';
-
 import 'package:url_launcher/url_launcher.dart';
 
-void launchFeedbackUrl() => _launchUrl(Platform.isAndroid
+import '../core/state.dart';
+
+void launchFeedbackUrl() => _launchUrl(isAndroid
     ? 'https://yubi.co/ya-feedback-android'
     : 'https://yubi.co/ya-feedback-desktop');
 
-void launchHelpUrl() => _launchUrl(Platform.isAndroid
+void launchHelpUrl() => _launchUrl(isAndroid
     ? 'https://yubi.co/ya-help-android'
     : 'https://yubi.co/ya-help-desktop');
 

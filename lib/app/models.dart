@@ -17,6 +17,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../management/models.dart';
 import '../core/models.dart';
@@ -28,16 +29,15 @@ const _listEquality = ListEquality();
 enum Availability { enabled, disabled, unsupported }
 
 enum Application {
-  oath('Authenticator'),
-  fido('WebAuthn'),
-  otp('One-Time Passwords'),
-  piv('Certificates'),
-  openpgp('OpenPGP'),
-  hsmauth('YubiHSM Auth'),
-  management('Toggle Applications');
+  oath,
+  fido,
+  otp,
+  piv,
+  openpgp,
+  hsmauth,
+  management;
 
-  final String displayName;
-  const Application(this.displayName);
+  const Application();
 
   bool _inCapabilities(int capabilities) {
     switch (this) {
@@ -56,6 +56,17 @@ enum Application {
         return Capability.hsmauth.value & capabilities != 0;
       case Application.management:
         return true;
+    }
+  }
+
+  String getDisplayName(AppLocalizations l10n) {
+    switch (this) {
+      case Application.oath:
+        return l10n.s_authenticator;
+      case Application.fido:
+        return l10n.s_webauthn;
+      default:
+        return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
   }
 

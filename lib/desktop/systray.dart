@@ -56,7 +56,7 @@ final _favoriteAccounts =
 );
 
 final systrayProvider = Provider.autoDispose((ref) {
-  final systray = _Systray(ref, ref.watch(l10nProvider));
+  final systray = _Systray(ref);
 
   // Keep track of which accounts to show
   ref.listen(
@@ -64,12 +64,18 @@ final systrayProvider = Provider.autoDispose((ref) {
     (_, next) {
       systray._updateCredentials(next);
     },
+    fireImmediately: true,
   );
 
   // Keep track of the shown/hidden state of the app
   ref.listen(windowStateProvider.select((value) => value.hidden), (_, hidden) {
     systray._setHidden(hidden);
   }, fireImmediately: true);
+
+  // Keep track of the locale of the app
+  ref.listen(l10nProvider, (_, l10n) {
+    systray._updateLocale(l10n);
+  });
 
   ref.onDispose(systray.dispose);
 
@@ -99,20 +105,17 @@ String _getIcon() {
 
 class _Systray extends TrayListener {
   final Ref _ref;
-  final AppLocalizations _l10n;
   int _lastClick = 0;
+  AppLocalizations _l10n;
   DevicePath _devicePath = DevicePath([]);
   List<OathCredential> _credentials = [];
   bool _isHidden = false;
-  _Systray(this._ref, this._l10n) {
+  _Systray(this._ref) : _l10n = _ref.read(l10nProvider) {
     _init();
   }
 
   Future<void> _init() async {
     await trayManager.setIcon(_getIcon(), isTemplate: true);
-    if (!Platform.isLinux) {
-      await trayManager.setToolTip(_l10n.general_app_name);
-    }
     await _updateContextMenu();
 
     // Doesn't seem to work on Linux
@@ -120,7 +123,16 @@ class _Systray extends TrayListener {
   }
 
   void dispose() {
+    trayManager.removeListener(this);
     trayManager.destroy();
+  }
+
+  void _updateLocale(AppLocalizations l10n) async {
+    _l10n = l10n;
+    if (!Platform.isLinux) {
+      await trayManager.setToolTip(l10n.app_name);
+    }
+    await _updateContextMenu();
   }
 
   void _updateCredentials(Pair<DevicePath?, List<OathCredential>> pair) {
@@ -176,8 +188,8 @@ class _Systray extends TrayListener {
                         .read(clipboardProvider)
                         .setText(code.value, isSensitive: true);
                     final notification = LocalNotification(
-                      title: _l10n.systray_oath_copied,
-                      body: _l10n.systray_oath_copied_to_clipboard(label),
+                      title: _l10n.s_code_copied,
+                      body: _l10n.p_target_copied_clipboard(label),
                       silent: true,
                     );
                     await notification.show();
@@ -190,14 +202,12 @@ class _Systray extends TrayListener {
           ),
           if (_credentials.isEmpty)
             MenuItem(
-              label: _l10n.systray_no_pinned,
+              label: _l10n.s_no_pinned_accounts,
               disabled: true,
             ),
           MenuItem.separator(),
           MenuItem(
-            label: _isHidden
-                ? _l10n.general_show_window
-                : _l10n.general_hide_window,
+            label: _isHidden ? _l10n.s_show_window : _l10n.s_hide_window,
             onClick: (_) {
               _ref
                   .read(desktopWindowStateProvider.notifier)
@@ -206,7 +216,7 @@ class _Systray extends TrayListener {
           ),
           MenuItem.separator(),
           MenuItem(
-              label: _l10n.general_quit,
+              label: _l10n.s_quit,
               onClick: (_) {
                 _ref.read(withContextProvider)(
                   (context) async {
