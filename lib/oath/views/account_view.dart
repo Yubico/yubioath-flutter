@@ -99,6 +99,24 @@ class _AccountViewState extends ConsumerState<AccountView> {
     }).toList();
   }
 
+  String? a11yCredentialLabel(String? issuer, String? name, OathCode? code) {
+    String? label = '';
+    String? tmpIssuer = issuer;
+    String? tmpName = name;
+    String? tmpCode = code?.value;
+    if (tmpIssuer != null) {
+      label += tmpIssuer;
+    }
+    if (tmpName != null) {
+      label += tmpName;
+    }
+    if (tmpCode != null) {
+      label += tmpCode;
+    }
+
+    return label;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -169,76 +187,80 @@ class _AccountViewState extends ConsumerState<AccountView> {
             );
 
             return Shortcuts(
-              shortcuts: {
-                LogicalKeySet(LogicalKeyboardKey.enter): const OpenIntent(),
-                LogicalKeySet(LogicalKeyboardKey.space): const OpenIntent(),
-              },
-              child: ListTile(
-                focusNode: _focusNode,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                onTap: () {
-                  if (isDesktop) {
-                    final now = DateTime.now().millisecondsSinceEpoch;
-                    if (now - _lastTap < 500) {
-                      setState(() {
-                        _lastTap = 0;
-                      });
+                shortcuts: {
+                  LogicalKeySet(LogicalKeyboardKey.enter): const OpenIntent(),
+                  LogicalKeySet(LogicalKeyboardKey.space): const OpenIntent(),
+                },
+                child: Semantics(
+                  label: a11yCredentialLabel(
+                      credential.issuer, credential.name, helper.code),
+                  child: ListTile(
+                    focusNode: _focusNode,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    onTap: () {
+                      if (isDesktop) {
+                        final now = DateTime.now().millisecondsSinceEpoch;
+                        if (now - _lastTap < 500) {
+                          setState(() {
+                            _lastTap = 0;
+                          });
+                          Actions.maybeInvoke(context, const CopyIntent());
+                        } else {
+                          _focusNode.requestFocus();
+                          setState(() {
+                            _lastTap = now;
+                          });
+                        }
+                      } else {
+                        Actions.maybeInvoke<OpenIntent>(
+                            context, const OpenIntent());
+                      }
+                    },
+                    onLongPress: () {
                       Actions.maybeInvoke(context, const CopyIntent());
-                    } else {
-                      _focusNode.requestFocus();
-                      setState(() {
-                        _lastTap = now;
-                      });
-                    }
-                  } else {
-                    Actions.maybeInvoke<OpenIntent>(
-                        context, const OpenIntent());
-                  }
-                },
-                onLongPress: () {
-                  Actions.maybeInvoke(context, const CopyIntent());
-                },
-                leading: showAvatar
-                    ? AccountIcon(
-                        issuer: credential.issuer, defaultWidget: circleAvatar)
-                    : null,
-                title: Text(
-                  helper.title,
-                  overflow: TextOverflow.fade,
-                  maxLines: 1,
-                  softWrap: false,
-                ),
-                subtitle: subtitle != null
-                    ? Text(
-                        subtitle,
-                        overflow: TextOverflow.fade,
-                        maxLines: 1,
-                        softWrap: false,
-                      )
-                    : null,
-                trailing: Focus(
-                  skipTraversal: true,
-                  descendantsAreTraversable: false,
-                  child: helper.code != null
-                      ? FilledButton.tonalIcon(
-                          icon: helper.buildCodeIcon(),
-                          label: helper.buildCodeLabel(),
-                          onPressed: () {
-                            Actions.maybeInvoke<OpenIntent>(
-                                context, const OpenIntent());
-                          },
-                        )
-                      : FilledButton.tonal(
-                          onPressed: () {
-                            Actions.maybeInvoke<OpenIntent>(
-                                context, const OpenIntent());
-                          },
-                          child: helper.buildCodeIcon()),
-                ),
-              ),
-            );
+                    },
+                    leading: showAvatar
+                        ? AccountIcon(
+                            issuer: credential.issuer,
+                            defaultWidget: circleAvatar)
+                        : null,
+                    title: Text(
+                      helper.title,
+                      overflow: TextOverflow.fade,
+                      maxLines: 1,
+                      softWrap: false,
+                    ),
+                    subtitle: subtitle != null
+                        ? Text(
+                            subtitle,
+                            overflow: TextOverflow.fade,
+                            maxLines: 1,
+                            softWrap: false,
+                          )
+                        : null,
+                    trailing: Focus(
+                      skipTraversal: true,
+                      descendantsAreTraversable: false,
+                      child: helper.code != null
+                          ? FilledButton.tonalIcon(
+                              icon: helper.buildCodeIcon(),
+                              label: helper.buildCodeLabel(),
+                              onPressed: () {
+                                Actions.maybeInvoke<OpenIntent>(
+                                    context, const OpenIntent());
+                              },
+                            )
+                          : FilledButton.tonal(
+                              onPressed: () {
+                                Actions.maybeInvoke<OpenIntent>(
+                                    context, const OpenIntent());
+                              },
+                              child: helper.buildCodeIcon()),
+                    ),
+                  ),
+                ));
           }),
         );
       },
