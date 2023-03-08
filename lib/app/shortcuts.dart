@@ -22,14 +22,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../about_page.dart';
-import '../android/views/android_settings_page.dart';
 import '../core/state.dart';
 import '../desktop/state.dart';
 import '../oath/keys.dart';
-import '../settings_page.dart';
 import 'message.dart';
 import 'models.dart';
 import 'state.dart';
+import 'views/settings_page.dart';
 
 class OpenIntent extends Intent {
   const OpenIntent();
@@ -71,8 +70,9 @@ class DeleteIntent extends Intent {
   const DeleteIntent();
 }
 
-final ctrlOrCmd =
-    Platform.isMacOS ? LogicalKeyboardKey.meta : LogicalKeyboardKey.control;
+/// Use cmd on macOS, use ctrl on the other platforms
+SingleActivator ctrlOrCmd(LogicalKeyboardKey key) =>
+    SingleActivator(key, meta: Platform.isMacOS, control: !Platform.isMacOS);
 
 Widget registerGlobalShortcuts(
         {required WidgetRef ref, required Widget child}) =>
@@ -122,9 +122,7 @@ Widget registerGlobalShortcuts(
             if (!Navigator.of(context).canPop()) {
               await showBlurDialog(
                 context: context,
-                builder: (context) => Platform.isAndroid
-                    ? const AndroidSettingsPage()
-                    : const SettingsPage(),
+                builder: (context) => const SettingsPage(),
                 routeSettings: const RouteSettings(name: 'settings'),
               );
             }
@@ -146,18 +144,17 @@ Widget registerGlobalShortcuts(
       },
       child: Shortcuts(
         shortcuts: {
-          LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyC): const CopyIntent(),
-          LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyW): const HideIntent(),
-          LogicalKeySet(ctrlOrCmd, LogicalKeyboardKey.keyF):
-              const SearchIntent(),
+          ctrlOrCmd(LogicalKeyboardKey.keyC): const CopyIntent(),
+          ctrlOrCmd(LogicalKeyboardKey.keyW): const HideIntent(),
+          ctrlOrCmd(LogicalKeyboardKey.keyF): const SearchIntent(),
           if (isDesktop) ...{
-            LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.tab):
+            const SingleActivator(LogicalKeyboardKey.tab, control: true):
                 const NextDeviceIntent(),
           },
           if (Platform.isMacOS) ...{
-            LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyQ):
+            const SingleActivator(LogicalKeyboardKey.keyQ, meta: true):
                 const CloseIntent(),
-            LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.comma):
+            const SingleActivator(LogicalKeyboardKey.comma, meta: true):
                 const SettingsIntent(),
           },
         },

@@ -56,7 +56,7 @@ final _favoriteAccounts =
 );
 
 final systrayProvider = Provider.autoDispose((ref) {
-  final systray = _Systray(ref, ref.watch(l10nProvider));
+  final systray = _Systray(ref);
 
   // Keep track of which accounts to show
   ref.listen(
@@ -64,12 +64,18 @@ final systrayProvider = Provider.autoDispose((ref) {
     (_, next) {
       systray._updateCredentials(next);
     },
+    fireImmediately: true,
   );
 
   // Keep track of the shown/hidden state of the app
   ref.listen(windowStateProvider.select((value) => value.hidden), (_, hidden) {
     systray._setHidden(hidden);
   }, fireImmediately: true);
+
+  // Keep track of the locale of the app
+  ref.listen(l10nProvider, (_, l10n) {
+    systray._updateLocale(l10n);
+  });
 
   ref.onDispose(systray.dispose);
 
@@ -99,20 +105,17 @@ String _getIcon() {
 
 class _Systray extends TrayListener {
   final Ref _ref;
-  final AppLocalizations _l10n;
   int _lastClick = 0;
+  AppLocalizations _l10n;
   DevicePath _devicePath = DevicePath([]);
   List<OathCredential> _credentials = [];
   bool _isHidden = false;
-  _Systray(this._ref, this._l10n) {
+  _Systray(this._ref) : _l10n = _ref.read(l10nProvider) {
     _init();
   }
 
   Future<void> _init() async {
     await trayManager.setIcon(_getIcon(), isTemplate: true);
-    if (!Platform.isLinux) {
-      await trayManager.setToolTip(_l10n.app_name);
-    }
     await _updateContextMenu();
 
     // Doesn't seem to work on Linux
@@ -120,7 +123,16 @@ class _Systray extends TrayListener {
   }
 
   void dispose() {
+    trayManager.removeListener(this);
     trayManager.destroy();
+  }
+
+  void _updateLocale(AppLocalizations l10n) async {
+    _l10n = l10n;
+    if (!Platform.isLinux) {
+      await trayManager.setToolTip(l10n.app_name);
+    }
+    await _updateContextMenu();
   }
 
   void _updateCredentials(Pair<DevicePath?, List<OathCredential>> pair) {

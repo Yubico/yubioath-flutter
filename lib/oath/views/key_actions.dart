@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -24,6 +22,7 @@ import 'package:yubico_authenticator/oath/icon_provider/icon_pack_dialog.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../core/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../widgets/list_title.dart';
 import '../models.dart';
@@ -57,9 +56,11 @@ Widget oathBuildActions(
         enabled: used != null && (capacity == null || capacity > used),
         onTap: used != null && (capacity == null || capacity > used)
             ? () async {
+                final credentials = ref.read(credentialsProvider);
+                final withContext = ref.read(withContextProvider);
                 Navigator.of(context).pop();
                 CredentialData? otpauth;
-                if (Platform.isAndroid) {
+                if (isAndroid) {
                   final scanner = ref.read(qrScannerProvider);
                   if (scanner != null) {
                     try {
@@ -73,13 +74,13 @@ Widget oathBuildActions(
                     }
                   }
                 }
-                await ref.read(withContextProvider)((context) async {
+                await withContext((context) async {
                   await showBlurDialog(
                     context: context,
                     builder: (context) => OathAddAccountPage(
                       devicePath,
                       oathState,
-                      credentials: ref.watch(credentialsProvider),
+                      credentials: credentials,
                       credentialData: otpauth,
                     ),
                   );
