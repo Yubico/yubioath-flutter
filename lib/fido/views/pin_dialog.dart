@@ -75,6 +75,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 initialValue: _currentPin,
                 autofocus: true,
                 obscureText: true,
+                autofillHints: const [AutofillHints.password],
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_current_pin,
@@ -96,6 +97,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               initialValue: _newPin,
               autofocus: !hasPin,
               obscureText: true,
+              autofillHints: const [AutofillHints.password],
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_pin,
@@ -114,6 +116,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             TextFormField(
               initialValue: _confirmPin,
               obscureText: true,
+              autofillHints: const [AutofillHints.password],
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_pin,

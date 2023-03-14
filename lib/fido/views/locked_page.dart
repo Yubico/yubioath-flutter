@@ -145,6 +145,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
             child: TextField(
               autofocus: true,
               obscureText: _isObscure,
+              autofillHints: const [AutofillHints.password],
               controller: _pinController,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
