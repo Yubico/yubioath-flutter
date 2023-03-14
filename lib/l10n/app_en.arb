@@ -86,6 +86,7 @@
     "s_dark_mode": "Dark mode",
 
     "@_yubikey_selection": {},
+    "s_yk_information": "YubiKey information",
     "s_select_yk": "Select YubiKey",
     "s_select_to_scan": "Select to scan",
     "s_hide_device": "Hide device",
