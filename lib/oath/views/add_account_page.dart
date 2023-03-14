@@ -453,6 +453,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       key: keys.secretField,
                       controller: _secretController,
                       obscureText: _isObscure,
+                      autofillHints: isAndroid ? [] : const [AutofillHints.password],
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(
                             _secretFormatterPattern)

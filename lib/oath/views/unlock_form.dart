@@ -77,6 +77,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 controller: _passwordController,
                 autofocus: true,
                 obscureText: _isObscure,
+                autofillHints: const [AutofillHints.password],
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_password,
