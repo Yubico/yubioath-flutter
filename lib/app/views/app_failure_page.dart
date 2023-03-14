@@ -34,10 +34,11 @@ class AppFailurePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final reason = cause;
 
     Widget? graphic = const Icon(Icons.error);
-    String? header = 'An error has occured';
+    String? header = l10n.l_error_occured;
     String? message = reason.toString();
     List<Widget> actions = [];
 
@@ -45,13 +46,13 @@ class AppFailurePage extends ConsumerWidget {
       if (reason.status == 'connection-error') {
         switch (reason.body['connection']) {
           case 'ccid':
-            header = 'Failed to open smart card connection';
+            header = l10n.l_ccid_connection_failed;
             if (Platform.isMacOS) {
-              message = 'Try to remove and re-insert your YubiKey.';
+              message = l10n.p_try_reinsert_yk;
             } else if (Platform.isLinux) {
-              message = 'Make sure pcscd is installed and running.';
+              message = l10n.p_pcscd_unavailable;
             } else {
-              message = 'Make sure your smart card service is functioning.';
+              message = l10n.p_ccid_service_unavailable;
             }
             break;
           case 'fido':
@@ -59,17 +60,14 @@ class AppFailurePage extends ConsumerWidget {
                 !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
               graphic = noPermission;
               header = null;
-              message = AppLocalizations.of(context)!.appFailurePage_txt_info;
+              message = l10n.p_webauthn_elevated_permissions_required;
               actions = [
                 ElevatedButton.icon(
-                  label: Text(
-                      AppLocalizations.of(context)!.appFailurePage_btn_unlock),
+                  label: Text(l10n.s_unlock),
                   icon: const Icon(Icons.lock_open),
                   onPressed: () async {
                     final closeMessage = showMessage(
-                        context,
-                        AppLocalizations.of(context)!
-                            .appFailurePage_msg_permission,
+                        context, l10n.l_elevating_permissions,
                         duration: const Duration(seconds: 30));
                     try {
                       if (await ref.read(rpcProvider).requireValue.elevate()) {
@@ -77,7 +75,10 @@ class AppFailurePage extends ConsumerWidget {
                       } else {
                         await ref.read(withContextProvider)(
                           (context) async {
-                            showMessage(context, 'Permission denied');
+                            showMessage(
+                              context,
+                              l10n.s_permission_denied,
+                            );
                           },
                         );
                       }
@@ -90,8 +91,8 @@ class AppFailurePage extends ConsumerWidget {
             }
             break;
           default:
-            header = 'Failed to open connection';
-            message = 'Try to remove and re-insert your YubiKey.';
+            header = l10n.l_open_connection_failed;
+            message = l10n.p_try_reinsert_yk;
         }
       }
     }

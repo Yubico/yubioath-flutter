@@ -33,23 +33,24 @@ class YubicoAuthenticatorApp extends ConsumerWidget {
     return registerGlobalShortcuts(
       ref: ref,
       child: LogWarningOverlay(
-        child: MaterialApp(
-          title: 'Yubico Authenticator',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ref.watch(themeModeProvider),
-          home: page,
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en', ''), // English, no country code
-          ],
-        ),
+        child: Consumer(builder: (context, ref, _) {
+          return MaterialApp(
+            title: ref.watch(l10nProvider).app_name,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: ref.watch(themeModeProvider),
+            home: page,
+            debugShowCheckedModeBanner: false,
+            locale: ref.watch(currentLocaleProvider),
+            supportedLocales: ref.watch(supportedLocalesProvider),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+          );
+        }),
       ),
     );
   }

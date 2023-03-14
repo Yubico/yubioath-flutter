@@ -126,7 +126,7 @@ class ConfigTest {
 
     @Test
     fun `deviceFlags value`() {
-        val deviceConfig = Mockito.mock(DeviceConfig::class.java)
+        val deviceConfig = deviceConfigMock
 
         Mockito.`when`(deviceConfig.deviceFlags).thenReturn(null)
         assertEquals(Config(deviceConfig).deviceFlags, null)
@@ -137,7 +137,7 @@ class ConfigTest {
 
     @Test
     fun `challengeResponseTimeout value`() {
-        val deviceConfig = Mockito.mock(DeviceConfig::class.java)
+        val deviceConfig = deviceConfigMock
 
         Mockito.`when`(deviceConfig.challengeResponseTimeout).thenReturn(null)
         assertEquals(Config(deviceConfig).challengeResponseTimeout, null)
@@ -157,7 +157,7 @@ class ConfigTest {
 
     @Test
     fun `autoEjectTimeout value`() {
-        val deviceConfig = Mockito.mock(DeviceConfig::class.java)
+        val deviceConfig = deviceConfigMock
 
         Mockito.`when`(deviceConfig.autoEjectTimeout).thenReturn(null)
         assertEquals(Config(deviceConfig).autoEjectTimeout, null)

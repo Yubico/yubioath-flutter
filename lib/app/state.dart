@@ -15,17 +15,24 @@
  */
 
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
 import '../core/state.dart';
 import 'models.dart';
 
 final _log = Logger('app.state');
+
+// Officially supported translations
+const officialLocales = [
+  Locale('en', ''),
+];
 
 // Override this to alter the set of supported apps.
 final supportedAppsProvider =
@@ -38,6 +45,37 @@ final windowStateProvider = Provider<WindowState>(
 
 final supportedThemesProvider = StateProvider<List<ThemeMode>>(
   (ref) => throw UnimplementedError(),
+);
+
+final communityTranslationsProvider =
+    StateNotifierProvider<CommunityTranslationsNotifier, bool>(
+        (ref) => CommunityTranslationsNotifier(ref.watch(prefProvider)));
+
+class CommunityTranslationsNotifier extends StateNotifier<bool> {
+  static const String _key = 'APP_STATE_ENABLE_COMMUNITY_TRANSLATIONS';
+  final SharedPreferences _prefs;
+
+  CommunityTranslationsNotifier(this._prefs)
+      : super(_prefs.getBool(_key) == true);
+
+  void setEnableCommunityTranslations(bool value) {
+    state = value;
+    _prefs.setBool(_key, value);
+  }
+}
+
+final supportedLocalesProvider = Provider<List<Locale>>((ref) =>
+    ref.watch(communityTranslationsProvider)
+        ? AppLocalizations.supportedLocales
+        : officialLocales);
+
+final currentLocaleProvider = Provider<Locale>(
+  (ref) => basicLocaleListResolution(
+      window.locales, ref.watch(supportedLocalesProvider)),
+);
+
+final l10nProvider = Provider<AppLocalizations>(
+  (ref) => lookupAppLocalizations(ref.watch(currentLocaleProvider)),
 );
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(

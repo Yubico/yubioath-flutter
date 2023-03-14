@@ -1,0 +1,22 @@
+== Custom Account Icons
+Yubico Authenticator supports adding a custom icon pack to use for your OATH
+(TOTP/HOTP) accounts, making the list a bit easier to navigate. Icon packs must
+be in the
+https://github.com/beemdevelopment/Aegis/blob/master/docs/iconpacks.md[Aegis Icon Pack format].
+You can use one of the existing pre-built packages from
+https://aegis-icons.github.io/ or
+https://github.com/alexbakker/aegis-simple-icons, or you can create your own.
+
+=== Installing an icon pack
+Once you have an icon pack on your computer or Android device and wish to use
+it, follow these steps:
+
+1. Open the Yubico Authenticator app and insert or tap your OATH-enabled YubiKey.
+2. Make sure the `Authenticator` section is chosen, where you can see your list of accounts.
+3. Press the `Configure YubiKey` button, and select `Custom icons` from the menu.
+4. Press the `Load icon pack` button, select the icon pack zip-file, and wait for it to load.
+
+Once done, any account that has an issuer that is supported by the icon pack
+will display the custom icon instead of the standard colored circle with a
+letter. You can also use the `Custom icons` dialog to replace the icon pack, or
+to remove it.

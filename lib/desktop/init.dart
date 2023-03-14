@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,44 +23,86 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
+import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../app/app.dart';
 import '../app/logging.dart';
 import '../app/message.dart';
+import '../app/models.dart';
+import '../app/state.dart';
 import '../app/views/app_failure_page.dart';
 import '../app/views/main_page.dart';
 import '../app/views/message_page.dart';
 import '../core/state.dart';
 import '../fido/state.dart';
-import '../oath/state.dart';
-import '../app/models.dart';
-import '../app/state.dart';
 import '../management/state.dart';
+import '../oath/state.dart';
 import '../version.dart';
+import 'devices.dart';
 import 'fido/state.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
-import 'rpc.dart';
-import 'devices.dart';
 import 'qr_scanner.dart';
+import 'rpc.dart';
 import 'state.dart';
+import 'systray.dart';
+import 'window_manager_helper/defaults.dart';
+import 'window_manager_helper/window_manager_helper.dart';
 
 final _log = Logger('desktop.init');
+
+const String _keyLeft = 'DESKTOP_WINDOW_LEFT';
+const String _keyTop = 'DESKTOP_WINDOW_TOP';
 const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
 const String _keyHeight = 'DESKTOP_WINDOW_HEIGHT';
 
-class _WindowResizeListener extends WindowListener {
-  final SharedPreferences _prefs;
-  _WindowResizeListener(this._prefs);
+void _saveWindowBounds(WindowManagerHelper helper) async {
+  final bounds = await helper.getBounds();
+  await helper.sharedPreferences.setDouble(_keyWidth, bounds.width);
+  await helper.sharedPreferences.setDouble(_keyHeight, bounds.height);
+  await helper.sharedPreferences.setDouble(_keyLeft, bounds.left);
+  await helper.sharedPreferences.setDouble(_keyTop, bounds.top);
+  _log.debug('Saving window bounds: $bounds');
+}
+
+class _ScreenRetrieverListener extends ScreenListener {
+  final WindowManagerHelper _helper;
+
+  _ScreenRetrieverListener(this._helper);
+
+  @override
+  void onScreenEvent(String eventName) async {
+    _log.debug('Screen event: $eventName');
+    _saveWindowBounds(_helper);
+  }
+}
+
+class _WindowEventListener extends WindowListener {
+  final WindowManagerHelper _helper;
+
+  _WindowEventListener(this._helper);
 
   @override
   void onWindowResize() async {
-    final size = await windowManager.getSize();
-    await _prefs.setDouble(_keyWidth, size.width);
-    await _prefs.setDouble(_keyHeight, size.height);
+    _log.debug('Window event: onWindowResize');
+    _saveWindowBounds(_helper);
+  }
+
+  @override
+  void onWindowMoved() async {
+    _log.debug('Window event: onWindowMoved');
+    _saveWindowBounds(_helper);
+  }
+
+  @override
+  void onWindowClose() async {
+    if (Platform.isMacOS) {
+      await windowManager.destroy();
+    }
   }
 }
 
@@ -69,14 +111,33 @@ Future<Widget> initialize(List<String> argv) async {
 
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
+  final windowManagerHelper = WindowManagerHelper.withPreferences(prefs);
+  final isHidden = prefs.getBool(windowHidden) ?? false;
 
-  unawaited(windowManager.waitUntilReadyToShow().then((_) async {
-    await windowManager.setMinimumSize(const Size(270, 0));
-    final width = prefs.getDouble(_keyWidth) ?? 400;
-    final height = prefs.getDouble(_keyHeight) ?? 720;
-    await windowManager.setSize(Size(width, height));
-    await windowManager.show();
-    windowManager.addListener(_WindowResizeListener(prefs));
+  final bounds = Rect.fromLTWH(
+    prefs.getDouble(_keyLeft) ?? WindowDefaults.bounds.left,
+    prefs.getDouble(_keyTop) ?? WindowDefaults.bounds.top,
+    prefs.getDouble(_keyWidth) ?? WindowDefaults.bounds.width,
+    prefs.getDouble(_keyHeight) ?? WindowDefaults.bounds.height,
+  );
+
+  _log.debug('Using saved window bounds (or defaults): $bounds');
+
+  unawaited(windowManager
+      .waitUntilReadyToShow(WindowOptions(
+    minimumSize: WindowDefaults.minSize,
+    skipTaskbar: isHidden,
+  ))
+      .then((_) async {
+    await windowManagerHelper.setBounds(bounds);
+
+    if (isHidden) {
+      await windowManager.setSkipTaskbar(true);
+    } else {
+      await windowManager.show();
+    }
+    windowManager.addListener(_WindowEventListener(windowManagerHelper));
+    screenRetriever.addListener(_ScreenRetrieverListener(windowManagerHelper));
   }));
 
   // Either use the _HELPER_PATH environment variable, or look relative to executable.
@@ -105,6 +166,11 @@ Future<Widget> initialize(List<String> argv) async {
 
   final rpcFuture = _initHelper(exe!);
   _initLicenses();
+
+  await localNotifier.setup(
+    appName: 'Yubico Authenticator',
+    shortcutPolicy: ShortcutPolicy.ignore,
+  );
 
   return ProviderScope(
     overrides: [
@@ -154,6 +220,9 @@ Future<Widget> initialize(List<String> argv) async {
           ref.listen<Level>(logLevelProvider, (_, level) {
             ref.read(rpcProvider).valueOrNull?.setLogLevel(level);
           });
+
+          // Initialize systray
+          ref.watch(systrayProvider);
 
           // Show a loading or error page while the Helper isn't ready
           return ref.watch(rpcProvider).when(
@@ -251,13 +320,14 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
   @override
   Widget build(BuildContext context) {
     if (slow) {
+      final l10n = AppLocalizations.of(context)!;
       return MessagePage(
         graphic: const CircularProgressIndicator(),
-        message: 'The Helper process isn\'t responding',
+        message: l10n.l_helper_not_responding,
         actions: [
           ActionChip(
             avatar: const Icon(Icons.copy),
-            label: Text(AppLocalizations.of(context)!.general_copy_log),
+            label: Text(l10n.s_copy_log),
             onPressed: () async {
               _log.info('Copying log to clipboard ($version)...');
               final logs = await ref.read(logLevelProvider.notifier).getLogs();
@@ -268,7 +338,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
                   (context) async {
                     showMessage(
                       context,
-                      AppLocalizations.of(context)!.general_log_copied,
+                      l10n.l_log_copied,
                     );
                   },
                 );

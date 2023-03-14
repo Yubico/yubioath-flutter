@@ -26,6 +26,7 @@ import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
+import 'utils.dart';
 
 class DeleteAccountDialog extends ConsumerWidget {
   final DeviceNode device;
@@ -34,12 +35,9 @@ class DeleteAccountDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final label = credential.issuer != null
-        ? '${credential.issuer} (${credential.name})'
-        : credential.name;
-
+    final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.oath_delete_account),
+      title: Text(l10n.s_delete_account),
       actions: [
         TextButton(
           key: keys.deleteButton,
@@ -51,17 +49,14 @@ class DeleteAccountDialog extends ConsumerWidget {
               await ref.read(withContextProvider)(
                 (context) async {
                   Navigator.of(context).pop(true);
-                  showMessage(
-                      context,
-                      AppLocalizations.of(context)!
-                          .oath_success_delete_account);
+                  showMessage(context, l10n.s_account_deleted);
                 },
               );
             } on CancellationException catch (_) {
               // ignored
             }
           },
-          child: Text(AppLocalizations.of(context)!.oath_delete),
+          child: Text(l10n.s_delete),
         ),
       ],
       child: Padding(
@@ -69,13 +64,12 @@ class DeleteAccountDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context)!
-                .oath_warning_this_will_delete_account_from_key),
+            Text(l10n.p_warning_delete_account),
             Text(
-              AppLocalizations.of(context)!.oath_warning_disable_this_cred,
+              l10n.p_warning_disable_credential,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            Text('${AppLocalizations.of(context)!.oath_account} $label'),
+            Text(l10n.l_account(getTextName(credential))),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

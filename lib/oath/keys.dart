@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@ import 'package:flutter/material.dart';
 
 const _prefix = 'oath.keys';
 
-const setOrManagePasswordAction = Key('$_prefix.set_or_manage_oath_password');
+const setOrManagePasswordAction = Key('$_prefix.set_or_manage_password');
 const addAccountAction = Key('$_prefix.add_account');
 const resetAction = Key('$_prefix.reset');
+
+const customIconsAction = Key('$_prefix.custom_icons');
 
 const noAccountsView = Key('$_prefix.no_accounts');
 

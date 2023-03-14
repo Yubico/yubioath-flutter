@@ -17,11 +17,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
+import '../core/state.dart';
 import 'app_methods.dart';
 import 'devices.dart';
+import 'models.dart';
 
 const _contextChannel = MethodChannel('android.state.appContext');
 
@@ -63,7 +66,7 @@ class _AndroidClipboard extends AppClipboard {
 }
 
 class NfcStateNotifier extends StateNotifier<bool> {
-  NfcStateNotifier(): super(false);
+  NfcStateNotifier() : super(false);
 
   void setNfcEnabled(bool value) {
     state = value;
@@ -74,9 +77,8 @@ final androidSdkVersionProvider = Provider<int>((ref) => -1);
 
 final androidNfcSupportProvider = Provider<bool>((ref) => false);
 
-final androidNfcStateProvider = StateNotifierProvider<NfcStateNotifier, bool>((ref) =>
-  NfcStateNotifier()
-);
+final androidNfcStateProvider =
+    StateNotifierProvider<NfcStateNotifier, bool>((ref) => NfcStateNotifier());
 
 final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   if (ref.read(androidSdkVersionProvider) < 29) {
@@ -122,5 +124,116 @@ class AndroidCurrentDeviceNotifier extends CurrentDeviceNotifier {
   @override
   setCurrentDevice(DeviceNode? device) {
     state = device;
+  }
+}
+
+final androidNfcTapActionProvider =
+    StateNotifierProvider<NfcTapActionNotifier, NfcTapAction>(
+        (ref) => NfcTapActionNotifier(ref.watch(prefProvider)));
+
+class NfcTapActionNotifier extends StateNotifier<NfcTapAction> {
+  static const _prefNfcOpenApp = 'prefNfcOpenApp';
+  static const _prefNfcCopyOtp = 'prefNfcCopyOtp';
+  final SharedPreferences _prefs;
+  NfcTapActionNotifier._(this._prefs, super._state);
+
+  factory NfcTapActionNotifier(SharedPreferences prefs) {
+    final launchApp = prefs.getBool(_prefNfcOpenApp) ?? true;
+    final copyOtp = prefs.getBool(_prefNfcCopyOtp) ?? false;
+    final NfcTapAction action;
+    if (launchApp && copyOtp) {
+      action = NfcTapAction.both;
+    } else if (copyOtp) {
+      action = NfcTapAction.copy;
+    } else {
+      // This is the default value if both are false.
+      action = NfcTapAction.launch;
+    }
+    return NfcTapActionNotifier._(prefs, action);
+  }
+
+  Future<void> setTapAction(NfcTapAction value) async {
+    if (state != value) {
+      state = value;
+      await _prefs.setBool(_prefNfcOpenApp, value != NfcTapAction.copy);
+      await _prefs.setBool(_prefNfcCopyOtp, value != NfcTapAction.launch);
+    }
+  }
+}
+
+// TODO: Get these from Android
+final androidNfcSupportedKbdLayoutsProvider =
+    Provider<List<String>>((ref) => ['US', 'DE', 'DE-CH']);
+
+final androidNfcKbdLayoutProvider =
+    StateNotifierProvider<NfcKbdLayoutNotifier, String>(
+        (ref) => NfcKbdLayoutNotifier(ref.watch(prefProvider)));
+
+class NfcKbdLayoutNotifier extends StateNotifier<String> {
+  static const String _defaultClipKbdLayout = 'US';
+  static const _prefClipKbdLayout = 'prefClipKbdLayout';
+  final SharedPreferences _prefs;
+  NfcKbdLayoutNotifier(this._prefs)
+      : super(_prefs.getString(_prefClipKbdLayout) ?? _defaultClipKbdLayout);
+
+  Future<void> setKeyboardLayout(String value) async {
+    if (state != value) {
+      state = value;
+      await _prefs.setString(_prefClipKbdLayout, value);
+    }
+  }
+}
+
+final androidNfcBypassTouchProvider =
+    StateNotifierProvider<NfcBypassTouchNotifier, bool>(
+        (ref) => NfcBypassTouchNotifier(ref.watch(prefProvider)));
+
+class NfcBypassTouchNotifier extends StateNotifier<bool> {
+  static const _prefNfcBypassTouch = 'prefNfcBypassTouch';
+  final SharedPreferences _prefs;
+  NfcBypassTouchNotifier(this._prefs)
+      : super(_prefs.getBool(_prefNfcBypassTouch) ?? false);
+
+  Future<void> setNfcBypassTouch(bool value) async {
+    if (state != value) {
+      state = value;
+      await _prefs.setBool(_prefNfcBypassTouch, value);
+    }
+  }
+}
+
+final androidNfcSilenceSoundsProvider =
+    StateNotifierProvider<NfcSilenceSoundsNotifier, bool>(
+        (ref) => NfcSilenceSoundsNotifier(ref.watch(prefProvider)));
+
+class NfcSilenceSoundsNotifier extends StateNotifier<bool> {
+  static const _prefNfcSilenceSounds = 'prefNfcSilenceSounds';
+  final SharedPreferences _prefs;
+  NfcSilenceSoundsNotifier(this._prefs)
+      : super(_prefs.getBool(_prefNfcSilenceSounds) ?? false);
+
+  Future<void> setNfcSilenceSounds(bool value) async {
+    if (state != value) {
+      state = value;
+      await _prefs.setBool(_prefNfcSilenceSounds, value);
+    }
+  }
+}
+
+final androidUsbLaunchAppProvider =
+    StateNotifierProvider<UsbLaunchAppNotifier, bool>(
+        (ref) => UsbLaunchAppNotifier(ref.watch(prefProvider)));
+
+class UsbLaunchAppNotifier extends StateNotifier<bool> {
+  static const _prefUsbOpenApp = 'prefUsbOpenApp';
+  final SharedPreferences _prefs;
+  UsbLaunchAppNotifier(this._prefs)
+      : super(_prefs.getBool(_prefUsbOpenApp) ?? false);
+
+  Future<void> setUsbLaunchApp(bool value) async {
+    if (state != value) {
+      state = value;
+      await _prefs.setBool(_prefUsbOpenApp, value);
+    }
   }
 }
