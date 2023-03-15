@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +39,10 @@ class AccountView extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AccountViewState();
+}
+
+String _a11yCredentialLabel(String? issuer, String name, String? code) {
+  return [issuer, name, code].whereNotNull().join(' ');
 }
 
 class _AccountViewState extends ConsumerState<AccountView> {
@@ -97,24 +102,6 @@ class _AccountViewState extends ConsumerState<AccountView> {
         trailing: e.trailing,
       );
     }).toList();
-  }
-
-  String? a11yCredentialLabel(String? issuer, String? name, OathCode? code) {
-    String? label = '';
-    String? tmpIssuer = issuer;
-    String? tmpName = name;
-    String? tmpCode = code?.value;
-    if (tmpIssuer != null) {
-      label += tmpIssuer;
-    }
-    if (tmpName != null) {
-      label += tmpName;
-    }
-    if (tmpCode != null) {
-      label += tmpCode;
-    }
-
-    return label;
   }
 
   @override
@@ -192,8 +179,8 @@ class _AccountViewState extends ConsumerState<AccountView> {
                   LogicalKeySet(LogicalKeyboardKey.space): const OpenIntent(),
                 },
                 child: Semantics(
-                  label: a11yCredentialLabel(
-                      credential.issuer, credential.name, helper.code),
+                  label: _a11yCredentialLabel(
+                      credential.issuer, credential.name, helper.code?.value),
                   child: ListTile(
                     focusNode: _focusNode,
                     shape: RoundedRectangleBorder(
