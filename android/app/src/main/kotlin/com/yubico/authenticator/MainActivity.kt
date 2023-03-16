@@ -16,9 +16,12 @@
 
 package com.yubico.authenticator
 
+import android.annotation.SuppressLint
 import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.usb.UsbDevice
@@ -71,6 +74,11 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (isPortraitOnly()) {
+            forcePortraitOrientation()
+        }
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         allowScreenshots(false)
@@ -240,6 +248,17 @@ class MainActivity : FlutterFragmentActivity() {
         }
 
         appPreferences.registerListener(sharedPreferencesListener)
+    }
+
+    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
+        super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
+
+        if (isPortraitOnly()) {
+            when (isInMultiWindowMode) {
+                true -> allowAnyOrientation()
+                else -> forcePortraitOrientation()
+            }
+        }
     }
 
     private fun processYubiKey(device: YubiKeyDevice) {
@@ -424,4 +443,14 @@ class MainActivity : FlutterFragmentActivity() {
         return FLAG_SECURE != (window.attributes.flags and FLAG_SECURE)
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
+    private fun forcePortraitOrientation() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
+
+    private fun allowAnyOrientation() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+    }
+
+    private fun isPortraitOnly() = resources.getBoolean(R.bool.portrait_only);
 }
