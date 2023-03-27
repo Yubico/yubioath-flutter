@@ -97,7 +97,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0'
 
     // Lifecycle
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
 
     implementation 'androidx.fragment:fragment-ktx:1.5.5'
     implementation 'androidx.preference:preference-ktx:1.2.0'
