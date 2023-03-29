@@ -233,7 +233,7 @@ class MainActivity : FlutterFragmentActivity() {
                     startUsbDiscovery()
                 }
             }
-        } else if (viewModel.connectedYubiKey.value == null) {
+        } else {
             // if any YubiKeys are connected, use them directly
             val deviceIterator = usbManager.deviceList.values.iterator()
             while (deviceIterator.hasNext()) {
