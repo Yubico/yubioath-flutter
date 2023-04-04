@@ -607,58 +607,58 @@ packages:
     dependency: "direct main"
     description:
       name: shared_preferences
-      sha256: "78528fd87d0d08ffd3e69551173c026e8eacc7b7079c82eb6a77413957b7e394"
+      sha256: "858aaa72d8f61637d64e776aca82e1c67e6d9ee07979123c5d17115031c1b13b"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.20"
+    version: "2.1.0"
   shared_preferences_android:
     dependency: transitive
     description:
       name: shared_preferences_android
-      sha256: a51a4f9375097f94df1c6e0a49c0374440d31ab026b59d58a7e7660675879db4
+      sha256: "8304d8a1f7d21a429f91dee552792249362b68a331ac5c3c1caf370f658873f6"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.16"
+    version: "2.1.0"
   shared_preferences_foundation:
     dependency: transitive
     description:
       name: shared_preferences_foundation
-      sha256: "6b84fdf06b32bb336f972d373cd38b63734f3461ba56ac2ba01b56d052796259"
+      sha256: cf2a42fb20148502022861f71698db12d937c7459345a1bdaa88fc91a91b3603
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.4"
+    version: "2.2.0"
   shared_preferences_linux:
     dependency: transitive
     description:
       name: shared_preferences_linux
-      sha256: d7fb71e6e20cd3dfffcc823a28da3539b392e53ed5fc5c2b90b55fdaa8a7e8fa
+      sha256: "9d387433ca65717bbf1be88f4d5bb18f10508917a8fa2fb02e0fd0d7479a9afa"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.4"
+    version: "2.2.0"
   shared_preferences_platform_interface:
     dependency: transitive
     description:
       name: shared_preferences_platform_interface
-      sha256: "824bfd02713e37603b2bdade0842e47d56e7db32b1dcdd1cae533fb88e2913fc"
+      sha256: fb5cf25c0235df2d0640ac1b1174f6466bd311f621574997ac59018a6664548d
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "2.2.0"
   shared_preferences_web:
     dependency: transitive
     description:
       name: shared_preferences_web
-      sha256: "6737b757e49ba93de2a233df229d0b6a87728cea1684da828cbc718b65dcf9d7"
+      sha256: "74083203a8eae241e0de4a0d597dbedab3b8fef5563f33cf3c12d7e93c655ca5"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.5"
+    version: "2.1.0"
   shared_preferences_windows:
     dependency: transitive
     description:
       name: shared_preferences_windows
-      sha256: bd014168e8484837c39ef21065b78f305810ceabc1d4f90be6e3b392ce81b46d
+      sha256: "5e588e2efef56916a3b229c3bfe81e6a525665a454519ca51dbcc4236a274173"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.4"
+    version: "2.2.0"
   shelf:
     dependency: transitive
     description:
