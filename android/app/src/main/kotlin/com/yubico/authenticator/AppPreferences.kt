@@ -19,9 +19,11 @@ package com.yubico.authenticator
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import com.yubico.authenticator.logging.Log
 
 class AppPreferences(context: Context) {
+
+    private val logger = org.slf4j.LoggerFactory.getLogger(AppPreferences::class.java)
+
     companion object {
         const val PREFS_FILE = "FlutterSharedPreferences"
         const val PREF_NFC_OPEN_APP = "flutter.prefNfcOpenApp"
@@ -32,15 +34,13 @@ class AppPreferences(context: Context) {
 
         const val PREF_CLIP_KBD_LAYOUT = "flutter.prefClipKbdLayout"
         const val DEFAULT_CLIP_KBD_LAYOUT = "US"
-
-        const val TAG = "AppPreferences"
     }
 
     private val prefs: SharedPreferences =
         context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE).also {
-            Log.d(TAG, "Current app preferences:")
+            logger.debug("Current app preferences:")
             it.all.map { preference ->
-                Log.d(TAG, "${preference.key}: ${preference.value}")
+                logger.debug("{}: {}", preference.key, preference.value)
             }
         }
 
@@ -66,12 +66,12 @@ class AppPreferences(context: Context) {
         get() = prefs.getBoolean(PREF_USB_OPEN_APP, false)
 
     fun registerListener(listener: OnSharedPreferenceChangeListener) {
-        Log.d(TAG, "registering change listener")
+        logger.debug("registering change listener")
         prefs.registerOnSharedPreferenceChangeListener(listener)
     }
 
     fun unregisterListener(listener: OnSharedPreferenceChangeListener) {
         prefs.unregisterOnSharedPreferenceChangeListener(listener)
-        Log.d(TAG, "unregistered change listener")
+        logger.debug("unregistered change listener")
     }
 }

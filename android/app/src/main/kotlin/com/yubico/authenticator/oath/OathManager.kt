@@ -27,7 +27,6 @@ import com.yubico.authenticator.*
 import com.yubico.authenticator.device.Capabilities
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
-import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.data.Code
 import com.yubico.authenticator.oath.data.CodeType
 import com.yubico.authenticator.oath.data.Credential
@@ -43,7 +42,7 @@ import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
-import com.yubico.authenticator.yubikit.getDeviceInfo
+import com.yubico.authenticator.yubikit.DeviceInfoHelper
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -81,6 +80,7 @@ class OathManager(
         val OTP_AID = byteArrayOf(0xa0.toByte(), 0x00, 0x00, 0x05, 0x27, 0x20, 0x01, 0x01)
     }
 
+    private val logger = org.slf4j.LoggerFactory.getLogger(OathManager::class.java)
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 
@@ -115,7 +115,7 @@ class OathManager(
             // cancel any pending actions, except for addToAny
             if (!addToAny) {
                 pendingAction?.let {
-                    Log.d(TAG, "Cancelling pending action/closing nfc dialog.")
+                    logger.debug("Cancelling pending action/closing nfc dialog.")
                     it.invoke(Result.failure(CancellationException()))
                     coroutineScope.launch {
                         dialogManager.closeDialog()
@@ -132,7 +132,7 @@ class OathManager(
             if (canInvoke) {
                 if (appViewModel.connectedYubiKey.value == null) {
                     // no USB YubiKey is connected, reset known data on resume
-                    Log.d(TAG, "Removing NFC data after resume.")
+                    logger.debug("Removing NFC data after resume.")
                     appViewModel.setDeviceInfo(null)
                     oathViewModel.setSessionState(null)
                 }
@@ -167,7 +167,7 @@ class OathManager(
 
                 refreshJob = coroutineScope.launch {
                     val delayMs = earliest - now
-                    Log.d(TAG, "Will execute refresh in ${delayMs}ms")
+                    logger.debug("Will execute refresh in {}ms", delayMs)
                     if (delayMs > 0) {
                         delay(delayMs)
                     }
@@ -175,9 +175,9 @@ class OathManager(
                     if (currentState.isAtLeast(Lifecycle.State.RESUMED)) {
                         requestRefresh()
                     } else {
-                        Log.d(
-                            TAG,
-                            "Cannot run credential refresh in current lifecycle state: $currentState"
+                        logger.debug(
+                            "Cannot run credential refresh in current lifecycle state: {}",
+                            currentState
                         )
                     }
                 }
@@ -257,7 +257,7 @@ class OathManager(
                         try {
                             oathViewModel.updateCredentials(calculateOathCodes(session))
                         } catch (error: Exception) {
-                            Log.e(TAG, "Failed to refresh codes", error.toString())
+                            logger.error("Failed to refresh codes", error)
                         }
                     }
                 } else {
@@ -296,7 +296,7 @@ class OathManager(
                         try {
                             SmartCardProtocol(connection).select(OTP_AID)
                         } catch (e: Exception) {
-                            Log.e(TAG, "Failed to recognize this OATH device.")
+                            logger.error("Failed to recognize this OATH device.", e)
                             // we know this is NFC device and it supports OATH
                             val oathCapabilities = Capabilities(nfc = 0x20)
                             appViewModel.setDeviceInfo(
@@ -325,25 +325,24 @@ class OathManager(
 
                 }
             }
-            Log.d(
-                TAG,
+            logger.debug(
                 "Successfully read Oath session info (and credentials if unlocked) from connected key"
             )
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
-            Log.e(TAG, "Failed to connect to CCID", e.toString())
+            logger.error("Failed to connect to CCID", e)
             if (device.transport == Transport.USB || e is ApplicationNotAvailableException) {
                 val deviceInfo = try {
-                    getDeviceInfo(device)
+                    DeviceInfoHelper.getDeviceInfo(device)
                 } catch (e: IllegalArgumentException) {
-                    Log.d(TAG, "Device was not recognized")
+                    logger.debug("Device was not recognized")
                     UnknownDevice.copy(isNfc = device.transport == Transport.NFC)
                 } catch (e: Exception) {
-                    Log.d(TAG, "Failure getting device info: ${e.message}")
+                    logger.debug("Failure getting device info", e)
                     null
                 }
 
-                Log.d(TAG, "Setting device info: $deviceInfo")
+                logger.debug("Setting device info: {}", deviceInfo)
                 appViewModel.setDeviceInfo(deviceInfo)
             }
 
@@ -377,7 +376,7 @@ class OathManager(
                 Code.from(code)
             )
 
-            Log.d(TAG, "Added cred $credential")
+            logger.debug("Added cred {}", credential)
             jsonSerializer.encodeToString(addedCred)
         }
     }
@@ -429,7 +428,7 @@ class OathManager(
             session.setAccessKey(accessKey)
             keyManager.addKey(session.deviceId, accessKey, false)
             oathViewModel.setSessionState(Session(session, false))
-            Log.d(TAG, "Successfully set password")
+            logger.debug("Successfully set password")
             NULL
         }
 
@@ -441,7 +440,7 @@ class OathManager(
                     session.deleteAccessKey()
                     keyManager.removeKey(session.deviceId)
                     oathViewModel.setSessionState(Session(session, false))
-                    Log.d(TAG, "Successfully unset password")
+                    logger.debug("Successfully unset password")
                     return@useOathSession NULL
                 }
             }
@@ -450,7 +449,7 @@ class OathManager(
 
     private suspend fun forgetPassword(): String {
         keyManager.clearAll()
-        Log.d(TAG, "Cleared all keys.")
+        logger.debug("Cleared all keys.")
         oathViewModel.sessionState.value?.let {
             oathViewModel.setSessionState(
                 it.copy(
@@ -514,7 +513,7 @@ class OathManager(
                     oathViewModel.updateCredentials(calculateOathCodes(session))
                 } catch (apduException: ApduException) {
                     if (apduException.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
-                        Log.d(TAG, "Handled oath credential refresh on locked session.")
+                        logger.debug("Handled oath credential refresh on locked session.")
                         oathViewModel.setSessionState(
                             Session(
                                 session,
@@ -522,10 +521,9 @@ class OathManager(
                             )
                         )
                     } else {
-                        Log.e(
-                            TAG,
+                        logger.error(
                             "Unexpected sw when refreshing oath credentials",
-                            apduException.message
+                            apduException
                         )
                     }
                 }
@@ -541,7 +539,7 @@ class OathManager(
                 Credential(credential, session.deviceId),
                 code
             )
-            Log.d(TAG, "Code calculated $code")
+            logger.trace("Code calculated {}", code)
 
             jsonSerializer.encodeToString(code)
         }
@@ -652,7 +650,7 @@ class OathManager(
                     })
                 }
                 dialogManager.showDialog(Icon.NFC, "Tap your key", title) {
-                    Log.d(TAG, "Cancelled Dialog $title")
+                    logger.debug("Cancelled Dialog {}", title)
                     pendingAction?.invoke(Result.failure(CancellationException()))
                     pendingAction = null
                 }

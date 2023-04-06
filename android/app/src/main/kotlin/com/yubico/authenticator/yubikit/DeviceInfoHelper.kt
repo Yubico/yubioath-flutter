@@ -17,8 +17,6 @@
 package com.yubico.authenticator.yubikit
 
 import com.yubico.authenticator.device.Info
-import com.yubico.authenticator.logging.Log
-import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.compatUtil
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -30,27 +28,33 @@ import com.yubico.yubikit.management.DeviceInfo
 import com.yubico.yubikit.support.DeviceUtil
 import java.io.IOException
 
-suspend fun getDeviceInfo(device: YubiKeyDevice): Info {
-    val pid = (device as? UsbYubiKeyDevice)?.pid
+object DeviceInfoHelper {
 
-    val deviceInfo = try {
-        device.withConnection<SmartCardConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
-    } catch (e: IOException) {
-        runCatching {
-            Log.d(OathManager.TAG, "Smart card connection not available: ${e.message}")
-            device.withConnection<OtpConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
-        }.recoverCatching { t ->
-            Log.d(OathManager.TAG, "OTP connection not available: ${t.message}")
-            device.withConnection<FidoConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
-        }.recoverCatching { t ->
-            Log.d(OathManager.TAG, "FIDO connection not available: ${t.message}")
-            return SkyHelper(compatUtil).getDeviceInfo(device)
-        }.getOrElse {
-            Log.e(OathManager.TAG, "Failed to recognize device: ${it.message}")
-            throw it
+    private val logger = org.slf4j.LoggerFactory.getLogger(DeviceInfoHelper::class.java)
+
+    suspend fun getDeviceInfo(device: YubiKeyDevice): Info {
+        val pid = (device as? UsbYubiKeyDevice)?.pid
+
+        val deviceInfo = try {
+            device.withConnection<SmartCardConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
+        } catch (e: IOException) {
+            runCatching {
+                logger.debug("Smart card connection not available", e)
+                device.withConnection<OtpConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
+            }.recoverCatching { t ->
+                logger.debug("OTP connection not available", t)
+                device.withConnection<FidoConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
+            }.recoverCatching { t ->
+                logger.debug("FIDO connection not available", t)
+                return SkyHelper(compatUtil).getDeviceInfo(device)
+            }.getOrElse {
+                logger.error("Failed to recognize device", it)
+                throw it
+            }
         }
+
+        val name = DeviceUtil.getName(deviceInfo, pid?.type)
+        return Info(name, device is NfcYubiKeyDevice, pid?.value, deviceInfo)
     }
 
-    val name = DeviceUtil.getName(deviceInfo, pid?.type)
-    return Info(name, device is NfcYubiKeyDevice, pid?.value, deviceInfo)
 }
