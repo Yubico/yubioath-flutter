@@ -20,6 +20,9 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 
 class FlutterLog(messenger: BinaryMessenger) {
+    private val logger = org.slf4j.LoggerFactory.getLogger(FlutterLog::class.java).also {
+        (it as Logger).setTag("") // empty tag hack to not log tag/name for this logger
+    }
     private var channel = MethodChannel(messenger, "android.log.redirect")
 
     init {
@@ -30,46 +33,48 @@ class FlutterLog(messenger: BinaryMessenger) {
                     val message = call.argument<String>("message")
                     val error = call.argument<String>("error")
                     val loggerName = call.argument<String>("loggerName")
-                    val levelValue = call.argument<String>("level")
-                    val level = logLevelFromArgument(levelValue)
+                    val flutterLogLevel = call.argument<String>("level")?.uppercase()
 
-                    if (level == null) {
-                        loggerError("Invalid level for message from [$loggerName]: $levelValue")
-                    } else if (loggerName != null && message != null) {
-                        log(level, loggerName, message, error)
-                        result.success(null)
-                    } else {
-                        result.error("-1", "Invalid log parameters", null)
+                    when (flutterLogLevel) {
+                        "TRAFFIC" -> logger.trace(
+                            "[{}] {}: {}",
+                            loggerName,
+                            flutterLogLevel,
+                            message
+                        )
+
+                        "DEBUG" -> logger.debug("[{}] {}: {}", loggerName, flutterLogLevel, message)
+                        "INFO" -> logger.info("[{}] {}: {}", loggerName, flutterLogLevel, message)
+                        "WARNING" -> logger.warn(
+                            "[{}] {}: {}",
+                            loggerName,
+                            flutterLogLevel,
+                            message
+                        )
+
+                        "ERROR" -> logger.error("[{}] {}: {}", loggerName, flutterLogLevel, message)
+                        else -> logger.error(
+                            "Invalid level for message from [{}]: {}",
+                            loggerName,
+                            flutterLogLevel
+                        )
+                    }
+                    error?.let {
+                        logger.error("[{}] {}(details): {}", loggerName, flutterLogLevel, it)
                     }
                 }
                 "setLevel" -> {
                     val levelArgValue = call.argument<String>("level")
-                    val requestedLogLevel = logLevelFromArgument(levelArgValue)
-                    if (requestedLogLevel != null) {
-                        Log.setLevel(requestedLogLevel)
-                    } else {
-                        loggerError("Invalid log level requested: $levelArgValue")
-                    }
+                    Logger.setLevel(levelArgValue)
                     result.success(null)
                 }
                 "getLogs" -> {
-                    result.success(Log.getBuffer())
+                    result.success(Logger.getBuffer())
                 }
                 else -> {
                     result.notImplemented()
                 }
             }
         }
-    }
-
-    private fun logLevelFromArgument(argValue: String?): Log.LogLevel? =
-        Log.LogLevel.values().firstOrNull { it.name == argValue?.uppercase() }
-
-    private fun loggerError(message: String) {
-        log(Log.LogLevel.ERROR,"FlutterLog", message, null)
-    }
-
-    private fun log(level: Log.LogLevel, loggerName: String, message: String, error: String?) {
-        Log.log(level, loggerName, message, error)
     }
 }
