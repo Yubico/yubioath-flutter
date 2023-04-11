@@ -35,6 +35,8 @@ import android.os.Bundle
 import android.provider.Settings.ACTION_NFC_SETTINGS
 import android.view.WindowManager
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.logging.FlutterLog
@@ -168,8 +170,18 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onStart() {
         super.onStart()
-        registerReceiver(qrScannerCameraClosedBR, QRScannerCameraClosedBR.intentFilter)
-        registerReceiver(nfcAdapterStateChangeBR, NfcAdapterStateChangedBR.intentFilter)
+        ContextCompat.registerReceiver(
+            this,
+            qrScannerCameraClosedBR,
+            QRScannerCameraClosedBR.intentFilter,
+            RECEIVER_NOT_EXPORTED
+        )
+        ContextCompat.registerReceiver(
+            this,
+            nfcAdapterStateChangeBR,
+            NfcAdapterStateChangedBR.intentFilter,
+            RECEIVER_NOT_EXPORTED
+        )
     }
 
     override fun onStop() {
