@@ -82,6 +82,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               TextField(
                 autofocus: true,
                 obscureText: true,
+                autofillHints: const [AutofillHints.password],
                 key: keys.currentPasswordField,
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
@@ -141,6 +142,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               key: keys.newPasswordField,
               autofocus: !widget.state.hasKey,
               obscureText: true,
+              autofillHints: const [AutofillHints.newPassword],
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_password,
@@ -162,6 +164,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             TextField(
               key: keys.confirmPasswordField,
               obscureText: true,
+              autofillHints: const [AutofillHints.newPassword],
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_password,

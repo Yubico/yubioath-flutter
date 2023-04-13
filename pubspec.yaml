@@ -44,21 +44,21 @@ dependencies:
   async: ^2.8.2
   logging: ^1.1.0
   collection: ^1.16.0
-  shared_preferences: ^2.0.16
-  flutter_riverpod: ^2.3.0
+  shared_preferences: ^2.1.0
+  flutter_riverpod: ^2.3.4
   json_annotation: ^4.7.0
   freezed_annotation: ^2.2.0
-  window_manager: ^0.3.0
+  window_manager: ^0.3.2
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
   screen_retriever: ^0.1.6
   desktop_drop: ^0.4.0
   url_launcher: ^6.1.7
-  path_provider: ^2.0.13
-  vector_graphics: ^1.1.1
-  vector_graphics_compiler: ^1.1.1
+  path_provider: ^2.0.14
+  vector_graphics: ^1.1.4
+  vector_graphics_compiler: ^1.1.4
   path: ^1.8.2
-  file_picker: ^5.2.5
+  file_picker: ^5.2.7
   archive: ^3.3.2
   crypto: ^3.0.2
   tray_manager: ^0.2.0
