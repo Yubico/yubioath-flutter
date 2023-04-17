@@ -7,7 +7,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      PYVER: 3.11
+      PYVER: '3.11.3'
       FLUTTER: '3.7.10'
     container:
       image: ubuntu:18.04
@@ -17,13 +17,27 @@ jobs:
     steps:
     - name: Install dependencies
       run: |
+        export PYVER_MINOR=${PYVER%.*}
+        echo "PYVER_MINOR: $PYVER_MINOR"
         apt-get update
         apt-get install -qq software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
         add-apt-repository -y ppa:git-core/ppa
         add-apt-repository -y ppa:deadsnakes/ppa
-        apt-get install -qq git python$PYVER-dev python$PYVER-venv
+        apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
-        ln -s `which python$PYVER` /usr/local/bin/python
+        ln -s `which python$PYVER_MINOR` /usr/local/bin/python
+        PYVER_TEMP=`/usr/local/bin/python --version`
+        export PYVERINST=${PYVER_TEMP#* }
+        echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
+        echo "Installed python version: $PYVERINST"
+
+    - name: Verify Python version
+      if: ${{ env.PYVERINST != env.PYVER }}
+      run: |
+        echo "Python version not compatible"
+        echo "Installed python version: $PYVERINST"
+        echo "Expected: $PYVER"
+        exit 1
 
     - uses: actions/checkout@v3
 
