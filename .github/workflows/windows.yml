@@ -7,7 +7,7 @@ jobs:
 
     runs-on: windows-latest
     env:
-      PYVER: 3.11
+      PYVER: '3.11.3'
 
     steps:
       - uses: actions/checkout@v3
