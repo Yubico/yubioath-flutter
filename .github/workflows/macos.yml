@@ -49,7 +49,7 @@ jobs:
       with:
         channel: 'stable'
         architecture: 'x64'
-        flutter-version: '3.7.10'
+        flutter-version: '3.7.11'
     - run: flutter config --enable-macos-desktop
     - run: flutter --version
 
