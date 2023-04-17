@@ -242,7 +242,6 @@ class OathManager(
         try {
             device.withConnection<SmartCardConnection, Unit> { connection ->
                 val session = YubiKitOathSession(connection)
-                tryToUnlockOathSession(session)
 
                 val previousId = oathViewModel.sessionState.value?.deviceId
                 if (session.deviceId == previousId && device is NfcYubiKeyDevice) {
@@ -434,7 +433,7 @@ class OathManager(
         }
 
     private suspend fun unsetPassword(currentPassword: String): String =
-        useOathSession("Unset password") { session ->
+        useOathSession("Unset password", unlock = false) { session ->
             if (session.isAccessKeySet) {
                 // test current password sent by the user
                 if (session.unlock(currentPassword.toCharArray())) {
@@ -624,31 +623,40 @@ class OathManager(
 
     private suspend fun <T> useOathSession(
         title: String,
+        unlock: Boolean = true,
         action: (YubiKitOathSession) -> T
     ): T {
         return appViewModel.connectedYubiKey.value?.let {
-            useOathSessionUsb(it, action)
-        } ?: useOathSessionNfc(title, action)
+            useOathSessionUsb(it, unlock, action)
+        } ?: useOathSessionNfc(title, unlock, action)
     }
 
     private suspend fun <T> useOathSessionUsb(
         device: UsbYubiKeyDevice,
+        unlock: Boolean = true,
         block: (YubiKitOathSession) -> T
     ): T = device.withConnection<SmartCardConnection, T> {
         val session = YubiKitOathSession(it)
-        tryToUnlockOathSession(session)
+        if (unlock) {
+            tryToUnlockOathSession(session)
+        }
         block(session)
     }
 
     private suspend fun <T> useOathSessionNfc(
         title: String,
+        unlock: Boolean = true,
         block: (YubiKitOathSession) -> T
     ): T {
         try {
             val result = suspendCoroutine { outer ->
                 pendingAction = {
                     outer.resumeWith(runCatching {
-                        block.invoke(it.value)
+                        val session = it.value
+                        if (unlock) {
+                            tryToUnlockOathSession(session)
+                        }
+                        block.invoke(session)
                     })
                 }
                 dialogManager.showDialog(Icon.NFC, "Tap your key", title) {
