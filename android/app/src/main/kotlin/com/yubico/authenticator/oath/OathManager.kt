@@ -101,7 +101,7 @@ class OathManager(
     @TargetApi(Build.VERSION_CODES.M)
     private fun createKeyStoreProviderM(): KeyProvider = KeyStoreProvider()
 
-    private var unlockOnConnect = AtomicBoolean(true)
+    private val unlockOnConnect = AtomicBoolean(true)
     private var pendingAction: OathAction? = null
     private var refreshJob: Job? = null
     private var addToAny = false
