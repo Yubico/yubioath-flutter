@@ -24,6 +24,7 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:yubico_authenticator/app/logging.dart';
+import 'package:io/io.dart';
 
 import 'icon_cache.dart';
 import 'icon_pack.dart';
@@ -166,7 +167,7 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
     _iconCache.memCache.clear();
 
     // moves unpacked files to the directory final directory
-    await unpackDirectory.rename(packDirectory.path);
+    await copyPath(unpackDirectory.path, packDirectory.path);
 
     readPack();
 
