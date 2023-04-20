@@ -1,3 +1,12 @@
+* Version 6.2.0 (released 2023-04-19)
+ ** Add support for custom account icons.
+ ** Desktop: Add systray icon for quick access to pinned accounts.
+ ** Win/Mac: Remember window position between launches.
+ ** UI: Swap click-area for OATH accounts (click on code button to open single-account view, double-click on account to copy code).
+ ** Android: Better support for large screens (landscape, multi-window).
+ ** Desktop: Fix issues with keyboard shortcuts sometimes not working and add new shortcuts.
+ ** Accessibility: Screen reader improvement for various parts of the UI.
+
 * Version 6.1.1 (released 2023-02-13)
  ** Android: Fix issues on Chromebooks when adding accounts.
  ** Android: Fix to a bug when accounts might disappear from the account list when switching between apps with a YubiKey connected over USB.
