@@ -419,6 +419,7 @@
         }
     },
     "l_invalid_icon_pack": "Invalid icon pack",
+    "l_icon_pack_copy_failed": "Failed to copy icon pack files",
 
     "@_android_settings": {},
     "s_nfc_options": "NFC options",

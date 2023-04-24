@@ -152,7 +152,7 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
       return false;
     }
 
-    // remove old icons pack and icon pack cache
+    // remove old icon pack and icon pack cache
     final packDirectory = await _packDirectory;
     if (!await _deleteDirectory(packDirectory)) {
       _log.error('Failure when deleting original pack directory');
@@ -166,8 +166,15 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
     await _iconCache.fsCache.clear();
     _iconCache.memCache.clear();
 
-    // moves unpacked files to the directory final directory
-    await copyPath(unpackDirectory.path, packDirectory.path);
+    // copy unpacked files from temporary directory to the icon pack directory
+    try {
+      await copyPath(unpackDirectory.path, packDirectory.path);
+    } catch (e) {
+      _log.error('Failed to copy icon pack files to destination: $e');
+      _lastError = l10n.l_icon_pack_copy_failed;
+      state = AsyncValue.error('Failed to copy icon pack files.', StackTrace.current);
+      return false;
+    }
 
     readPack();
 
