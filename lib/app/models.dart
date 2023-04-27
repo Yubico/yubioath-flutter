@@ -53,6 +53,7 @@ enum Application {
   String getDisplayName(AppLocalizations l10n) => switch (this) {
         Application.oath => l10n.s_authenticator,
         Application.fido => l10n.s_webauthn,
+        Application.piv => "PIV", //TODO
         _ => name.substring(0, 1).toUpperCase() + name.substring(1),
       };
 

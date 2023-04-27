@@ -41,11 +41,13 @@ import '../core/state.dart';
 import '../fido/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
+import '../piv/state.dart';
 import '../version.dart';
 import 'devices.dart';
 import 'fido/state.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
+import 'piv/state.dart';
 import 'qr_scanner.dart';
 import 'rpc.dart';
 import 'state.dart';
@@ -177,12 +179,19 @@ Future<Widget> initialize(List<String> argv) async {
       supportedAppsProvider.overrideWithValue([
         Application.oath,
         Application.fido,
+        Application.piv,
         Application.management,
       ]),
       prefProvider.overrideWithValue(prefs),
       rpcProvider.overrideWith((_) => rpcFuture),
       windowStateProvider.overrideWith(
         (ref) => ref.watch(desktopWindowStateProvider),
+      ),
+      clipboardProvider.overrideWith(
+        (ref) => ref.watch(desktopClipboardProvider),
+      ),
+      supportedThemesProvider.overrideWith(
+        (ref) => ref.watch(desktopSupportedThemesProvider),
       ),
       attachedDevicesProvider.overrideWith(
         () => DesktopDevicesNotifier(),
@@ -206,12 +215,9 @@ Future<Widget> initialize(List<String> argv) async {
       fidoStateProvider.overrideWithProvider(desktopFidoState),
       fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
       credentialProvider.overrideWithProvider(desktopCredentialProvider),
-      clipboardProvider.overrideWith(
-        (ref) => ref.watch(desktopClipboardProvider),
-      ),
-      supportedThemesProvider.overrideWith(
-        (ref) => ref.watch(desktopSupportedThemesProvider),
-      )
+      // PIV
+      pivStateProvider.overrideWithProvider(desktopPivState),
+      pivSlotsProvider.overrideWithProvider(desktopPivSlots),
     ],
     child: YubicoAuthenticatorApp(
       page: Consumer(
