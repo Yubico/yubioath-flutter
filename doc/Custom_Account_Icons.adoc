@@ -20,3 +20,20 @@ Once done, any account that has an issuer that is supported by the icon pack
 will display the custom icon instead of the standard colored circle with a
 letter. You can also use the `Custom icons` dialog to replace the icon pack, or
 to remove it.
+
+=== Troubleshooting
+
+==== Problem
+
+Cannot import icons on MacOS.
+
+==== Error message
+
+```
+Error importing icon pack: Invalid icon pack
+
+```
+
+==== Solution
+
+Make sure to have the `Open "safe" files after downloading"` option unchecked in Safari's General settings tab. Otherwise, you will end up with an unzipped file. Trying to re-compress it will cause the above error.
