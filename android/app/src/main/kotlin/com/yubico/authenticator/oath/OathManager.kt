@@ -39,6 +39,7 @@ import com.yubico.authenticator.oath.data.YubiKitOathSession
 import com.yubico.authenticator.oath.data.YubiKitOathType
 import com.yubico.authenticator.oath.data.calculateSteamCode
 import com.yubico.authenticator.oath.data.isSteamCredential
+import com.yubico.authenticator.oath.keystore.BiometricProtection
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
@@ -75,6 +76,7 @@ class OathManager(
     private val oathViewModel: OathViewModel,
     private val dialogManager: DialogManager,
     private val appPreferences: AppPreferences,
+    private val biometricProtection: BiometricProtection
 ) : AppContextManager {
     companion object {
         const val TAG = "OathManager"
@@ -266,30 +268,15 @@ class OathManager(
                         memoryKeyProvider.removeKey(previousId)
                     }
 
-                    // Update the OATH state
-                    oathViewModel.setSessionState(
-                        Session(
-                            session,
-                            keyManager.isRemembered(session.deviceId)
-                        )
+                    // cache info for use later
+                    val newSession = Session(
+                        session,
+                        keyManager.isRemembered(session.deviceId)
                     )
-                    if (!session.isLocked) {
-                        oathViewModel.updateCredentials(calculateOathCodes(session))
-                    }
 
-                    // Awaiting an action for a different or no device?
-                    pendingAction?.let { action ->
-                        pendingAction = null
-                        if (addToAny) {
-                            // Special "add to any YubiKey" action, process
-                            addToAny = false
-                            action.invoke(Result.success(session))
-                        } else {
-                            // Awaiting an action for a different device? Fail it and stop processing.
-                            action.invoke(Result.failure(IllegalStateException("Wrong deviceId")))
-                            return@withConnection
-                        }
-                    }
+                    val newCodes = if (!session.isLocked) {
+                        calculateOathCodes(session)
+                    } else mapOf()
 
                     if (session.version.isLessThan(4, 0, 0) && connection.transport == Transport.NFC) {
                         // NEO over NFC, select OTP applet before reading info
@@ -311,18 +298,77 @@ class OathManager(
                         }
                     }
 
-                    // Update deviceInfo since the deviceId has changed
                     val pid = (device as? UsbYubiKeyDevice)?.pid
                     val deviceInfo = DeviceUtil.readInfo(connection, pid)
-                    appViewModel.setDeviceInfo(
-                        Info(
-                            name = DeviceUtil.getName(deviceInfo, pid?.type),
-                            isNfc = device.transport == Transport.NFC,
-                            usbPid = pid?.value,
-                            deviceInfo = deviceInfo
-                        )
-                    )
 
+                    // verify authentication
+                    if (!biometricProtection.isUserAuthenticated(session.deviceId)) {
+                        // clear codes before the user authenticated
+                        oathViewModel.updateCredentials(mapOf())
+
+                        appViewModel.setDeviceInfo(
+                            Info(
+                                name = DeviceUtil.getName(deviceInfo, pid?.type),
+                                isNfc = device.transport == Transport.NFC,
+                                usbPid = pid?.value,
+                                deviceInfo = deviceInfo
+                            )
+                        )
+
+                        biometricProtection.authenticate(session.deviceId,
+                            onAuthenticationExpired = {
+                                Log.d(TAG, "Biometric authentication key has been invalidated, resetting rememebered password")
+                                keyManager.clearAll()
+                                oathViewModel.setSessionState(newSession.copy(isLocked = true))
+                            },
+                            onAuthenticationCancelledOrFailed = {
+                                Log.d(TAG, "Biometric authentication was cancelled or failed. User needs to provide password")
+                                oathViewModel.setSessionState(newSession.copy(isLocked = true))
+                            },
+                            onAuthenticationSucceeded = {
+                                Log.d(TAG, "Biometric authentication succeeded")
+                                oathViewModel.setSessionState(newSession)
+                                if (!session.isLocked) {
+                                    oathViewModel.updateCredentials(newCodes)
+                                }
+                            }
+                        )
+                        return@withConnection
+                    } else {
+
+                        Log.d(TAG, "User is verified - updating session state and credentials")
+
+                        oathViewModel.setSessionState(newSession)
+                        if (!session.isLocked) {
+                            oathViewModel.updateCredentials(newCodes)
+                        }
+
+                        // Update deviceInfo since the deviceId has changed
+                        Log.i(TAG, "Updating device info")
+                        appViewModel.setDeviceInfo(
+                            Info(
+                                name = DeviceUtil.getName(deviceInfo, pid?.type),
+                                isNfc = device.transport == Transport.NFC,
+                                usbPid = pid?.value,
+                                deviceInfo = deviceInfo
+                            )
+                        )
+
+                        // Awaiting an action for a different or no device?
+                        pendingAction?.let { action ->
+                            pendingAction = null
+                            if (addToAny) {
+                                // Special "add to any YubiKey" action, process
+                                addToAny = false
+                                action.invoke(Result.success(session))
+                            } else {
+                                // Awaiting an action for a different device? Fail it and stop processing.
+                                action.invoke(Result.failure(IllegalStateException("Wrong deviceId")))
+                                return@withConnection
+                            }
+                        }
+
+                    }
                 }
             }
             Log.d(

@@ -135,6 +135,8 @@ class SettingsPage extends ConsumerWidget {
               const NfcSilenceSoundsView(),
               ListTitle(l10n.s_usb_options),
               const UsbOpenAppView(),
+              ListTitle(l10n.s_oath_options),
+              const UseBiometricsView(),
             ],
             ListTitle(l10n.s_appearance),
             const _ThemeModeView(),

@@ -26,6 +26,7 @@ const manualEntryButton = Key('$_prefix.manual_entry');
 const nfcBypassTouchSetting = Key('$_prefix.nfc_bypass_touch');
 const nfcSilenceSoundsSettings = Key('$_prefix.nfc_silence_sounds');
 const usbOpenApp = Key('$_prefix.usb_open_app');
+const useBiometrics = Key('$_prefix.use_biometrics');
 
 const nfcTapSetting = Key('$_prefix.nfc_tap');
 Key nfcTapOption(NfcTapAction action) =>

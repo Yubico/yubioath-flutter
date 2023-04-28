@@ -35,6 +35,7 @@ import android.os.Bundle
 import android.provider.Settings.ACTION_NFC_SETTINGS
 import android.view.WindowManager
 import androidx.activity.viewModels
+import androidx.biometric.BiometricManager
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.logging.FlutterLog
@@ -42,6 +43,8 @@ import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
+import com.yubico.authenticator.oath.keystore.BiometricProtection
+import com.yubico.authenticator.oath.keystore.BiometricProtectionSinceM
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
@@ -281,6 +284,7 @@ class MainActivity : FlutterFragmentActivity() {
     private lateinit var flutterStreams: List<Closeable>
     private lateinit var appMethodChannel: AppMethodChannel
     private lateinit var appLinkMethodChannel: AppLinkMethodChannel
+    private lateinit var biometricProtection: BiometricProtection
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -293,6 +297,9 @@ class MainActivity : FlutterFragmentActivity() {
         appPreferences = AppPreferences(this)
         appMethodChannel = AppMethodChannel(messenger)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
+        biometricProtection = compatUtil.from<BiometricProtection>(Build.VERSION_CODES.M) {
+            BiometricProtectionSinceM(this, appPreferences)
+        }.otherwise { BiometricProtection() }
 
         flutterStreams = listOf(
             viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),
@@ -309,7 +316,8 @@ class MainActivity : FlutterFragmentActivity() {
                     viewModel,
                     oathViewModel,
                     dialogManager,
-                    appPreferences
+                    appPreferences,
+                    biometricProtection
                 )
                 else -> null
             }
@@ -406,6 +414,7 @@ class MainActivity : FlutterFragmentActivity() {
                     "hasNfc" -> result.success(
                         packageManager.hasSystemFeature(PackageManager.FEATURE_NFC)
                     )
+
                     "isNfcEnabled" -> {
                         val nfcAdapter = NfcAdapter.getDefaultAdapter(this@MainActivity)
 
@@ -413,10 +422,32 @@ class MainActivity : FlutterFragmentActivity() {
                             nfcAdapter != null && nfcAdapter.isEnabled
                         )
                     }
+
                     "openNfcSettings" -> {
                         startActivity(Intent(ACTION_NFC_SETTINGS))
                         result.success(true)
                     }
+
+                    "hasBiometricsSupport" -> {
+                        result.success(
+                            compatUtil.from(Build.VERSION_CODES.M) {
+                                val biometricManager = BiometricManager.from(this@MainActivity)
+                                compatUtil.from(Build.VERSION_CODES.R) {
+                                    biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS
+                                }.otherwise {
+                                    @Suppress("DEPRECATION")
+                                    biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS
+                                }
+                            }.otherwise {
+                                false
+                            })
+                    }
+
+                    "setUseBiometrics" -> {
+                        setUseBiometrics(methodCall.arguments as Boolean)
+                        result.success(true)
+                    }
+
                     else -> Log.w(TAG, "Unknown app method: ${methodCall.method}")
                 }
             }
@@ -441,6 +472,10 @@ class MainActivity : FlutterFragmentActivity() {
         }
 
         return FLAG_SECURE != (window.attributes.flags and FLAG_SECURE)
+    }
+
+    private fun setUseBiometrics(value: Boolean): Unit {
+        biometricProtection.setEnabled(value)
     }
 
     @SuppressLint("SourceLockedOrientationActivity")

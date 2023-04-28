@@ -5,4 +5,6 @@
     <string name="otp_success_set_password_to_clipboard">Successfully copied password from YubiKey to clipboard.</string>
     <string name="otp_parse_failure">Failed to parse OTP code from YubiKey.</string>
     <string name="otp_set_clip_failure">Failed to access clipboard when trying to copy OTP code from YubiKey.</string>
+    <string name="oath_biometric_prompt_title">Authenticate to continue</string>
+    <string name="oath_biometric_prompt_negative_button">Use password</string>
 </resources>

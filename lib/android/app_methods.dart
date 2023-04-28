@@ -38,6 +38,14 @@ Future<void> openNfcSettings() async {
   await appMethodsChannel.invokeMethod('openNfcSettings');
 }
 
+Future<void> callSetUseBiometrics(bool enabled) async {
+  await appMethodsChannel.invokeMethod('setUseBiometrics', enabled);
+}
+
+Future<bool> getHasBiometricsSupport() async {
+  return await appMethodsChannel.invokeMethod('hasBiometricsSupport');
+}
+
 Future<int> getAndroidSdkVersion() async {
   return await appMethodsChannel.invokeMethod('getAndroidSdkVersion');
 }

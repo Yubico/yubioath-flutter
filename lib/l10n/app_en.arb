@@ -438,6 +438,11 @@
     "l_launch_app_on_usb": "Launch when YubiKey is connected",
     "l_launch_app_on_usb_on": "This prevents other apps from using the YubiKey over USB",
     "l_launch_app_on_usb_off": "Other apps can use the YubiKey over USB",
+    "s_oath_options": "OATH options",
+    "l_use_biometrics": "Use biometrics",
+    "l_use_biometrics_on": "App will require biometric authentication before accessing stored YubiKey OATH passwords",
+    "l_use_biometrics_off": "App will not require biometric authentication",
+    "l_biometrics_not_supported": "To use biometrics, enable secure lock screen and a fingerprint, face or retina biometric",
     "s_allow_screenshots": "Allow screenshots",
 
     "@_eof": {}

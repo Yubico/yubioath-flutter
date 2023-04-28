@@ -29,6 +29,7 @@ class AppPreferences(context: Context) {
         const val PREF_NFC_SILENCE_SOUNDS = "flutter.prefNfcSilenceSounds"
         const val PREF_NFC_COPY_OTP = "flutter.prefNfcCopyOtp"
         const val PREF_USB_OPEN_APP = "flutter.prefUsbOpenApp"
+        const val PREF_USE_BIOMETRICS = "flutter.prefUseBiometrics"
 
         const val PREF_CLIP_KBD_LAYOUT = "flutter.prefClipKbdLayout"
         const val DEFAULT_CLIP_KBD_LAYOUT = "US"
@@ -64,6 +65,9 @@ class AppPreferences(context: Context) {
 
     val openAppOnUsb: Boolean
         get() = prefs.getBoolean(PREF_USB_OPEN_APP, false)
+
+    val useBiometrics: Boolean
+        get() = prefs.getBoolean(PREF_USE_BIOMETRICS, false)
 
     fun registerListener(listener: OnSharedPreferenceChangeListener) {
         Log.d(TAG, "registering change listener")

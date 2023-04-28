@@ -80,6 +80,8 @@ final androidNfcSupportProvider = Provider<bool>((ref) => false);
 final androidNfcStateProvider =
     StateNotifierProvider<NfcStateNotifier, bool>((ref) => NfcStateNotifier());
 
+final androidBiometricsSupportedProvider = Provider<bool>((ref) => false);
+
 final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   if (ref.read(androidSdkVersionProvider) < 29) {
     // the user can select from light or dark theme of the app
@@ -237,3 +239,23 @@ class UsbLaunchAppNotifier extends StateNotifier<bool> {
     }
   }
 }
+
+final androidUseBiometricsProvider =
+StateNotifierProvider<UseBiometricsNotifier, bool>(
+        (ref) => UseBiometricsNotifier(ref.watch(prefProvider)));
+
+class UseBiometricsNotifier extends StateNotifier<bool> {
+  static const _prefUseBiometrics = 'prefUseBiometrics';
+  final SharedPreferences _prefs;
+  UseBiometricsNotifier(this._prefs)
+      : super(_prefs.getBool(_prefUseBiometrics) ?? false);
+
+  Future<void> setUseBiometrics(bool value) async {
+    if (state != value) {
+      state = value;
+      await _prefs.setBool(_prefUseBiometrics, value);
+      await callSetUseBiometrics(state);
+    }
+  }
+}
+

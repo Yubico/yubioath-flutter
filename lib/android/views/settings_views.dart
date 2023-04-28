@@ -185,3 +185,30 @@ class UsbOpenAppView extends ConsumerWidget {
         });
   }
 }
+
+class UseBiometricsView extends ConsumerWidget {
+  const UseBiometricsView({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final hasBiometricsSupport = ref.watch(androidBiometricsSupportedProvider);
+    final useBiometrics = ref.watch(androidUseBiometricsProvider);
+
+    // TODO implement "enabled/disabled"
+    return SwitchListTile(
+        title: Text(l10n.l_use_biometrics),
+        subtitle: hasBiometricsSupport ? Text(useBiometrics
+            ? l10n.l_use_biometrics_on
+            : l10n.l_use_biometrics_off)
+        : Text(l10n.l_biometrics_not_supported),
+        value: hasBiometricsSupport && useBiometrics,
+        key: keys.useBiometrics,
+        onChanged: (value) {
+          if (hasBiometricsSupport) {
+            ref.read(androidUseBiometricsProvider.notifier).setUseBiometrics(
+                value);
+          }
+        });
+  }
+}

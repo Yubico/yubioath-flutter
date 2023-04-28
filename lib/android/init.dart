@@ -83,6 +83,7 @@ Future<Widget> initialize() async {
       ),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
       androidNfcSupportProvider.overrideWithValue(await getHasNfc()),
+      androidBiometricsSupportedProvider.overrideWithValue(await getHasBiometricsSupport()),
       supportedThemesProvider
           .overrideWith(
             (ref) => ref.watch(androidSupportedThemesProvider),
