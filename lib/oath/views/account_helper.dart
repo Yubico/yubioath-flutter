@@ -61,38 +61,41 @@ class AccountHelper {
               credential.touchRequired || credential.oathType == OathType.hotp;
           final ready = expired || credential.oathType == OathType.hotp;
           final pinned = _ref.watch(favoritesProvider).contains(credential.id);
-
           final l10n = AppLocalizations.of(_context)!;
-          final shortcut = Platform.isMacOS ? '\u2318 C' : 'Ctrl+C';
+
           return [
             MenuAction(
-              text: l10n.l_copy_to_clipboard,
               icon: const Icon(Icons.copy),
+              text: l10n.l_copy_to_clipboard,
+              trailing: l10n.l_copy_code_desc,
               intent: code == null || expired ? null : const CopyIntent(),
-              trailing: shortcut,
             ),
             if (manual)
               MenuAction(
-                text: l10n.s_calculate,
                 icon: const Icon(Icons.refresh),
+                text: l10n.s_calculate,
+                trailing: l10n.l_calculate_code_desc,
                 intent: ready ? const CalculateIntent() : null,
               ),
             MenuAction(
-              text: pinned ? l10n.s_unpin_account : l10n.s_pin_account,
               icon: pinned
                   ? pushPinStrokeIcon
                   : const Icon(Icons.push_pin_outlined),
+              text: pinned ? l10n.s_unpin_account : l10n.s_pin_account,
+              trailing: l10n.l_pin_account_desc,
               intent: const TogglePinIntent(),
             ),
             if (data.info.version.isAtLeast(5, 3))
               MenuAction(
                 icon: const Icon(Icons.edit_outlined),
                 text: l10n.s_rename_account,
+                trailing: l10n.l_rename_account_desc,
                 intent: const EditIntent(),
               ),
             MenuAction(
-              text: l10n.s_delete_account,
               icon: const Icon(Icons.delete_outline),
+              text: l10n.s_delete_account,
+              trailing: l10n.l_delete_account_desc,
               intent: const DeleteIntent(),
             ),
           ];
