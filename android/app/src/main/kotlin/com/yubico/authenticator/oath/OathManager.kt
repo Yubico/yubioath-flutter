@@ -268,7 +268,7 @@ class OathManager(
                         memoryKeyProvider.removeKey(previousId)
                     }
 
-                    val userIsAuthenticated = biometricProtection.isUserAuthenticated(session.deviceId)
+                    val userAuthenticationStatus = biometricProtection.getAuthenticationStatus(session.deviceId)
 
                     val sessionState =
                         Session(session, keyManager.isRemembered(session.deviceId))
@@ -278,7 +278,7 @@ class OathManager(
                     // to avoid leaking the calculated codes in log files we silence the log temporarily
                     val logLevel = Log.getLevel()
 
-                    if (!userIsAuthenticated) {
+                    if (userAuthenticationStatus != BiometricProtection.UserAuthenticationStatus.SUCCESS) {
                         Log.d(TAG, "User is not authenticated, silencing logging")
                         Log.setLevel(Log.LogLevel.NONE)
                     }
@@ -287,7 +287,7 @@ class OathManager(
                         calculateOathCodes(session)
                     } else mapOf()
 
-                    if (!userIsAuthenticated) {
+                    if (userAuthenticationStatus != BiometricProtection.UserAuthenticationStatus.SUCCESS) {
                         Log.setLevel(logLevel)
                         Log.d(TAG, "Resuming logging level")
                     }
@@ -315,77 +315,92 @@ class OathManager(
                     val pid = (device as? UsbYubiKeyDevice)?.pid
                     val deviceInfo = DeviceUtil.readInfo(connection, pid)
 
-                    // verify authentication
-                    if (!userIsAuthenticated) {
+                    when (userAuthenticationStatus) {
+                        BiometricProtection.UserAuthenticationStatus.KEY_PERMANENTLY_INVALIDATED,
+                        BiometricProtection.UserAuthenticationStatus.SIGNATURE_FAILED -> {
+                            // the key was invalidated and there is no point to use the biometric prompt
+                            // the user has to use password
 
-                        // clear codes before the user authenticated
-                        oathViewModel.updateCredentials(mapOf())
+                            keyManager.clearAll()
+                            // the clearAll call removed also keyEntry used for biometric operations
+                            // the following call will create a new keypair
+                            biometricProtection.setEnabled(true)
 
-                        appViewModel.setDeviceInfo(
-                            Info(
-                                name = DeviceUtil.getName(deviceInfo, pid?.type),
-                                isNfc = device.transport == Transport.NFC,
-                                usbPid = pid?.value,
-                                deviceInfo = deviceInfo
-                            )
-                        )
-
-                        biometricProtection.authenticate(session.deviceId,
-                            onAuthenticationExpired = {
-                                Log.d(TAG, "Biometric authentication key has been invalidated, resetting remembered password")
-                                keyManager.clearAll()
-                                // the clearAll call removed also keyEntry used for biometric operations
-                                // the following call will create a new keypair
-                                biometricProtection.setEnabled(true)
-
-                                // in this situation, the user did not succeed with biometric
-                                // authentication and will need to use password to unlock the session
-                                oathViewModel.setSessionState(sessionState.copy(isLocked = true))
-                            },
-                            onAuthenticationCancelledOrFailed = {
-                                Log.d(TAG, "Biometric authentication was cancelled or failed. User needs to provide password")
-
-                                // in this situation, the user did not succeed with biometric
-                                // authentication and will need to use password to unlock the session
-                                oathViewModel.setSessionState(sessionState.copy(isLocked = true))
-                            },
-                            onAuthenticationSucceeded = {
-                                Log.d(TAG, "Biometric authentication succeeded")
-                                oathViewModel.setSessionState(sessionState)
-                                if (!session.isLocked) {
-                                    oathViewModel.updateCredentials(credentialsWithCodes)
-                                }
-                            }
-                        )
-                        return@withConnection
-                    } else {
-                        oathViewModel.setSessionState(sessionState)
-                        oathViewModel.updateCredentials(credentialsWithCodes)
-
-                        // Update deviceInfo since the deviceId has changed
-                        appViewModel.setDeviceInfo(
-                            Info(
-                                name = DeviceUtil.getName(deviceInfo, pid?.type),
-                                isNfc = device.transport == Transport.NFC,
-                                usbPid = pid?.value,
-                                deviceInfo = deviceInfo
-                            )
-                        )
-
-                        // Awaiting an action for a different or no device?
-                        pendingAction?.let { action ->
-                            pendingAction = null
-                            if (addToAny) {
-                                // Special "add to any YubiKey" action, process
-                                addToAny = false
-                                action.invoke(Result.success(session))
-                            } else {
-                                // Awaiting an action for a different device? Fail it and stop processing.
-                                action.invoke(Result.failure(IllegalStateException("Wrong deviceId")))
-                                return@withConnection
-                            }
+                            // in this situation, the user did not succeed with biometric
+                            // authentication and will need to use password to unlock the session
+                            oathViewModel.setSessionState(sessionState.copy(isLocked = true))
                         }
 
+                        BiometricProtection.UserAuthenticationStatus.USER_NOT_AUTHENTICATED -> {
+                            oathViewModel.updateCredentials(mapOf())
+                            appViewModel.setDeviceInfo(
+                                Info(
+                                    name = DeviceUtil.getName(deviceInfo, pid?.type),
+                                    isNfc = device.transport == Transport.NFC,
+                                    usbPid = pid?.value,
+                                    deviceInfo = deviceInfo
+                                )
+                            )
+
+                            biometricProtection.authenticate(session.deviceId,
+                                onKeyPermanentlyInvalidated = {
+                                    Log.d(TAG, "Biometric authentication key has been invalidated, resetting remembered password")
+                                    keyManager.clearAll()
+                                    // the clearAll call removed also keyEntry used for biometric operations
+                                    // the following call will create a new keypair
+                                    biometricProtection.setEnabled(true)
+
+                                    // in this situation, the user did not succeed with biometric
+                                    // authentication and will need to use password to unlock the session
+                                    oathViewModel.setSessionState(sessionState.copy(isLocked = true))
+                                },
+                                onAuthenticationCancelledOrFailed = {
+                                    Log.d(TAG, "Biometric authentication was cancelled or failed. User needs to provide password")
+
+                                    // in this situation, the user did not succeed with biometric
+                                    // authentication and will need to use password to unlock the session
+                                    oathViewModel.setSessionState(sessionState.copy(isLocked = true))
+                                },
+                                onAuthenticationSucceeded = {
+                                    Log.d(TAG, "Biometric authentication succeeded")
+                                    oathViewModel.setSessionState(sessionState)
+                                    if (!session.isLocked) {
+                                        oathViewModel.updateCredentials(credentialsWithCodes)
+                                    }
+                                }
+                            )
+                            return@withConnection
+                        }
+
+                        BiometricProtection.UserAuthenticationStatus.SUCCESS -> {
+                            oathViewModel.setSessionState(sessionState)
+                            oathViewModel.updateCredentials(credentialsWithCodes)
+
+                            // Update deviceInfo since the deviceId has changed
+                            appViewModel.setDeviceInfo(
+                                Info(
+                                    name = DeviceUtil.getName(deviceInfo, pid?.type),
+                                    isNfc = device.transport == Transport.NFC,
+                                    usbPid = pid?.value,
+                                    deviceInfo = deviceInfo
+                                )
+                            )
+
+                            // Awaiting an action for a different or no device?
+                            pendingAction?.let { action ->
+                                pendingAction = null
+                                if (addToAny) {
+                                    // Special "add to any YubiKey" action, process
+                                    addToAny = false
+                                    action.invoke(Result.success(session))
+                                } else {
+                                    // Awaiting an action for a different device? Fail it and stop processing.
+                                    action.invoke(Result.failure(IllegalStateException("Wrong deviceId")))
+                                    return@withConnection
+                                }
+                            }
+
+                        }
                     }
                 }
             }
