@@ -36,53 +36,51 @@ final _sessionProvider =
       RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, []),
 );
 
-final desktopManagementState = StateNotifierProvider.autoDispose
-    .family<ManagementStateNotifier, AsyncValue<DeviceInfo>, DevicePath>(
-  (ref, devicePath) {
+final desktopManagementState = AsyncNotifierProvider.autoDispose
+    .family<ManagementStateNotifier, DeviceInfo, DevicePath>(
+        _DesktopManagementStateNotifier.new);
+
+class _DesktopManagementStateNotifier extends ManagementStateNotifier {
+  late RpcNodeSession _session;
+  List<String> _subpath = [];
+  _DesktopManagementStateNotifier() : super();
+
+  @override
+  FutureOr<DeviceInfo> build(DevicePath devicePath) async {
     // Make sure to rebuild if currentDevice changes (as on reboot)
     ref.watch(currentDeviceProvider);
-    final session = ref.watch(_sessionProvider(devicePath));
-    final notifier = _DesktopManagementStateNotifier(ref, session);
-    session.setErrorHandler('state-reset', (_) async {
+
+    _session = ref.watch(_sessionProvider(devicePath));
+    _session.setErrorHandler('state-reset', (_) async {
       ref.invalidate(_sessionProvider(devicePath));
     });
     ref.onDispose(() {
-      session.unsetErrorHandler('state-reset');
+      _session.unsetErrorHandler('state-reset');
     });
-    return notifier..refresh();
-  },
-);
 
-class _DesktopManagementStateNotifier extends ManagementStateNotifier {
-  final Ref _ref;
-  final RpcNodeSession _session;
-  List<String> _subpath = [];
-  _DesktopManagementStateNotifier(this._ref, this._session) : super();
-
-  Future<void> refresh() => updateState(() async {
-        final result = await _session.command('get');
-        final info = DeviceInfo.fromJson(result['data']['info']);
-        final interfaces = (result['children'] as Map).keys.toSet();
-        for (final iface in [
-          // This is the preferred order
-          UsbInterface.ccid,
-          UsbInterface.otp,
-          UsbInterface.fido,
-        ]) {
-          if (interfaces.contains(iface.name)) {
-            final path = [iface.name, 'management'];
-            try {
-              await _session.command('get', target: path);
-              _subpath = path;
-              _log.debug('Using transport $iface for management');
-              return info;
-            } catch (e) {
-              _log.warning('Failed connecting to management via $iface');
-            }
-          }
+    final result = await _session.command('get');
+    final info = DeviceInfo.fromJson(result['data']['info']);
+    final interfaces = (result['children'] as Map).keys.toSet();
+    for (final iface in [
+      // This is the preferred order
+      UsbInterface.ccid,
+      UsbInterface.otp,
+      UsbInterface.fido,
+    ]) {
+      if (interfaces.contains(iface.name)) {
+        final path = [iface.name, 'management'];
+        try {
+          await _session.command('get', target: path);
+          _subpath = path;
+          _log.debug('Using transport $iface for management');
+          return info;
+        } catch (e) {
+          _log.warning('Failed connecting to management via $iface');
         }
-        throw 'Failed connection over all interfaces';
-      });
+      }
+    }
+    throw 'Failed connection over all interfaces';
+  }
 
   @override
   Future<void> setMode(
@@ -94,7 +92,7 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
       'challenge_response_timeout': challengeResponseTimeout,
       'auto_eject_timeout': autoEjectTimeout,
     });
-    _ref.read(attachedDevicesProvider.notifier).refresh();
+    ref.read(attachedDevicesProvider.notifier).refresh();
   }
 
   @override
@@ -111,6 +109,6 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
       'new_lock_code': newLockCode,
       'reboot': reboot,
     });
-    _ref.read(attachedDevicesProvider.notifier).refresh();
+    ref.read(attachedDevicesProvider.notifier).refresh();
   }
 }

@@ -38,9 +38,9 @@ class SearchNotifier extends StateNotifier<String> {
   }
 }
 
-final oathStateProvider = StateNotifierProvider.autoDispose
-    .family<OathStateNotifier, AsyncValue<OathState>, DevicePath>(
-  (ref, devicePath) => throw UnimplementedError(),
+final oathStateProvider = AsyncNotifierProvider.autoDispose
+    .family<OathStateNotifier, OathState, DevicePath>(
+  () => throw UnimplementedError(),
 );
 
 abstract class OathStateNotifier extends ApplicationStateNotifier<OathState> {
