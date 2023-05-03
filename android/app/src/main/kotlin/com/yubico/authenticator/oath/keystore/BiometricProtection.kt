@@ -95,16 +95,16 @@ class BiometricProtectionSinceM(
                         Log.d(TAG, "User is now verified by biometrics")
                     }
 
-                    UserAuthenticationStatus.USER_NOT_AUTHENTICATED -> onAuthenticationCancelledOrFailed().also {
-                        Log.e(TAG, "Failed to use the authentication private key")
+                    // explanation for why both statuses trigger onKeyPermanentlyInvalidated:
+                    // we are in onAuthenticationSucceeded callback of BiometricPrompt which means,
+                    // that if the key is still not authenticated, the key is not valid anymore
+                    UserAuthenticationStatus.KEY_PERMANENTLY_INVALIDATED,
+                    UserAuthenticationStatus.USER_NOT_AUTHENTICATED -> onKeyPermanentlyInvalidated().also {
+                        Log.e(TAG, "The private key is not valid for signatures anymore")
                     }
 
                     UserAuthenticationStatus.SIGNATURE_FAILED -> onAuthenticationCancelledOrFailed().also {
                         Log.e(TAG, "Signature with the key pair failed")
-                    }
-
-                    UserAuthenticationStatus.KEY_PERMANENTLY_INVALIDATED -> onKeyPermanentlyInvalidated().also {
-                        Log.e(TAG, "The private key is not valid for signatures anymore")
                     }
 
                 }
