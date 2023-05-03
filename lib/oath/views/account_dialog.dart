@@ -200,7 +200,7 @@ class AccountDialog extends ConsumerWidget {
                         ),
                   ),
                 const SizedBox(height: 32),
-                ListTitle('Actions',
+                ListTitle(AppLocalizations.of(context)!.s_actions,
                     textStyle: Theme.of(context).textTheme.bodyLarge),
                 ..._buildActions(context, helper),
               ],

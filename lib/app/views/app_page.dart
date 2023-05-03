@@ -28,6 +28,7 @@ class AppPage extends StatelessWidget {
   final Widget child;
   final List<Widget> actions;
   final Widget Function(BuildContext context)? keyActionsBuilder;
+  final bool keyActionsBadge;
   final bool centered;
   final bool delayedContent;
   final Widget Function(BuildContext context)? actionButtonBuilder;
@@ -40,6 +41,7 @@ class AppPage extends StatelessWidget {
     this.keyActionsBuilder,
     this.actionButtonBuilder,
     this.delayedContent = false,
+    this.keyActionsBadge = false,
   });
 
   @override
@@ -127,7 +129,11 @@ class AppPage extends StatelessWidget {
                 onPressed: () {
                   showBlurDialog(context: context, builder: keyActionsBuilder!);
                 },
-                icon: const Icon(Icons.tune),
+                icon: keyActionsBadge
+                    ? const Badge(
+                        child: Icon(Icons.tune),
+                      )
+                    : const Icon(Icons.tune),
                 iconSize: 24,
                 tooltip: AppLocalizations.of(context)!.s_configure_yk,
                 padding: const EdgeInsets.all(12),

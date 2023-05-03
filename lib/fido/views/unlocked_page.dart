@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/shortcuts.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
@@ -27,9 +28,8 @@ import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
 import 'delete_credential_dialog.dart';
-import 'delete_fingerprint_dialog.dart';
+import 'fingerprint_dialog.dart';
 import 'key_actions.dart';
-import 'rename_fingerprint_dialog.dart';
 
 class FidoUnlockedPage extends ConsumerWidget {
   final DeviceNode node;
@@ -97,40 +97,17 @@ class FidoUnlockedPage extends ConsumerWidget {
       if (fingerprints.isNotEmpty) {
         nFingerprints = fingerprints.length;
         children.add(ListTitle(l10n.s_fingerprints));
-        children.addAll(fingerprints.map((fp) => ListTile(
-              leading: CircleAvatar(
-                foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                child: const Icon(Icons.fingerprint),
-              ),
-              title: Text(
-                fp.label,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        showBlurDialog(
-                          context: context,
-                          builder: (context) =>
-                              RenameFingerprintDialog(node.path, fp),
-                        );
-                      },
-                      icon: const Icon(Icons.edit_outlined)),
-                  IconButton(
-                      onPressed: () {
-                        showBlurDialog(
-                          context: context,
-                          builder: (context) =>
-                              DeleteFingerprintDialog(node.path, fp),
-                        );
-                      },
-                      icon: const Icon(Icons.delete_outline)),
-                ],
-              ),
+        children.addAll(fingerprints.map((fp) => Actions(
+              actions: {
+                OpenIntent: CallbackAction<OpenIntent>(onInvoke: (_) async {
+                  await showBlurDialog(
+                    context: context,
+                    builder: (context) => FingerprintDialog(fp),
+                  );
+                  return null;
+                }),
+              },
+              child: _FingerprintListItem(fp),
             )));
       }
     }
@@ -140,6 +117,7 @@ class FidoUnlockedPage extends ConsumerWidget {
         title: Text(l10n.s_webauthn),
         keyActionsBuilder: (context) =>
             fidoBuildActions(context, node, state, nFingerprints),
+        keyActionsBadge: fidoShowActionsNotifier(state),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, children: children),
       );
@@ -153,6 +131,7 @@ class FidoUnlockedPage extends ConsumerWidget {
         message: l10n.l_add_one_or_more_fps,
         keyActionsBuilder: (context) =>
             fidoBuildActions(context, node, state, 0),
+        keyActionsBadge: fidoShowActionsNotifier(state),
       );
     }
 
@@ -162,6 +141,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       header: l10n.l_no_discoverable_accounts,
       message: l10n.l_register_sk_on_websites,
       keyActionsBuilder: (context) => fidoBuildActions(context, node, state, 0),
+      keyActionsBadge: fidoShowActionsNotifier(state),
     );
   }
 
@@ -171,4 +151,31 @@ class FidoUnlockedPage extends ConsumerWidget {
         delayedContent: true,
         child: const CircularProgressIndicator(),
       );
+}
+
+class _FingerprintListItem extends StatelessWidget {
+  final Fingerprint fingerprint;
+  const _FingerprintListItem(this.fingerprint);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: CircleAvatar(
+        foregroundColor: Theme.of(context).colorScheme.onSecondary,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        child: const Icon(Icons.fingerprint),
+      ),
+      title: Text(
+        fingerprint.label,
+        softWrap: false,
+        overflow: TextOverflow.fade,
+      ),
+      trailing: OutlinedButton(
+        onPressed: () {
+          Actions.maybeInvoke<OpenIntent>(context, const OpenIntent());
+        },
+        child: const Icon(Icons.more_horiz),
+      ),
+    );
+  }
 }
