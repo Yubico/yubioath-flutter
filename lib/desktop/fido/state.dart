@@ -45,47 +45,42 @@ final _sessionProvider =
   },
 );
 
-final desktopFidoState = StateNotifierProvider.autoDispose
-    .family<FidoStateNotifier, AsyncValue<FidoState>, DevicePath>(
-  (ref, devicePath) {
-    final session = ref.watch(_sessionProvider(devicePath));
+final desktopFidoState = AsyncNotifierProvider.autoDispose
+    .family<FidoStateNotifier, FidoState, DevicePath>(
+        _DesktopFidoStateNotifier.new);
+
+class _DesktopFidoStateNotifier extends FidoStateNotifier {
+  late RpcNodeSession _session;
+  late StateController<String?> _pinController;
+
+  @override
+  FutureOr<FidoState> build(DevicePath devicePath) async {
+    _session = ref.watch(_sessionProvider(devicePath));
     if (Platform.isWindows) {
       // Make sure to rebuild if isAdmin changes
       ref.watch(rpcStateProvider.select((state) => state.isAdmin));
     }
-    final notifier = _DesktopFidoStateNotifier(
-      session,
-      ref.watch(_pinProvider(devicePath).notifier),
-    );
-    session.setErrorHandler('state-reset', (_) async {
+    _pinController = ref.watch(_pinProvider(devicePath).notifier);
+    _session.setErrorHandler('state-reset', (_) async {
       ref.invalidate(_sessionProvider(devicePath));
     });
-    session.setErrorHandler('auth-required', (_) async {
+    _session.setErrorHandler('auth-required', (_) async {
       final pin = ref.read(_pinProvider(devicePath));
       if (pin != null) {
-        await notifier.unlock(pin);
+        await unlock(pin);
       }
     });
     ref.onDispose(() {
-      session.unsetErrorHandler('auth-required');
+      _session.unsetErrorHandler('auth-required');
     });
     ref.onDispose(() {
-      session.unsetErrorHandler('state-reset');
+      _session.unsetErrorHandler('state-reset');
     });
-    return notifier..refresh();
-  },
-);
 
-class _DesktopFidoStateNotifier extends FidoStateNotifier {
-  final RpcNodeSession _session;
-  final StateController<String?> _pinController;
-  _DesktopFidoStateNotifier(this._session, this._pinController) : super();
-
-  Future<void> refresh() => updateState(() async {
-        final result = await _session.command('get');
-        _log.debug('application status', jsonEncode(result));
-        return FidoState.fromJson(result['data']);
-      });
+    final result = await _session.command('get');
+    _log.debug('application status', jsonEncode(result));
+    return FidoState.fromJson(result['data']);
+  }
 
   @override
   Stream<InteractionEvent> reset() {
@@ -105,8 +100,8 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
     controller.onListen = () async {
       try {
         await _session.command('reset', signal: signaler);
-        await refresh();
         await controller.sink.close();
+        ref.invalidateSelf();
       } catch (e) {
         controller.sink.addError(e);
       }
@@ -155,16 +150,19 @@ final desktopFingerprintProvider = StateNotifierProvider.autoDispose.family<
         FidoFingerprintsNotifier, AsyncValue<List<Fingerprint>>, DevicePath>(
     (ref, devicePath) => _DesktopFidoFingerprintsNotifier(
           ref.watch(_sessionProvider(devicePath)),
+          ref,
         ));
 
 class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   final RpcNodeSession _session;
+  final Ref _ref;
 
-  _DesktopFidoFingerprintsNotifier(this._session) {
+  _DesktopFidoFingerprintsNotifier(this._session, this._ref) {
     _refresh();
   }
 
   Future<void> _refresh() async {
+    _ref.invalidate(fidoStateProvider(_session.devicePath));
     final result = await _session.command('fingerprints');
     setItems((result['children'] as Map<String, dynamic>)
         .entries
@@ -236,12 +234,14 @@ final desktopCredentialProvider = StateNotifierProvider.autoDispose.family<
         FidoCredentialsNotifier, AsyncValue<List<FidoCredential>>, DevicePath>(
     (ref, devicePath) => _DesktopFidoCredentialsNotifier(
           ref.watch(_sessionProvider(devicePath)),
+          ref,
         ));
 
 class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
   final RpcNodeSession _session;
+  final Ref _ref;
 
-  _DesktopFidoCredentialsNotifier(this._session) {
+  _DesktopFidoCredentialsNotifier(this._session, this._ref) {
     _refresh();
   }
 
@@ -259,6 +259,7 @@ class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
       }
     }
     setItems(creds);
+    _ref.invalidate(fidoStateProvider(_session.devicePath));
   }
 
   @override

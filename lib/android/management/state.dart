@@ -23,22 +23,19 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../management/state.dart';
 
-final androidManagementState = StateNotifierProvider.autoDispose
-    .family<ManagementStateNotifier, AsyncValue<DeviceInfo>, DevicePath>(
-  (ref, devicePath) {
-    // Make sure to rebuild if currentDevice changes (as on reboot)
-    ref.watch(currentDeviceProvider);
-    final notifier = _AndroidManagementStateNotifier(ref);
-    return notifier..refresh();
-  },
+final androidManagementState = AsyncNotifierProvider.autoDispose
+    .family<ManagementStateNotifier, DeviceInfo, DevicePath>(
+  _AndroidManagementStateNotifier.new,
 );
 
 class _AndroidManagementStateNotifier extends ManagementStateNotifier {
-  final Ref _ref;
+  @override
+  FutureOr<DeviceInfo> build(DevicePath devicePath) {
+    // Make sure to rebuild if currentDevice changes (as on reboot)
+    ref.watch(currentDeviceProvider);
 
-  _AndroidManagementStateNotifier(this._ref) : super();
-
-  void refresh() async {}
+    return Completer<DeviceInfo>().future;
+  }
 
   @override
   Future<void> setMode(
@@ -55,6 +52,6 @@ class _AndroidManagementStateNotifier extends ManagementStateNotifier {
       state = const AsyncValue.loading();
     }
 
-    _ref.read(attachedDevicesProvider.notifier).refresh();
+    ref.read(attachedDevicesProvider.notifier).refresh();
   }
 }
