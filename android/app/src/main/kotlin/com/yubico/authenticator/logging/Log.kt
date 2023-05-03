@@ -26,7 +26,8 @@ object Log {
         DEBUG,
         INFO,
         WARNING,
-        ERROR
+        ERROR,
+        NONE
     }
 
     private const val MAX_BUFFER_SIZE = 1000
@@ -71,7 +72,7 @@ object Log {
 
     @Suppress("unused")
     fun log(level: LogLevel, loggerName: String, message: String, error: String?) {
-        if (level < this.level) {
+        if (this.level == LogLevel.NONE || level < this.level) {
             return
         }
 
@@ -89,6 +90,7 @@ object Log {
             LogLevel.INFO -> Log.i(TAG, logMessage)
             LogLevel.WARNING -> Log.w(TAG, logMessage)
             LogLevel.ERROR -> Log.e(TAG, logMessage)
+            LogLevel.NONE -> {}
         }
 
         error?.let {
@@ -102,4 +104,7 @@ object Log {
     fun setLevel(newLevel: LogLevel) {
         level = newLevel
     }
+
+    @Suppress("unused")
+    fun getLevel() : LogLevel = level
 }

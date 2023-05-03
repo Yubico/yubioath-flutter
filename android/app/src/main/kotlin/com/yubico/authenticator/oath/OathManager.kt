@@ -268,15 +268,29 @@ class OathManager(
                         memoryKeyProvider.removeKey(previousId)
                     }
 
-                    // cache info for use later
-                    val newSession = Session(
-                        session,
-                        keyManager.isRemembered(session.deviceId)
-                    )
+                    val userIsAuthenticated = biometricProtection.isUserAuthenticated(session.deviceId)
 
-                    val newCodes = if (!session.isLocked) {
+                    val sessionState =
+                        Session(session, keyManager.isRemembered(session.deviceId))
+
+                    // If the session is not locked, we calculate the codes and use them later
+                    // with oathViewModel.updateCredentials() only after the user is authenticated
+                    // to avoid leaking the calculated codes in log files we silence the log temporarily
+                    val logLevel = Log.getLevel()
+
+                    if (!userIsAuthenticated) {
+                        Log.d(TAG, "User is not authenticated, silencing logging")
+                        Log.setLevel(Log.LogLevel.NONE)
+                    }
+
+                    val credentialsWithCodes = if (!session.isLocked) {
                         calculateOathCodes(session)
                     } else mapOf()
+
+                    if (!userIsAuthenticated) {
+                        Log.setLevel(logLevel)
+                        Log.d(TAG, "Resuming logging level")
+                    }
 
                     if (session.version.isLessThan(4, 0, 0) && connection.transport == Transport.NFC) {
                         // NEO over NFC, select OTP applet before reading info
@@ -302,7 +316,8 @@ class OathManager(
                     val deviceInfo = DeviceUtil.readInfo(connection, pid)
 
                     // verify authentication
-                    if (!biometricProtection.isUserAuthenticated(session.deviceId)) {
+                    if (!userIsAuthenticated) {
+
                         // clear codes before the user authenticated
                         oathViewModel.updateCredentials(mapOf())
 
@@ -317,34 +332,37 @@ class OathManager(
 
                         biometricProtection.authenticate(session.deviceId,
                             onAuthenticationExpired = {
-                                Log.d(TAG, "Biometric authentication key has been invalidated, resetting rememebered password")
+                                Log.d(TAG, "Biometric authentication key has been invalidated, resetting remembered password")
                                 keyManager.clearAll()
-                                oathViewModel.setSessionState(newSession.copy(isLocked = true))
+                                // the clearAll call removed also keyEntry used for biometric operations
+                                // the following call will create a new keypair
+                                biometricProtection.setEnabled(true)
+
+                                // in this situation, the user did not succeed with biometric
+                                // authentication and will need to use password to unlock the session
+                                oathViewModel.setSessionState(sessionState.copy(isLocked = true))
                             },
                             onAuthenticationCancelledOrFailed = {
                                 Log.d(TAG, "Biometric authentication was cancelled or failed. User needs to provide password")
-                                oathViewModel.setSessionState(newSession.copy(isLocked = true))
+
+                                // in this situation, the user did not succeed with biometric
+                                // authentication and will need to use password to unlock the session
+                                oathViewModel.setSessionState(sessionState.copy(isLocked = true))
                             },
                             onAuthenticationSucceeded = {
                                 Log.d(TAG, "Biometric authentication succeeded")
-                                oathViewModel.setSessionState(newSession)
+                                oathViewModel.setSessionState(sessionState)
                                 if (!session.isLocked) {
-                                    oathViewModel.updateCredentials(newCodes)
+                                    oathViewModel.updateCredentials(credentialsWithCodes)
                                 }
                             }
                         )
                         return@withConnection
                     } else {
-
-                        Log.d(TAG, "User is verified - updating session state and credentials")
-
-                        oathViewModel.setSessionState(newSession)
-                        if (!session.isLocked) {
-                            oathViewModel.updateCredentials(newCodes)
-                        }
+                        oathViewModel.setSessionState(sessionState)
+                        oathViewModel.updateCredentials(credentialsWithCodes)
 
                         // Update deviceInfo since the deviceId has changed
-                        Log.i(TAG, "Updating device info")
                         appViewModel.setDeviceInfo(
                             Info(
                                 name = DeviceUtil.getName(deviceInfo, pid?.type),
