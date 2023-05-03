@@ -36,33 +36,31 @@ final _log = Logger('android.oath.state');
 
 const _methods = MethodChannel('android.oath.methods');
 
-final androidOathStateProvider = StateNotifierProvider.autoDispose
-    .family<OathStateNotifier, AsyncValue<OathState>, DevicePath>(
-        (ref, devicePath) => _AndroidOathStateNotifier());
+final androidOathStateProvider = AsyncNotifierProvider.autoDispose
+    .family<OathStateNotifier, OathState, DevicePath>(
+        _AndroidOathStateNotifier.new);
 
 class _AndroidOathStateNotifier extends OathStateNotifier {
   final _events = const EventChannel('android.oath.sessionState');
   late StreamSubscription _sub;
-  _AndroidOathStateNotifier() : super() {
+
+  @override
+  FutureOr<OathState> build(DevicePath arg) {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
-      if (mounted) {
-        if (json == null) {
-          state = const AsyncValue.loading();
-        } else {
-          final oathState = OathState.fromJson(json);
-          state = AsyncValue.data(oathState);
-        }
+      if (json == null) {
+        state = const AsyncValue.loading();
+      } else {
+        final oathState = OathState.fromJson(json);
+        state = AsyncValue.data(oathState);
       }
     }, onError: (err, stackTrace) {
       state = AsyncValue.error(err, stackTrace);
     });
-  }
 
-  @override
-  void dispose() {
-    _sub.cancel();
-    super.dispose();
+    ref.onDispose(_sub.cancel);
+
+    return Completer<OathState>().future;
   }
 
   @override

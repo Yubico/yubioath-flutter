@@ -42,7 +42,6 @@ Widget oathBuildActions(
 }) {
   final l10n = AppLocalizations.of(context)!;
   final capacity = oathState.version.isAtLeast(4) ? 32 : null;
-  //final theme = Theme.of(context).colorScheme;
   final theme =
       ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
   return FsDialog(

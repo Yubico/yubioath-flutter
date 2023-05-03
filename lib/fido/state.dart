@@ -21,9 +21,9 @@ import '../app/models.dart';
 import '../core/state.dart';
 import 'models.dart';
 
-final fidoStateProvider = StateNotifierProvider.autoDispose
-    .family<FidoStateNotifier, AsyncValue<FidoState>, DevicePath>(
-  (ref, devicePath) => throw UnimplementedError(),
+final fidoStateProvider = AsyncNotifierProvider.autoDispose
+    .family<FidoStateNotifier, FidoState, DevicePath>(
+  () => throw UnimplementedError(),
 );
 
 abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {

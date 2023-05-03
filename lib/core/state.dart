@@ -18,6 +18,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../app/models.dart';
+
 bool get isDesktop {
   return const [
     TargetPlatform.windows,
@@ -36,21 +38,16 @@ final prefProvider = Provider<SharedPreferences>((ref) {
 });
 
 abstract class ApplicationStateNotifier<T>
-    extends StateNotifier<AsyncValue<T>> {
-  ApplicationStateNotifier() : super(const AsyncValue.loading());
+    extends AutoDisposeFamilyAsyncNotifier<T, DevicePath> {
+  ApplicationStateNotifier() : super();
 
   @protected
   Future<void> updateState(Future<T> Function() guarded) async {
-    final result = await AsyncValue.guard(guarded);
-    if (mounted) {
-      state = result;
-    }
+    state = await AsyncValue.guard(guarded);
   }
 
   @protected
   void setData(T value) {
-    if (mounted) {
-      state = AsyncValue.data(value);
-    }
+    state = AsyncValue.data(value);
   }
 }
