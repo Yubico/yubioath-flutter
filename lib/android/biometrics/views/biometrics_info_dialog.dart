@@ -40,8 +40,8 @@ class BiometricsInfoDialog extends ConsumerWidget {
           child: Column(
             children: [
               Text(_variant == BiometricsDialogVariant.invalidated
-                  ? l10n.l_biometrics_dialog_invalidated
-                  : l10n.l_biometrics_dialog_disabled)
+                  ? l10n.p_biometrics_dialog_invalidated
+                  : l10n.p_biometrics_dialog_disabled)
             ],
           ),
         ),

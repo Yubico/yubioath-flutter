@@ -442,10 +442,10 @@
     "l_use_biometrics": "Biometric protection",
     "l_use_biometrics_on": "App will require biometric authentication before accessing stored YubiKey OATH passwords",
     "l_use_biometrics_off": "App will not require biometric authentication",
-    "l_biometrics_not_supported": "Currently not available. To use biometrics, enable secure lock screen and a fingerprint, face or retina biometric",
+    "p_biometrics_not_supported": "Currently not available. To use biometrics, enable secure lock screen and a fingerprint, face or retina biometric",
     "l_biometrics_dialog_title": "Biometric authentication",
-    "l_biometrics_dialog_invalidated": "The system Biometric authentication have been altered.\n\nFor security reasons all previously remembered passwords for OATH have been cleared from the app.\n\nUse password to access OATH accounts.",
-    "l_biometrics_dialog_disabled": "The system Biometric authentication changed and is not usable.\n\nFor security reasons all previously remembered passwords for OATH have been cleared from the app.\n\nTo use biometric protection you need to enable it in settings again.",
+    "p_biometrics_dialog_invalidated": "The system Biometric authentication have been altered.\n\nFor security reasons all previously remembered passwords for OATH have been cleared from the app.\n\nUse password to access OATH accounts.",
+    "p_biometrics_dialog_disabled": "The system Biometric authentication changed and is not usable.\n\nFor security reasons all previously remembered passwords for OATH have been cleared from the app.\n\nTo use biometric protection you need to enable it in settings again.",
     "s_allow_screenshots": "Allow screenshots",
 
     "@_eof": {}

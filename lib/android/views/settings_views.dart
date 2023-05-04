@@ -216,7 +216,7 @@ class UseBiometricsView extends ConsumerWidget {
             })
         : ListTile(
             title: Text(l10n.l_use_biometrics),
-            subtitle: Text(l10n.l_biometrics_not_supported),
+            subtitle: Text(l10n.p_biometrics_not_supported),
             enabled: false,
           );
   }
