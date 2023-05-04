@@ -1,4 +1,20 @@
-package com.yubico.authenticator.oath.keystore
+/*
+ * Copyright (C) 2023 Yubico.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.yubico.authenticator.oath.biometrics
 
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
@@ -6,10 +22,12 @@ import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.security.keystore.UserNotAuthenticatedException
 import androidx.annotation.RequiresApi
+import androidx.biometric.BiometricManager
 import androidx.fragment.app.FragmentActivity
 import com.yubico.authenticator.AppPreferences
 import com.yubico.authenticator.compatUtil
 import com.yubico.authenticator.logging.Log
+import com.yubico.authenticator.oath.keystore.getAlias
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.Signature
@@ -21,21 +39,24 @@ open class BiometricProtection {
     enum class UserAuthenticationStatus {
         KEY_PERMANENTLY_INVALIDATED,
         USER_NOT_AUTHENTICATED,
-        SIGNATURE_FAILED,
+        CANT_AUTHENTICATE,
         SUCCESS
     }
+
+    open fun canAuthenticate() = false
 
     open fun getAuthenticationStatus(deviceId: String): UserAuthenticationStatus =
         UserAuthenticationStatus.SUCCESS
 
     open fun setEnabled(enabled: Boolean) {}
+
     open fun authenticate(
         deviceId: String,
-        onKeyPermanentlyInvalidated: () -> Unit,
-        onAuthenticationCancelledOrFailed: () -> Unit,
-        onAuthenticationSucceeded: () -> Unit
-    ) {
-    }
+        onError: (error: Int, errorMessage: String) -> Unit,
+        onKeyInvalidated: () -> Unit,
+        onCancelOrFail: () -> Unit,
+        onSuccess: () -> Unit
+    ) {}
 }
 
 @RequiresApi(Build.VERSION_CODES.M)
@@ -44,12 +65,31 @@ class BiometricProtectionSinceM(
     private val appPreferences: AppPreferences
 ) : BiometricProtection() {
 
+    private val applicationContext = activity.applicationContext
+
+    override fun canAuthenticate(): Boolean = compatUtil.from(Build.VERSION_CODES.M) {
+        val biometricManager = BiometricManager.from(applicationContext)
+        compatUtil.from(Build.VERSION_CODES.R) {
+            biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS
+        }.otherwise {
+            @Suppress("DEPRECATION")
+            biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS
+        }
+    }.otherwise {
+        false
+    }
+
     override fun getAuthenticationStatus(deviceId: String): UserAuthenticationStatus {
 
         // user is authenticated if the use of biometrics is turned off
         if (!appPreferences.useBiometrics) {
             Log.d(TAG, "Not using biometrics")
             return UserAuthenticationStatus.SUCCESS
+        }
+
+        if (appPreferences.useBiometrics && !canAuthenticate()) {
+            Log.d(TAG, "Wants to use biometrics, but system does not support it")
+            return UserAuthenticationStatus.CANT_AUTHENTICATE
         }
 
         if (!keystore.containsAlias(getAlias(deviceId))) {
@@ -70,28 +110,33 @@ class BiometricProtectionSinceM(
 
     override fun authenticate(
         deviceId: String,
-        onKeyPermanentlyInvalidated: () -> Unit,
-        onAuthenticationCancelledOrFailed: () -> Unit,
-        onAuthenticationSucceeded: () -> Unit
+        onError: (error: Int, errorMessage: String) -> Unit,
+        onKeyInvalidated: () -> Unit,
+        onCancelOrFail: () -> Unit,
+        onSuccess: () -> Unit
     ) {
         biometricPrompt.authenticate(AuthenticationCallbacks(
-            onAuthenticationError = { err, str ->
-                Log.e(TAG, "Biometric authentication error $err: $str")
-                onAuthenticationCancelledOrFailed()
+            onAuthenticationError = { err, errorMessage ->
+                // there is a problem with the biometric authentication system
+                // for example it was disabled, or there are no fingerprints or faces enrolled;
+                // or there is a HW failure or the system requires update
+                // for Yubico Authenticator this means that we have to disable the Biometric Protection
+                Log.e(TAG, "Biometric authentication error $err: $errorMessage")
+                onError(err, errorMessage.toString())
             },
             onAuthenticationSucceeded = {
                 Log.d(TAG, "Biometric authentication succeeded, verifying authentication key")
 
                 val authKey = getKey()
                 if (authKey == null) {
-                    onKeyPermanentlyInvalidated().also {
+                    onError(BiometricManager.BIOMETRIC_STATUS_UNKNOWN, "Authentication Key does not exists in KeyStore").also {
                         Log.e(TAG, "Failed to find authentication key")
                     }
                     return@AuthenticationCallbacks
                 }
 
                 when (verifyAuthentication(authKey)) {
-                    UserAuthenticationStatus.SUCCESS -> onAuthenticationSucceeded().also {
+                    UserAuthenticationStatus.SUCCESS -> onSuccess().also {
                         Log.d(TAG, "User is now verified by biometrics")
                     }
 
@@ -99,14 +144,16 @@ class BiometricProtectionSinceM(
                     // we are in onAuthenticationSucceeded callback of BiometricPrompt which means,
                     // that if the key is still not authenticated, the key is not valid anymore
                     UserAuthenticationStatus.KEY_PERMANENTLY_INVALIDATED,
-                    UserAuthenticationStatus.USER_NOT_AUTHENTICATED -> onKeyPermanentlyInvalidated().also {
+                    UserAuthenticationStatus.USER_NOT_AUTHENTICATED -> onKeyInvalidated().also {
                         Log.e(TAG, "The private key is not valid for signatures anymore")
                     }
 
-                    UserAuthenticationStatus.SIGNATURE_FAILED -> onAuthenticationCancelledOrFailed().also {
-                        Log.e(TAG, "Signature with the key pair failed")
+                    UserAuthenticationStatus.CANT_AUTHENTICATE -> onError(
+                        BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED,
+                        "Device cannot use biometric authentication"
+                    ).also {
+                        Log.e(TAG, "Device cannot use biometric authentication")
                     }
-
                 }
             },
             onAuthenticationFailed = {
@@ -114,7 +161,7 @@ class BiometricProtectionSinceM(
                     TAG,
                     "Error authenticating user, the biometric information does not match!"
                 )
-                onAuthenticationCancelledOrFailed()
+                onCancelOrFail()
             }
         ))
     }
@@ -122,9 +169,10 @@ class BiometricProtectionSinceM(
     override fun setEnabled(enabled: Boolean) {
 
         if (!enabled) {
-            // remove authentication key
             Log.d(TAG, "Disabling biometric protection")
-            keystore.deleteEntry(KEY_ALIAS)
+            // remove all information from key store
+            keystore.aliases().asSequence().forEach { keystore.deleteEntry(it) }
+            appPreferences.setUseBiometrics(false)
         } else {
             Log.d(TAG, "Enabling biometric protection")
             if (getKey() == null) {
@@ -186,9 +234,6 @@ class BiometricProtectionSinceM(
         } catch (keyPermanentlyInvalidatedException: KeyPermanentlyInvalidatedException) {
             Log.d(TAG, "verifyAuthentication: AuthResult.KEY_PERMANENTLY_INVALIDATED")
             UserAuthenticationStatus.KEY_PERMANENTLY_INVALIDATED
-        } catch (signatureException: SignatureException) {
-            Log.d(TAG, "verifyAuthentication: AuthResult.SIGNATURE_FAILED")
-            UserAuthenticationStatus.SIGNATURE_FAILED
         }
     }
 

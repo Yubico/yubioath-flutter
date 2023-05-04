@@ -22,6 +22,7 @@ import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/models.dart';
 import 'app_methods.dart';
+import 'biometrics/biometrics_methods.dart';
 
 final _log = Logger('android.window_state_provider');
 
@@ -59,6 +60,8 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
         _log.debug('Reading nfc enabled value');
         isNfcEnabled().then((value) =>
             _ref.read(androidNfcStateProvider.notifier).setNfcEnabled(value));
+
+        refreshBiometricProtectionAvailability(_ref);
       }
     } else {
       _log.debug('Ignoring appLifecycleStateChange');

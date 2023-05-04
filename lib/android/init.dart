@@ -36,6 +36,7 @@ import '../core/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
 import 'app_methods.dart';
+import 'biometrics/biometrics_methods.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
@@ -83,7 +84,7 @@ Future<Widget> initialize() async {
       ),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
       androidNfcSupportProvider.overrideWithValue(await getHasNfc()),
-      androidBiometricsSupportedProvider.overrideWithValue(await getHasBiometricsSupport()),
+
       supportedThemesProvider
           .overrideWith(
             (ref) => ref.watch(androidSupportedThemesProvider),
@@ -102,6 +103,7 @@ Future<Widget> initialize() async {
           setupOtpAuthLinkHandler(context);
 
           setupAppMethodsChannel(ref);
+          setupBiometricsMethodsChannel(ref);
 
           return const MainPage();
         },

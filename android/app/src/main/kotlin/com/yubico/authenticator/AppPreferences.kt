@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,10 @@ class AppPreferences(context: Context) {
 
     val useBiometrics: Boolean
         get() = prefs.getBoolean(PREF_USE_BIOMETRICS, false)
+
+    fun setUseBiometrics(enabled: Boolean) {
+        prefs.edit().putBoolean(PREF_USE_BIOMETRICS, enabled).apply()
+    }
 
     fun registerListener(listener: OnSharedPreferenceChangeListener) {
         Log.d(TAG, "registering change listener")

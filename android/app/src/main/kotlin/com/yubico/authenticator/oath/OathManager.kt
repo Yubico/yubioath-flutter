@@ -23,6 +23,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.coroutineScope
 import com.yubico.authenticator.*
 import com.yubico.authenticator.device.Capabilities
 import com.yubico.authenticator.device.Info
@@ -39,7 +40,8 @@ import com.yubico.authenticator.oath.data.YubiKitOathSession
 import com.yubico.authenticator.oath.data.YubiKitOathType
 import com.yubico.authenticator.oath.data.calculateSteamCode
 import com.yubico.authenticator.oath.data.isSteamCredential
-import com.yubico.authenticator.oath.keystore.BiometricProtection
+import com.yubico.authenticator.oath.biometrics.BiometricProtection
+import com.yubico.authenticator.oath.biometrics.BiometricsMethodChannel
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
@@ -88,6 +90,8 @@ class OathManager(
     private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 
     private val oathChannel = MethodChannel(messenger, "android.oath.methods")
+    private val biometricsMethodChannel =
+        BiometricsMethodChannel(lifecycleOwner as Context, biometricProtection, messenger)
 
     private val memoryKeyProvider = ClearingMemProvider()
     private val keyManager by lazy {
@@ -316,8 +320,20 @@ class OathManager(
                     val deviceInfo = DeviceUtil.readInfo(connection, pid)
 
                     when (userAuthenticationStatus) {
-                        BiometricProtection.UserAuthenticationStatus.KEY_PERMANENTLY_INVALIDATED,
-                        BiometricProtection.UserAuthenticationStatus.SIGNATURE_FAILED -> {
+                        BiometricProtection.UserAuthenticationStatus.CANT_AUTHENTICATE -> {
+                            // the system no longer supports biometric authentication
+                            // we remove all remembered passwords, disable the settings and let the
+                            // user know
+
+                            keyManager.clearAll()
+                            biometricProtection.setEnabled(false)
+                            oathViewModel.setSessionState(sessionState.copy(isLocked = true))
+                            lifecycleOwner.lifecycle.coroutineScope.launch(Dispatchers.Main) {
+                                biometricsMethodChannel.showBiometricProtectionDisabledDialog()
+                            }
+                        }
+
+                        BiometricProtection.UserAuthenticationStatus.KEY_PERMANENTLY_INVALIDATED -> {
                             // the key was invalidated and there is no point to use the biometric prompt
                             // the user has to use password
 
@@ -343,7 +359,19 @@ class OathManager(
                             )
 
                             biometricProtection.authenticate(session.deviceId,
-                                onKeyPermanentlyInvalidated = {
+                                onError = { error, errorMessage ->
+                                    Log.d(TAG, "Error in device biometric system: $errorMessage ($error)")
+                                    keyManager.clearAll()
+
+                                    // in this case we will disable the biometric protection
+                                    biometricProtection.setEnabled(false)
+
+                                    // in this situation, the user did not succeed with biometric
+                                    // authentication and will need to use password to unlock the session
+                                    oathViewModel.setSessionState(sessionState.copy(isLocked = true))
+                                    biometricsMethodChannel.showBiometricProtectionDisabledDialog()
+                                },
+                                onKeyInvalidated = {
                                     Log.d(TAG, "Biometric authentication key has been invalidated, resetting remembered password")
                                     keyManager.clearAll()
                                     // the clearAll call removed also keyEntry used for biometric operations
@@ -353,15 +381,16 @@ class OathManager(
                                     // in this situation, the user did not succeed with biometric
                                     // authentication and will need to use password to unlock the session
                                     oathViewModel.setSessionState(sessionState.copy(isLocked = true))
+                                    biometricsMethodChannel.showBiometricProtectionInvalidatedDialog()
                                 },
-                                onAuthenticationCancelledOrFailed = {
+                                onCancelOrFail = {
                                     Log.d(TAG, "Biometric authentication was cancelled or failed. User needs to provide password")
 
                                     // in this situation, the user did not succeed with biometric
                                     // authentication and will need to use password to unlock the session
                                     oathViewModel.setSessionState(sessionState.copy(isLocked = true))
                                 },
-                                onAuthenticationSucceeded = {
+                                onSuccess = {
                                     Log.d(TAG, "Biometric authentication succeeded")
                                     oathViewModel.setSessionState(sessionState)
                                     if (!session.isLocked) {

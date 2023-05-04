@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../biometrics/biometrics_methods.dart';
+import '../biometrics/state.dart';
 import '../state.dart';
 import '../models.dart';
 import '../keys.dart' as keys;
@@ -192,23 +194,30 @@ class UseBiometricsView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final hasBiometricsSupport = ref.watch(androidBiometricsSupportedProvider);
-    final useBiometrics = ref.watch(androidUseBiometricsProvider);
 
-    // TODO implement "enabled/disabled"
-    return SwitchListTile(
-        title: Text(l10n.l_use_biometrics),
-        subtitle: hasBiometricsSupport ? Text(useBiometrics
-            ? l10n.l_use_biometrics_on
-            : l10n.l_use_biometrics_off)
-        : Text(l10n.l_biometrics_not_supported),
-        value: hasBiometricsSupport && useBiometrics,
-        key: keys.useBiometrics,
-        onChanged: (value) {
-          if (hasBiometricsSupport) {
-            ref.read(androidUseBiometricsProvider.notifier).setUseBiometrics(
-                value);
-          }
-        });
+    refreshBiometricProtectionAvailability(ref);
+    final available = ref.watch(isBiometricProtectionAvailable);
+    final enabled = ref.watch(useBiometricProtection);
+
+    return available
+        ? SwitchListTile(
+            title: Text(l10n.l_use_biometrics),
+            subtitle: Text(enabled
+                ? l10n.l_use_biometrics_on
+                : l10n.l_use_biometrics_off),
+            value: enabled,
+            key: keys.useBiometrics,
+            onChanged: (value) {
+              if (available) {
+                ref
+                    .read(useBiometricProtection.notifier)
+                    .setUseBiometrics(value);
+              }
+            })
+        : ListTile(
+            title: Text(l10n.l_use_biometrics),
+            subtitle: Text(l10n.l_biometrics_not_supported),
+            enabled: false,
+          );
   }
 }

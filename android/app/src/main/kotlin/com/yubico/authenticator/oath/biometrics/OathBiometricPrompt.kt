@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator.oath.keystore
+package com.yubico.authenticator.oath.biometrics
 
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
