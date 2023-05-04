@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/models.dart';
@@ -32,36 +31,24 @@ abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
   Future<PinResult> unlock(String pin);
 }
 
-abstract class LockedCollectionNotifier<T>
-    extends StateNotifier<AsyncValue<List<T>>> {
-  LockedCollectionNotifier() : super(const AsyncValue.loading());
-
-  @protected
-  void setItems(List<T> items) {
-    if (mounted) {
-      state = AsyncValue.data(List.unmodifiable(items));
-    }
-  }
-}
-
-final fingerprintProvider = StateNotifierProvider.autoDispose.family<
-    FidoFingerprintsNotifier, AsyncValue<List<Fingerprint>>, DevicePath>(
-  (ref, arg) => throw UnimplementedError(),
+final fingerprintProvider = AsyncNotifierProvider.autoDispose
+    .family<FidoFingerprintsNotifier, List<Fingerprint>, DevicePath>(
+  () => throw UnimplementedError(),
 );
 
 abstract class FidoFingerprintsNotifier
-    extends LockedCollectionNotifier<Fingerprint> {
+    extends AutoDisposeFamilyAsyncNotifier<List<Fingerprint>, DevicePath> {
   Stream<FingerprintEvent> registerFingerprint({String? name});
   Future<Fingerprint> renameFingerprint(Fingerprint fingerprint, String name);
   Future<void> deleteFingerprint(Fingerprint fingerprint);
 }
 
-final credentialProvider = StateNotifierProvider.autoDispose.family<
-    FidoCredentialsNotifier, AsyncValue<List<FidoCredential>>, DevicePath>(
-  (ref, arg) => throw UnimplementedError(),
+final credentialProvider = AsyncNotifierProvider.autoDispose
+    .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
+  () => throw UnimplementedError(),
 );
 
 abstract class FidoCredentialsNotifier
-    extends LockedCollectionNotifier<FidoCredential> {
+    extends AutoDisposeFamilyAsyncNotifier<List<FidoCredential>, DevicePath> {
   Future<void> deleteCredential(FidoCredential credential);
 }

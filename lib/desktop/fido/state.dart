@@ -23,6 +23,7 @@ import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
 import '../models.dart';
@@ -53,6 +54,22 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
   late RpcNodeSession _session;
   late StateController<String?> _pinController;
 
+  FutureOr<FidoState> _build(DevicePath devicePath) async {
+    var result = await _session.command('get');
+    FidoState fidoState = FidoState.fromJson(result['data']);
+    if (fidoState.hasPin && !fidoState.unlocked) {
+      final pin = ref.read(_pinProvider(devicePath));
+      if (pin != null) {
+        await unlock(pin);
+        result = await _session.command('get');
+        fidoState = FidoState.fromJson(result['data']);
+      }
+    }
+
+    _log.debug('application status', jsonEncode(fidoState));
+    return fidoState;
+  }
+
   @override
   FutureOr<FidoState> build(DevicePath devicePath) async {
     _session = ref.watch(_sessionProvider(devicePath));
@@ -60,6 +77,20 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
       // Make sure to rebuild if isAdmin changes
       ref.watch(rpcStateProvider.select((state) => state.isAdmin));
     }
+
+    ref.listen<WindowState>(
+      windowStateProvider,
+      (prev, next) async {
+        if (prev?.active == false && next.active) {
+          // Refresh state on active
+          final newState = await _build(devicePath);
+          if (state.valueOrNull != newState) {
+            state = AsyncValue.data(newState);
+          }
+        }
+      },
+    );
+
     _pinController = ref.watch(_pinProvider(devicePath).notifier);
     _session.setErrorHandler('state-reset', (_) async {
       ref.invalidate(_sessionProvider(devicePath));
@@ -77,9 +108,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
       _session.unsetErrorHandler('state-reset');
     });
 
-    final result = await _session.command('get');
-    _log.debug('application status', jsonEncode(result));
-    return FidoState.fromJson(result['data']);
+    return _build(devicePath);
   }
 
   @override
@@ -146,25 +175,38 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
   }
 }
 
-final desktopFingerprintProvider = StateNotifierProvider.autoDispose.family<
-        FidoFingerprintsNotifier, AsyncValue<List<Fingerprint>>, DevicePath>(
-    (ref, devicePath) => _DesktopFidoFingerprintsNotifier(
-          ref.watch(_sessionProvider(devicePath)),
-          ref,
-        ));
+final desktopFingerprintProvider = AsyncNotifierProvider.autoDispose
+    .family<FidoFingerprintsNotifier, List<Fingerprint>, DevicePath>(
+        _DesktopFidoFingerprintsNotifier.new);
 
 class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
-  final RpcNodeSession _session;
-  final Ref _ref;
+  late RpcNodeSession _session;
 
-  _DesktopFidoFingerprintsNotifier(this._session, this._ref) {
-    _refresh();
+  @override
+  FutureOr<List<Fingerprint>> build(DevicePath devicePath) async {
+    _session = ref.watch(_sessionProvider(devicePath));
+    ref.watch(fidoStateProvider(devicePath));
+
+    // Refresh on active
+    ref.listen<WindowState>(
+      windowStateProvider,
+      (prev, next) async {
+        if (prev?.active == false && next.active) {
+          // Refresh state on active
+          final newState = await _build(devicePath);
+          if (state.valueOrNull != newState) {
+            state = AsyncValue.data(newState);
+          }
+        }
+      },
+    );
+
+    return _build(devicePath);
   }
 
-  Future<void> _refresh() async {
-    _ref.invalidate(fidoStateProvider(_session.devicePath));
+  FutureOr<List<Fingerprint>> _build(DevicePath devicePath) async {
     final result = await _session.command('fingerprints');
-    setItems((result['children'] as Map<String, dynamic>)
+    return List.unmodifiable((result['children'] as Map<String, dynamic>)
         .entries
         .map((e) => Fingerprint(e.key, e.value['name']))
         .toList());
@@ -174,7 +216,7 @@ class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   Future<void> deleteFingerprint(Fingerprint fingerprint) async {
     await _session
         .command('delete', target: ['fingerprints', fingerprint.templateId]);
-    await _refresh();
+    ref.invalidate(fidoStateProvider(_session.devicePath));
   }
 
   @override
@@ -208,7 +250,7 @@ class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
         );
         controller.sink
             .add(FingerprintEvent.complete(Fingerprint.fromJson(result)));
-        await _refresh();
+        ref.invalidate(fidoStateProvider(_session.devicePath));
         await controller.sink.close();
       } catch (e) {
         controller.sink.addError(e);
@@ -225,27 +267,41 @@ class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
         target: ['fingerprints', fingerprint.templateId],
         params: {'name': name});
     final renamed = fingerprint.copyWith(name: name);
-    await _refresh();
+    ref.invalidate(fidoStateProvider(_session.devicePath));
     return renamed;
   }
 }
 
-final desktopCredentialProvider = StateNotifierProvider.autoDispose.family<
-        FidoCredentialsNotifier, AsyncValue<List<FidoCredential>>, DevicePath>(
-    (ref, devicePath) => _DesktopFidoCredentialsNotifier(
-          ref.watch(_sessionProvider(devicePath)),
-          ref,
-        ));
+final desktopCredentialProvider = AsyncNotifierProvider.autoDispose
+    .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
+        _DesktopFidoCredentialsNotifier.new);
 
 class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
-  final RpcNodeSession _session;
-  final Ref _ref;
+  late RpcNodeSession _session;
 
-  _DesktopFidoCredentialsNotifier(this._session, this._ref) {
-    _refresh();
+  @override
+  FutureOr<List<FidoCredential>> build(DevicePath devicePath) async {
+    _session = ref.watch(_sessionProvider(devicePath));
+    ref.watch(fidoStateProvider(devicePath));
+
+    // Refresh on active
+    ref.listen<WindowState>(
+      windowStateProvider,
+      (prev, next) async {
+        if (prev?.active == false && next.active) {
+          // Refresh state on active
+          final newState = await _build(devicePath);
+          if (state.valueOrNull != newState) {
+            state = AsyncValue.data(newState);
+          }
+        }
+      },
+    );
+
+    return _build(devicePath);
   }
 
-  Future<void> _refresh() async {
+  FutureOr<List<FidoCredential>> _build(DevicePath devicePath) async {
     final List<FidoCredential> creds = [];
     final rps = await _session.command('credentials');
     for (final rpId in (rps['children'] as Map<String, dynamic>).keys) {
@@ -258,8 +314,7 @@ class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
             userName: e.value['user_name']));
       }
     }
-    setItems(creds);
-    _ref.invalidate(fidoStateProvider(_session.devicePath));
+    return List.unmodifiable(creds);
   }
 
   @override
@@ -269,6 +324,6 @@ class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
       credential.rpId,
       credential.credentialId,
     ]);
-    await _refresh();
+    ref.invalidate(fidoStateProvider(_session.devicePath));
   }
 }
