@@ -291,19 +291,20 @@
     "l_calculate_code_desc": "Get a new code from your YubiKey",
 
     "@_fido_credentials": {},
-    "l_credential": "Credential: {label}",
-    "@l_credential" : {
+    "l_passkey": "Passkey: {label}",
+    "@l_passkey" : {
         "placeholders": {
             "label": {}
         }
     },
-    "s_credentials": "Credentials",
+    "s_passkeys": "Passkeys",
     "l_ready_to_use": "Ready to use",
     "l_register_sk_on_websites": "Register as a Security Key on websites",
-    "l_no_discoverable_accounts": "No discoverable accounts",
-    "s_delete_credential": "Delete credential",
-    "s_credential_deleted": "Credential deleted",
-    "p_warning_delete_credential": "This will delete the credential from your YubiKey.",
+    "l_no_discoverable_accounts": "No Passkeys stored",
+    "s_delete_passkey": "Delete Passkey",
+    "l_delete_passkey_desc": "Remove the Passkey from the YubiKey",
+    "s_passkey_deleted": "Passkey deleted",
+    "p_warning_delete_passkey": "This will delete the Passkey from your YubiKey.",
 
     "@_fingerprints": {},
     "l_fingerprint": "Fingerprint: {label}",
