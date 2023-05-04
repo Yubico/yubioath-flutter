@@ -27,7 +27,7 @@ import '../../app/views/message_page.dart';
 import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
-import 'delete_credential_dialog.dart';
+import 'credential_dialog.dart';
 import 'fingerprint_dialog.dart';
 import 'key_actions.dart';
 
@@ -48,42 +48,19 @@ class FidoUnlockedPage extends ConsumerWidget {
       }
       final creds = data.value;
       if (creds.isNotEmpty) {
-        children.add(ListTitle(l10n.s_credentials));
-        children.addAll(
-          creds.map(
-            (cred) => ListTile(
-              leading: CircleAvatar(
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                child: const Icon(Icons.person),
-              ),
-              title: Text(
-                cred.userName,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-              subtitle: Text(
-                cred.rpId,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        showBlurDialog(
-                          context: context,
-                          builder: (context) =>
-                              DeleteCredentialDialog(node.path, cred),
-                        );
-                      },
-                      icon: const Icon(Icons.delete_outline)),
-                ],
-              ),
-            ),
-          ),
-        );
+        children.add(ListTitle(l10n.s_passkeys));
+        children.addAll(creds.map((cred) => Actions(
+              actions: {
+                OpenIntent: CallbackAction<OpenIntent>(onInvoke: (_) async {
+                  await showBlurDialog(
+                    context: context,
+                    builder: (context) => CredentialDialog(cred),
+                  );
+                  return null;
+                }),
+              },
+              child: _CredentialListItem(cred),
+            )));
       }
     }
 
@@ -151,6 +128,38 @@ class FidoUnlockedPage extends ConsumerWidget {
         delayedContent: true,
         child: const CircularProgressIndicator(),
       );
+}
+
+class _CredentialListItem extends StatelessWidget {
+  final FidoCredential credential;
+  const _CredentialListItem(this.credential);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: CircleAvatar(
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: const Icon(Icons.person),
+      ),
+      title: Text(
+        credential.userName,
+        softWrap: false,
+        overflow: TextOverflow.fade,
+      ),
+      subtitle: Text(
+        credential.rpId,
+        softWrap: false,
+        overflow: TextOverflow.fade,
+      ),
+      trailing: OutlinedButton(
+        onPressed: () {
+          Actions.maybeInvoke<OpenIntent>(context, const OpenIntent());
+        },
+        child: const Icon(Icons.more_horiz),
+      ),
+    );
+  }
 }
 
 class _FingerprintListItem extends StatelessWidget {
