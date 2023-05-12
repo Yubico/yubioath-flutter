@@ -17,9 +17,11 @@
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:base32/base32.dart';
+import 'package:logging/logging.dart';
 import 'package:convert/convert.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yubico_authenticator/app/logging.dart';
 
 import '../core/models.dart';
 
@@ -31,6 +33,8 @@ const defaultDigits = 6;
 const defaultCounter = 0;
 const defaultOathType = OathType.totp;
 const defaultHashAlgorithm = HashAlgorithm.sha1;
+
+final _log = Logger('oath.models');
 
 enum HashAlgorithm {
   @JsonValue(0x01)
@@ -154,7 +158,7 @@ class CredentialData with _$CredentialData {
       while (tag == 10) {
         // 0a tag means new credential.
 
-        var length = data[1]; // The length of this credential
+        //var length = data[1]; // The length of this credential
         var secretTag = data[2];
         if (secretTag != 10) {
           // tag before secret is 0a hex
@@ -177,7 +181,8 @@ class CredentialData with _$CredentialData {
         data = result2[1];
 
         var issuerTag = data[0];
-        var issuer;
+        List<int>? issuer;
+
         if (issuerTag == 26) {
           // tag before issuer is 1a hex, but issuer is optional.
           data = data.sublist(1);
@@ -185,11 +190,10 @@ class CredentialData with _$CredentialData {
           issuer = result3[0];
           data = result3[1];
         }
-
         final credential = CredentialData(
           issuer: issuerTag != 26
               ? null
-              : utf8.decode(issuer, allowMalformed: true),
+              : utf8.decode(issuer!, allowMalformed: true),
           name: utf8.decode(name, allowMalformed: true),
           secret: decodedSecret,
         );
@@ -207,7 +211,8 @@ class CredentialData with _$CredentialData {
 
       // Print all the extracted credentials
       for (var credential in credentials) {
-        print('${credential.issuer} (${credential.name}) ${credential.secret}');
+        _log.debug(
+            '${credential.issuer} (${credential.name}) ${credential.secret}');
       }
 
       return credentials[0]; // For now, return only the first credential.
