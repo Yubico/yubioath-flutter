@@ -47,16 +47,14 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   String _getMessage() {
     final l10n = AppLocalizations.of(context)!;
     final nfc = widget.node.transport == Transport.nfc;
-    switch (_interaction) {
-      case InteractionEvent.remove:
-        return nfc ? l10n.l_remove_yk_from_reader : l10n.l_unplug_yk;
-      case InteractionEvent.insert:
-        return nfc ? l10n.l_replace_yk_on_reader : l10n.l_reinsert_yk;
-      case InteractionEvent.touch:
-        return l10n.l_touch_button_now;
-      case null:
-        return l10n.l_press_reset_to_begin;
-    }
+    return switch (_interaction) {
+      InteractionEvent.remove =>
+        nfc ? l10n.l_remove_yk_from_reader : l10n.l_unplug_yk,
+      InteractionEvent.insert =>
+        nfc ? l10n.l_replace_yk_on_reader : l10n.l_reinsert_yk,
+      InteractionEvent.touch => l10n.l_touch_button_now,
+      null => l10n.l_press_reset_to_begin
+    };
   }
 
   @override

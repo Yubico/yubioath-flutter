@@ -48,18 +48,11 @@ class AccountIcon extends ConsumerWidget {
             return defaultWidget;
           }
 
-          switch (extension(issuerImageFile.path)) {
-            case '.svg':
-              {
-                return _decodeSvg(ref, issuerImageFile);
-              }
-            case '.png':
-            case '.jpg':
-              {
-                return _decodeRasterImage(ref, issuerImageFile);
-              }
-          }
-          return defaultWidget;
+          return switch (extension(issuerImageFile.path)) {
+            '.svg' => _decodeSvg(ref, issuerImageFile),
+            '.jpg' || '.png' => _decodeRasterImage(ref, issuerImageFile),
+            _ => defaultWidget
+          };
         },
         error: (_, __) => defaultWidget,
         loading: () => defaultWidget);

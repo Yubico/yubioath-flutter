@@ -21,14 +21,9 @@ enum NfcTapAction {
   copy,
   both;
 
-  String getDescription(AppLocalizations l10n) {
-    switch (this) {
-      case NfcTapAction.launch:
-        return l10n.l_launch_ya;
-      case NfcTapAction.copy:
-        return l10n.l_copy_otp_clipboard;
-      case NfcTapAction.both:
-        return l10n.l_launch_and_copy_otp;
-    }
-  }
+  String getDescription(AppLocalizations l10n) => switch (this) {
+        NfcTapAction.launch => l10n.l_launch_ya,
+        NfcTapAction.copy => l10n.l_copy_otp_clipboard,
+        NfcTapAction.both => l10n.l_launch_and_copy_otp
+      };
 }

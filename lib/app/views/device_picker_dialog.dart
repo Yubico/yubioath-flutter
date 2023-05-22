@@ -205,14 +205,10 @@ List<String> _getDeviceStrings(
   final l10n = AppLocalizations.of(context)!;
   final messages = data.whenOrNull(
         data: (data) => [data.name, _getDeviceInfoString(context, data.info)],
-        error: (error, _) {
-          switch (error) {
-            case 'device-inaccessible':
-              return [node.name, l10n.s_yk_inaccessible];
-            case 'unknown-device':
-              return [l10n.s_unknown_device];
-          }
-          return null;
+        error: (error, _) => switch (error) {
+          'device-inaccessible' => [node.name, l10n.s_yk_inaccessible],
+          'unknown-device' => [l10n.s_unknown_device],
+          _ => null,
         },
       ) ??
       [l10n.l_no_yk_present];
