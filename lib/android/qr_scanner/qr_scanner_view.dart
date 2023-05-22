@@ -130,11 +130,11 @@ class _QrScannerViewState extends State<QrScannerView> {
         children: [
           Container(
               color: Colors.black,
-              child: Column(
+              child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [Spacer()])),
+                  children: [Spacer()])),
           Visibility(
               maintainState: true,
               maintainInteractivity: true,

@@ -126,7 +126,7 @@ class LogWarningOverlay extends StatelessWidget {
           }
 
           var mediaQueryData =
-              MediaQueryData.fromWindow(WidgetsBinding.instance.window);
+              MediaQueryData.fromView(WidgetsBinding.instance.window);
           var bottomPadding = mediaQueryData.systemGestureInsets.bottom;
           return Padding(
             padding: EdgeInsets.fromLTRB(5, 0, 5, bottomPadding),
