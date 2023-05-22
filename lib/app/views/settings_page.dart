@@ -139,9 +139,11 @@ class SettingsPage extends ConsumerWidget {
             ListTitle(l10n.s_appearance),
             const _ThemeModeView(),
             if (enableTranslations ||
-                basicLocaleListResolution(window.locales, officialLocales) !=
+                basicLocaleListResolution(
+                        PlatformDispatcher.instance.locales, officialLocales) !=
                     basicLocaleListResolution(
-                        window.locales, AppLocalizations.supportedLocales)) ...[
+                        PlatformDispatcher.instance.locales,
+                        AppLocalizations.supportedLocales)) ...[
               ListTitle(l10n.s_language),
               const _CommunityTranslationsView(),
             ],
