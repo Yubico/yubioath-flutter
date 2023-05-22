@@ -27,7 +27,6 @@ import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
-import '../../core/models.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 import '../rpc.dart';
@@ -111,8 +110,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
   }
 
   @override
-  Future<Pair<bool, bool>> unlock(String password,
-      {bool remember = false}) async {
+  Future<(bool, bool)> unlock(String password, {bool remember = false}) async {
     var derive =
         await _session.command('derive', params: {'password': password});
     var key = derive['key'];
@@ -128,7 +126,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
         remembered: remembered,
       ));
     }
-    return Pair(valid, remembered);
+    return (valid, remembered);
   }
 
   Future<bool> _checkPassword(String password) async {

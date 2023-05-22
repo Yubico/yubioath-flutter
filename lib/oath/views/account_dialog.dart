@@ -48,31 +48,32 @@ class AccountDialog extends ConsumerWidget {
         actions.firstWhere(((e) => e.text == l10n.l_copy_to_clipboard));
     final delete = actions.firstWhere(((e) => e.text == l10n.s_delete_account));
     final colors = {
-      copy: Pair(theme.primary, theme.onPrimary),
-      delete: Pair(theme.error, theme.onError),
+      copy: (theme.primary, theme.onPrimary),
+      delete: (theme.error, theme.onError),
     };
 
     // If we can't copy, but can calculate, highlight that button instead
     if (copy.intent == null) {
       final calculates = actions.where(((e) => e.text == l10n.s_calculate));
       if (calculates.isNotEmpty) {
-        colors[calculates.first] = Pair(theme.primary, theme.onPrimary);
+        colors[calculates.first] = (theme.primary, theme.onPrimary);
       }
     }
 
     return actions.map((e) {
       final intent = e.intent;
-      final color = colors[e] ?? Pair(theme.secondary, theme.onSecondary);
+      final (firstColor, secondColor) =
+          colors[e] ?? (theme.secondary, theme.onSecondary);
       final tooltip = e.trailing != null ? '${e.text}\n${e.trailing}' : e.text;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6.0),
         child: CircleAvatar(
-          backgroundColor: intent != null ? color.first : theme.secondary,
-          foregroundColor: color.second,
+          backgroundColor: intent != null ? firstColor : theme.secondary,
+          foregroundColor: secondColor,
           child: IconButton(
             style: IconButton.styleFrom(
-              backgroundColor: intent != null ? color.first : theme.secondary,
-              foregroundColor: color.second,
+              backgroundColor: intent != null ? firstColor : theme.secondary,
+              foregroundColor: secondColor,
               disabledBackgroundColor: theme.onSecondary.withOpacity(0.2),
               fixedSize: const Size.square(38),
             ),

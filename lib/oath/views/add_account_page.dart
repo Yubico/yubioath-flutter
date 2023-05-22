@@ -267,14 +267,12 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     final period = int.tryParse(_periodController.text) ?? -1;
     final issuerText = _issuerController.text.trim();
     final nameText = _accountController.text.trim();
-    final remaining = getRemainingKeySpace(
+    final (issuerRemaining, nameRemaining) = getRemainingKeySpace(
       oathType: _oathType,
       period: period,
       issuer: issuerText,
       name: nameText,
     );
-    final issuerRemaining = remaining.first;
-    final nameRemaining = remaining.second;
 
     final issuerMaxLength = max(issuerRemaining, 1);
     final nameMaxLength = max(nameRemaining, 1);
@@ -455,7 +453,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       obscureText: _isObscure,
                       // avoid using autofill hints on Android otherwise Autofill service
                       // would hint to use saved passwords for this field
-                      autofillHints: isAndroid ? [] : const [AutofillHints.password],
+                      autofillHints:
+                          isAndroid ? [] : const [AutofillHints.password],
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(
                             _secretFormatterPattern)

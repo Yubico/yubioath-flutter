@@ -28,7 +28,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../app/models.dart';
 import '../app/shortcuts.dart';
 import '../app/state.dart';
-import '../core/models.dart';
 import '../exception/cancellation_exception.dart';
 import '../oath/models.dart';
 import '../oath/state.dart';
@@ -37,7 +36,7 @@ import 'oath/state.dart';
 import 'state.dart';
 
 final _favoriteAccounts =
-    Provider.autoDispose<Pair<DevicePath?, List<OathCredential>>>(
+    Provider.autoDispose<(DevicePath?, List<OathCredential>)>(
   (ref) {
     final deviceData = ref.watch(currentDeviceDataProvider).valueOrNull;
     if (deviceData != null) {
@@ -49,9 +48,9 @@ final _favoriteAccounts =
               .where((c) => favorites.contains(c.id))
               .toList() ??
           [];
-      return Pair(deviceData.node.path, listed);
+      return (deviceData.node.path, listed);
     }
-    return Pair(null, []);
+    return (null, []);
   },
 );
 
@@ -62,7 +61,7 @@ final systrayProvider = Provider.autoDispose((ref) {
   ref.listen(
     _favoriteAccounts,
     (_, next) {
-      systray._updateCredentials(next);
+      systray._updateCredentials(next.$1, next.$2);
     },
     fireImmediately: true,
   );
@@ -135,10 +134,11 @@ class _Systray extends TrayListener {
     await _updateContextMenu();
   }
 
-  void _updateCredentials(Pair<DevicePath?, List<OathCredential>> pair) {
-    if (!listEquals(_credentials, pair.second)) {
-      _devicePath = pair.first ?? _devicePath;
-      _credentials = pair.second;
+  void _updateCredentials(
+      DevicePath? devicePath, List<OathCredential> credentials) {
+    if (!listEquals(_credentials, credentials)) {
+      _devicePath = devicePath ?? _devicePath;
+      _credentials = credentials;
       _updateContextMenu();
     }
   }
