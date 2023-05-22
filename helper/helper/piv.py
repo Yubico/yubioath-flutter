@@ -51,7 +51,9 @@ from ykman.util import (
     InvalidPasswordError,
 )
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+from cryptography.hazmat.primitives import hashes
 from dataclasses import asdict
+from enum import Enum, unique
 from threading import Timer
 from time import time
 import datetime
@@ -67,6 +69,12 @@ class InvalidPinException(RpcException):
             "Wrong PIN",
             dict(attempts_remaining=cause.attempts_remaining),
         )
+
+
+@unique
+class GENERATE_TYPE(str, Enum):
+    CSR = "csr"
+    CERTIFICATE = "certificate"
 
 
 class PivNode(RpcNode):
@@ -103,16 +111,15 @@ class PivNode(RpcNode):
             pin_md = self.session.get_pin_metadata()
             puk_md = self.session.get_puk_metadata()
             mgm_md = self.session.get_management_key_metadata()
+            pin_attempts = pin_md.attempts_remaining
             metadata = dict(
-                pin_attempts=pin_md.attempts_remaining,
                 pin_metadata=asdict(pin_md),
                 puk_metadata=asdict(puk_md),
                 management_key_metadata=asdict(mgm_md),
             )
         except NotSupportedError:
-            metadata = dict(
-                pin_attempts=self.session.get_pin_attempts(),
-            )
+            pin_attempts = self.session.get_pin_attempts()
+            metadata = None
 
         return dict(
             version=self.session.version,
@@ -121,7 +128,8 @@ class PivNode(RpcNode):
             stored_key=self._pivman_data.has_stored_key,
             chuid=self._get_object(OBJECT_ID.CHUID),
             ccc=self._get_object(OBJECT_ID.CAPABILITY),
-            **metadata,
+            pin_attempts=pin_attempts,
+            metadata=metadata,
         )
 
     def _authenticate(self, key, signal):
@@ -151,6 +159,7 @@ class PivNode(RpcNode):
     @action
     def verify_pin(self, params, event, signal):
         pin = params.pop("pin")
+
         self.session.verify_pin(pin)
         key = None
 
@@ -160,18 +169,22 @@ class PivNode(RpcNode):
             pivman_prot = get_pivman_protected_data(self.session)
             key = pivman_prot.key
         if key:
-            self._authenticate(key, signal)
+            try:
+                self._authenticate(key, signal)
+            except ApduError as e:
+                if e.sw == SW.SECURITY_CONDITION_NOT_SATISFIED:
+                    pass  # Authenticate failed, bad derived key?
+
             # Ensure verify was the last thing we did
             self.session.verify_pin(pin)
 
-        return dict()
+        return dict(status=True, authenticated=self._authenticated)
 
     @action
     def authenticate(self, params, event, signal):
         key = bytes.fromhex(params.pop("key"))
         try:
             self._authenticate(key, signal)
-            self._authenticated = True
             return dict(status=True)
         except ApduError as e:
             if e.sw == SW.SECURITY_CONDITION_NOT_SATISFIED:
@@ -238,11 +251,12 @@ class SlotsNode(RpcNode):
     def refresh(self):
         self._slots = {}
         for slot in set(SLOT) - {SLOT.ATTESTATION}:
+            metadata = None
             if self._has_metadata:
                 try:
                     metadata = self.session.get_slot_metadata(slot)
                 except (ApduError, BadResponseError):
-                    metadata = None
+                    pass
             try:
                 certificate = self.session.get_certificate(slot)
             except (ApduError, BadResponseError):
@@ -255,10 +269,17 @@ class SlotsNode(RpcNode):
     def list_children(self):
         return {
             f"{int(slot):02x}": dict(
+                slot=int(slot),
                 name=slot.name,
-                has_key=metadata is not None,
-                subject=cert.subject.rfc4514_string() if cert else None,
-                issuer=cert.issuer.rfc4514_string() if cert else None,
+                has_key=metadata is not None if self._has_metadata else None,
+                cert_info=dict(
+                    subject=cert.subject.rfc4514_string(),
+                    issuer=cert.issuer.rfc4514_string(),
+                    serial=hex(cert.serial_number)[2:],
+                    not_valid_before=cert.not_valid_before.isoformat(),
+                    not_valid_after=cert.not_valid_after.isoformat(),
+                    fingerprint=cert.fingerprint(hashes.SHA256()),
+                ) if cert else None,
             )
             for slot, (metadata, cert) in self._slots.items()
         }
@@ -282,6 +303,8 @@ class SlotNode(RpcNode):
 
     def get_data(self):
         return dict(
+            id=f"{int(self.slot):02x}",
+            name=self.slot.name,
             metadata=asdict(self.metadata) if self.metadata else None,
             certificate=self.certificate.public_bytes(encoding=Encoding.PEM).decode()
             if self.certificate
@@ -327,7 +350,9 @@ class SlotNode(RpcNode):
 
         metadata = None
         if private_key:
-            self.session.put_key(self.slot, private_key)
+            pin_policy = PIN_POLICY(params.pop("pin_policy", PIN_POLICY.DEFAULT))
+            touch_policy = TOUCH_POLICY(params.pop("touch_policy", TOUCH_POLICY.DEFAULT))
+            self.session.put_key(self.slot, private_key, pin_policy, touch_policy)
             try:
                 metadata = self.session.get_slot_metadata(self.slot)
             except (ApduError, BadResponseError):
@@ -365,21 +390,22 @@ class SlotNode(RpcNode):
         pin_policy = PIN_POLICY(params.pop("pin_policy", PIN_POLICY.DEFAULT))
         touch_policy = TOUCH_POLICY(params.pop("touch_policy", TOUCH_POLICY.DEFAULT))
         subject = params.pop("subject")
-        csr = params.pop("csr", False)
+        generate_type = GENERATE_TYPE(params.pop("type", GENERATE_TYPE.CERTIFICATE))
         public_key = self.session.generate_key(
             self.slot, key_type, pin_policy, touch_policy
         )
 
         if pin_policy != PIN_POLICY.NEVER:
+            # TODO: Check if verified?
             pin = params.pop("pin")
             self.session.verify_pin(pin)
 
         if touch_policy in (TOUCH_POLICY.ALWAYS, TOUCH_POLICY.CACHED):
             signal("touch")
 
-        if csr:
+        if generate_type == GENERATE_TYPE.CSR:
             result = generate_csr(self.session, self.slot, public_key, subject)
-        else:
+        elif generate_type == GENERATE_TYPE.CERTIFICATE:
             now = datetime.datetime.utcnow()
             valid_days = params.pop("valid_days", 365)
             valid_to = now + datetime.timedelta(days=valid_days)
@@ -388,6 +414,8 @@ class SlotNode(RpcNode):
             )
             self.session.put_certificate(self.slot, result)
             self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+        else:
+            raise ValueError("Unsupported GENERATE_TYPE")
 
         self._refresh()
 
