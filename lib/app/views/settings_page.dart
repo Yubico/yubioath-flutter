@@ -28,16 +28,11 @@ import '../state.dart';
 import 'keys.dart' as keys;
 
 extension on ThemeMode {
-  String getDisplayName(AppLocalizations l10n) {
-    switch (this) {
-      case ThemeMode.system:
-        return l10n.s_system_default;
-      case ThemeMode.light:
-        return l10n.s_light_mode;
-      case ThemeMode.dark:
-        return l10n.s_dark_mode;
-    }
-  }
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+        ThemeMode.system => l10n.s_system_default,
+        ThemeMode.light => l10n.s_light_mode,
+        ThemeMode.dark => l10n.s_dark_mode
+      };
 }
 
 class _ThemeModeView extends ConsumerWidget {
@@ -139,9 +134,11 @@ class SettingsPage extends ConsumerWidget {
             ListTitle(l10n.s_appearance),
             const _ThemeModeView(),
             if (enableTranslations ||
-                basicLocaleListResolution(window.locales, officialLocales) !=
+                basicLocaleListResolution(
+                        PlatformDispatcher.instance.locales, officialLocales) !=
                     basicLocaleListResolution(
-                        window.locales, AppLocalizations.supportedLocales)) ...[
+                        PlatformDispatcher.instance.locales,
+                        AppLocalizations.supportedLocales)) ...[
               ListTitle(l10n.s_language),
               const _CommunityTranslationsView(),
             ],

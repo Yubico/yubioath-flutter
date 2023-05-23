@@ -75,8 +75,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   }
 
   @override
-  Future<Pair<bool, bool>> unlock(String password,
-      {bool remember = false}) async {
+  Future<(bool, bool)> unlock(String password, {bool remember = false}) async {
     try {
       final unlockResponse = jsonDecode(await _methods.invokeMethod(
           'unlock', {'password': password, 'remember': remember}));
@@ -85,10 +84,10 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       final unlocked = unlockResponse['unlocked'] == true;
       final remembered = unlockResponse['remembered'] == true;
 
-      return Pair(unlocked, remembered);
+      return (unlocked, remembered);
     } on PlatformException catch (e) {
       _log.debug('Calling unlock failed with exception: $e');
-      return Pair(false, false);
+      return (false, false);
     }
   }
 

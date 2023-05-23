@@ -48,14 +48,10 @@ enum OathType {
 
   const OathType();
 
-  String getDisplayName(AppLocalizations l10n) {
-    switch (this) {
-      case OathType.hotp:
-        return l10n.s_counter_based;
-      case OathType.totp:
-        return l10n.s_time_based;
-    }
-  }
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+        OathType.hotp => l10n.s_counter_based,
+        OathType.totp => l10n.s_time_based
+      };
 }
 
 enum KeystoreState { unknown, allowed, failed }

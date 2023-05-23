@@ -79,7 +79,8 @@ class WindowManagerHelperWindows {
   static Future<Rect> getBounds(SharedPreferences prefs) async {
     final primaryDisplay = await screenRetriever.getPrimaryDisplay();
     final primaryScaleFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
-    final windowPixelRatio = window.devicePixelRatio;
+    final windowPixelRatio =
+        PlatformDispatcher.instance.views.first.devicePixelRatio;
 
     final rect = await windowManager.getBounds();
 

@@ -98,14 +98,12 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     final l10n = AppLocalizations.of(context)!;
     final credential = widget.credential;
 
-    final remaining = getRemainingKeySpace(
+    final (issuerRemaining, nameRemaining) = getRemainingKeySpace(
       oathType: credential.oathType,
       period: credential.period,
       issuer: _issuer,
       name: _account,
     );
-    final issuerRemaining = remaining.first;
-    final nameRemaining = remaining.second;
 
     // is this credentials name/issuer pair different from all other?
     final isUnique = widget.credentials

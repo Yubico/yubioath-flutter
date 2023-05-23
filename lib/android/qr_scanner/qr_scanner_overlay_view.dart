@@ -85,7 +85,7 @@ class QRScannerOverlay extends StatelessWidget {
       /// clip scanner area "hole" into a darkened background
       ClipPath(
           clipper: _ScannerAreaClipper(),
-          child: Opacity(
+          child: const Opacity(
               opacity: 0.6,
               child: ColoredBox(
                   color: Colors.black,
@@ -93,7 +93,7 @@ class QRScannerOverlay extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: const [Spacer()],
+                    children: [Spacer()],
                   )))),
 
       /// draw a stroke around the scanner area

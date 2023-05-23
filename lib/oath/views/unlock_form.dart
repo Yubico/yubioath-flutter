@@ -43,16 +43,16 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
     setState(() {
       _passwordIsWrong = false;
     });
-    final result = await ref
+    final (success, remembered) = await ref
         .read(oathStateProvider(widget._devicePath).notifier)
         .unlock(_passwordController.text, remember: _remember);
     if (!mounted) return;
-    if (!result.first) {
+    if (!success) {
       setState(() {
         _passwordIsWrong = true;
         _passwordController.clear();
       });
-    } else if (_remember && !result.second) {
+    } else if (_remember && !remembered) {
       showMessage(context, AppLocalizations.of(context)!.l_remember_pw_failed);
     }
   }

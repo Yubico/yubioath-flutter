@@ -71,7 +71,7 @@ final supportedLocalesProvider = Provider<List<Locale>>((ref) =>
 
 final currentLocaleProvider = Provider<Locale>(
   (ref) => basicLocaleListResolution(
-      window.locales, ref.watch(supportedLocalesProvider)),
+      PlatformDispatcher.instance.locales, ref.watch(supportedLocalesProvider)),
 );
 
 final l10nProvider = Provider<AppLocalizations>(

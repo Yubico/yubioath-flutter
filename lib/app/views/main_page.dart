@@ -158,17 +158,14 @@ class MainPage extends ConsumerWidget {
                 );
               }
 
-              switch (app) {
-                case Application.oath:
-                  return OathScreen(data.node.path);
-                case Application.fido:
-                  return FidoScreen(data);
-                default:
-                  return MessagePage(
+              return switch (app) {
+                Application.oath => OathScreen(data.node.path),
+                Application.fido => FidoScreen(data),
+                _ => MessagePage(
                     header: l10n.s_app_not_supported,
                     message: l10n.l_app_not_supported_desc,
-                  );
-              }
+                  ),
+              };
             },
             loading: () => DeviceErrorScreen(deviceNode),
             error: (error, _) => DeviceErrorScreen(deviceNode, error: error),

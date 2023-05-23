@@ -39,36 +39,22 @@ enum Application {
 
   const Application();
 
-  bool _inCapabilities(int capabilities) {
-    switch (this) {
-      case Application.oath:
-        return Capability.oath.value & capabilities != 0;
-      case Application.fido:
-        return (Capability.u2f.value | Capability.fido2.value) & capabilities !=
-            0;
-      case Application.otp:
-        return Capability.otp.value & capabilities != 0;
-      case Application.piv:
-        return Capability.piv.value & capabilities != 0;
-      case Application.openpgp:
-        return Capability.openpgp.value & capabilities != 0;
-      case Application.hsmauth:
-        return Capability.hsmauth.value & capabilities != 0;
-      case Application.management:
-        return true;
-    }
-  }
+  bool _inCapabilities(int capabilities) => switch (this) {
+        Application.oath => Capability.oath.value & capabilities != 0,
+        Application.fido =>
+          (Capability.u2f.value | Capability.fido2.value) & capabilities != 0,
+        Application.otp => Capability.otp.value & capabilities != 0,
+        Application.piv => Capability.piv.value & capabilities != 0,
+        Application.openpgp => Capability.openpgp.value & capabilities != 0,
+        Application.hsmauth => Capability.hsmauth.value & capabilities != 0,
+        Application.management => true,
+      };
 
-  String getDisplayName(AppLocalizations l10n) {
-    switch (this) {
-      case Application.oath:
-        return l10n.s_authenticator;
-      case Application.fido:
-        return l10n.s_webauthn;
-      default:
-        return name.substring(0, 1).toUpperCase() + name.substring(1);
-    }
-  }
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+        Application.oath => l10n.s_authenticator,
+        Application.fido => l10n.s_webauthn,
+        _ => name.substring(0, 1).toUpperCase() + name.substring(1),
+      };
 
   Availability getAvailability(YubiKeyData data) {
     if (this == Application.management) {

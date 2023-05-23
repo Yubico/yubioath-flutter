@@ -78,14 +78,10 @@ class DeviceErrorScreen extends ConsumerWidget {
     return node.map(
       usbYubiKey: (node) => _buildUsbPid(context, ref, node.pid),
       nfcReader: (node) {
-        final String message;
-        switch (error) {
-          case 'unknown-device':
-            message = l10n.s_unknown_device;
-            break;
-          default:
-            message = l10n.l_place_on_nfc_reader;
-        }
+        final message = switch (error) {
+          'unknown-device' => l10n.s_unknown_device,
+          _ => l10n.l_place_on_nfc_reader,
+        };
         return MessagePage(message: message);
       },
     );

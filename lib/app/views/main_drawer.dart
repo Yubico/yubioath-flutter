@@ -26,43 +26,25 @@ import '../state.dart';
 import 'keys.dart';
 
 extension on Application {
-  IconData get _icon {
-    switch (this) {
-      case Application.oath:
-        return Icons.supervisor_account_outlined;
-      case Application.fido:
-        return Icons.security_outlined;
-      case Application.otp:
-        return Icons.password_outlined;
-      case Application.piv:
-        return Icons.approval_outlined;
-      case Application.management:
-        return Icons.construction_outlined;
-      case Application.openpgp:
-        return Icons.key_outlined;
-      case Application.hsmauth:
-        return Icons.key_outlined;
-    }
-  }
+  IconData get _icon => switch (this) {
+        Application.oath => Icons.supervisor_account_outlined,
+        Application.fido => Icons.security_outlined,
+        Application.otp => Icons.password_outlined,
+        Application.piv => Icons.approval_outlined,
+        Application.management => Icons.construction_outlined,
+        Application.openpgp => Icons.key_outlined,
+        Application.hsmauth => Icons.key_outlined,
+      };
 
-  IconData get _filledIcon {
-    switch (this) {
-      case Application.oath:
-        return Icons.supervisor_account;
-      case Application.fido:
-        return Icons.security;
-      case Application.otp:
-        return Icons.password;
-      case Application.piv:
-        return Icons.approval;
-      case Application.management:
-        return Icons.construction;
-      case Application.openpgp:
-        return Icons.key;
-      case Application.hsmauth:
-        return Icons.key;
-    }
-  }
+  IconData get _filledIcon => switch (this) {
+        Application.oath => Icons.supervisor_account,
+        Application.fido => Icons.security,
+        Application.otp => Icons.password,
+        Application.piv => Icons.approval,
+        Application.management => Icons.construction,
+        Application.openpgp => Icons.key,
+        Application.hsmauth => Icons.key,
+      };
 }
 
 class MainPageDrawer extends ConsumerWidget {

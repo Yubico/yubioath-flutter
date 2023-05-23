@@ -65,18 +65,12 @@ class _DialogProvider {
     _controller = null;
   }
 
-  Widget? _getIcon(String? icon) {
-    switch (icon) {
-      case 'nfc':
-        return nfcIcon;
-      case 'success':
-        return const Icon(Icons.check_circle);
-      case 'error':
-        return const Icon(Icons.error);
-      default:
-        return null;
-    }
-  }
+  Widget? _getIcon(String? icon) => switch (icon) {
+        'nfc' => nfcIcon,
+        'success' => const Icon(Icons.check_circle),
+        'error' => const Icon(Icons.error),
+        _ => null,
+      };
 
   Future<void> _updateDialogState(
       String? title, String? description, String? iconName) async {
