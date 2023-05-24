@@ -81,6 +81,7 @@ class _DialogDescription extends ConsumerWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     return RichText(
+      textScaleFactor: MediaQuery.of(context).textScaleFactor,
       text: TextSpan(
         text: l10n.p_custom_icons_description,
         style: theme.textTheme.bodyMedium,
@@ -126,6 +127,7 @@ class _IconPackDescription extends ConsumerWidget {
           Flexible(
               fit: FlexFit.loose,
               child: RichText(
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
                   text: TextSpan(
                       text: iconPack.name,
                       style: theme.textTheme.bodyMedium,
