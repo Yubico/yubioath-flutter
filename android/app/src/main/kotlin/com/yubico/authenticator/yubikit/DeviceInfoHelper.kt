@@ -28,27 +28,24 @@ import com.yubico.yubikit.core.otp.OtpConnection
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.management.DeviceInfo
 import com.yubico.yubikit.support.DeviceUtil
-import java.io.IOException
 
 suspend fun getDeviceInfo(device: YubiKeyDevice): Info {
     val pid = (device as? UsbYubiKeyDevice)?.pid
 
-    val deviceInfo = try {
+    val deviceInfo = runCatching {
         device.withConnection<SmartCardConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
-    } catch (e: IOException) {
-        runCatching {
-            Log.d(OathManager.TAG, "Smart card connection not available: ${e.message}")
-            device.withConnection<OtpConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
-        }.recoverCatching { t ->
-            Log.d(OathManager.TAG, "OTP connection not available: ${t.message}")
-            device.withConnection<FidoConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
-        }.recoverCatching { t ->
-            Log.d(OathManager.TAG, "FIDO connection not available: ${t.message}")
-            return SkyHelper(compatUtil).getDeviceInfo(device)
-        }.getOrElse {
-            Log.e(OathManager.TAG, "Failed to recognize device: ${it.message}")
-            throw it
-        }
+    }.recoverCatching { t ->
+        Log.d(OathManager.TAG, "Smart card connection not available: ${t.message}")
+        device.withConnection<OtpConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
+    }.recoverCatching { t ->
+        Log.d(OathManager.TAG, "OTP connection not available: ${t.message}")
+        device.withConnection<FidoConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
+    }.recoverCatching { t ->
+        Log.d(OathManager.TAG, "FIDO connection not available: ${t.message}")
+        return SkyHelper(compatUtil).getDeviceInfo(device)
+    }.getOrElse {
+        Log.e(OathManager.TAG, "Failed to recognize device: ${it.message}")
+        throw it
     }
 
     val name = DeviceUtil.getName(deviceInfo, pid?.type)
