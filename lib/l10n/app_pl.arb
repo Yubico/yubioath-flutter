@@ -478,6 +478,7 @@
   },
   "l_invalid_icon_pack": "Nieprawidłowy pakiet ikon",
   "@l_invalid_icon_pack": {},
+  "l_icon_pack_copy_failed": "Nie udało się skopiować plików pakietu ikon",
   "s_nfc_options": "Opcje NFC",
   "@s_nfc_options": {},
   "l_copy_otp_clipboard": "Skopiuj OTP do schowka",
