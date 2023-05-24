@@ -35,6 +35,7 @@ import android.os.Bundle
 import android.provider.Settings.ACTION_NFC_SETTINGS
 import android.view.WindowManager
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.logging.FlutterLog
@@ -166,10 +167,22 @@ class MainActivity : FlutterFragmentActivity() {
         })
     }
 
+    @SuppressLint("WrongConstant")
     override fun onStart() {
         super.onStart()
-        registerReceiver(qrScannerCameraClosedBR, QRScannerCameraClosedBR.intentFilter)
-        registerReceiver(nfcAdapterStateChangeBR, NfcAdapterStateChangedBR.intentFilter)
+        val receiverFlags = ContextCompat.RECEIVER_NOT_EXPORTED
+        ContextCompat.registerReceiver(
+            this,
+            qrScannerCameraClosedBR,
+            QRScannerCameraClosedBR.intentFilter,
+            receiverFlags
+        )
+        ContextCompat.registerReceiver(
+            this,
+            nfcAdapterStateChangeBR,
+            NfcAdapterStateChangedBR.intentFilter,
+            receiverFlags
+        )
     }
 
     override fun onStop() {
