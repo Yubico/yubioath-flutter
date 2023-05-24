@@ -23,7 +23,6 @@ allprojects {
         minSdkVersion = 21
         targetSdkVersion = 33
         compileSdkVersion = 33
-        buildToolsVersion = "33.0.3"
 
         yubiKitVersion = "2.2.0"
         junitVersion = "4.13.2"
