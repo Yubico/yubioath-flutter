@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="LaunchTheme" parent="LaunchThemeBase">
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-    </style>
-
-    <style name="NormalTheme" parent="BaseTheme">
-        <item name="android:defaultFocusHighlightEnabled">false</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowSplashScreenBackground">@color/yubico_green</item>
     </style>
 </resources>
