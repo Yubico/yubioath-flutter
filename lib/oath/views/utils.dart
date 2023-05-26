@@ -18,13 +18,12 @@ import 'dart:math';
 
 import '../../widgets/utf8_utils.dart';
 import '../models.dart';
-import '../../core/models.dart';
 
 /// Calculates the available space for issuer and account name.
 ///
-/// Returns a [Pair] of the space available for the issuer and account name,
+/// Returns a record of the space available for the issuer and account name,
 /// respectively, based on the current state of the credential.
-Pair<int, int> getRemainingKeySpace(
+(int, int) getRemainingKeySpace(
     {required OathType oathType,
     required int period,
     required String issuer,
@@ -41,9 +40,16 @@ Pair<int, int> getRemainingKeySpace(
     issuerSpace += 1;
   }
 
-  return Pair(
+  return (
     // Always reserve at least one character for name
     remaining - 1 - max(byteLength(name), 1),
     remaining - issuerSpace,
   );
+}
+
+/// Gets a textual name for the account, based on the issuer and name.
+String getTextName(OathCredential credential) {
+  return credential.issuer != null
+      ? '${credential.issuer} (${credential.name})'
+      : credential.name;
 }

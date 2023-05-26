@@ -35,7 +35,7 @@ android {
 
     namespace 'com.yubico.authenticator'
 
-    compileSdkVersion project.compileSdkVersion
+    compileSdk project.compileSdkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -93,16 +93,17 @@ dependencies {
     api "com.yubico.yubikit:oath:$project.yubiKitVersion"
     api "com.yubico.yubikit:support:$project.yubiKitVersion"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.4.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1'
 
     // Lifecycle
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
 
-    implementation 'androidx.fragment:fragment-ktx:1.5.5'
+    implementation "androidx.core:core-ktx:1.10.1"
+    implementation 'androidx.fragment:fragment-ktx:1.5.7'
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
 
     // testing dependencies
     testImplementation "junit:junit:$project.junitVersion"

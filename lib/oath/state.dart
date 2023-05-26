@@ -23,7 +23,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
-import '../core/models.dart';
 import '../core/state.dart';
 import 'models.dart';
 
@@ -33,7 +32,7 @@ final searchProvider =
 class SearchNotifier extends StateNotifier<String> {
   SearchNotifier() : super('');
 
-  setFilter(String value) {
+  void setFilter(String value) {
     state = value;
   }
 }
@@ -46,8 +45,8 @@ final oathStateProvider = StateNotifierProvider.autoDispose
 abstract class OathStateNotifier extends ApplicationStateNotifier<OathState> {
   Future<void> reset();
 
-  /// Unlocks the session and returns a Pair of `success`, `remembered`.
-  Future<Pair<bool, bool>> unlock(String password, {bool remember = false});
+  /// Unlocks the session and returns a record of `success`, `remembered`.
+  Future<(bool, bool)> unlock(String password, {bool remember = false});
 
   Future<bool> setPassword(String? current, String password);
   Future<bool> unsetPassword(String current);
@@ -66,7 +65,14 @@ abstract class OathCredentialListNotifier
   @override
   @protected
   set state(List<OathPair>? value) {
-    super.state = value != null ? List.unmodifiable(value) : null;
+    super.state = value != null
+        ? List.unmodifiable(value
+          ..sort((a, b) {
+            String searchKey(OathCredential c) =>
+                ((c.issuer ?? '') + c.name).toLowerCase();
+            return searchKey(a.credential).compareTo(searchKey(b.credential));
+          }))
+        : null;
   }
 
   Future<OathCode> calculate(OathCredential credential);
@@ -143,7 +149,7 @@ class _ExpireNotifier extends StateNotifier<bool> {
   }
 
   @override
-  dispose() {
+  void dispose() {
     _timer?.cancel();
     super.dispose();
   }
@@ -158,7 +164,7 @@ class FavoritesNotifier extends StateNotifier<List<String>> {
   final SharedPreferences _prefs;
   FavoritesNotifier(this._prefs) : super(_prefs.getStringList(_key) ?? []);
 
-  toggleFavorite(String credentialId) {
+  void toggleFavorite(String credentialId) {
     if (state.contains(credentialId)) {
       state = state.toList()..remove(credentialId);
     } else {
@@ -167,7 +173,7 @@ class FavoritesNotifier extends StateNotifier<List<String>> {
     _prefs.setStringList(_key, state);
   }
 
-  renameCredential(String oldCredentialId, String newCredentialId) {
+  void renameCredential(String oldCredentialId, String newCredentialId) {
     if (state.contains(oldCredentialId)) {
       state = [newCredentialId, ...state.toList()..remove(oldCredentialId)];
       _prefs.setStringList(_key, state);
@@ -193,11 +199,6 @@ class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
                       .toLowerCase()
                       .contains(query.toLowerCase()))
               .where((pair) => pair.credential.issuer != '_hidden')
-              .toList()
-            ..sort((a, b) {
-              String searchKey(OathCredential c) =>
-                  ((c.issuer ?? '') + c.name).toLowerCase();
-              return searchKey(a.credential).compareTo(searchKey(b.credential));
-            }),
+              .toList(),
         );
 }

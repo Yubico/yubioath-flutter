@@ -49,6 +49,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hasPin = widget.state.hasPin;
     final isValid = _newPin.isNotEmpty &&
         _newPin == _confirmPin &&
@@ -56,13 +57,11 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final minPinLength = widget.state.minPinLength;
 
     return ResponsiveDialog(
-      title: Text(hasPin
-          ? AppLocalizations.of(context)!.fido_change_pin
-          : AppLocalizations.of(context)!.fido_set_pin),
+      title: Text(hasPin ? l10n.s_change_pin : l10n.s_set_pin),
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
-          child: Text(AppLocalizations.of(context)!.fido_save),
+          child: Text(l10n.s_save),
         ),
       ],
       child: Padding(
@@ -71,14 +70,15 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (hasPin) ...[
-              Text(AppLocalizations.of(context)!.fido_enter_current_pin),
+              Text(l10n.p_enter_current_pin_or_reset),
               TextFormField(
                 initialValue: _currentPin,
                 autofocus: true,
                 obscureText: true,
+                autofillHints: const [AutofillHints.password],
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  labelText: AppLocalizations.of(context)!.fido_current_pin,
+                  labelText: l10n.s_current_pin,
                   errorText: _currentIsWrong ? _currentPinError : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Icons.pin_outlined),
@@ -91,16 +91,16 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 },
               ),
             ],
-            Text(
-                AppLocalizations.of(context)!.fido_enter_new_pin(minPinLength)),
+            Text(l10n.p_enter_new_fido2_pin(minPinLength)),
             // TODO: Set max characters based on UTF-8 bytes
             TextFormField(
               initialValue: _newPin,
               autofocus: !hasPin,
               obscureText: true,
+              autofillHints: const [AutofillHints.password],
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: AppLocalizations.of(context)!.fido_new_pin,
+                labelText: l10n.s_new_pin,
                 enabled: !hasPin || _currentPin.isNotEmpty,
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
@@ -116,9 +116,10 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             TextFormField(
               initialValue: _confirmPin,
               obscureText: true,
+              autofillHints: const [AutofillHints.password],
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: AppLocalizations.of(context)!.fido_confirm_pin,
+                labelText: l10n.s_confirm_pin,
                 prefixIcon: const Icon(Icons.pin_outlined),
                 enabled:
                     (!hasPin || _currentPin.isNotEmpty) && _newPin.isNotEmpty,
@@ -146,12 +147,12 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
   }
 
   void _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     final minPinLength = widget.state.minPinLength;
     final oldPin = _currentPin.isNotEmpty ? _currentPin : null;
     if (_newPin.length < minPinLength) {
       setState(() {
-        _newPinError =
-            AppLocalizations.of(context)!.fido_new_pin_chars(minPinLength);
+        _newPinError = l10n.l_new_pin_len(minPinLength);
         _newIsWrong = true;
       });
       return;
@@ -162,15 +163,14 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           .setPin(_newPin, oldPin: oldPin);
       result.when(success: () {
         Navigator.of(context).pop(true);
-        showMessage(context, AppLocalizations.of(context)!.fido_pin_set);
+        showMessage(context, l10n.s_pin_set);
       }, failed: (retries, authBlocked) {
         setState(() {
           if (authBlocked) {
-            _currentPinError = AppLocalizations.of(context)!.fido_pin_blocked;
+            _currentPinError = l10n.l_pin_soft_locked;
             _currentIsWrong = true;
           } else {
-            _currentPinError = AppLocalizations.of(context)!
-                .fido_wrong_pin_retries_remaining(retries);
+            _currentPinError = l10n.l_wrong_pin_attempts_remaining(retries);
             _currentIsWrong = true;
           }
         });
@@ -186,7 +186,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       }
       showMessage(
         context,
-        '${AppLocalizations.of(context)!.fido_fail_set_pin}: $errorMessage',
+        l10n.l_set_pin_failed(errorMessage),
         duration: const Duration(seconds: 4),
       );
     }

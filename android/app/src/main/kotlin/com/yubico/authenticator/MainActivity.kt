@@ -22,8 +22,12 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.annotation.SuppressLint
+import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.usb.UsbDevice
@@ -40,6 +44,7 @@ import android.os.Looper
 import android.provider.Settings.ACTION_NFC_SETTINGS
 import android.view.WindowManager
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.logging.FlutterLog
@@ -148,6 +153,11 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (isPortraitOnly()) {
+            forcePortraitOrientation()
+        }
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         allowScreenshots(true)
@@ -249,10 +259,22 @@ class MainActivity : FlutterFragmentActivity() {
         })
     }
 
+    @SuppressLint("WrongConstant")
     override fun onStart() {
         super.onStart()
-        registerReceiver(qrScannerCameraClosedBR, QRScannerCameraClosedBR.intentFilter)
-        registerReceiver(nfcAdapterStateChangeBR, NfcAdapterStateChangedBR.intentFilter)
+        val receiverFlags = ContextCompat.RECEIVER_NOT_EXPORTED
+        ContextCompat.registerReceiver(
+            this,
+            qrScannerCameraClosedBR,
+            QRScannerCameraClosedBR.intentFilter,
+            receiverFlags
+        )
+        ContextCompat.registerReceiver(
+            this,
+            nfcAdapterStateChangeBR,
+            NfcAdapterStateChangedBR.intentFilter,
+            receiverFlags
+        )
     }
 
     override fun onStop() {
@@ -316,7 +338,7 @@ class MainActivity : FlutterFragmentActivity() {
                     startUsbDiscovery()
                 }
             }
-        } else if (viewModel.connectedYubiKey.value == null) {
+        } else {
             // if any YubiKeys are connected, use them directly
             val deviceIterator = usbManager.deviceList.values.iterator()
             while (deviceIterator.hasNext()) {
@@ -331,6 +353,17 @@ class MainActivity : FlutterFragmentActivity() {
         }
 
         appPreferences.registerListener(sharedPreferencesListener)
+    }
+
+    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
+        super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
+
+        if (isPortraitOnly()) {
+            when (isInMultiWindowMode) {
+                true -> allowAnyOrientation()
+                else -> forcePortraitOrientation()
+            }
+        }
     }
 
     private fun processYubiKey(device: YubiKeyDevice) {
@@ -532,4 +565,14 @@ class MainActivity : FlutterFragmentActivity() {
         return FLAG_SECURE != (window.attributes.flags and FLAG_SECURE)
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
+    private fun forcePortraitOrientation() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
+
+    private fun allowAnyOrientation() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+    }
+
+    private fun isPortraitOnly() = resources.getBoolean(R.bool.portrait_only);
 }

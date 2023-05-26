@@ -92,21 +92,21 @@ enum UsbPid {
   int get value => _$UsbPidEnumMap[this]!;
 
   String get displayName {
-    switch (this) {
-      case UsbPid.yksOtp:
-        return 'YubiKey Standard';
-      case UsbPid.ykpOtpFido:
-        return 'YubiKey Plus';
-      case UsbPid.skyFido:
-        return 'Security Key by Yubico';
-      default:
-        final prefix = name.startsWith('neo') ? 'YubiKey NEO' : 'YubiKey';
-        final suffix = UsbInterface.values
-            .where((e) => e.value & usbInterfaces != 0)
-            .map((e) => e.name.toUpperCase())
-            .join('+');
-        return '$prefix $suffix';
+    String defaultName() {
+      final prefix = name.startsWith('neo') ? 'YubiKey NEO' : 'YubiKey';
+      final suffix = UsbInterface.values
+          .where((e) => e.value & usbInterfaces != 0)
+          .map((e) => e.name.toUpperCase())
+          .join('+');
+      return '$prefix $suffix';
     }
+
+    return switch (this) {
+      UsbPid.yksOtp => 'YubiKey Standard',
+      UsbPid.ykpOtpFido => 'YubiKey Plus',
+      UsbPid.skyFido => 'Security Key by Yubico',
+      _ => defaultName(),
+    };
   }
 
   int get usbInterfaces => UsbInterface.values
@@ -151,9 +151,4 @@ class Version with _$Version implements Comparable<Version> {
     final b = other.major << 16 | other.minor << 8 | other.patch;
     return a - b;
   }
-}
-
-@freezed
-class Pair<T1, T2> with _$Pair<T1, T2> {
-  factory Pair(T1 first, T2 second) = _Pair<T1, T2>;
 }

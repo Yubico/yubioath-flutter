@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrscanner_zxing/qrscanner_zxing_view.dart';
 
 import '../../oath/models.dart';
@@ -63,7 +64,6 @@ class _QrScannerViewState extends State<QrScannerView> {
       _status = ScanStatus.scanning;
 
       _zxingViewKey.currentState?.resumeScanning();
-
     });
   }
 
@@ -106,15 +106,16 @@ class _QrScannerViewState extends State<QrScannerView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       extendBody: true,
       appBar: AppBar(
-        title: const Text(
-          'Add account',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          l10n.s_add_account,
+          style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
@@ -129,11 +130,11 @@ class _QrScannerViewState extends State<QrScannerView> {
         children: [
           Container(
               color: Colors.black,
-              child: Column(
+              child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [Spacer()])),
+                  children: [Spacer()])),
           Visibility(
               maintainState: true,
               maintainInteractivity: true,

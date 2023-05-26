@@ -87,7 +87,7 @@ class _ModeForm extends StatelessWidget {
         ),
       ),
       Text(interfaces == 0
-          ? AppLocalizations.of(context)!.mgmt_min_one_interface
+          ? AppLocalizations.of(context)!.l_min_one_interface
           : ''),
     ]);
   }
@@ -106,6 +106,7 @@ class _CapabilitiesForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final usbCapabilities = supported[Transport.usb] ?? 0;
     final nfcCapabilities = supported[Transport.nfc] ?? 0;
 
@@ -113,10 +114,10 @@ class _CapabilitiesForm extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (usbCapabilities != 0) ...[
-          const ListTile(
-            leading: Icon(Icons.usb),
-            title: Text('USB'),
-            contentPadding: EdgeInsets.only(bottom: 8),
+          ListTile(
+            leading: const Icon(Icons.usb),
+            title: Text(l10n.s_usb),
+            contentPadding: const EdgeInsets.only(bottom: 8),
             horizontalTitleGap: 0,
           ),
           _CapabilityForm(
@@ -136,7 +137,7 @@ class _CapabilitiesForm extends StatelessWidget {
             ),
           ListTile(
             leading: nfcIcon,
-            title: const Text('NFC'),
+            title: Text(l10n.s_nfc),
             contentPadding: const EdgeInsets.only(bottom: 8),
             horizontalTitleGap: 0,
           ),
@@ -191,6 +192,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
   }
 
   void _submitCapabilitiesForm() async {
+    final l10n = AppLocalizations.of(context)!;
     final bool reboot;
     if (widget.deviceData.node is UsbYubiKeyNode) {
       // Reboot if USB device descriptor is changed.
@@ -210,7 +212,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
         // This will take longer, show a message
         close = showMessage(
           context,
-          AppLocalizations.of(context)!.mgmt_reconfiguring_yubikey,
+          l10n.s_reconfiguring_yk,
           duration: const Duration(seconds: 8),
         );
       }
@@ -223,8 +225,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
           );
       if (!mounted) return;
       if (!reboot) Navigator.pop(context);
-      showMessage(
-          context, AppLocalizations.of(context)!.mgmt_configuration_updated);
+      showMessage(context, l10n.s_config_updated);
     } finally {
       close?.call();
     }
@@ -241,6 +242,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       );
 
   void _submitModeForm() async {
+    final l10n = AppLocalizations.of(context)!;
     await ref
         .read(managementStateProvider(widget.deviceData.node.path).notifier)
         .setMode(interfaces: _interfaces);
@@ -248,10 +250,8 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     showMessage(
         context,
         widget.deviceData.node.maybeMap(
-            nfcReader: (_) =>
-                AppLocalizations.of(context)!.mgmt_configuration_updated,
-            orElse: () => AppLocalizations.of(context)!
-                .mgmt_configuration_updated_remove_reinsert));
+            nfcReader: (_) => l10n.s_config_updated,
+            orElse: () => l10n.l_config_updated_reinsert));
     Navigator.pop(context);
   }
 
@@ -265,6 +265,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     var canSave = false;
     final child = ref
         .watch(managementStateProvider(widget.deviceData.node.path))
@@ -317,12 +318,12 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
         );
 
     return ResponsiveDialog(
-      title: Text(AppLocalizations.of(context)!.mgmt_toggle_applications),
+      title: Text(l10n.s_toggle_applications),
       actions: [
         TextButton(
           onPressed: canSave ? _submitForm : null,
           key: management_keys.saveButtonKey,
-          child: Text(AppLocalizations.of(context)!.mgmt_save),
+          child: Text(l10n.s_save),
         ),
       ],
       child: child,

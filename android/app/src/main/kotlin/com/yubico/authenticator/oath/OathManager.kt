@@ -45,6 +45,7 @@ import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
 import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
+import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
@@ -62,6 +63,7 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import java.net.URI
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.suspendCoroutine
 
 typealias OathAction = (Result<YubiKitOathSession, Exception>) -> Unit
@@ -99,6 +101,7 @@ class OathManager(
     @TargetApi(Build.VERSION_CODES.M)
     private fun createKeyStoreProviderM(): KeyProvider = KeyStoreProvider()
 
+    private val unlockOnConnect = AtomicBoolean(true)
     private var pendingAction: OathAction? = null
     private var refreshJob: Job? = null
     private var addToAny = false
@@ -240,11 +243,9 @@ class OathManager(
     override suspend fun processYubiKey(device: YubiKeyDevice) {
         try {
             device.withConnection<SmartCardConnection, Unit> { connection ->
-                val session = YubiKitOathSession(connection)
-                tryToUnlockOathSession(session)
-
+                val session = getOathSession(connection)
                 val previousId = oathViewModel.sessionState.value?.deviceId
-                if (session.deviceId == previousId) {
+                if (session.deviceId == previousId && device is NfcYubiKeyDevice) {
                     // Run any pending action
                     pendingAction?.let { action ->
                         action.invoke(Result.success(session))
@@ -432,7 +433,7 @@ class OathManager(
         currentPassword: String?,
         newPassword: String,
     ): String =
-        useOathSession("Set password") { session ->
+        useOathSession("Set password", unlock = false) { session ->
             if (session.isAccessKeySet) {
                 if (currentPassword == null) {
                     throw Exception("Must provide current password to be able to change it")
@@ -451,7 +452,7 @@ class OathManager(
         }
 
     private suspend fun unsetPassword(currentPassword: String): String =
-        useOathSession("Unset password") { session ->
+        useOathSession("Unset password", unlock = false) { session ->
             if (session.isAccessKeySet) {
                 // test current password sent by the user
                 if (session.unlock(currentPassword.toCharArray())) {
@@ -617,6 +618,29 @@ class OathManager(
         return false // the unlock did not work, session is locked
     }
 
+    /**
+     * Returns a [YubiKitOathSession] for the [connection].
+     * The session will be unlocked if [unlockOnConnect] is true.
+     *
+     * Generally we always want to try to unlock the session and that is why the variable
+     * [unlockOnConnect] is also reset to true.
+     *
+     * Currently, only setPassword and unsetPassword will not unlock the session.
+     *
+     * @param connection the device SmartCard connection
+     * @return a [YubiKitOathSession]  which is unlocked or locked based on an internal parameter
+     */
+    private fun getOathSession(connection: SmartCardConnection) : YubiKitOathSession {
+        val session = YubiKitOathSession(connection)
+
+        if (!unlockOnConnect.compareAndSet(false, true)) {
+            tryToUnlockOathSession(session)
+        }
+
+        return session
+    }
+
+
     private fun calculateOathCodes(session: YubiKitOathSession): Map<Credential, Code?> {
         val isUsbKey = appViewModel.connectedYubiKey.value != null
         var timestamp = System.currentTimeMillis()
@@ -641,8 +665,12 @@ class OathManager(
 
     private suspend fun <T> useOathSession(
         title: String,
+        unlock: Boolean = true,
         action: (YubiKitOathSession) -> T
     ): T {
+
+        // callers can decide whether the session should be unlocked first
+        unlockOnConnect.set(unlock)
         return appViewModel.connectedYubiKey.value?.let {
             useOathSessionUsb(it, action)
         } ?: useOathSessionNfc(title, action)
@@ -652,9 +680,7 @@ class OathManager(
         device: UsbYubiKeyDevice,
         block: (YubiKitOathSession) -> T
     ): T = device.withConnection<SmartCardConnection, T> {
-        val session = YubiKitOathSession(it)
-        tryToUnlockOathSession(session)
-        block(session)
+        block(getOathSession(it))
     }
 
     private suspend fun <T> useOathSessionNfc(

@@ -159,17 +159,17 @@ class QRScannerPageState extends State<QRScannerPage> {
                 ),
               )),
         ),
-        Positioned(
+        const Positioned(
           top: 50,
           left: 0,
           right: 0,
           child: Card(
-              margin: const EdgeInsets.all(20),
+              margin: EdgeInsets.all(20),
               elevation: 100,
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 child: Column(
-                  children: const [
+                  children: [
                     Text("QR scanner example"),
                   ],
                 ),

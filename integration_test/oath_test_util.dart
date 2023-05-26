@@ -112,6 +112,7 @@ extension OathFunctions on WidgetTester {
     }
 
     await shortWait();
+
     /// find an AccountView with issuer/name in the account list
     var matchingAccounts = find.descendant(
         of: findAccountList(),
@@ -146,8 +147,11 @@ extension OathFunctions on WidgetTester {
     expect(accountView, isNotNull);
 
     if (accountView != null) {
-      await ensureVisible(find.byWidget(accountView));
-      await tap(find.byWidget(accountView));
+      final accountFinder = find.byWidget(accountView);
+      await ensureVisible(accountFinder);
+      final codeButtonFinder = find.descendant(
+          of: accountFinder, matching: find.bySubtype<FilledButton>());
+      await tap(codeButtonFinder);
       await shortWait();
     }
   }

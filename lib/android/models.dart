@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-// shared preferences keys
-const betaDialogPrefName = 'prefBetaDialogShouldBeShown';
-const prefNfcOpenApp = 'prefNfcOpenApp';
-const prefNfcBypassTouch = 'prefNfcBypassTouch';
-const prefNfcSilenceSounds = 'prefNfcSilenceSounds';
-const prefNfcCopyOtp = 'prefNfcCopyOtp';
-const prefClipKbdLayout = 'prefClipKbdLayout';
-const prefUsbOpenApp = 'prefUsbOpenApp';
-const prefTheme = 'APP_STATE_THEME';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+enum NfcTapAction {
+  launch,
+  copy,
+  both;
+
+  String getDescription(AppLocalizations l10n) => switch (this) {
+        NfcTapAction.launch => l10n.l_launch_ya,
+        NfcTapAction.copy => l10n.l_copy_otp_clipboard,
+        NfcTapAction.both => l10n.l_launch_and_copy_otp
+      };
+}

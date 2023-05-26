@@ -20,13 +20,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
-import '../../core/models.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 import '../rpc.dart';
@@ -110,8 +110,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
   }
 
   @override
-  Future<Pair<bool, bool>> unlock(String password,
-      {bool remember = false}) async {
+  Future<(bool, bool)> unlock(String password, {bool remember = false}) async {
     var derive =
         await _session.command('derive', params: {'password': password});
     var key = derive['key'];
@@ -127,7 +126,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
         remembered: remembered,
       ));
     }
-    return Pair(valid, remembered);
+    return (valid, remembered);
   }
 
   Future<bool> _checkPassword(String password) async {
@@ -192,9 +191,9 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
 }
 
 final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
-    .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
+    .family<DesktopCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
-    var notifier = _DesktopCredentialListNotifier(
+    var notifier = DesktopCredentialListNotifier(
       ref.watch(withContextProvider),
       ref.watch(_sessionProvider(devicePath)),
       ref.watch(oathStateProvider(devicePath)
@@ -203,6 +202,7 @@ final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
     ref.listen<WindowState>(windowStateProvider, (_, windowState) {
       notifier._notifyWindowState(windowState);
     }, fireImmediately: true);
+
     return notifier;
   },
 );
@@ -225,12 +225,12 @@ String _formatSteam(String response) {
   return value;
 }
 
-class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
+class DesktopCredentialListNotifier extends OathCredentialListNotifier {
   final WithContext _withContext;
   final RpcNodeSession _session;
   final bool _locked;
   Timer? _timer;
-  _DesktopCredentialListNotifier(this._withContext, this._session, this._locked)
+  DesktopCredentialListNotifier(this._withContext, this._session, this._locked)
       : super();
 
   void _notifyWindowState(WindowState windowState) {
@@ -251,7 +251,7 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
 
   @override
   Future<OathCode> calculate(OathCredential credential,
-      {bool update = true}) async {
+      {bool update = true, bool headless = false}) async {
     var now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     if (update) {
       // Manually triggered, need to pad timer to avoid immediate expiration
@@ -264,12 +264,16 @@ class _DesktopCredentialListNotifier extends OathCredentialListNotifier {
       signaler.signals.listen((signal) async {
         if (signal.status == 'touch') {
           controller = await _withContext(
-            (context) async => promptUserInteraction(
-              context,
-              icon: const Icon(Icons.touch_app),
-              title: 'Touch Required',
-              description: 'Touch the button on your YubiKey now.',
-            ),
+            (context) async {
+              final l10n = AppLocalizations.of(context)!;
+              return promptUserInteraction(
+                context,
+                icon: const Icon(Icons.touch_app),
+                title: l10n.s_touch_required,
+                description: l10n.l_touch_button_now,
+                headless: headless,
+              );
+            },
           );
         }
       });

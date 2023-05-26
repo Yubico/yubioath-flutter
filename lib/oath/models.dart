@@ -15,6 +15,7 @@
  */
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../core/models.dart';
 
@@ -41,12 +42,16 @@ enum HashAlgorithm {
 
 enum OathType {
   @JsonValue(0x10)
-  hotp('Counter based'),
+  hotp,
   @JsonValue(0x20)
-  totp('Time based');
+  totp;
 
-  final String displayName;
-  const OathType(this.displayName);
+  const OathType();
+
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+        OathType.hotp => l10n.s_counter_based,
+        OathType.totp => l10n.s_time_based
+      };
 }
 
 enum KeystoreState { unknown, allowed, failed }
