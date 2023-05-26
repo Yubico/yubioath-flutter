@@ -157,6 +157,10 @@ Widget registerGlobalShortcuts(
             const SingleActivator(LogicalKeyboardKey.comma, meta: true):
                 const SettingsIntent(),
           },
+          if (Platform.isLinux) ...{
+            const SingleActivator(LogicalKeyboardKey.keyQ, control: true):
+                const CloseIntent(),
+          },
         },
         child: child,
       ),
