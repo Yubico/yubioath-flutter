@@ -41,7 +41,7 @@ final _favoriteAccounts =
     final deviceData = ref.watch(currentDeviceDataProvider).valueOrNull;
     if (deviceData != null) {
       final credentials =
-          ref.watch(desktopOathCredentialListProvider(deviceData.node.path));
+          ref.watch(credentialListProvider(deviceData.node.path));
       final favorites = ref.watch(favoritesProvider);
       final listed = credentials
               ?.map((e) => e.credential)
