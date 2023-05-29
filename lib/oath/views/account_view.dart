@@ -142,72 +142,67 @@ class _AccountViewState extends ConsumerState<AccountView> {
       },
       builder: (context) {
         final helper = AccountHelper(context, ref, credential);
-        return GestureDetector(
-          onSecondaryTapDown: (details) {
-            showMenu(
-              context: context,
-              position: RelativeRect.fromLTRB(
-                details.globalPosition.dx,
-                details.globalPosition.dy,
-                details.globalPosition.dx,
-                0,
-              ),
-              items: _buildPopupMenu(context, helper),
-            );
-          },
-          child: LayoutBuilder(builder: (context, constraints) {
-            final showAvatar = constraints.maxWidth >= 315;
+        return LayoutBuilder(builder: (context, constraints) {
+          final showAvatar = constraints.maxWidth >= 315;
+          final subtitle = helper.subtitle;
+          final circleAvatar = CircleAvatar(
+            foregroundColor: darkMode ? Colors.black : Colors.white,
+            backgroundColor: _iconColor(darkMode ? 300 : 400),
+            child: Text(
+              (credential.issuer ?? credential.name)
+                  .characters
+                  .first
+                  .toUpperCase(),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+            ),
+          );
 
-            final subtitle = helper.subtitle;
-
-            final circleAvatar = CircleAvatar(
-              foregroundColor: darkMode ? Colors.black : Colors.white,
-              backgroundColor: _iconColor(darkMode ? 300 : 400),
-              child: Text(
-                (credential.issuer ?? credential.name)
-                    .characters
-                    .first
-                    .toUpperCase(),
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-              ),
-            );
-
-            return Shortcuts(
-                shortcuts: {
-                  LogicalKeySet(LogicalKeyboardKey.enter): const OpenIntent(),
-                  LogicalKeySet(LogicalKeyboardKey.space): const OpenIntent(),
-                },
-                child: Semantics(
-                  label: _a11yCredentialLabel(
-                      credential.issuer, credential.name, helper.code?.value),
-                  child: ListTile(
-                    focusNode: _focusNode,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    onTap: () {
-                      if (isDesktop) {
-                        final now = DateTime.now().millisecondsSinceEpoch;
-                        if (now - _lastTap < 500) {
-                          setState(() {
-                            _lastTap = 0;
-                          });
-                          Actions.maybeInvoke(context, const CopyIntent());
-                        } else {
-                          _focusNode.requestFocus();
-                          setState(() {
-                            _lastTap = now;
-                          });
-                        }
+          return Shortcuts(
+              shortcuts: {
+                LogicalKeySet(LogicalKeyboardKey.enter): const OpenIntent(),
+                LogicalKeySet(LogicalKeyboardKey.space): const OpenIntent(),
+              },
+              child: Semantics(
+                label: _a11yCredentialLabel(
+                    credential.issuer, credential.name, helper.code?.value),
+                child: InkWell(
+                  focusNode: _focusNode,
+                  borderRadius: BorderRadius.circular(30),
+                  onSecondaryTapDown: (details) {
+                    showMenu(
+                      context: context,
+                      position: RelativeRect.fromLTRB(
+                        details.globalPosition.dx,
+                        details.globalPosition.dy,
+                        details.globalPosition.dx,
+                        0,
+                      ),
+                      items: _buildPopupMenu(context, helper),
+                    );
+                  },
+                  onTap: () {
+                    if (isDesktop) {
+                      final now = DateTime.now().millisecondsSinceEpoch;
+                      if (now - _lastTap < 500) {
+                        setState(() {
+                          _lastTap = 0;
+                        });
+                        Actions.maybeInvoke(context, const CopyIntent());
                       } else {
-                        Actions.maybeInvoke<OpenIntent>(
-                            context, const OpenIntent());
+                        _focusNode.requestFocus();
+                        setState(() {
+                          _lastTap = now;
+                        });
                       }
-                    },
-                    onLongPress: () {
-                      Actions.maybeInvoke(context, const CopyIntent());
-                    },
+                    } else {
+                      Actions.maybeInvoke<OpenIntent>(
+                          context, const OpenIntent());
+                    }
+                  },
+                  onLongPress: () {
+                    Actions.maybeInvoke(context, const CopyIntent());
+                  },
+                  child: ListTile(
                     leading: showAvatar
                         ? AccountIcon(
                             issuer: credential.issuer,
@@ -247,9 +242,9 @@ class _AccountViewState extends ConsumerState<AccountView> {
                               child: helper.buildCodeIcon()),
                     ),
                   ),
-                ));
-          }),
-        );
+                ),
+              ));
+        });
       },
     );
   }
