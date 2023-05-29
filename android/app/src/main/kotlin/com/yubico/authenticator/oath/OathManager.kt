@@ -382,15 +382,17 @@ class OathManager(
         }
     }
 
-    private suspend fun reset(): String {
+    private suspend fun reset(): String =
         useOathSession("Reset YubiKey") {
             // note, it is ok to reset locked session
             it.reset()
             keyManager.removeKey(it.deviceId)
-            oathViewModel.setSessionState(Session(it, false))
+            oathViewModel.resetOathSession(
+                Session(it, false),
+                calculateOathCodes(it)
+            )
+            NULL
         }
-        return NULL
-    }
 
     private suspend fun unlock(password: String, remember: Boolean): String =
         useOathSession("Unlocking") {
