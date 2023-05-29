@@ -20,6 +20,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/android/state.dart';
+import 'package:yubico_authenticator/android/views/nfc/nfc_activity_background.dart';
+import 'package:yubico_authenticator/android/views/nfc/nfc_activity_widget.dart';
 
 import '../app/state.dart';
 import '../app/views/user_interaction.dart';
@@ -65,46 +68,62 @@ class _DialogProvider {
     _controller = null;
   }
 
-  Widget? _getIcon(String? icon) => switch (icon) {
-        'nfc' => nfcIcon,
-        'success' => const Icon(Icons.check_circle),
-        'error' => const Icon(Icons.error),
-        _ => null,
-      };
-
   Future<void> _updateDialogState(
       String? title, String? description, String? iconName) async {
-    final icon = _getIcon(iconName);
     await _withContext((context) async {
       _controller?.updateContent(
         title: title,
         description: description,
-        icon: icon != null
-            ? IconTheme(
-                data: IconTheme.of(context).copyWith(size: 64),
-                child: icon,
-              )
-            : null,
+        icon: _createIcon(context),
       );
     });
   }
 
   Future<void> _showDialog(
       String title, String description, String? iconName) async {
-    final icon = _getIcon(iconName);
-    _controller = await _withContext((context) async => promptUserInteraction(
-          context,
-          title: title,
-          description: description,
-          icon: icon != null
-              ? IconTheme(
-                  data: IconTheme.of(context).copyWith(size: 64),
-                  child: icon,
-                )
-              : null,
-          onCancel: () {
-            _channel.invokeMethod('cancel');
-          },
-        ));
+    _controller = await _withContext((context) async {
+      return promptUserInteraction(
+        context,
+        title: title,
+        description: description,
+        icon: _createIcon(context),
+        onCancel: () {
+          _channel.invokeMethod('cancel');
+        },
+      );
+    });
+  }
+
+  NfcActivityWidget _createIcon(BuildContext context) {
+    final pulseColor = Theme.of(context).primaryColor;
+
+    return NfcActivityWidget(
+      width: 64,
+      height: 64,
+      iconFn: (NfcActivity nfcActivityState) {
+        return nfcIcon;
+      },
+      backgroundFn: (NfcActivity nfcActivityState) =>
+          switch (nfcActivityState) {
+        NfcActivity.notActive => const SizedBox.shrink(),
+        NfcActivity.ready => NfcActivityBackground(
+            foregroundColor: pulseColor,
+            opacity: 0.2,
+          ),
+        NfcActivity.tagPresent => NfcActivityBackground(
+            foregroundColor: pulseColor,
+            opacity: 0.5,
+          ),
+        NfcActivity.processingStarted => const NfcActivityBackground(
+            foregroundColor: Colors.blueGrey,
+            opacity: 0.8,
+          ),
+        NfcActivity.processingFinished => NfcActivityBackground(
+            foregroundColor: pulseColor,
+            opacity: 0.5,
+          ),
+        NfcActivity _ => const NfcActivityBackground()
+      },
+    );
   }
 }

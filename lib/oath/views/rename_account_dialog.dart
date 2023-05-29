@@ -60,6 +60,13 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   void _submit() async {
     final l10n = AppLocalizations.of(context)!;
     try {
+
+      FocusScopeNode currentFocus = FocusScope.of(context);
+
+      if (!currentFocus.hasPrimaryFocus) {
+        currentFocus.unfocus();
+      }
+
       // Rename credentials
       final renamed = await ref
           .read(credentialListProvider(widget.device.path).notifier)

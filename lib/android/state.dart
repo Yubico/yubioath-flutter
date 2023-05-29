@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
@@ -26,6 +27,7 @@ import 'app_methods.dart';
 import 'devices.dart';
 import 'models.dart';
 
+final _log = Logger('state');
 const _contextChannel = MethodChannel('android.state.appContext');
 
 final androidAllowScreenshotsProvider =
@@ -86,6 +88,7 @@ class NfcActivityNotifier extends StateNotifier<NfcActivity> {
   NfcActivityNotifier() : super(NfcActivity.notActive);
 
   void setActivityState(int stateValue) {
+    _log.info('Received state: $stateValue');
     switch (stateValue) {
       case 0:
         state = NfcActivity.notActive;

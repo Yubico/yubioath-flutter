@@ -43,6 +43,7 @@ import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
+import com.yubico.authenticator.yubikit.NfcActivityState
 import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
@@ -331,19 +332,20 @@ class OathManager(
             )
 
             (lifecycleOwner as MainActivity).appMethodChannel.nfcActivityStateChanged(
-                MainActivity.NfcActivity.PROCESSING_FINISHED.value)
+                NfcActivityState.PROCESSING_FINISHED
+            )
             delay(500)
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
             Log.e(TAG, "Failed to connect to CCID", e.toString())
             Log.e(TAG, "Set nfc activity state to PROCESSING_INTERRUPTED")
             (lifecycleOwner as MainActivity).appMethodChannel.nfcActivityStateChanged(
-                MainActivity.NfcActivity.PROCESSING_INTERRUPTED.value)
+                NfcActivityState.PROCESSING_INTERRUPTED
+            )
 
             coroutineScope.launch {
                 delay(2500)
-                (lifecycleOwner as MainActivity).appMethodChannel.nfcActivityStateChanged(
-                    MainActivity.NfcActivity.READY.value)
+                lifecycleOwner.appMethodChannel.nfcActivityStateChanged(NfcActivityState.READY)
             }
 
             delay(500)
@@ -406,6 +408,7 @@ class OathManager(
             it.reset()
             keyManager.removeKey(it.deviceId)
             oathViewModel.setSessionState(Session(it, false))
+            oathViewModel.updateCredentials(emptyMap())
         }
         return NULL
     }

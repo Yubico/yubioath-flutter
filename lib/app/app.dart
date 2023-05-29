@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/android/nfc_activity_overlay.dart';
 
 import '../theme.dart';
 import 'logging.dart';
@@ -33,27 +32,25 @@ class YubicoAuthenticatorApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return registerGlobalShortcuts(
         ref: ref,
-        child: NfcActivityOverlay(
-          child: LogWarningOverlay(
-            child: Consumer(builder: (context, ref, _) {
-              return MaterialApp(
-                title: ref.watch(l10nProvider).app_name,
-                theme: AppTheme.lightTheme,
-                darkTheme: AppTheme.darkTheme,
-                themeMode: ref.watch(themeModeProvider),
-                home: page,
-                debugShowCheckedModeBanner: false,
-                locale: ref.watch(currentLocaleProvider),
-                supportedLocales: ref.watch(supportedLocalesProvider),
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-              );
-            }),
-          ),
+        child: LogWarningOverlay(
+          child: Consumer(builder: (context, ref, _) {
+            return MaterialApp(
+              title: ref.watch(l10nProvider).app_name,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: ref.watch(themeModeProvider),
+              home: page,
+              debugShowCheckedModeBanner: false,
+              locale: ref.watch(currentLocaleProvider),
+              supportedLocales: ref.watch(supportedLocalesProvider),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+            );
+          }),
         ));
   }
 }
