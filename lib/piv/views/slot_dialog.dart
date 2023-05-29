@@ -128,7 +128,7 @@ class _SlotDialogActions extends StatelessWidget {
           leading: CircleAvatar(
             backgroundColor: theme.primary,
             foregroundColor: theme.onPrimary,
-            child: const Icon(Icons.add),
+            child: const Icon(Icons.add_outlined),
           ),
           title: Text('Generate key'),
           subtitle: Text('Generate a new certificate or CSR'),
@@ -140,7 +140,7 @@ class _SlotDialogActions extends StatelessWidget {
           leading: CircleAvatar(
             backgroundColor: theme.secondary,
             foregroundColor: theme.onSecondary,
-            child: const Icon(Icons.add),
+            child: const Icon(Icons.file_download_outlined),
           ),
           title: Text('Import file'),
           subtitle: Text('Import a key and/or certificate from file'),
@@ -153,7 +153,7 @@ class _SlotDialogActions extends StatelessWidget {
             leading: CircleAvatar(
               backgroundColor: theme.secondary,
               foregroundColor: theme.onSecondary,
-              child: const Icon(Icons.add),
+              child: const Icon(Icons.file_upload_outlined),
             ),
             title: Text('Export certificate'),
             subtitle: Text('Export the certificate to file'),
@@ -165,7 +165,7 @@ class _SlotDialogActions extends StatelessWidget {
             leading: CircleAvatar(
               backgroundColor: theme.error,
               foregroundColor: theme.onError,
-              child: const Icon(Icons.delete),
+              child: const Icon(Icons.delete_outline),
             ),
             title: Text('Delete certificate'),
             subtitle: Text('Remove the certificate from the YubiKey'),

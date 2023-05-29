@@ -28,6 +28,8 @@ import '../models.dart';
 import '../state.dart';
 import 'authentication_dialog.dart';
 import 'delete_certificate_dialog.dart';
+import 'generate_key_dialog.dart';
+import 'import_file_dialog.dart';
 
 class AuthenticateIntent extends Intent {
   const AuthenticateIntent();
@@ -77,6 +79,11 @@ Future<PivImportResult> _importFile(
     final data = await file.readAsBytes();
     final hexData = data.map((e) => e.toRadixString(16).padLeft(2, '0')).join();
 
+    // TODO: Ask for password.
+    final result =
+        await ref.read(pivSlotsProvider(devicePath).notifier).examine(hexData);
+    print(result);
+
     return await ref
         .read(pivSlotsProvider(devicePath).notifier)
         .import(pivSlot.slot, hexData);
@@ -97,23 +104,77 @@ Widget registerPivActions(
         AuthenticateIntent: CallbackAction<AuthenticateIntent>(
           onInvoke: (intent) => _authenticate(ref, devicePath, pivState),
         ),
+        GenerateIntent:
+            CallbackAction<GenerateIntent>(onInvoke: (intent) async {
+          if (!pivState.authenticated) {
+            await _authenticate(ref, devicePath, pivState);
+          }
+
+          final withContext = ref.read(withContextProvider);
+          return await withContext((context) async =>
+              await showBlurDialog(
+                context: context,
+                builder: (context) => GenerateKeyDialog(
+                  devicePath,
+                  pivState,
+                  pivSlot,
+                ),
+              ) ??
+              false);
+        }),
         ImportIntent: CallbackAction<ImportIntent>(onInvoke: (intent) async {
           if (!pivState.authenticated) {
             await _authenticate(ref, devicePath, pivState);
           }
-          final result = await _importFile(ref, devicePath, pivSlot);
+
+          final picked = await FilePicker.platform.pickFiles(
+              allowedExtensions: ['pem', 'der', 'pfx', 'p12', 'key', 'crt'],
+              type: FileType.custom,
+              allowMultiple: false,
+              lockParentWindow: true,
+              dialogTitle: 'Select file to import');
+          if (picked == null || picked.files.isEmpty) {
+            return false;
+          }
+
+          final withContext = ref.read(withContextProvider);
+          return await withContext((context) async =>
+              await showBlurDialog(
+                context: context,
+                builder: (context) => ImportFileDialog(
+                  devicePath,
+                  pivState,
+                  pivSlot,
+                  File(picked.paths.first!),
+                ),
+              ) ??
+              false);
+        }),
+        ExportIntent: CallbackAction<ExportIntent>(onInvoke: (intent) async {
+          final (_, cert) = await ref
+              .read(pivSlotsProvider(devicePath).notifier)
+              .read(pivSlot.slot);
+
+          if (cert == null) {
+            return false;
+          }
+
+          final filePath = await FilePicker.platform.saveFile(
+            dialogTitle: 'Export certificate to file',
+            allowedExtensions: ['pem'],
+            type: FileType.custom,
+            lockParentWindow: true,
+          );
+          if (filePath != null) {
+            final file = File(filePath);
+            await file.writeAsString(cert, flush: true);
+          }
+
           await ref.read(withContextProvider)((context) async {
-            if (result.publicKey != null && result.certificate != null) {
-              showMessage(context, 'Private key and certificate imported');
-            } else if (result.publicKey != null) {
-              showMessage(context, 'Private key imported');
-            } else if (result.certificate != null) {
-              showMessage(context, 'Certificate imported');
-            } else {
-              return false;
-            }
-            return true;
+            showMessage(context, 'Certificate exported');
           });
+
+          return true;
         }),
         DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
           if (!pivState.authenticated) {

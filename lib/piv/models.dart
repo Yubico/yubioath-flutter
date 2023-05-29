@@ -24,8 +24,19 @@ part 'models.g.dart';
 
 const defaultManagementKey = '010203040506070801020304050607080102030405060708';
 const defaultManagementKeyType = ManagementKeyType.tdes;
+const defaultKeyType = KeyType.rsa2048;
 
-enum GenerateType { certificate, csr }
+enum GenerateType {
+  certificate,
+  csr;
+
+  String getDisplayName(AppLocalizations l10n) {
+    return switch (this) {
+      // TODO:
+      _ => name
+    };
+  }
+}
 
 enum SlotId {
   authentication(0x9a),
@@ -37,11 +48,10 @@ enum SlotId {
   const SlotId(this.id);
 
   String getDisplayName(AppLocalizations l10n) {
-    switch (this) {
+    return switch (this) {
       // TODO:
-      default:
-        return name;
-    }
+      _ => name
+    };
   }
 
   factory SlotId.fromJson(int value) =>
@@ -64,17 +74,10 @@ enum PinPolicy {
   int get value => _$PinPolicyEnumMap[this]!;
 
   String getDisplayName(AppLocalizations l10n) {
-    switch (this) {
+    return switch (this) {
       // TODO:
-      case PinPolicy.dfault:
-        return l10n.s_counter_based;
-      case PinPolicy.never:
-        return l10n.s_time_based;
-      case PinPolicy.once:
-        return l10n.s_time_based;
-      case PinPolicy.always:
-        return l10n.s_time_based;
-    }
+      _ => name
+    };
   }
 }
 
@@ -94,17 +97,10 @@ enum TouchPolicy {
   int get value => _$TouchPolicyEnumMap[this]!;
 
   String getDisplayName(AppLocalizations l10n) {
-    switch (this) {
+    return switch (this) {
       // TODO:
-      case TouchPolicy.dfault:
-        return l10n.s_counter_based;
-      case TouchPolicy.never:
-        return l10n.s_time_based;
-      case TouchPolicy.always:
-        return l10n.s_time_based;
-      case TouchPolicy.cached:
-        return l10n.s_time_based;
-    }
+      _ => name
+    };
   }
 }
 
@@ -124,17 +120,10 @@ enum KeyType {
   int get value => _$KeyTypeEnumMap[this]!;
 
   String getDisplayName(AppLocalizations l10n) {
-    switch (this) {
+    return switch (this) {
       // TODO:
-      case KeyType.rsa1024:
-        return l10n.s_counter_based;
-      case KeyType.rsa2048:
-        return l10n.s_time_based;
-      case KeyType.eccp256:
-        return l10n.s_time_based;
-      case KeyType.eccp384:
-        return l10n.s_time_based;
-    }
+      _ => name
+    };
   }
 }
 
@@ -153,17 +142,10 @@ enum ManagementKeyType {
   int get value => _$ManagementKeyTypeEnumMap[this]!;
 
   String getDisplayName(AppLocalizations l10n) {
-    switch (this) {
+    return switch (this) {
       // TODO:
-      case ManagementKeyType.tdes:
-        return l10n.s_counter_based;
-      case ManagementKeyType.aes128:
-        return l10n.s_time_based;
-      case ManagementKeyType.aes192:
-        return l10n.s_time_based;
-      case ManagementKeyType.aes256:
-        return l10n.s_time_based;
-    }
+      _ => name
+    };
   }
 }
 
@@ -269,6 +251,31 @@ class PivSlot with _$PivSlot {
 
   factory PivSlot.fromJson(Map<String, dynamic> json) =>
       _$PivSlotFromJson(json);
+}
+
+@freezed
+class PivExamineResult with _$PivExamineResult {
+  factory PivExamineResult.result({
+    required bool password,
+    required bool privateKey,
+    required int certificates,
+  }) = _ExamineResult;
+  factory PivExamineResult.invalidPassword() = _InvalidPassword;
+
+  factory PivExamineResult.fromJson(Map<String, dynamic> json) =>
+      _$PivExamineResultFromJson(json);
+}
+
+@freezed
+class PivGenerateParameters with _$PivGenerateParameters {
+  factory PivGenerateParameters.certificate({
+    required String subject,
+    required DateTime validFrom,
+    required DateTime validTo,
+  }) = _GenerateCertificate;
+  factory PivGenerateParameters.csr({
+    required String subject,
+  }) = _GenerateCsr;
 }
 
 @freezed

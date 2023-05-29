@@ -27,6 +27,7 @@ import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
+import '../../core/models.dart';
 import '../../piv/models.dart';
 import '../../piv/state.dart';
 import '../rpc.dart';
@@ -34,10 +35,19 @@ import '../state.dart';
 
 final _log = Logger('desktop.piv.state');
 
+final _managementKeyProvider =
+    StateProvider.autoDispose.family<String?, DevicePath>(
+  (ref, _) => null,
+);
+
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, DevicePath>(
-  (ref, devicePath) => RpcNodeSession(
-      ref.watch(rpcProvider).requireValue, devicePath, ['ccid', 'piv']),
+  (ref, devicePath) {
+    // Make sure the managementKeyProvider is held for the duration of the session.
+    ref.watch(_managementKeyProvider(devicePath));
+    return RpcNodeSession(
+        ref.watch(rpcProvider).requireValue, devicePath, ['ccid', 'piv']);
+  },
 );
 
 final desktopPivState = AsyncNotifierProvider.autoDispose
@@ -46,6 +56,7 @@ final desktopPivState = AsyncNotifierProvider.autoDispose
 
 class _DesktopPivStateNotifier extends PivStateNotifier {
   late RpcNodeSession _session;
+  late DevicePath _devicePath;
 
   @override
   FutureOr<PivState> build(DevicePath devicePath) async {
@@ -62,9 +73,24 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
         ..unsetErrorHandler('state-reset')
         ..unsetErrorHandler('auth-required');
     });
+    _devicePath = devicePath;
+
     final result = await _session.command('get');
     _log.debug('application status', jsonEncode(result));
-    return PivState.fromJson(result['data']);
+    final pivState = PivState.fromJson(result['data']);
+    if (!pivState.authenticated) {
+      final mgmtKey = ref.read(_managementKeyProvider(devicePath));
+      print("NOT AUTHED, have key: $mgmtKey");
+      if (mgmtKey != null) {
+        if (await authenticate(mgmtKey)) {
+          print("RE AUTHED!");
+          return pivState.copyWith(authenticated: true);
+        }
+        ref.read(_managementKeyProvider(devicePath).notifier).state = null;
+      }
+    }
+
+    return pivState;
   }
 
   @override
@@ -102,7 +128,17 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
         signal: signaler,
       );
 
-      return result['status'];
+      if (result['status']) {
+        ref.read(_managementKeyProvider(_devicePath).notifier).state =
+            managementKey;
+        final oldState = state.valueOrNull;
+        if (oldState != null) {
+          state = AsyncData(oldState.copyWith(authenticated: true));
+        }
+        return true;
+      } else {
+        return false;
+      }
     } finally {
       controller?.close();
     }
@@ -256,9 +292,8 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
   @override
   Future<PivGenerateResult> generate(
     SlotId slot,
-    KeyType keyType,
-    String subject, {
-    GenerateType generateType = GenerateType.certificate,
+    KeyType keyType, {
+    required PivGenerateParameters parameters,
     PinPolicy pinPolicy = PinPolicy.dfault,
     TouchPolicy touchPolicy = TouchPolicy.dfault,
     String? pin,
@@ -284,6 +319,21 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
         }
       });
 
+      final (type, subject, validFrom, validTo) = parameters.when(
+        certificate: (subject, validFrom, validTo) => (
+          GenerateType.certificate,
+          subject,
+          dateFormatter.format(validFrom),
+          dateFormatter.format(validTo),
+        ),
+        csr: (subject) => (
+          GenerateType.csr,
+          subject,
+          null,
+          null,
+        ),
+      );
+
       final result = await _session.command(
         'generate',
         target: [
@@ -295,7 +345,9 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
           'pin_policy': pinPolicy.value,
           'touch_policy': touchPolicy.value,
           'subject': subject,
-          'generate_type': generateType.name,
+          'generate_type': type.name,
+          'valid_from': validFrom,
+          'valid_to': validTo,
           'pin': pin,
         },
         signal: signaler,
@@ -306,6 +358,22 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
       return PivGenerateResult.fromJson(result);
     } finally {
       controller?.close();
+    }
+  }
+
+  @override
+  Future<PivExamineResult> examine(String data, {String? password}) async {
+    final result = await _session.command('examine_file', target: [
+      'slots',
+    ], params: {
+      'data': data,
+      'password': password,
+    });
+
+    if (result['status']) {
+      return PivExamineResult.fromJson({'runtimeType': 'result', ...result});
+    } else {
+      return PivExamineResult.invalidPassword();
     }
   }
 
@@ -334,10 +402,11 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
       'slots',
       slot.node,
     ]);
-    final metadata = result['metadata'];
+    final data = result['data'];
+    final metadata = data['metadata'];
     return (
       metadata != null ? SlotMetadata.fromJson(metadata) : null,
-      result['certificate'] as String?,
+      data['certificate'] as String?,
     );
   }
 }

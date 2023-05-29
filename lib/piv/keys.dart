@@ -32,3 +32,4 @@ const managementKeyField = Key('$_prefix.management_key');
 const pinPukField = Key('$_prefix.pin_puk');
 const newPinPukField = Key('$_prefix.new_pin_puk');
 const confirmPinPukField = Key('$_prefix.confirm_pin_puk');
+const subjectField = Key('$_prefix.subject');

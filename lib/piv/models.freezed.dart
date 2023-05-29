@@ -1843,6 +1843,774 @@ abstract class _PivSlot implements PivSlot {
       throw _privateConstructorUsedError;
 }
 
+PivExamineResult _$PivExamineResultFromJson(Map<String, dynamic> json) {
+  switch (json['runtimeType']) {
+    case 'result':
+      return _ExamineResult.fromJson(json);
+    case 'invalidPassword':
+      return _InvalidPassword.fromJson(json);
+
+    default:
+      throw CheckedFromJsonException(json, 'runtimeType', 'PivExamineResult',
+          'Invalid union type "${json['runtimeType']}"!');
+  }
+}
+
+/// @nodoc
+mixin _$PivExamineResult {
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(bool password, bool privateKey, int certificates)
+        result,
+    required TResult Function() invalidPassword,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(bool password, bool privateKey, int certificates)? result,
+    TResult? Function()? invalidPassword,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(bool password, bool privateKey, int certificates)? result,
+    TResult Function()? invalidPassword,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ExamineResult value) result,
+    required TResult Function(_InvalidPassword value) invalidPassword,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ExamineResult value)? result,
+    TResult? Function(_InvalidPassword value)? invalidPassword,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ExamineResult value)? result,
+    TResult Function(_InvalidPassword value)? invalidPassword,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $PivExamineResultCopyWith<$Res> {
+  factory $PivExamineResultCopyWith(
+          PivExamineResult value, $Res Function(PivExamineResult) then) =
+      _$PivExamineResultCopyWithImpl<$Res, PivExamineResult>;
+}
+
+/// @nodoc
+class _$PivExamineResultCopyWithImpl<$Res, $Val extends PivExamineResult>
+    implements $PivExamineResultCopyWith<$Res> {
+  _$PivExamineResultCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+}
+
+/// @nodoc
+abstract class _$$_ExamineResultCopyWith<$Res> {
+  factory _$$_ExamineResultCopyWith(
+          _$_ExamineResult value, $Res Function(_$_ExamineResult) then) =
+      __$$_ExamineResultCopyWithImpl<$Res>;
+  @useResult
+  $Res call({bool password, bool privateKey, int certificates});
+}
+
+/// @nodoc
+class __$$_ExamineResultCopyWithImpl<$Res>
+    extends _$PivExamineResultCopyWithImpl<$Res, _$_ExamineResult>
+    implements _$$_ExamineResultCopyWith<$Res> {
+  __$$_ExamineResultCopyWithImpl(
+      _$_ExamineResult _value, $Res Function(_$_ExamineResult) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? password = null,
+    Object? privateKey = null,
+    Object? certificates = null,
+  }) {
+    return _then(_$_ExamineResult(
+      password: null == password
+          ? _value.password
+          : password // ignore: cast_nullable_to_non_nullable
+              as bool,
+      privateKey: null == privateKey
+          ? _value.privateKey
+          : privateKey // ignore: cast_nullable_to_non_nullable
+              as bool,
+      certificates: null == certificates
+          ? _value.certificates
+          : certificates // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$_ExamineResult implements _ExamineResult {
+  _$_ExamineResult(
+      {required this.password,
+      required this.privateKey,
+      required this.certificates,
+      final String? $type})
+      : $type = $type ?? 'result';
+
+  factory _$_ExamineResult.fromJson(Map<String, dynamic> json) =>
+      _$$_ExamineResultFromJson(json);
+
+  @override
+  final bool password;
+  @override
+  final bool privateKey;
+  @override
+  final int certificates;
+
+  @JsonKey(name: 'runtimeType')
+  final String $type;
+
+  @override
+  String toString() {
+    return 'PivExamineResult.result(password: $password, privateKey: $privateKey, certificates: $certificates)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_ExamineResult &&
+            (identical(other.password, password) ||
+                other.password == password) &&
+            (identical(other.privateKey, privateKey) ||
+                other.privateKey == privateKey) &&
+            (identical(other.certificates, certificates) ||
+                other.certificates == certificates));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, password, privateKey, certificates);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_ExamineResultCopyWith<_$_ExamineResult> get copyWith =>
+      __$$_ExamineResultCopyWithImpl<_$_ExamineResult>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(bool password, bool privateKey, int certificates)
+        result,
+    required TResult Function() invalidPassword,
+  }) {
+    return result(password, privateKey, certificates);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(bool password, bool privateKey, int certificates)? result,
+    TResult? Function()? invalidPassword,
+  }) {
+    return result?.call(password, privateKey, certificates);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(bool password, bool privateKey, int certificates)? result,
+    TResult Function()? invalidPassword,
+    required TResult orElse(),
+  }) {
+    if (result != null) {
+      return result(password, privateKey, certificates);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ExamineResult value) result,
+    required TResult Function(_InvalidPassword value) invalidPassword,
+  }) {
+    return result(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ExamineResult value)? result,
+    TResult? Function(_InvalidPassword value)? invalidPassword,
+  }) {
+    return result?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ExamineResult value)? result,
+    TResult Function(_InvalidPassword value)? invalidPassword,
+    required TResult orElse(),
+  }) {
+    if (result != null) {
+      return result(this);
+    }
+    return orElse();
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_ExamineResultToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ExamineResult implements PivExamineResult {
+  factory _ExamineResult(
+      {required final bool password,
+      required final bool privateKey,
+      required final int certificates}) = _$_ExamineResult;
+
+  factory _ExamineResult.fromJson(Map<String, dynamic> json) =
+      _$_ExamineResult.fromJson;
+
+  bool get password;
+  bool get privateKey;
+  int get certificates;
+  @JsonKey(ignore: true)
+  _$$_ExamineResultCopyWith<_$_ExamineResult> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$_InvalidPasswordCopyWith<$Res> {
+  factory _$$_InvalidPasswordCopyWith(
+          _$_InvalidPassword value, $Res Function(_$_InvalidPassword) then) =
+      __$$_InvalidPasswordCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$_InvalidPasswordCopyWithImpl<$Res>
+    extends _$PivExamineResultCopyWithImpl<$Res, _$_InvalidPassword>
+    implements _$$_InvalidPasswordCopyWith<$Res> {
+  __$$_InvalidPasswordCopyWithImpl(
+      _$_InvalidPassword _value, $Res Function(_$_InvalidPassword) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$_InvalidPassword implements _InvalidPassword {
+  _$_InvalidPassword({final String? $type})
+      : $type = $type ?? 'invalidPassword';
+
+  factory _$_InvalidPassword.fromJson(Map<String, dynamic> json) =>
+      _$$_InvalidPasswordFromJson(json);
+
+  @JsonKey(name: 'runtimeType')
+  final String $type;
+
+  @override
+  String toString() {
+    return 'PivExamineResult.invalidPassword()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$_InvalidPassword);
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(bool password, bool privateKey, int certificates)
+        result,
+    required TResult Function() invalidPassword,
+  }) {
+    return invalidPassword();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(bool password, bool privateKey, int certificates)? result,
+    TResult? Function()? invalidPassword,
+  }) {
+    return invalidPassword?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(bool password, bool privateKey, int certificates)? result,
+    TResult Function()? invalidPassword,
+    required TResult orElse(),
+  }) {
+    if (invalidPassword != null) {
+      return invalidPassword();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ExamineResult value) result,
+    required TResult Function(_InvalidPassword value) invalidPassword,
+  }) {
+    return invalidPassword(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ExamineResult value)? result,
+    TResult? Function(_InvalidPassword value)? invalidPassword,
+  }) {
+    return invalidPassword?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ExamineResult value)? result,
+    TResult Function(_InvalidPassword value)? invalidPassword,
+    required TResult orElse(),
+  }) {
+    if (invalidPassword != null) {
+      return invalidPassword(this);
+    }
+    return orElse();
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_InvalidPasswordToJson(
+      this,
+    );
+  }
+}
+
+abstract class _InvalidPassword implements PivExamineResult {
+  factory _InvalidPassword() = _$_InvalidPassword;
+
+  factory _InvalidPassword.fromJson(Map<String, dynamic> json) =
+      _$_InvalidPassword.fromJson;
+}
+
+/// @nodoc
+mixin _$PivGenerateParameters {
+  String get subject => throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(
+            String subject, DateTime validFrom, DateTime validTo)
+        certificate,
+    required TResult Function(String subject) csr,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String subject, DateTime validFrom, DateTime validTo)?
+        certificate,
+    TResult? Function(String subject)? csr,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String subject, DateTime validFrom, DateTime validTo)?
+        certificate,
+    TResult Function(String subject)? csr,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_GenerateCertificate value) certificate,
+    required TResult Function(_GenerateCsr value) csr,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_GenerateCertificate value)? certificate,
+    TResult? Function(_GenerateCsr value)? csr,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_GenerateCertificate value)? certificate,
+    TResult Function(_GenerateCsr value)? csr,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $PivGenerateParametersCopyWith<PivGenerateParameters> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $PivGenerateParametersCopyWith<$Res> {
+  factory $PivGenerateParametersCopyWith(PivGenerateParameters value,
+          $Res Function(PivGenerateParameters) then) =
+      _$PivGenerateParametersCopyWithImpl<$Res, PivGenerateParameters>;
+  @useResult
+  $Res call({String subject});
+}
+
+/// @nodoc
+class _$PivGenerateParametersCopyWithImpl<$Res,
+        $Val extends PivGenerateParameters>
+    implements $PivGenerateParametersCopyWith<$Res> {
+  _$PivGenerateParametersCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? subject = null,
+  }) {
+    return _then(_value.copyWith(
+      subject: null == subject
+          ? _value.subject
+          : subject // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_GenerateCertificateCopyWith<$Res>
+    implements $PivGenerateParametersCopyWith<$Res> {
+  factory _$$_GenerateCertificateCopyWith(_$_GenerateCertificate value,
+          $Res Function(_$_GenerateCertificate) then) =
+      __$$_GenerateCertificateCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String subject, DateTime validFrom, DateTime validTo});
+}
+
+/// @nodoc
+class __$$_GenerateCertificateCopyWithImpl<$Res>
+    extends _$PivGenerateParametersCopyWithImpl<$Res, _$_GenerateCertificate>
+    implements _$$_GenerateCertificateCopyWith<$Res> {
+  __$$_GenerateCertificateCopyWithImpl(_$_GenerateCertificate _value,
+      $Res Function(_$_GenerateCertificate) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? subject = null,
+    Object? validFrom = null,
+    Object? validTo = null,
+  }) {
+    return _then(_$_GenerateCertificate(
+      subject: null == subject
+          ? _value.subject
+          : subject // ignore: cast_nullable_to_non_nullable
+              as String,
+      validFrom: null == validFrom
+          ? _value.validFrom
+          : validFrom // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      validTo: null == validTo
+          ? _value.validTo
+          : validTo // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_GenerateCertificate implements _GenerateCertificate {
+  _$_GenerateCertificate(
+      {required this.subject, required this.validFrom, required this.validTo});
+
+  @override
+  final String subject;
+  @override
+  final DateTime validFrom;
+  @override
+  final DateTime validTo;
+
+  @override
+  String toString() {
+    return 'PivGenerateParameters.certificate(subject: $subject, validFrom: $validFrom, validTo: $validTo)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_GenerateCertificate &&
+            (identical(other.subject, subject) || other.subject == subject) &&
+            (identical(other.validFrom, validFrom) ||
+                other.validFrom == validFrom) &&
+            (identical(other.validTo, validTo) || other.validTo == validTo));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, subject, validFrom, validTo);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_GenerateCertificateCopyWith<_$_GenerateCertificate> get copyWith =>
+      __$$_GenerateCertificateCopyWithImpl<_$_GenerateCertificate>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(
+            String subject, DateTime validFrom, DateTime validTo)
+        certificate,
+    required TResult Function(String subject) csr,
+  }) {
+    return certificate(subject, validFrom, validTo);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String subject, DateTime validFrom, DateTime validTo)?
+        certificate,
+    TResult? Function(String subject)? csr,
+  }) {
+    return certificate?.call(subject, validFrom, validTo);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String subject, DateTime validFrom, DateTime validTo)?
+        certificate,
+    TResult Function(String subject)? csr,
+    required TResult orElse(),
+  }) {
+    if (certificate != null) {
+      return certificate(subject, validFrom, validTo);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_GenerateCertificate value) certificate,
+    required TResult Function(_GenerateCsr value) csr,
+  }) {
+    return certificate(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_GenerateCertificate value)? certificate,
+    TResult? Function(_GenerateCsr value)? csr,
+  }) {
+    return certificate?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_GenerateCertificate value)? certificate,
+    TResult Function(_GenerateCsr value)? csr,
+    required TResult orElse(),
+  }) {
+    if (certificate != null) {
+      return certificate(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _GenerateCertificate implements PivGenerateParameters {
+  factory _GenerateCertificate(
+      {required final String subject,
+      required final DateTime validFrom,
+      required final DateTime validTo}) = _$_GenerateCertificate;
+
+  @override
+  String get subject;
+  DateTime get validFrom;
+  DateTime get validTo;
+  @override
+  @JsonKey(ignore: true)
+  _$$_GenerateCertificateCopyWith<_$_GenerateCertificate> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$_GenerateCsrCopyWith<$Res>
+    implements $PivGenerateParametersCopyWith<$Res> {
+  factory _$$_GenerateCsrCopyWith(
+          _$_GenerateCsr value, $Res Function(_$_GenerateCsr) then) =
+      __$$_GenerateCsrCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String subject});
+}
+
+/// @nodoc
+class __$$_GenerateCsrCopyWithImpl<$Res>
+    extends _$PivGenerateParametersCopyWithImpl<$Res, _$_GenerateCsr>
+    implements _$$_GenerateCsrCopyWith<$Res> {
+  __$$_GenerateCsrCopyWithImpl(
+      _$_GenerateCsr _value, $Res Function(_$_GenerateCsr) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? subject = null,
+  }) {
+    return _then(_$_GenerateCsr(
+      subject: null == subject
+          ? _value.subject
+          : subject // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_GenerateCsr implements _GenerateCsr {
+  _$_GenerateCsr({required this.subject});
+
+  @override
+  final String subject;
+
+  @override
+  String toString() {
+    return 'PivGenerateParameters.csr(subject: $subject)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_GenerateCsr &&
+            (identical(other.subject, subject) || other.subject == subject));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, subject);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_GenerateCsrCopyWith<_$_GenerateCsr> get copyWith =>
+      __$$_GenerateCsrCopyWithImpl<_$_GenerateCsr>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(
+            String subject, DateTime validFrom, DateTime validTo)
+        certificate,
+    required TResult Function(String subject) csr,
+  }) {
+    return csr(subject);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String subject, DateTime validFrom, DateTime validTo)?
+        certificate,
+    TResult? Function(String subject)? csr,
+  }) {
+    return csr?.call(subject);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String subject, DateTime validFrom, DateTime validTo)?
+        certificate,
+    TResult Function(String subject)? csr,
+    required TResult orElse(),
+  }) {
+    if (csr != null) {
+      return csr(subject);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_GenerateCertificate value) certificate,
+    required TResult Function(_GenerateCsr value) csr,
+  }) {
+    return csr(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_GenerateCertificate value)? certificate,
+    TResult? Function(_GenerateCsr value)? csr,
+  }) {
+    return csr?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_GenerateCertificate value)? certificate,
+    TResult Function(_GenerateCsr value)? csr,
+    required TResult orElse(),
+  }) {
+    if (csr != null) {
+      return csr(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _GenerateCsr implements PivGenerateParameters {
+  factory _GenerateCsr({required final String subject}) = _$_GenerateCsr;
+
+  @override
+  String get subject;
+  @override
+  @JsonKey(ignore: true)
+  _$$_GenerateCsrCopyWith<_$_GenerateCsr> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 PivGenerateResult _$PivGenerateResultFromJson(Map<String, dynamic> json) {
   return _PivGenerateResult.fromJson(json);
 }

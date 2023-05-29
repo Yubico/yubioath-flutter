@@ -61,6 +61,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+_date_format = "%Y-%m-%d"
+
 
 class InvalidPinException(RpcException):
     def __init__(self, cause):
@@ -237,6 +239,22 @@ def _slot_for(name):
     return SLOT(int(name, base=16))
 
 
+def _parse_file(data, password=None):
+    if password:
+        password = password.encode()
+    try:
+        certs = parse_certificates(data, password)
+    except (ValueError, TypeError):
+        certs = []
+
+    try:
+        private_key = parse_private_key(data, password)
+    except (ValueError, TypeError):
+        private_key = None
+
+    return private_key, certs
+
+
 class SlotsNode(RpcNode):
     def __init__(self, session):
         super().__init__()
@@ -279,7 +297,9 @@ class SlotsNode(RpcNode):
                     not_valid_before=cert.not_valid_before.isoformat(),
                     not_valid_after=cert.not_valid_after.isoformat(),
                     fingerprint=cert.fingerprint(hashes.SHA256()),
-                ) if cert else None,
+                )
+                if cert
+                else None,
             )
             for slot, (metadata, cert) in self._slots.items()
         }
@@ -290,6 +310,21 @@ class SlotsNode(RpcNode):
             metadata, certificate = self._slots[slot]
             return SlotNode(self.session, slot, metadata, certificate, self.refresh)
         return super().create_child(name)
+
+    @action
+    def examine_file(self, params, event, signal):
+        data = bytes.fromhex(params.pop("data"))
+        password = params.pop("password", None)
+        try:
+            private_key, certs = _parse_file(data, password)
+            return dict(
+                status=True,
+                password=password is not None,
+                private_key=bool(private_key),
+                certificates=len(certs),
+            )
+        except InvalidPasswordError:
+            return dict(status=False)
 
 
 class SlotNode(RpcNode):
@@ -323,26 +358,12 @@ class SlotNode(RpcNode):
     def import_file(self, params, event, signal):
         data = bytes.fromhex(params.pop("data"))
         password = params.pop("password", None)
-        if password:
-            password = password.encode()
 
         try:
-            certs = parse_certificates(data, password)
-        except (ValueError, TypeError):
-            certs = []
+            private_key, certs = _parse_file(data, password)
         except InvalidPasswordError:
             logger.debug("InvalidPassword", exc_info=True)
             raise ValueError("Wrong/Missing password")
-
-        try:
-            private_key = parse_private_key(data, password)
-        except (ValueError, TypeError):
-            private_key = None
-        except InvalidPasswordError:
-            if not certs:
-                logger.debug("InvalidPassword", exc_info=True)
-                raise ValueError("Wrong/Missing password")
-            private_key = None
 
         # Exception?
         if not certs and not private_key:
@@ -351,7 +372,9 @@ class SlotNode(RpcNode):
         metadata = None
         if private_key:
             pin_policy = PIN_POLICY(params.pop("pin_policy", PIN_POLICY.DEFAULT))
-            touch_policy = TOUCH_POLICY(params.pop("touch_policy", TOUCH_POLICY.DEFAULT))
+            touch_policy = TOUCH_POLICY(
+                params.pop("touch_policy", TOUCH_POLICY.DEFAULT)
+            )
             self.session.put_key(self.slot, private_key, pin_policy, touch_policy)
             try:
                 metadata = self.session.get_slot_metadata(self.slot)
@@ -407,10 +430,16 @@ class SlotNode(RpcNode):
             result = generate_csr(self.session, self.slot, public_key, subject)
         elif generate_type == GENERATE_TYPE.CERTIFICATE:
             now = datetime.datetime.utcnow()
-            valid_days = params.pop("valid_days", 365)
-            valid_to = now + datetime.timedelta(days=valid_days)
+            then = now + datetime.timedelta(days=365)
+            valid_from = params.pop("valid_from", now.strftime(_date_format))
+            valid_to = params.pop("valid_to", then.strftime(_date_format))
             result = generate_self_signed_certificate(
-                self.session, self.slot, public_key, subject, now, valid_to
+                self.session,
+                self.slot,
+                public_key,
+                subject,
+                datetime.datetime.strptime(valid_from, _date_format),
+                datetime.datetime.strptime(valid_to, _date_format),
             )
             self.session.put_certificate(self.slot, result)
             self.session.put_object(OBJECT_ID.CHUID, generate_chuid())

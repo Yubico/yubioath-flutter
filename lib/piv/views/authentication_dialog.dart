@@ -32,10 +32,10 @@ class AuthenticationDialog extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _AuthenticationDialodState();
+      _AuthenticationDialogState();
 }
 
-class _AuthenticationDialodState extends ConsumerState<AuthenticationDialog> {
+class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
   String _managementKey = '';
   bool _keyIsWrong = false;
 
