@@ -23,11 +23,12 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import android.os.PersistableBundle
-import com.yubico.authenticator.logging.Log
+
+import org.slf4j.LoggerFactory
 
 object ClipboardUtil {
 
-    private const val TAG = "ClipboardUtil"
+    private val logger = LoggerFactory.getLogger(ClipboardUtil::class.java)
 
     fun setPrimaryClip(context: Context, toClipboard: String, isSensitive: Boolean) {
         try {
@@ -41,7 +42,7 @@ object ClipboardUtil {
 
             clipboardManager.setPrimaryClip(clipData)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to set string to clipboard", e.stackTraceToString())
+            logger.error( "Failed to set string to clipboard", e)
             throw UnsupportedOperationException()
         }
     }
