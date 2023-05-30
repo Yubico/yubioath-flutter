@@ -115,7 +115,10 @@ class _CapabilitiesForm extends StatelessWidget {
       children: [
         if (usbCapabilities != 0) ...[
           ListTile(
-            leading: const Icon(Icons.usb),
+            leading: const Padding(
+              padding: EdgeInsets.only(right: 8.0),
+              child: Icon(Icons.usb),
+            ),
             title: Text(l10n.s_usb),
             contentPadding: const EdgeInsets.only(bottom: 8),
             horizontalTitleGap: 0,
@@ -136,7 +139,10 @@ class _CapabilitiesForm extends StatelessWidget {
               child: Divider(),
             ),
           ListTile(
-            leading: nfcIcon,
+            leading: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: nfcIcon,
+            ),
             title: Text(l10n.s_nfc),
             contentPadding: const EdgeInsets.only(bottom: 8),
             horizontalTitleGap: 0,
