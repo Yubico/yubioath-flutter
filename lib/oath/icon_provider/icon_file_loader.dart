@@ -45,7 +45,7 @@ class IconFileLoader extends BytesLoader {
     // check if the requested file exists in memory cache
     var cachedData = memCache.read(cacheFileName);
     if (cachedData != null) {
-      _log.debug('Returning $cacheFileName image data from memory cache');
+      _log.traffic('Returning $cacheFileName image data from memory cache');
       return cachedData;
     }
 
@@ -55,7 +55,7 @@ class IconFileLoader extends BytesLoader {
     cachedData = await fsCache.read(cacheFileName);
     if (cachedData != null) {
       memCache.write(cacheFileName, cachedData.buffer.asUint8List());
-      _log.debug('Returning $cacheFileName image data from fs cache');
+      _log.traffic('Returning $cacheFileName image data from fs cache');
       return cachedData;
     }
 
