@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
@@ -42,6 +43,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   bool _currentIsWrong = false;
 
   _submit() async {
+
+    FocusUtils.unfocus(context);
+
     final result = await ref
         .read(oathStateProvider(widget.path).notifier)
         .setPassword(_currentPassword, _newPassword);
