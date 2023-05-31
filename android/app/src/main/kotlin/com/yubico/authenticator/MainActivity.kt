@@ -170,18 +170,17 @@ class MainActivity : FlutterFragmentActivity() {
     @SuppressLint("WrongConstant")
     override fun onStart() {
         super.onStart()
-        val receiverFlags = ContextCompat.RECEIVER_NOT_EXPORTED
         ContextCompat.registerReceiver(
             this,
             qrScannerCameraClosedBR,
             QRScannerCameraClosedBR.intentFilter,
-            receiverFlags
+            ContextCompat.RECEIVER_NOT_EXPORTED
         )
         ContextCompat.registerReceiver(
             this,
             nfcAdapterStateChangeBR,
             NfcAdapterStateChangedBR.intentFilter,
-            receiverFlags
+            ContextCompat.RECEIVER_EXPORTED
         )
     }
 
@@ -351,6 +350,7 @@ class MainActivity : FlutterFragmentActivity() {
         }
 
         override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d(TAG, "Restarting nfc discovery after camera was closed.")
             (context as? MainActivity)?.startNfcDiscovery()
         }
     }
