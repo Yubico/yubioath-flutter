@@ -30,6 +30,7 @@ import 'authentication_dialog.dart';
 import 'delete_certificate_dialog.dart';
 import 'generate_key_dialog.dart';
 import 'import_file_dialog.dart';
+import 'pin_dialog.dart';
 
 class AuthenticateIntent extends Intent {
   const AuthenticateIntent();
@@ -65,30 +66,12 @@ Future<bool> _authenticate(
       false);
 }
 
-Future<PivImportResult> _importFile(
-    WidgetRef ref, DevicePath devicePath, PivSlot pivSlot) async {
-  final picked = await FilePicker.platform.pickFiles(
-      allowedExtensions: ['pem', 'der', 'pfx', 'p12', 'key', 'crt'],
-      type: FileType.custom,
-      allowMultiple: false,
-      lockParentWindow: true,
-      dialogTitle: 'Select file to import');
-  if (picked != null && picked.files.isNotEmpty) {
-    final filePath = picked.paths.first!;
-    final file = File(filePath);
-    final data = await file.readAsBytes();
-    final hexData = data.map((e) => e.toRadixString(16).padLeft(2, '0')).join();
-
-    // TODO: Ask for password.
-    final result =
-        await ref.read(pivSlotsProvider(devicePath).notifier).examine(hexData);
-    print(result);
-
-    return await ref
-        .read(pivSlotsProvider(devicePath).notifier)
-        .import(pivSlot.slot, hexData);
+Future<bool> _authIfNeeded(
+    WidgetRef ref, DevicePath devicePath, PivState pivState) async {
+  if (pivState.needsAuth) {
+    return await _authenticate(ref, devicePath, pivState);
   }
-  return PivImportResult(metadata: null, publicKey: null, certificate: null);
+  return true;
 }
 
 Widget registerPivActions(
@@ -106,25 +89,55 @@ Widget registerPivActions(
         ),
         GenerateIntent:
             CallbackAction<GenerateIntent>(onInvoke: (intent) async {
-          if (!pivState.authenticated) {
-            await _authenticate(ref, devicePath, pivState);
+          if (!await _authIfNeeded(ref, devicePath, pivState)) {
+            return false;
           }
 
           final withContext = ref.read(withContextProvider);
-          return await withContext((context) async =>
-              await showBlurDialog(
-                context: context,
-                builder: (context) => GenerateKeyDialog(
-                  devicePath,
-                  pivState,
-                  pivSlot,
-                ),
-              ) ??
-              false);
+
+          final verified = await withContext((context) async =>
+                  await showBlurDialog(
+                      context: context,
+                      builder: (context) => PinDialog(devicePath, pivState))) ??
+              false;
+
+          if (!verified) {
+            return false;
+          }
+
+          return await withContext((context) async {
+            final PivGenerateResult? result = await showBlurDialog(
+              context: context,
+              builder: (context) => GenerateKeyDialog(
+                devicePath,
+                pivState,
+                pivSlot,
+              ),
+            );
+
+            switch (result?.generateType) {
+              case GenerateType.csr:
+                final filePath = await FilePicker.platform.saveFile(
+                  dialogTitle: 'Save CSR to file',
+                  allowedExtensions: ['csr'],
+                  type: FileType.custom,
+                  lockParentWindow: true,
+                );
+                if (filePath != null) {
+                  final file = File(filePath);
+                  await file.writeAsString(result!.result, flush: true);
+                }
+                break;
+              default:
+                break;
+            }
+
+            return result != null;
+          });
         }),
         ImportIntent: CallbackAction<ImportIntent>(onInvoke: (intent) async {
-          if (!pivState.authenticated) {
-            await _authenticate(ref, devicePath, pivState);
+          if (!await _authIfNeeded(ref, devicePath, pivState)) {
+            return false;
           }
 
           final picked = await FilePicker.platform.pickFiles(
@@ -177,8 +190,8 @@ Widget registerPivActions(
           return true;
         }),
         DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
-          if (!pivState.authenticated) {
-            await _authenticate(ref, devicePath, pivState);
+          if (!await _authIfNeeded(ref, devicePath, pivState)) {
+            return false;
           }
           final withContext = ref.read(withContextProvider);
           final bool? deleted = await withContext((context) async =>

@@ -40,11 +40,16 @@ final _managementKeyProvider =
   (ref, _) => null,
 );
 
+final _pinProvider = StateProvider.autoDispose.family<String?, DevicePath>(
+  (ref, _) => null,
+);
+
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, DevicePath>(
   (ref, devicePath) {
-    // Make sure the managementKeyProvider is held for the duration of the session.
+    // Make sure the managementKey and PIN are held for the duration of the session.
     ref.watch(_managementKeyProvider(devicePath));
+    ref.watch(_pinProvider(devicePath));
     return RpcNodeSession(
         ref.watch(rpcProvider).requireValue, devicePath, ['ccid', 'piv']);
   },
@@ -66,7 +71,20 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
         ref.invalidate(_sessionProvider(devicePath));
       })
       ..setErrorHandler('auth-required', (_) async {
-        ref.invalidateSelf();
+        final String? mgmtKey;
+        if (state.valueOrNull?.metadata?.managementKeyMetadata.defaultValue ==
+            true) {
+          mgmtKey = defaultManagementKey;
+        } else {
+          mgmtKey = ref.read(_managementKeyProvider(devicePath));
+        }
+        if (mgmtKey != null) {
+          if (await authenticate(mgmtKey)) {
+            ref.invalidateSelf();
+          } else {
+            ref.read(_managementKeyProvider(devicePath).notifier).state = null;
+          }
+        }
       });
     ref.onDispose(() {
       _session
@@ -78,17 +96,6 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
     final result = await _session.command('get');
     _log.debug('application status', jsonEncode(result));
     final pivState = PivState.fromJson(result['data']);
-    if (!pivState.authenticated) {
-      final mgmtKey = ref.read(_managementKeyProvider(devicePath));
-      print("NOT AUTHED, have key: $mgmtKey");
-      if (mgmtKey != null) {
-        if (await authenticate(mgmtKey)) {
-          print("RE AUTHED!");
-          return pivState.copyWith(authenticated: true);
-        }
-        ref.read(_managementKeyProvider(devicePath).notifier).state = null;
-      }
-    }
 
     return pivState;
   }
@@ -176,6 +183,8 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
         signal: signaler,
       );
 
+      ref.read(_pinProvider(_devicePath).notifier).state = pin;
+
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
@@ -195,6 +204,7 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
         'change_pin',
         params: {'pin': pin, 'new_pin': newPin},
       );
+      ref.read(_pinProvider(_devicePath).notifier).state = null;
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
@@ -334,6 +344,8 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
         ),
       );
 
+      final pin = ref.read(_pinProvider(_session.devicePath));
+
       final result = await _session.command(
         'generate',
         target: [
@@ -355,7 +367,8 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
 
       ref.invalidateSelf();
 
-      return PivGenerateResult.fromJson(result);
+      return PivGenerateResult.fromJson(
+          {'generate_type': type.name, ...result});
     } finally {
       controller?.close();
     }

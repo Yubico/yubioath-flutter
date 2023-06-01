@@ -193,6 +193,7 @@ Map<String, dynamic> _$$_InvalidPasswordToJson(_$_InvalidPassword instance) =>
 
 _$_PivGenerateResult _$$_PivGenerateResultFromJson(Map<String, dynamic> json) =>
     _$_PivGenerateResult(
+      generateType: $enumDecode(_$GenerateTypeEnumMap, json['generate_type']),
       publicKey: json['public_key'] as String,
       result: json['result'] as String,
     );
@@ -200,9 +201,15 @@ _$_PivGenerateResult _$$_PivGenerateResultFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$_PivGenerateResultToJson(
         _$_PivGenerateResult instance) =>
     <String, dynamic>{
+      'generate_type': _$GenerateTypeEnumMap[instance.generateType]!,
       'public_key': instance.publicKey,
       'result': instance.result,
     };
+
+const _$GenerateTypeEnumMap = {
+  GenerateType.certificate: 'certificate',
+  GenerateType.csr: 'csr',
+};
 
 _$_PivImportResult _$$_PivImportResultFromJson(Map<String, dynamic> json) =>
     _$_PivImportResult(

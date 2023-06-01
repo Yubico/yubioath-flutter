@@ -62,7 +62,8 @@ class PivScreen extends ConsumerWidget {
                                 CallbackAction<OpenIntent>(onInvoke: (_) async {
                               await showBlurDialog(
                                 context: context,
-                                builder: (context) => SlotDialog(pivState, e),
+                                builder: (context) =>
+                                    SlotDialog(pivState, e.slot),
                               );
                               return null;
                             }),

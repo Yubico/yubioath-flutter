@@ -25,6 +25,7 @@ part 'models.g.dart';
 const defaultManagementKey = '010203040506070801020304050607080102030405060708';
 const defaultManagementKeyType = ManagementKeyType.tdes;
 const defaultKeyType = KeyType.rsa2048;
+const defaultGenerateType = GenerateType.certificate;
 
 enum GenerateType {
   certificate,
@@ -221,6 +222,8 @@ class PivState with _$PivState {
   }) = _PivState;
 
   bool get protectedKey => derivedKey || storedKey;
+  bool get needsAuth =>
+      !authenticated && metadata?.managementKeyMetadata.defaultValue != true;
 
   factory PivState.fromJson(Map<String, dynamic> json) =>
       _$PivStateFromJson(json);
@@ -281,6 +284,7 @@ class PivGenerateParameters with _$PivGenerateParameters {
 @freezed
 class PivGenerateResult with _$PivGenerateResult {
   factory PivGenerateResult({
+    required GenerateType generateType,
     required String publicKey,
     required String result,
   }) = _PivGenerateResult;

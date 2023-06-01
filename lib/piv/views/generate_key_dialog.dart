@@ -40,8 +40,8 @@ class GenerateKeyDialog extends ConsumerStatefulWidget {
 
 class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
   String _subject = '';
-  GenerateType _generateType = GenerateType.certificate;
-  KeyType _keyType = KeyType.rsa2048;
+  GenerateType _generateType = defaultGenerateType;
+  KeyType _keyType = defaultKeyType;
   late DateTime _validFrom;
   late DateTime _validTo;
   late DateTime _validToDefault;
@@ -61,13 +61,16 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
     return ResponsiveDialog(
       title: Text("Generate key"),
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: () {
-            ref.read(pivSlotsProvider(widget.devicePath).notifier).generate(
+          onPressed: () async {
+            final result = await ref
+                .read(pivSlotsProvider(widget.devicePath).notifier)
+                .generate(
                   widget.pivSlot.slot,
                   _keyType,
                   parameters: switch (_generateType) {
@@ -79,8 +82,9 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                     GenerateType.csr =>
                       PivGenerateParameters.csr(subject: _subject),
                   },
-                  pin: "123456", //TODO
                 );
+
+            navigator.pop(result);
           },
           child: Text(l10n.s_save),
         ),
@@ -112,7 +116,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                   ChoiceFilterChip<GenerateType>(
                     items: GenerateType.values,
                     value: _generateType,
-                    selected: _keyType != defaultKeyType,
+                    selected: _generateType != defaultGenerateType,
                     itemBuilder: (value) => Text(value.getDisplayName(l10n)),
                     onChanged: (value) {
                       setState(() {

@@ -413,7 +413,7 @@ class SlotNode(RpcNode):
         pin_policy = PIN_POLICY(params.pop("pin_policy", PIN_POLICY.DEFAULT))
         touch_policy = TOUCH_POLICY(params.pop("touch_policy", TOUCH_POLICY.DEFAULT))
         subject = params.pop("subject")
-        generate_type = GENERATE_TYPE(params.pop("type", GENERATE_TYPE.CERTIFICATE))
+        generate_type = GENERATE_TYPE(params.pop("generate_type", GENERATE_TYPE.CERTIFICATE))
         public_key = self.session.generate_key(
             self.slot, key_type, pin_policy, touch_policy
         )

@@ -2617,6 +2617,7 @@ PivGenerateResult _$PivGenerateResultFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$PivGenerateResult {
+  GenerateType get generateType => throw _privateConstructorUsedError;
   String get publicKey => throw _privateConstructorUsedError;
   String get result => throw _privateConstructorUsedError;
 
@@ -2632,7 +2633,7 @@ abstract class $PivGenerateResultCopyWith<$Res> {
           PivGenerateResult value, $Res Function(PivGenerateResult) then) =
       _$PivGenerateResultCopyWithImpl<$Res, PivGenerateResult>;
   @useResult
-  $Res call({String publicKey, String result});
+  $Res call({GenerateType generateType, String publicKey, String result});
 }
 
 /// @nodoc
@@ -2648,10 +2649,15 @@ class _$PivGenerateResultCopyWithImpl<$Res, $Val extends PivGenerateResult>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? generateType = null,
     Object? publicKey = null,
     Object? result = null,
   }) {
     return _then(_value.copyWith(
+      generateType: null == generateType
+          ? _value.generateType
+          : generateType // ignore: cast_nullable_to_non_nullable
+              as GenerateType,
       publicKey: null == publicKey
           ? _value.publicKey
           : publicKey // ignore: cast_nullable_to_non_nullable
@@ -2672,7 +2678,7 @@ abstract class _$$_PivGenerateResultCopyWith<$Res>
       __$$_PivGenerateResultCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String publicKey, String result});
+  $Res call({GenerateType generateType, String publicKey, String result});
 }
 
 /// @nodoc
@@ -2686,10 +2692,15 @@ class __$$_PivGenerateResultCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? generateType = null,
     Object? publicKey = null,
     Object? result = null,
   }) {
     return _then(_$_PivGenerateResult(
+      generateType: null == generateType
+          ? _value.generateType
+          : generateType // ignore: cast_nullable_to_non_nullable
+              as GenerateType,
       publicKey: null == publicKey
           ? _value.publicKey
           : publicKey // ignore: cast_nullable_to_non_nullable
@@ -2705,11 +2716,16 @@ class __$$_PivGenerateResultCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$_PivGenerateResult implements _PivGenerateResult {
-  _$_PivGenerateResult({required this.publicKey, required this.result});
+  _$_PivGenerateResult(
+      {required this.generateType,
+      required this.publicKey,
+      required this.result});
 
   factory _$_PivGenerateResult.fromJson(Map<String, dynamic> json) =>
       _$$_PivGenerateResultFromJson(json);
 
+  @override
+  final GenerateType generateType;
   @override
   final String publicKey;
   @override
@@ -2717,7 +2733,7 @@ class _$_PivGenerateResult implements _PivGenerateResult {
 
   @override
   String toString() {
-    return 'PivGenerateResult(publicKey: $publicKey, result: $result)';
+    return 'PivGenerateResult(generateType: $generateType, publicKey: $publicKey, result: $result)';
   }
 
   @override
@@ -2725,6 +2741,8 @@ class _$_PivGenerateResult implements _PivGenerateResult {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_PivGenerateResult &&
+            (identical(other.generateType, generateType) ||
+                other.generateType == generateType) &&
             (identical(other.publicKey, publicKey) ||
                 other.publicKey == publicKey) &&
             (identical(other.result, result) || other.result == result));
@@ -2732,7 +2750,7 @@ class _$_PivGenerateResult implements _PivGenerateResult {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, publicKey, result);
+  int get hashCode => Object.hash(runtimeType, generateType, publicKey, result);
 
   @JsonKey(ignore: true)
   @override
@@ -2751,12 +2769,15 @@ class _$_PivGenerateResult implements _PivGenerateResult {
 
 abstract class _PivGenerateResult implements PivGenerateResult {
   factory _PivGenerateResult(
-      {required final String publicKey,
+      {required final GenerateType generateType,
+      required final String publicKey,
       required final String result}) = _$_PivGenerateResult;
 
   factory _PivGenerateResult.fromJson(Map<String, dynamic> json) =
       _$_PivGenerateResult.fromJson;
 
+  @override
+  GenerateType get generateType;
   @override
   String get publicKey;
   @override

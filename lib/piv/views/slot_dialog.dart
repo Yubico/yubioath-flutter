@@ -7,11 +7,12 @@ import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../widgets/list_title.dart';
 import '../models.dart';
+import '../state.dart';
 import 'actions.dart';
 
 class SlotDialog extends ConsumerWidget {
   final PivState pivState;
-  final PivSlot pivSlot;
+  final SlotId pivSlot;
   const SlotDialog(this.pivState, this.pivSlot, {super.key});
 
   @override
@@ -26,11 +27,21 @@ class SlotDialog extends ConsumerWidget {
 
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
-    final certInfo = pivSlot.certInfo;
+
+    final slotData = ref.watch(pivSlotsProvider(node.path).select((value) =>
+        value.whenOrNull(
+            data: (data) =>
+                data.firstWhere((element) => element.slot == pivSlot))));
+
+    if (slotData == null) {
+      return const FsDialog(child: CircularProgressIndicator());
+    }
+
+    final certInfo = slotData.certInfo;
     return registerPivActions(
       node.path,
       pivState,
-      pivSlot,
+      slotData,
       ref: ref,
       builder: (context) => FocusScope(
         autofocus: true,
@@ -42,7 +53,7 @@ class SlotDialog extends ConsumerWidget {
                 child: Column(
                   children: [
                     Text(
-                      '${pivSlot.slot.getDisplayName(l10n)} (Slot ${pivSlot.slot.id.toRadixString(16).padLeft(2, '0')})',
+                      '${pivSlot.getDisplayName(l10n)} (Slot ${pivSlot.id.toRadixString(16).padLeft(2, '0')})',
                       style: textTheme.headlineSmall,
                       softWrap: true,
                       textAlign: TextAlign.center,
