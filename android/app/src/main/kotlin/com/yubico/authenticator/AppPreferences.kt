@@ -35,7 +35,7 @@ class AppPreferences(context: Context) {
         const val DEFAULT_CLIP_KBD_LAYOUT = "US"
     }
 
-    private val logger = LoggerFactory.getLogger(AppContext::class.java)
+    private val logger = LoggerFactory.getLogger(AppPreferences::class.java)
 
     private val prefs: SharedPreferences =
         context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE).also {
