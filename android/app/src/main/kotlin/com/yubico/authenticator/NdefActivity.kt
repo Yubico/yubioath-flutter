@@ -24,15 +24,20 @@ import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
-import com.yubico.authenticator.logging.Log
+
 import com.yubico.authenticator.ndef.KeyboardLayout
 import com.yubico.yubikit.core.util.NdefUtils
+
+import org.slf4j.LoggerFactory
+
 import java.nio.charset.StandardCharsets
 
 typealias ResourceId = Int
 
 class NdefActivity : Activity() {
     private lateinit var appPreferences: AppPreferences
+
+    private val logger = LoggerFactory.getLogger(NdefActivity::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,10 +73,9 @@ class NdefActivity : Activity() {
                     }
 
                 } catch (illegalArgumentException: IllegalArgumentException) {
-                    Log.e(
-                        TAG,
+                    logger.error(
                         illegalArgumentException.message ?: "Failure when handling YubiKey OTP",
-                        illegalArgumentException.stackTraceToString()
+                        illegalArgumentException
                     )
                     showToast(R.string.otp_parse_failure, Toast.LENGTH_LONG)
                 } catch (_: UnsupportedOperationException) {
@@ -109,10 +113,6 @@ class NdefActivity : Activity() {
             val kbd: KeyboardLayout = KeyboardLayout.forName(appPreferences.clipKbdLayout)
             OtpSlotValue(OtpType.Password, kbd.fromScanCodes(ndefPayloadBytes))
         }
-    }
-
-    companion object {
-        const val TAG = "YubicoAuthenticatorOTPActivity"
     }
 
     enum class OtpType {
