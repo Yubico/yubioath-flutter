@@ -28,6 +28,13 @@ class OathViewModel: ViewModel() {
     private val _sessionState = MutableLiveData<Session?>()
     val sessionState: LiveData<Session?> = _sessionState
 
+    // Sets session and credentials after performing OATH reset
+    // Note: we cannot use [setSessionState] because resetting OATH changes deviceId
+    fun resetOathSession(sessionState: Session, credentials: Map<Credential, Code?>) {
+        _sessionState.postValue(sessionState)
+        updateCredentials(credentials)
+    }
+
     fun setSessionState(sessionState: Session?) {
         val oldDeviceId = _sessionState.value?.deviceId
         _sessionState.postValue(sessionState)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ package com.yubico.authenticator
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import com.yubico.authenticator.logging.Log
+
+import org.slf4j.LoggerFactory
 
 class AppPreferences(context: Context) {
     companion object {
@@ -32,15 +33,15 @@ class AppPreferences(context: Context) {
 
         const val PREF_CLIP_KBD_LAYOUT = "flutter.prefClipKbdLayout"
         const val DEFAULT_CLIP_KBD_LAYOUT = "US"
-
-        const val TAG = "AppPreferences"
     }
+
+    private val logger = LoggerFactory.getLogger(AppPreferences::class.java)
 
     private val prefs: SharedPreferences =
         context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE).also {
-            Log.d(TAG, "Current app preferences:")
+            logger.debug("Current app preferences:")
             it.all.map { preference ->
-                Log.d(TAG, "${preference.key}: ${preference.value}")
+                logger.debug("{}: {}", preference.key, preference.value)
             }
         }
 
@@ -66,12 +67,12 @@ class AppPreferences(context: Context) {
         get() = prefs.getBoolean(PREF_USB_OPEN_APP, false)
 
     fun registerListener(listener: OnSharedPreferenceChangeListener) {
-        Log.d(TAG, "registering change listener")
+        logger.debug("registering change listener")
         prefs.registerOnSharedPreferenceChangeListener(listener)
     }
 
     fun unregisterListener(listener: OnSharedPreferenceChangeListener) {
         prefs.unregisterOnSharedPreferenceChangeListener(listener)
-        Log.d(TAG, "unregistered change listener")
+        logger.debug("unregistered change listener")
     }
 }

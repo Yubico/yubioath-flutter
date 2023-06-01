@@ -124,7 +124,7 @@
     "s_config_updated": "Configuration updated",
     "l_config_updated_reinsert": "Configuration updated, remove and reinsert your YubiKey",
     "s_app_not_supported": "Application not supported",
-    "l_app_not_supported_on_yk": "The used YubiKey does not support '${app}' application",
+    "l_app_not_supported_on_yk": "The used YubiKey does not support '{app}' application",
     "@l_app_not_supported_on_yk" : {
         "placeholders": {
             "app": {}

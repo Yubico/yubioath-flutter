@@ -46,7 +46,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.logging.FlutterLog
-import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
@@ -59,7 +58,6 @@ import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyManager
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyManager
-import com.yubico.yubikit.core.Logger
 import com.yubico.yubikit.core.YubiKeyDevice
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -67,6 +65,7 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.util.concurrent.Executors
 
@@ -84,6 +83,7 @@ class MainActivity : FlutterFragmentActivity() {
     private val qrScannerCameraClosedBR = QRScannerCameraClosedBR()
     private val nfcAdapterStateChangeBR = NfcAdapterStateChangedBR()
 
+    private val logger = LoggerFactory.getLogger(MainActivity::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,8 +100,6 @@ class MainActivity : FlutterFragmentActivity() {
             UsbYubiKeyManager(this),
             NfcYubiKeyManager(this, NfcActivityDispatcher(lifecycleScope))
         )
-
-        setupYubiKitLogger()
     }
 
     /**
@@ -132,7 +130,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     private fun startNfcDiscovery() =
         try {
-            Log.d(TAG, "Starting nfc discovery")
+            logger.debug("Starting nfc discovery")
             yubikit.startNfcDiscovery(
                 nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
                 this,
@@ -148,16 +146,16 @@ class MainActivity : FlutterFragmentActivity() {
         if (hasNfc) {
             appMethodChannel.nfcActivityStateChanged(NfcActivityState.NOT_ACTIVE)
             yubikit.stopNfcDiscovery(this)
-            Log.d(TAG, "Stopped nfc discovery")
+            logger.debug("Stopped nfc discovery")
         }
     }
 
     private fun startUsbDiscovery() {
-        Log.d(TAG, "Starting usb discovery")
+        logger.debug("Starting usb discovery")
         val usbConfiguration = UsbConfiguration().handlePermissions(true)
         yubikit.startUsbDiscovery(usbConfiguration) { device ->
             viewModel.setConnectedYubiKey(device) {
-                Log.d(TAG, "YubiKey was disconnected, stopping usb discovery")
+                logger.debug("YubiKey was disconnected, stopping usb discovery")
                 stopUsbDiscovery()
             }
             processYubiKey(device)
@@ -166,22 +164,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     private fun stopUsbDiscovery() {
         yubikit.stopUsbDiscovery()
-        Log.d(TAG, "Stopped usb discovery")
-    }
-
-    private fun setupYubiKitLogger() {
-        Logger.setLogger(object : Logger() {
-            private val TAG = "yubikit"
-
-            override fun logDebug(message: String) {
-                // redirect yubikit debug logs to traffic
-                Log.t(TAG, message)
-            }
-
-            override fun logError(message: String, throwable: Throwable) {
-                Log.e(TAG, message, throwable.message ?: throwable.toString())
-            }
-        })
+        logger.debug("Stopped usb discovery")
     }
 
     @SuppressLint("WrongConstant")
@@ -247,7 +230,7 @@ class MainActivity : FlutterFragmentActivity() {
                         startNfcDiscovery()
                     }
                 } catch (e: Throwable) {
-                    Log.e(TAG, "Error processing YubiKey in AppContextManager", e.toString())
+                    logger.error("Error processing YubiKey in AppContextManager", e)
                 }
             }
         } else {
@@ -303,7 +286,7 @@ class MainActivity : FlutterFragmentActivity() {
                         }
                     }
                 } catch (e: Throwable) {
-                    Log.e(TAG, "Error processing YubiKey in AppContextManager", e.toString())
+                    logger.error("Error processing YubiKey in AppContextManager", e)
                 }
             }
         }
@@ -359,7 +342,6 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     companion object {
-        const val TAG = "MainActivity"
         const val YUBICO_VENDOR_ID = 4176
         const val FLAG_SECURE = WindowManager.LayoutParams.FLAG_SECURE
     }
@@ -386,6 +368,9 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     class NfcAdapterStateChangedBR : BroadcastReceiver() {
+
+        private val logger = LoggerFactory.getLogger(NfcAdapterStateChangedBR::class.java)
+
         companion object {
             val intentFilter = IntentFilter("android.nfc.action.ADAPTER_STATE_CHANGED")
         }
@@ -393,7 +378,7 @@ class MainActivity : FlutterFragmentActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent?.let {
                 val state = it.getIntExtra("android.nfc.extra.ADAPTER_STATE", 0)
-                Log.d(TAG, "NfcAdapter state changed to $state")
+                logger.debug("NfcAdapter state changed to {}", state)
                 if (state == STATE_ON || state == STATE_TURNING_OFF) {
                     (context as? MainActivity)?.appMethodChannel?.nfcAdapterStateChanged(state == STATE_ON)
                 }
@@ -453,7 +438,7 @@ class MainActivity : FlutterFragmentActivity() {
                         startActivity(Intent(ACTION_NFC_SETTINGS))
                         result.success(true)
                     }
-                    else -> Log.w(TAG, "Unknown app method: ${methodCall.method}")
+                    else -> logger.warn("Unknown app method: {}", methodCall.method)
                 }
             }
         }
@@ -479,10 +464,10 @@ class MainActivity : FlutterFragmentActivity() {
     private fun allowScreenshots(value: Boolean): Boolean {
         // Note that FLAG_SECURE is the inverse of allowScreenshots
         if (value) {
-            Log.d(TAG, "Clearing FLAG_SECURE (allow screenshots)")
+            logger.debug("Clearing FLAG_SECURE (allow screenshots)")
             window.clearFlags(FLAG_SECURE)
         } else {
-            Log.d(TAG, "Setting FLAG_SECURE (disallow screenshots)")
+            logger.debug("Setting FLAG_SECURE (disallow screenshots)")
             window.setFlags(FLAG_SECURE, FLAG_SECURE)
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,26 @@
 package com.yubico.authenticator.oath
 
 import android.net.Uri
+
 import androidx.annotation.UiThread
-import com.yubico.authenticator.logging.Log
+
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
+
 import org.json.JSONObject
+
+import org.slf4j.LoggerFactory
 
 class AppLinkMethodChannel(messenger: BinaryMessenger) {
     private val methodChannel = MethodChannel(messenger, "app.link.methods")
+    private val logger = LoggerFactory.getLogger(AppLinkMethodChannel::class.java)
 
     @UiThread
     fun handleUri(uri: Uri) {
-        Log.t(TAG, "Handling URI: $uri")
+        logger.trace("Handling URI: {}", uri)
         methodChannel.invokeMethod(
             "handleOtpAuthLink",
             JSONObject(mapOf("link" to uri.toString())).toString()
         )
-    }
-
-    companion object {
-        const val TAG = "AppLinkMethodChannel"
     }
 }
