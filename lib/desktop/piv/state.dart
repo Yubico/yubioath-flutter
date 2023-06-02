@@ -242,7 +242,7 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
       'set_key',
       params: {
         'key': managementKey,
-        'key_type': managementKeyType,
+        'key_type': managementKeyType.value,
         'store_key': storeKey,
       },
     );

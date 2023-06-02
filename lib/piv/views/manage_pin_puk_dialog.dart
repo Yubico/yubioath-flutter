@@ -17,11 +17,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/piv/models.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
 

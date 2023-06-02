@@ -24,6 +24,7 @@ import '../../app/views/fs_dialog.dart';
 import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../keys.dart' as keys;
+import 'manage_key_dialog.dart';
 import 'manage_pin_puk_dialog.dart';
 import 'reset_dialog.dart';
 
@@ -87,7 +88,9 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
             title: Text('Management Key'), // TODO
             subtitle: Text(usingDefaultMgmtKey
                 ? 'Warning: Default key used'
-                : 'Change your management key'),
+                : (pivState.protectedKey
+                    ? 'PIN can be used instead'
+                    : 'Change your management key')),
             leading: CircleAvatar(
               foregroundColor: theme.onSecondary,
               backgroundColor: theme.secondary,
@@ -97,10 +100,10 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                 usingDefaultMgmtKey ? const Icon(Icons.warning_amber) : null,
             onTap: () {
               Navigator.of(context).pop();
-              /*showBlurDialog(
+              showBlurDialog(
                 context: context,
-                builder: (context) => ResetDialog(devicePath),
-              );*/
+                builder: (context) => ManageKeyDialog(devicePath, pivState),
+              );
             }),
         ListTile(
             key: keys.resetAction,

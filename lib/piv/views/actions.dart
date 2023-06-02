@@ -95,10 +95,11 @@ Widget registerPivActions(
 
           final withContext = ref.read(withContextProvider);
 
+          // TODO: Avoid asking for PIN if not needed?
           final verified = await withContext((context) async =>
                   await showBlurDialog(
                       context: context,
-                      builder: (context) => PinDialog(devicePath, pivState))) ??
+                      builder: (context) => PinDialog(devicePath))) ??
               false;
 
           if (!verified) {
@@ -178,15 +179,16 @@ Widget registerPivActions(
             type: FileType.custom,
             lockParentWindow: true,
           );
-          if (filePath != null) {
-            final file = File(filePath);
-            await file.writeAsString(cert, flush: true);
+          if (filePath == null) {
+            return false;
           }
+
+          final file = File(filePath);
+          await file.writeAsString(cert, flush: true);
 
           await ref.read(withContextProvider)((context) async {
             showMessage(context, 'Certificate exported');
           });
-
           return true;
         }),
         DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {

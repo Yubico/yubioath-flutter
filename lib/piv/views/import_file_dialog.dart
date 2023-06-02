@@ -59,6 +59,9 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
   }
 
   void _examine() async {
+    setState(() {
+      _state = null;
+    });
     final result = await ref
         .read(pivSlotsProvider(widget.devicePath).notifier)
         .examine(_data, password: _password.isNotEmpty ? _password : null);
@@ -99,12 +102,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
         actions: [
           TextButton(
             key: keys.unlockButton,
-            onPressed: () async {
-              setState(() {
-                _state = null;
-              });
-              _examine();
-            },
+            onPressed: () => _examine(),
             child: Text(l10n.s_unlock),
           ),
         ],
@@ -131,6 +129,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                     _password = value;
                   });
                 },
+                onSubmitted: (_) => _examine(),
               ),
             ]
                 .map((e) => Padding(

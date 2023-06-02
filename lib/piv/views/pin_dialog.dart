@@ -21,14 +21,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../widgets/responsive_dialog.dart';
-import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
 
 class PinDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
-  final PivState pivState;
-  const PinDialog(this.devicePath, this.pivState, {super.key});
+  const PinDialog(this.devicePath, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _PinDialogState();
@@ -39,6 +37,28 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   bool _pinIsWrong = false;
   int _attemptsRemaining = -1;
 
+  Future<void> _submit() async {
+    final navigator = Navigator.of(context);
+    try {
+      final status = await ref
+          .read(pivStateProvider(widget.devicePath).notifier)
+          .verifyPin(_pin);
+      status.when(
+        success: () {
+          navigator.pop(true);
+        },
+        failure: (attemptsRemaining) {
+          setState(() {
+            _attemptsRemaining = attemptsRemaining;
+            _pinIsWrong = true;
+          });
+        },
+      );
+    } on CancellationException catch (_) {
+      navigator.pop(false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -47,27 +67,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: () async {
-            final navigator = Navigator.of(context);
-            try {
-              final status = await ref
-                  .read(pivStateProvider(widget.devicePath).notifier)
-                  .verifyPin(_pin);
-              status.when(
-                success: () {
-                  navigator.pop(true);
-                },
-                failure: (attemptsRemaining) {
-                  setState(() {
-                    _attemptsRemaining = attemptsRemaining;
-                    _pinIsWrong = true;
-                  });
-                },
-              );
-            } on CancellationException catch (_) {
-              navigator.pop(false);
-            }
-          },
+          onPressed: _submit,
           child: Text(l10n.s_unlock),
         ),
       ],
@@ -96,6 +96,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                   _pin = value;
                 });
               },
+              onSubmitted: (_) => _submit(),
             ),
           ]
               .map((e) => Padding(

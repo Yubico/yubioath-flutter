@@ -142,6 +142,13 @@ enum ManagementKeyType {
 
   int get value => _$ManagementKeyTypeEnumMap[this]!;
 
+  int get keyLength => switch (this) {
+        ManagementKeyType.tdes => 24,
+        ManagementKeyType.aes128 => 16,
+        ManagementKeyType.aes192 => 24,
+        ManagementKeyType.aes256 => 32,
+      };
+
   String getDisplayName(AppLocalizations l10n) {
     return switch (this) {
       // TODO:
