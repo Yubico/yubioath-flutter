@@ -12,66 +12,24 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import mss
 import zxingcpp
 import base64
 import io
-import os
-import sys
-import subprocess  # nosec
-import tempfile
-from mss.exception import ScreenShotError
+import pyscreenshot as ImageGrab
+from pyscreenshot import FailedBackendError
 from PIL import Image
-import numpy.core.multiarray  # noqa
-
-
-def _capture_screen():
-    try:
-        with mss.mss() as sct:
-            monitor = sct.monitors[0]  # 0 is the special "all monitors" value.
-            sct_img = sct.grab(monitor)  # mss format
-        return Image.frombytes("RGB", sct_img.size, sct_img.bgra, "raw", "BGRX")
-    except ScreenShotError:
-        # One common error is that mss doesn't work with Wayland
-        if sys.platform.startswith("linux"):
-            # Try calling screenshot tools, with original library path
-            env = dict(os.environ)
-            lp = env.get("LD_LIBRARY_PATH_ORIG")
-            if lp is not None:
-                env["LD_LIBRARY_PATH"] = lp
-            else:
-                env.pop("LD_LIBRARY_PATH", None)
-            fd, fname = tempfile.mkstemp(suffix=".png")
-
-            try:
-                # Try using gnome-screenshot
-                rc = subprocess.call(  # nosec
-                    ["gnome-screenshot", "-f", fname], env=env
-                )
-                if rc == 0:
-                    return Image.open(fname)
-            except FileNotFoundError:
-                # Try using spectacle (KDE)
-                try:
-                    rc = subprocess.call(  # nosec
-                        ["spectacle", "-b", "-n", "-o", fname], env=env
-                    )
-                    if rc == 0:
-                        return Image.open(fname)
-                except FileNotFoundError:
-                    pass  # Fall through to ValueError
-            finally:
-                os.unlink(fname)
-    raise ValueError("Unable to capture screenshot")
-
 
 def scan_qr(image_data=None):
+    img = None
     if image_data:
         msg = base64.b64decode(image_data)
         buf = io.BytesIO(msg)
         img = Image.open(buf)
     else:
-        img = _capture_screen()
+        try:
+            img = ImageGrab.grab()
+        except FailedBackendError:
+            raise ValueError("Unable to capture screenshot")
 
     result = zxingcpp.read_barcode(img)
     if result and result.valid:
