@@ -63,7 +63,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     return ResponsiveDialog(
-      title: Text("Generate key"),
+      title: Text(l10n.s_generate_key),
       actions: [
         TextButton(
           key: keys.saveButton,
@@ -97,9 +97,9 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
             TextField(
               autofocus: true,
               key: keys.subjectField,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Subject",
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: l10n.s_subject,
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {

@@ -38,6 +38,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
       pivState.metadata?.managementKeyMetadata.defaultValue == true;
 
   final pinBlocked = pivState.pinAttempts == 0;
+  final pukAttempts = pivState.metadata?.pukMetadata.attemptsRemaining;
 
   return FsDialog(
     child: Column(
@@ -48,8 +49,8 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
             key: keys.managePinAction,
             title: Text(l10n.s_pin),
             subtitle: Text(pinBlocked
-                ? 'Blocked, use PUK to reset'
-                : '${pivState.pinAttempts} attempts remaining'),
+                ? l10n.l_piv_pin_blocked
+                : l10n.l_attempts_remaining(pivState.pinAttempts)),
             leading: CircleAvatar(
               foregroundColor: theme.onSecondary,
               backgroundColor: theme.secondary,
@@ -67,9 +68,10 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
             }),
         ListTile(
             key: keys.managePukAction,
-            title: Text('PUK'), // TODO
-            subtitle: Text(
-                '${pivState.metadata?.pukMetadata.attemptsRemaining ?? '?'} attempts remaining'),
+            title: Text(l10n.s_puk),
+            subtitle: pukAttempts != null
+                ? Text(l10n.l_attempts_remaining(pukAttempts))
+                : null,
             leading: CircleAvatar(
               foregroundColor: theme.onSecondary,
               backgroundColor: theme.secondary,
@@ -85,12 +87,12 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
             }),
         ListTile(
             key: keys.manageManagementKeyAction,
-            title: Text('Management Key'), // TODO
+            title: Text(l10n.s_management_key),
             subtitle: Text(usingDefaultMgmtKey
-                ? 'Warning: Default key used'
+                ? l10n.l_warning_default_key
                 : (pivState.protectedKey
-                    ? 'PIN can be used instead'
-                    : 'Change your management key')),
+                    ? l10n.l_pin_protected_key
+                    : l10n.l_change_management_key)),
             leading: CircleAvatar(
               foregroundColor: theme.onSecondary,
               backgroundColor: theme.secondary,
@@ -107,7 +109,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
             }),
         ListTile(
             key: keys.resetAction,
-            title: Text('Reset PIV'), //TODO
+            title: Text(l10n.s_reset_piv),
             subtitle: Text(l10n.l_factory_reset_this_app),
             leading: CircleAvatar(
               foregroundColor: theme.onError,
@@ -121,20 +123,25 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                 builder: (context) => ResetDialog(devicePath),
               );
             }),
-        ListTitle(l10n.s_setup,
-            textStyle: Theme.of(context).textTheme.bodyLarge),
-        ListTile(
-            key: keys.setupMacOsAction,
-            title: Text('Setup for macOS'), //TODO
-            subtitle: Text('Create certificates for macOS login'), //TODO
-            leading: CircleAvatar(
-              backgroundColor: theme.secondary,
-              foregroundColor: theme.onSecondary,
-              child: const Icon(Icons.laptop),
-            ),
-            onTap: () async {
-              Navigator.of(context).pop();
-            }),
+        // TODO
+        /*
+        if (false == true) ...[
+          ListTitle(l10n.s_setup,
+              textStyle: Theme.of(context).textTheme.bodyLarge),
+          ListTile(
+              key: keys.setupMacOsAction,
+              title: Text('Setup for macOS'),
+              subtitle: Text('Create certificates for macOS login'),
+              leading: CircleAvatar(
+                backgroundColor: theme.secondary,
+                foregroundColor: theme.onSecondary,
+                child: const Icon(Icons.laptop),
+              ),
+              onTap: () async {
+                Navigator.of(context).pop();
+              }),
+        ],
+        */
       ],
     ),
   );

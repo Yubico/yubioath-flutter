@@ -83,13 +83,13 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     final String titleText;
     switch (widget.target) {
       case ManageTarget.pin:
-        titleText = "Change PIN";
+        titleText = l10n.s_change_pin;
         break;
       case ManageTarget.puk:
-        titleText = l10n.s_manage_password;
+        titleText = l10n.s_change_puk;
         break;
       case ManageTarget.unblock:
-        titleText = "Unblock PIN";
+        titleText = l10n.s_unblock_pin;
         break;
     }
 
@@ -116,8 +116,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: widget.target == ManageTarget.pin
-                      ? 'Current PIN'
-                      : 'Current PUK',
+                      ? l10n.s_current_pin
+                      : l10n.s_current_puk,
                   prefixIcon: const Icon(Icons.password_outlined),
                   errorText: _currentIsWrong
                       ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
@@ -131,8 +131,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 });
               },
             ),
-            Text(
-                "Enter your new ${widget.target == ManageTarget.puk ? 'PUK' : 'PIN'}. Must be 6-8 characters."),
+            Text(l10n.p_enter_new_piv_pin_puk(
+                widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin)),
             TextField(
               key: keys.newPinPukField,
               obscureText: true,
@@ -140,7 +140,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: widget.target == ManageTarget.puk
-                    ? "New PUK"
+                    ? l10n.s_new_puk
                     : l10n.s_new_pin,
                 prefixIcon: const Icon(Icons.password_outlined),
                 enabled: _currentPin.isNotEmpty,

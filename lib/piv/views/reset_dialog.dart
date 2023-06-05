@@ -39,7 +39,7 @@ class ResetDialog extends ConsumerWidget {
             await ref.read(pivStateProvider(devicePath).notifier).reset();
             await ref.read(withContextProvider)((context) async {
               Navigator.of(context).pop();
-              showMessage(context, l10n.l_oath_application_reset); //TODO
+              showMessage(context, l10n.l_piv_app_reset);
             });
           },
           child: Text(l10n.s_reset),
@@ -50,10 +50,10 @@ class ResetDialog extends ConsumerWidget {
         child: Column(
           children: [
             Text(
-              l10n.p_warning_factory_reset, // TODO
+              l10n.p_warning_piv_reset,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            Text(l10n.p_warning_disable_credentials), //TODO
+            Text(l10n.p_warning_piv_reset_desc),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

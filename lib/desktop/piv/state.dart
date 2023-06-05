@@ -270,10 +270,6 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
 
 final _shownSlots = SlotId.values.map((slot) => slot.id).toList();
 
-extension on SlotId {
-  String get node => id.toRadixString(16).padLeft(2, '0');
-}
-
 final desktopPivSlots = AsyncNotifierProvider.autoDispose
     .family<PivSlotsNotifier, List<PivSlot>, DevicePath>(
         _DesktopPivSlotsNotifier.new);
@@ -295,7 +291,7 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
 
   @override
   Future<void> delete(SlotId slot) async {
-    await _session.command('delete', target: ['slots', slot.node]);
+    await _session.command('delete', target: ['slots', slot.hexId]);
     ref.invalidateSelf();
   }
 
@@ -350,7 +346,7 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
         'generate',
         target: [
           'slots',
-          slot.node,
+          slot.hexId,
         ],
         params: {
           'key_type': keyType.value,
@@ -397,7 +393,7 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
       TouchPolicy touchPolicy = TouchPolicy.dfault}) async {
     final result = await _session.command('import_file', target: [
       'slots',
-      slot.node,
+      slot.hexId,
     ], params: {
       'data': data,
       'password': password,
@@ -413,7 +409,7 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
   Future<(SlotMetadata?, String?)> read(SlotId slot) async {
     final result = await _session.command('get', target: [
       'slots',
-      slot.node,
+      slot.hexId,
     ]);
     final data = result['data'];
     final metadata = data['metadata'];

@@ -53,14 +53,15 @@ class SlotDialog extends ConsumerWidget {
                 child: Column(
                   children: [
                     Text(
-                      '${pivSlot.getDisplayName(l10n)} (Slot ${pivSlot.id.toRadixString(16).padLeft(2, '0')})',
+                      pivSlot.getDisplayName(l10n),
                       style: textTheme.headlineSmall,
                       softWrap: true,
                       textAlign: TextAlign.center,
                     ),
                     if (certInfo != null) ...[
                       Text(
-                        'Subject: ${certInfo.subject}, Issuer: ${certInfo.issuer}',
+                        l10n.l_subject_issuer(
+                            certInfo.subject, certInfo.issuer),
                         softWrap: true,
                         textAlign: TextAlign.center,
                         // This is what ListTile uses for subtitle
@@ -69,7 +70,7 @@ class SlotDialog extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        'Serial: ${certInfo.serial}',
+                        l10n.l_serial(certInfo.serial),
                         softWrap: true,
                         textAlign: TextAlign.center,
                         // This is what ListTile uses for subtitle
@@ -78,7 +79,7 @@ class SlotDialog extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        'Fingerprint: ${certInfo.fingerprint}',
+                        l10n.l_certificate_fingerprint(certInfo.fingerprint),
                         softWrap: true,
                         textAlign: TextAlign.center,
                         // This is what ListTile uses for subtitle
@@ -87,7 +88,8 @@ class SlotDialog extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        'Not before: ${certInfo.notValidBefore}, Not after: ${certInfo.notValidAfter}',
+                        l10n.l_valid(
+                            certInfo.notValidBefore, certInfo.notValidAfter),
                         softWrap: true,
                         textAlign: TextAlign.center,
                         // This is what ListTile uses for subtitle
@@ -99,7 +101,7 @@ class SlotDialog extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Text(
-                          'No certificate loaded',
+                          l10n.l_no_certificate,
                           softWrap: true,
                           textAlign: TextAlign.center,
                           // This is what ListTile uses for subtitle
@@ -113,8 +115,7 @@ class SlotDialog extends ConsumerWidget {
                   ],
                 ),
               ),
-              ListTitle(AppLocalizations.of(context)!.s_actions,
-                  textStyle: textTheme.bodyLarge),
+              ListTitle(l10n.s_actions, textStyle: textTheme.bodyLarge),
               _SlotDialogActions(certInfo),
             ],
           ),
@@ -141,8 +142,8 @@ class _SlotDialogActions extends StatelessWidget {
             foregroundColor: theme.onPrimary,
             child: const Icon(Icons.add_outlined),
           ),
-          title: Text('Generate key'),
-          subtitle: Text('Generate a new certificate or CSR'),
+          title: Text(l10n.s_generate_key),
+          subtitle: Text(l10n.l_generate_desc),
           onTap: () {
             Actions.invoke(context, const GenerateIntent());
           },
@@ -153,8 +154,8 @@ class _SlotDialogActions extends StatelessWidget {
             foregroundColor: theme.onSecondary,
             child: const Icon(Icons.file_download_outlined),
           ),
-          title: Text('Import file'),
-          subtitle: Text('Import a key and/or certificate from file'),
+          title: Text(l10n.l_import_file),
+          subtitle: Text(l10n.l_import_desc),
           onTap: () {
             Actions.invoke(context, const ImportIntent());
           },
@@ -166,8 +167,8 @@ class _SlotDialogActions extends StatelessWidget {
               foregroundColor: theme.onSecondary,
               child: const Icon(Icons.file_upload_outlined),
             ),
-            title: Text('Export certificate'),
-            subtitle: Text('Export the certificate to file'),
+            title: Text(l10n.l_export_certificate),
+            subtitle: Text(l10n.l_export_certificate_desc),
             onTap: () {
               Actions.invoke(context, const ExportIntent());
             },
@@ -178,8 +179,8 @@ class _SlotDialogActions extends StatelessWidget {
               foregroundColor: theme.onError,
               child: const Icon(Icons.delete_outline),
             ),
-            title: Text('Delete certificate'),
-            subtitle: Text('Remove the certificate from the YubiKey'),
+            title: Text(l10n.l_delete_certificate),
+            subtitle: Text(l10n.l_delete_certificate_desc),
             onTap: () {
               Actions.invoke(context, const DeleteIntent());
             },

@@ -80,7 +80,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
     final state = _state;
     if (state == null) {
       return ResponsiveDialog(
-        title: Text("Import file"),
+        title: Text(l10n.l_import_file),
         actions: [
           TextButton(
             key: keys.unlockButton,
@@ -98,7 +98,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
 
     return state.when(
       invalidPassword: () => ResponsiveDialog(
-        title: Text("Import file"),
+        title: Text(l10n.l_import_file),
         actions: [
           TextButton(
             key: keys.unlockButton,
@@ -111,6 +111,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(l10n.p_password_protected_file),
               TextField(
                 autofocus: true,
                 obscureText: true,
@@ -118,7 +119,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                 key: keys.managementKeyField,
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    labelText: "Password",
+                    labelText: l10n.s_password,
                     prefixIcon: const Icon(Icons.password_outlined),
                     errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
                     errorMaxLines: 3),
@@ -141,7 +142,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
         ),
       ),
       result: (_, privateKey, certificates) => ResponsiveDialog(
-        title: Text("Import file"),
+        title: Text(l10n.l_import_file),
         actions: [
           TextButton(
             key: keys.unlockButton,
@@ -160,7 +161,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                 });
               }
             },
-            child: Text(l10n.s_save),
+            child: Text(l10n.s_import),
           ),
         ],
         child: Padding(
@@ -168,10 +169,10 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                  "Import the following into slot ${widget.pivSlot.slot.getDisplayName(l10n)}?"),
-              if (privateKey) Text("- Private key"),
-              if (certificates > 0) Text("- Certificate"),
+              Text(l10n.p_import_items_desc(
+                  widget.pivSlot.slot.getDisplayName(l10n))),
+              if (privateKey) Text(l10n.l_bullet(l10n.s_private_key)),
+              if (certificates > 0) Text(l10n.l_bullet(l10n.s_certificate)),
             ]
                 .map((e) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),

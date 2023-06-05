@@ -36,7 +36,7 @@ class DeleteCertificateDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text(l10n.s_delete_account),
+      title: Text(l10n.l_delete_certificate),
       actions: [
         TextButton(
           key: keys.deleteButton,
@@ -48,7 +48,7 @@ class DeleteCertificateDialog extends ConsumerWidget {
               await ref.read(withContextProvider)(
                 (context) async {
                   Navigator.of(context).pop(true);
-                  showMessage(context, l10n.s_account_deleted);
+                  showMessage(context, l10n.l_certificate_deleted);
                 },
               );
             } on CancellationException catch (_) {
@@ -63,13 +63,9 @@ class DeleteCertificateDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.p_warning_delete_account),
-            Text(
-              l10n.p_warning_disable_credential,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            Text(// TODO
-                'Delete certificate in ${pivSlot.slot.getDisplayName(l10n)} (Slot ${pivSlot.slot.id.toRadixString(16).padLeft(2, '0')})?'),
+            Text(l10n.p_warning_delete_certificate),
+            Text(l10n.q_delete_certificate_confirm(
+                pivSlot.slot.getDisplayName(l10n))),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

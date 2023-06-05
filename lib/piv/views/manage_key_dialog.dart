@@ -100,11 +100,12 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
       }
     }
 
-    print("Set new key: $_newKey");
     await notifier.setManagementKey(_newKey,
         managementKeyType: _keyType, storeKey: _storeKey);
     if (!mounted) return;
-    showMessage(context, "Management key changed");
+
+    final l10n = AppLocalizations.of(context)!;
+    showMessage(context, l10n.l_management_key_changed);
 
     Navigator.of(context).pop();
   }
@@ -116,7 +117,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     final hexLength = _keyType.keyLength * 2;
 
     return ResponsiveDialog(
-      title: Text('Change Management Key'),
+      title: Text(l10n.l_change_management_key),
       actions: [
         TextButton(
           onPressed: _submit,
@@ -129,7 +130,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.p_enter_current_password_or_reset),
+            Text(l10n.p_change_management_key_desc),
             if (widget.pivState.protectedKey)
               TextField(
                 autofocus: true,
@@ -138,10 +139,11 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 key: keys.managementKeyField,
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    labelText: "PIN",
+                    labelText: l10n.s_pin,
                     prefixIcon: const Icon(Icons.pin_outlined),
                     errorText: _currentIsWrong
-                        ? "Wrong PIN ($_attemptsRemaining attempts left)"
+                        ? l10n
+                            .l_wrong_pin_attempts_remaining(_attemptsRemaining)
                         : null,
                     errorMaxLines: 3),
                 textInputAction: TextInputAction.next,
@@ -164,12 +166,11 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                     : null,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  labelText: 'Current management key',
+                  labelText: l10n.s_current_management_key,
                   prefixIcon: const Icon(Icons.password_outlined),
-                  errorText: _currentIsWrong ? 'Wrong key' : null,
+                  errorText: _currentIsWrong ? l10n.l_wrong_key : null,
                   errorMaxLines: 3,
-                  helperText:
-                      _defaultKeyUsed ? "Default management key used" : null,
+                  helperText: _defaultKeyUsed ? l10n.l_default_key_used : null,
                 ),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
@@ -179,7 +180,6 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                   });
                 },
               ),
-            Text("Enter your new management key."),
             TextField(
               key: keys.newPinPukField,
               autofocus: _defaultKeyUsed,
@@ -191,7 +191,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
               ],
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: "New management key",
+                labelText: l10n.s_new_management_key,
                 prefixIcon: const Icon(Icons.password_outlined),
                 enabled: _currentKeyOrPin.isNotEmpty,
               ),
@@ -225,7 +225,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                       },
                     ),
                   FilterChip(
-                    label: Text("Protect with PIN"),
+                    label: Text(l10n.s_protect_key),
                     selected: _storeKey,
                     onSelected: (value) {
                       setState(() {

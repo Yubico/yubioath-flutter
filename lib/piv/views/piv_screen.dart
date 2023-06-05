@@ -39,18 +39,18 @@ class PivScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return ref.watch(pivStateProvider(devicePath)).when(
           loading: () => MessagePage(
-            title: Text(l10n.s_authenticator),
+            title: Text(l10n.s_piv),
             graphic: const CircularProgressIndicator(),
             delayedContent: true,
           ),
           error: (error, _) => AppFailurePage(
-            title: Text(l10n.s_authenticator),
+            title: Text(l10n.s_piv),
             cause: error,
           ),
           data: (pivState) {
             final pivSlots = ref.watch(pivSlotsProvider(devicePath)).asData;
             return AppPage(
-              title: const Text('PIV'),
+              title: Text(l10n.s_piv),
               keyActionsBuilder: (context) =>
                   pivBuildActions(context, devicePath, pivState, ref),
               child: Column(
@@ -95,19 +95,19 @@ class _CertificateListItem extends StatelessWidget {
         child: const Icon(Icons.approval),
       ),
       title: Text(
-        '${slot.getDisplayName(l10n)} (Slot ${slot.id.toRadixString(16).padLeft(2, '0')})',
+        slot.getDisplayName(l10n),
         softWrap: false,
         overflow: TextOverflow.fade,
       ),
       subtitle: certInfo != null
           ? Text(
-              'Subject: ${certInfo.subject}, Issuer: ${certInfo.issuer}',
+              l10n.l_subject_issuer(certInfo.subject, certInfo.issuer),
               softWrap: false,
               overflow: TextOverflow.fade,
             )
           : Text(pivSlot.hasKey == true
-              ? 'Key without certificate loaded'
-              : 'No certificate loaded'),
+              ? l10n.l_key_no_certificate
+              : l10n.l_no_certificate),
       trailing: OutlinedButton(
         onPressed: () {
           Actions.maybeInvoke<OpenIntent>(context, const OpenIntent());
