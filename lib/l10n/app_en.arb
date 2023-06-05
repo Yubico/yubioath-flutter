@@ -29,6 +29,7 @@
     "s_quit": "Quit",
     "s_unlock": "Unlock",
     "s_calculate": "Calculate",
+    "s_import": "Import",
     "s_label": "Label",
     "s_name": "Name",
     "s_usb": "USB",
@@ -41,6 +42,12 @@
             "label": {}
         }
     },
+    "l_bullet": "• {item}",
+    "@l_bullet" : {
+        "placeholders": {
+            "item": {}
+        }
+    },
 
     "s_about": "About",
     "s_appearance": "Appearance",
@@ -49,6 +56,7 @@
     "s_manage": "Manage",
     "s_setup": "Setup",
     "s_settings": "Settings",
+    "s_piv": "PIV",
     "s_webauthn": "WebAuthn",
     "s_help_and_about": "Help and about",
     "s_help_and_feedback": "Help and feedback",
@@ -61,6 +69,7 @@
     "s_configure_yk": "Configure YubiKey",
     "s_please_wait": "Please wait\u2026",
     "s_secret_key": "Secret key",
+    "s_private_key": "Private key",
     "s_invalid_length": "Invalid length",
     "s_require_touch": "Require touch",
     "q_have_account_info": "Have account info?",
@@ -166,11 +175,17 @@
 
     "@_pins": {},
     "s_pin": "PIN",
+    "s_puk": "PUK",
     "s_set_pin": "Set PIN",
     "s_change_pin": "Change PIN",
+    "s_change_puk": "Change PUK",
     "s_current_pin": "Current PIN",
+    "s_current_puk": "Current PUK",
     "s_new_pin": "New PIN",
+    "s_new_puk": "New PUK",
     "s_confirm_pin": "Confirm PIN",
+    "s_confirm_puk": "Confirm PUK",
+    "s_unblock_pin": "Unblock PIN",
     "l_new_pin_len": "New PIN must be at least {length} characters",
     "@l_new_pin_len" : {
         "placeholders": {
@@ -182,6 +197,12 @@
     "@l_set_pin_failed" : {
         "placeholders": {
             "message": {}
+        }
+    },
+    "l_attempts_remaining": "{retries} attempt(s) remaining",
+    "@l_attempts_remaining" : {
+        "placeholders": {
+            "retries": {}
         }
     },
     "l_wrong_pin_attempts_remaining": "Wrong PIN, {retries} attempt(s) remaining",
@@ -203,6 +224,15 @@
     "@p_enter_new_fido2_pin" : {
         "placeholders": {
             "length": {}
+        }
+    },
+    "s_pin_required": "PIN required",
+    "p_pin_required_desc": "The action you are about to perform requires the PIV PIN to be entered.",
+    "l_piv_pin_blocked": "Blocked, use PUK to reset",
+    "p_enter_new_piv_pin_puk": "Enter a new {name} to set. Must be 6-8 characters.",
+    "@p_enter_new_piv_pin_puk" : {
+        "placeholders": {
+            "name": {}
         }
     },
 
@@ -227,6 +257,21 @@
     "l_enter_oath_pw": "Enter the OATH password for your YubiKey",
     "p_enter_current_password_or_reset": "Enter your current password. If you don't know your password, you'll need to reset the YubiKey.",
     "p_enter_new_password": "Enter your new password. A password may contain letters, numbers and special characters.",
+
+    "@_management_key": {},
+    "s_management_key": "Management key",
+    "s_current_management_key": "Current management key",
+    "s_new_management_key": "New management key",
+    "l_change_management_key": "Change management key",
+    "p_change_management_key_desc": "Change your management key. You can optionally choose to allow the PIN to be used instead of the management key.",
+    "l_management_key_changed": "Management key changed",
+    "l_default_key_used": "Default management key used",
+    "l_warning_default_key": "Warning: Default key used",
+    "s_protect_key": "Protect with PIN",
+    "l_pin_protected_key": "PIN can be used instead",
+    "l_wrong_key": "Wrong key",
+    "l_unlock_piv_management": "Unlock PIV management",
+    "p_unlock_piv_management_desc": "The action you are about to perform requires the PIV management key. Provide this key to unlock management functionality for this session.",
 
     "@_oath_accounts": {},
     "l_account": "Account: {label}",
@@ -351,6 +396,85 @@
     "p_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
     "p_will_change_label_fp": "This will change the label of the fingerprint.",
 
+    "@_certificates": {},
+    "s_certificate": "Certificate",
+    "s_csr": "CSR",
+    "s_subject": "Subject",
+    "l_export_csr_file": "Save CSR to file",
+    "l_select_import_file": "Select file to import",
+    "l_export_certificate": "Export certificate",
+    "l_export_certificate_file": "Export certificate to file",
+    "l_export_certificate_desc": "Export the certificate to a file",
+    "l_certificate_exported": "Certificate exported",
+    "l_import_file": "Import file",
+    "l_import_desc": "Import a key and/or certificate",
+    "l_delete_certificate": "Delete certificate",
+    "l_delete_certificate_desc": "Remove the certificate from your YubiKey",
+    "l_subject_issuer": "Subject: {subject}, Issuer: {issuer}",
+    "@l_subject_issuer" : {
+        "placeholders": {
+            "subject": {},
+            "issuer": {}
+        }
+    },
+    "l_serial": "Serial: {serial}",
+    "@l_serial" : {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "l_certificate_fingerprint": "Fingerprint: {fingerprint}",
+    "@l_certificate_fingerprint" : {
+        "placeholders": {
+            "fingerprint": {}
+        }
+    },
+    "l_valid": "Valid: {not_before} - {not_after}",
+    "@l_valid" : {
+        "placeholders": {
+            "not_before": {},
+            "not_after": {}
+        }
+    },
+    "l_no_certificate": "No certificate loaded",
+    "l_key_no_certificate": "Key without certificate loaded",
+    "s_generate_key": "Generate key",
+    "l_generate_desc": "Generate a new certificate or CSR",
+    "p_generate_desc": "This will generate a new key on the YubiKey in PIV slot {slot}. The public key will be embedded into a self-signed certificate stored on the YubiKey, or in a certificate signing request (CSR) saved to file.",
+    "@p_generate_desc" : {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "p_warning_delete_certificate": "Warning! This action will delete the certificate from your YubiKey.",
+    "q_delete_certificate_confirm": "Delete the certficate in PIV slot {slot}?",
+    "@q_delete_certificate_confirm" : {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "l_certificate_deleted": "Certificate deleted",
+    "p_password_protected_file": "The selected file is password protected. Enter the password to proceed.",
+    "p_import_items_desc": "The following items will be imported into PIV slot {slot}.",
+    "@p_import_items_desc" : {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+
+    "@_piv_slots": {},
+    "s_slot_display_name": "{name} ({hexid})",
+    "@s_slot_display_name" : {
+        "placeholders": {
+            "name": {},
+            "hexid": {}
+        }
+    },
+    "s_slot_9a": "Authentication",
+    "s_slot_9c": "Digital Signature",
+    "s_slot_9d": "Key Management",
+    "s_slot_9e": "Card Authentication",
+
     "@_permissions": {},
     "s_enable_nfc": "Enable NFC",
     "s_permission_denied": "Permission denied",
@@ -391,10 +515,14 @@
             "message": {}
         }
     },
+    "s_reset_piv": "Reset PIV",
+    "l_piv_app_reset": "PIV application reset",
     "p_warning_factory_reset": "Warning! This will irrevocably delete all OATH TOTP/HOTP accounts from your YubiKey.",
     "p_warning_disable_credentials": "Your OATH credentials, as well as any password set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.",
     "p_warning_deletes_accounts": "Warning! This will irrevocably delete all U2F and FIDO2 accounts from your YubiKey.",
     "p_warning_disable_accounts": "Your credentials, as well as any PIN set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.",
+    "p_warning_piv_reset": "Warning! All data stored for PIV will be irrevocably deleted from your YubiKey.",
+    "p_warning_piv_reset_desc": "This includes private keys and certificates. Your PIN, PUK, and management key will be reset to their factory detault values.",
 
     "@_copy_to_clipboard": {},
     "l_copy_to_clipboard": "Copy to clipboard",

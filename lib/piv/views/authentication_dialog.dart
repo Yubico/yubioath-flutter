@@ -43,7 +43,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text("Unlock management functions"),
+      title: Text(l10n.l_unlock_piv_management),
       actions: [
         TextButton(
           key: keys.unlockButton,
@@ -77,6 +77,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(l10n.p_unlock_piv_management_desc),
             TextField(
               autofocus: true,
               obscureText: true,
@@ -84,9 +85,9 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
               key: keys.managementKeyField,
               decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  labelText: "Management key",
+                  labelText: l10n.s_management_key,
                   prefixIcon: const Icon(Icons.key_outlined),
-                  errorText: _keyIsWrong ? l10n.s_wrong_password : null,
+                  errorText: _keyIsWrong ? l10n.l_wrong_key : null,
                   errorMaxLines: 3),
               textInputAction: TextInputAction.next,
               onChanged: (value) {

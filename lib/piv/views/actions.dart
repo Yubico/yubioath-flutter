@@ -19,11 +19,12 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/app/models.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
+import '../../app/models.dart';
 import '../models.dart';
 import '../state.dart';
 import 'authentication_dialog.dart';
@@ -107,6 +108,7 @@ Widget registerPivActions(
           }
 
           return await withContext((context) async {
+            final l10n = AppLocalizations.of(context)!;
             final PivGenerateResult? result = await showBlurDialog(
               context: context,
               builder: (context) => GenerateKeyDialog(
@@ -119,7 +121,7 @@ Widget registerPivActions(
             switch (result?.generateType) {
               case GenerateType.csr:
                 final filePath = await FilePicker.platform.saveFile(
-                  dialogTitle: 'Save CSR to file',
+                  dialogTitle: l10n.l_export_csr_file,
                   allowedExtensions: ['csr'],
                   type: FileType.custom,
                   lockParentWindow: true,
@@ -141,17 +143,23 @@ Widget registerPivActions(
             return false;
           }
 
-          final picked = await FilePicker.platform.pickFiles(
-              allowedExtensions: ['pem', 'der', 'pfx', 'p12', 'key', 'crt'],
-              type: FileType.custom,
-              allowMultiple: false,
-              lockParentWindow: true,
-              dialogTitle: 'Select file to import');
+          final withContext = ref.read(withContextProvider);
+
+          final picked = await withContext(
+            (context) async {
+              final l10n = AppLocalizations.of(context)!;
+              return await FilePicker.platform.pickFiles(
+                  allowedExtensions: ['pem', 'der', 'pfx', 'p12', 'key', 'crt'],
+                  type: FileType.custom,
+                  allowMultiple: false,
+                  lockParentWindow: true,
+                  dialogTitle: l10n.l_select_import_file);
+            },
+          );
           if (picked == null || picked.files.isEmpty) {
             return false;
           }
 
-          final withContext = ref.read(withContextProvider);
           return await withContext((context) async =>
               await showBlurDialog(
                 context: context,
@@ -173,12 +181,18 @@ Widget registerPivActions(
             return false;
           }
 
-          final filePath = await FilePicker.platform.saveFile(
-            dialogTitle: 'Export certificate to file',
-            allowedExtensions: ['pem'],
-            type: FileType.custom,
-            lockParentWindow: true,
-          );
+          final withContext = ref.read(withContextProvider);
+
+          final filePath = await withContext((context) async {
+            final l10n = AppLocalizations.of(context)!;
+            return await FilePicker.platform.saveFile(
+              dialogTitle: l10n.l_export_certificate_file,
+              allowedExtensions: ['pem'],
+              type: FileType.custom,
+              lockParentWindow: true,
+            );
+          });
+
           if (filePath == null) {
             return false;
           }
@@ -186,8 +200,9 @@ Widget registerPivActions(
           final file = File(filePath);
           await file.writeAsString(cert, flush: true);
 
-          await ref.read(withContextProvider)((context) async {
-            showMessage(context, 'Certificate exported');
+          await withContext((context) async {
+            final l10n = AppLocalizations.of(context)!;
+            showMessage(context, l10n.l_certificate_exported);
           });
           return true;
         }),
@@ -214,7 +229,7 @@ Widget registerPivActions(
             });
           }
           return deleted;
-        }), //TODO
+        }),
         ...actions,
       },
       child: Builder(builder: builder),

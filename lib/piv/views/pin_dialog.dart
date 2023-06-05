@@ -63,7 +63,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text("PIN required"),
+      title: Text(l10n.s_pin_required),
       actions: [
         TextButton(
           key: keys.unlockButton,
@@ -76,6 +76,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(l10n.p_pin_required_desc),
             TextField(
               autofocus: true,
               obscureText: true,
@@ -83,10 +84,10 @@ class _PinDialogState extends ConsumerState<PinDialog> {
               key: keys.managementKeyField,
               decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  labelText: "PIN",
+                  labelText: l10n.s_pin,
                   prefixIcon: const Icon(Icons.pin_outlined),
                   errorText: _pinIsWrong
-                      ? "Wrong PIN ($_attemptsRemaining attempts left)"
+                      ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
                       : null,
                   errorMaxLines: 3),
               textInputAction: TextInputAction.next,

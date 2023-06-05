@@ -33,8 +33,8 @@ enum GenerateType {
 
   String getDisplayName(AppLocalizations l10n) {
     return switch (this) {
-      // TODO:
-      _ => name
+      GenerateType.certificate => l10n.s_certificate,
+      GenerateType.csr => l10n.s_csr,
     };
   }
 }
@@ -48,10 +48,15 @@ enum SlotId {
   final int id;
   const SlotId(this.id);
 
+  String get hexId => id.toRadixString(16).padLeft(2, '0');
+
   String getDisplayName(AppLocalizations l10n) {
+    String nameFor(String name) => l10n.s_slot_display_name(name, hexId);
     return switch (this) {
-      // TODO:
-      _ => name
+      SlotId.authentication => nameFor(l10n.s_slot_9a),
+      SlotId.signature => nameFor(l10n.s_slot_9c),
+      SlotId.keyManagement => nameFor(l10n.s_slot_9d),
+      SlotId.cardAuth => nameFor(l10n.s_slot_9e),
     };
   }
 
@@ -122,37 +127,31 @@ enum KeyType {
 
   String getDisplayName(AppLocalizations l10n) {
     return switch (this) {
-      // TODO:
-      _ => name
+      // TODO: Should these be translatable?
+      _ => name.toUpperCase()
     };
   }
 }
 
 enum ManagementKeyType {
   @JsonValue(0x03)
-  tdes,
+  tdes(24),
   @JsonValue(0x08)
-  aes128,
+  aes128(16),
   @JsonValue(0x0A)
-  aes192,
+  aes192(24),
   @JsonValue(0x0C)
-  aes256;
+  aes256(32);
 
-  const ManagementKeyType();
+  const ManagementKeyType(this.keyLength);
+  final int keyLength;
 
   int get value => _$ManagementKeyTypeEnumMap[this]!;
 
-  int get keyLength => switch (this) {
-        ManagementKeyType.tdes => 24,
-        ManagementKeyType.aes128 => 16,
-        ManagementKeyType.aes192 => 24,
-        ManagementKeyType.aes256 => 32,
-      };
-
   String getDisplayName(AppLocalizations l10n) {
     return switch (this) {
-      // TODO:
-      _ => name
+      // TODO: Should these be translatable?
+      _ => name.toUpperCase()
     };
   }
 }
