@@ -85,33 +85,24 @@ enum NfcActivity {
 }
 
 class NfcActivityNotifier extends StateNotifier<NfcActivity> {
-  NfcActivityNotifier() : super(NfcActivity.notActive);
+  NfcActivityNotifier() : super(NfcActivity.notActive) {
+    _log.info('Created NfcActivityNotifier: $hashCode');
+  }
 
-  void setActivityState(int stateValue) {
-    _log.info('Received state: $stateValue');
-    switch (stateValue) {
-      case 0:
-        state = NfcActivity.notActive;
-        break;
-      case 1:
-        state = NfcActivity.ready;
-        break;
-      case 2:
-        state = NfcActivity.tagPresent;
-        break;
-      case 3:
-        state = NfcActivity.processingStarted;
-        break;
-      case 4:
-        state = NfcActivity.processingFinished;
-        break;
-      case 5:
-        state = NfcActivity.processingInterrupted;
-        break;
-      default:
-        state = NfcActivity.notActive;
-        break;
-    }
+  Future<void> setActivityState(int stateValue) async {
+
+    var newState = switch (stateValue) {
+      0 => NfcActivity.notActive,
+      1 => NfcActivity.ready,
+      2 => NfcActivity.tagPresent,
+      3 => NfcActivity.processingStarted,
+      4 => NfcActivity.processingFinished,
+      5 => NfcActivity.processingInterrupted,
+      _ => NfcActivity.notActive
+    };
+
+    _log.info('Updating nfc activity state to $newState');
+    state = newState;
   }
 }
 

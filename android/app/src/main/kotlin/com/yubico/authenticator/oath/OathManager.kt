@@ -27,7 +27,6 @@ import com.yubico.authenticator.*
 import com.yubico.authenticator.device.Capabilities
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
-import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.data.Code
 import com.yubico.authenticator.oath.data.CodeType
 import com.yubico.authenticator.oath.data.Credential
@@ -335,21 +334,17 @@ class OathManager(
             (lifecycleOwner as MainActivity).appMethodChannel.nfcActivityStateChanged(
                 NfcActivityState.PROCESSING_FINISHED
             )
-            delay(500)
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
             logger.error("Failed to connect to CCID", e)
-            logger.error("Set nfc activity state to PROCESSING_INTERRUPTED")
+            logger.debug("Set nfc activity state to PROCESSING_INTERRUPTED")
             (lifecycleOwner as MainActivity).appMethodChannel.nfcActivityStateChanged(
                 NfcActivityState.PROCESSING_INTERRUPTED
             )
 
-            coroutineScope.launch {
-                delay(2500)
-                lifecycleOwner.appMethodChannel.nfcActivityStateChanged(NfcActivityState.READY)
-            }
-
-            delay(500)
+            lifecycleOwner.appMethodChannel.nfcActivityStateChanged(
+                NfcActivityState.TAG_PRESENT
+            )
 
             if (device.transport == Transport.USB || e is ApplicationNotAvailableException) {
                 val deviceInfo = try {

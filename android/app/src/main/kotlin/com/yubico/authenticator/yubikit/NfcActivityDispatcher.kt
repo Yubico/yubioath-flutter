@@ -3,16 +3,13 @@ package com.yubico.authenticator.yubikit
 import android.app.Activity
 import android.nfc.NfcAdapter
 import android.nfc.Tag
-
 import com.yubico.authenticator.MainActivity
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcDispatcher
 import com.yubico.yubikit.android.transport.nfc.NfcReaderDispatcher
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
 import org.slf4j.LoggerFactory
 
 class NfcActivityDispatcher(private val coroutineScope: CoroutineScope) : NfcDispatcher {
@@ -56,25 +53,11 @@ class NfcActivityDispatcher(private val coroutineScope: CoroutineScope) : NfcDis
         override fun onTag(tag: Tag) {
             coroutineScope.launch {
                 activity.appMethodChannel.nfcActivityStateChanged(NfcActivityState.TAG_PRESENT)
-                delay(500)
                 activity.appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_STARTED)
-                delay(500)
                 logger.info("Calling original onTag")
                 tagHandler.onTag(tag)
-                delay(500)
-                logger.info("Marking call as successful")
-                activity.appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_FINISHED)
-//                    Log.i(TAG, "Marking call as interrupted")
-//                    activity.appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED.value)
-                delay(500)
-                activity.appMethodChannel.nfcActivityStateChanged(NfcActivityState.TAG_PRESENT)
             }
         }
 
     }
-
-    companion object {
-        private const val TAG = "NfcActivityDispatcher"
-    }
-
 }

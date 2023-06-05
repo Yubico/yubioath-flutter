@@ -20,13 +20,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/android/state.dart';
-import 'package:yubico_authenticator/android/views/nfc/nfc_activity_background.dart';
 import 'package:yubico_authenticator/android/views/nfc/nfc_activity_widget.dart';
 
 import '../app/state.dart';
 import '../app/views/user_interaction.dart';
-import '../widgets/custom_icons.dart';
 
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
@@ -64,6 +61,7 @@ class _DialogProvider {
   }
 
   void _closeDialog() {
+    _icon = null;
     _controller?.close();
     _controller = null;
   }
@@ -74,19 +72,22 @@ class _DialogProvider {
       _controller?.updateContent(
         title: title,
         description: description,
-        icon: _createIcon(context),
+        icon: _icon,
       );
     });
   }
 
+  Widget? _icon;
+
   Future<void> _showDialog(
       String title, String description, String? iconName) async {
     _controller = await _withContext((context) async {
+      _icon = _createIcon();
       return promptUserInteraction(
         context,
         title: title,
         description: description,
-        icon: _createIcon(context),
+        icon: _icon,
         onCancel: () {
           _channel.invokeMethod('cancel');
         },
@@ -94,36 +95,7 @@ class _DialogProvider {
     });
   }
 
-  NfcActivityWidget _createIcon(BuildContext context) {
-    final pulseColor = Theme.of(context).primaryColor;
-
-    return NfcActivityWidget(
-      width: 64,
-      height: 64,
-      iconFn: (NfcActivity nfcActivityState) {
-        return nfcIcon;
-      },
-      backgroundFn: (NfcActivity nfcActivityState) =>
-          switch (nfcActivityState) {
-        NfcActivity.notActive => const SizedBox.shrink(),
-        NfcActivity.ready => NfcActivityBackground(
-            foregroundColor: pulseColor,
-            opacity: 0.2,
-          ),
-        NfcActivity.tagPresent => NfcActivityBackground(
-            foregroundColor: pulseColor,
-            opacity: 0.5,
-          ),
-        NfcActivity.processingStarted => const NfcActivityBackground(
-            foregroundColor: Colors.blueGrey,
-            opacity: 0.8,
-          ),
-        NfcActivity.processingFinished => NfcActivityBackground(
-            foregroundColor: pulseColor,
-            opacity: 0.5,
-          ),
-        NfcActivity _ => const NfcActivityBackground()
-      },
-    );
+  Widget _createIcon() {
+    return const NfcActivityWidget(width: 64, height: 64,);
   }
 }

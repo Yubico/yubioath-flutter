@@ -60,7 +60,7 @@ void setupAppMethodsChannel(WidgetRef ref) {
       case 'nfcActivityChanged':
         {
           var nfcActivityState = args['state'];
-          ref.read(androidNfcActivityProvider.notifier).setActivityState(nfcActivityState);
+          await ref.read(androidNfcActivityProvider.notifier).setActivityState(nfcActivityState);
           break;
         }
       default:
