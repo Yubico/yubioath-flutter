@@ -12,7 +12,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 
-class NfcActivityDispatcher(private val coroutineScope: CoroutineScope) : NfcDispatcher {
+interface NfcActivityListener {
+    fun onChange(newState: NfcActivityState)
+}
+
+class NfcActivityDispatcher(private val listener: NfcActivityListener) : NfcDispatcher {
 
     private lateinit var adapter: NfcAdapter
     private lateinit var yubikitNfcDispatcher: NfcReaderDispatcher
@@ -32,31 +36,29 @@ class NfcActivityDispatcher(private val coroutineScope: CoroutineScope) : NfcDis
         yubikitNfcDispatcher.enable(
             activity,
             nfcConfiguration,
-            TagInterceptor(activity as MainActivity, coroutineScope, handler)
+            TagInterceptor(listener, handler)
         )
+        listener.onChange(NfcActivityState.READY)
 
     }
 
     override fun disable(activity: Activity) {
+        listener.onChange(NfcActivityState.NOT_ACTIVE)
         yubikitNfcDispatcher.disable(activity)
         logger.info("disabling yubikit NFC activity dispatcher")
     }
 
     class TagInterceptor(
-        private val activity: MainActivity,
-        private val coroutineScope: CoroutineScope,
+        private val listener: NfcActivityListener,
         private val tagHandler: NfcDispatcher.OnTagHandler
     ) : NfcDispatcher.OnTagHandler {
 
         private val logger = LoggerFactory.getLogger(TagInterceptor::class.java)
 
         override fun onTag(tag: Tag) {
-            coroutineScope.launch {
-                activity.appMethodChannel.nfcActivityStateChanged(NfcActivityState.TAG_PRESENT)
-                activity.appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_STARTED)
-                logger.info("Calling original onTag")
-                tagHandler.onTag(tag)
-            }
+            listener.onChange(NfcActivityState.PROCESSING_STARTED)
+            logger.debug("forwarding tag")
+            tagHandler.onTag(tag)
         }
 
     }

@@ -78,7 +78,6 @@ class NfcStateNotifier extends StateNotifier<bool> {
 enum NfcActivity {
   notActive,
   ready,
-  tagPresent,
   processingStarted,
   processingFinished,
   processingInterrupted,
@@ -94,10 +93,9 @@ class NfcActivityNotifier extends StateNotifier<NfcActivity> {
     var newState = switch (stateValue) {
       0 => NfcActivity.notActive,
       1 => NfcActivity.ready,
-      2 => NfcActivity.tagPresent,
-      3 => NfcActivity.processingStarted,
-      4 => NfcActivity.processingFinished,
-      5 => NfcActivity.processingInterrupted,
+      2 => NfcActivity.processingStarted,
+      3 => NfcActivity.processingFinished,
+      4 => NfcActivity.processingInterrupted,
       _ => NfcActivity.notActive
     };
 

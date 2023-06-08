@@ -42,6 +42,7 @@ import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
+import com.yubico.authenticator.yubikit.NfcActivityListener
 import com.yubico.authenticator.yubikit.NfcActivityState
 import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
@@ -76,6 +77,7 @@ class OathManager(
     private val oathViewModel: OathViewModel,
     private val dialogManager: DialogManager,
     private val appPreferences: AppPreferences,
+    private val nfcActivityListener: NfcActivityListener
 ) : AppContextManager {
     companion object {
         const val NFC_DATA_CLEANUP_DELAY = 30L * 1000 // 30s
@@ -331,20 +333,13 @@ class OathManager(
                 "Successfully read Oath session info (and credentials if unlocked) from connected key"
             )
 
-            (lifecycleOwner as MainActivity).appMethodChannel.nfcActivityStateChanged(
-                NfcActivityState.PROCESSING_FINISHED
-            )
+            nfcActivityListener.onChange(NfcActivityState.PROCESSING_FINISHED)
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
             logger.error("Failed to connect to CCID", e)
             logger.debug("Set nfc activity state to PROCESSING_INTERRUPTED")
-            (lifecycleOwner as MainActivity).appMethodChannel.nfcActivityStateChanged(
-                NfcActivityState.PROCESSING_INTERRUPTED
-            )
 
-            lifecycleOwner.appMethodChannel.nfcActivityStateChanged(
-                NfcActivityState.TAG_PRESENT
-            )
+            nfcActivityListener.onChange(NfcActivityState.PROCESSING_INTERRUPTED)
 
             if (device.transport == Transport.USB || e is ApplicationNotAvailableException) {
                 val deviceInfo = try {

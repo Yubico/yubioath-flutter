@@ -50,6 +50,7 @@ import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
 import com.yubico.authenticator.yubikit.NfcActivityDispatcher
+import com.yubico.authenticator.yubikit.NfcActivityListener
 import com.yubico.authenticator.yubikit.NfcActivityState
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
@@ -85,6 +86,20 @@ class MainActivity : FlutterFragmentActivity() {
 
     private val logger = LoggerFactory.getLogger(MainActivity::class.java)
 
+    private val nfcActivityListener = object : NfcActivityListener {
+
+        var appMethodChannel : AppMethodChannel? = null
+
+        override fun onChange(newState: NfcActivityState) {
+            appMethodChannel?.let {
+                logger.debug("setting nfc activity state to ${newState.name}")
+                it.nfcActivityStateChanged(newState)
+            } ?: {
+                logger.warn("cannot set nfc activity state to ${newState.name} - no method channel")
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -98,7 +113,7 @@ class MainActivity : FlutterFragmentActivity() {
 
         yubikit = YubiKitManager(
             UsbYubiKeyManager(this),
-            NfcYubiKeyManager(this, NfcActivityDispatcher(lifecycleScope))
+            NfcYubiKeyManager(this, NfcActivityDispatcher(nfcActivityListener))
         )
     }
 
@@ -136,7 +151,6 @@ class MainActivity : FlutterFragmentActivity() {
                 this,
                 ::processYubiKey
             )
-            appMethodChannel.nfcActivityStateChanged(NfcActivityState.READY)
             hasNfc = true
         } catch (e: NfcNotAvailable) {
             hasNfc = false
@@ -144,7 +158,6 @@ class MainActivity : FlutterFragmentActivity() {
 
     private fun stopNfcDiscovery() {
         if (hasNfc) {
-            appMethodChannel.nfcActivityStateChanged(NfcActivityState.NOT_ACTIVE)
             yubikit.stopNfcDiscovery(this)
             logger.debug("Stopped nfc discovery")
         }
@@ -313,6 +326,8 @@ class MainActivity : FlutterFragmentActivity() {
         appMethodChannel = AppMethodChannel(messenger)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
 
+        nfcActivityListener.appMethodChannel = appMethodChannel
+
         flutterStreams = listOf(
             viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),
             oathViewModel.sessionState.streamTo(this, messenger, "android.oath.sessionState"),
@@ -328,7 +343,8 @@ class MainActivity : FlutterFragmentActivity() {
                     viewModel,
                     oathViewModel,
                     dialogManager,
-                    appPreferences
+                    appPreferences,
+                    nfcActivityListener
                 )
                 else -> null
             }
@@ -337,6 +353,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        nfcActivityListener.appMethodChannel = null
         flutterStreams.forEach { it.close() }
         super.cleanUpFlutterEngine(flutterEngine)
     }
