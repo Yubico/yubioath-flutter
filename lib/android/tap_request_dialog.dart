@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'views/nfc/nfc_activity_widget.dart';
+
 import '../app/state.dart';
 import '../app/views/user_interaction.dart';
-import '../widgets/custom_icons.dart';
 
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
@@ -35,6 +36,7 @@ final androidDialogProvider = Provider<_DialogProvider>(
 
 class _DialogProvider {
   final WithContext _withContext;
+  final Widget _icon = const NfcActivityWidget(width: 64, height: 64);
   UserInteractionController? _controller;
 
   _DialogProvider(this._withContext) {
@@ -65,46 +67,29 @@ class _DialogProvider {
     _controller = null;
   }
 
-  Widget? _getIcon(String? icon) => switch (icon) {
-        'nfc' => nfcIcon,
-        'success' => const Icon(Icons.check_circle),
-        'error' => const Icon(Icons.error),
-        _ => null,
-      };
-
   Future<void> _updateDialogState(
       String? title, String? description, String? iconName) async {
-    final icon = _getIcon(iconName);
     await _withContext((context) async {
       _controller?.updateContent(
         title: title,
         description: description,
-        icon: icon != null
-            ? IconTheme(
-                data: IconTheme.of(context).copyWith(size: 64),
-                child: icon,
-              )
-            : null,
+        icon: _icon,
       );
     });
   }
 
   Future<void> _showDialog(
       String title, String description, String? iconName) async {
-    final icon = _getIcon(iconName);
-    _controller = await _withContext((context) async => promptUserInteraction(
-          context,
-          title: title,
-          description: description,
-          icon: icon != null
-              ? IconTheme(
-                  data: IconTheme.of(context).copyWith(size: 64),
-                  child: icon,
-                )
-              : null,
-          onCancel: () {
-            _channel.invokeMethod('cancel');
-          },
-        ));
+    _controller = await _withContext((context) async {
+      return promptUserInteraction(
+        context,
+        title: title,
+        description: description,
+        icon: _icon,
+        onCancel: () {
+          _channel.invokeMethod('cancel');
+        },
+      );
+    });
   }
 }

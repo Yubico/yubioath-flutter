@@ -20,6 +20,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../android/app_methods.dart';
 import '../../android/state.dart';
+import '../../android/views/nfc/main_page_nfc_activity_widget.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
 import '../../fido/views/fido_screen.dart';
@@ -82,7 +83,7 @@ class MainPage extends ConsumerWidget {
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
         var isNfcEnabled = ref.watch(androidNfcStateProvider);
         return MessagePage(
-          graphic: noKeyImage,
+          graphic: MainPageNfcActivityWidget(noKeyImage),
           message: hasNfcSupport && isNfcEnabled
               ? l10n.l_insert_or_tap_yk
               : l10n.l_insert_yk,
