@@ -324,6 +324,7 @@ class SlotsNode(RpcNode):
                 certificates=len(certs),
             )
         except InvalidPasswordError:
+            logger.debug("Invalid or missing password", exc_info=True)
             return dict(status=False)
 
 
@@ -362,7 +363,7 @@ class SlotNode(RpcNode):
         try:
             private_key, certs = _parse_file(data, password)
         except InvalidPasswordError:
-            logger.debug("InvalidPassword", exc_info=True)
+            logger.debug("Invalid or missing password", exc_info=True)
             raise ValueError("Wrong/Missing password")
 
         # Exception?
