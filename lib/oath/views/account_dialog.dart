@@ -24,9 +24,9 @@ import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
+import '../../app/views/action_list.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
-import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_helper.dart';
@@ -39,7 +39,8 @@ class AccountDialog extends ConsumerWidget {
 
   const AccountDialog(this.credential, {super.key});
 
-  List<Widget> _buildActions(BuildContext context, AccountHelper helper) {
+  List<ActionListItem> _buildActions(
+      BuildContext context, AccountHelper helper) {
     final l10n = AppLocalizations.of(context)!;
     final actions = helper.buildActions();
 
@@ -66,7 +67,7 @@ class AccountDialog extends ConsumerWidget {
       final intent = e.intent;
       final (firstColor, secondColor) =
           colors[e] ?? (theme.secondary, theme.onSecondary);
-      return ListTile(
+      return ActionListItem(
         leading: CircleAvatar(
           backgroundColor:
               intent != null ? firstColor : theme.secondary.withOpacity(0.2),
@@ -74,8 +75,8 @@ class AccountDialog extends ConsumerWidget {
           //disabledBackgroundColor: theme.onSecondary.withOpacity(0.2),
           child: e.icon,
         ),
-        title: Text(e.text),
-        subtitle: e.trailing != null ? Text(e.trailing!) : null,
+        title: e.text,
+        subtitle: e.trailing,
         onTap: intent != null
             ? () {
                 Actions.invoke(context, intent);
@@ -200,9 +201,10 @@ class AccountDialog extends ConsumerWidget {
                         ),
                   ),
                 const SizedBox(height: 32),
-                ListTitle(AppLocalizations.of(context)!.s_actions,
-                    textStyle: Theme.of(context).textTheme.bodyLarge),
-                ..._buildActions(context, helper),
+                ActionListSection(
+                  AppLocalizations.of(context)!.s_actions,
+                  children: _buildActions(context, helper),
+                ),
               ],
             ),
           ),

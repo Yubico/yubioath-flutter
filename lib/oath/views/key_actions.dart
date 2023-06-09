@@ -23,9 +23,9 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
+import '../../app/views/action_list.dart';
 import '../../core/state.dart';
 import '../../exception/cancellation_exception.dart';
-import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
@@ -47,108 +47,98 @@ Widget oathBuildActions(
   return FsDialog(
     child: Column(
       children: [
-        ListTitle(l10n.s_setup,
-            textStyle: Theme.of(context).textTheme.bodyLarge),
-        ListTile(
-          title: Text(l10n.s_add_account),
-          key: keys.addAccountAction,
-          leading: CircleAvatar(
+        ActionListSection(l10n.s_setup, children: [
+          ActionListItem(
+            key: keys.addAccountAction,
+            title: l10n.s_add_account,
             backgroundColor: theme.primary,
             foregroundColor: theme.onPrimary,
-            child: const Icon(Icons.person_add_alt_1_outlined),
-          ),
-          subtitle: Text(used == null
-              ? l10n.l_unlock_first
-              : (capacity != null ? l10n.l_accounts_used(used, capacity) : '')),
-          enabled: used != null && (capacity == null || capacity > used),
-          onTap: used != null && (capacity == null || capacity > used)
-              ? () async {
-                  final credentials = ref.read(credentialsProvider);
-                  final withContext = ref.read(withContextProvider);
-                  Navigator.of(context).pop();
-                  CredentialData? otpauth;
-                  if (isAndroid) {
-                    final scanner = ref.read(qrScannerProvider);
-                    if (scanner != null) {
-                      try {
-                        final url = await scanner.scanQr();
-                        if (url != null) {
-                          otpauth = CredentialData.fromUri(Uri.parse(url));
+            icon: const Icon(Icons.person_add_alt_1_outlined),
+            subtitle: used == null
+                ? l10n.l_unlock_first
+                : (capacity != null
+                    ? l10n.l_accounts_used(used, capacity)
+                    : ''),
+            onTap: used != null && (capacity == null || capacity > used)
+                ? () async {
+                    final credentials = ref.read(credentialsProvider);
+                    final withContext = ref.read(withContextProvider);
+                    Navigator.of(context).pop();
+                    CredentialData? otpauth;
+                    if (isAndroid) {
+                      final scanner = ref.read(qrScannerProvider);
+                      if (scanner != null) {
+                        try {
+                          final url = await scanner.scanQr();
+                          if (url != null) {
+                            otpauth = CredentialData.fromUri(Uri.parse(url));
+                          }
+                        } on CancellationException catch (_) {
+                          // ignored - user cancelled
+                          return;
                         }
-                      } on CancellationException catch (_) {
-                        // ignored - user cancelled
-                        return;
                       }
                     }
+                    await withContext((context) async {
+                      await showBlurDialog(
+                        context: context,
+                        builder: (context) => OathAddAccountPage(
+                          devicePath,
+                          oathState,
+                          credentials: credentials,
+                          credentialData: otpauth,
+                        ),
+                      );
+                    });
                   }
-                  await withContext((context) async {
-                    await showBlurDialog(
+                : null,
+          ),
+        ]),
+        ActionListSection(l10n.s_manage, children: [
+          ActionListItem(
+              key: keys.customIconsAction,
+              title: l10n.s_custom_icons,
+              subtitle: l10n.l_set_icons_for_accounts,
+              icon: const Icon(Icons.image_outlined),
+              onTap: () async {
+                Navigator.of(context).pop();
+                await ref.read(withContextProvider)((context) => showBlurDialog(
                       context: context,
-                      builder: (context) => OathAddAccountPage(
-                        devicePath,
-                        oathState,
-                        credentials: credentials,
-                        credentialData: otpauth,
-                      ),
-                    );
-                  });
-                }
-              : null,
-        ),
-        ListTitle(l10n.s_manage,
-            textStyle: Theme.of(context).textTheme.bodyLarge),
-        ListTile(
-            key: keys.customIconsAction,
-            title: Text(l10n.s_custom_icons),
-            subtitle: Text(l10n.l_set_icons_for_accounts),
-            leading: CircleAvatar(
-              backgroundColor: theme.secondary,
-              foregroundColor: theme.onSecondary,
-              child: const Icon(Icons.image_outlined),
-            ),
-            onTap: () async {
-              Navigator.of(context).pop();
-              await ref.read(withContextProvider)((context) => showBlurDialog(
-                    context: context,
-                    routeSettings:
-                        const RouteSettings(name: 'oath_icon_pack_dialog'),
-                    builder: (context) => const IconPackDialog(),
-                  ));
-            }),
-        ListTile(
-            key: keys.setOrManagePasswordAction,
-            title: Text(oathState.hasKey
-                ? l10n.s_manage_password
-                : l10n.s_set_password),
-            subtitle: Text(l10n.l_optional_password_protection),
-            leading: CircleAvatar(
-                backgroundColor: theme.secondary,
-                foregroundColor: theme.onSecondary,
-                child: const Icon(Icons.password_outlined)),
-            onTap: () {
-              Navigator.of(context).pop();
-              showBlurDialog(
-                context: context,
-                builder: (context) =>
-                    ManagePasswordDialog(devicePath, oathState),
-              );
-            }),
-        ListTile(
-            key: keys.resetAction,
-            title: Text(l10n.s_reset_oath),
-            subtitle: Text(l10n.l_factory_reset_this_app),
-            leading: CircleAvatar(
+                      routeSettings:
+                          const RouteSettings(name: 'oath_icon_pack_dialog'),
+                      builder: (context) => const IconPackDialog(),
+                    ));
+              }),
+          ActionListItem(
+              key: keys.setOrManagePasswordAction,
+              title: oathState.hasKey
+                  ? l10n.s_manage_password
+                  : l10n.s_set_password,
+              subtitle: l10n.l_optional_password_protection,
+              icon: const Icon(Icons.password_outlined),
+              onTap: () {
+                Navigator.of(context).pop();
+                showBlurDialog(
+                  context: context,
+                  builder: (context) =>
+                      ManagePasswordDialog(devicePath, oathState),
+                );
+              }),
+          ActionListItem(
+              key: keys.resetAction,
+              title: l10n.s_reset_oath,
+              subtitle: l10n.l_factory_reset_this_app,
               foregroundColor: theme.onError,
               backgroundColor: theme.error,
-              child: const Icon(Icons.delete_outline),
-            ),
-            onTap: () {
-              Navigator.of(context).pop();
-              showBlurDialog(
-                context: context,
-                builder: (context) => ResetDialog(devicePath),
-              );
-            }),
+              icon: const Icon(Icons.delete_outline),
+              onTap: () {
+                Navigator.of(context).pop();
+                showBlurDialog(
+                  context: context,
+                  builder: (context) => ResetDialog(devicePath),
+                );
+              }),
+        ]),
       ],
     ),
   );

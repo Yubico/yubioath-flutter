@@ -21,7 +21,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/fs_dialog.dart';
-import '../../widgets/list_title.dart';
+import '../../app/views/action_list.dart';
 import '../models.dart';
 import '../keys.dart' as keys;
 import 'manage_key_dialog.dart';
@@ -43,105 +43,95 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
   return FsDialog(
     child: Column(
       children: [
-        ListTitle(l10n.s_manage,
-            textStyle: Theme.of(context).textTheme.bodyLarge),
-        ListTile(
-            key: keys.managePinAction,
-            title: Text(l10n.s_pin),
-            subtitle: Text(pinBlocked
-                ? l10n.l_piv_pin_blocked
-                : l10n.l_attempts_remaining(pivState.pinAttempts)),
-            leading: CircleAvatar(
-              foregroundColor: theme.onSecondary,
-              backgroundColor: theme.secondary,
-              child: const Icon(Icons.pin_outlined),
-            ),
-            onTap: () {
-              Navigator.of(context).pop();
-              showBlurDialog(
-                context: context,
-                builder: (context) => ManagePinPukDialog(
-                  devicePath,
-                  target: pinBlocked ? ManageTarget.unblock : ManageTarget.pin,
-                ),
-              );
-            }),
-        ListTile(
-            key: keys.managePukAction,
-            title: Text(l10n.s_puk),
-            subtitle: pukAttempts != null
-                ? Text(l10n.l_attempts_remaining(pukAttempts))
-                : null,
-            leading: CircleAvatar(
-              foregroundColor: theme.onSecondary,
-              backgroundColor: theme.secondary,
-              child: const Icon(Icons.pin_outlined),
-            ),
-            onTap: () {
-              Navigator.of(context).pop();
-              showBlurDialog(
-                context: context,
-                builder: (context) =>
-                    ManagePinPukDialog(devicePath, target: ManageTarget.puk),
-              );
-            }),
-        ListTile(
-            key: keys.manageManagementKeyAction,
-            title: Text(l10n.s_management_key),
-            subtitle: Text(usingDefaultMgmtKey
-                ? l10n.l_warning_default_key
-                : (pivState.protectedKey
-                    ? l10n.l_pin_protected_key
-                    : l10n.l_change_management_key)),
-            leading: CircleAvatar(
-              foregroundColor: theme.onSecondary,
-              backgroundColor: theme.secondary,
-              child: const Icon(Icons.key_outlined),
-            ),
-            trailing:
-                usingDefaultMgmtKey ? const Icon(Icons.warning_amber) : null,
-            onTap: () {
-              Navigator.of(context).pop();
-              showBlurDialog(
-                context: context,
-                builder: (context) => ManageKeyDialog(devicePath, pivState),
-              );
-            }),
-        ListTile(
-            key: keys.resetAction,
-            title: Text(l10n.s_reset_piv),
-            subtitle: Text(l10n.l_factory_reset_this_app),
-            leading: CircleAvatar(
-              foregroundColor: theme.onError,
-              backgroundColor: theme.error,
-              child: const Icon(Icons.delete_outline),
-            ),
-            onTap: () {
-              Navigator.of(context).pop();
-              showBlurDialog(
-                context: context,
-                builder: (context) => ResetDialog(devicePath),
-              );
-            }),
+        ActionListSection(
+          l10n.s_manage,
+          children: [
+            ActionListItem(
+                key: keys.managePinAction,
+                title: l10n.s_pin,
+                subtitle: pinBlocked
+                    ? l10n.l_piv_pin_blocked
+                    : l10n.l_attempts_remaining(pivState.pinAttempts),
+                icon: const Icon(Icons.pin_outlined),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  showBlurDialog(
+                    context: context,
+                    builder: (context) => ManagePinPukDialog(
+                      devicePath,
+                      target:
+                          pinBlocked ? ManageTarget.unblock : ManageTarget.pin,
+                    ),
+                  );
+                }),
+            ActionListItem(
+                key: keys.managePukAction,
+                title: l10n.s_puk,
+                subtitle: pukAttempts != null
+                    ? l10n.l_attempts_remaining(pukAttempts)
+                    : null,
+                icon: const Icon(Icons.pin_outlined),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  showBlurDialog(
+                    context: context,
+                    builder: (context) => ManagePinPukDialog(devicePath,
+                        target: ManageTarget.puk),
+                  );
+                }),
+            ActionListItem(
+                key: keys.manageManagementKeyAction,
+                title: l10n.s_management_key,
+                subtitle: usingDefaultMgmtKey
+                    ? l10n.l_warning_default_key
+                    : (pivState.protectedKey
+                        ? l10n.l_pin_protected_key
+                        : l10n.l_change_management_key),
+                icon: const Icon(Icons.key_outlined),
+                trailing: usingDefaultMgmtKey
+                    ? const Icon(Icons.warning_amber)
+                    : null,
+                onTap: () {
+                  Navigator.of(context).pop();
+                  showBlurDialog(
+                    context: context,
+                    builder: (context) => ManageKeyDialog(devicePath, pivState),
+                  );
+                }),
+            ActionListItem(
+                key: keys.resetAction,
+                title: l10n.s_reset_piv,
+                subtitle: l10n.l_factory_reset_this_app,
+                foregroundColor: theme.onError,
+                backgroundColor: theme.error,
+                icon: const Icon(Icons.delete_outline),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  showBlurDialog(
+                    context: context,
+                    builder: (context) => ResetDialog(devicePath),
+                  );
+                })
+          ],
+        ),
         // TODO
         /*
-        if (false == true) ...[
-          ListTitle(l10n.s_setup,
-              textStyle: Theme.of(context).textTheme.bodyLarge),
-          ListTile(
-              key: keys.setupMacOsAction,
-              title: Text('Setup for macOS'),
-              subtitle: Text('Create certificates for macOS login'),
-              leading: CircleAvatar(
-                backgroundColor: theme.secondary,
-                foregroundColor: theme.onSecondary,
-                child: const Icon(Icons.laptop),
-              ),
-              onTap: () async {
-                Navigator.of(context).pop();
-              }),
-        ],
-        */
+          if (false == true) ...[
+            KeyActionTitle(l10n.s_setup),
+            KeyActionItem(
+                key: keys.setupMacOsAction,
+                title: Text('Setup for macOS'),
+                subtitle: Text('Create certificates for macOS login'),
+                leading: CircleAvatar(
+                  backgroundColor: theme.secondary,
+                  foregroundColor: theme.onSecondary,
+                  child: const Icon(Icons.laptop),
+                ),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                }),
+          ],
+          */
       ],
     ),
   );
