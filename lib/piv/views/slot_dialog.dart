@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
-import '../../widgets/list_title.dart';
+import '../../app/views/action_list.dart';
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
@@ -27,6 +27,8 @@ class SlotDialog extends ConsumerWidget {
 
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
+    final theme =
+        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
 
     final slotData = ref.watch(pivSlotsProvider(node.path).select((value) =>
         value.whenOrNull(
@@ -115,78 +117,53 @@ class SlotDialog extends ConsumerWidget {
                   ],
                 ),
               ),
-              ListTitle(l10n.s_actions, textStyle: textTheme.bodyLarge),
-              _SlotDialogActions(certInfo),
+              ActionListSection(
+                l10n.s_actions,
+                children: [
+                  ActionListItem(
+                    backgroundColor: theme.primary,
+                    foregroundColor: theme.onPrimary,
+                    icon: const Icon(Icons.add_outlined),
+                    title: l10n.s_generate_key,
+                    subtitle: l10n.l_generate_desc,
+                    onTap: () {
+                      Actions.invoke(context, const GenerateIntent());
+                    },
+                  ),
+                  ActionListItem(
+                    icon: const Icon(Icons.file_download_outlined),
+                    title: l10n.l_import_file,
+                    subtitle: l10n.l_import_desc,
+                    onTap: () {
+                      Actions.invoke(context, const ImportIntent());
+                    },
+                  ),
+                  if (certInfo != null) ...[
+                    ActionListItem(
+                      icon: const Icon(Icons.file_upload_outlined),
+                      title: l10n.l_export_certificate,
+                      subtitle: l10n.l_export_certificate_desc,
+                      onTap: () {
+                        Actions.invoke(context, const ExportIntent());
+                      },
+                    ),
+                    ActionListItem(
+                      backgroundColor: theme.error,
+                      foregroundColor: theme.onError,
+                      icon: const Icon(Icons.delete_outline),
+                      title: l10n.l_delete_certificate,
+                      subtitle: l10n.l_delete_certificate_desc,
+                      onTap: () {
+                        Actions.invoke(context, const DeleteIntent());
+                      },
+                    ),
+                  ],
+                ],
+              ),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class _SlotDialogActions extends StatelessWidget {
-  final CertInfo? certInfo;
-  const _SlotDialogActions(this.certInfo);
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
-    return Column(
-      children: [
-        ListTile(
-          leading: CircleAvatar(
-            backgroundColor: theme.primary,
-            foregroundColor: theme.onPrimary,
-            child: const Icon(Icons.add_outlined),
-          ),
-          title: Text(l10n.s_generate_key),
-          subtitle: Text(l10n.l_generate_desc),
-          onTap: () {
-            Actions.invoke(context, const GenerateIntent());
-          },
-        ),
-        ListTile(
-          leading: CircleAvatar(
-            backgroundColor: theme.secondary,
-            foregroundColor: theme.onSecondary,
-            child: const Icon(Icons.file_download_outlined),
-          ),
-          title: Text(l10n.l_import_file),
-          subtitle: Text(l10n.l_import_desc),
-          onTap: () {
-            Actions.invoke(context, const ImportIntent());
-          },
-        ),
-        if (certInfo != null) ...[
-          ListTile(
-            leading: CircleAvatar(
-              backgroundColor: theme.secondary,
-              foregroundColor: theme.onSecondary,
-              child: const Icon(Icons.file_upload_outlined),
-            ),
-            title: Text(l10n.l_export_certificate),
-            subtitle: Text(l10n.l_export_certificate_desc),
-            onTap: () {
-              Actions.invoke(context, const ExportIntent());
-            },
-          ),
-          ListTile(
-            leading: CircleAvatar(
-              backgroundColor: theme.error,
-              foregroundColor: theme.onError,
-              child: const Icon(Icons.delete_outline),
-            ),
-            title: Text(l10n.l_delete_certificate),
-            subtitle: Text(l10n.l_delete_certificate_desc),
-            onTap: () {
-              Actions.invoke(context, const DeleteIntent());
-            },
-          ),
-        ],
-      ],
     );
   }
 }

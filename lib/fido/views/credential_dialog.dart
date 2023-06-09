@@ -6,7 +6,7 @@ import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
-import '../../widgets/list_title.dart';
+import '../../app/views/action_list.dart';
 import '../models.dart';
 import 'delete_credential_dialog.dart';
 
@@ -24,6 +24,9 @@ class CredentialDialog extends ConsumerWidget {
       return const SizedBox();
     }
 
+    final l10n = AppLocalizations.of(context)!;
+    final theme =
+        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
     return Actions(
       actions: {
         DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
@@ -77,38 +80,25 @@ class CredentialDialog extends ConsumerWidget {
                   ],
                 ),
               ),
-              ListTitle(AppLocalizations.of(context)!.s_actions,
-                  textStyle: Theme.of(context).textTheme.bodyLarge),
-              _CredentialDialogActions(),
+              ActionListSection(
+                l10n.s_actions,
+                children: [
+                  ActionListItem(
+                    backgroundColor: theme.error,
+                    foregroundColor: theme.onError,
+                    icon: const Icon(Icons.delete),
+                    title: l10n.s_delete_passkey,
+                    subtitle: l10n.l_delete_account_desc,
+                    onTap: () {
+                      Actions.invoke(context, const DeleteIntent());
+                    },
+                  ),
+                ],
+              ),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class _CredentialDialogActions extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
-    return Column(
-      children: [
-        ListTile(
-          leading: CircleAvatar(
-            backgroundColor: theme.error,
-            foregroundColor: theme.onError,
-            child: const Icon(Icons.delete),
-          ),
-          title: Text(l10n.s_delete_passkey),
-          subtitle: Text(l10n.l_delete_account_desc),
-          onTap: () {
-            Actions.invoke(context, const DeleteIntent());
-          },
-        ),
-      ],
     );
   }
 }

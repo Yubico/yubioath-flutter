@@ -6,7 +6,7 @@ import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
-import '../../widgets/list_title.dart';
+import '../../app/views/action_list.dart';
 import '../models.dart';
 import 'delete_fingerprint_dialog.dart';
 import 'rename_fingerprint_dialog.dart';
@@ -25,6 +25,9 @@ class FingerprintDialog extends ConsumerWidget {
       return const SizedBox();
     }
 
+    final l10n = AppLocalizations.of(context)!;
+    final theme =
+        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
     return Actions(
       actions: {
         EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
@@ -93,50 +96,33 @@ class FingerprintDialog extends ConsumerWidget {
                   ],
                 ),
               ),
-              ListTitle(AppLocalizations.of(context)!.s_actions,
-                  textStyle: Theme.of(context).textTheme.bodyLarge),
-              _FingerprintDialogActions(),
+              ActionListSection(
+                l10n.s_actions,
+                children: [
+                  ActionListItem(
+                    icon: const Icon(Icons.edit),
+                    title: l10n.s_rename_fp,
+                    subtitle: l10n.l_rename_fp_desc,
+                    onTap: () {
+                      Actions.invoke(context, const EditIntent());
+                    },
+                  ),
+                  ActionListItem(
+                    backgroundColor: theme.error,
+                    foregroundColor: theme.onError,
+                    icon: const Icon(Icons.delete),
+                    title: l10n.s_delete_fingerprint,
+                    subtitle: l10n.l_delete_fingerprint_desc,
+                    onTap: () {
+                      Actions.invoke(context, const DeleteIntent());
+                    },
+                  ),
+                ],
+              ),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class _FingerprintDialogActions extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
-    return Column(
-      children: [
-        ListTile(
-          leading: CircleAvatar(
-            backgroundColor: theme.secondary,
-            foregroundColor: theme.onSecondary,
-            child: const Icon(Icons.edit),
-          ),
-          title: Text(l10n.s_rename_fp),
-          subtitle: Text(l10n.l_rename_fp_desc),
-          onTap: () {
-            Actions.invoke(context, const EditIntent());
-          },
-        ),
-        ListTile(
-          leading: CircleAvatar(
-            backgroundColor: theme.error,
-            foregroundColor: theme.onError,
-            child: const Icon(Icons.delete),
-          ),
-          title: Text(l10n.s_delete_fingerprint),
-          subtitle: Text(l10n.l_delete_fingerprint_desc),
-          onTap: () {
-            Actions.invoke(context, const DeleteIntent());
-          },
-        ),
-      ],
     );
   }
 }
