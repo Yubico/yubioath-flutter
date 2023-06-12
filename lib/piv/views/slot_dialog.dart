@@ -27,8 +27,6 @@ class SlotDialog extends ConsumerWidget {
 
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
 
     final slotData = ref.watch(pivSlotsProvider(node.path).select((value) =>
         value.whenOrNull(
@@ -121,9 +119,8 @@ class SlotDialog extends ConsumerWidget {
                 l10n.s_actions,
                 children: [
                   ActionListItem(
-                    backgroundColor: theme.primary,
-                    foregroundColor: theme.onPrimary,
                     icon: const Icon(Icons.add_outlined),
+                    actionStyle: ActionStyle.primary,
                     title: l10n.s_generate_key,
                     subtitle: l10n.l_generate_desc,
                     onTap: () {
@@ -148,8 +145,7 @@ class SlotDialog extends ConsumerWidget {
                       },
                     ),
                     ActionListItem(
-                      backgroundColor: theme.error,
-                      foregroundColor: theme.onError,
+                      actionStyle: ActionStyle.error,
                       icon: const Icon(Icons.delete_outline),
                       title: l10n.l_delete_certificate,
                       subtitle: l10n.l_delete_certificate_desc,

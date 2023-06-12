@@ -42,18 +42,16 @@ Widget oathBuildActions(
 }) {
   final l10n = AppLocalizations.of(context)!;
   final capacity = oathState.version.isAtLeast(4) ? 32 : null;
-  final theme =
-      ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
+
   return FsDialog(
     child: Column(
       children: [
         ActionListSection(l10n.s_setup, children: [
           ActionListItem(
             key: keys.addAccountAction,
-            title: l10n.s_add_account,
-            backgroundColor: theme.primary,
-            foregroundColor: theme.onPrimary,
+            actionStyle: ActionStyle.primary,
             icon: const Icon(Icons.person_add_alt_1_outlined),
+            title: l10n.s_add_account,
             subtitle: used == null
                 ? l10n.l_unlock_first
                 : (capacity != null
@@ -126,11 +124,10 @@ Widget oathBuildActions(
               }),
           ActionListItem(
               key: keys.resetAction,
+              icon: const Icon(Icons.delete_outline),
+              actionStyle: ActionStyle.error,
               title: l10n.s_reset_oath,
               subtitle: l10n.l_factory_reset_this_app,
-              foregroundColor: theme.onError,
-              backgroundColor: theme.error,
-              icon: const Icon(Icons.delete_outline),
               onTap: () {
                 Navigator.of(context).pop();
                 showBlurDialog(

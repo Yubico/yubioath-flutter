@@ -44,37 +44,28 @@ class AccountDialog extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final actions = helper.buildActions();
 
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
-
     final copy =
         actions.firstWhere(((e) => e.text == l10n.l_copy_to_clipboard));
     final delete = actions.firstWhere(((e) => e.text == l10n.s_delete_account));
-    final colors = {
-      copy: (theme.primary, theme.onPrimary),
-      delete: (theme.error, theme.onError),
+    final canCopy = copy.intent != null;
+    final actionStyles = {
+      copy: canCopy ? ActionStyle.primary : ActionStyle.normal,
+      delete: ActionStyle.error,
     };
 
     // If we can't copy, but can calculate, highlight that button instead
-    if (copy.intent == null) {
+    if (!canCopy) {
       final calculates = actions.where(((e) => e.text == l10n.s_calculate));
       if (calculates.isNotEmpty) {
-        colors[calculates.first] = (theme.primary, theme.onPrimary);
+        actionStyles[calculates.first] = ActionStyle.primary;
       }
     }
 
     return actions.map((e) {
       final intent = e.intent;
-      final (firstColor, secondColor) =
-          colors[e] ?? (theme.secondary, theme.onSecondary);
       return ActionListItem(
-        leading: CircleAvatar(
-          backgroundColor:
-              intent != null ? firstColor : theme.secondary.withOpacity(0.2),
-          foregroundColor: secondColor,
-          //disabledBackgroundColor: theme.onSecondary.withOpacity(0.2),
-          child: e.icon,
-        ),
+        actionStyle: actionStyles[e] ?? ActionStyle.normal,
+        icon: e.icon,
         title: e.text,
         subtitle: e.trailing,
         onTap: intent != null

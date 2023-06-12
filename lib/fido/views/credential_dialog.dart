@@ -25,8 +25,6 @@ class CredentialDialog extends ConsumerWidget {
     }
 
     final l10n = AppLocalizations.of(context)!;
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
     return Actions(
       actions: {
         DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
@@ -84,8 +82,7 @@ class CredentialDialog extends ConsumerWidget {
                 l10n.s_actions,
                 children: [
                   ActionListItem(
-                    backgroundColor: theme.error,
-                    foregroundColor: theme.onError,
+                    actionStyle: ActionStyle.error,
                     icon: const Icon(Icons.delete),
                     title: l10n.s_delete_passkey,
                     subtitle: l10n.l_delete_account_desc,

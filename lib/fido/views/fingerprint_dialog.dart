@@ -26,8 +26,6 @@ class FingerprintDialog extends ConsumerWidget {
     }
 
     final l10n = AppLocalizations.of(context)!;
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
     return Actions(
       actions: {
         EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
@@ -108,8 +106,7 @@ class FingerprintDialog extends ConsumerWidget {
                     },
                   ),
                   ActionListItem(
-                    backgroundColor: theme.error,
-                    foregroundColor: theme.onError,
+                    actionStyle: ActionStyle.error,
                     icon: const Icon(Icons.delete),
                     title: l10n.s_delete_fingerprint,
                     subtitle: l10n.l_delete_fingerprint_desc,

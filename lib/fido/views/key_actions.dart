@@ -33,8 +33,6 @@ bool fidoShowActionsNotifier(FidoState state) {
 Widget fidoBuildActions(
     BuildContext context, DeviceNode node, FidoState state, int fingerprints) {
   final l10n = AppLocalizations.of(context)!;
-  final theme =
-      ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
 
   return FsDialog(
     child: Column(
@@ -44,8 +42,7 @@ Widget fidoBuildActions(
             l10n.s_setup,
             children: [
               ActionListItem(
-                backgroundColor: theme.primary,
-                foregroundColor: theme.onPrimary,
+                actionStyle: ActionStyle.primary,
                 icon: const Icon(Icons.fingerprint_outlined),
                 title: l10n.s_add_fingerprint,
                 subtitle: state.unlocked
@@ -87,8 +84,7 @@ Widget fidoBuildActions(
                   );
                 }),
             ActionListItem(
-              foregroundColor: theme.onError,
-              backgroundColor: theme.error,
+              actionStyle: ActionStyle.error,
               icon: const Icon(Icons.delete_outline),
               title: l10n.s_reset_fido,
               subtitle: l10n.l_factory_reset_this_app,
