@@ -18,50 +18,49 @@ import 'package:flutter/material.dart';
 
 import '../../widgets/list_title.dart';
 
+enum ActionStyle { normal, primary, error }
+
 class ActionListItem extends StatelessWidget {
   final String title;
   final String? subtitle;
-  final Widget? leading;
-  final Widget? icon;
-  final Color? foregroundColor;
-  final Color? backgroundColor;
+  final Widget icon;
   final Widget? trailing;
+  final ActionStyle actionStyle;
   final void Function()? onTap;
 
   const ActionListItem({
     super.key,
+    required this.icon,
     required this.title,
     this.subtitle,
-    this.leading,
-    this.icon,
-    this.foregroundColor,
-    this.backgroundColor,
     this.trailing,
     this.onTap,
+    this.actionStyle = ActionStyle.normal,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Either leading is defined only, or we need at least an icon.
-    assert((leading != null &&
-            (icon == null &&
-                foregroundColor == null &&
-                backgroundColor == null)) ||
-        (leading == null && icon != null));
-
     final theme =
         ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
+
+    final (foreground, background) = switch (actionStyle) {
+      ActionStyle.normal => (theme.onSecondary, theme.secondary),
+      ActionStyle.primary => (theme.onPrimary, theme.primary),
+      ActionStyle.error => (theme.onError, theme.error),
+    };
 
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       title: Text(title),
       subtitle: subtitle != null ? Text(subtitle!) : null,
-      leading: leading ??
-          CircleAvatar(
-            foregroundColor: foregroundColor ?? theme.onSecondary,
-            backgroundColor: backgroundColor ?? theme.secondary,
-            child: icon,
-          ),
+      leading: Opacity(
+        opacity: onTap != null ? 1.0 : 0.4,
+        child: CircleAvatar(
+          foregroundColor: foreground,
+          backgroundColor: background,
+          child: icon,
+        ),
+      ),
       trailing: trailing,
       onTap: onTap,
       enabled: onTap != null,

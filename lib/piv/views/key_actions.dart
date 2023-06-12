@@ -31,8 +31,6 @@ import 'reset_dialog.dart';
 Widget pivBuildActions(BuildContext context, DevicePath devicePath,
     PivState pivState, WidgetRef ref) {
   final l10n = AppLocalizations.of(context)!;
-  final theme =
-      ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
 
   final usingDefaultMgmtKey =
       pivState.metadata?.managementKeyMetadata.defaultValue == true;
@@ -100,11 +98,10 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                 }),
             ActionListItem(
                 key: keys.resetAction,
+                icon: const Icon(Icons.delete_outline),
+                actionStyle: ActionStyle.error,
                 title: l10n.s_reset_piv,
                 subtitle: l10n.l_factory_reset_this_app,
-                foregroundColor: theme.onError,
-                backgroundColor: theme.error,
-                icon: const Icon(Icons.delete_outline),
                 onTap: () {
                   Navigator.of(context).pop();
                   showBlurDialog(
