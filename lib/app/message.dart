@@ -63,20 +63,27 @@ Future<T?> showBlurDialog<T>({
   required BuildContext context,
   required Widget Function(BuildContext) builder,
   RouteSettings? routeSettings,
-}) =>
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      pageBuilder: (ctx, anim1, anim2) => builder(ctx),
-      transitionDuration: const Duration(milliseconds: 150),
-      transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
-        filter: ImageFilter.blur(
-            sigmaX: 20 * anim1.value, sigmaY: 20 * anim1.value),
-        child: FadeTransition(
-          opacity: anim1,
-          child: child,
-        ),
+}) async {
+  const transitionDelay = Duration(milliseconds: 150);
+  final result = await showGeneralDialog<T>(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+    pageBuilder: (ctx, anim1, anim2) => builder(ctx),
+    transitionDuration: transitionDelay,
+    transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
+      filter:
+          ImageFilter.blur(sigmaX: 20 * anim1.value, sigmaY: 20 * anim1.value),
+      child: FadeTransition(
+        opacity: anim1,
+        child: child,
       ),
-      routeSettings: routeSettings,
-    );
+    ),
+    routeSettings: routeSettings,
+  );
+  // Make sure we wait for the dialog to fade out before returning the result.
+  // This is needed for subsequent dialogs with autofocus.
+  await Future.delayed(transitionDelay);
+
+  return result;
+}

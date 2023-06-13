@@ -90,7 +90,8 @@ Widget registerPivActions(
         ),
         GenerateIntent:
             CallbackAction<GenerateIntent>(onInvoke: (intent) async {
-          if (!await _authIfNeeded(ref, devicePath, pivState)) {
+          if (!pivState.protectedKey &&
+              !await _authIfNeeded(ref, devicePath, pivState)) {
             return false;
           }
 

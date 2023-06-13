@@ -224,15 +224,11 @@ class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
     final controller = StreamController<FingerprintEvent>();
     final signaler = Signaler();
     signaler.signals.listen((signal) {
-      switch (signal.status) {
-        case 'capture':
-          controller.sink
-              .add(FingerprintEvent.capture(signal.body['remaining']));
-          break;
-        case 'capture-error':
-          controller.sink.add(FingerprintEvent.error(signal.body['code']));
-          break;
-      }
+      controller.sink.add(switch (signal.status) {
+        'capture' => FingerprintEvent.capture(signal.body['remaining']),
+        'capture-error' => FingerprintEvent.error(signal.body['code']),
+        final other => throw UnimplementedError(other),
+      });
     });
 
     controller.onCancel = () {

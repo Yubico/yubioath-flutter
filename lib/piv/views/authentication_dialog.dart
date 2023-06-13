@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -42,33 +43,39 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final keyLen = (widget.pivState.metadata?.managementKeyMetadata.keyType ??
+                ManagementKeyType.tdes)
+            .keyLength *
+        2;
     return ResponsiveDialog(
       title: Text(l10n.l_unlock_piv_management),
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: () async {
-            final navigator = Navigator.of(context);
-            try {
-              final status = await ref
-                  .read(pivStateProvider(widget.devicePath).notifier)
-                  .authenticate(_managementKey);
-              if (status) {
-                navigator.pop(true);
-              } else {
-                setState(() {
-                  _keyIsWrong = true;
-                });
-              }
-            } on CancellationException catch (_) {
-              navigator.pop(false);
-            } catch (_) {
-              // TODO: More error cases
-              setState(() {
-                _keyIsWrong = true;
-              });
-            }
-          },
+          onPressed: _managementKey.length == keyLen
+              ? () async {
+                  final navigator = Navigator.of(context);
+                  try {
+                    final status = await ref
+                        .read(pivStateProvider(widget.devicePath).notifier)
+                        .authenticate(_managementKey);
+                    if (status) {
+                      navigator.pop(true);
+                    } else {
+                      setState(() {
+                        _keyIsWrong = true;
+                      });
+                    }
+                  } on CancellationException catch (_) {
+                    navigator.pop(false);
+                  } catch (_) {
+                    // TODO: More error cases
+                    setState(() {
+                      _keyIsWrong = true;
+                    });
+                  }
+                }
+              : null,
           child: Text(l10n.s_unlock),
         ),
       ],
@@ -79,16 +86,21 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
           children: [
             Text(l10n.p_unlock_piv_management_desc),
             TextField(
-              autofocus: true,
-              obscureText: true,
-              autofillHints: const [AutofillHints.password],
               key: keys.managementKeyField,
+              autofocus: true,
+              maxLength: keyLen,
+              autofillHints: const [AutofillHints.password],
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                    RegExp('[a-f0-9]', caseSensitive: false))
+              ],
               decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: l10n.s_management_key,
-                  prefixIcon: const Icon(Icons.key_outlined),
-                  errorText: _keyIsWrong ? l10n.l_wrong_key : null,
-                  errorMaxLines: 3),
+                border: const OutlineInputBorder(),
+                labelText: l10n.s_management_key,
+                prefixIcon: const Icon(Icons.key_outlined),
+                errorText: _keyIsWrong ? l10n.l_wrong_key : null,
+                errorMaxLines: 3,
+              ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {

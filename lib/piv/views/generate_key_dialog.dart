@@ -104,7 +104,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
-                  _subject = value;
+                  _subject = value.contains('=') ? value : 'CN=$value';
                 });
               },
             ),

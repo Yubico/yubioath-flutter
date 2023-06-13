@@ -21,7 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/desktop/models.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
@@ -30,6 +29,7 @@ import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
 import '../../piv/models.dart';
 import '../../piv/state.dart';
+import '../models.dart';
 import '../rpc.dart';
 import '../state.dart';
 
@@ -70,7 +70,7 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
       ..setErrorHandler('state-reset', (_) async {
         ref.invalidate(_sessionProvider(devicePath));
       })
-      ..setErrorHandler('auth-required', (_) async {
+      ..setErrorHandler('auth-required', (e) async {
         final String? mgmtKey;
         if (state.valueOrNull?.metadata?.managementKeyMetadata.defaultValue ==
             true) {
@@ -83,7 +83,12 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
             ref.invalidateSelf();
           } else {
             ref.read(_managementKeyProvider(devicePath).notifier).state = null;
+            ref.invalidateSelf();
+            throw e;
           }
+        } else {
+          ref.invalidateSelf();
+          throw e;
         }
       });
     ref.onDispose(() {
@@ -103,6 +108,7 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
   @override
   Future<void> reset() async {
     await _session.command('reset');
+    ref.read(_managementKeyProvider(_devicePath).notifier).state = null;
     ref.invalidate(_sessionProvider(_session.devicePath));
   }
 
@@ -246,6 +252,8 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
         'store_key': storeKey,
       },
     );
+    ref.read(_managementKeyProvider(_devicePath).notifier).state =
+        managementKey;
     ref.invalidateSelf();
   }
 

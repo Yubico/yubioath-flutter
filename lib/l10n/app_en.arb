@@ -193,6 +193,7 @@
         }
     },
     "s_pin_set": "PIN set",
+    "s_puk_set": "PUK set",
     "l_set_pin_failed": "Failed to set PIN: {message}",
     "@l_set_pin_failed" : {
         "placeholders": {
@@ -219,7 +220,8 @@
     "l_set_pin_first": "A PIN is required first",
     "l_unlock_pin_first": "Unlock with PIN first",
     "l_pin_soft_locked": "PIN has been blocked until the YubiKey is removed and reinserted",
-    "p_enter_current_pin_or_reset": "Enter your current PIN. If you don't know your PIN, you'll need to reset the YubiKey.",
+    "p_enter_current_pin_or_reset": "Enter your current PIN. If you don't know your PIN, you'll need to unblock it with the PUK or reset the YubiKey.",
+    "p_enter_current_puk_or_reset": "Enter your current PUK. If you don't know your PUK, you'll need to reset the YubiKey.",
     "p_enter_new_fido2_pin": "Enter your new PIN. A PIN must be at least {length} characters long and may contain letters, numbers and special characters.",
     "@p_enter_new_fido2_pin" : {
         "placeholders": {
