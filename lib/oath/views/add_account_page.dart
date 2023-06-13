@@ -130,8 +130,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           _qrState = _QrScanState.failed;
         });
       } else {
-        final data = CredentialData.fromUri(Uri.parse(otpauth));
-        _loadCredentialData(data);
+        final data = CredentialData.multiFromUri(Uri.parse(otpauth));
+        _loadCredentialData(data[0]); // TODO
       }
     } catch (e) {
       final String errorMessage;
@@ -455,7 +455,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       obscureText: _isObscure,
                       // avoid using autofill hints on Android otherwise Autofill service
                       // would hint to use saved passwords for this field
-                      autofillHints: isAndroid ? [] : const [AutofillHints.password],
+                      autofillHints:
+                          isAndroid ? [] : const [AutofillHints.password],
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(
                             _secretFormatterPattern)
