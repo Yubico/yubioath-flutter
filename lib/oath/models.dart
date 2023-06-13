@@ -18,7 +18,6 @@ import 'dart:typed_data';
 import 'dart:convert';
 import 'package:base32/base32.dart';
 import 'package:logging/logging.dart';
-import 'package:convert/convert.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yubico_authenticator/app/logging.dart';
@@ -128,7 +127,17 @@ class CredentialData with _$CredentialData {
   factory CredentialData.fromJson(Map<String, dynamic> json) =>
       _$CredentialDataFromJson(json);
 
-  factory CredentialData.fromUri(Uri uri) {
+  static List<CredentialData> multiFromUri(uri) {
+    if (uri.scheme.toLowerCase() == 'otpauth-migration') {
+      return CredentialData.fromMigration(uri);
+    } else if (uri.scheme.toLowerCase() == 'otpauth') {
+      return [CredentialData.fromUri(uri)];
+    } else {
+      throw ArgumentError('Invalid scheme');
+    }
+  }
+
+  static List<CredentialData> fromMigration(uri) {
     List<dynamic> read(Uint8List bytes) {
       final index = bytes[0];
       final sublist1 = bytes.sublist(1, index + 1);
@@ -141,85 +150,115 @@ class CredentialData with _$CredentialData {
       return utf8.decode(encodedData.runes.toList());
     }
 
-    if (uri.scheme.toLowerCase() == 'otpauth-migration') {
-      final uriString = uri.toString();
-      var data = Uint8List.fromList(
-          base64.decode(Uri.decodeComponent(uriString.split('=')[1])));
+    final uriString = uri.toString();
+    var data = Uint8List.fromList(
+        base64.decode(Uri.decodeComponent(uriString.split('=')[1])));
 
-      var credentials = <CredentialData>[];
+    var credentials = <CredentialData>[];
 
-      var tag = data[0];
+    var tag = data[0];
 
-      /*
+    /*
       Assuming the credential(s) follow the format:
-      cred = 0aLENGTH0aSECRET12NAME1aISSUER200128013002xxx
+      cred = 0aLENGTH0aSECRET12NAME1aISSUER20ALGO28DIGITS30OATHxxx
       where xxx can be another cred.
       */
-      while (tag == 10) {
-        // 0a tag means new credential.
+    while (tag == 10) {
+      // 0a tag means new credential.
 
-        //var length = data[1]; // The length of this credential
-        var secretTag = data[2];
-        if (secretTag != 10) {
-          // tag before secret is 0a hex
-          throw ArgumentError('Invalid scheme, no secret tag');
-        }
-        data = data.sublist(3);
-        final result1 = read(data);
-        final secret = result1[0];
-        data = result1[1];
-        final decodedSecret = b32Encode(secret);
+      // Extract secret, name, and issuer
+      var secretTag = data[2];
+      if (secretTag != 10) {
+        // tag before secret is 0a hex
+        throw ArgumentError('Invalid scheme, no secret tag');
+      }
+      data = data.sublist(3);
+      final result1 = read(data);
+      final secret = result1[0];
+      data = result1[1];
+      final decodedSecret = b32Encode(secret);
 
-        var nameTag = data[0];
-        if (nameTag != 18) {
-          // tag before name is 12 hex
-          throw ArgumentError('Invalid scheme, no name tag');
-        }
+      var nameTag = data[0];
+      if (nameTag != 18) {
+        // tag before name is 12 hex
+        throw ArgumentError('Invalid scheme, no name tag');
+      }
+      data = data.sublist(1);
+      final result2 = read(data);
+      final name = result2[0];
+      data = result2[1];
+
+      var issuerTag = data[0];
+      List<int>? issuer;
+
+      if (issuerTag == 26) {
+        // tag before issuer is 1a hex, but issuer is optional.
         data = data.sublist(1);
-        final result2 = read(data);
-        final name = result2[0];
-        data = result2[1];
+        final result3 = read(data);
+        issuer = result3[0];
+        data = result3[1];
+      }
 
-        var issuerTag = data[0];
-        List<int>? issuer;
+      // Extract algorithm, number of digits, and oath type:
+      var algoTag = data[0];
+      if (algoTag != 32) {
+        // tag before algo is 20 hex
+        throw ArgumentError('Invalid scheme, no algo tag');
+      }
+      int algo = data[1];
 
-        if (issuerTag == 26) {
-          // tag before issuer is 1a hex, but issuer is optional.
-          data = data.sublist(1);
-          final result3 = read(data);
-          issuer = result3[0];
-          data = result3[1];
-        }
-        final credential = CredentialData(
-          issuer: issuerTag != 26
-              ? null
-              : utf8.decode(issuer!, allowMalformed: true),
-          name: utf8.decode(name, allowMalformed: true),
-          secret: decodedSecret,
-        );
+      var digitsTag = data[2];
+      if (digitsTag != 40) {
+        // tag before digits is 28 hex
+        throw ArgumentError('Invalid scheme, no digits tag');
+      }
+      var digits = data[3];
 
-        credentials.add(credential);
+      var oathTag = data[4];
+      if (oathTag != 48) {
+        // tag before oath is 30 hex
+        throw ArgumentError('Invalid scheme, no oath tag');
+      }
+      var oathType = data[5];
 
-        var endTag = data.sublist(0, 6);
-        if (hex.encode(endTag) != '200128013002') {
-          // At the end of every credential there is 200128013002
-          throw ArgumentError('Invalid scheme, no end tag');
-        }
+      int counter = defaultCounter;
+      if (oathType == 1) {
+        // if hotp, extract counter
+        counter = data[7];
+      }
+
+      final credential = CredentialData(
+        issuer:
+            issuerTag != 26 ? null : utf8.decode(issuer!, allowMalformed: true),
+        name: utf8.decode(name, allowMalformed: true),
+        oathType: oathType == 1 ? OathType.hotp : OathType.totp,
+        secret: decodedSecret,
+        hashAlgorithm: algo == 1
+            ? HashAlgorithm.sha1
+            : (algo == 2 ? HashAlgorithm.sha256 : HashAlgorithm.sha512),
+        digits: digits == 1 ? defaultDigits : 8,
+        counter: counter,
+      );
+
+      credentials.add(credential);
+      if (oathType == 1) {
+        data = data.sublist(8);
+      } else {
         data = data.sublist(6);
-        tag = data[0];
       }
-
-      // Print all the extracted credentials
-      for (var credential in credentials) {
-        _log.debug(
-            '${credential.issuer} (${credential.name}) ${credential.secret}');
-      }
-
-      return credentials[0]; // For now, return only the first credential.
-    } else if (uri.scheme.toLowerCase() != 'otpauth') {
-      throw ArgumentError('Invalid scheme, must be "otpauth://"');
+      tag = data[0];
     }
 
+    // Print all the extracted credentials
+    for (var credential in credentials) {
+      _log.debug(
+          '${credential.issuer} (${credential.name}) ${credential.secret}');
+    }
+
+    return credentials;
+  }
+
+  factory CredentialData.fromUri(Uri uri) {
     final oathType = OathType.values.byName(uri.host.toLowerCase());
     final params = uri.queryParameters;
     String? issuer;
