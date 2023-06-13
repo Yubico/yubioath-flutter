@@ -21,7 +21,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../widgets/responsive_dialog.dart';
-import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
 
@@ -38,7 +37,6 @@ class ManagePinPukDialog extends ConsumerStatefulWidget {
       _ManagePinPukDialogState();
 }
 
-//TODO: Use switch expressions in Dart 3
 class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   String _currentPin = '';
   String _newPin = '';
@@ -48,23 +46,22 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
 
   _submit() async {
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
-    final PinVerificationStatus result;
-    switch (widget.target) {
-      case ManageTarget.pin:
-        result = await notifier.changePin(_currentPin, _newPin);
-        break;
-      case ManageTarget.puk:
-        result = await notifier.changePuk(_currentPin, _newPin);
-        break;
-      case ManageTarget.unblock:
-        result = await notifier.unblockPin(_currentPin, _newPin);
-        break;
-    }
+    final result = await switch (widget.target) {
+      ManageTarget.pin => notifier.changePin(_currentPin, _newPin),
+      ManageTarget.puk => notifier.changePuk(_currentPin, _newPin),
+      ManageTarget.unblock => notifier.unblockPin(_currentPin, _newPin),
+    };
 
     result.when(success: () {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       Navigator.of(context).pop();
-      showMessage(context, AppLocalizations.of(context)!.s_password_set);
+      showMessage(
+          context,
+          switch (widget.target) {
+            ManageTarget.puk => l10n.s_puk_set,
+            _ => l10n.s_pin_set,
+          });
     }, failure: (attemptsRemaining) {
       setState(() {
         _attemptsRemaining = attemptsRemaining;
@@ -80,18 +77,11 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     final isValid =
         _newPin.isNotEmpty && _newPin == _confirmPin && _currentPin.isNotEmpty;
 
-    final String titleText;
-    switch (widget.target) {
-      case ManageTarget.pin:
-        titleText = l10n.s_change_pin;
-        break;
-      case ManageTarget.puk:
-        titleText = l10n.s_change_puk;
-        break;
-      case ManageTarget.unblock:
-        titleText = l10n.s_unblock_pin;
-        break;
-    }
+    final titleText = switch (widget.target) {
+      ManageTarget.pin => l10n.s_change_pin,
+      ManageTarget.puk => l10n.s_change_puk,
+      ManageTarget.unblock => l10n.s_unblock_pin,
+    };
 
     return ResponsiveDialog(
       title: Text(titleText),
@@ -107,10 +97,14 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.p_enter_current_password_or_reset),
+            //TODO fix string
+            Text(widget.target == ManageTarget.pin
+                ? l10n.p_enter_current_pin_or_reset
+                : l10n.p_enter_current_puk_or_reset),
             TextField(
               autofocus: true,
               obscureText: true,
+              maxLength: 8,
               autofillHints: const [AutofillHints.password],
               key: keys.pinPukField,
               decoration: InputDecoration(
@@ -136,6 +130,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
             TextField(
               key: keys.newPinPukField,
               obscureText: true,
+              maxLength: 8,
               autofillHints: const [AutofillHints.newPassword],
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
@@ -143,7 +138,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                     ? l10n.s_new_puk
                     : l10n.s_new_pin,
                 prefixIcon: const Icon(Icons.password_outlined),
-                enabled: _currentPin.isNotEmpty,
+                // Old YubiKeys allowed a 4 digit PIN
+                enabled: _currentPin.length >= 4,
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -160,12 +156,13 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
             TextField(
               key: keys.confirmPinPukField,
               obscureText: true,
+              maxLength: 8,
               autofillHints: const [AutofillHints.newPassword],
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_pin,
                 prefixIcon: const Icon(Icons.password_outlined),
-                enabled: _currentPin.isNotEmpty && _newPin.isNotEmpty,
+                enabled: _currentPin.length >= 4 && _newPin.length >= 6,
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {

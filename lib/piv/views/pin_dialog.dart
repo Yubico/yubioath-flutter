@@ -67,7 +67,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: _submit,
+          onPressed: _pin.length >= 4 ? _submit : null,
           child: Text(l10n.s_unlock),
         ),
       ],
@@ -80,6 +80,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
             TextField(
               autofocus: true,
               obscureText: true,
+              maxLength: 8,
               autofillHints: const [AutofillHints.password],
               key: keys.managementKeyField,
               decoration: InputDecoration(

@@ -11,9 +11,8 @@ import '../state.dart';
 import 'actions.dart';
 
 class SlotDialog extends ConsumerWidget {
-  final PivState pivState;
   final SlotId pivSlot;
-  const SlotDialog(this.pivState, this.pivSlot, {super.key});
+  const SlotDialog(this.pivSlot, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,12 +27,13 @@ class SlotDialog extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
 
+    final pivState = ref.watch(pivStateProvider(node.path)).valueOrNull;
     final slotData = ref.watch(pivSlotsProvider(node.path).select((value) =>
         value.whenOrNull(
             data: (data) =>
                 data.firstWhere((element) => element.slot == pivSlot))));
 
-    if (slotData == null) {
+    if (pivState == null || slotData == null) {
       return const FsDialog(child: CircularProgressIndicator());
     }
 
