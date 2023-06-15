@@ -17,13 +17,22 @@
 import 'package:flutter/material.dart';
 
 const _prefix = 'piv.keys';
+const _keyAction = '$_prefix.actions';
+const _slotAction = '$_prefix.slot.actions';
 
-const managePinAction = Key('$_prefix.manage_pin');
-const managePukAction = Key('$_prefix.manage_puk');
-const manageManagementKeyAction = Key('$_prefix.manage_management_key');
-const resetAction = Key('$_prefix.reset');
+// Key actions
+const managePinAction = Key('$_keyAction.manage_pin');
+const managePukAction = Key('$_keyAction.manage_puk');
+const manageManagementKeyAction = Key('$_keyAction.manage_management_key');
+const resetAction = Key('$_keyAction.reset');
+const setupMacOsAction = Key('$_keyAction.setup_macos');
 
-const setupMacOsAction = Key('$_prefix.setup_macos');
+// Slot actions
+const generateAction = Key('$_slotAction.generate');
+const importAction = Key('$_slotAction.import');
+const exportAction = Key('$_slotAction.export');
+const deleteAction = Key('$_slotAction.delete');
+
 const saveButton = Key('$_prefix.save');
 const deleteButton = Key('$_prefix.delete');
 const unlockButton = Key('$_prefix.unlock');

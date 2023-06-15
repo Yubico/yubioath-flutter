@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
+import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
@@ -101,7 +102,7 @@ class FingerprintDialog extends ConsumerWidget {
                     icon: const Icon(Icons.edit),
                     title: l10n.s_rename_fp,
                     subtitle: l10n.l_rename_fp_desc,
-                    onTap: () {
+                    onTap: (context) {
                       Actions.invoke(context, const EditIntent());
                     },
                   ),
@@ -110,7 +111,7 @@ class FingerprintDialog extends ConsumerWidget {
                     icon: const Icon(Icons.delete),
                     title: l10n.s_delete_fingerprint,
                     subtitle: l10n.l_delete_fingerprint_desc,
-                    onTap: () {
+                    onTap: (context) {
                       Actions.invoke(context, const DeleteIntent());
                     },
                   ),

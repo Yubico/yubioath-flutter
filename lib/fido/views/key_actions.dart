@@ -53,7 +53,7 @@ Widget fidoBuildActions(
                 trailing:
                     fingerprints == 0 ? const Icon(Icons.warning_amber) : null,
                 onTap: state.unlocked && fingerprints < 5
-                    ? () {
+                    ? (context) {
                         Navigator.of(context).pop();
                         showBlurDialog(
                           context: context,
@@ -76,7 +76,7 @@ Widget fidoBuildActions(
                 trailing: state.alwaysUv && !state.hasPin
                     ? const Icon(Icons.warning_amber)
                     : null,
-                onTap: () {
+                onTap: (context) {
                   Navigator.of(context).pop();
                   showBlurDialog(
                     context: context,
@@ -88,7 +88,7 @@ Widget fidoBuildActions(
               icon: const Icon(Icons.delete_outline),
               title: l10n.s_reset_fido,
               subtitle: l10n.l_factory_reset_this_app,
-              onTap: () {
+              onTap: (context) {
                 Navigator.of(context).pop();
                 showBlurDialog(
                   context: context,

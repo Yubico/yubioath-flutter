@@ -116,14 +116,20 @@ class DeviceNode with _$DeviceNode {
       map(usbYubiKey: (_) => Transport.usb, nfcReader: (_) => Transport.nfc);
 }
 
+enum ActionStyle { normal, primary, error }
+
 @freezed
-class MenuAction with _$MenuAction {
-  factory MenuAction({
-    required String text,
+class ActionItem with _$ActionItem {
+  factory ActionItem({
     required Widget icon,
-    String? trailing,
-    Intent? intent,
-  }) = _MenuAction;
+    required String title,
+    String? subtitle,
+    String? shortcut,
+    Widget? trailing,
+    void Function(BuildContext context)? onTap,
+    ActionStyle? actionStyle,
+    Key? key,
+  }) = _ActionItem;
 }
 
 @freezed

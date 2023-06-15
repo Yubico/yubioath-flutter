@@ -58,7 +58,7 @@ Widget oathBuildActions(
                     ? l10n.l_accounts_used(used, capacity)
                     : ''),
             onTap: used != null && (capacity == null || capacity > used)
-                ? () async {
+                ? (context) async {
                     final credentials = ref.read(credentialsProvider);
                     final withContext = ref.read(withContextProvider);
                     Navigator.of(context).pop();
@@ -98,7 +98,7 @@ Widget oathBuildActions(
               title: l10n.s_custom_icons,
               subtitle: l10n.l_set_icons_for_accounts,
               icon: const Icon(Icons.image_outlined),
-              onTap: () async {
+              onTap: (context) async {
                 Navigator.of(context).pop();
                 await ref.read(withContextProvider)((context) => showBlurDialog(
                       context: context,
@@ -114,7 +114,7 @@ Widget oathBuildActions(
                   : l10n.s_set_password,
               subtitle: l10n.l_optional_password_protection,
               icon: const Icon(Icons.password_outlined),
-              onTap: () {
+              onTap: (context) {
                 Navigator.of(context).pop();
                 showBlurDialog(
                   context: context,
@@ -128,7 +128,7 @@ Widget oathBuildActions(
               actionStyle: ActionStyle.error,
               title: l10n.s_reset_oath,
               subtitle: l10n.l_factory_reset_this_app,
-              onTap: () {
+              onTap: (context) {
                 Navigator.of(context).pop();
                 showBlurDialog(
                   context: context,

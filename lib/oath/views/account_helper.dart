@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ import '../../widgets/circle_timer.dart';
 import '../../widgets/custom_icons.dart';
 import '../models.dart';
 import '../state.dart';
+import '../keys.dart' as keys;
 import 'actions.dart';
 
 /// Support class for presenting an OATH account.
@@ -52,7 +54,7 @@ class AccountHelper {
   String get title => credential.issuer ?? credential.name;
   String? get subtitle => credential.issuer != null ? credential.name : null;
 
-  List<MenuAction> buildActions() => _ref
+  List<ActionItem> buildActions() => _ref
       .watch(currentDeviceDataProvider)
       .maybeWhen(
         data: (data) {
@@ -61,41 +63,57 @@ class AccountHelper {
           final ready = expired || credential.oathType == OathType.hotp;
           final pinned = _ref.watch(favoritesProvider).contains(credential.id);
           final l10n = AppLocalizations.of(_context)!;
+          final canCopy = code != null && !expired;
 
           return [
-            MenuAction(
+            ActionItem(
+              key: keys.copyAction,
               icon: const Icon(Icons.copy),
-              text: l10n.l_copy_to_clipboard,
-              trailing: l10n.l_copy_code_desc,
-              intent: code == null || expired ? null : const CopyIntent(),
+              title: l10n.l_copy_to_clipboard,
+              subtitle: l10n.l_copy_code_desc,
+              shortcut: Platform.isMacOS ? '\u2318 C' : 'Ctrl+C',
+              actionStyle: canCopy ? ActionStyle.primary : null,
+              onTap: canCopy
+                  ? (context) => Actions.invoke(context, const CopyIntent())
+                  : null,
             ),
             if (manual)
-              MenuAction(
+              ActionItem(
+                key: keys.calculateAction,
+                actionStyle: !canCopy ? ActionStyle.primary : null,
                 icon: const Icon(Icons.refresh),
-                text: l10n.s_calculate,
-                trailing: l10n.l_calculate_code_desc,
-                intent: ready ? const CalculateIntent() : null,
+                title: l10n.s_calculate,
+                subtitle: l10n.l_calculate_code_desc,
+                onTap: ready
+                    ? (context) =>
+                        Actions.invoke(context, const CalculateIntent())
+                    : null,
               ),
-            MenuAction(
+            ActionItem(
+              key: keys.togglePinAction,
               icon: pinned
                   ? pushPinStrokeIcon
                   : const Icon(Icons.push_pin_outlined),
-              text: pinned ? l10n.s_unpin_account : l10n.s_pin_account,
-              trailing: l10n.l_pin_account_desc,
-              intent: const TogglePinIntent(),
+              title: pinned ? l10n.s_unpin_account : l10n.s_pin_account,
+              subtitle: l10n.l_pin_account_desc,
+              onTap: (context) =>
+                  Actions.invoke(context, const TogglePinIntent()),
             ),
             if (data.info.version.isAtLeast(5, 3))
-              MenuAction(
+              ActionItem(
+                key: keys.editAction,
                 icon: const Icon(Icons.edit_outlined),
-                text: l10n.s_rename_account,
-                trailing: l10n.l_rename_account_desc,
-                intent: const EditIntent(),
+                title: l10n.s_rename_account,
+                subtitle: l10n.l_rename_account_desc,
+                onTap: (context) => Actions.invoke(context, const EditIntent()),
               ),
-            MenuAction(
+            ActionItem(
+              key: keys.deleteAction,
+              actionStyle: ActionStyle.error,
               icon: const Icon(Icons.delete_outline),
-              text: l10n.s_delete_account,
-              trailing: l10n.l_delete_account_desc,
-              intent: const DeleteIntent(),
+              title: l10n.s_delete_account,
+              subtitle: l10n.l_delete_account_desc,
+              onTap: (context) => Actions.invoke(context, const DeleteIntent()),
             ),
           ];
         },

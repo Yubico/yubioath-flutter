@@ -27,6 +27,7 @@ import '../../app/state.dart';
 import '../../app/models.dart';
 import '../models.dart';
 import '../state.dart';
+import '../keys.dart' as keys;
 import 'authentication_dialog.dart';
 import 'delete_certificate_dialog.dart';
 import 'generate_key_dialog.dart';
@@ -235,3 +236,48 @@ Widget registerPivActions(
       },
       child: Builder(builder: builder),
     );
+
+List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
+  return [
+    ActionItem(
+      key: keys.generateAction,
+      icon: const Icon(Icons.add_outlined),
+      actionStyle: ActionStyle.primary,
+      title: l10n.s_generate_key,
+      subtitle: l10n.l_generate_desc,
+      onTap: (context) {
+        Actions.invoke(context, const GenerateIntent());
+      },
+    ),
+    ActionItem(
+      key: keys.importAction,
+      icon: const Icon(Icons.file_download_outlined),
+      title: l10n.l_import_file,
+      subtitle: l10n.l_import_desc,
+      onTap: (context) {
+        Actions.invoke(context, const ImportIntent());
+      },
+    ),
+    if (hasCert) ...[
+      ActionItem(
+        key: keys.exportAction,
+        icon: const Icon(Icons.file_upload_outlined),
+        title: l10n.l_export_certificate,
+        subtitle: l10n.l_export_certificate_desc,
+        onTap: (context) {
+          Actions.invoke(context, const ExportIntent());
+        },
+      ),
+      ActionItem(
+        key: keys.deleteAction,
+        actionStyle: ActionStyle.error,
+        icon: const Icon(Icons.delete_outline),
+        title: l10n.l_delete_certificate,
+        subtitle: l10n.l_delete_certificate_desc,
+        onTap: (context) {
+          Actions.invoke(context, const DeleteIntent());
+        },
+      ),
+    ],
+  ];
+}

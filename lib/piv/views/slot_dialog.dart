@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
@@ -26,6 +25,10 @@ class SlotDialog extends ConsumerWidget {
 
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
+    // This is what ListTile uses for subtitle
+    final subtitleStyle = textTheme.bodyMedium!.copyWith(
+      color: textTheme.bodySmall!.color,
+    );
 
     final pivState = ref.watch(pivStateProvider(node.path)).valueOrNull;
     final slotData = ref.watch(pivSlotsProvider(node.path).select((value) =>
@@ -64,38 +67,26 @@ class SlotDialog extends ConsumerWidget {
                             certInfo.subject, certInfo.issuer),
                         softWrap: true,
                         textAlign: TextAlign.center,
-                        // This is what ListTile uses for subtitle
-                        style: textTheme.bodyMedium!.copyWith(
-                          color: textTheme.bodySmall!.color,
-                        ),
+                        style: subtitleStyle,
                       ),
                       Text(
                         l10n.l_serial(certInfo.serial),
                         softWrap: true,
                         textAlign: TextAlign.center,
-                        // This is what ListTile uses for subtitle
-                        style: textTheme.bodyMedium!.copyWith(
-                          color: textTheme.bodySmall!.color,
-                        ),
+                        style: subtitleStyle,
                       ),
                       Text(
                         l10n.l_certificate_fingerprint(certInfo.fingerprint),
                         softWrap: true,
                         textAlign: TextAlign.center,
-                        // This is what ListTile uses for subtitle
-                        style: textTheme.bodyMedium!.copyWith(
-                          color: textTheme.bodySmall!.color,
-                        ),
+                        style: subtitleStyle,
                       ),
                       Text(
                         l10n.l_valid(
                             certInfo.notValidBefore, certInfo.notValidAfter),
                         softWrap: true,
                         textAlign: TextAlign.center,
-                        // This is what ListTile uses for subtitle
-                        style: textTheme.bodyMedium!.copyWith(
-                          color: textTheme.bodySmall!.color,
-                        ),
+                        style: subtitleStyle,
                       ),
                     ] else ...[
                       Padding(
@@ -104,10 +95,7 @@ class SlotDialog extends ConsumerWidget {
                           l10n.l_no_certificate,
                           softWrap: true,
                           textAlign: TextAlign.center,
-                          // This is what ListTile uses for subtitle
-                          style: textTheme.bodyMedium!.copyWith(
-                            color: textTheme.bodySmall!.color,
-                          ),
+                          style: subtitleStyle,
                         ),
                       ),
                     ],
@@ -115,46 +103,9 @@ class SlotDialog extends ConsumerWidget {
                   ],
                 ),
               ),
-              ActionListSection(
+              ActionListSection.fromMenuActions(
                 l10n.s_actions,
-                children: [
-                  ActionListItem(
-                    icon: const Icon(Icons.add_outlined),
-                    actionStyle: ActionStyle.primary,
-                    title: l10n.s_generate_key,
-                    subtitle: l10n.l_generate_desc,
-                    onTap: () {
-                      Actions.invoke(context, const GenerateIntent());
-                    },
-                  ),
-                  ActionListItem(
-                    icon: const Icon(Icons.file_download_outlined),
-                    title: l10n.l_import_file,
-                    subtitle: l10n.l_import_desc,
-                    onTap: () {
-                      Actions.invoke(context, const ImportIntent());
-                    },
-                  ),
-                  if (certInfo != null) ...[
-                    ActionListItem(
-                      icon: const Icon(Icons.file_upload_outlined),
-                      title: l10n.l_export_certificate,
-                      subtitle: l10n.l_export_certificate_desc,
-                      onTap: () {
-                        Actions.invoke(context, const ExportIntent());
-                      },
-                    ),
-                    ActionListItem(
-                      actionStyle: ActionStyle.error,
-                      icon: const Icon(Icons.delete_outline),
-                      title: l10n.l_delete_certificate,
-                      subtitle: l10n.l_delete_certificate_desc,
-                      onTap: () {
-                        Actions.invoke(context, const DeleteIntent());
-                      },
-                    ),
-                  ],
-                ],
+                actions: buildSlotActions(certInfo != null, l10n),
               ),
             ],
           ),

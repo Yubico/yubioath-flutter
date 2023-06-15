@@ -17,16 +17,15 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/list_title.dart';
-
-enum ActionStyle { normal, primary, error }
+import '../models.dart';
 
 class ActionListItem extends StatelessWidget {
+  final Widget icon;
   final String title;
   final String? subtitle;
-  final Widget icon;
   final Widget? trailing;
+  final void Function(BuildContext context)? onTap;
   final ActionStyle actionStyle;
-  final void Function()? onTap;
 
   const ActionListItem({
     super.key,
@@ -62,7 +61,7 @@ class ActionListItem extends StatelessWidget {
         ),
       ),
       trailing: trailing,
-      onTap: onTap,
+      onTap: onTap != null ? () => onTap?.call(context) : null,
       enabled: onTap != null,
     );
   }
@@ -73,6 +72,25 @@ class ActionListSection extends StatelessWidget {
   final List<ActionListItem> children;
 
   const ActionListSection(this.title, {super.key, required this.children});
+
+  factory ActionListSection.fromMenuActions(String title,
+      {Key? key, required List<ActionItem> actions}) {
+    return ActionListSection(
+      key: key,
+      title,
+      children: actions
+          .map((action) => ActionListItem(
+                key: action.key,
+                actionStyle: action.actionStyle ?? ActionStyle.normal,
+                icon: action.icon,
+                title: action.title,
+                subtitle: action.subtitle,
+                onTap: action.onTap,
+                trailing: action.trailing,
+              ))
+          .toList(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => SizedBox(

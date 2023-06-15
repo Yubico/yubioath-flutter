@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import 'dart:io';
-
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
@@ -88,26 +85,6 @@ class _AccountViewState extends ConsumerState<AccountView> {
         : credential.name;
 
     return colors[label.hashCode % colors.length]!;
-  }
-
-  List<PopupMenuItem> _buildPopupMenu(
-      BuildContext context, AccountHelper helper) {
-    final shortcut = Platform.isMacOS ? '\u2318 C' : 'Ctrl+C';
-    final copyText = AppLocalizations.of(context)!.l_copy_to_clipboard;
-
-    return helper.buildActions().map((e) {
-      final intent = e.intent;
-      return buildMenuItem(
-        leading: e.icon,
-        title: Text(e.text),
-        action: intent != null
-            ? () {
-                Actions.invoke(context, intent);
-              }
-            : null,
-        trailing: e.text == copyText ? shortcut : null,
-      );
-    }).toList();
   }
 
   @override
@@ -183,7 +160,10 @@ class _AccountViewState extends ConsumerState<AccountView> {
                         details.globalPosition.dx,
                         0,
                       ),
-                      items: _buildPopupMenu(context, helper),
+                      items: helper
+                          .buildActions()
+                          .map((e) => buildMenuItem(context, e))
+                          .toList(),
                     );
                   },
                   onTap: () {
