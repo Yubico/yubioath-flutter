@@ -3,12 +3,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
-import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../models.dart';
+import 'actions.dart';
 import 'delete_fingerprint_dialog.dart';
 import 'rename_fingerprint_dialog.dart';
 
@@ -95,27 +95,9 @@ class FingerprintDialog extends ConsumerWidget {
                   ],
                 ),
               ),
-              ActionListSection(
+              ActionListSection.fromMenuActions(
                 l10n.s_actions,
-                children: [
-                  ActionListItem(
-                    icon: const Icon(Icons.edit),
-                    title: l10n.s_rename_fp,
-                    subtitle: l10n.l_rename_fp_desc,
-                    onTap: (context) {
-                      Actions.invoke(context, const EditIntent());
-                    },
-                  ),
-                  ActionListItem(
-                    actionStyle: ActionStyle.error,
-                    icon: const Icon(Icons.delete),
-                    title: l10n.s_delete_fingerprint,
-                    subtitle: l10n.l_delete_fingerprint_desc,
-                    onTap: (context) {
-                      Actions.invoke(context, const DeleteIntent());
-                    },
-                  ),
-                ],
+                actions: buildFingerprintActions(l10n),
               ),
             ],
           ),
