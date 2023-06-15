@@ -27,19 +27,12 @@ import '../../app/state.dart';
 import '../../app/models.dart';
 import '../models.dart';
 import '../state.dart';
+import '../keys.dart' as keys;
 import 'authentication_dialog.dart';
 import 'delete_certificate_dialog.dart';
 import 'generate_key_dialog.dart';
 import 'import_file_dialog.dart';
 import 'pin_dialog.dart';
-
-class AuthenticateIntent extends Intent {
-  const AuthenticateIntent();
-}
-
-class VerifyPinIntent extends Intent {
-  const VerifyPinIntent();
-}
 
 class GenerateIntent extends Intent {
   const GenerateIntent();
@@ -85,9 +78,6 @@ Widget registerPivActions(
 }) =>
     Actions(
       actions: {
-        AuthenticateIntent: CallbackAction<AuthenticateIntent>(
-          onInvoke: (intent) => _authenticate(ref, devicePath, pivState),
-        ),
         GenerateIntent:
             CallbackAction<GenerateIntent>(onInvoke: (intent) async {
           if (!pivState.protectedKey &&
@@ -221,17 +211,46 @@ Widget registerPivActions(
                 ),
               ) ??
               false);
-
-          // Needs to move to slot dialog(?) or react to state change
-          // Pop the slot dialog if deleted
-          if (deleted == true) {
-            await withContext((context) async {
-              Navigator.of(context).pop();
-            });
-          }
           return deleted;
         }),
         ...actions,
       },
       child: Builder(builder: builder),
     );
+
+List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
+  return [
+    ActionItem(
+      key: keys.generateAction,
+      icon: const Icon(Icons.add_outlined),
+      actionStyle: ActionStyle.primary,
+      title: l10n.s_generate_key,
+      subtitle: l10n.l_generate_desc,
+      intent: const GenerateIntent(),
+    ),
+    ActionItem(
+      key: keys.importAction,
+      icon: const Icon(Icons.file_download_outlined),
+      title: l10n.l_import_file,
+      subtitle: l10n.l_import_desc,
+      intent: const ImportIntent(),
+    ),
+    if (hasCert) ...[
+      ActionItem(
+        key: keys.exportAction,
+        icon: const Icon(Icons.file_upload_outlined),
+        title: l10n.l_export_certificate,
+        subtitle: l10n.l_export_certificate_desc,
+        intent: const ExportIntent(),
+      ),
+      ActionItem(
+        key: keys.deleteAction,
+        actionStyle: ActionStyle.error,
+        icon: const Icon(Icons.delete_outline),
+        title: l10n.l_delete_certificate,
+        subtitle: l10n.l_delete_certificate_desc,
+        intent: const DeleteIntent(),
+      ),
+    ],
+  ];
+}

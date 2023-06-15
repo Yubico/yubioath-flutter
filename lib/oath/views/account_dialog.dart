@@ -39,44 +39,6 @@ class AccountDialog extends ConsumerWidget {
 
   const AccountDialog(this.credential, {super.key});
 
-  List<ActionListItem> _buildActions(
-      BuildContext context, AccountHelper helper) {
-    final l10n = AppLocalizations.of(context)!;
-    final actions = helper.buildActions();
-
-    final copy =
-        actions.firstWhere(((e) => e.text == l10n.l_copy_to_clipboard));
-    final delete = actions.firstWhere(((e) => e.text == l10n.s_delete_account));
-    final canCopy = copy.intent != null;
-    final actionStyles = {
-      copy: canCopy ? ActionStyle.primary : ActionStyle.normal,
-      delete: ActionStyle.error,
-    };
-
-    // If we can't copy, but can calculate, highlight that button instead
-    if (!canCopy) {
-      final calculates = actions.where(((e) => e.text == l10n.s_calculate));
-      if (calculates.isNotEmpty) {
-        actionStyles[calculates.first] = ActionStyle.primary;
-      }
-    }
-
-    return actions.map((e) {
-      final intent = e.intent;
-      return ActionListItem(
-        actionStyle: actionStyles[e] ?? ActionStyle.normal,
-        icon: e.icon,
-        title: e.text,
-        subtitle: e.trailing,
-        onTap: intent != null
-            ? () {
-                Actions.invoke(context, intent);
-              }
-            : null,
-      );
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO: Solve this in a cleaner way
@@ -192,9 +154,10 @@ class AccountDialog extends ConsumerWidget {
                         ),
                   ),
                 const SizedBox(height: 32),
-                ActionListSection(
+                ActionListSection.fromMenuActions(
+                  context,
                   AppLocalizations.of(context)!.s_actions,
-                  children: _buildActions(context, helper),
+                  actions: helper.buildActions(),
                 ),
               ],
             ),

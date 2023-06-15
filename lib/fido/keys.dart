@@ -16,22 +16,23 @@
 
 import 'package:flutter/material.dart';
 
-const _prefix = 'piv.keys';
+const _prefix = 'fido.keys';
 const _keyAction = '$_prefix.actions';
-const _slotAction = '$_prefix.slot.actions';
+const _credentialAction = '$_prefix.credential.actions';
+const _fingerprintAction = '$_prefix.fingerprint.actions';
 
 // Key actions
 const managePinAction = Key('$_keyAction.manage_pin');
-const managePukAction = Key('$_keyAction.manage_puk');
-const manageManagementKeyAction = Key('$_keyAction.manage_management_key');
+const addFingerprintAction = Key('$_keyAction.add_fingerprint');
 const resetAction = Key('$_keyAction.reset');
-const setupMacOsAction = Key('$_keyAction.setup_macos');
 
-// Slot actions
-const generateAction = Key('$_slotAction.generate');
-const importAction = Key('$_slotAction.import');
-const exportAction = Key('$_slotAction.export');
-const deleteAction = Key('$_slotAction.delete');
+// Credential actions
+const editCredentialAction = Key('$_credentialAction.edit');
+const deleteCredentialAction = Key('$_credentialAction.delete');
+
+// Fingerprint actions
+const editFingerintAction = Key('$_fingerprintAction.edit');
+const deleteFingerprintAction = Key('$_fingerprintAction.delete');
 
 const saveButton = Key('$_prefix.save');
 const deleteButton = Key('$_prefix.delete');

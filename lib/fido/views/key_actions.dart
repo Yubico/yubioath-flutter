@@ -22,6 +22,7 @@ import '../../app/models.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../models.dart';
+import '../keys.dart' as keys;
 import 'add_fingerprint_dialog.dart';
 import 'pin_dialog.dart';
 import 'reset_dialog.dart';
@@ -42,6 +43,7 @@ Widget fidoBuildActions(
             l10n.s_setup,
             children: [
               ActionListItem(
+                key: keys.addFingerprintAction,
                 actionStyle: ActionStyle.primary,
                 icon: const Icon(Icons.fingerprint_outlined),
                 title: l10n.s_add_fingerprint,
@@ -53,7 +55,7 @@ Widget fidoBuildActions(
                 trailing:
                     fingerprints == 0 ? const Icon(Icons.warning_amber) : null,
                 onTap: state.unlocked && fingerprints < 5
-                    ? () {
+                    ? (context) {
                         Navigator.of(context).pop();
                         showBlurDialog(
                           context: context,
@@ -68,6 +70,7 @@ Widget fidoBuildActions(
           l10n.s_manage,
           children: [
             ActionListItem(
+                key: keys.managePinAction,
                 icon: const Icon(Icons.pin_outlined),
                 title: state.hasPin ? l10n.s_change_pin : l10n.s_set_pin,
                 subtitle: state.hasPin
@@ -76,7 +79,7 @@ Widget fidoBuildActions(
                 trailing: state.alwaysUv && !state.hasPin
                     ? const Icon(Icons.warning_amber)
                     : null,
-                onTap: () {
+                onTap: (context) {
                   Navigator.of(context).pop();
                   showBlurDialog(
                     context: context,
@@ -84,11 +87,12 @@ Widget fidoBuildActions(
                   );
                 }),
             ActionListItem(
+              key: keys.resetAction,
               actionStyle: ActionStyle.error,
               icon: const Icon(Icons.delete_outline),
               title: l10n.s_reset_fido,
               subtitle: l10n.l_factory_reset_this_app,
-              onTap: () {
+              onTap: (context) {
                 Navigator.of(context).pop();
                 showBlurDialog(
                   context: context,

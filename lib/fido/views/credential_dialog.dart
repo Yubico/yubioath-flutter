@@ -8,6 +8,7 @@ import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../models.dart';
+import 'actions.dart';
 import 'delete_credential_dialog.dart';
 
 class CredentialDialog extends ConsumerWidget {
@@ -78,19 +79,10 @@ class CredentialDialog extends ConsumerWidget {
                   ],
                 ),
               ),
-              ActionListSection(
+              ActionListSection.fromMenuActions(
+                context,
                 l10n.s_actions,
-                children: [
-                  ActionListItem(
-                    actionStyle: ActionStyle.error,
-                    icon: const Icon(Icons.delete),
-                    title: l10n.s_delete_passkey,
-                    subtitle: l10n.l_delete_account_desc,
-                    onTap: () {
-                      Actions.invoke(context, const DeleteIntent());
-                    },
-                  ),
-                ],
+                actions: buildCredentialActions(l10n),
               ),
             ],
           ),

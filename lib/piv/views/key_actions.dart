@@ -51,7 +51,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                     ? l10n.l_piv_pin_blocked
                     : l10n.l_attempts_remaining(pivState.pinAttempts),
                 icon: const Icon(Icons.pin_outlined),
-                onTap: () {
+                onTap: (context) {
                   Navigator.of(context).pop();
                   showBlurDialog(
                     context: context,
@@ -69,7 +69,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                     ? l10n.l_attempts_remaining(pukAttempts)
                     : null,
                 icon: const Icon(Icons.pin_outlined),
-                onTap: () {
+                onTap: (context) {
                   Navigator.of(context).pop();
                   showBlurDialog(
                     context: context,
@@ -89,7 +89,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                 trailing: usingDefaultMgmtKey
                     ? const Icon(Icons.warning_amber)
                     : null,
-                onTap: () {
+                onTap: (context) {
                   Navigator.of(context).pop();
                   showBlurDialog(
                     context: context,
@@ -102,7 +102,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                 actionStyle: ActionStyle.error,
                 title: l10n.s_reset_piv,
                 subtitle: l10n.l_factory_reset_this_app,
-                onTap: () {
+                onTap: (context) {
                   Navigator.of(context).pop();
                   showBlurDialog(
                     context: context,
