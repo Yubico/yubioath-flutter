@@ -104,6 +104,7 @@ class SlotDialog extends ConsumerWidget {
                 ),
               ),
               ActionListSection.fromMenuActions(
+                context,
                 l10n.s_actions,
                 actions: buildSlotActions(certInfo != null, l10n),
               ),

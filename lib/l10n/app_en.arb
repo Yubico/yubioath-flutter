@@ -400,6 +400,7 @@
 
     "@_certificates": {},
     "s_certificate": "Certificate",
+    "s_certificates": "Certificates",
     "s_csr": "CSR",
     "s_subject": "Subject",
     "l_export_csr_file": "Save CSR to file",

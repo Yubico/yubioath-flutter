@@ -22,9 +22,10 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/views/app_failure_page.dart';
+import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
-import '../../widgets/menu_list_tile.dart';
+import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
@@ -57,6 +58,7 @@ class PivScreen extends ConsumerWidget {
                   pivBuildActions(context, devicePath, pivState, ref),
               child: Column(
                 children: [
+                  ListTitle(l10n.s_certificates),
                   if (pivSlots?.hasValue == true)
                     ...pivSlots!.value.map((e) => Actions(
                           actions: {
@@ -89,49 +91,26 @@ class _CertificateListItem extends StatelessWidget {
     final certInfo = pivSlot.certInfo;
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
-    return InkWell(
-      borderRadius: BorderRadius.circular(30),
-      onSecondaryTapDown: (details) {
-        showMenu(
-          context: context,
-          position: RelativeRect.fromLTRB(
-            details.globalPosition.dx,
-            details.globalPosition.dy,
-            details.globalPosition.dx,
-            0,
-          ),
-          items: buildSlotActions(certInfo != null, l10n)
-              .map((e) => buildMenuItem(context, e))
-              .toList(),
-        );
-      },
-      child: ListTile(
-        leading: CircleAvatar(
-          foregroundColor: colorScheme.onSecondary,
-          backgroundColor: colorScheme.secondary,
-          child: const Icon(Icons.approval),
-        ),
-        title: Text(
-          slot.getDisplayName(l10n),
-          softWrap: false,
-          overflow: TextOverflow.fade,
-        ),
-        subtitle: certInfo != null
-            ? Text(
-                l10n.l_subject_issuer(certInfo.subject, certInfo.issuer),
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              )
-            : Text(pivSlot.hasKey == true
-                ? l10n.l_key_no_certificate
-                : l10n.l_no_certificate),
-        trailing: OutlinedButton(
-          onPressed: () {
-            Actions.maybeInvoke<OpenIntent>(context, const OpenIntent());
-          },
-          child: const Icon(Icons.more_horiz),
-        ),
+
+    return AppListItem(
+      leading: CircleAvatar(
+        foregroundColor: colorScheme.onSecondary,
+        backgroundColor: colorScheme.secondary,
+        child: const Icon(Icons.approval),
       ),
+      title: slot.getDisplayName(l10n),
+      subtitle: certInfo != null
+          ? l10n.l_subject_issuer(certInfo.subject, certInfo.issuer)
+          : pivSlot.hasKey == true
+              ? l10n.l_key_no_certificate
+              : l10n.l_no_certificate,
+      trailing: OutlinedButton(
+        onPressed: () {
+          Actions.invoke<OpenIntent>(context, const OpenIntent());
+        },
+        child: const Icon(Icons.more_horiz),
+      ),
+      buildPopupActions: (context) => buildSlotActions(certInfo != null, l10n),
     );
   }
 }

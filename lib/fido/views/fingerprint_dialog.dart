@@ -96,6 +96,7 @@ class FingerprintDialog extends ConsumerWidget {
                 ),
               ),
               ActionListSection.fromMenuActions(
+                context,
                 l10n.s_actions,
                 actions: buildFingerprintActions(l10n),
               ),

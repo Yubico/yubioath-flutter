@@ -126,7 +126,7 @@ class ActionItem with _$ActionItem {
     String? subtitle,
     String? shortcut,
     Widget? trailing,
-    void Function(BuildContext context)? onTap,
+    Intent? intent,
     ActionStyle? actionStyle,
     Key? key,
   }) = _ActionItem;

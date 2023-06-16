@@ -245,18 +245,14 @@ List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
       actionStyle: ActionStyle.primary,
       title: l10n.s_generate_key,
       subtitle: l10n.l_generate_desc,
-      onTap: (context) {
-        Actions.invoke(context, const GenerateIntent());
-      },
+      intent: const GenerateIntent(),
     ),
     ActionItem(
       key: keys.importAction,
       icon: const Icon(Icons.file_download_outlined),
       title: l10n.l_import_file,
       subtitle: l10n.l_import_desc,
-      onTap: (context) {
-        Actions.invoke(context, const ImportIntent());
-      },
+      intent: const ImportIntent(),
     ),
     if (hasCert) ...[
       ActionItem(
@@ -264,9 +260,7 @@ List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
         icon: const Icon(Icons.file_upload_outlined),
         title: l10n.l_export_certificate,
         subtitle: l10n.l_export_certificate_desc,
-        onTap: (context) {
-          Actions.invoke(context, const ExportIntent());
-        },
+        intent: const ExportIntent(),
       ),
       ActionItem(
         key: keys.deleteAction,
@@ -274,9 +268,7 @@ List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
         icon: const Icon(Icons.delete_outline),
         title: l10n.l_delete_certificate,
         subtitle: l10n.l_delete_certificate_desc,
-        onTap: (context) {
-          Actions.invoke(context, const DeleteIntent());
-        },
+        intent: const DeleteIntent(),
       ),
     ],
   ];

@@ -80,6 +80,7 @@ class CredentialDialog extends ConsumerWidget {
                 ),
               ),
               ActionListSection.fromMenuActions(
+                context,
                 l10n.s_actions,
                 actions: buildCredentialActions(l10n),
               ),

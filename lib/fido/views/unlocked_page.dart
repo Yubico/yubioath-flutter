@@ -21,12 +21,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
+import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
+import 'actions.dart';
 import 'credential_dialog.dart';
 import 'fingerprint_dialog.dart';
 import 'key_actions.dart';
@@ -136,28 +138,22 @@ class _CredentialListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
+    return AppListItem(
       leading: CircleAvatar(
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         backgroundColor: Theme.of(context).colorScheme.primary,
         child: const Icon(Icons.person),
       ),
-      title: Text(
-        credential.userName,
-        softWrap: false,
-        overflow: TextOverflow.fade,
-      ),
-      subtitle: Text(
-        credential.rpId,
-        softWrap: false,
-        overflow: TextOverflow.fade,
-      ),
+      title: credential.userName,
+      subtitle: credential.rpId,
       trailing: OutlinedButton(
         onPressed: () {
           Actions.maybeInvoke<OpenIntent>(context, const OpenIntent());
         },
         child: const Icon(Icons.more_horiz),
       ),
+      buildPopupActions: (context) =>
+          buildCredentialActions(AppLocalizations.of(context)!),
     );
   }
 }
@@ -168,23 +164,21 @@ class _FingerprintListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
+    return AppListItem(
       leading: CircleAvatar(
         foregroundColor: Theme.of(context).colorScheme.onSecondary,
         backgroundColor: Theme.of(context).colorScheme.secondary,
         child: const Icon(Icons.fingerprint),
       ),
-      title: Text(
-        fingerprint.label,
-        softWrap: false,
-        overflow: TextOverflow.fade,
-      ),
+      title: fingerprint.label,
       trailing: OutlinedButton(
         onPressed: () {
           Actions.maybeInvoke<OpenIntent>(context, const OpenIntent());
         },
         child: const Icon(Icons.more_horiz),
       ),
+      buildPopupActions: (context) =>
+          buildFingerprintActions(AppLocalizations.of(context)!),
     );
   }
 }

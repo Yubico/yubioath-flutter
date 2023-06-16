@@ -73,22 +73,25 @@ class ActionListSection extends StatelessWidget {
 
   const ActionListSection(this.title, {super.key, required this.children});
 
-  factory ActionListSection.fromMenuActions(String title,
+  factory ActionListSection.fromMenuActions(BuildContext context, String title,
       {Key? key, required List<ActionItem> actions}) {
     return ActionListSection(
       key: key,
       title,
-      children: actions
-          .map((action) => ActionListItem(
-                key: action.key,
-                actionStyle: action.actionStyle ?? ActionStyle.normal,
-                icon: action.icon,
-                title: action.title,
-                subtitle: action.subtitle,
-                onTap: action.onTap,
-                trailing: action.trailing,
-              ))
-          .toList(),
+      children: actions.map((action) {
+        final intent = action.intent;
+        return ActionListItem(
+          key: action.key,
+          actionStyle: action.actionStyle ?? ActionStyle.normal,
+          icon: action.icon,
+          title: action.title,
+          subtitle: action.subtitle,
+          onTap: intent != null
+              ? (context) => Actions.invoke(context, intent)
+              : null,
+          trailing: action.trailing,
+        );
+      }).toList(),
     );
   }
 

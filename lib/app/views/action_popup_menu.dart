@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,35 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../app/models.dart';
+import '../models.dart';
 
-PopupMenuItem buildMenuItem(BuildContext context, ActionItem actionItem) {
-  final enabled = actionItem.onTap != null;
+Future showPopupMenu(BuildContext context, Offset globalPosition,
+        List<ActionItem> actions) =>
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        globalPosition.dx,
+        globalPosition.dy,
+        globalPosition.dx,
+        0,
+      ),
+      items: actions.map((e) => _buildMenuItem(context, e)).toList(),
+    );
+
+PopupMenuItem _buildMenuItem(BuildContext context, ActionItem actionItem) {
+  final intent = actionItem.intent;
+  final enabled = intent != null;
   final shortcut = actionItem.shortcut;
   return PopupMenuItem(
     enabled: enabled,
-    onTap: () {
-      // Wait for popup menu to close before running action.
-      Timer.run(() {
-        actionItem.onTap?.call(context);
-      });
-    },
+    onTap: enabled
+        ? () {
+            // Wait for popup menu to close before running action.
+            Timer.run(() {
+              Actions.invoke(context, intent);
+            });
+          }
+        : null,
     child: ListTile(
       key: actionItem.key,
       enabled: enabled,

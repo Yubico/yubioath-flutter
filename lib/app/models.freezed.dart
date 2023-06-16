@@ -630,7 +630,7 @@ mixin _$ActionItem {
   String? get subtitle => throw _privateConstructorUsedError;
   String? get shortcut => throw _privateConstructorUsedError;
   Widget? get trailing => throw _privateConstructorUsedError;
-  void Function(BuildContext)? get onTap => throw _privateConstructorUsedError;
+  Intent? get intent => throw _privateConstructorUsedError;
   ActionStyle? get actionStyle => throw _privateConstructorUsedError;
   Key? get key => throw _privateConstructorUsedError;
 
@@ -651,7 +651,7 @@ abstract class $ActionItemCopyWith<$Res> {
       String? subtitle,
       String? shortcut,
       Widget? trailing,
-      void Function(BuildContext)? onTap,
+      Intent? intent,
       ActionStyle? actionStyle,
       Key? key});
 }
@@ -674,7 +674,7 @@ class _$ActionItemCopyWithImpl<$Res, $Val extends ActionItem>
     Object? subtitle = freezed,
     Object? shortcut = freezed,
     Object? trailing = freezed,
-    Object? onTap = freezed,
+    Object? intent = freezed,
     Object? actionStyle = freezed,
     Object? key = freezed,
   }) {
@@ -699,10 +699,10 @@ class _$ActionItemCopyWithImpl<$Res, $Val extends ActionItem>
           ? _value.trailing
           : trailing // ignore: cast_nullable_to_non_nullable
               as Widget?,
-      onTap: freezed == onTap
-          ? _value.onTap
-          : onTap // ignore: cast_nullable_to_non_nullable
-              as void Function(BuildContext)?,
+      intent: freezed == intent
+          ? _value.intent
+          : intent // ignore: cast_nullable_to_non_nullable
+              as Intent?,
       actionStyle: freezed == actionStyle
           ? _value.actionStyle
           : actionStyle // ignore: cast_nullable_to_non_nullable
@@ -729,7 +729,7 @@ abstract class _$$_ActionItemCopyWith<$Res>
       String? subtitle,
       String? shortcut,
       Widget? trailing,
-      void Function(BuildContext)? onTap,
+      Intent? intent,
       ActionStyle? actionStyle,
       Key? key});
 }
@@ -750,7 +750,7 @@ class __$$_ActionItemCopyWithImpl<$Res>
     Object? subtitle = freezed,
     Object? shortcut = freezed,
     Object? trailing = freezed,
-    Object? onTap = freezed,
+    Object? intent = freezed,
     Object? actionStyle = freezed,
     Object? key = freezed,
   }) {
@@ -775,10 +775,10 @@ class __$$_ActionItemCopyWithImpl<$Res>
           ? _value.trailing
           : trailing // ignore: cast_nullable_to_non_nullable
               as Widget?,
-      onTap: freezed == onTap
-          ? _value.onTap
-          : onTap // ignore: cast_nullable_to_non_nullable
-              as void Function(BuildContext)?,
+      intent: freezed == intent
+          ? _value.intent
+          : intent // ignore: cast_nullable_to_non_nullable
+              as Intent?,
       actionStyle: freezed == actionStyle
           ? _value.actionStyle
           : actionStyle // ignore: cast_nullable_to_non_nullable
@@ -800,7 +800,7 @@ class _$_ActionItem implements _ActionItem {
       this.subtitle,
       this.shortcut,
       this.trailing,
-      this.onTap,
+      this.intent,
       this.actionStyle,
       this.key});
 
@@ -815,7 +815,7 @@ class _$_ActionItem implements _ActionItem {
   @override
   final Widget? trailing;
   @override
-  final void Function(BuildContext)? onTap;
+  final Intent? intent;
   @override
   final ActionStyle? actionStyle;
   @override
@@ -823,7 +823,7 @@ class _$_ActionItem implements _ActionItem {
 
   @override
   String toString() {
-    return 'ActionItem(icon: $icon, title: $title, subtitle: $subtitle, shortcut: $shortcut, trailing: $trailing, onTap: $onTap, actionStyle: $actionStyle, key: $key)';
+    return 'ActionItem(icon: $icon, title: $title, subtitle: $subtitle, shortcut: $shortcut, trailing: $trailing, intent: $intent, actionStyle: $actionStyle, key: $key)';
   }
 
   @override
@@ -839,7 +839,7 @@ class _$_ActionItem implements _ActionItem {
                 other.shortcut == shortcut) &&
             (identical(other.trailing, trailing) ||
                 other.trailing == trailing) &&
-            (identical(other.onTap, onTap) || other.onTap == onTap) &&
+            (identical(other.intent, intent) || other.intent == intent) &&
             (identical(other.actionStyle, actionStyle) ||
                 other.actionStyle == actionStyle) &&
             (identical(other.key, key) || other.key == key));
@@ -847,7 +847,7 @@ class _$_ActionItem implements _ActionItem {
 
   @override
   int get hashCode => Object.hash(runtimeType, icon, title, subtitle, shortcut,
-      trailing, onTap, actionStyle, key);
+      trailing, intent, actionStyle, key);
 
   @JsonKey(ignore: true)
   @override
@@ -863,7 +863,7 @@ abstract class _ActionItem implements ActionItem {
       final String? subtitle,
       final String? shortcut,
       final Widget? trailing,
-      final void Function(BuildContext)? onTap,
+      final Intent? intent,
       final ActionStyle? actionStyle,
       final Key? key}) = _$_ActionItem;
 
@@ -878,7 +878,7 @@ abstract class _ActionItem implements ActionItem {
   @override
   Widget? get trailing;
   @override
-  void Function(BuildContext)? get onTap;
+  Intent? get intent;
   @override
   ActionStyle? get actionStyle;
   @override

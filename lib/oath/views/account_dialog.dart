@@ -155,6 +155,7 @@ class AccountDialog extends ConsumerWidget {
                   ),
                 const SizedBox(height: 32),
                 ActionListSection.fromMenuActions(
+                  context,
                   AppLocalizations.of(context)!.s_actions,
                   actions: helper.buildActions(),
                 ),
