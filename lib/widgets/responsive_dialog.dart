@@ -22,13 +22,16 @@ class ResponsiveDialog extends StatefulWidget {
   final Widget child;
   final List<Widget> actions;
   final Function()? onCancel;
+  final bool allowCancel;
 
-  const ResponsiveDialog(
-      {super.key,
-      required this.child,
-      this.title,
-      this.actions = const [],
-      this.onCancel});
+  const ResponsiveDialog({
+    super.key,
+    required this.child,
+    this.title,
+    this.actions = const [],
+    this.onCancel,
+    this.allowCancel = true,
+  });
 
   @override
   State<ResponsiveDialog> createState() => _ResponsiveDialogState();
@@ -47,12 +50,14 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
             appBar: AppBar(
               title: widget.title,
               actions: widget.actions,
-              leading: CloseButton(
-                onPressed: () {
-                  widget.onCancel?.call();
-                  Navigator.of(context).pop();
-                },
-              ),
+              leading: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: widget.allowCancel
+                      ? () {
+                          widget.onCancel?.call();
+                          Navigator.of(context).pop();
+                        }
+                      : null),
             ),
             body: SingleChildScrollView(
               child: SafeArea(

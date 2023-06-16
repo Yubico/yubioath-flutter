@@ -449,6 +449,8 @@
             "slot": {}
         }
     },
+    "l_generating_private_key": "Generating private key\u2026",
+    "s_private_key_generated": "Private key generated",
     "p_warning_delete_certificate": "Warning! This action will delete the certificate from your YubiKey.",
     "q_delete_certificate_confirm": "Delete the certficate in PIV slot {slot}?",
     "@q_delete_certificate_confirm" : {
@@ -525,7 +527,7 @@
     "p_warning_deletes_accounts": "Warning! This will irrevocably delete all U2F and FIDO2 accounts from your YubiKey.",
     "p_warning_disable_accounts": "Your credentials, as well as any PIN set, will be removed from this YubiKey. Make sure to first disable these from their respective web sites to avoid being locked out of your accounts.",
     "p_warning_piv_reset": "Warning! All data stored for PIV will be irrevocably deleted from your YubiKey.",
-    "p_warning_piv_reset_desc": "This includes private keys and certificates. Your PIN, PUK, and management key will be reset to their factory detault values.",
+    "p_warning_piv_reset_desc": "This includes private keys and certificates. Your PIN, PUK, and management key will be reset to their factory default values.",
 
     "@_copy_to_clipboard": {},
     "l_copy_to_clipboard": "Copy to clipboard",
