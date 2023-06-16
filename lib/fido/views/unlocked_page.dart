@@ -30,8 +30,11 @@ import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
 import 'credential_dialog.dart';
+import 'delete_credential_dialog.dart';
+import 'delete_fingerprint_dialog.dart';
 import 'fingerprint_dialog.dart';
 import 'key_actions.dart';
+import 'rename_fingerprint_dialog.dart';
 
 class FidoUnlockedPage extends ConsumerWidget {
   final DeviceNode node;
@@ -53,13 +56,20 @@ class FidoUnlockedPage extends ConsumerWidget {
         children.add(ListTitle(l10n.s_passkeys));
         children.addAll(creds.map((cred) => Actions(
               actions: {
-                OpenIntent: CallbackAction<OpenIntent>(onInvoke: (_) async {
-                  await showBlurDialog(
+                OpenIntent: CallbackAction<OpenIntent>(
+                    onInvoke: (_) => showBlurDialog(
+                          context: context,
+                          builder: (context) => CredentialDialog(cred),
+                        )),
+                DeleteIntent: CallbackAction<DeleteIntent>(
+                  onInvoke: (_) => showBlurDialog(
                     context: context,
-                    builder: (context) => CredentialDialog(cred),
-                  );
-                  return null;
-                }),
+                    builder: (context) => DeleteCredentialDialog(
+                      node.path,
+                      cred,
+                    ),
+                  ),
+                ),
               },
               child: _CredentialListItem(cred),
             )));
@@ -78,13 +88,27 @@ class FidoUnlockedPage extends ConsumerWidget {
         children.add(ListTitle(l10n.s_fingerprints));
         children.addAll(fingerprints.map((fp) => Actions(
               actions: {
-                OpenIntent: CallbackAction<OpenIntent>(onInvoke: (_) async {
-                  await showBlurDialog(
-                    context: context,
-                    builder: (context) => FingerprintDialog(fp),
-                  );
-                  return null;
-                }),
+                OpenIntent: CallbackAction<OpenIntent>(
+                    onInvoke: (_) => showBlurDialog(
+                          context: context,
+                          builder: (context) => FingerprintDialog(fp),
+                        )),
+                EditIntent: CallbackAction<EditIntent>(
+                    onInvoke: (_) => showBlurDialog(
+                          context: context,
+                          builder: (context) => RenameFingerprintDialog(
+                            node.path,
+                            fp,
+                          ),
+                        )),
+                DeleteIntent: CallbackAction<DeleteIntent>(
+                    onInvoke: (_) => showBlurDialog(
+                          context: context,
+                          builder: (context) => DeleteFingerprintDialog(
+                            node.path,
+                            fp,
+                          ),
+                        )),
               },
               child: _FingerprintListItem(fp),
             )));
@@ -147,9 +171,7 @@ class _CredentialListItem extends StatelessWidget {
       title: credential.userName,
       subtitle: credential.rpId,
       trailing: OutlinedButton(
-        onPressed: () {
-          Actions.maybeInvoke<OpenIntent>(context, const OpenIntent());
-        },
+        onPressed: Actions.handler(context, const OpenIntent()),
         child: const Icon(Icons.more_horiz),
       ),
       buildPopupActions: (context) =>
@@ -172,9 +194,7 @@ class _FingerprintListItem extends StatelessWidget {
       ),
       title: fingerprint.label,
       trailing: OutlinedButton(
-        onPressed: () {
-          Actions.maybeInvoke<OpenIntent>(context, const OpenIntent());
-        },
+        onPressed: Actions.handler(context, const OpenIntent()),
         child: const Icon(Icons.more_horiz),
       ),
       buildPopupActions: (context) =>

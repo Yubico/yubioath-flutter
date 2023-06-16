@@ -150,16 +150,12 @@ class _AccountViewState extends ConsumerState<AccountView> {
                       ? FilledButton.tonalIcon(
                           icon: helper.buildCodeIcon(),
                           label: helper.buildCodeLabel(),
-                          onPressed: () {
-                            Actions.maybeInvoke<OpenIntent>(
-                                context, const OpenIntent());
-                          },
+                          onPressed:
+                              Actions.handler(context, const OpenIntent()),
                         )
                       : FilledButton.tonal(
-                          onPressed: () {
-                            Actions.maybeInvoke<OpenIntent>(
-                                context, const OpenIntent());
-                          },
+                          onPressed:
+                              Actions.handler(context, const OpenIntent()),
                           child: helper.buildCodeIcon()),
                   activationIntent: const CopyIntent(),
                   buildPopupActions: (_) => helper.buildActions(),

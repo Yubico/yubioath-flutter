@@ -34,14 +34,6 @@ import 'generate_key_dialog.dart';
 import 'import_file_dialog.dart';
 import 'pin_dialog.dart';
 
-class AuthenticateIntent extends Intent {
-  const AuthenticateIntent();
-}
-
-class VerifyPinIntent extends Intent {
-  const VerifyPinIntent();
-}
-
 class GenerateIntent extends Intent {
   const GenerateIntent();
 }
@@ -86,9 +78,6 @@ Widget registerPivActions(
 }) =>
     Actions(
       actions: {
-        AuthenticateIntent: CallbackAction<AuthenticateIntent>(
-          onInvoke: (intent) => _authenticate(ref, devicePath, pivState),
-        ),
         GenerateIntent:
             CallbackAction<GenerateIntent>(onInvoke: (intent) async {
           if (!pivState.protectedKey &&
@@ -222,14 +211,6 @@ Widget registerPivActions(
                 ),
               ) ??
               false);
-
-          // Needs to move to slot dialog(?) or react to state change
-          // Pop the slot dialog if deleted
-          if (deleted == true) {
-            await withContext((context) async {
-              Navigator.of(context).pop();
-            });
-          }
           return deleted;
         }),
         ...actions,

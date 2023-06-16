@@ -60,7 +60,11 @@ class PivScreen extends ConsumerWidget {
                 children: [
                   ListTitle(l10n.s_certificates),
                   if (pivSlots?.hasValue == true)
-                    ...pivSlots!.value.map((e) => Actions(
+                    ...pivSlots!.value.map((e) => registerPivActions(
+                          devicePath,
+                          pivState,
+                          e,
+                          ref: ref,
                           actions: {
                             OpenIntent:
                                 CallbackAction<OpenIntent>(onInvoke: (_) async {
@@ -71,8 +75,8 @@ class PivScreen extends ConsumerWidget {
                               return null;
                             }),
                           },
-                          child: _CertificateListItem(e),
-                        ))
+                          builder: (context) => _CertificateListItem(e),
+                        )),
                 ],
               ),
             );
@@ -105,9 +109,7 @@ class _CertificateListItem extends StatelessWidget {
               ? l10n.l_key_no_certificate
               : l10n.l_no_certificate,
       trailing: OutlinedButton(
-        onPressed: () {
-          Actions.invoke<OpenIntent>(context, const OpenIntent());
-        },
+        onPressed: Actions.handler(context, const OpenIntent()),
         child: const Icon(Icons.more_horiz),
       ),
       buildPopupActions: (context) => buildSlotActions(certInfo != null, l10n),
