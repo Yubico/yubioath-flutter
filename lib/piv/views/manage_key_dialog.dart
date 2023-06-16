@@ -129,12 +129,13 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     final currentLenOk = protected
         ? _currentKeyOrPin.length >= 4
         : _currentKeyOrPin.length == currentType.keyLength * 2;
+    final newLenOk = _keyController.text.length == hexLength;
 
     return ResponsiveDialog(
       title: Text(l10n.l_change_management_key),
       actions: [
         TextButton(
-          onPressed: _submit,
+          onPressed: currentLenOk && newLenOk ? _submit : null,
           key: keys.saveButton,
           child: Text(l10n.s_save),
         )
@@ -232,7 +233,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
               ),
               textInputAction: TextInputAction.next,
               onSubmitted: (_) {
-                if (_keyController.text.length == hexLength) {
+                if (currentLenOk && newLenOk) {
                   _submit();
                 }
               },

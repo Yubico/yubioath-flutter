@@ -30,6 +30,8 @@ import 'reset_dialog.dart';
 
 Widget pivBuildActions(BuildContext context, DevicePath devicePath,
     PivState pivState, WidgetRef ref) {
+  final colors = Theme.of(context).buttonTheme.colorScheme ??
+      Theme.of(context).colorScheme;
   final l10n = AppLocalizations.of(context)!;
 
   final usingDefaultMgmtKey =
@@ -87,7 +89,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                         : l10n.l_change_management_key),
                 icon: const Icon(Icons.key_outlined),
                 trailing: usingDefaultMgmtKey
-                    ? const Icon(Icons.warning_amber)
+                    ? Icon(Icons.warning_amber, color: colors.tertiary)
                     : null,
                 onTap: (context) {
                   Navigator.of(context).pop();

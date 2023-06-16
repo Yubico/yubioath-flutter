@@ -160,7 +160,9 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               autofillHints: const [AutofillHints.newPassword],
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: l10n.s_confirm_pin,
+                labelText: widget.target == ManageTarget.puk
+                    ? l10n.s_confirm_puk
+                    : l10n.s_confirm_pin,
                 prefixIcon: const Icon(Icons.password_outlined),
                 enabled: _currentPin.length >= 4 && _newPin.length >= 6,
               ),

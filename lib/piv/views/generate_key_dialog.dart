@@ -18,7 +18,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../core/models.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -46,6 +48,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
   late DateTime _validTo;
   late DateTime _validToDefault;
   late DateTime _validToMax;
+  bool _generating = false;
 
   @override
   void initState() {
@@ -61,31 +64,57 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final navigator = Navigator.of(context);
+
     return ResponsiveDialog(
+      allowCancel: !_generating,
       title: Text(l10n.s_generate_key),
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: () async {
-            final result = await ref
-                .read(pivSlotsProvider(widget.devicePath).notifier)
-                .generate(
-                  widget.pivSlot.slot,
-                  _keyType,
-                  parameters: switch (_generateType) {
-                    GenerateType.certificate =>
-                      PivGenerateParameters.certificate(
-                          subject: _subject,
-                          validFrom: _validFrom,
-                          validTo: _validTo),
-                    GenerateType.csr =>
-                      PivGenerateParameters.csr(subject: _subject),
-                  },
-                );
+          onPressed: _generating || _subject.isEmpty
+              ? null
+              : () async {
+                  setState(() {
+                    _generating = true;
+                  });
 
-            navigator.pop(result);
-          },
+                  Function()? close;
+                  final PivGenerateResult result;
+                  try {
+                    close = showMessage(
+                      context,
+                      l10n.l_generating_private_key,
+                      duration: const Duration(seconds: 30),
+                    );
+                    result = await ref
+                        .read(pivSlotsProvider(widget.devicePath).notifier)
+                        .generate(
+                          widget.pivSlot.slot,
+                          _keyType,
+                          parameters: switch (_generateType) {
+                            GenerateType.certificate =>
+                              PivGenerateParameters.certificate(
+                                  subject: _subject,
+                                  validFrom: _validFrom,
+                                  validTo: _validTo),
+                            GenerateType.csr =>
+                              PivGenerateParameters.csr(subject: _subject),
+                          },
+                        );
+                  } finally {
+                    close?.call();
+                  }
+
+                  await ref.read(withContextProvider)(
+                    (context) async {
+                      Navigator.of(context).pop(result);
+                      showMessage(
+                        context,
+                        l10n.s_private_key_generated,
+                      );
+                    },
+                  );
+                },
           child: Text(l10n.s_save),
         ),
       ],
@@ -102,9 +131,14 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                 labelText: l10n.s_subject,
               ),
               textInputAction: TextInputAction.next,
+              enabled: !_generating,
               onChanged: (value) {
                 setState(() {
-                  _subject = value.contains('=') ? value : 'CN=$value';
+                  if (value.isEmpty) {
+                    _subject = '';
+                  } else {
+                    _subject = value.contains('=') ? value : 'CN=$value';
+                  }
                 });
               },
             ),
@@ -118,39 +152,45 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                     value: _generateType,
                     selected: _generateType != defaultGenerateType,
                     itemBuilder: (value) => Text(value.getDisplayName(l10n)),
-                    onChanged: (value) {
-                      setState(() {
-                        _generateType = value;
-                      });
-                    },
+                    onChanged: _generating
+                        ? null
+                        : (value) {
+                            setState(() {
+                              _generateType = value;
+                            });
+                          },
                   ),
                   ChoiceFilterChip<KeyType>(
                     items: KeyType.values,
                     value: _keyType,
                     selected: _keyType != defaultKeyType,
                     itemBuilder: (value) => Text(value.getDisplayName(l10n)),
-                    onChanged: (value) {
-                      setState(() {
-                        _keyType = value;
-                      });
-                    },
+                    onChanged: _generating
+                        ? null
+                        : (value) {
+                            setState(() {
+                              _keyType = value;
+                            });
+                          },
                   ),
                   if (_generateType == GenerateType.certificate)
                     FilterChip(
                       label: Text(dateFormatter.format(_validTo)),
-                      onSelected: (value) async {
-                        final selected = await showDatePicker(
-                          context: context,
-                          initialDate: _validTo,
-                          firstDate: _validFrom,
-                          lastDate: _validToMax,
-                        );
-                        if (selected != null) {
-                          setState(() {
-                            _validTo = selected;
-                          });
-                        }
-                      },
+                      onSelected: _generating
+                          ? null
+                          : (value) async {
+                              final selected = await showDatePicker(
+                                context: context,
+                                initialDate: _validTo,
+                                firstDate: _validFrom,
+                                lastDate: _validToMax,
+                              );
+                              if (selected != null) {
+                                setState(() {
+                                  _validTo = selected;
+                                });
+                              }
+                            },
                     ),
                 ]),
           ]
