@@ -39,56 +39,75 @@ class ResponsiveDialog extends StatefulWidget {
 
 class _ResponsiveDialogState extends State<ResponsiveDialog> {
   final Key _childKey = GlobalKey();
+  final _focus = FocusScopeNode();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _focus.dispose();
+  }
+
+  Widget _buildFullscreen(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: widget.title,
+          actions: widget.actions,
+          leading: IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: widget.allowCancel
+                  ? () {
+                      widget.onCancel?.call();
+                      Navigator.of(context).pop();
+                    }
+                  : null),
+        ),
+        body: SingleChildScrollView(
+          child:
+              SafeArea(child: Container(key: _childKey, child: widget.child)),
+        ),
+      );
+
+  Widget _buildDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final cancelText = widget.onCancel == null && widget.actions.isEmpty
+        ? l10n.s_close
+        : l10n.s_cancel;
+    return AlertDialog(
+      title: widget.title,
+      titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
+      scrollable: true,
+      contentPadding: const EdgeInsets.symmetric(vertical: 8),
+      content: SizedBox(
+        width: 380,
+        child: Container(key: _childKey, child: widget.child),
+      ),
+      actions: [
+        TextButton(
+          child: Text(cancelText),
+          onPressed: () {
+            widget.onCancel?.call();
+            Navigator.of(context).pop();
+          },
+        ),
+        ...widget.actions
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) =>
       LayoutBuilder(builder: ((context, constraints) {
-        final l10n = AppLocalizations.of(context)!;
-        if (constraints.maxWidth < 540) {
-          // Fullscreen
-          return Scaffold(
-            appBar: AppBar(
-              title: widget.title,
-              actions: widget.actions,
-              leading: IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: widget.allowCancel
-                      ? () {
-                          widget.onCancel?.call();
-                          Navigator.of(context).pop();
-                        }
-                      : null),
-            ),
-            body: SingleChildScrollView(
-              child: SafeArea(
-                  child: Container(key: _childKey, child: widget.child)),
-            ),
-          );
-        } else {
-          // Dialog
-          final cancelText = widget.onCancel == null && widget.actions.isEmpty
-              ? l10n.s_close
-              : l10n.s_cancel;
-          return AlertDialog(
-            title: widget.title,
-            titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
-            scrollable: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 8),
-            content: SizedBox(
-              width: 380,
-              child: Container(key: _childKey, child: widget.child),
-            ),
-            actions: [
-              TextButton(
-                child: Text(cancelText),
-                onPressed: () {
-                  widget.onCancel?.call();
-                  Navigator.of(context).pop();
-                },
-              ),
-              ...widget.actions
-            ],
-          );
-        }
+        // This keeps the focus in the dialog, even if the underlying page changes.
+        return FocusScope(
+          node: _focus,
+          autofocus: true,
+          onFocusChange: (focused) {
+            if (!focused) {
+              _focus.requestFocus();
+            }
+          },
+          child: constraints.maxWidth < 540
+              ? _buildFullscreen(context)
+              : _buildDialog(context),
+        );
       }));
 }
