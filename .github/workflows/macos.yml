@@ -7,7 +7,7 @@ jobs:
 
     runs-on: macos-latest
     env:
-      PYVER: '3.11.3'
+      PYVER: '3.11.4'
       MACOSX_DEPLOYMENT_TARGET: "10.15"
 
     steps:
