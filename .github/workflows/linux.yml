@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PYVER: '3.11.4'
-      FLUTTER: '3.10.1'
+      FLUTTER: '3.10.5'
     container:
       image: ubuntu:20.04
       env:
