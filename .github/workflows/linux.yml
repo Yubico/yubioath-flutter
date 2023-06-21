@@ -10,7 +10,7 @@ jobs:
       PYVER: '3.11.3'
       FLUTTER: '3.10.1'
     container:
-      image: ubuntu:18.04
+      image: ubuntu:20.04
       env:
         DEBIAN_FRONTEND: noninteractive
 
