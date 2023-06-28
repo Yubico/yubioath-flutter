@@ -19,9 +19,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../widgets/delayed_visibility.dart';
 import '../message.dart';
-import 'device_button.dart';
 import 'keys.dart';
-import 'main_drawer.dart';
+import 'navigation.dart';
+
+// We use global keys here to maintain the NavigatorContent between AppPages.
+final _navKey = GlobalKey();
+final _navExpandedKey = GlobalKey();
 
 class AppPage extends StatelessWidget {
   final Widget? title;
@@ -47,26 +50,33 @@ class AppPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 540) {
-            // Single column layout
-            return _buildScaffold(context, true);
+          if (constraints.maxWidth < 600) {
+            // Single column layout, maybe with rail
+            final hasRail = constraints.maxWidth > 400;
+            return _buildScaffold(context, true, hasRail);
           } else {
-            // Two-column layout
+            // Fully expanded layout
             return Scaffold(
               body: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
                     width: 280,
-                    child: DrawerTheme(
-                      data: DrawerTheme.of(context).copyWith(
-                        // Don't color the drawer differently
-                        surfaceTintColor: Colors.transparent,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          _buildLogo(context),
+                          NavigationContent(
+                            key: _navExpandedKey,
+                            shouldPop: false,
+                            extended: true,
+                          ),
+                        ],
                       ),
-                      child: const MainPageDrawer(shouldPop: false),
                     ),
                   ),
                   Expanded(
-                    child: _buildScaffold(context, false),
+                    child: _buildScaffold(context, false, false),
                   ),
                 ],
               ),
@@ -75,7 +85,47 @@ class AppPage extends StatelessWidget {
         },
       );
 
-  Widget _buildScrollView() {
+  Widget _buildLogo(BuildContext context) {
+    final color =
+        Theme.of(context).brightness == Brightness.dark ? 'white' : 'green';
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, bottom: 12),
+      child: Image.asset(
+        'assets/graphics/yubico-$color.png',
+        alignment: Alignment.centerLeft,
+        height: 28,
+        filterQuality: FilterQuality.medium,
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+        child: SingleChildScrollView(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: DrawerButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+              _buildLogo(context),
+              const SizedBox(width: 48),
+            ],
+          ),
+          NavigationContent(key: _navExpandedKey, extended: true),
+        ],
+      ),
+    ));
+  }
+
+  Widget _buildMainContent() {
     final content = Column(
       children: [
         child,
@@ -83,8 +133,7 @@ class AppPage extends StatelessWidget {
           Align(
             alignment: centered ? Alignment.center : Alignment.centerLeft,
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 18.0),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
               child: Wrap(
                 spacing: 4,
                 runSpacing: 4,
@@ -95,6 +144,7 @@ class AppPage extends StatelessWidget {
       ],
     );
     return SingleChildScrollView(
+      primary: false,
       child: SafeArea(
         child: Center(
           child: SizedBox(
@@ -112,7 +162,27 @@ class AppPage extends StatelessWidget {
     );
   }
 
-  Scaffold _buildScaffold(BuildContext context, bool hasDrawer) {
+  Scaffold _buildScaffold(BuildContext context, bool hasDrawer, bool hasRail) {
+    var body =
+        centered ? Center(child: _buildMainContent()) : _buildMainContent();
+    if (hasRail) {
+      body = Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 72,
+            child: SingleChildScrollView(
+              child: NavigationContent(
+                key: _navKey,
+                shouldPop: false,
+                extended: false,
+              ),
+            ),
+          ),
+          Expanded(child: body),
+        ],
+      );
+    }
     return Scaffold(
       key: scaffoldGlobalKey,
       appBar: AppBar(
@@ -120,6 +190,20 @@ class AppPage extends StatelessWidget {
         titleSpacing: hasDrawer ? 2 : 8,
         centerTitle: true,
         titleTextStyle: Theme.of(context).textTheme.titleLarge,
+        leadingWidth: hasRail ? 84 : null,
+        leading: hasRail
+            ? const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Expanded(
+                      child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: DrawerButton(),
+                  )),
+                  SizedBox(width: 12),
+                ],
+              )
+            : null,
         actions: [
           if (actionButtonBuilder == null && keyActionsBuilder != null)
             Padding(
@@ -139,14 +223,15 @@ class AppPage extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: actionButtonBuilder?.call(context) ?? const DeviceButton(),
-          ),
+          if (actionButtonBuilder != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: actionButtonBuilder!.call(context),
+            ),
         ],
       ),
-      drawer: hasDrawer ? const MainPageDrawer() : null,
-      body: centered ? Center(child: _buildScrollView()) : _buildScrollView(),
+      drawer: hasDrawer ? _buildDrawer(context) : null,
+      body: body,
     );
   }
 }
