@@ -18,5 +18,3 @@
 var approvedYubiKeys = <String>[
   '',
 ];
-
-///var approvedYubiKeys = <String>[];    approvedYubikeys.add = '13820900';
