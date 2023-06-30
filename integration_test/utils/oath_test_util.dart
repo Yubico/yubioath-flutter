@@ -22,7 +22,7 @@ import 'package:yubico_authenticator/oath/views/account_list.dart';
 import 'package:yubico_authenticator/oath/views/account_view.dart';
 
 import 'android/util.dart';
-import 'test_util.dart';
+import '../utils/test_util.dart';
 
 class Account {
   final String? issuer;

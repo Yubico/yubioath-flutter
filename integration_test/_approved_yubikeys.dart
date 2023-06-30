@@ -15,4 +15,10 @@
  */
 
 /// list of YubiKey serial numbers which are approved to be used with integration tests
-var approvedYubiKeys = <String>[];
+var approvedYubiKeys = <String>[
+  '11790010',
+  '13820900',
+  '13820901',
+];
+
+///var approvedYubiKeys = <String>[];    approvedYubikeys.add = '13820900';
