@@ -24,11 +24,11 @@ import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/management/views/keys.dart';
 
 import 'android/util.dart' as android_test_util;
-import 'approved_yubikeys.dart';
+import '../_approved_yubikeys.dart';
 import 'desktop/util.dart' as desktop_test_util;
 
-const shortWaitMs = 10;
-const longWaitMs = 50;
+const shortWaitMs = 500;
+const longWaitMs = 500;
 
 /// information about YubiKey as seen by the app
 String? yubiKeyName;
