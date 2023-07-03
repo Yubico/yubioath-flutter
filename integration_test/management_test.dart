@@ -37,7 +37,8 @@ void main() {
   group('Management UI tests', () {
     appTest('Drawer items exist', (WidgetTester tester) async {
       await tester.openDrawer();
-      expect(find.byKey(app_keys.managementAppDrawer), findsOneWidget);
+      expect(find.byKey(app_keys.managementAppDrawer).hitTestable(),
+          findsOneWidget);
     });
   });
 

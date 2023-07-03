@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yubico_authenticator/core/state.dart';
+import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 import 'package:yubico_authenticator/oath/keys.dart' as keys;
 import 'package:yubico_authenticator/oath/views/account_list.dart';
 import 'package:yubico_authenticator/oath/views/account_view.dart';
@@ -235,8 +236,12 @@ extension OathFunctions on WidgetTester {
     /// now the account dialog is shown
     /// TODO verify it shows correct issuer and name
 
-    /// close the account dialog by tapping out of it
-    await tapAt(const Offset(10, 10));
+    /// close the account dialog by tapping the close button
+    var closeButton = find.byKey(app_keys.closeButton).hitTestable();
+    // Wait for toast to clear
+    await waitForFinder(closeButton);
+
+    await tap(closeButton);
     await longWait();
 
     /// verify accounts in the list

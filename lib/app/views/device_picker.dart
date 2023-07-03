@@ -24,6 +24,7 @@ import '../../management/models.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
+import 'keys.dart' as keys;
 
 final _hiddenDevicesProvider =
     StateNotifierProvider<_HiddenDevicesNotifier, List<String>>(
@@ -337,6 +338,7 @@ _DeviceRow _buildCurrentDeviceRow(
   final subtitle = messages.join('\n');
 
   return _DeviceRow(
+    key: keys.deviceInfoListTile,
     leading: data.maybeWhen(
       data: (data) =>
           DeviceAvatar.yubiKeyData(data, radius: extended ? null : 16),

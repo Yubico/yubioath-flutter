@@ -30,3 +30,6 @@ const managementAppDrawer = Key('$_prefix.drawer.management');
 // settings page
 const themeModeSetting = Key('$_prefix.settings.theme_mode');
 Key themeModeOption(ThemeMode mode) => Key('$_prefix.theme_mode.${mode.name}');
+
+// misc buttons
+const closeButton = Key('$_prefix.close_button');

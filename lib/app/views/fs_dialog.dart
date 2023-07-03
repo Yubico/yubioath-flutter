@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'keys.dart' as keys;
 
 class FsDialog extends StatelessWidget {
   final Widget child;
@@ -35,6 +36,7 @@ class FsDialog extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: TextButton.icon(
+              key: keys.closeButton,
               icon: const Icon(Icons.close),
               label: Text(l10n.s_close),
               onPressed: () {
