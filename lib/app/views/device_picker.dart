@@ -255,7 +255,8 @@ class _DeviceRow extends StatelessWidget {
             child: leading,
           ),
           title: Text(title, overflow: TextOverflow.fade, softWrap: false),
-          subtitle: Text(subtitle),
+          subtitle:
+              Text(subtitle, overflow: TextOverflow.fade, softWrap: false),
           dense: true,
           tileColor: selected ? colorScheme.primary : null,
           textColor: selected ? colorScheme.onPrimary : null,
