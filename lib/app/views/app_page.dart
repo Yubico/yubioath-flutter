@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yubico_authenticator/core/state.dart';
 
 import '../../widgets/delayed_visibility.dart';
 import '../message.dart';
@@ -50,9 +51,19 @@ class AppPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 600) {
+          final bool singleColumn;
+          final bool hasRail;
+          if (isAndroid) {
+            final isPortrait = constraints.maxWidth < constraints.maxHeight;
+            singleColumn = isPortrait || constraints.maxWidth < 600;
+            hasRail = constraints.maxWidth > 600;
+          } else {
+            singleColumn = constraints.maxWidth < 600;
+            hasRail = constraints.maxWidth > 400;
+          }
+
+          if (singleColumn) {
             // Single column layout, maybe with rail
-            final hasRail = constraints.maxWidth > 400;
             return _buildScaffold(context, true, hasRail);
           } else {
             // Fully expanded layout
@@ -101,26 +112,28 @@ class AppPage extends StatelessWidget {
 
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
-        child: SingleChildScrollView(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 16),
-                child: DrawerButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
+        child: SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: DrawerButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
                 ),
-              ),
-              _buildLogo(context),
-              const SizedBox(width: 48),
-            ],
-          ),
-          NavigationContent(key: _navExpandedKey, extended: true),
-        ],
+                _buildLogo(context),
+                const SizedBox(width: 48),
+              ],
+            ),
+            NavigationContent(key: _navExpandedKey, extended: true),
+          ],
+        ),
       ),
     ));
   }
