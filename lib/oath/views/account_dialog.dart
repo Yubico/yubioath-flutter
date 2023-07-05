@@ -23,6 +23,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
+import '../../app/views/fs_dialog.dart';
+import '../../app/views/action_list.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../models.dart';
@@ -36,60 +38,6 @@ class AccountDialog extends ConsumerWidget {
   final OathCredential credential;
 
   const AccountDialog(this.credential, {super.key});
-
-  List<Widget> _buildActions(BuildContext context, AccountHelper helper) {
-    final l10n = AppLocalizations.of(context)!;
-    final actions = helper.buildActions();
-
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
-
-    final copy =
-        actions.firstWhere(((e) => e.text == l10n.l_copy_to_clipboard));
-    final delete = actions.firstWhere(((e) => e.text == l10n.s_delete_account));
-    final colors = {
-      copy: (theme.primary, theme.onPrimary),
-      delete: (theme.error, theme.onError),
-    };
-
-    // If we can't copy, but can calculate, highlight that button instead
-    if (copy.intent == null) {
-      final calculates = actions.where(((e) => e.text == l10n.s_calculate));
-      if (calculates.isNotEmpty) {
-        colors[calculates.first] = (theme.primary, theme.onPrimary);
-      }
-    }
-
-    return actions.map((e) {
-      final intent = e.intent;
-      final (firstColor, secondColor) =
-          colors[e] ?? (theme.secondary, theme.onSecondary);
-      final tooltip = e.trailing != null ? '${e.text}\n${e.trailing}' : e.text;
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6.0),
-        child: CircleAvatar(
-          backgroundColor: intent != null ? firstColor : theme.secondary,
-          foregroundColor: secondColor,
-          child: IconButton(
-            style: IconButton.styleFrom(
-              backgroundColor: intent != null ? firstColor : theme.secondary,
-              foregroundColor: secondColor,
-              disabledBackgroundColor: theme.onSecondary.withOpacity(0.2),
-              fixedSize: const Size.square(38),
-            ),
-            icon: e.icon,
-            iconSize: 22,
-            tooltip: tooltip,
-            onPressed: intent != null
-                ? () {
-                    Actions.invoke(context, intent);
-                  }
-                : null,
-          ),
-        ),
-      );
-    }).toList();
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -168,20 +116,33 @@ class AccountDialog extends ConsumerWidget {
         }
         return FocusScope(
           autofocus: true,
-          child: AlertDialog(
-            title: Center(
-              child: Text(
-                helper.title,
-                style: Theme.of(context).textTheme.headlineSmall,
-                softWrap: true,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
+          child: FsDialog(
+            child: Column(
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 48, bottom: 16),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      IconTheme(
+                        data: IconTheme.of(context).copyWith(size: 24),
+                        child: helper.buildCodeIcon(),
+                      ),
+                      const SizedBox(width: 8.0),
+                      DefaultTextStyle.merge(
+                        style: const TextStyle(fontSize: 28),
+                        child: helper.buildCodeLabel(),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  helper.title,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                ),
                 if (subtitle != null)
                   Text(
                     subtitle,
@@ -192,48 +153,14 @@ class AccountDialog extends ConsumerWidget {
                           color: Theme.of(context).textTheme.bodySmall!.color,
                         ),
                   ),
-                const SizedBox(height: 12.0),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.rectangle,
-                    color: Theme.of(context).colorScheme.surfaceVariant,
-                    borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-                  ),
-                  child: Center(
-                    child: FittedBox(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            IconTheme(
-                              data: IconTheme.of(context).copyWith(size: 24),
-                              child: helper.buildCodeIcon(),
-                            ),
-                            const SizedBox(width: 8.0),
-                            DefaultTextStyle.merge(
-                              style: const TextStyle(fontSize: 28),
-                              child: helper.buildCodeLabel(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                const SizedBox(height: 32),
+                ActionListSection.fromMenuActions(
+                  context,
+                  AppLocalizations.of(context)!.s_actions,
+                  actions: helper.buildActions(),
                 ),
               ],
             ),
-            actionsPadding: const EdgeInsets.symmetric(vertical: 10.0),
-            actions: [
-              Center(
-                child: FittedBox(
-                  alignment: Alignment.center,
-                  child: Row(children: _buildActions(context, helper)),
-                ),
-              )
-            ],
           ),
         );
       },

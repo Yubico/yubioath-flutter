@@ -22,8 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
-import '../../core/state.dart';
-import '../../widgets/menu_list_tile.dart';
+import '../../app/views/app_list_item.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_dialog.dart';
@@ -47,15 +46,6 @@ String _a11yCredentialLabel(String? issuer, String name, String? code) {
 
 class _AccountViewState extends ConsumerState<AccountView> {
   OathCredential get credential => widget.credential;
-
-  final _focusNode = FocusNode();
-  int _lastTap = 0;
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
 
   Color _iconColor(int shade) {
     final colors = [
@@ -85,23 +75,6 @@ class _AccountViewState extends ConsumerState<AccountView> {
         : credential.name;
 
     return colors[label.hashCode % colors.length]!;
-  }
-
-  List<PopupMenuItem> _buildPopupMenu(
-      BuildContext context, AccountHelper helper) {
-    return helper.buildActions().map((e) {
-      final intent = e.intent;
-      return buildMenuItem(
-        leading: e.icon,
-        title: Text(e.text),
-        action: intent != null
-            ? () {
-                Actions.invoke(context, intent);
-              }
-            : null,
-        trailing: e.trailing,
-      );
-    }).toList();
   }
 
   @override
@@ -165,83 +138,27 @@ class _AccountViewState extends ConsumerState<AccountView> {
               child: Semantics(
                 label: _a11yCredentialLabel(
                     credential.issuer, credential.name, helper.code?.value),
-                child: InkWell(
-                  focusNode: _focusNode,
-                  borderRadius: BorderRadius.circular(30),
-                  onSecondaryTapDown: (details) {
-                    showMenu(
-                      context: context,
-                      position: RelativeRect.fromLTRB(
-                        details.globalPosition.dx,
-                        details.globalPosition.dy,
-                        details.globalPosition.dx,
-                        0,
-                      ),
-                      items: _buildPopupMenu(context, helper),
-                    );
-                  },
-                  onTap: () {
-                    if (isDesktop) {
-                      final now = DateTime.now().millisecondsSinceEpoch;
-                      if (now - _lastTap < 500) {
-                        setState(() {
-                          _lastTap = 0;
-                        });
-                        Actions.maybeInvoke(context, const CopyIntent());
-                      } else {
-                        _focusNode.requestFocus();
-                        setState(() {
-                          _lastTap = now;
-                        });
-                      }
-                    } else {
-                      Actions.maybeInvoke<OpenIntent>(
-                          context, const OpenIntent());
-                    }
-                  },
-                  onLongPress: () {
-                    Actions.maybeInvoke(context, const CopyIntent());
-                  },
-                  child: ListTile(
-                    leading: showAvatar
-                        ? AccountIcon(
-                            issuer: credential.issuer,
-                            defaultWidget: circleAvatar)
-                        : null,
-                    title: Text(
-                      helper.title,
-                      overflow: TextOverflow.fade,
-                      maxLines: 1,
-                      softWrap: false,
-                    ),
-                    subtitle: subtitle != null
-                        ? Text(
-                            subtitle,
-                            overflow: TextOverflow.fade,
-                            maxLines: 1,
-                            softWrap: false,
-                          )
-                        : null,
-                    trailing: Focus(
-                      skipTraversal: true,
-                      descendantsAreTraversable: false,
-                      child: helper.code != null
-                          ? FilledButton.tonalIcon(
-                              icon: helper.buildCodeIcon(),
-                              label: helper.buildCodeLabel(),
-                              onPressed: () {
-                                Actions.maybeInvoke<OpenIntent>(
-                                    context, const OpenIntent());
-                              },
-                            )
-                          : FilledButton.tonal(
-                              onPressed: () {
-                                Actions.maybeInvoke<OpenIntent>(
-                                    context, const OpenIntent());
-                              },
-                              child: helper.buildCodeIcon()),
-                    ),
-                  ),
+                child: AppListItem(
+                  leading: showAvatar
+                      ? AccountIcon(
+                          issuer: credential.issuer,
+                          defaultWidget: circleAvatar)
+                      : null,
+                  title: helper.title,
+                  subtitle: subtitle,
+                  trailing: helper.code != null
+                      ? FilledButton.tonalIcon(
+                          icon: helper.buildCodeIcon(),
+                          label: helper.buildCodeLabel(),
+                          onPressed:
+                              Actions.handler(context, const OpenIntent()),
+                        )
+                      : FilledButton.tonal(
+                          onPressed:
+                              Actions.handler(context, const OpenIntent()),
+                          child: helper.buildCodeIcon()),
+                  activationIntent: const CopyIntent(),
+                  buildPopupActions: (_) => helper.buildActions(),
                 ),
               ));
         });

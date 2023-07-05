@@ -16,18 +16,23 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yubico_authenticator/core/state.dart';
 
 import '../../widgets/delayed_visibility.dart';
 import '../message.dart';
-import 'device_button.dart';
 import 'keys.dart';
-import 'main_drawer.dart';
+import 'navigation.dart';
+
+// We use global keys here to maintain the NavigatorContent between AppPages.
+final _navKey = GlobalKey();
+final _navExpandedKey = GlobalKey();
 
 class AppPage extends StatelessWidget {
   final Widget? title;
   final Widget child;
   final List<Widget> actions;
   final Widget Function(BuildContext context)? keyActionsBuilder;
+  final bool keyActionsBadge;
   final bool centered;
   final bool delayedContent;
   final Widget Function(BuildContext context)? actionButtonBuilder;
@@ -40,31 +45,49 @@ class AppPage extends StatelessWidget {
     this.keyActionsBuilder,
     this.actionButtonBuilder,
     this.delayedContent = false,
+    this.keyActionsBadge = false,
   });
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 540) {
-            // Single column layout
-            return _buildScaffold(context, true);
+          final bool singleColumn;
+          final bool hasRail;
+          if (isAndroid) {
+            final isPortrait = constraints.maxWidth < constraints.maxHeight;
+            singleColumn = isPortrait || constraints.maxWidth < 600;
+            hasRail = constraints.maxWidth > 600;
           } else {
-            // Two-column layout
+            singleColumn = constraints.maxWidth < 600;
+            hasRail = constraints.maxWidth > 400;
+          }
+
+          if (singleColumn) {
+            // Single column layout, maybe with rail
+            return _buildScaffold(context, true, hasRail);
+          } else {
+            // Fully expanded layout
             return Scaffold(
               body: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
                     width: 280,
-                    child: DrawerTheme(
-                      data: DrawerTheme.of(context).copyWith(
-                        // Don't color the drawer differently
-                        surfaceTintColor: Colors.transparent,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          _buildLogo(context),
+                          NavigationContent(
+                            key: _navExpandedKey,
+                            shouldPop: false,
+                            extended: true,
+                          ),
+                        ],
                       ),
-                      child: const MainPageDrawer(shouldPop: false),
                     ),
                   ),
                   Expanded(
-                    child: _buildScaffold(context, false),
+                    child: _buildScaffold(context, false, false),
                   ),
                 ],
               ),
@@ -73,7 +96,49 @@ class AppPage extends StatelessWidget {
         },
       );
 
-  Widget _buildScrollView() {
+  Widget _buildLogo(BuildContext context) {
+    final color =
+        Theme.of(context).brightness == Brightness.dark ? 'white' : 'green';
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, bottom: 12),
+      child: Image.asset(
+        'assets/graphics/yubico-$color.png',
+        alignment: Alignment.centerLeft,
+        height: 28,
+        filterQuality: FilterQuality.medium,
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+        child: SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: DrawerButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+                _buildLogo(context),
+                const SizedBox(width: 48),
+              ],
+            ),
+            NavigationContent(key: _navExpandedKey, extended: true),
+          ],
+        ),
+      ),
+    ));
+  }
+
+  Widget _buildMainContent() {
     final content = Column(
       children: [
         child,
@@ -81,8 +146,7 @@ class AppPage extends StatelessWidget {
           Align(
             alignment: centered ? Alignment.center : Alignment.centerLeft,
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 18.0),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
               child: Wrap(
                 spacing: 4,
                 runSpacing: 4,
@@ -93,6 +157,7 @@ class AppPage extends StatelessWidget {
       ],
     );
     return SingleChildScrollView(
+      primary: false,
       child: SafeArea(
         child: Center(
           child: SizedBox(
@@ -110,7 +175,27 @@ class AppPage extends StatelessWidget {
     );
   }
 
-  Scaffold _buildScaffold(BuildContext context, bool hasDrawer) {
+  Scaffold _buildScaffold(BuildContext context, bool hasDrawer, bool hasRail) {
+    var body =
+        centered ? Center(child: _buildMainContent()) : _buildMainContent();
+    if (hasRail) {
+      body = Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 72,
+            child: SingleChildScrollView(
+              child: NavigationContent(
+                key: _navKey,
+                shouldPop: false,
+                extended: false,
+              ),
+            ),
+          ),
+          Expanded(child: body),
+        ],
+      );
+    }
     return Scaffold(
       key: scaffoldGlobalKey,
       appBar: AppBar(
@@ -118,6 +203,20 @@ class AppPage extends StatelessWidget {
         titleSpacing: hasDrawer ? 2 : 8,
         centerTitle: true,
         titleTextStyle: Theme.of(context).textTheme.titleLarge,
+        leadingWidth: hasRail ? 84 : null,
+        leading: hasRail
+            ? const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Expanded(
+                      child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: DrawerButton(),
+                  )),
+                  SizedBox(width: 12),
+                ],
+              )
+            : null,
         actions: [
           if (actionButtonBuilder == null && keyActionsBuilder != null)
             Padding(
@@ -127,20 +226,25 @@ class AppPage extends StatelessWidget {
                 onPressed: () {
                   showBlurDialog(context: context, builder: keyActionsBuilder!);
                 },
-                icon: const Icon(Icons.tune),
+                icon: keyActionsBadge
+                    ? const Badge(
+                        child: Icon(Icons.tune),
+                      )
+                    : const Icon(Icons.tune),
                 iconSize: 24,
                 tooltip: AppLocalizations.of(context)!.s_configure_yk,
                 padding: const EdgeInsets.all(12),
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: actionButtonBuilder?.call(context) ?? const DeviceButton(),
-          ),
+          if (actionButtonBuilder != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: actionButtonBuilder!.call(context),
+            ),
         ],
       ),
-      drawer: hasDrawer ? const MainPageDrawer() : null,
-      body: centered ? Center(child: _buildScrollView()) : _buildScrollView(),
+      drawer: hasDrawer ? _buildDrawer(context) : null,
+      body: body,
     );
   }
 }

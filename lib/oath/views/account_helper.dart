@@ -29,6 +29,7 @@ import '../../widgets/circle_timer.dart';
 import '../../widgets/custom_icons.dart';
 import '../models.dart';
 import '../state.dart';
+import '../keys.dart' as keys;
 import 'actions.dart';
 
 /// Support class for presenting an OATH account.
@@ -53,7 +54,7 @@ class AccountHelper {
   String get title => credential.issuer ?? credential.name;
   String? get subtitle => credential.issuer != null ? credential.name : null;
 
-  List<MenuAction> buildActions() => _ref
+  List<ActionItem> buildActions() => _ref
       .watch(currentDeviceDataProvider)
       .maybeWhen(
         data: (data) {
@@ -61,38 +62,51 @@ class AccountHelper {
               credential.touchRequired || credential.oathType == OathType.hotp;
           final ready = expired || credential.oathType == OathType.hotp;
           final pinned = _ref.watch(favoritesProvider).contains(credential.id);
-
           final l10n = AppLocalizations.of(_context)!;
-          final shortcut = Platform.isMacOS ? '\u2318 C' : 'Ctrl+C';
+          final canCopy = code != null && !expired;
+
           return [
-            MenuAction(
-              text: l10n.l_copy_to_clipboard,
+            ActionItem(
+              key: keys.copyAction,
               icon: const Icon(Icons.copy),
-              intent: code == null || expired ? null : const CopyIntent(),
-              trailing: shortcut,
+              title: l10n.l_copy_to_clipboard,
+              subtitle: l10n.l_copy_code_desc,
+              shortcut: Platform.isMacOS ? '\u2318 C' : 'Ctrl+C',
+              actionStyle: canCopy ? ActionStyle.primary : null,
+              intent: canCopy ? const CopyIntent() : null,
             ),
             if (manual)
-              MenuAction(
-                text: l10n.s_calculate,
+              ActionItem(
+                key: keys.calculateAction,
+                actionStyle: !canCopy ? ActionStyle.primary : null,
                 icon: const Icon(Icons.refresh),
+                title: l10n.s_calculate,
+                subtitle: l10n.l_calculate_code_desc,
                 intent: ready ? const CalculateIntent() : null,
               ),
-            MenuAction(
-              text: pinned ? l10n.s_unpin_account : l10n.s_pin_account,
+            ActionItem(
+              key: keys.togglePinAction,
               icon: pinned
                   ? pushPinStrokeIcon
                   : const Icon(Icons.push_pin_outlined),
+              title: pinned ? l10n.s_unpin_account : l10n.s_pin_account,
+              subtitle: l10n.l_pin_account_desc,
               intent: const TogglePinIntent(),
             ),
             if (data.info.version.isAtLeast(5, 3))
-              MenuAction(
+              ActionItem(
+                key: keys.editAction,
                 icon: const Icon(Icons.edit_outlined),
-                text: l10n.s_rename_account,
+                title: l10n.s_rename_account,
+                subtitle: l10n.l_rename_account_desc,
                 intent: const EditIntent(),
               ),
-            MenuAction(
-              text: l10n.s_delete_account,
+            ActionItem(
+              key: keys.deleteAction,
+              actionStyle: ActionStyle.error,
               icon: const Icon(Icons.delete_outline),
+              title: l10n.s_delete_account,
+              subtitle: l10n.l_delete_account_desc,
               intent: const DeleteIntent(),
             ),
           ];

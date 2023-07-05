@@ -53,6 +53,7 @@ enum Application {
   String getDisplayName(AppLocalizations l10n) => switch (this) {
         Application.oath => l10n.s_authenticator,
         Application.fido => l10n.s_webauthn,
+        Application.piv => l10n.s_piv,
         _ => name.substring(0, 1).toUpperCase() + name.substring(1),
       };
 
@@ -115,14 +116,20 @@ class DeviceNode with _$DeviceNode {
       map(usbYubiKey: (_) => Transport.usb, nfcReader: (_) => Transport.nfc);
 }
 
+enum ActionStyle { normal, primary, error }
+
 @freezed
-class MenuAction with _$MenuAction {
-  factory MenuAction({
-    required String text,
+class ActionItem with _$ActionItem {
+  factory ActionItem({
     required Widget icon,
-    String? trailing,
+    required String title,
+    String? subtitle,
+    String? shortcut,
+    Widget? trailing,
     Intent? intent,
-  }) = _MenuAction;
+    ActionStyle? actionStyle,
+    Key? key,
+  }) = _ActionItem;
 }
 
 @freezed

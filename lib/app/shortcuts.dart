@@ -28,6 +28,7 @@ import '../oath/keys.dart';
 import 'message.dart';
 import 'models.dart';
 import 'state.dart';
+import 'views/keys.dart';
 import 'views/settings_page.dart';
 
 class OpenIntent extends Intent {
@@ -100,7 +101,10 @@ Widget registerGlobalShortcuts(
         }),
         NextDeviceIntent: CallbackAction<NextDeviceIntent>(onInvoke: (_) {
           ref.read(withContextProvider)((context) async {
-            if (!Navigator.of(context).canPop()) {
+            // Only allow switching keys if no other views are open,
+            // with the exception of the drawer.
+            if (!Navigator.of(context).canPop() ||
+                scaffoldGlobalKey.currentState?.isDrawerOpen == true) {
               final attached = ref
                   .read(attachedDevicesProvider)
                   .whereType<UsbYubiKeyNode>()
