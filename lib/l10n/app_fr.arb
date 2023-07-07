@@ -16,7 +16,7 @@
     },
 
     "@_lint_rules": {
-        "s_max_words": 4,
+        "s_max_words": 5,
         "s_max_length": 32
     },
 
@@ -30,12 +30,12 @@
     "s_unlock": "Déverrouiller",
     "s_calculate": "Calculer",
     "s_import": "Importer",
-    "s_label": "étiquette",
+    "s_label": "Étiquette",
     "s_name": "Nom",
     "s_usb": "USB",
     "s_nfc": "NFC",
     "s_show_window": "Afficher la fenêtre",
-    "s_hide_window": "masquer la fenêtre",
+    "s_hide_window": "Masquer la fenêtre",
     "q_rename_target": "Renommer l'{label}?",
     "@q_rename_target" : {
         "placeholders": {
@@ -230,7 +230,7 @@
     },
     "s_pin_required": "PIN requis",
     "p_pin_required_desc": "L'action que vous allez faire demande d'entrer le code PIN du PIV.",
-    "l_piv_pin_blocked": "Vous êtes bloqué. Utilisez le code PUK pour réinitialiser",
+    "l_piv_pin_blocked": "Vous êtes bloqué, utilisez le code PUK pour réinitialiser",
     "p_enter_new_piv_pin_puk": "Entrez un nouveau {name} entre 6 et 8 caractères.",
     "@p_enter_new_piv_pin_puk" : {
         "placeholders": {
@@ -250,8 +250,8 @@
     "s_wrong_password": "Mauvais mot de passe",
     "s_remove_password": "Supprimer le mot de passe",
     "s_password_removed": "Mot de passe supprimé",
-    "s_remember_password": "Se souvenir du mot de passe",
-    "s_clear_saved_password": "Effacer le mot de passe enregistré",
+    "s_remember_password": "Retenir le mot de passe",
+    "s_clear_saved_password": "Effacer le mot de passe",
     "s_password_forgotten": "Mot de passe oublié",
     "l_keystore_unavailable": "Le magasin de clés de l'OS est indisponible",
     "l_remember_pw_failed": "Échec de la mémorisation du mot de passe",
@@ -507,7 +507,7 @@
 
     "@_factory_reset": {},
     "s_reset": "Réinitialiser",
-    "s_factory_reset": "Réinitialisation à l'état d'usine",
+    "s_factory_reset": "Réinitialisation",
     "l_factory_reset_this_app": "Réinitialiser cette application",
     "s_reset_oath": "Réinitialiser l'OATH",
     "l_oath_application_reset": "L'application OATH à été réinitialisée",
@@ -535,7 +535,7 @@
     "l_code_copied_clipboard": "Code copé vers le presse papier",
     "s_copy_log": "Copier les logs",
     "l_log_copied": "Logs copiés vers le presse papier",
-    "l_diagnostics_copied": "données de diagnostique copiés vers le presse papier",
+    "l_diagnostics_copied": "Données de diagnostique copiés vers le presse papier",
     "p_target_copied_clipboard": "{label} copié vers le presse papier.",
     "@p_target_copied_clipboard" : {
         "placeholders": {
