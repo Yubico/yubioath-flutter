@@ -32,6 +32,7 @@ import '../keys.dart' as keys;
 import 'add_account_page.dart';
 import 'manage_password_dialog.dart';
 import 'reset_dialog.dart';
+import 'list_screen.dart';
 
 Widget oathBuildActions(
   BuildContext context,
@@ -91,6 +92,47 @@ Widget oathBuildActions(
                   }
                 : null,
           ),
+          ActionListItem(
+              title: l10n.s_qr_scan,
+              icon: const Icon(Icons.qr_code_scanner_outlined),
+              onTap: (context) async {
+                final withContext = ref.read(withContextProvider);
+                final credentials = ref.read(credentialsProvider);
+                Navigator.of(context).pop();
+                final qrScanner = ref.watch(qrScannerProvider);
+                if (qrScanner != null) {
+                  final otpauth = await qrScanner.scanQr();
+                  if (otpauth == null) {
+                    showMessage(context, l10n.l_qr_not_found);
+                  } else {
+                    String s = 'otpauth-migration';
+                    if (otpauth.contains(s)) {
+                      final data =
+                          CredentialData.multiFromUri(Uri.parse(otpauth));
+                      await withContext((context) async {
+                        await showBlurDialog(
+                          context: context,
+                          builder: (context) => ListScreen(devicePath, data),
+                        );
+                      });
+                    } else if (otpauth.contains('otpauth')) {
+                      final data =
+                          CredentialData.multiFromUri(Uri.parse(otpauth));
+                      await withContext((context) async {
+                        await showBlurDialog(
+                          context: context,
+                          builder: (context) => OathAddAccountPage(
+                            devicePath,
+                            oathState,
+                            credentials: credentials,
+                            credentialData: data[0],
+                          ),
+                        );
+                      });
+                    }
+                  }
+                }
+              }),
         ]),
         ActionListSection(l10n.s_manage, children: [
           ActionListItem(
