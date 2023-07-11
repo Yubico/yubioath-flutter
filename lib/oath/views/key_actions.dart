@@ -31,6 +31,7 @@ import '../keys.dart' as keys;
 import 'add_account_page.dart';
 import 'manage_password_dialog.dart';
 import 'reset_dialog.dart';
+import 'list_screen.dart';
 
 Widget oathBuildActions(
   BuildContext context,
@@ -88,6 +89,46 @@ Widget oathBuildActions(
               }
             : null,
       ),
+      ListTile(
+          title: Text(l10n.s_qr_scan),
+          leading:
+              const CircleAvatar(child: Icon(Icons.qr_code_scanner_outlined)),
+          onTap: () async {
+            final withContext = ref.read(withContextProvider);
+            final credentials = ref.read(credentialsProvider);
+            Navigator.of(context).pop();
+            final qrScanner = ref.watch(qrScannerProvider);
+            if (qrScanner != null) {
+              final otpauth = await qrScanner.scanQr();
+              if (otpauth == null) {
+                showMessage(context, l10n.l_qr_not_found);
+              } else {
+                String s = 'otpauth-migration';
+                if (otpauth.contains(s)) {
+                  final data = CredentialData.multiFromUri(Uri.parse(otpauth));
+                  await withContext((context) async {
+                    await showBlurDialog(
+                      context: context,
+                      builder: (context) => ListScreen(devicePath, data),
+                    );
+                  });
+                } else if (otpauth.contains('otpauth')) {
+                  final data = CredentialData.multiFromUri(Uri.parse(otpauth));
+                  await withContext((context) async {
+                    await showBlurDialog(
+                      context: context,
+                      builder: (context) => OathAddAccountPage(
+                        devicePath,
+                        oathState,
+                        credentials: credentials,
+                        credentialData: data[0],
+                      ),
+                    );
+                  });
+                }
+              }
+            }
+          }),
       ListTitle(l10n.s_manage,
           textStyle: Theme.of(context).textTheme.bodyLarge),
       ListTile(
