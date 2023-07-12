@@ -32,18 +32,18 @@ class ListScreen extends ConsumerStatefulWidget {
 }
 
 class _ListScreenState extends ConsumerState<ListScreen> {
-  bool isChecked = true;
   int? numCreds;
   late Map<CredentialData, bool> checkedCreds;
+  late Map<CredentialData, bool> touchEnabled;
   List<OathCredential>? _credentials;
-
-  bool unique = true;
 
   @override
   void initState() {
     super.initState();
     checkedCreds =
         Map.fromIterable(widget.credentialsFromUri!, value: (v) => true);
+    touchEnabled =
+        Map.fromIterable(widget.credentialsFromUri!, value: (v) => false);
   }
 
   @override
@@ -62,7 +62,7 @@ class _ListScreenState extends ConsumerState<ListScreen> {
         title: Text(l10n.s_add_accounts),
         actions: [
           TextButton(
-            onPressed: isValid() ? submit : null,
+            onPressed: isValid() && areUnique() ? submit : null,
             child: Text(l10n.s_save),
           )
         ],
@@ -77,8 +77,12 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                     controlAffinity: ListTileControlAffinity.leading,
                     secondary: Row(mainAxisSize: MainAxisSize.min, children: [
                       IconButton(
-                          onPressed: () async {
-                            _log.debug('pressed');
+                          isSelected: touchEnabled[cred],
+                          color: touchEnabled[cred]! ? Colors.green : null,
+                          onPressed: () {
+                            setState(() {
+                              touchEnabled[cred] = !touchEnabled[cred]!;
+                            });
                           },
                           icon: const Icon(Icons.touch_app_outlined)),
                       IconButton(
@@ -106,6 +110,7 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                               widget.credentialsFromUri![index] = renamed;
                               checkedCreds[cred] = false;
                               checkedCreds[renamed] = true;
+                              touchEnabled[renamed] = false;
                             });
                           },
                           icon: const Icon(Icons.edit_outlined)),
@@ -113,15 +118,14 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                     title: cred.issuer != null
                         ? Text(cred.issuer!)
                         : Text(cred.name),
-                    value: isUnique(cred.name, cred.issuer ?? '')
-                        ? (checkedCreds[cred] ?? true)
-                        : false,
-                    enabled: isUnique(cred.name, cred.issuer ?? ''),
+                    value:
+                        isUnique(cred) ? (checkedCreds[cred] ?? true) : false,
+                    enabled: isUnique(cred),
                     subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           cred.issuer != null ? Text(cred.name) : Text(''),
-                          isUnique(cred.name, cred.issuer ?? '')
+                          isUnique(cred)
                               ? Text('')
                               : Text(
                                   l10n.l_name_already_exists,
@@ -144,20 +148,32 @@ class _ListScreenState extends ConsumerState<ListScreen> {
             )));
   }
 
-  bool isUnique(String nameText, String? issuerText) {
+  bool areUnique() {
+    bool unique = false;
+    checkedCreds.forEach((k, v) => unique = unique || isUnique(k));
+    return unique;
+  }
+
+  bool isUnique(CredentialData cred) {
+    String nameText = cred.name;
+    String? issuerText = cred.issuer ?? '';
     bool ans = _credentials
             ?.where((element) =>
                 element.name == nameText &&
                 (element.issuer ?? '') == issuerText)
             .isEmpty ??
         true;
+    // If the credential is not unique, make sure the checkbox is not checked.
+    if (!ans) {
+      checkedCreds[cred] = false;
+    }
     return ans;
   }
 
   bool isValid() {
     int credsToAdd = 0;
     checkedCreds.forEach((k, v) => v ? credsToAdd++ : null);
-    if (numCreds! + credsToAdd <= 32) return true;
+    if ((credsToAdd > 0) && (numCreds! + credsToAdd <= 32)) return true;
     return false;
   }
 
@@ -170,7 +186,10 @@ class _ListScreenState extends ConsumerState<ListScreen> {
     final deviceNode = ref.watch(currentDeviceProvider);
     final devicePath = deviceNode?.path;
     if (devicePath != null) {
-      await _doAddCredential(devicePath: devicePath, credUri: cred.toUri());
+      await _doAddCredential(
+          devicePath: devicePath,
+          credUri: cred.toUri(),
+          requireTouch: touchEnabled[cred]);
     } else if (isAndroid) {
       // Send the credential to Android to be added to the next YubiKey
       await _doAddCredential(devicePath: null, credUri: cred.toUri());
@@ -178,7 +197,9 @@ class _ListScreenState extends ConsumerState<ListScreen> {
   }
 
   Future<void> _doAddCredential(
-      {DevicePath? devicePath, required Uri credUri}) async {
+      {DevicePath? devicePath,
+      required Uri credUri,
+      bool? requireTouch}) async {
     try {
       if (devicePath == null) {
         assert(isAndroid, 'devicePath is only optional for Android');
@@ -186,7 +207,7 @@ class _ListScreenState extends ConsumerState<ListScreen> {
       } else {
         await ref
             .read(credentialListProvider(devicePath).notifier)
-            .addAccount(credUri);
+            .addAccount(credUri, requireTouch: requireTouch!);
       }
       if (!mounted) return;
       //Navigator.of(context).pop();
