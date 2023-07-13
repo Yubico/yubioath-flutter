@@ -62,7 +62,7 @@ class _RenameListState extends ConsumerState<RenameList> {
     try {
       // Rename credentials
       final credential = CredentialData(
-        issuer: _issuer,
+        issuer: _issuer == '' ? null : _issuer,
         name: _account,
         oathType: widget.credential.oathType,
         secret: widget.credential.secret,
