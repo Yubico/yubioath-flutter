@@ -98,7 +98,6 @@ Widget oathBuildActions(
               onTap: (context) async {
                 final withContext = ref.read(withContextProvider);
                 final credentials = ref.read(credentialsProvider);
-                Navigator.of(context).pop();
                 final qrScanner = ref.watch(qrScannerProvider);
                 if (qrScanner != null) {
                   final otpauth = await qrScanner.scanQr();
@@ -132,6 +131,7 @@ Widget oathBuildActions(
                     }
                   }
                 }
+                Navigator.of(context).pop();
               }),
         ]),
         ActionListSection(l10n.s_manage, children: [

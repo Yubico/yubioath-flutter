@@ -66,86 +66,90 @@ class _ListScreenState extends ConsumerState<ListScreen> {
             child: Text(l10n.s_save),
           )
         ],
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              children: [
-                Text(l10n.l_select_accounts),
-                //Padding(padding: EdgeInsets.only(top: 20.0, bottom: 2.0)),
-                ...widget.credentialsFromUri!.map(
-                  (cred) => CheckboxListTile(
-                    controlAffinity: ListTileControlAffinity.leading,
-                    secondary: Row(mainAxisSize: MainAxisSize.min, children: [
-                      IconButton(
-                          isSelected: touchEnabled[cred],
-                          color: touchEnabled[cred]! ? Colors.green : null,
-                          onPressed: () {
-                            setState(() {
-                              touchEnabled[cred] = !touchEnabled[cred]!;
-                            });
-                          },
-                          icon: const Icon(Icons.touch_app_outlined)),
-                      IconButton(
-                          onPressed: () async {
-                            final node = ref
-                                .watch(currentDeviceDataProvider)
-                                .valueOrNull
-                                ?.node;
-                            final withContext = ref.read(withContextProvider);
-                            CredentialData renamed = await withContext(
-                                (context) async => await showBlurDialog(
-                                      context: context,
-                                      builder: (context) => RenameList(
-                                          node!,
-                                          cred,
-                                          widget.credentialsFromUri,
-                                          _credentials),
-                                    ));
+        child: //Padding(
+            //padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                  child: Text(l10n.l_select_accounts)),
+              //Padding(padding: EdgeInsets.only(top: 20.0, bottom: 2.0)),
+              ...widget.credentialsFromUri!.map(
+                (cred) => CheckboxListTile(
+                  //contentPadding: const EdgeInsets.fromLTRB(0.0, 12.0, 0.0, 16.0),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  secondary: Row(mainAxisSize: MainAxisSize.min, children: [
+                    IconButton(
+                        isSelected: touchEnabled[cred],
+                        color: touchEnabled[cred]! ? Colors.green : null,
+                        onPressed: () {
+                          setState(() {
+                            touchEnabled[cred] = !touchEnabled[cred]!;
+                          });
+                        },
+                        icon: const Icon(Icons.touch_app_outlined)),
+                    IconButton(
+                        onPressed: () async {
+                          final node = ref
+                              .watch(currentDeviceDataProvider)
+                              .valueOrNull
+                              ?.node;
+                          final withContext = ref.read(withContextProvider);
+                          CredentialData renamed = await withContext(
+                              (context) async => await showBlurDialog(
+                                    context: context,
+                                    builder: (context) => RenameList(
+                                        node!,
+                                        cred,
+                                        widget.credentialsFromUri,
+                                        _credentials),
+                                  ));
 
-                            setState(() {
-                              int index = widget.credentialsFromUri!.indexWhere(
-                                  (element) =>
-                                      element.name == cred.name &&
-                                      (element.issuer == cred.issuer));
-                              widget.credentialsFromUri![index] = renamed;
-                              checkedCreds[cred] = false;
-                              checkedCreds[renamed] = true;
-                              touchEnabled[renamed] = false;
-                            });
-                          },
-                          icon: const Icon(Icons.edit_outlined)),
-                    ]),
-                    title: cred.issuer != null
-                        ? Text(cred.issuer!)
-                        : Text(cred.name),
-                    value:
-                        isUnique(cred) ? (checkedCreds[cred] ?? true) : false,
-                    enabled: isUnique(cred),
-                    subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          cred.issuer != null ? Text(cred.name) : Text(''),
-                          isUnique(cred)
-                              ? Text('')
-                              : Text(
-                                  l10n.l_name_already_exists,
-                                  style: TextStyle(color: Colors.red),
-                                )
-                        ]),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        checkedCreds[cred] = value!;
-                      });
-                    },
-                  ),
-                )
-              ]
-                  .map((e) => Padding(
+                          setState(() {
+                            int index = widget.credentialsFromUri!.indexWhere(
+                                (element) =>
+                                    element.name == cred.name &&
+                                    (element.issuer == cred.issuer));
+                            widget.credentialsFromUri![index] = renamed;
+                            checkedCreds[cred] = false;
+                            checkedCreds[renamed] = true;
+                            touchEnabled[renamed] = false;
+                          });
+                        },
+                        icon: const Icon(Icons.edit_outlined)),
+                  ]),
+                  title: cred.issuer != null
+                      ? Text(cred.issuer!)
+                      : Text(cred.name),
+                  value: isUnique(cred) ? (checkedCreds[cred] ?? true) : false,
+                  enabled: isUnique(cred),
+                  subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        cred.issuer != null ? Text(cred.name) : Text(''),
+                        isUnique(cred)
+                            ? Text('')
+                            : Text(
+                                l10n.l_name_already_exists,
+                                style: TextStyle(color: Colors.red),
+                              )
+                      ]),
+                  onChanged: (bool? value) {
+                    setState(() {
+                      checkedCreds[cred] = value!;
+                    });
+                  },
+                ),
+              )
+            ]
+                /* .map((e) => Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: e,
                       ))
-                  .toList(),
-            )));
+                  .toList(),*/
+                ));
   }
 
   bool areUnique() {
