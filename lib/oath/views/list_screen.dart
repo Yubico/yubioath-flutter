@@ -125,17 +125,15 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                       : Text(cred.name),
                   value: isUnique(cred) ? (checkedCreds[cred] ?? true) : false,
                   enabled: isUnique(cred),
-                  subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        cred.issuer != null ? Text(cred.name) : Text(''),
-                        isUnique(cred)
-                            ? Text('')
-                            : Text(
-                                l10n.l_name_already_exists,
-                                style: TextStyle(color: Colors.red),
-                              )
-                      ]),
+                  subtitle: Wrap(children: [
+                    cred.issuer != null ? Text(cred.name) : Text(''),
+                    isUnique(cred)
+                        ? Text('')
+                        : Text(
+                            l10n.l_name_already_exists,
+                            style: TextStyle(color: Colors.red),
+                          )
+                  ]),
                   onChanged: (bool? value) {
                     setState(() {
                       checkedCreds[cred] = value!;
