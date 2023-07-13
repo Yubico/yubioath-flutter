@@ -75,7 +75,7 @@ class _ListScreenState extends ConsumerState<ListScreen> {
               Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 18.0),
                   child: Text(l10n.l_select_accounts)),
-              //Padding(padding: EdgeInsets.only(top: 20.0, bottom: 2.0)),
+              const Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
               ...widget.credentialsFromUri!.map(
                 (cred) => CheckboxListTile(
                   //contentPadding: const EdgeInsets.fromLTRB(0.0, 12.0, 0.0, 16.0),
@@ -125,15 +125,22 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                       : Text(cred.name),
                   value: isUnique(cred) ? (checkedCreds[cred] ?? true) : false,
                   enabled: isUnique(cred),
-                  subtitle: Wrap(children: [
-                    cred.issuer != null ? Text(cred.name) : Text(''),
-                    isUnique(cred)
-                        ? Text('')
-                        : Text(
-                            l10n.l_name_already_exists,
-                            style: TextStyle(color: Colors.red),
-                          )
-                  ]),
+                  subtitle: cred.issuer != null
+                      ? Wrap(children: [
+                          Text(cred.name),
+                          isUnique(cred)
+                              ? Text('')
+                              : Text(
+                                  l10n.l_name_already_exists,
+                                  style: TextStyle(color: Colors.red),
+                                )
+                        ])
+                      : isUnique(cred)
+                          ? null
+                          : Text(
+                              l10n.l_name_already_exists,
+                              style: TextStyle(color: Colors.red),
+                            ),
                   onChanged: (bool? value) {
                     setState(() {
                       checkedCreds[cred] = value!;
