@@ -124,7 +124,7 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                       });
                     },
                     icon: const Icon(Icons.edit_outlined),
-                    color: Colors.white,
+                    color: darkMode ? Colors.white : Colors.black,
                   ),
                 ]),
                 title: Text(getTitle(cred),
@@ -132,30 +132,25 @@ class _ListScreenState extends ConsumerState<ListScreen> {
 
                 value: isUnique(cred) ? (checkedCreds[cred] ?? true) : false,
                 enabled: isUnique(cred),
-                subtitle: cred.issuer != null
+                subtitle: cred.issuer != null || !isUnique(cred)
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                            Text(cred.name,
-                                overflow: TextOverflow.fade,
-                                maxLines: 1,
-                                softWrap: false),
-                            isUnique(cred)
-                                ? Text('')
-                                : Text(
-                                    l10n.l_name_already_exists,
-                                    style: TextStyle(
-                                      color: primaryRed,
-                                      fontSize: 12,
-                                    ),
-                                  )
+                            if (cred.issuer != null)
+                              Text(cred.name,
+                                  overflow: TextOverflow.fade,
+                                  maxLines: 1,
+                                  softWrap: false),
+                            if (!isUnique(cred))
+                              Text(
+                                l10n.l_name_already_exists,
+                                style: const TextStyle(
+                                  color: primaryRed,
+                                  fontSize: 12,
+                                ),
+                              )
                           ])
-                    : isUnique(cred)
-                        ? null
-                        : Text(
-                            l10n.l_name_already_exists,
-                            style: TextStyle(color: primaryRed, fontSize: 12),
-                          ),
+                    : null,
                 onChanged: (bool? value) {
                   setState(() {
                     checkedCreds[cred] = value!;
