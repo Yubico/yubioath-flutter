@@ -148,7 +148,10 @@ class _RenameListState extends ConsumerState<RenameList> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.q_rename_target(credential.name)),
+            credential.issuer != null
+                ? Text(l10n.q_rename_target(
+                    '${credential.issuer} (${credential.name})'))
+                : Text(l10n.q_rename_target(credential.name)),
             Text(l10n.p_rename_will_change_account_displayed),
             TextFormField(
               initialValue: _issuer,

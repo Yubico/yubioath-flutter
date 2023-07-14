@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/app/logging.dart';
+import 'package:yubico_authenticator/theme.dart';
 
 import '../../android/oath/state.dart';
 import '../../app/models.dart';
@@ -48,6 +49,9 @@ class _ListScreenState extends ConsumerState<ListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final darkMode = theme.brightness == Brightness.dark;
+
     final l10n = AppLocalizations.of(context)!;
     numCreds = ref.watch(credentialListProvider(widget.devicePath)
         .select((value) => value?.length));
@@ -83,7 +87,9 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                 secondary: Row(mainAxisSize: MainAxisSize.min, children: [
                   IconButton(
                       isSelected: touchEnabled[cred],
-                      color: touchEnabled[cred]! ? Colors.green : null,
+                      color: touchEnabled[cred]!
+                          ? (darkMode ? primaryGreen : primaryBlue)
+                          : null,
                       onPressed: () {
                         setState(() {
                           touchEnabled[cred] = !touchEnabled[cred]!;
@@ -128,14 +134,14 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                             ? Text('')
                             : Text(
                                 l10n.l_name_already_exists,
-                                style: TextStyle(color: Colors.red),
+                                style: TextStyle(color: primaryRed),
                               )
                       ])
                     : isUnique(cred)
                         ? null
                         : Text(
                             l10n.l_name_already_exists,
-                            style: TextStyle(color: Colors.red),
+                            style: TextStyle(color: primaryRed),
                           ),
                 onChanged: (bool? value) {
                   setState(() {
