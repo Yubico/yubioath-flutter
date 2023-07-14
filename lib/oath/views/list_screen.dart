@@ -90,58 +90,71 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                       color: touchEnabled[cred]!
                           ? (darkMode ? primaryGreen : primaryBlue)
                           : null,
-                      onPressed: () {
-                        setState(() {
-                          touchEnabled[cred] = !touchEnabled[cred]!;
-                        });
-                      },
+                      onPressed: isUnique(cred)
+                          ? () {
+                              setState(() {
+                                touchEnabled[cred] = !touchEnabled[cred]!;
+                              });
+                            }
+                          : null,
                       icon: const Icon(Icons.touch_app_outlined)),
                   IconButton(
-                      onPressed: () async {
-                        final node = ref
-                            .watch(currentDeviceDataProvider)
-                            .valueOrNull
-                            ?.node;
-                        final withContext = ref.read(withContextProvider);
-                        CredentialData renamed = await withContext(
-                            (context) async => await showBlurDialog(
-                                  context: context,
-                                  builder: (context) => RenameList(node!, cred,
-                                      widget.credentialsFromUri, _credentials),
-                                ));
+                    onPressed: () async {
+                      final node = ref
+                          .watch(currentDeviceDataProvider)
+                          .valueOrNull
+                          ?.node;
+                      final withContext = ref.read(withContextProvider);
+                      CredentialData renamed = await withContext(
+                          (context) async => await showBlurDialog(
+                                context: context,
+                                builder: (context) => RenameList(node!, cred,
+                                    widget.credentialsFromUri, _credentials),
+                              ));
 
-                        setState(() {
-                          int index = widget.credentialsFromUri!.indexWhere(
-                              (element) =>
-                                  element.name == cred.name &&
-                                  (element.issuer == cred.issuer));
-                          widget.credentialsFromUri![index] = renamed;
-                          checkedCreds[cred] = false;
-                          checkedCreds[renamed] = true;
-                          touchEnabled[renamed] = false;
-                        });
-                      },
-                      icon: const Icon(Icons.edit_outlined)),
+                      setState(() {
+                        int index = widget.credentialsFromUri!.indexWhere(
+                            (element) =>
+                                element.name == cred.name &&
+                                (element.issuer == cred.issuer));
+                        widget.credentialsFromUri![index] = renamed;
+                        checkedCreds[cred] = false;
+                        checkedCreds[renamed] = true;
+                        touchEnabled[renamed] = false;
+                      });
+                    },
+                    icon: const Icon(Icons.edit_outlined),
+                    color: Colors.white,
+                  ),
                 ]),
-                title:
-                    cred.issuer != null ? Text(cred.issuer!) : Text(cred.name),
+                title: Text(getTitle(cred),
+                    overflow: TextOverflow.fade, maxLines: 1, softWrap: false),
+
                 value: isUnique(cred) ? (checkedCreds[cred] ?? true) : false,
                 enabled: isUnique(cred),
                 subtitle: cred.issuer != null
-                    ? Wrap(children: [
-                        Text(cred.name),
-                        isUnique(cred)
-                            ? Text('')
-                            : Text(
-                                l10n.l_name_already_exists,
-                                style: TextStyle(color: primaryRed),
-                              )
-                      ])
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                            Text(cred.name,
+                                overflow: TextOverflow.fade,
+                                maxLines: 1,
+                                softWrap: false),
+                            isUnique(cred)
+                                ? Text('')
+                                : Text(
+                                    l10n.l_name_already_exists,
+                                    style: TextStyle(
+                                      color: primaryRed,
+                                      fontSize: 12,
+                                    ),
+                                  )
+                          ])
                     : isUnique(cred)
                         ? null
                         : Text(
                             l10n.l_name_already_exists,
-                            style: TextStyle(color: primaryRed),
+                            style: TextStyle(color: primaryRed, fontSize: 12),
                           ),
                 onChanged: (bool? value) {
                   setState(() {
@@ -157,6 +170,13 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                   ))
               .toList(),
         ));
+  }
+
+  String getTitle(CredentialData cred) {
+    if (cred.issuer != null) {
+      return cred.issuer!;
+    }
+    return cred.name;
   }
 
   bool areUnique() {
