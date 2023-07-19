@@ -23,9 +23,10 @@ final _log = Logger('oath.views.list_screen');
 
 class ListScreen extends ConsumerStatefulWidget {
   final DevicePath devicePath;
+  final OathState? state;
   final List<CredentialData>? credentialsFromUri;
 
-  const ListScreen(this.devicePath, this.credentialsFromUri)
+  const ListScreen(this.devicePath, this.state, this.credentialsFromUri)
       : super(key: setOrManagePasswordAction);
 
   @override
@@ -62,42 +63,41 @@ class _ListScreenState extends ConsumerState<ListScreen> {
         ?.map((e) => e.credential)
         .toList();
 
+    // If the credential is not unique, make sure the checkbox is not checked
+    uncheckDuplicates();
+
     return ResponsiveDialog(
         title: Text(l10n.s_add_accounts),
         actions: [
           TextButton(
-            onPressed: isValid() && areUnique() ? submit : null,
+            onPressed: isValid() ? submit : null,
             child: Text(l10n.s_save),
           )
         ],
-        child: //Padding(
-            //padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 18.0),
                 child: Text(l10n.l_select_accounts)),
-            //const Padding(padding: EdgeInsets.symmetric(vertical: 8.0)),
             ...widget.credentialsFromUri!.map(
               (cred) => CheckboxListTile(
-                //contentPadding: const EdgeInsets.fromLTRB(0.0, 12.0, 0.0, 16.0),
                 controlAffinity: ListTileControlAffinity.leading,
                 secondary: Row(mainAxisSize: MainAxisSize.min, children: [
-                  IconButton(
-                      isSelected: touchEnabled[cred],
-                      color: touchEnabled[cred]!
-                          ? (darkMode ? primaryGreen : primaryBlue)
-                          : null,
-                      onPressed: isUnique(cred)
-                          ? () {
-                              setState(() {
-                                touchEnabled[cred] = !touchEnabled[cred]!;
-                              });
-                            }
-                          : null,
-                      icon: const Icon(Icons.touch_app_outlined)),
+                  if (isTouchSupported())
+                    IconButton(
+                        color: touchEnabled[cred]!
+                            ? (darkMode ? primaryGreen : primaryBlue)
+                            : null,
+                        onPressed: isUnique(cred)
+                            ? () {
+                                setState(() {
+                                  touchEnabled[cred] = !touchEnabled[cred]!;
+                                });
+                              }
+                            : null,
+                        icon: const Icon(Icons.touch_app_outlined)),
                   IconButton(
                     onPressed: () async {
                       final node = ref
@@ -129,7 +129,6 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                 ]),
                 title: Text(getTitle(cred),
                     overflow: TextOverflow.fade, maxLines: 1, softWrap: false),
-
                 value: isUnique(cred) ? (checkedCreds[cred] ?? true) : false,
                 enabled: isUnique(cred),
                 subtitle: cred.issuer != null || !isUnique(cred)
@@ -167,6 +166,15 @@ class _ListScreenState extends ConsumerState<ListScreen> {
         ));
   }
 
+  bool isTouchSupported() {
+    bool touch = true;
+    if (!(widget.state?.version.isAtLeast(4, 2) ?? true)) {
+      // Touch not supported
+      touch = false;
+    }
+    return touch;
+  }
+
   String getTitle(CredentialData cred) {
     if (cred.issuer != null) {
       return cred.issuer!;
@@ -174,10 +182,14 @@ class _ListScreenState extends ConsumerState<ListScreen> {
     return cred.name;
   }
 
-  bool areUnique() {
-    bool unique = false;
-    checkedCreds.forEach((k, v) => unique = unique || isUnique(k));
-    return unique;
+  void uncheckDuplicates() {
+    for (var item in checkedCreds.entries) {
+      CredentialData cred = item.key;
+
+      if (!isUnique(cred)) {
+        checkedCreds[cred] = false;
+      }
+    }
   }
 
   bool isUnique(CredentialData cred) {
@@ -189,17 +201,16 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                 (element.issuer ?? '') == issuerText)
             .isEmpty ??
         true;
-    // If the credential is not unique, make sure the checkbox is not checked.
-    if (!ans) {
-      checkedCreds[cred] = false;
-    }
+
     return ans;
   }
 
   bool isValid() {
     int credsToAdd = 0;
+    int? capacity = widget.state!.version.isAtLeast(4) ? 32 : null;
     checkedCreds.forEach((k, v) => v ? credsToAdd++ : null);
-    if ((credsToAdd > 0) && (numCreds! + credsToAdd <= 32)) return true;
+    if ((credsToAdd > 0) &&
+        (capacity == null || (numCreds! + credsToAdd <= capacity))) return true;
     return false;
   }
 
