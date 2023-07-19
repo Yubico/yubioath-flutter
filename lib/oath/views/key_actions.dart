@@ -108,7 +108,8 @@ Widget oathBuildActions(
                   await withContext((context) async {
                     await showBlurDialog(
                       context: context,
-                      builder: (context) => ListScreen(devicePath, data),
+                      builder: (context) =>
+                          ListScreen(devicePath, oathState, data),
                     );
                   });
                 } else if (otpauth.contains('otpauth')) {
