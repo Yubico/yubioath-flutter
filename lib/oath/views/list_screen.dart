@@ -21,22 +21,24 @@ import 'rename_list_account.dart';
 
 final _log = Logger('oath.views.list_screen');
 
-class ListScreen extends ConsumerStatefulWidget {
+class MigrateAccountPage extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OathState? state;
   final List<CredentialData>? credentialsFromUri;
 
-  const ListScreen(this.devicePath, this.state, this.credentialsFromUri)
+  const MigrateAccountPage(this.devicePath, this.state, this.credentialsFromUri)
       : super(key: setOrManagePasswordAction);
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ListScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _MigrateAccountPageState();
 }
 
-class _ListScreenState extends ConsumerState<ListScreen> {
+class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
   int? numCreds;
   late Map<CredentialData, bool> checkedCreds;
   late Map<CredentialData, bool> touchEnabled;
+  late Map<CredentialData, bool> uniqueCreds;
   List<OathCredential>? _credentials;
 
   @override
@@ -45,6 +47,8 @@ class _ListScreenState extends ConsumerState<ListScreen> {
     checkedCreds =
         Map.fromIterable(widget.credentialsFromUri!, value: (v) => true);
     touchEnabled =
+        Map.fromIterable(widget.credentialsFromUri!, value: (v) => false);
+    uniqueCreds =
         Map.fromIterable(widget.credentialsFromUri!, value: (v) => false);
   }
 
@@ -63,6 +67,7 @@ class _ListScreenState extends ConsumerState<ListScreen> {
         ?.map((e) => e.credential)
         .toList();
 
+    checkForDuplicates();
     // If the credential is not unique, make sure the checkbox is not checked
     uncheckDuplicates();
 
@@ -90,7 +95,7 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                         color: touchEnabled[cred]!
                             ? (darkMode ? primaryGreen : primaryBlue)
                             : null,
-                        onPressed: isUnique(cred)
+                        onPressed: uniqueCreds[cred]!
                             ? () {
                                 setState(() {
                                   touchEnabled[cred] = !touchEnabled[cred]!;
@@ -129,9 +134,10 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                 ]),
                 title: Text(getTitle(cred),
                     overflow: TextOverflow.fade, maxLines: 1, softWrap: false),
-                value: isUnique(cred) ? (checkedCreds[cred] ?? true) : false,
-                enabled: isUnique(cred),
-                subtitle: cred.issuer != null || !isUnique(cred)
+                value:
+                    uniqueCreds[cred]! ? (checkedCreds[cred] ?? true) : false,
+                enabled: uniqueCreds[cred]!,
+                subtitle: cred.issuer != null || !uniqueCreds[cred]!
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -140,7 +146,7 @@ class _ListScreenState extends ConsumerState<ListScreen> {
                                   overflow: TextOverflow.fade,
                                   maxLines: 1,
                                   softWrap: false),
-                            if (!isUnique(cred))
+                            if (!uniqueCreds[cred]!)
                               Text(
                                 l10n.l_name_already_exists,
                                 style: const TextStyle(
@@ -182,11 +188,18 @@ class _ListScreenState extends ConsumerState<ListScreen> {
     return cred.name;
   }
 
+  void checkForDuplicates() {
+    for (var item in checkedCreds.entries) {
+      CredentialData cred = item.key;
+      uniqueCreds[cred] = isUnique(cred);
+    }
+  }
+
   void uncheckDuplicates() {
     for (var item in checkedCreds.entries) {
       CredentialData cred = item.key;
 
-      if (!isUnique(cred)) {
+      if (!uniqueCreds[cred]!) {
         checkedCreds[cred] = false;
       }
     }
