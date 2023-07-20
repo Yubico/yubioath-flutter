@@ -31,7 +31,7 @@ import '../keys.dart' as keys;
 import 'add_account_page.dart';
 import 'manage_password_dialog.dart';
 import 'reset_dialog.dart';
-import 'list_screen.dart';
+import 'migrate_account_page.dart';
 
 Widget oathBuildActions(
   BuildContext context,
@@ -109,7 +109,7 @@ Widget oathBuildActions(
                     await showBlurDialog(
                       context: context,
                       builder: (context) =>
-                          ListScreen(devicePath, oathState, data),
+                          MigrateAccountPage(devicePath, oathState, data),
                     );
                   });
                 } else if (otpauth.contains('otpauth')) {
