@@ -295,6 +295,7 @@
     },
     "l_account_name_required": "Your account must have a name",
     "l_name_already_exists": "This name already exists for the issuer",
+    "l_account_already_exists": "This account already exists on the YubiKey",
     "l_invalid_character_issuer": "Invalid character: ':' is not allowed in issuer",
     "l_select_accounts" : "Select account(s) to add to the YubiKey",
     "s_pinned": "Pinned",
