@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/app/logging.dart';
+import 'package:yubico_authenticator/exception/apdu_exception.dart';
 import 'package:yubico_authenticator/theme.dart';
 
 import '../../android/oath/state.dart';
 import '../../app/models.dart';
+import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -148,7 +150,7 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
                                   softWrap: false),
                             if (!uniqueCreds[cred]!)
                               Text(
-                                l10n.l_name_already_exists,
+                                l10n.l_account_already_exists,
                                 style: const TextStyle(
                                   color: primaryRed,
                                   fontSize: 12,
@@ -250,6 +252,7 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
       {DevicePath? devicePath,
       required Uri credUri,
       bool? requireTouch}) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       if (devicePath == null) {
         assert(isAndroid, 'devicePath is only optional for Android');
@@ -261,13 +264,25 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
       }
       if (!mounted) return;
       //Navigator.of(context).pop();
-      showMessage(context, 'added');
+      showMessage(context, l10n.s_account_added);
     } on CancellationException catch (_) {
       // ignored
     } catch (e) {
-      _log.debug('Failed to add account');
+      _log.error('Failed to add account', e);
       final String errorMessage;
       // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (e is RpcError) {
+        errorMessage = e.message;
+      } else if (e is ApduException) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      showMessage(
+        context,
+        l10n.l_account_add_failed(errorMessage),
+        duration: const Duration(seconds: 4),
+      );
     }
   }
 }
