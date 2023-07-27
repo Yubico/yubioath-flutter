@@ -29,7 +29,7 @@ class MigrateAccountPage extends ConsumerStatefulWidget {
   final List<CredentialData>? credentialsFromUri;
 
   const MigrateAccountPage(this.devicePath, this.state, this.credentialsFromUri)
-      : super(key: setOrManagePasswordAction);
+      : super(key: migrateAccountAction);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -37,20 +37,20 @@ class MigrateAccountPage extends ConsumerStatefulWidget {
 }
 
 class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
-  int? numCreds;
-  late Map<CredentialData, bool> checkedCreds;
-  late Map<CredentialData, bool> touchEnabled;
-  late Map<CredentialData, bool> uniqueCreds;
+  int? _numCreds;
+  late Map<CredentialData, bool> _checkedCreds;
+  late Map<CredentialData, bool> _touchEnabled;
+  late Map<CredentialData, bool> _uniqueCreds;
   List<OathCredential>? _credentials;
 
   @override
   void initState() {
     super.initState();
-    checkedCreds =
+    _checkedCreds =
         Map.fromIterable(widget.credentialsFromUri!, value: (v) => true);
-    touchEnabled =
+    _touchEnabled =
         Map.fromIterable(widget.credentialsFromUri!, value: (v) => false);
-    uniqueCreds =
+    _uniqueCreds =
         Map.fromIterable(widget.credentialsFromUri!, value: (v) => false);
   }
 
@@ -58,16 +58,16 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final darkMode = theme.brightness == Brightness.dark;
-
     final l10n = AppLocalizations.of(context)!;
-    numCreds = ref.watch(credentialListProvider(widget.devicePath)
-        .select((value) => value?.length));
     final deviceNode = ref.watch(currentDeviceProvider);
 
     _credentials = ref
         .watch(credentialListProvider(deviceNode!.path))
         ?.map((e) => e.credential)
         .toList();
+
+    _numCreds = ref.watch(credentialListProvider(widget.devicePath)
+        .select((value) => value?.length));
 
     checkForDuplicates();
     // If the credential is not unique, make sure the checkbox is not checked
@@ -94,13 +94,13 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
                 secondary: Row(mainAxisSize: MainAxisSize.min, children: [
                   if (isTouchSupported())
                     IconButton(
-                        color: touchEnabled[cred]!
+                        color: _touchEnabled[cred]!
                             ? (darkMode ? primaryGreen : primaryBlue)
                             : null,
-                        onPressed: uniqueCreds[cred]!
+                        onPressed: _uniqueCreds[cred]!
                             ? () {
                                 setState(() {
-                                  touchEnabled[cred] = !touchEnabled[cred]!;
+                                  _touchEnabled[cred] = !_touchEnabled[cred]!;
                                 });
                               }
                             : null,
@@ -125,9 +125,9 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
                                 element.name == cred.name &&
                                 (element.issuer == cred.issuer));
                         widget.credentialsFromUri![index] = renamed;
-                        checkedCreds[cred] = false;
-                        checkedCreds[renamed] = true;
-                        touchEnabled[renamed] = false;
+                        _checkedCreds[cred] = false;
+                        _checkedCreds[renamed] = true;
+                        _touchEnabled[renamed] = false;
                       });
                     },
                     icon: const Icon(Icons.edit_outlined),
@@ -136,10 +136,9 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
                 ]),
                 title: Text(getTitle(cred),
                     overflow: TextOverflow.fade, maxLines: 1, softWrap: false),
-                value:
-                    uniqueCreds[cred]! ? (checkedCreds[cred] ?? true) : false,
-                enabled: uniqueCreds[cred]!,
-                subtitle: cred.issuer != null || !uniqueCreds[cred]!
+                value: _uniqueCreds[cred]! ? _checkedCreds[cred] : false,
+                enabled: _uniqueCreds[cred]!,
+                subtitle: cred.issuer != null || !_uniqueCreds[cred]!
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -148,7 +147,7 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
                                   overflow: TextOverflow.fade,
                                   maxLines: 1,
                                   softWrap: false),
-                            if (!uniqueCreds[cred]!)
+                            if (!_uniqueCreds[cred]!)
                               Text(
                                 l10n.l_account_already_exists,
                                 style: const TextStyle(
@@ -160,7 +159,7 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
                     : null,
                 onChanged: (bool? value) {
                   setState(() {
-                    checkedCreds[cred] = value!;
+                    _checkedCreds[cred] = value!;
                   });
                 },
               ),
@@ -191,18 +190,18 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
   }
 
   void checkForDuplicates() {
-    for (var item in checkedCreds.entries) {
+    for (var item in _checkedCreds.entries) {
       CredentialData cred = item.key;
-      uniqueCreds[cred] = isUnique(cred);
+      _uniqueCreds[cred] = isUnique(cred);
     }
   }
 
   void uncheckDuplicates() {
-    for (var item in checkedCreds.entries) {
+    for (var item in _checkedCreds.entries) {
       CredentialData cred = item.key;
 
-      if (!uniqueCreds[cred]!) {
-        checkedCreds[cred] = false;
+      if (!_uniqueCreds[cred]!) {
+        _checkedCreds[cred] = false;
       }
     }
   }
@@ -223,14 +222,16 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
   bool isValid() {
     int credsToAdd = 0;
     int? capacity = widget.state!.version.isAtLeast(4) ? 32 : null;
-    checkedCreds.forEach((k, v) => v ? credsToAdd++ : null);
+    _checkedCreds.forEach((k, v) => v ? credsToAdd++ : null);
     if ((credsToAdd > 0) &&
-        (capacity == null || (numCreds! + credsToAdd <= capacity))) return true;
+        (capacity == null || (_numCreds! + credsToAdd <= capacity))) {
+      return true;
+    }
     return false;
   }
 
   void submit() async {
-    checkedCreds.forEach((k, v) => v ? accept(k) : null);
+    _checkedCreds.forEach((k, v) => v ? accept(k) : null);
     Navigator.of(context).pop();
   }
 
@@ -241,7 +242,7 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
       await _doAddCredential(
           devicePath: devicePath,
           credUri: cred.toUri(),
-          requireTouch: touchEnabled[cred]);
+          requireTouch: _touchEnabled[cred]);
     } else if (isAndroid) {
       // Send the credential to Android to be added to the next YubiKey
       await _doAddCredential(devicePath: null, credUri: cred.toUri());
