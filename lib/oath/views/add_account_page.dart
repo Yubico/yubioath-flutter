@@ -130,8 +130,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           _qrState = _QrScanState.failed;
         });
       } else {
-        final data = CredentialData.multiFromUri(Uri.parse(otpauth));
-        _loadCredentialData(data[0]); // TODO
+        final data = CredentialData.fromUri(Uri.parse(otpauth));
+        _loadCredentialData(data);
       }
     } catch (e) {
       final String errorMessage;

@@ -107,7 +107,7 @@ Widget oathBuildActions(
                     String s = 'otpauth-migration';
                     if (otpauth.contains(s)) {
                       final data =
-                          CredentialData.multiFromUri(Uri.parse(otpauth));
+                          CredentialData.fromMigration(Uri.parse(otpauth));
                       await withContext((context) async {
                         await showBlurDialog(
                           context: context,
@@ -116,8 +116,7 @@ Widget oathBuildActions(
                         );
                       });
                     } else if (otpauth.contains('otpauth')) {
-                      final data =
-                          CredentialData.multiFromUri(Uri.parse(otpauth));
+                      final data = CredentialData.fromUri(Uri.parse(otpauth));
                       await withContext((context) async {
                         await showBlurDialog(
                           context: context,
@@ -125,7 +124,7 @@ Widget oathBuildActions(
                             devicePath,
                             oathState,
                             credentials: credentials,
-                            credentialData: data[0],
+                            credentialData: data,
                           ),
                         );
                       });

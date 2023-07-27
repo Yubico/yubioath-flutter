@@ -127,16 +127,6 @@ class CredentialData with _$CredentialData {
   factory CredentialData.fromJson(Map<String, dynamic> json) =>
       _$CredentialDataFromJson(json);
 
-  static List<CredentialData> multiFromUri(uri) {
-    if (uri.scheme.toLowerCase() == 'otpauth-migration') {
-      return CredentialData.fromMigration(uri);
-    } else if (uri.scheme.toLowerCase() == 'otpauth') {
-      return [CredentialData.fromUri(uri)];
-    } else {
-      throw ArgumentError('Invalid scheme');
-    }
-  }
-
   static List<CredentialData> fromMigration(uri) {
     List<dynamic> read(Uint8List bytes) {
       final index = bytes[0];
@@ -247,12 +237,6 @@ class CredentialData with _$CredentialData {
         data = data.sublist(6);
       }
       tag = data[0];
-    }
-
-    // Print all the extracted credentials
-    for (var credential in credentials) {
-      _log.debug(
-          '${credential.issuer} (${credential.name}) ${credential.secret}');
     }
 
     return credentials;

@@ -105,7 +105,7 @@ class _RenameListState extends ConsumerState<RenameList> {
       name: _account,
     );
 
-    // is this credentials name/issuer pair different from all other?
+    // is this credential's name/issuer pair different from all other?
     final isUniqueFromUri = widget.credentialsFromUri
             ?.where((element) =>
                 element != credential &&
@@ -116,13 +116,11 @@ class _RenameListState extends ConsumerState<RenameList> {
 
     final isUniqueFromDevice = widget.credentials
             ?.where((element) =>
-                element != credential &&
-                element.name == _account &&
-                (element.issuer ?? '') == _issuer)
+                element.name == _account && (element.issuer ?? '') == _issuer)
             .isEmpty ??
         false;
 
-    // is this credential name/issuer of valid format
+    // is this credential's name/issuer of valid format
     final isValidFormat = _account.isNotEmpty;
 
     // are the name/issuer values different from original
