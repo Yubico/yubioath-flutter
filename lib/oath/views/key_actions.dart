@@ -102,7 +102,8 @@ Widget oathBuildActions(
                 if (qrScanner != null) {
                   final otpauth = await qrScanner.scanQr();
                   if (otpauth == null) {
-                    showMessage(context, l10n.l_qr_not_found);
+                    await ref.read(withContextProvider)((context) async =>
+                        showMessage(context, l10n.l_qr_not_found));
                   } else {
                     String s = 'otpauth-migration';
                     if (otpauth.contains(s)) {
@@ -131,7 +132,8 @@ Widget oathBuildActions(
                     }
                   }
                 }
-                Navigator.of(context).pop();
+                await ref.read(withContextProvider)(
+                    (context) async => Navigator.of(context).pop());
               }),
         ]),
         ActionListSection(l10n.s_manage, children: [
