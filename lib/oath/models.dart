@@ -17,10 +17,8 @@
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:base32/base32.dart';
-import 'package:logging/logging.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
 import '../core/models.dart';
 
@@ -32,8 +30,6 @@ const defaultDigits = 6;
 const defaultCounter = 0;
 const defaultOathType = OathType.totp;
 const defaultHashAlgorithm = HashAlgorithm.sha1;
-
-final _log = Logger('oath.models');
 
 enum HashAlgorithm {
   @JsonValue(0x01)
