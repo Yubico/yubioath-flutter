@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "authenticator-helper"
-version = "0.1.0"
+version = "0.1.0-dev.1"
 description = "Yubico Authenticator Helper"
 authors = ["Dain Nilsson <dain@yubico.com>"]
 packages = [
