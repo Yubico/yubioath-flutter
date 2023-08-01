@@ -38,15 +38,11 @@ GlobalKey<QRScannerZxingViewState> _zxingViewKey = GlobalKey();
 class _QrScannerViewState extends State<QrScannerView> {
   String? _scannedString;
 
-  // will be used later
-  // ignore: unused_field
-  CredentialData? _credentialData;
   ScanStatus _status = ScanStatus.scanning;
   bool _previewInitialized = false;
   bool _permissionsGranted = false;
 
   void setError() {
-    _credentialData = null;
     _scannedString = null;
     _status = ScanStatus.error;
 
@@ -59,7 +55,6 @@ class _QrScannerViewState extends State<QrScannerView> {
 
   void resetError() {
     setState(() {
-      _credentialData = null;
       _scannedString = null;
       _status = ScanStatus.scanning;
 
@@ -67,17 +62,16 @@ class _QrScannerViewState extends State<QrScannerView> {
     });
   }
 
-  void handleResult(String barCode) {
+  void handleResult(String qrCodeData) {
     if (_status != ScanStatus.scanning) {
       // on success and error ignore reported codes
       return;
     }
     setState(() {
-      if (barCode.isNotEmpty) {
+      if (qrCodeData.isNotEmpty) {
         try {
-          var parsedCredential = CredentialData.fromUri(Uri.parse(barCode));
-          _credentialData = parsedCredential;
-          _scannedString = barCode;
+          _validateQrCodeUri(Uri.parse(qrCodeData)); // throws ArgumentError if validation fails
+          _scannedString = qrCodeData;
           _status = ScanStatus.success;
 
           final navigator = Navigator.of(context);
@@ -96,6 +90,18 @@ class _QrScannerViewState extends State<QrScannerView> {
         setError();
       }
     });
+  }
+
+  void _validateQrCodeUri(Uri qrCodeUri) {
+    try {
+      CredentialData.fromUri(qrCodeUri);
+    } on ArgumentError catch (_) {
+      try {
+        CredentialData.fromMigration(qrCodeUri);
+      } on ArgumentError catch (_) {
+        throw ArgumentError();
+      }
+    }
   }
 
   @override
