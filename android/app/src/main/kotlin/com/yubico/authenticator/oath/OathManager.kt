@@ -360,7 +360,7 @@ class OathManager(
         val credentialData: CredentialData =
             CredentialData.parseUri(URI.create(uri))
         addToAny = true
-        return useOathSessionNfc("Add account") { session ->
+        return useOathSessionNfc(OathActionDescription.AddAccount) { session ->
             // We need to check for duplicates here since we haven't yet read the credentials
             if (session.credentials.any { it.id.contentEquals(credentialData.id) }) {
                 throw Exception("A credential with this ID already exists!")
@@ -384,7 +384,7 @@ class OathManager(
     }
 
     private suspend fun reset(): String =
-        useOathSession("Reset YubiKey") {
+        useOathSession(OathActionDescription.Reset) {
             // note, it is ok to reset locked session
             it.reset()
             keyManager.removeKey(it.deviceId)
@@ -396,7 +396,7 @@ class OathManager(
         }
 
     private suspend fun unlock(password: String, remember: Boolean): String =
-        useOathSession("Unlocking") {
+        useOathSession(OathActionDescription.Unlock) {
             val accessKey = it.deriveAccessKey(password.toCharArray())
             keyManager.addKey(it.deviceId, accessKey, remember)
 
@@ -418,7 +418,7 @@ class OathManager(
         currentPassword: String?,
         newPassword: String,
     ): String =
-        useOathSession("Set password", unlock = false) { session ->
+        useOathSession(OathActionDescription.SetPassword, unlock = false) { session ->
             if (session.isAccessKeySet) {
                 if (currentPassword == null) {
                     throw Exception("Must provide current password to be able to change it")
@@ -437,7 +437,7 @@ class OathManager(
         }
 
     private suspend fun unsetPassword(currentPassword: String): String =
-        useOathSession("Unset password", unlock = false) { session ->
+        useOathSession(OathActionDescription.UnsetPassword, unlock = false) { session ->
             if (session.isAccessKeySet) {
                 // test current password sent by the user
                 if (session.unlock(currentPassword.toCharArray())) {
@@ -469,7 +469,7 @@ class OathManager(
         uri: String,
         requireTouch: Boolean,
     ): String =
-        useOathSession("Add account") { session ->
+        useOathSession(OathActionDescription.AddAccount) { session ->
             val credentialData: CredentialData =
                 CredentialData.parseUri(URI.create(uri))
 
@@ -490,7 +490,7 @@ class OathManager(
         }
 
     private suspend fun renameAccount(uri: String, name: String, issuer: String?): String =
-        useOathSession("Rename") { session ->
+        useOathSession(OathActionDescription.RenameAccount) { session ->
             val credential = getOathCredential(session, uri)
             val renamedCredential =
                 Credential(session.renameCredential(credential, name, issuer), session.deviceId)
@@ -503,7 +503,7 @@ class OathManager(
         }
 
     private suspend fun deleteAccount(credentialId: String): String =
-        useOathSession("Delete account") { session ->
+        useOathSession(OathActionDescription.DeleteAccount) { session ->
             val credential = getOathCredential(session, credentialId)
             session.deleteCredential(credential)
             oathViewModel.removeCredential(Credential(credential, session.deviceId))
@@ -535,7 +535,7 @@ class OathManager(
         }
 
     private suspend fun calculate(credentialId: String): String =
-        useOathSession("Calculate") { session ->
+        useOathSession(OathActionDescription.CalculateCode) { session ->
             val credential = getOathCredential(session, credentialId)
 
             val code = Code.from(calculateCode(session, credential))
@@ -648,7 +648,7 @@ class OathManager(
     }
 
     private suspend fun <T> useOathSession(
-        title: String,
+        oathActionDescription: OathActionDescription,
         unlock: Boolean = true,
         action: (YubiKitOathSession) -> T
     ): T {
@@ -657,7 +657,7 @@ class OathManager(
         unlockOnConnect.set(unlock)
         return appViewModel.connectedYubiKey.value?.let {
             useOathSessionUsb(it, action)
-        } ?: useOathSessionNfc(title, action)
+        } ?: useOathSessionNfc(oathActionDescription, action)
     }
 
     private suspend fun <T> useOathSessionUsb(
@@ -668,7 +668,7 @@ class OathManager(
     }
 
     private suspend fun <T> useOathSessionNfc(
-        title: String,
+        oathActionDescription: OathActionDescription,
         block: (YubiKitOathSession) -> T
     ): T {
         try {
@@ -678,15 +678,15 @@ class OathManager(
                         block.invoke(it.value)
                     })
                 }
-                dialogManager.showDialog(Icon.NFC, "Tap your key", title) {
-                    logger.debug("Cancelled Dialog {}", title)
+                dialogManager.showDialog(DialogIcon.Nfc, DialogTitle.TapKey, oathActionDescription.id) {
+                    logger.debug("Cancelled Dialog {}", oathActionDescription.name)
                     pendingAction?.invoke(Result.failure(CancellationException()))
                     pendingAction = null
                 }
             }
             dialogManager.updateDialogState(
-                icon = Icon.SUCCESS,
-                title = "Success"
+                dialogIcon = DialogIcon.Success,
+                dialogTitle = DialogTitle.OperationSuccessful
             )
             // TODO: This delays the closing of the dialog, but also the return value
             delay(500)
@@ -695,9 +695,9 @@ class OathManager(
             throw cancelled
         } catch (error: Throwable) {
             dialogManager.updateDialogState(
-                icon = Icon.ERROR,
-                title = "Failure",
-                description = "Action failed - try again"
+                dialogIcon = DialogIcon.Failure,
+                dialogTitle = DialogTitle.OperationFailed,
+                dialogDescriptionId = OathActionDescription.ActionFailure.id
             )
             // TODO: This delays the closing of the dialog, but also the return value
             delay(1500)
