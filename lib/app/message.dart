@@ -20,7 +20,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../widgets/toast.dart';
-import 'models.dart';
 
 void Function() showMessage(
   BuildContext context,
@@ -29,42 +28,12 @@ void Function() showMessage(
 }) =>
     showToast(context, message, duration: duration);
 
-Future<void> showBottomMenu(
-    BuildContext context, List<MenuAction> actions) async {
-  await showBlurDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Options'),
-          contentPadding: const EdgeInsets.only(bottom: 24, top: 4),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: actions
-                .map((a) => ListTile(
-                      leading: a.icon,
-                      title: Text(a.text),
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 24),
-                      enabled: a.intent != null,
-                      onTap: a.intent == null
-                          ? null
-                          : () {
-                              Navigator.pop(context);
-                              Actions.invoke(context, a.intent!);
-                            },
-                    ))
-                .toList(),
-          ),
-        );
-      });
-}
-
 Future<T?> showBlurDialog<T>({
   required BuildContext context,
   required Widget Function(BuildContext) builder,
   RouteSettings? routeSettings,
-}) =>
-    showGeneralDialog(
+}) async =>
+    await showGeneralDialog<T>(
       context: context,
       barrierDismissible: true,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,

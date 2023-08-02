@@ -17,18 +17,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:yubico_authenticator/app/views/device_button.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/management/views/keys.dart';
 
 import 'android/util.dart' as android_test_util;
-import 'approved_yubikeys.dart';
+import '../_approved_yubikeys.dart';
 import 'desktop/util.dart' as desktop_test_util;
 
-const shortWaitMs = 10;
-const longWaitMs = 50;
+const shortWaitMs = 500;
+const longWaitMs = 500;
 
 /// information about YubiKey as seen by the app
 String? yubiKeyName;
@@ -63,16 +62,6 @@ extension AppWidgetTester on WidgetTester {
     }
 
     return f;
-  }
-
-  Finder findDeviceButton() {
-    return find.byType(DeviceButton).hitTestable();
-  }
-
-  /// Taps the device button
-  Future<void> tapDeviceButton() async {
-    await tap(findDeviceButton());
-    await pump(const Duration(milliseconds: 500));
   }
 
   Finder findActionIconButton() {
@@ -119,7 +108,7 @@ extension AppWidgetTester on WidgetTester {
       await openDrawer();
     }
 
-    await tap(find.byKey(managementAppDrawer));
+    await tap(find.byKey(managementAppDrawer).hitTestable());
     await pump(const Duration(milliseconds: 500));
 
     expect(find.byKey(screenKey), findsOneWidget);
@@ -153,17 +142,22 @@ extension AppWidgetTester on WidgetTester {
       return;
     }
 
-    await tapDeviceButton();
+    await openDrawer();
 
     var deviceInfo = find.byKey(app_keys.deviceInfoListTile);
     if (deviceInfo.evaluate().isNotEmpty) {
-      ListTile lt = deviceInfo.evaluate().single.widget as ListTile;
+      ListTile lt = find
+          .descendant(of: deviceInfo, matching: find.byType(ListTile))
+          .evaluate()
+          .single
+          .widget as ListTile;
+      //ListTile lt = deviceInfo.evaluate().single.widget as ListTile;
       yubiKeyName = (lt.title as Text).data;
       var subtitle = (lt.subtitle as Text?)?.data;
 
       if (subtitle != null) {
-        RegExpMatch? match = RegExp(r'S/N: (\d.*) F/W: (\d\.\d\.\d)')
-            .firstMatch(subtitle);
+        RegExpMatch? match =
+            RegExp(r'S/N: (\d.*) F/W: (\d\.\d\.\d)').firstMatch(subtitle);
         if (match != null) {
           yubiKeySerialNumber = match.group(1);
           yubiKeyFirmware = match.group(2);
@@ -177,7 +171,7 @@ extension AppWidgetTester on WidgetTester {
     }
 
     // close the opened menu
-    await tapTopLeftCorner();
+    await closeDrawer();
 
     testLog(false,
         'Connected YubiKey: $yubiKeySerialNumber/$yubiKeyFirmware - $yubiKeyName');

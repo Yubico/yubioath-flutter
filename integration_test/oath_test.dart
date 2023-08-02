@@ -19,8 +19,8 @@ import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/oath/keys.dart' as keys;
 
-import 'oath_test_util.dart';
-import 'test_util.dart';
+import 'utils/oath_test_util.dart';
+import 'utils/test_util.dart';
 
 void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();

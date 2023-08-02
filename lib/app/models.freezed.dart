@@ -624,30 +624,42 @@ abstract class NfcReaderNode extends DeviceNode {
 }
 
 /// @nodoc
-mixin _$MenuAction {
-  String get text => throw _privateConstructorUsedError;
+mixin _$ActionItem {
   Widget get icon => throw _privateConstructorUsedError;
-  String? get trailing => throw _privateConstructorUsedError;
+  String get title => throw _privateConstructorUsedError;
+  String? get subtitle => throw _privateConstructorUsedError;
+  String? get shortcut => throw _privateConstructorUsedError;
+  Widget? get trailing => throw _privateConstructorUsedError;
   Intent? get intent => throw _privateConstructorUsedError;
+  ActionStyle? get actionStyle => throw _privateConstructorUsedError;
+  Key? get key => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $MenuActionCopyWith<MenuAction> get copyWith =>
+  $ActionItemCopyWith<ActionItem> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $MenuActionCopyWith<$Res> {
-  factory $MenuActionCopyWith(
-          MenuAction value, $Res Function(MenuAction) then) =
-      _$MenuActionCopyWithImpl<$Res, MenuAction>;
+abstract class $ActionItemCopyWith<$Res> {
+  factory $ActionItemCopyWith(
+          ActionItem value, $Res Function(ActionItem) then) =
+      _$ActionItemCopyWithImpl<$Res, ActionItem>;
   @useResult
-  $Res call({String text, Widget icon, String? trailing, Intent? intent});
+  $Res call(
+      {Widget icon,
+      String title,
+      String? subtitle,
+      String? shortcut,
+      Widget? trailing,
+      Intent? intent,
+      ActionStyle? actionStyle,
+      Key? key});
 }
 
 /// @nodoc
-class _$MenuActionCopyWithImpl<$Res, $Val extends MenuAction>
-    implements $MenuActionCopyWith<$Res> {
-  _$MenuActionCopyWithImpl(this._value, this._then);
+class _$ActionItemCopyWithImpl<$Res, $Val extends ActionItem>
+    implements $ActionItemCopyWith<$Res> {
+  _$ActionItemCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -657,140 +669,223 @@ class _$MenuActionCopyWithImpl<$Res, $Val extends MenuAction>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? text = null,
     Object? icon = null,
+    Object? title = null,
+    Object? subtitle = freezed,
+    Object? shortcut = freezed,
     Object? trailing = freezed,
     Object? intent = freezed,
+    Object? actionStyle = freezed,
+    Object? key = freezed,
   }) {
     return _then(_value.copyWith(
-      text: null == text
-          ? _value.text
-          : text // ignore: cast_nullable_to_non_nullable
-              as String,
       icon: null == icon
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as Widget,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      subtitle: freezed == subtitle
+          ? _value.subtitle
+          : subtitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      shortcut: freezed == shortcut
+          ? _value.shortcut
+          : shortcut // ignore: cast_nullable_to_non_nullable
+              as String?,
       trailing: freezed == trailing
           ? _value.trailing
           : trailing // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as Widget?,
       intent: freezed == intent
           ? _value.intent
           : intent // ignore: cast_nullable_to_non_nullable
               as Intent?,
+      actionStyle: freezed == actionStyle
+          ? _value.actionStyle
+          : actionStyle // ignore: cast_nullable_to_non_nullable
+              as ActionStyle?,
+      key: freezed == key
+          ? _value.key
+          : key // ignore: cast_nullable_to_non_nullable
+              as Key?,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$_MenuActionCopyWith<$Res>
-    implements $MenuActionCopyWith<$Res> {
-  factory _$$_MenuActionCopyWith(
-          _$_MenuAction value, $Res Function(_$_MenuAction) then) =
-      __$$_MenuActionCopyWithImpl<$Res>;
+abstract class _$$_ActionItemCopyWith<$Res>
+    implements $ActionItemCopyWith<$Res> {
+  factory _$$_ActionItemCopyWith(
+          _$_ActionItem value, $Res Function(_$_ActionItem) then) =
+      __$$_ActionItemCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String text, Widget icon, String? trailing, Intent? intent});
+  $Res call(
+      {Widget icon,
+      String title,
+      String? subtitle,
+      String? shortcut,
+      Widget? trailing,
+      Intent? intent,
+      ActionStyle? actionStyle,
+      Key? key});
 }
 
 /// @nodoc
-class __$$_MenuActionCopyWithImpl<$Res>
-    extends _$MenuActionCopyWithImpl<$Res, _$_MenuAction>
-    implements _$$_MenuActionCopyWith<$Res> {
-  __$$_MenuActionCopyWithImpl(
-      _$_MenuAction _value, $Res Function(_$_MenuAction) _then)
+class __$$_ActionItemCopyWithImpl<$Res>
+    extends _$ActionItemCopyWithImpl<$Res, _$_ActionItem>
+    implements _$$_ActionItemCopyWith<$Res> {
+  __$$_ActionItemCopyWithImpl(
+      _$_ActionItem _value, $Res Function(_$_ActionItem) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? text = null,
     Object? icon = null,
+    Object? title = null,
+    Object? subtitle = freezed,
+    Object? shortcut = freezed,
     Object? trailing = freezed,
     Object? intent = freezed,
+    Object? actionStyle = freezed,
+    Object? key = freezed,
   }) {
-    return _then(_$_MenuAction(
-      text: null == text
-          ? _value.text
-          : text // ignore: cast_nullable_to_non_nullable
-              as String,
+    return _then(_$_ActionItem(
       icon: null == icon
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as Widget,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      subtitle: freezed == subtitle
+          ? _value.subtitle
+          : subtitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      shortcut: freezed == shortcut
+          ? _value.shortcut
+          : shortcut // ignore: cast_nullable_to_non_nullable
+              as String?,
       trailing: freezed == trailing
           ? _value.trailing
           : trailing // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as Widget?,
       intent: freezed == intent
           ? _value.intent
           : intent // ignore: cast_nullable_to_non_nullable
               as Intent?,
+      actionStyle: freezed == actionStyle
+          ? _value.actionStyle
+          : actionStyle // ignore: cast_nullable_to_non_nullable
+              as ActionStyle?,
+      key: freezed == key
+          ? _value.key
+          : key // ignore: cast_nullable_to_non_nullable
+              as Key?,
     ));
   }
 }
 
 /// @nodoc
 
-class _$_MenuAction implements _MenuAction {
-  _$_MenuAction(
-      {required this.text, required this.icon, this.trailing, this.intent});
+class _$_ActionItem implements _ActionItem {
+  _$_ActionItem(
+      {required this.icon,
+      required this.title,
+      this.subtitle,
+      this.shortcut,
+      this.trailing,
+      this.intent,
+      this.actionStyle,
+      this.key});
 
-  @override
-  final String text;
   @override
   final Widget icon;
   @override
-  final String? trailing;
+  final String title;
+  @override
+  final String? subtitle;
+  @override
+  final String? shortcut;
+  @override
+  final Widget? trailing;
   @override
   final Intent? intent;
+  @override
+  final ActionStyle? actionStyle;
+  @override
+  final Key? key;
 
   @override
   String toString() {
-    return 'MenuAction(text: $text, icon: $icon, trailing: $trailing, intent: $intent)';
+    return 'ActionItem(icon: $icon, title: $title, subtitle: $subtitle, shortcut: $shortcut, trailing: $trailing, intent: $intent, actionStyle: $actionStyle, key: $key)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_MenuAction &&
-            (identical(other.text, text) || other.text == text) &&
+            other is _$_ActionItem &&
             (identical(other.icon, icon) || other.icon == icon) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.subtitle, subtitle) ||
+                other.subtitle == subtitle) &&
+            (identical(other.shortcut, shortcut) ||
+                other.shortcut == shortcut) &&
             (identical(other.trailing, trailing) ||
                 other.trailing == trailing) &&
-            (identical(other.intent, intent) || other.intent == intent));
+            (identical(other.intent, intent) || other.intent == intent) &&
+            (identical(other.actionStyle, actionStyle) ||
+                other.actionStyle == actionStyle) &&
+            (identical(other.key, key) || other.key == key));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, text, icon, trailing, intent);
+  int get hashCode => Object.hash(runtimeType, icon, title, subtitle, shortcut,
+      trailing, intent, actionStyle, key);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_MenuActionCopyWith<_$_MenuAction> get copyWith =>
-      __$$_MenuActionCopyWithImpl<_$_MenuAction>(this, _$identity);
+  _$$_ActionItemCopyWith<_$_ActionItem> get copyWith =>
+      __$$_ActionItemCopyWithImpl<_$_ActionItem>(this, _$identity);
 }
 
-abstract class _MenuAction implements MenuAction {
-  factory _MenuAction(
-      {required final String text,
-      required final Widget icon,
-      final String? trailing,
-      final Intent? intent}) = _$_MenuAction;
+abstract class _ActionItem implements ActionItem {
+  factory _ActionItem(
+      {required final Widget icon,
+      required final String title,
+      final String? subtitle,
+      final String? shortcut,
+      final Widget? trailing,
+      final Intent? intent,
+      final ActionStyle? actionStyle,
+      final Key? key}) = _$_ActionItem;
 
-  @override
-  String get text;
   @override
   Widget get icon;
   @override
-  String? get trailing;
+  String get title;
+  @override
+  String? get subtitle;
+  @override
+  String? get shortcut;
+  @override
+  Widget? get trailing;
   @override
   Intent? get intent;
   @override
+  ActionStyle? get actionStyle;
+  @override
+  Key? get key;
+  @override
   @JsonKey(ignore: true)
-  _$$_MenuActionCopyWith<_$_MenuAction> get copyWith =>
+  _$$_ActionItemCopyWith<_$_ActionItem> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

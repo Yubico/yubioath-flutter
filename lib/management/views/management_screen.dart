@@ -118,7 +118,6 @@ class _CapabilitiesForm extends StatelessWidget {
             leading: const Icon(Icons.usb),
             title: Text(l10n.s_usb),
             contentPadding: const EdgeInsets.only(bottom: 8),
-            horizontalTitleGap: 0,
           ),
           _CapabilityForm(
             type: _CapabilityType.usb,
@@ -139,7 +138,6 @@ class _CapabilitiesForm extends StatelessWidget {
             leading: nfcIcon,
             title: Text(l10n.s_nfc),
             contentPadding: const EdgeInsets.only(bottom: 8),
-            horizontalTitleGap: 0,
           ),
           _CapabilityForm(
             type: _CapabilityType.nfc,
