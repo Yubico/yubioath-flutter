@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../desktop/models.dart';
+import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../models.dart';
@@ -60,6 +61,9 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   void _submit() async {
     final l10n = AppLocalizations.of(context)!;
     try {
+
+      FocusUtils.unfocus(context);
+
       // Rename credentials
       final renamed = await ref
           .read(credentialListProvider(widget.device.path).notifier)

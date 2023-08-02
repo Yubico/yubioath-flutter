@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import '../../desktop/models.dart';
 import '../../management/models.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_target.dart';
+import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
@@ -175,6 +176,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       {DevicePath? devicePath, required Uri credUri}) async {
     final l10n = AppLocalizations.of(context)!;
     try {
+
+      FocusUtils.unfocus(context);
+
       if (devicePath == null) {
         assert(isAndroid, 'devicePath is only optional for Android');
         await ref
