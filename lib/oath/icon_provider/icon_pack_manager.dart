@@ -48,10 +48,10 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
     final packFile =
         File(join(packDirectory.path, getLocalIconFileName('pack.json')));
 
-    _log.traffic('Looking for file: ${packFile.path}');
+    _log.debug('Looking for file: ${packFile.path}');
 
     if (!await packFile.exists()) {
-      _log.traffic('Failed to find icons pack ${packFile.path}');
+      _log.debug('Failed to find icons pack ${packFile.path}');
       state = AsyncValue.error(
           'Failed to find icon pack ${packFile.path}', StackTrace.current);
       return;
@@ -76,10 +76,10 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
           directory: packDirectory,
           icons: icons));
 
-      _log.traffic(
+      _log.debug(
           'Parsed ${state.value?.name} with ${state.value?.icons.length} icons');
     } catch (e) {
-      _log.traffic('Failed to parse icons pack ${packFile.path}');
+      _log.debug('Failed to parse icons pack ${packFile.path}');
       state = AsyncValue.error(
           'Failed to parse icon pack ${packFile.path}', StackTrace.current);
       return;
@@ -123,7 +123,7 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
         final data = file.content as List<int>;
         final extractedFile =
             File(join(unpackDirectory.path, getLocalIconFileName(filename)));
-        _log.traffic('Writing file: ${extractedFile.path} (size: ${file.size})');
+        _log.debug('Writing file: ${extractedFile.path} (size: ${file.size})');
         final createdFile = await extractedFile.create(recursive: true);
         await createdFile.writeAsBytes(data);
       }

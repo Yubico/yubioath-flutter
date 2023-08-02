@@ -30,15 +30,15 @@ class IconCacheFs {
     final file = await _getFile(fileName);
     final exists = await file.exists();
     if (exists) {
-      _log.traffic('File $fileName exists in cache');
+      _log.debug('File $fileName exists in cache');
     } else {
-      _log.traffic('File $fileName does not exist in cache');
+      _log.debug('File $fileName does not exist in cache');
     }
     return exists ? (await file.readAsBytes()).buffer.asByteData() : null;
   }
 
   Future<void> write(String fileName, Uint8List data) async {
-    _log.traffic('Writing $fileName to cache');
+    _log.debug('Writing $fileName to cache');
     final file = await _getFile(fileName);
     if (!await file.exists()) {
       await file.create(recursive: true, exclusive: false);
@@ -52,7 +52,7 @@ class IconCacheFs {
       try {
         await cacheDirectory.delete(recursive: true);
       } catch (e) {
-        _log.traffic(
+        _log.error(
             'Failed to delete cache directory ${cacheDirectory.path}', e);
       }
     }
