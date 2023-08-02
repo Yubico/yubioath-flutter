@@ -26,6 +26,7 @@ import '../../fido/views/fido_screen.dart';
 import '../../oath/models.dart';
 import '../../oath/views/add_account_page.dart';
 import '../../oath/views/oath_screen.dart';
+import '../../piv/views/piv_screen.dart';
 import '../../widgets/custom_icons.dart';
 import '../message.dart';
 import '../models.dart';
@@ -161,6 +162,7 @@ class MainPage extends ConsumerWidget {
               return switch (app) {
                 Application.oath => OathScreen(data.node.path),
                 Application.fido => FidoScreen(data),
+                Application.piv => PivScreen(data.node.path),
                 _ => MessagePage(
                     header: l10n.s_app_not_supported,
                     message: l10n.l_app_not_supported_desc,

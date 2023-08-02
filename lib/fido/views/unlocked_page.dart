@@ -20,14 +20,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/shortcuts.dart';
+import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
+import 'actions.dart';
+import 'credential_dialog.dart';
 import 'delete_credential_dialog.dart';
 import 'delete_fingerprint_dialog.dart';
+import 'fingerprint_dialog.dart';
 import 'key_actions.dart';
 import 'rename_fingerprint_dialog.dart';
 
@@ -48,42 +53,26 @@ class FidoUnlockedPage extends ConsumerWidget {
       }
       final creds = data.value;
       if (creds.isNotEmpty) {
-        children.add(ListTitle(l10n.s_credentials));
-        children.addAll(
-          creds.map(
-            (cred) => ListTile(
-              leading: CircleAvatar(
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                child: const Icon(Icons.person),
-              ),
-              title: Text(
-                cred.userName,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-              subtitle: Text(
-                cred.rpId,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        showBlurDialog(
+        children.add(ListTitle(l10n.s_passkeys));
+        children.addAll(creds.map((cred) => Actions(
+              actions: {
+                OpenIntent: CallbackAction<OpenIntent>(
+                    onInvoke: (_) => showBlurDialog(
                           context: context,
-                          builder: (context) =>
-                              DeleteCredentialDialog(node.path, cred),
-                        );
-                      },
-                      icon: const Icon(Icons.delete_outline)),
-                ],
-              ),
-            ),
-          ),
-        );
+                          builder: (context) => CredentialDialog(cred),
+                        )),
+                DeleteIntent: CallbackAction<DeleteIntent>(
+                  onInvoke: (_) => showBlurDialog(
+                    context: context,
+                    builder: (context) => DeleteCredentialDialog(
+                      node.path,
+                      cred,
+                    ),
+                  ),
+                ),
+              },
+              child: _CredentialListItem(cred),
+            )));
       }
     }
 
@@ -97,40 +86,31 @@ class FidoUnlockedPage extends ConsumerWidget {
       if (fingerprints.isNotEmpty) {
         nFingerprints = fingerprints.length;
         children.add(ListTitle(l10n.s_fingerprints));
-        children.addAll(fingerprints.map((fp) => ListTile(
-              leading: CircleAvatar(
-                foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                child: const Icon(Icons.fingerprint),
-              ),
-              title: Text(
-                fp.label,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        showBlurDialog(
+        children.addAll(fingerprints.map((fp) => Actions(
+              actions: {
+                OpenIntent: CallbackAction<OpenIntent>(
+                    onInvoke: (_) => showBlurDialog(
                           context: context,
-                          builder: (context) =>
-                              RenameFingerprintDialog(node.path, fp),
-                        );
-                      },
-                      icon: const Icon(Icons.edit_outlined)),
-                  IconButton(
-                      onPressed: () {
-                        showBlurDialog(
+                          builder: (context) => FingerprintDialog(fp),
+                        )),
+                EditIntent: CallbackAction<EditIntent>(
+                    onInvoke: (_) => showBlurDialog(
                           context: context,
-                          builder: (context) =>
-                              DeleteFingerprintDialog(node.path, fp),
-                        );
-                      },
-                      icon: const Icon(Icons.delete_outline)),
-                ],
-              ),
+                          builder: (context) => RenameFingerprintDialog(
+                            node.path,
+                            fp,
+                          ),
+                        )),
+                DeleteIntent: CallbackAction<DeleteIntent>(
+                    onInvoke: (_) => showBlurDialog(
+                          context: context,
+                          builder: (context) => DeleteFingerprintDialog(
+                            node.path,
+                            fp,
+                          ),
+                        )),
+              },
+              child: _FingerprintListItem(fp),
             )));
       }
     }
@@ -140,6 +120,7 @@ class FidoUnlockedPage extends ConsumerWidget {
         title: Text(l10n.s_webauthn),
         keyActionsBuilder: (context) =>
             fidoBuildActions(context, node, state, nFingerprints),
+        keyActionsBadge: fidoShowActionsNotifier(state),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, children: children),
       );
@@ -153,6 +134,7 @@ class FidoUnlockedPage extends ConsumerWidget {
         message: l10n.l_add_one_or_more_fps,
         keyActionsBuilder: (context) =>
             fidoBuildActions(context, node, state, 0),
+        keyActionsBadge: fidoShowActionsNotifier(state),
       );
     }
 
@@ -162,6 +144,7 @@ class FidoUnlockedPage extends ConsumerWidget {
       header: l10n.l_no_discoverable_accounts,
       message: l10n.l_register_sk_on_websites,
       keyActionsBuilder: (context) => fidoBuildActions(context, node, state, 0),
+      keyActionsBadge: fidoShowActionsNotifier(state),
     );
   }
 
@@ -171,4 +154,51 @@ class FidoUnlockedPage extends ConsumerWidget {
         delayedContent: true,
         child: const CircularProgressIndicator(),
       );
+}
+
+class _CredentialListItem extends StatelessWidget {
+  final FidoCredential credential;
+  const _CredentialListItem(this.credential);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppListItem(
+      leading: CircleAvatar(
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: const Icon(Icons.person),
+      ),
+      title: credential.userName,
+      subtitle: credential.rpId,
+      trailing: OutlinedButton(
+        onPressed: Actions.handler(context, const OpenIntent()),
+        child: const Icon(Icons.more_horiz),
+      ),
+      buildPopupActions: (context) =>
+          buildCredentialActions(AppLocalizations.of(context)!),
+    );
+  }
+}
+
+class _FingerprintListItem extends StatelessWidget {
+  final Fingerprint fingerprint;
+  const _FingerprintListItem(this.fingerprint);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppListItem(
+      leading: CircleAvatar(
+        foregroundColor: Theme.of(context).colorScheme.onSecondary,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        child: const Icon(Icons.fingerprint),
+      ),
+      title: fingerprint.label,
+      trailing: OutlinedButton(
+        onPressed: Actions.handler(context, const OpenIntent()),
+        child: const Icon(Icons.more_horiz),
+      ),
+      buildPopupActions: (context) =>
+          buildFingerprintActions(AppLocalizations.of(context)!),
+    );
+  }
 }

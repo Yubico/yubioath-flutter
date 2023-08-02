@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,15 @@
 
 package com.yubico.authenticator.logging
 
-import android.util.Log
+import ch.qos.logback.classic.Level
 import com.yubico.authenticator.BuildConfig
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
 object Log {
+
+    private val logger = LoggerFactory.getLogger("com.yubico.authenticator")
 
     enum class LogLevel {
         TRAFFIC,
@@ -42,34 +47,10 @@ object Log {
         LogLevel.INFO
     }
 
-    private const val TAG = "yubico-authenticator"
-
-    @Suppress("unused")
-    fun t(tag: String, message: String, error: String? = null) {
-        log(LogLevel.TRAFFIC, tag, message, error)
+    init {
+        setLevel(level)
     }
 
-    @Suppress("unused")
-    fun d(tag: String, message: String, error: String? = null) {
-        log(LogLevel.DEBUG, tag, message, error)
-    }
-
-    @Suppress("unused")
-    fun i(tag: String, message: String, error: String? = null) {
-        log(LogLevel.INFO, tag, message, error)
-    }
-
-    @Suppress("unused")
-    fun w(tag: String, message: String, error: String? = null) {
-        log(LogLevel.WARNING, tag, message, error)
-    }
-
-    @Suppress("unused")
-    fun e(tag: String, message: String, error: String? = null) {
-        log(LogLevel.ERROR, tag, message, error)
-    }
-
-    @Suppress("unused")
     fun log(level: LogLevel, loggerName: String, message: String, error: String?) {
         if (level < this.level) {
             return
@@ -79,27 +60,33 @@ object Log {
             buffer.removeAt(0)
         }
 
-        val logMessage = "[$loggerName] ${level.name}: $message".also {
-            buffer.add(it)
-        }
+        val logMessage = (if (error == null)
+            "[$loggerName] ${level.name}: $message"
+        else
+            "[$loggerName] ${level.name}: $message (err: $error)"
+                ).also {
+                buffer.add(it)
+            }
 
         when (level) {
-            LogLevel.TRAFFIC -> Log.v(TAG, logMessage)
-            LogLevel.DEBUG -> Log.d(TAG, logMessage)
-            LogLevel.INFO -> Log.i(TAG, logMessage)
-            LogLevel.WARNING -> Log.w(TAG, logMessage)
-            LogLevel.ERROR -> Log.e(TAG, logMessage)
-        }
-
-        error?.let {
-            Log.e(TAG, "[$loggerName] ${level.name}(details): $error".also {
-                buffer.add(it)
-            })
+            LogLevel.TRAFFIC -> logger.trace(logMessage)
+            LogLevel.DEBUG -> logger.debug(logMessage)
+            LogLevel.INFO -> logger.info(logMessage)
+            LogLevel.WARNING -> logger.warn(logMessage)
+            LogLevel.ERROR -> logger.error(logMessage)
         }
     }
 
-    @Suppress("unused")
     fun setLevel(newLevel: LogLevel) {
         level = newLevel
+
+        val root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger
+        root.level = when (newLevel) {
+            LogLevel.TRAFFIC -> Level.TRACE
+            LogLevel.DEBUG -> Level.DEBUG
+            LogLevel.INFO -> Level.INFO
+            LogLevel.WARNING -> Level.WARN
+            LogLevel.ERROR -> Level.ERROR
+        }
     }
 }

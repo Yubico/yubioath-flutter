@@ -24,6 +24,7 @@ from .oath import OathNode
 from .fido import Ctap2Node
 from .yubiotp import YubiOtpNode
 from .management import ManagementNode
+from .piv import PivNode
 from .qr import scan_qr
 from ykman import __version__ as ykman_version
 from ykman.base import PID
@@ -390,6 +391,13 @@ class ConnectionNode(RpcNode):
     )
     def oath(self):
         return OathNode(self._connection)
+
+    @child(
+        condition=lambda self: isinstance(self._connection, SmartCardConnection)
+        and CAPABILITY.PIV in self.capabilities
+    )
+    def piv(self):
+        return PivNode(self._connection)
 
     @child(
         condition=lambda self: isinstance(self._connection, FidoConnection)

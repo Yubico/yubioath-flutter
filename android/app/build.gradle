@@ -100,10 +100,12 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
 
     implementation "androidx.core:core-ktx:1.10.1"
-    implementation 'androidx.fragment:fragment-ktx:1.5.7'
+    implementation 'androidx.fragment:fragment-ktx:1.6.0'
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     implementation 'com.google.android.material:material:1.9.0'
+
+    implementation 'com.github.tony19:logback-android:3.0.0'
 
     // testing dependencies
     testImplementation "junit:junit:$project.junitVersion"

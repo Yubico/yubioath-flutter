@@ -27,6 +27,7 @@ class MessagePage extends StatelessWidget {
   final bool delayedContent;
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final Widget Function(BuildContext context)? actionButtonBuilder;
+  final bool keyActionsBadge;
 
   const MessagePage({
     super.key,
@@ -38,6 +39,7 @@ class MessagePage extends StatelessWidget {
     this.keyActionsBuilder,
     this.actionButtonBuilder,
     this.delayedContent = false,
+    this.keyActionsBadge = false,
   });
 
   @override
@@ -46,6 +48,7 @@ class MessagePage extends StatelessWidget {
         centered: true,
         actions: actions,
         keyActionsBuilder: keyActionsBuilder,
+        keyActionsBadge: keyActionsBadge,
         actionButtonBuilder: actionButtonBuilder,
         delayedContent: delayedContent,
         child: Padding(

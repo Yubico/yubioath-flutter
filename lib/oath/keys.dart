@@ -17,17 +17,27 @@
 import 'package:flutter/material.dart';
 
 const _prefix = 'oath.keys';
-
-const setOrManagePasswordAction = Key('$_prefix.set_or_manage_password');
-const addAccountAction = Key('$_prefix.add_account');
-const resetAction = Key('$_prefix.reset');
-
-const customIconsAction = Key('$_prefix.custom_icons');
-
-const noAccountsView = Key('$_prefix.no_accounts');
+const _keyAction = '$_prefix.actions';
+const _accountAction = '$_prefix.account.actions';
 
 // This is global so we can access it from the global Ctrl+F shortcut.
 final searchAccountsField = GlobalKey();
+
+// Key actions
+const setOrManagePasswordAction =
+    Key('$_keyAction.action.set_or_manage_password');
+const addAccountAction = Key('$_keyAction.add_account');
+const resetAction = Key('$_keyAction.reset');
+const customIconsAction = Key('$_keyAction.custom_icons');
+
+// Credential actions
+const copyAction = Key('$_accountAction.copy');
+const calculateAction = Key('$_accountAction.calculate');
+const togglePinAction = Key('$_accountAction.toggle_pin');
+const editAction = Key('$_accountAction.edit');
+const deleteAction = Key('$_accountAction.delete');
+
+const noAccountsView = Key('$_prefix.no_accounts');
 
 const passwordField = Key('$_prefix.password');
 const currentPasswordField = Key('$_prefix.current_password');

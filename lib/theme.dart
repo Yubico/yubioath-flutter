@@ -21,6 +21,7 @@ const accentGreen = Color(0xff9aca3c);
 const primaryBlue = Color(0xff325f74);
 const primaryRed = Color(0xffea4335);
 const darkRed = Color(0xffda4d41);
+const amber = Color(0xffffca28);
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
@@ -32,6 +33,7 @@ class AppTheme {
         ).copyWith(
           primary: primaryBlue,
           //secondary: accentGreen,
+          tertiary: amber.withOpacity(0.7),
         ),
         textTheme: TextTheme(
           bodySmall: TextStyle(color: Colors.grey.shade900),
@@ -57,6 +59,7 @@ class AppTheme {
           //onPrimaryContainer: Colors.grey.shade100,
           error: darkRed,
           onError: Colors.white.withOpacity(0.9),
+          tertiary: amber.withOpacity(0.7),
         ),
         textTheme: TextTheme(
           bodySmall: TextStyle(color: Colors.grey.shade500),

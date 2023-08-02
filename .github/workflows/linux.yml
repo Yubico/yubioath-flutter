@@ -7,10 +7,10 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      PYVER: '3.11.3'
-      FLUTTER: '3.10.1'
+      PYVER: '3.11.4'
+      FLUTTER: '3.10.6'
     container:
-      image: ubuntu:18.04
+      image: ubuntu:20.04
       env:
         DEBIAN_FRONTEND: noninteractive
 
@@ -20,7 +20,7 @@ jobs:
         export PYVER_MINOR=${PYVER%.*}
         echo "PYVER_MINOR: $PYVER_MINOR"
         apt-get update
-        apt-get install -qq software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
+        apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
         add-apt-repository -y ppa:git-core/ppa
         add-apt-repository -y ppa:deadsnakes/ppa
         apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv
@@ -61,7 +61,9 @@ jobs:
         apt-get install -qq swig libpcsclite-dev build-essential cmake
         python -m ensurepip --user
         python -m pip install -U pip pipx
-        pipx ensurepath
+        # pipx ensurepath
+        echo "export PATH=$PATH:$HOME/.local/bin" >> ~/.bashrc
+        . ~/.bashrc  # Needed to ensure poetry on PATH
         pipx install poetry
 
     - name: Build the Helper

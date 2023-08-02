@@ -102,8 +102,4 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
         }
         return NULL
     }
-
-    companion object {
-        const val TAG = "dialogManager"
-    }
 }

@@ -41,6 +41,8 @@ class FidoState with _$FidoState {
       info['options']['credentialMgmtPreview'] == true;
 
   bool? get bioEnroll => info['options']['bioEnroll'];
+
+  bool get alwaysUv => info['options']['alwaysUv'] == true;
 }
 
 @freezed

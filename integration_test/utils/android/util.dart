@@ -30,9 +30,10 @@ Future<void> startUp(WidgetTester tester,
   // only wait for yubikey connection when needed
   // needs_yubikey defaults to true
   if (startUpParams['needs_yubikey'] != false) {
+    await tester.openDrawer();
     // wait for a YubiKey connection
     await tester.waitForFinder(find.descendant(
-        of: tester.findDeviceButton(),
+        of: find.byKey(app_keys.deviceInfoListTile),
         matching: find.byWidgetPredicate((widget) =>
             widget is DeviceAvatar && widget.key != app_keys.noDeviceAvatar)));
   }
