@@ -26,6 +26,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.util.Size
 import android.view.View
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -81,8 +82,6 @@ internal class QRScannerView(
     private val stateChangeObserver = StateChangeObserver(context)
     private val uiThreadHandler = Handler(Looper.getMainLooper())
 
-    private var marginPct: Double? = null
-
     companion object {
         const val TAG = "QRScannerView"
 
@@ -128,10 +127,20 @@ internal class QRScannerView(
 
     private var imageAnalysis: ImageAnalysis? = null
     private var preview: Preview? = null
-    private var barcodeAnalyzer : BarcodeAnalyzer = BarcodeAnalyzer(marginPct) { analyzeResult ->
-        if (analyzeResult.isSuccess) {
-            analyzeResult.getOrNull()?.let { result ->
-                reportCodeFound(result)
+    private val barcodeAnalyzer = with(creationParams) {
+        var marginPct : Double? = null
+        if (this?.get("margin") is Number) {
+            val marginValue = this["margin"] as Number
+            if (marginValue.toDouble() > 0.0 && marginValue.toDouble() < 45) {
+                marginPct = marginValue.toDouble()
+            }
+        }
+
+        BarcodeAnalyzer(marginPct) { analyzeResult ->
+            if (analyzeResult.isSuccess) {
+                analyzeResult.getOrNull()?.let { result ->
+                    reportCodeFound(result)
+                }
             }
         }
     }
@@ -155,19 +164,11 @@ internal class QRScannerView(
     private val methodChannel: MethodChannel = MethodChannel(binaryMessenger, CHANNEL_NAME)
     private var permissionsGranted = false
 
+    private val screenSize = with(context.resources.displayMetrics) {
+        Size(widthPixels, heightPixels)
+    }
+
     init {
-
-        // read margin parameter
-        // only use it if it has reasonable value
-        if (creationParams?.get("margin") is Number) {
-            val marginValue = creationParams["margin"] as Number
-            if (marginValue.toDouble() > 0.0 && marginValue.toDouble() < 45) {
-                marginPct = marginValue.toDouble()
-            }
-        }
-
-        Log.v(TAG, "marginPct: $marginPct")
-
         if (context is Activity) {
             permissionsGranted = allPermissionsGranted(context)
 
@@ -266,7 +267,7 @@ internal class QRScannerView(
                 }
 
             preview = Preview.Builder()
-                .setTargetAspectRatio(QR_SCANNER_ASPECT_RATIO)
+                .setTargetResolution(screenSize)
                 .build()
                 .also {
                     it.setSurfaceProvider(previewView.surfaceProvider)
@@ -369,7 +370,7 @@ internal class QRScannerView(
 
                 val fullSize = BinaryBitmap(HybridBinarizer(luminanceSource))
 
-                val bitmapToProcess = if (marginPct != null) {
+                val bitmapToProcess = if (marginPct != null && fullSize.isCropSupported) {
                     val shorterDim = min(imageProxy.width, imageProxy.height)
                     val cropMargin = marginPct * 0.01 * shorterDim
                     val cropWH = shorterDim - 2.0 * cropMargin
