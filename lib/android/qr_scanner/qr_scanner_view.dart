@@ -149,7 +149,7 @@ class _QrScannerViewState extends State<QrScannerView> {
               visible: _permissionsGranted,
               child: QRScannerZxingView(
                   key: _zxingViewKey,
-                  marginPct: 50,
+                  marginPct: 10,
                   onDetect: (scannedData) => handleResult(scannedData),
                   onViewInitialized: (bool permissionsGranted) {
                     Future.delayed(const Duration(milliseconds: 50), () {
