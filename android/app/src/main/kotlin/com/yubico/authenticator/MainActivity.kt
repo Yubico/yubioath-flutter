@@ -328,12 +328,15 @@ class MainActivity : FlutterFragmentActivity() {
      * this receiver restarts the YubiKit NFC discovery when the QR Scanner camera is closed.
      */
     class QRScannerCameraClosedBR : BroadcastReceiver() {
+
+        private val logger = LoggerFactory.getLogger(QRScannerCameraClosedBR::class.java)
+
         companion object {
             val intentFilter = IntentFilter("com.yubico.authenticator.QRScannerView.CameraClosed")
         }
 
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d(TAG, "Restarting nfc discovery after camera was closed.")
+            logger.debug("Restarting nfc discovery after camera was closed.")
             (context as? MainActivity)?.startNfcDiscovery()
         }
     }
