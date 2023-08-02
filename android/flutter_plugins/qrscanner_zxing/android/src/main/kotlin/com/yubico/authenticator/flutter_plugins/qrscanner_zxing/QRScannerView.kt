@@ -92,9 +92,6 @@ internal class QRScannerView(
                 Manifest.permission.CAMERA,
             ).toTypedArray()
 
-        // view related
-        private const val QR_SCANNER_ASPECT_RATIO = AspectRatio.RATIO_4_3
-
         // communication channel
         private const val CHANNEL_NAME =
             "com.yubico.authenticator.flutter_plugins.qr_scanner_channel"
@@ -260,7 +257,7 @@ internal class QRScannerView(
 
             imageAnalysis = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .setTargetAspectRatio(QR_SCANNER_ASPECT_RATIO)
+                .setTargetResolution(Size(768,1024))
                 .build()
                 .also {
                     it.setAnalyzer(cameraExecutor, barcodeAnalyzer)
@@ -396,6 +393,10 @@ internal class QRScannerView(
                 }
 
                 val result: com.google.zxing.Result = multiFormatReader.decode(bitmapToProcess)
+                if (analysisPaused) {
+                    return
+                }
+
                 analysisPaused = true // pause
                 Log.v(TAG, "Analysis result: ${result.text}")
                 listener.invoke(Result.success(result.text))
