@@ -7,6 +7,7 @@ import 'package:yubico_authenticator/theme.dart';
 
 import '../../android/oath/state.dart';
 import '../../app/models.dart';
+import '../../core/models.dart';
 import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 
@@ -232,6 +233,9 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
 
   void submit() async {
 
+    final deviceNode = ref.watch(currentDeviceProvider);
+    final devicePath = deviceNode?.path;
+
     _log.debug('Submitting following credentials:');
     for (var element in _checkedCreds.entries) {
       if (element.value) {
@@ -241,7 +245,7 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
       }
     }
 
-    if (isAndroid) {
+    if (isAndroid && (devicePath == null || deviceNode?.transport == Transport.nfc)) {
       var uris = <String>[];
       var touchRequired = <bool>[];
 
