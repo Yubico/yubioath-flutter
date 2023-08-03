@@ -397,41 +397,32 @@ class OathManager(
 
         addToAny = true
         return useOathSessionNfc(OathActionDescription.AddMultipleAccounts) { session ->
-
             var successCount = 0
+            for (index in uris.indices) {
 
-           // try {
-                for (index in uris.indices) {
+                val credentialData: CredentialData =
+                    CredentialData.parseUri(URI.create(uris[index]))
 
-                    val credentialData: CredentialData =
-                        CredentialData.parseUri(URI.create(uris[index]))
-
-                    if (session.credentials.any { it.id.contentEquals(credentialData.id) }) {
-                        logger.info("A credential with this ID already exists, skipping")
-                        continue
-                    }
-
-
-                    val credential = session.putCredential(credentialData, requireTouch[index])
-                    val code =
-                        if (credentialData.oathType == YubiKitOathType.TOTP && !requireTouch[index]) {
-                            // recalculate the code
-                            calculateCode(session, credential)
-                        } else null
-
-                    oathViewModel.addCredential(
-                        Credential(credential, session.deviceId),
-                        Code.from(code)
-                    )
-
-                    logger.trace("Added cred {}", credential)
-                    successCount++
+                if (session.credentials.any { it.id.contentEquals(credentialData.id) }) {
+                    logger.info("A credential with this ID already exists, skipping")
+                    continue
                 }
-//            } catch (cancelled: CancellationException) {
-//
-//            } catch (e: Throwable) {
-//                logger.error("Caught exception when adding multiple credentials: ", e)
-//            }
+
+                val credential = session.putCredential(credentialData, requireTouch[index])
+                val code =
+                    if (credentialData.oathType == YubiKitOathType.TOTP && !requireTouch[index]) {
+                        // recalculate the code
+                        calculateCode(session, credential)
+                    } else null
+
+                oathViewModel.addCredential(
+                    Credential(credential, session.deviceId),
+                    Code.from(code)
+                )
+
+                logger.trace("Added cred {}", credential)
+                successCount++
+            }
             jsonSerializer.encodeToString(mapOf("succeeded" to successCount))
         }
     }
