@@ -24,10 +24,16 @@ import kotlinx.serialization.json.Json
 
 typealias OnDialogCancelled = suspend () -> Unit
 
-enum class Icon(val value: String) {
-    NFC("nfc"),
-    SUCCESS("success"),
-    ERROR("error");
+enum class DialogIcon(val value: Int) {
+    Nfc(0),
+    Success(1),
+    Failure(2);
+}
+
+enum class DialogTitle(val value: Int) {
+    TapKey(0),
+    OperationSuccessful(1),
+    OperationFailed(2)
 }
 
 class DialogManager(messenger: BinaryMessenger, private val coroutineScope: CoroutineScope) {
@@ -45,16 +51,21 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
         }
     }
 
-    fun showDialog(icon: Icon, title: String, description: String, cancelled: OnDialogCancelled?) {
+    fun showDialog(
+        dialogIcon: DialogIcon,
+        dialogTitle: DialogTitle,
+        dialogDescriptionId: Int,
+        cancelled: OnDialogCancelled?
+    ) {
         onCancelled = cancelled
         coroutineScope.launch {
             channel.invoke(
                 "show",
                 Json.encodeToString(
                     mapOf(
-                        "title" to title,
-                        "description" to description,
-                        "icon" to icon.value
+                        "title" to dialogTitle.value,
+                        "description" to dialogDescriptionId,
+                        "icon" to dialogIcon.value
                     )
                 )
             )
@@ -62,17 +73,17 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
     }
 
     suspend fun updateDialogState(
-        icon: Icon? = null,
-        title: String? = null,
-        description: String? = null
+        dialogIcon: DialogIcon? = null,
+        dialogTitle: DialogTitle,
+        dialogDescriptionId: Int? = null,
     ) {
         channel.invoke(
             "state",
             Json.encodeToString(
                 mapOf(
-                    "title" to title,
-                    "description" to description,
-                    "icon" to icon?.value
+                    "title" to dialogTitle.value,
+                    "description" to dialogDescriptionId,
+                    "icon" to dialogIcon?.value
                 )
             )
         )

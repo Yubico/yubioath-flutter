@@ -45,7 +45,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.10.5'
+          flutter-version: '3.10.6'
       - run: flutter config --enable-windows-desktop
       - run: flutter --version
 

@@ -587,5 +587,19 @@
     "l_launch_app_on_usb_off": "Other apps can use the YubiKey over USB",
     "s_allow_screenshots": "Allow screenshots",
 
+    "s_nfc_dialog_tap_key": "Tap your key",
+    "s_nfc_dialog_operation_success": "Success",
+    "s_nfc_dialog_operation_failed": "Failed",
+
+    "s_nfc_dialog_oath_reset": "Action: reset OATH applet",
+    "s_nfc_dialog_oath_unlock": "Action: unlock OATH applet",
+    "s_nfc_dialog_oath_set_password": "Action: set OATH password",
+    "s_nfc_dialog_oath_unset_password": "Action: remove OATH password",
+    "s_nfc_dialog_oath_add_account": "Action: add new account",
+    "s_nfc_dialog_oath_rename_account": "Action: rename account",
+    "s_nfc_dialog_oath_delete_account": "Action: delete account",
+    "s_nfc_dialog_oath_calculate_code": "Action: calculate OATH code",
+    "s_nfc_dialog_oath_failure": "OATH operation failed",
+
     "@_eof": {}
 }
