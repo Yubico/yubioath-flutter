@@ -195,6 +195,7 @@ class OathManager(
 
         // OATH methods callable from Flutter:
         oathChannel.setHandler(coroutineScope) { method, args ->
+            @Suppress("UNCHECKED_CAST")
             when (method) {
                 "reset" -> reset()
                 "unlock" -> unlock(
@@ -225,6 +226,11 @@ class OathManager(
                 "addAccountToAny" -> addAccountToAny(
                     args["uri"] as String,
                     args["requireTouch"] as Boolean
+                )
+
+                "addAccountsToAny" -> addAccountsToAny(
+                    args["uris"] as List<String>,
+                    args["requireTouch"] as List<Boolean>
                 )
 
                 else -> throw NotImplementedError()
@@ -380,6 +386,53 @@ class OathManager(
 
             logger.debug("Added cred {}", credential)
             jsonSerializer.encodeToString(addedCred)
+        }
+    }
+
+    private suspend fun addAccountsToAny(
+        uris: List<String>,
+        requireTouch: List<Boolean>,
+    ): String {
+        logger.trace("Adding following accounts: {}", uris)
+
+        addToAny = true
+        return useOathSessionNfc(OathActionDescription.AddMultipleAccounts) { session ->
+
+            var successCount = 0
+
+           // try {
+                for (index in uris.indices) {
+
+                    val credentialData: CredentialData =
+                        CredentialData.parseUri(URI.create(uris[index]))
+
+                    if (session.credentials.any { it.id.contentEquals(credentialData.id) }) {
+                        logger.info("A credential with this ID already exists, skipping")
+                        continue
+                    }
+
+
+                    val credential = session.putCredential(credentialData, requireTouch[index])
+                    val code =
+                        if (credentialData.oathType == YubiKitOathType.TOTP && !requireTouch[index]) {
+                            // recalculate the code
+                            calculateCode(session, credential)
+                        } else null
+
+                    oathViewModel.addCredential(
+                        Credential(credential, session.deviceId),
+                        Code.from(code)
+                    )
+
+                    logger.trace("Added cred {}", credential)
+                    successCount++
+                }
+//            } catch (cancelled: CancellationException) {
+//
+//            } catch (e: Throwable) {
+//                logger.error("Caught exception when adding multiple credentials: ", e)
+//            }
+            jsonSerializer.encodeToString(mapOf("succeeded" to successCount))
         }
     }
 

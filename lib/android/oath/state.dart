@@ -22,6 +22,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/exception/cancellation_exception.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
@@ -136,6 +137,35 @@ final addCredentialToAnyProvider =
           } on PlatformException catch (pe) {
             _log.error('Failed to add account.', pe);
             throw pe.decode();
+          }
+        });
+
+final addCredentialsToAnyProvider = Provider(
+    (ref) => (List<String> credentialUris, List<bool> touchRequired) async {
+          try {
+            _log.debug(
+                'Calling android with ${credentialUris.length} credentials to be added');
+
+            String resultString = await _methods.invokeMethod(
+              'addAccountsToAny',
+              {
+                'uris': credentialUris,
+                'requireTouch': touchRequired,
+              },
+            );
+
+            _log.debug('Call result: $resultString');
+            var result = jsonDecode(resultString);
+            return result['succeeded'] == credentialUris.length;
+          } on PlatformException catch (pe) {
+            var decodedException = pe.decode();
+            if (decodedException is CancellationException) {
+              _log.debug('User cancelled adding multiple accounts');
+            } else {
+              _log.error('Failed to add multiple accounts.', pe);
+            }
+
+            throw decodedException;
           }
         });
 
