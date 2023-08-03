@@ -27,7 +27,8 @@ enum class OathActionDescription(private val value: Int) {
     RenameAccount(5),
     DeleteAccount(6),
     CalculateCode(7),
-    ActionFailure(8);
+    ActionFailure(8),
+    AddMultipleAccounts(9);
 
     val id: Int
         get() = value + dialogDescriptionOathIndex

@@ -231,8 +231,59 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
   }
 
   void submit() async {
-    _checkedCreds.forEach((k, v) => v ? accept(k) : null);
-    Navigator.of(context).pop();
+
+    _log.debug('Submitting following credentials:');
+    for (var element in _checkedCreds.entries) {
+      if (element.value) {
+        _log.debug('Adding: ${element.key.toUri().toString()} '
+            '/ requireTouch:  ${_touchEnabled[element.key]} '
+            '/ isUnique: ${_uniqueCreds[element.key] == true}');
+      }
+    }
+
+    if (isAndroid) {
+      var uris = <String>[];
+      var touchRequired = <bool>[];
+
+      // build list of uris and touch required flags for unique credentials
+      for (var element in _checkedCreds.entries) {
+        if (element.value == true && _uniqueCreds[element.key] == true) {
+          uris.add(element.key.toUri().toString());
+          touchRequired.add(_touchEnabled[element.key] == true);
+        }
+      }
+
+      await _addCredentials(uris: uris, touchRequired: touchRequired);
+    } else {
+      _checkedCreds.forEach((k, v) => v ? accept(k) : null);
+      Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _addCredentials(
+      {required List<String> uris, required List<bool> touchRequired}) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await ref.read(addCredentialsToAnyProvider).call(uris, touchRequired);
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      showMessage(context, l10n.s_account_added);
+    } on CancellationException catch (_) {
+      // ignored
+    } catch (e) {
+      _log.error('Failed to add multiple accounts', e.toString());
+      final String errorMessage;
+      if (e is ApduException) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      showMessage(
+        context,
+        l10n.l_account_add_failed(errorMessage),
+        duration: const Duration(seconds: 4),
+      );
+    }
   }
 
   void accept(CredentialData cred) async {
@@ -243,9 +294,6 @@ class _MigrateAccountPageState extends ConsumerState<MigrateAccountPage> {
           devicePath: devicePath,
           credUri: cred.toUri(),
           requireTouch: _touchEnabled[cred]);
-    } else if (isAndroid) {
-      // Send the credential to Android to be added to the next YubiKey
-      await _doAddCredential(devicePath: null, credUri: cred.toUri());
     }
   }
 

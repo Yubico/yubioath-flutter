@@ -72,6 +72,7 @@ enum _DDesc {
   oathDeleteAccount,
   oathCalculateCode,
   oathActionFailure,
+  oathAddMultipleAccounts,
   invalid;
 
   static const int dialogDescriptionOathIndex = 100;
@@ -86,7 +87,8 @@ enum _DDesc {
         dialogDescriptionOathIndex + 5: _DDesc.oathRenameAccount,
         dialogDescriptionOathIndex + 6: _DDesc.oathDeleteAccount,
         dialogDescriptionOathIndex + 7: _DDesc.oathCalculateCode,
-        dialogDescriptionOathIndex + 8: _DDesc.oathActionFailure
+        dialogDescriptionOathIndex + 8: _DDesc.oathActionFailure,
+        dialogDescriptionOathIndex + 9: _DDesc.oathAddMultipleAccounts
       }[id] ??
       _DDesc.invalid;
 }
@@ -158,6 +160,7 @@ class _DialogProvider {
       _DDesc.oathDeleteAccount => l10n.s_nfc_dialog_oath_delete_account,
       _DDesc.oathCalculateCode => l10n.s_nfc_dialog_oath_calculate_code,
       _DDesc.oathActionFailure => l10n.s_nfc_dialog_oath_failure,
+      _DDesc.oathAddMultipleAccounts => l10n.s_nfc_dialog_oath_add_multiple_accounts,
       _ => ''
     };
   }

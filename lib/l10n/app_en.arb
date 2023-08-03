@@ -600,6 +600,7 @@
     "s_nfc_dialog_oath_delete_account": "Action: delete account",
     "s_nfc_dialog_oath_calculate_code": "Action: calculate OATH code",
     "s_nfc_dialog_oath_failure": "OATH operation failed",
+    "s_nfc_dialog_oath_add_multiple_accounts": "Action: add multiple accounts",
 
     "@_eof": {}
 }
