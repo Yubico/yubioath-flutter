@@ -27,24 +27,26 @@ class FsDialog extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Dialog.fullscreen(
       backgroundColor: Theme.of(context).colorScheme.background.withAlpha(100),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            child: SingleChildScrollView(child: child),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: TextButton.icon(
-              key: keys.closeButton,
-              icon: const Icon(Icons.close),
-              label: Text(l10n.s_close),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+      child: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: SingleChildScrollView(child: child),
             ),
-          )
-        ],
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: TextButton.icon(
+                key: keys.closeButton,
+                icon: const Icon(Icons.close),
+                label: Text(l10n.s_close),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
