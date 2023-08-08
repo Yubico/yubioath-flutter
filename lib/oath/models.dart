@@ -123,12 +123,22 @@ class CredentialData with _$CredentialData {
   factory CredentialData.fromJson(Map<String, dynamic> json) =>
       _$CredentialDataFromJson(json);
 
+  static List<CredentialData> fromUri(Uri uri) {
+    if (uri.scheme.toLowerCase() == 'otpauth-migration') {
+      return CredentialData.fromMigration(uri);
+    } else if (uri.scheme.toLowerCase() == 'otpauth') {
+      return [CredentialData.fromOtpauth(uri)];
+    } else {
+      throw ArgumentError('Invalid scheme');
+    }
+  }
+
   static List<CredentialData> fromMigration(uri) {
-    List<dynamic> read(Uint8List bytes) {
+    (Uint8List, Uint8List) read(Uint8List bytes) {
       final index = bytes[0];
       final sublist1 = bytes.sublist(1, index + 1);
       final sublist2 = bytes.sublist(index + 1);
-      return [sublist1, sublist2];
+      return (sublist1, sublist2);
     }
 
     String b32Encode(Uint8List data) {
@@ -153,92 +163,87 @@ class CredentialData with _$CredentialData {
       // 0a tag means new credential.
 
       // Extract secret, name, and issuer
-      var secretTag = data[2];
+      final secretTag = data[2];
       if (secretTag != 10) {
         // tag before secret is 0a hex
         throw ArgumentError('Invalid scheme, no secret tag');
       }
       data = data.sublist(3);
-      final result1 = read(data);
-      final secret = result1[0];
-      data = result1[1];
-      final decodedSecret = b32Encode(secret);
+      final Uint8List secret;
+      (secret, data) = read(data);
 
-      var nameTag = data[0];
+      final nameTag = data[0];
       if (nameTag != 18) {
         // tag before name is 12 hex
         throw ArgumentError('Invalid scheme, no name tag');
       }
       data = data.sublist(1);
-      final result2 = read(data);
-      final name = result2[0];
-      data = result2[1];
+      final Uint8List name;
+      (name, data) = read(data);
 
-      var issuerTag = data[0];
-      List<int>? issuer;
+      final issuerTag = data[0];
+      Uint8List? issuer;
 
       if (issuerTag == 26) {
         // tag before issuer is 1a hex, but issuer is optional.
         data = data.sublist(1);
-        final result3 = read(data);
-        issuer = result3[0];
-        data = result3[1];
+        (issuer, data) = read(data);
       }
 
       // Extract algorithm, number of digits, and oath type:
-      var algoTag = data[0];
+      final algoTag = data[0];
       if (algoTag != 32) {
         // tag before algo is 20 hex
         throw ArgumentError('Invalid scheme, no algo tag');
       }
-      int algo = data[1];
+      final algo = data[1];
 
-      var digitsTag = data[2];
+      final digitsTag = data[2];
       if (digitsTag != 40) {
         // tag before digits is 28 hex
         throw ArgumentError('Invalid scheme, no digits tag');
       }
-      var digits = data[3];
+      final digits = data[3];
 
-      var oathTag = data[4];
+      final oathTag = data[4];
       if (oathTag != 48) {
         // tag before oath is 30 hex
         throw ArgumentError('Invalid scheme, no oath tag');
       }
-      var oathType = data[5];
+      final oathType = data[5];
 
-      int counter = defaultCounter;
+      var counter = defaultCounter;
       if (oathType == 1) {
         // if hotp, extract counter
         counter = data[7];
-      }
-
-      final credential = CredentialData(
-        issuer:
-            issuerTag != 26 ? null : utf8.decode(issuer!, allowMalformed: true),
-        name: utf8.decode(name, allowMalformed: true),
-        oathType: oathType == 1 ? OathType.hotp : OathType.totp,
-        secret: decodedSecret,
-        hashAlgorithm: algo == 1
-            ? HashAlgorithm.sha1
-            : (algo == 2 ? HashAlgorithm.sha256 : HashAlgorithm.sha512),
-        digits: digits == 1 ? defaultDigits : 8,
-        counter: counter,
-      );
-
-      credentials.add(credential);
-      if (oathType == 1) {
         data = data.sublist(8);
       } else {
         data = data.sublist(6);
       }
+
+      final credential = CredentialData(
+        issuer:
+            issuer != null ? utf8.decode(issuer, allowMalformed: true) : null,
+        name: utf8.decode(name, allowMalformed: true),
+        oathType: oathType == 1 ? OathType.hotp : OathType.totp,
+        secret: b32Encode(secret),
+        hashAlgorithm: switch (algo) {
+          2 => HashAlgorithm.sha256,
+          3 => HashAlgorithm.sha512,
+          _ => HashAlgorithm.sha1,
+        },
+        digits: digits == 2 ? 8 : defaultDigits,
+        counter: counter,
+      );
+
+      credentials.add(credential);
       tag = data[0];
     }
 
     return credentials;
   }
 
-  factory CredentialData.fromUri(Uri uri) {
+  factory CredentialData.fromOtpauth(Uri uri) {
     final oathType = OathType.values.byName(uri.host.toLowerCase());
     final params = uri.queryParameters;
     String? issuer;

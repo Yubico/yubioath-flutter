@@ -32,7 +32,7 @@ void setupOtpAuthLinkHandler(BuildContext context) {
       case 'handleOtpAuthLink':
         {
           var url = args['link'];
-          var otpauth = CredentialData.fromUri(Uri.parse(url));
+          var otpauth = CredentialData.fromOtpauth(Uri.parse(url));
           Navigator.popUntil(context, ModalRoute.withName('/'));
           await showBlurDialog(
             context: context,
