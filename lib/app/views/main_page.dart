@@ -106,7 +106,7 @@ class MainPage extends ConsumerWidget {
                 try {
                   final url = await scanner.scanQr();
                   if (url != null) {
-                    otpauth = CredentialData.fromUri(Uri.parse(url));
+                    otpauth = CredentialData.fromOtpauth(Uri.parse(url));
                   }
                 } on CancellationException catch (_) {
                   // ignored - user cancelled

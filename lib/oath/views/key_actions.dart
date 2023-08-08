@@ -26,13 +26,14 @@ import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../../core/state.dart';
 import '../../exception/cancellation_exception.dart';
+import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
 import 'add_account_page.dart';
 import 'manage_password_dialog.dart';
 import 'reset_dialog.dart';
-import 'migrate_account_page.dart';
+import 'add_multi_account_page.dart';
 
 Widget oathBuildActions(
   BuildContext context,
@@ -70,7 +71,8 @@ Widget oathBuildActions(
                         try {
                           final url = await scanner.scanQr();
                           if (url != null) {
-                            otpauth = CredentialData.fromUri(Uri.parse(url));
+                            otpauth =
+                                CredentialData.fromOtpauth(Uri.parse(url));
                           }
                         } on CancellationException catch (_) {
                           // ignored - user cancelled
@@ -100,39 +102,33 @@ Widget oathBuildActions(
                 final credentials = ref.read(credentialsProvider);
                 final qrScanner = ref.watch(qrScannerProvider);
                 if (qrScanner != null) {
-                  final otpauth = await qrScanner.scanQr();
-                  if (otpauth == null) {
-                    await ref.read(withContextProvider)((context) async =>
-                        showMessage(context, l10n.l_qr_not_found));
-                  } else {
-                    String s = 'otpauth-migration';
-                    if (otpauth.contains(s)) {
-                      final data =
-                          CredentialData.fromMigration(Uri.parse(otpauth));
-                      await withContext((context) async {
-                        await showBlurDialog(
-                          context: context,
-                          builder: (context) =>
-                              MigrateAccountPage(devicePath, oathState, data),
-                        );
-                      });
-                    } else if (otpauth.contains('otpauth')) {
-                      final data = CredentialData.fromUri(Uri.parse(otpauth));
-                      await withContext((context) async {
-                        await showBlurDialog(
-                          context: context,
-                          builder: (context) => OathAddAccountPage(
-                            devicePath,
-                            oathState,
-                            credentials: credentials,
-                            credentialData: data,
-                          ),
-                        );
-                      });
+                  final uri = await qrScanner.scanQr();
+                  List<CredentialData> creds =
+                      uri != null ? CredentialData.fromUri(Uri.parse(uri)) : [];
+                  await withContext((context) async {
+                    if (creds.isEmpty) {
+                      showMessage(context, l10n.l_qr_not_found);
+                    } else if (creds.length == 1) {
+                      await showBlurDialog(
+                        context: context,
+                        builder: (context) => OathAddAccountPage(
+                          devicePath,
+                          oathState,
+                          credentials: credentials,
+                          credentialData: creds[0],
+                        ),
+                      );
+                    } else {
+                      await showBlurDialog(
+                        context: context,
+                        builder: (context) => OathAddMultiAccountPage(
+                            devicePath, oathState, creds,
+                            key: migrateAccountAction),
+                      );
                     }
-                  }
+                  });
                 }
-                await ref.read(withContextProvider)(
+                await withContext(
                     (context) async => Navigator.of(context).pop());
               }),
         ]),

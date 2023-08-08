@@ -131,7 +131,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           _qrState = _QrScanState.failed;
         });
       } else {
-        final data = CredentialData.fromUri(Uri.parse(otpauth));
+        final data = CredentialData.fromOtpauth(Uri.parse(otpauth));
         _loadCredentialData(data);
       }
     } catch (e) {
@@ -176,7 +176,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       {DevicePath? devicePath, required Uri credUri}) async {
     final l10n = AppLocalizations.of(context)!;
     try {
-
       FocusUtils.unfocus(context);
 
       if (devicePath == null) {
@@ -375,7 +374,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               if (!mounted) return;
               showMessage(context, l10n.l_qr_not_found);
             } else {
-              final data = CredentialData.fromUri(Uri.parse(otpauth));
+              final data = CredentialData.fromOtpauth(Uri.parse(otpauth));
               _loadCredentialData(data);
             }
           }
