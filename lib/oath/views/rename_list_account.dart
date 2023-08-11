@@ -57,21 +57,17 @@ class _RenameListState extends ConsumerState<RenameList> {
     _account = widget.credential.name.trim();
   }
 
-  void _submit() async {
+  void _submit() {
+    if (!mounted) return;
+
     final l10n = AppLocalizations.of(context)!;
     try {
       // Rename credentials
-      final credential = CredentialData(
+      final credential = widget.credential.copyWith(
         issuer: _issuer == '' ? null : _issuer,
         name: _account,
-        oathType: widget.credential.oathType,
-        secret: widget.credential.secret,
-        hashAlgorithm: widget.credential.hashAlgorithm,
-        digits: widget.credential.digits,
-        counter: widget.credential.counter,
       );
 
-      if (!mounted) return;
       Navigator.of(context).pop(credential);
       showMessage(context, l10n.s_account_renamed);
     } on CancellationException catch (_) {
