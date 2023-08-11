@@ -133,114 +133,62 @@ class CredentialData with _$CredentialData {
     }
   }
 
-  static List<CredentialData> fromMigration(uri) {
-    (Uint8List, Uint8List) read(Uint8List bytes) {
-      final index = bytes[0];
-      final sublist1 = bytes.sublist(1, index + 1);
-      final sublist2 = bytes.sublist(index + 1);
-      return (sublist1, sublist2);
+  static List<CredentialData> fromMigration(Uri uri) {
+    // Parse a single protobuf value from a buffer
+    (int tag, dynamic value, Uint8List rem) protoValue(Uint8List data) {
+      final first = data[0];
+      final index = first >> 3;
+      final second = data[1];
+      data = data.sublist(2);
+      switch (first & 0x07) {
+        case 0:
+          assert(second & 0x80 == 0);
+          return (index, second, data);
+        case 2:
+          assert(second & 0x80 == 0);
+          return (index, data.sublist(0, second), data.sublist(second));
+      }
+      throw ArgumentError('Unsupported value type!');
     }
 
-    String b32Encode(Uint8List data) {
-      final encodedData = base32.encode(data);
-      return utf8.decode(encodedData.runes.toList());
+    // Parse a protobuf message into map of tags and values
+    Map<int, dynamic> protoMap(Uint8List data) {
+      Map<int, dynamic> values = {};
+      while (data.isNotEmpty) {
+        final (tag, value, rem) = protoValue(data);
+        values[tag] = value;
+        data = rem;
+      }
+      return values;
     }
 
-    final uriString = uri.toString();
-    var data = Uint8List.fromList(
-        base64.decode(Uri.decodeComponent(uriString.split('=')[1])));
-
-    var credentials = <CredentialData>[];
-
-    var tag = data[0];
-
-    /*
-      Assuming the credential(s) follow the format:
-      cred = 0aLENGTH0aSECRET12NAME1aISSUER20ALGO28DIGITS30OATHxxx
-      where xxx can be another cred.
-      */
-    while (tag == 10) {
-      // 0a tag means new credential.
-
-      // Extract secret, name, and issuer
-      final secretTag = data[2];
-      if (secretTag != 10) {
-        // tag before secret is 0a hex
-        throw ArgumentError('Invalid scheme, no secret tag');
+    // Parse encoded credentials from data (tag 1) ignoring trailing extra data
+    Iterable<Map<int, dynamic>> splitCreds(Uint8List rem) sync* {
+      Uint8List credrem;
+      while (rem[0] == 0x0a) {
+        (_, credrem, rem) = protoValue(rem);
+        yield protoMap(credrem);
       }
-      data = data.sublist(3);
-      final Uint8List secret;
-      (secret, data) = read(data);
-
-      final nameTag = data[0];
-      if (nameTag != 18) {
-        // tag before name is 12 hex
-        throw ArgumentError('Invalid scheme, no name tag');
-      }
-      data = data.sublist(1);
-      final Uint8List name;
-      (name, data) = read(data);
-
-      final issuerTag = data[0];
-      Uint8List? issuer;
-
-      if (issuerTag == 26) {
-        // tag before issuer is 1a hex, but issuer is optional.
-        data = data.sublist(1);
-        (issuer, data) = read(data);
-      }
-
-      // Extract algorithm, number of digits, and oath type:
-      final algoTag = data[0];
-      if (algoTag != 32) {
-        // tag before algo is 20 hex
-        throw ArgumentError('Invalid scheme, no algo tag');
-      }
-      final algo = data[1];
-
-      final digitsTag = data[2];
-      if (digitsTag != 40) {
-        // tag before digits is 28 hex
-        throw ArgumentError('Invalid scheme, no digits tag');
-      }
-      final digits = data[3];
-
-      final oathTag = data[4];
-      if (oathTag != 48) {
-        // tag before oath is 30 hex
-        throw ArgumentError('Invalid scheme, no oath tag');
-      }
-      final oathType = data[5];
-
-      var counter = defaultCounter;
-      if (oathType == 1) {
-        // if hotp, extract counter
-        counter = data[7];
-        data = data.sublist(8);
-      } else {
-        data = data.sublist(6);
-      }
-
-      final credential = CredentialData(
-        issuer:
-            issuer != null ? utf8.decode(issuer, allowMalformed: true) : null,
-        name: utf8.decode(name, allowMalformed: true),
-        oathType: oathType == 1 ? OathType.hotp : OathType.totp,
-        secret: b32Encode(secret),
-        hashAlgorithm: switch (algo) {
-          2 => HashAlgorithm.sha256,
-          3 => HashAlgorithm.sha512,
-          _ => HashAlgorithm.sha1,
-        },
-        digits: digits == 2 ? 8 : defaultDigits,
-        counter: counter,
-      );
-
-      credentials.add(credential);
-      tag = data[0];
     }
 
-    return credentials;
+    // Convert parsed credential values into CredentialData objects
+    return splitCreds(base64.decode(uri.queryParameters['data']!))
+        .map((values) => CredentialData(
+              secret: base32.encode(values[1]),
+              name: utf8.decode(values[2], allowMalformed: true),
+              issuer: values[3] != null
+                  ? utf8.decode(values[3], allowMalformed: true)
+                  : null,
+              hashAlgorithm: switch (values[4]) {
+                2 => HashAlgorithm.sha256,
+                3 => HashAlgorithm.sha512,
+                _ => HashAlgorithm.sha1,
+              },
+              digits: values[5] == 2 ? 8 : defaultDigits,
+              oathType: values[6] == 1 ? OathType.hotp : OathType.totp,
+              counter: values[7] ?? defaultCounter,
+            ))
+        .toList();
   }
 
   factory CredentialData.fromOtpauth(Uri uri) {
