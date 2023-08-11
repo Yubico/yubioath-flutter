@@ -82,6 +82,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   OathType _oathType = defaultOathType;
   HashAlgorithm _hashAlgorithm = defaultHashAlgorithm;
   int _digits = defaultDigits;
+  int _counter = defaultCounter;
   bool _validateSecretLength = false;
   _QrScanState _qrState = _QrScanState.none;
   bool _isObscure = true;
@@ -167,6 +168,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       _periodController.text = '${data.period}';
       _digitsValues = [data.digits];
       _digits = data.digits;
+      _counter = data.counter;
       _isObscure = true;
       _qrState = _QrScanState.success;
     });
@@ -329,6 +331,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           hashAlgorithm: _hashAlgorithm,
           digits: _digits,
           period: period,
+          counter: _counter,
         );
 
         final devicePath = deviceNode?.path;
