@@ -134,19 +134,27 @@ class CredentialData with _$CredentialData {
   }
 
   static List<CredentialData> fromMigration(Uri uri) {
+    // Parse single protobuf encoded integer
+    (int value, Uint8List rem) protoInt(Uint8List data) {
+      final extras = data.takeWhile((b) => b & 0x80 != 0).length;
+      int value = 0;
+      for (int i = extras; i >= 0; i--) {
+        value = (value << 7) | (data[i] & 0x7F);
+      }
+      return (value, data.sublist(1 + extras));
+    }
+
     // Parse a single protobuf value from a buffer
     (int tag, dynamic value, Uint8List rem) protoValue(Uint8List data) {
       final first = data[0];
+      final int len;
+      (len, data) = protoInt(data.sublist(1));
       final index = first >> 3;
-      final second = data[1];
-      data = data.sublist(2);
       switch (first & 0x07) {
         case 0:
-          assert(second & 0x80 == 0);
-          return (index, second, data);
+          return (index, len, data);
         case 2:
-          assert(second & 0x80 == 0);
-          return (index, data.sublist(0, second), data.sublist(second));
+          return (index, data.sublist(0, len), data.sublist(len));
       }
       throw ArgumentError('Unsupported value type!');
     }
