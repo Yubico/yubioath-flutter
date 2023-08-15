@@ -104,7 +104,7 @@ class _CertificateListItem extends StatelessWidget {
       ),
       title: slot.getDisplayName(l10n),
       subtitle: certInfo != null
-          ? l10n.l_subject_issuer(certInfo.subject, certInfo.issuer)
+          ? certInfo.subject
           : pivSlot.hasKey == true
               ? l10n.l_key_no_certificate
               : l10n.l_no_certificate,

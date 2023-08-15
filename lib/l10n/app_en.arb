@@ -48,6 +48,12 @@
             "item": {}
         }
     },
+    "s_definition": "{item}:",
+    "@s_definition" : {
+        "placeholders": {
+            "item": {}
+        }
+    },
 
     "s_about": "About",
     "s_appearance": "Appearance",
@@ -212,6 +218,12 @@
             "retries": {}
         }
     },
+    "l_wrong_puk_attempts_remaining": "Wrong PUK, {retries} attempt(s) remaining",
+    "@l_wrong_puk_attempts_remaining" : {
+        "placeholders": {
+            "retries": {}
+        }
+    },
     "s_fido_pin_protection": "FIDO PIN protection",
     "l_fido_pin_protection_optional": "Optional FIDO PIN protection",
     "l_enter_fido2_pin": "Enter the FIDO2 PIN for your YubiKey",
@@ -231,6 +243,7 @@
     "s_pin_required": "PIN required",
     "p_pin_required_desc": "The action you are about to perform requires the PIV PIN to be entered.",
     "l_piv_pin_blocked": "Blocked, use PUK to reset",
+    "l_piv_pin_puk_blocked": "Blocked, factory reset needed",
     "p_enter_new_piv_pin_puk": "Enter a new {name} to set. Must be 6-8 characters.",
     "@p_enter_new_piv_pin_puk" : {
         "placeholders": {
@@ -418,32 +431,11 @@
     "l_import_desc": "Import a key and/or certificate",
     "l_delete_certificate": "Delete certificate",
     "l_delete_certificate_desc": "Remove the certificate from your YubiKey",
-    "l_subject_issuer": "Subject: {subject}, Issuer: {issuer}",
-    "@l_subject_issuer" : {
-        "placeholders": {
-            "subject": {},
-            "issuer": {}
-        }
-    },
-    "l_serial": "Serial: {serial}",
-    "@l_serial" : {
-        "placeholders": {
-            "serial": {}
-        }
-    },
-    "l_certificate_fingerprint": "Fingerprint: {fingerprint}",
-    "@l_certificate_fingerprint" : {
-        "placeholders": {
-            "fingerprint": {}
-        }
-    },
-    "l_valid": "Valid: {not_before} - {not_after}",
-    "@l_valid" : {
-        "placeholders": {
-            "not_before": {},
-            "not_after": {}
-        }
-    },
+    "s_issuer": "Issuer",
+    "s_serial": "Serial",
+    "s_certificate_fingerprint": "Fingerprint",
+    "s_valid_from": "Valid from",
+    "s_valid_to": "Valid to",
     "l_no_certificate": "No certificate loaded",
     "l_key_no_certificate": "Key without certificate loaded",
     "s_generate_key": "Generate key",
