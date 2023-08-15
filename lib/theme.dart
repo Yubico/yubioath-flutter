@@ -41,6 +41,9 @@ class AppTheme {
         dialogTheme: const DialogTheme(
           surfaceTintColor: Colors.white70,
         ),
+        tooltipTheme: const TooltipThemeData(
+          waitDuration: Duration(seconds: 1),
+        ),
       );
 
   static ThemeData get darkTheme => ThemeData(
@@ -66,6 +69,9 @@ class AppTheme {
         ),
         dialogTheme: DialogTheme(
           surfaceTintColor: Colors.grey.shade700,
+        ),
+        tooltipTheme: const TooltipThemeData(
+          waitDuration: Duration(seconds: 1),
         ),
       );
 

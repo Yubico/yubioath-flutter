@@ -24,7 +24,7 @@ part 'models.g.dart';
 
 const defaultManagementKey = '010203040506070801020304050607080102030405060708';
 const defaultManagementKeyType = ManagementKeyType.tdes;
-const defaultKeyType = KeyType.rsa2048;
+const defaultKeyType = KeyType.eccp256;
 const defaultGenerateType = GenerateType.certificate;
 
 enum GenerateType {
