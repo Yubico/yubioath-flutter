@@ -26,14 +26,12 @@ import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../../core/state.dart';
-import '../keys.dart';
 import '../models.dart';
 import '../keys.dart' as keys;
 import '../state.dart';
-import 'add_account_page.dart';
-import 'add_multi_account_page.dart';
 import 'manage_password_dialog.dart';
 import 'reset_dialog.dart';
+import 'utils.dart';
 
 Widget oathBuildActions(
   BuildContext context,
@@ -67,31 +65,8 @@ Widget oathBuildActions(
                         final qrScanner = ref.read(qrScannerProvider);
                         if (qrScanner != null) {
                           final uri = await qrScanner.scanQr();
-                          List<CredentialData> creds = uri != null
-                              ? CredentialData.fromUri(Uri.parse(uri))
-                              : [];
-                          await withContext((context) async {
-                            if (creds.isEmpty) {
-                              showMessage(context, l10n.l_qr_not_found);
-                            } else if (creds.length == 1) {
-                              await showBlurDialog(
-                                context: context,
-                                builder: (context) => OathAddAccountPage(
-                                  devicePath,
-                                  oathState,
-                                  credentials: credentials,
-                                  credentialData: creds[0],
-                                ),
-                              );
-                            } else {
-                              await showBlurDialog(
-                                context: context,
-                                builder: (context) => OathAddMultiAccountPage(
-                                    devicePath, oathState, creds,
-                                    key: migrateAccountAction),
-                              );
-                            }
-                          });
+                          handleUri(ref, withContext, credentials, uri,
+                              devicePath, oathState, l10n);
                         }
                       } else {
                         await showBlurDialog(

@@ -16,8 +16,16 @@
 
 import 'dart:math';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../app/message.dart';
+import '../../app/models.dart';
 import '../../widgets/utf8_utils.dart';
+import '../keys.dart';
 import '../models.dart';
+import 'add_account_page.dart';
+import 'add_multi_account_page.dart';
 
 /// Calculates the available space for issuer and account name.
 ///
@@ -52,4 +60,38 @@ String getTextName(OathCredential credential) {
   return credential.issuer != null
       ? '${credential.issuer} (${credential.name})'
       : credential.name;
+}
+
+void handleUri(
+  WidgetRef ref,
+  final withContext,
+  final credentials,
+  String? uri,
+  DevicePath? devicePath,
+  OathState? state,
+  AppLocalizations l10n,
+) async {
+  List<CredentialData> creds =
+      uri != null ? CredentialData.fromUri(Uri.parse(uri)) : [];
+  await withContext((context) async {
+    if (creds.isEmpty) {
+      showMessage(context, l10n.l_qr_not_found);
+    } else if (creds.length == 1) {
+      await showBlurDialog(
+        context: context,
+        builder: (context) => OathAddAccountPage(
+          devicePath,
+          state,
+          credentials: credentials,
+          credentialData: creds[0],
+        ),
+      );
+    } else {
+      await showBlurDialog(
+        context: context,
+        builder: (context) => OathAddMultiAccountPage(devicePath, state, creds,
+            key: migrateAccountAction),
+      );
+    }
+  });
 }
