@@ -59,6 +59,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                 OpenIntent: CallbackAction<OpenIntent>(
                     onInvoke: (_) => showBlurDialog(
                           context: context,
+                          barrierColor: Colors.transparent,
                           builder: (context) => CredentialDialog(cred),
                         )),
                 DeleteIntent: CallbackAction<DeleteIntent>(
@@ -91,6 +92,7 @@ class FidoUnlockedPage extends ConsumerWidget {
                 OpenIntent: CallbackAction<OpenIntent>(
                     onInvoke: (_) => showBlurDialog(
                           context: context,
+                          barrierColor: Colors.transparent,
                           builder: (context) => FingerprintDialog(fp),
                         )),
                 EditIntent: CallbackAction<EditIntent>(
