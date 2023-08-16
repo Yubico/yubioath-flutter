@@ -286,6 +286,8 @@
     "s_no_accounts": "No accounts",
     "s_add_account": "Add account",
     "s_add_accounts" : "Add account(s)",
+    "p_add_description" : "To scan a QR code, make sure the full code is visible on screen and press the button below. You can also drag a saved image from a folder onto this dialog. If you have the account credential details in writing, use the manual entry instead.",
+    "s_add_manually" : "Add manually",
     "s_account_added": "Account added",
     "l_account_add_failed": "Failed adding account: {message}",
     "@l_account_add_failed" : {
