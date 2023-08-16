@@ -149,17 +149,23 @@ Widget registerGlobalShortcuts(
       child: Shortcuts(
         shortcuts: {
           ctrlOrCmd(LogicalKeyboardKey.keyC): const CopyIntent(),
-          ctrlOrCmd(LogicalKeyboardKey.keyW): const HideIntent(),
+          const SingleActivator(LogicalKeyboardKey.copy): const CopyIntent(),
           ctrlOrCmd(LogicalKeyboardKey.keyF): const SearchIntent(),
           if (isDesktop) ...{
             const SingleActivator(LogicalKeyboardKey.tab, control: true):
                 const NextDeviceIntent(),
           },
           if (Platform.isMacOS) ...{
+            const SingleActivator(LogicalKeyboardKey.keyW, meta: true):
+                const HideIntent(),
             const SingleActivator(LogicalKeyboardKey.keyQ, meta: true):
                 const CloseIntent(),
             const SingleActivator(LogicalKeyboardKey.comma, meta: true):
                 const SettingsIntent(),
+          },
+          if (Platform.isWindows) ...{
+            const SingleActivator(LogicalKeyboardKey.keyW, control: true):
+                const HideIntent(),
           },
           if (Platform.isLinux) ...{
             const SingleActivator(LogicalKeyboardKey.keyQ, control: true):
