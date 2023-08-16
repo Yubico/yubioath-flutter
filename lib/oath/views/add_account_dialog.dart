@@ -59,7 +59,7 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
                 final b64Image = base64Encode(fileData);
                 final uri = await qrScanner.scanQr(b64Image);
 
-                handleUri(ref, withContext, credentials, uri, widget.devicePath,
+                handleUri(withContext, credentials, uri, widget.devicePath,
                     widget.state, l10n);
               }
             },
@@ -80,7 +80,7 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
                           Navigator.of(context).pop();
                           if (qrScanner != null) {
                             final uri = await qrScanner.scanQr();
-                            handleUri(ref, withContext, credentials, uri,
+                            handleUri(withContext, credentials, uri,
                                 widget.devicePath, widget.state, l10n);
                           }
                         },

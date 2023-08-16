@@ -63,7 +63,6 @@ String getTextName(OathCredential credential) {
 }
 
 void handleUri(
-  WidgetRef ref,
   final withContext,
   final credentials,
   String? uri,
