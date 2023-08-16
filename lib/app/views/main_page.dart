@@ -17,15 +17,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 import '../../android/app_methods.dart';
 import '../../android/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
 import '../../fido/views/fido_screen.dart';
 import '../../oath/models.dart';
+import '../../oath/state.dart';
 import '../../oath/views/add_account_page.dart';
 import '../../oath/views/oath_screen.dart';
+import '../../oath/views/utils.dart';
 import '../../piv/views/piv_screen.dart';
 import '../../widgets/custom_icons.dart';
 import '../message.dart';
@@ -104,10 +105,11 @@ class MainPage extends ConsumerWidget {
               final scanner = ref.read(qrScannerProvider);
               if (scanner != null) {
                 try {
-                  final url = await scanner.scanQr();
-                  if (url != null) {
-                    otpauth = CredentialData.fromOtpauth(Uri.parse(url));
-                  }
+                  final uri = await scanner.scanQr();
+                  final withContext = ref.read(withContextProvider);
+                  final credentials = ref.read(credentialsProvider);
+                  handleUri(
+                      ref, withContext, credentials, uri, null, null, l10n);
                 } on CancellationException catch (_) {
                   // ignored - user cancelled
                   return;

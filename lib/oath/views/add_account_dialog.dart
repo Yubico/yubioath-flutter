@@ -24,11 +24,10 @@ import 'package:yubico_authenticator/widgets/responsive_dialog.dart';
 
 import '../../app/models.dart';
 import '../../widgets/file_drop_target.dart';
-import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 import 'add_account_page.dart';
-import 'add_multi_account_page.dart';
+import 'utils.dart';
 
 class AddAccountDialog extends ConsumerStatefulWidget {
   final DevicePath? devicePath;
@@ -59,23 +58,9 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
               if (qrScanner != null) {
                 final b64Image = base64Encode(fileData);
                 final uri = await qrScanner.scanQr(b64Image);
-                if (uri == null) {
-                  if (!mounted) return;
-                  showMessage(context, l10n.l_qr_not_found);
-                } else {
-                  final otpauth = CredentialData.fromOtpauth(Uri.parse(uri));
-                  await withContext((context) async {
-                    await showBlurDialog(
-                      context: context,
-                      builder: (context) => OathAddAccountPage(
-                        widget.devicePath,
-                        widget.state,
-                        credentials: credentials,
-                        credentialData: otpauth,
-                      ),
-                    );
-                  });
-                }
+
+                handleUri(ref, withContext, credentials, uri, widget.devicePath,
+                    widget.state, l10n);
               }
             },
             child: Column(
@@ -95,31 +80,8 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
                           Navigator.of(context).pop();
                           if (qrScanner != null) {
                             final uri = await qrScanner.scanQr();
-                            List<CredentialData> creds = uri != null
-                                ? CredentialData.fromUri(Uri.parse(uri))
-                                : [];
-                            await withContext((context) async {
-                              if (creds.isEmpty) {
-                                showMessage(context, l10n.l_qr_not_found);
-                              } else if (creds.length == 1) {
-                                await showBlurDialog(
-                                  context: context,
-                                  builder: (context) => OathAddAccountPage(
-                                    widget.devicePath,
-                                    widget.state,
-                                    credentials: credentials,
-                                    credentialData: creds[0],
-                                  ),
-                                );
-                              } else {
-                                await showBlurDialog(
-                                  context: context,
-                                  builder: (context) => OathAddMultiAccountPage(
-                                      widget.devicePath, widget.state, creds,
-                                      key: migrateAccountAction),
-                                );
-                              }
-                            });
+                            handleUri(ref, withContext, credentials, uri,
+                                widget.devicePath, widget.state, l10n);
                           }
                         },
                       ),
