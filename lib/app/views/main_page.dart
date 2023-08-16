@@ -22,14 +22,11 @@ import '../../android/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
 import '../../fido/views/fido_screen.dart';
-import '../../oath/models.dart';
 import '../../oath/state.dart';
-import '../../oath/views/add_account_page.dart';
 import '../../oath/views/oath_screen.dart';
 import '../../oath/views/utils.dart';
 import '../../piv/views/piv_screen.dart';
 import '../../widgets/custom_icons.dart';
-import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_error_screen.dart';
@@ -101,7 +98,6 @@ class MainPage extends ConsumerWidget {
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: l10n.s_add_account,
             onPressed: () async {
-              CredentialData? otpauth;
               final scanner = ref.read(qrScannerProvider);
               if (scanner != null) {
                 try {
@@ -115,20 +111,6 @@ class MainPage extends ConsumerWidget {
                   return;
                 }
               }
-
-              await ref.read(withContextProvider)((context) => showBlurDialog(
-                    context: context,
-                    routeSettings:
-                        const RouteSettings(name: 'oath_add_account'),
-                    builder: (context) {
-                      return OathAddAccountPage(
-                        null,
-                        null,
-                        credentials: null,
-                        credentialData: otpauth,
-                      );
-                    },
-                  ));
             },
           ),
         );
