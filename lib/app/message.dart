@@ -32,10 +32,12 @@ Future<T?> showBlurDialog<T>({
   required BuildContext context,
   required Widget Function(BuildContext) builder,
   RouteSettings? routeSettings,
+  Color barrierColor = const Color(0x80000000),
 }) async =>
     await showGeneralDialog<T>(
       context: context,
       barrierDismissible: true,
+      barrierColor: barrierColor,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       pageBuilder: (ctx, anim1, anim2) => builder(ctx),
       transitionDuration: const Duration(milliseconds: 150),

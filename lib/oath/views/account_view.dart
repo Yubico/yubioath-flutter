@@ -89,6 +89,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
         OpenIntent: CallbackAction<OpenIntent>(onInvoke: (_) async {
           await showBlurDialog(
             context: context,
+            barrierColor: Colors.transparent,
             builder: (context) => AccountDialog(credential),
           );
           return null;
