@@ -104,8 +104,7 @@ class MainPage extends ConsumerWidget {
                   final uri = await scanner.scanQr();
                   final withContext = ref.read(withContextProvider);
                   final credentials = ref.read(credentialsProvider);
-                  handleUri(
-                      ref, withContext, credentials, uri, null, null, l10n);
+                  handleUri(withContext, credentials, uri, null, null, l10n);
                 } on CancellationException catch (_) {
                   // ignored - user cancelled
                   return;
