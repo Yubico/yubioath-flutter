@@ -32,6 +32,9 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Personal yubikey serials are required to be specified for running tests
+/integration_test/_approved_yubikeys.dart
+
 # Symbolication related
 app.*.symbols
 
