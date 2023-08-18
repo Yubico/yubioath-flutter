@@ -22,11 +22,12 @@ import '../../android/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
 import '../../fido/views/fido_screen.dart';
-import '../../oath/state.dart';
+import '../../oath/views/add_account_page.dart';
 import '../../oath/views/oath_screen.dart';
 import '../../oath/views/utils.dart';
 import '../../piv/views/piv_screen.dart';
 import '../../widgets/custom_icons.dart';
+import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_error_screen.dart';
@@ -98,19 +99,33 @@ class MainPage extends ConsumerWidget {
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: l10n.s_add_account,
             onPressed: () async {
+              final withContext = ref.read(withContextProvider);
               final scanner = ref.read(qrScannerProvider);
               if (scanner != null) {
                 try {
-                  final uri = await scanner.scanQr();
-                  final credentials = ref.read(credentialsProvider);
-                  final withContext = ref.read(withContextProvider);
-                  await withContext((context) =>
-                      handleUri(context, credentials, uri, null, null, l10n));
+                  final qrData = await scanner.scanQr();
+                  if (qrData != null) {
+                    await withContext((context) =>
+                        handleUri(context, null, qrData, null, null, l10n));
+                    return;
+                  }
                 } on CancellationException catch (_) {
                   // ignored - user cancelled
                   return;
                 }
               }
+              await withContext((context) => showBlurDialog(
+                    context: context,
+                    routeSettings:
+                        const RouteSettings(name: 'oath_add_account'),
+                    builder: (context) {
+                      return const OathAddAccountPage(
+                        null,
+                        null,
+                        credentials: null,
+                      );
+                    },
+                  ));
             },
           ),
         );
