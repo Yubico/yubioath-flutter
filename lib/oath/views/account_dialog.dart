@@ -121,40 +121,51 @@ class AccountDialog extends ConsumerWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 48, bottom: 16),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 32),
+                  child: Column(
                     children: [
-                      IconTheme(
-                        data: IconTheme.of(context).copyWith(size: 24),
-                        child: helper.buildCodeIcon(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            IconTheme(
+                              data: IconTheme.of(context).copyWith(size: 24),
+                              child: helper.buildCodeIcon(),
+                            ),
+                            const SizedBox(width: 8.0),
+                            DefaultTextStyle.merge(
+                              style: const TextStyle(fontSize: 28),
+                              child: helper.buildCodeLabel(),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(width: 8.0),
-                      DefaultTextStyle.merge(
-                        style: const TextStyle(fontSize: 28),
-                        child: helper.buildCodeLabel(),
+                      Text(
+                        helper.title,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
                       ),
+                      if (subtitle != null)
+                        Text(
+                          subtitle,
+                          softWrap: true,
+                          textAlign: TextAlign.center,
+                          // This is what ListTile uses for subtitle
+                          style:
+                              Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .color,
+                                  ),
+                        ),
                     ],
                   ),
                 ),
-                Text(
-                  helper.title,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  softWrap: true,
-                  textAlign: TextAlign.center,
-                ),
-                if (subtitle != null)
-                  Text(
-                    subtitle,
-                    softWrap: true,
-                    textAlign: TextAlign.center,
-                    // This is what ListTile uses for subtitle
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Theme.of(context).textTheme.bodySmall!.color,
-                        ),
-                  ),
-                const SizedBox(height: 32),
                 ActionListSection.fromMenuActions(
                   context,
                   AppLocalizations.of(context)!.s_actions,
