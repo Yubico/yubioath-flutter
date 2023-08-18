@@ -16,6 +16,7 @@
 
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../app/message.dart';
@@ -61,9 +62,9 @@ String getTextName(OathCredential credential) {
       : credential.name;
 }
 
-void handleUri(
-  final withContext,
-  final credentials,
+Future<void> handleUri(
+  BuildContext context,
+  List<OathCredential>? credentials,
   String? uri,
   DevicePath? devicePath,
   OathState? state,
@@ -71,25 +72,23 @@ void handleUri(
 ) async {
   List<CredentialData> creds =
       uri != null ? CredentialData.fromUri(Uri.parse(uri)) : [];
-  await withContext((context) async {
-    if (creds.isEmpty) {
-      showMessage(context, l10n.l_qr_not_found);
-    } else if (creds.length == 1) {
-      await showBlurDialog(
-        context: context,
-        builder: (context) => OathAddAccountPage(
-          devicePath,
-          state,
-          credentials: credentials,
-          credentialData: creds[0],
-        ),
-      );
-    } else {
-      await showBlurDialog(
-        context: context,
-        builder: (context) => OathAddMultiAccountPage(devicePath, state, creds,
-            key: migrateAccountAction),
-      );
-    }
-  });
+  if (creds.isEmpty) {
+    showMessage(context, l10n.l_qr_not_found);
+  } else if (creds.length == 1) {
+    await showBlurDialog(
+      context: context,
+      builder: (context) => OathAddAccountPage(
+        devicePath,
+        state,
+        credentials: credentials,
+        credentialData: creds[0],
+      ),
+    );
+  } else {
+    await showBlurDialog(
+      context: context,
+      builder: (context) => OathAddMultiAccountPage(devicePath, state, creds,
+          key: migrateAccountAction),
+    );
+  }
 }
