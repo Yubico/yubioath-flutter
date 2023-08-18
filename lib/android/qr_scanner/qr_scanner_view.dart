@@ -70,7 +70,8 @@ class _QrScannerViewState extends State<QrScannerView> {
     setState(() {
       if (qrCodeData.isNotEmpty) {
         try {
-          _validateQrCodeUri(Uri.parse(qrCodeData)); // throws ArgumentError if validation fails
+          CredentialData.fromUri(Uri.parse(
+              qrCodeData)); // throws ArgumentError if validation fails
           _scannedString = qrCodeData;
           _status = ScanStatus.success;
 
@@ -90,18 +91,6 @@ class _QrScannerViewState extends State<QrScannerView> {
         setError();
       }
     });
-  }
-
-  void _validateQrCodeUri(Uri qrCodeUri) {
-    try {
-      CredentialData.fromUri(qrCodeUri);
-    } on ArgumentError catch (_) {
-      try {
-        CredentialData.fromMigration(qrCodeUri);
-      } on ArgumentError catch (_) {
-        throw ArgumentError();
-      }
-    }
   }
 
   @override
