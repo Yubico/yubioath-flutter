@@ -57,9 +57,17 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
               Navigator.of(context).pop();
               if (qrScanner != null) {
                 final b64Image = base64Encode(fileData);
-                final uri = await qrScanner.scanQr(b64Image);
-                await withContext((context) => handleUri(context, credentials,
-                    uri, widget.devicePath, widget.state, l10n));
+                final qrData = await qrScanner.scanQr(b64Image);
+                await withContext(
+                  (context) async {
+                    if (qrData != null) {
+                      await handleUri(context, credentials, qrData,
+                          widget.devicePath, widget.state, l10n);
+                    } else {
+                      showMessage(context, l10n.l_qr_not_found);
+                    }
+                  },
+                );
               }
             },
             child: Column(
@@ -76,16 +84,19 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
                         avatar: const Icon(Icons.qr_code_scanner_outlined),
                         label: Text(l10n.s_qr_scan),
                         onPressed: () async {
-                          Navigator.of(context).pop();
                           if (qrScanner != null) {
-                            final uri = await qrScanner.scanQr();
-                            await withContext((context) => handleUri(
-                                context,
-                                credentials,
-                                uri,
-                                widget.devicePath,
-                                widget.state,
-                                l10n));
+                            final qrData = await qrScanner.scanQr();
+                            await withContext(
+                              (context) async {
+                                if (qrData != null) {
+                                  Navigator.of(context).pop();
+                                  await handleUri(context, credentials, qrData,
+                                      widget.devicePath, widget.state, l10n);
+                                } else {
+                                  showMessage(context, l10n.l_qr_not_found);
+                                }
+                              },
+                            );
                           }
                         },
                       ),

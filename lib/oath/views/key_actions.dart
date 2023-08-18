@@ -29,6 +29,7 @@ import '../../core/state.dart';
 import '../models.dart';
 import '../keys.dart' as keys;
 import '../state.dart';
+import 'add_account_page.dart';
 import 'manage_password_dialog.dart';
 import 'reset_dialog.dart';
 import 'utils.dart';
@@ -64,10 +65,32 @@ Widget oathBuildActions(
                       if (isAndroid) {
                         final qrScanner = ref.read(qrScannerProvider);
                         if (qrScanner != null) {
-                          final uri = await qrScanner.scanQr();
-                          await withContext((context) => handleUri(context,
-                              credentials, uri, devicePath, oathState, l10n));
+                          final qrData = await qrScanner.scanQr();
+                          if (qrData != null) {
+                            await withContext((context) => handleUri(
+                                  context,
+                                  credentials,
+                                  qrData,
+                                  devicePath,
+                                  oathState,
+                                  l10n,
+                                ));
+                            return;
+                          }
                         }
+                        await withContext((context) => showBlurDialog(
+                              context: context,
+                              routeSettings:
+                                  const RouteSettings(name: 'oath_add_account'),
+                              builder: (context) {
+                                return OathAddAccountPage(
+                                  devicePath,
+                                  oathState,
+                                  credentials: credentials,
+                                  credentialData: null,
+                                );
+                              },
+                            ));
                       } else {
                         await showBlurDialog(
                           context: context,
