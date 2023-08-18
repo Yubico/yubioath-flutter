@@ -59,15 +59,16 @@ class AccountDialog extends ConsumerWidget {
         EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
           final credentials = ref.read(credentialsProvider);
           final withContext = ref.read(withContextProvider);
-          final OathCredential? renamed =
+          final renamed =
               await withContext((context) async => await showBlurDialog(
-                    context: context,
-                    builder: (context) => RenameAccountDialog(
-                      node,
-                      credential,
-                      credentials,
-                    ),
-                  ));
+                  context: context,
+                  builder: (context) => RenameAccountDialog.forOathCredential(
+                        ref,
+                        node,
+                        credential,
+                        credentials?.map((e) => (e.issuer, e.name)).toList() ??
+                            [],
+                      )));
           if (renamed != null) {
             // Replace the dialog with the renamed credential
             await withContext((context) async {

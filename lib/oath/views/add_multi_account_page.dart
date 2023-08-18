@@ -18,7 +18,7 @@ import '../state.dart';
 import '../../app/message.dart';
 
 import '../../exception/cancellation_exception.dart';
-import 'rename_list_account.dart';
+import 'rename_account_dialog.dart';
 
 final _log = Logger('oath.views.list_screen');
 
@@ -91,6 +91,7 @@ class _OathAddMultiAccountPageState
                   secondary: Row(mainAxisSize: MainAxisSize.min, children: [
                     if (isTouchSupported())
                       IconButton(
+                          tooltip: l10n.s_require_touch,
                           color: touch ? colorScheme.primary : null,
                           onPressed: unique
                               ? () {
@@ -100,30 +101,46 @@ class _OathAddMultiAccountPageState
                                   });
                                 }
                               : null,
-                          icon: const Icon(Icons.touch_app_outlined)),
+                          icon: Icon(touch
+                              ? Icons.touch_app
+                              : Icons.touch_app_outlined)),
                     IconButton(
+                      tooltip: l10n.s_rename_account,
                       onPressed: () async {
                         final node = ref
                             .read(currentDeviceDataProvider)
                             .valueOrNull
                             ?.node;
                         final withContext = ref.read(withContextProvider);
-                        CredentialData renamed = await withContext(
+                        CredentialData? renamed = await withContext(
                             (context) async => await showBlurDialog(
                                   context: context,
-                                  builder: (context) => RenameList(node!, cred,
-                                      widget.credentialsFromUri, _credentials),
+                                  builder: (context) => RenameAccountDialog(
+                                    device: node!,
+                                    issuer: cred.issuer,
+                                    name: cred.name,
+                                    oathType: cred.oathType,
+                                    period: cred.period,
+                                    existing: (widget.credentialsFromUri ?? [])
+                                        .map((e) => (e.issuer, e.name))
+                                        .followedBy((_credentials ?? [])
+                                            .map((e) => (e.issuer, e.name)))
+                                        .toList(),
+                                    rename: (issuer, name) async => cred
+                                        .copyWith(issuer: issuer, name: name),
+                                  ),
                                 ));
-
-                        setState(() {
-                          int index = widget.credentialsFromUri!.indexWhere(
-                              (element) =>
-                                  element.name == cred.name &&
-                                  (element.issuer == cred.issuer));
-                          widget.credentialsFromUri![index] = renamed;
-                          _credStates.remove(cred);
-                          _credStates[renamed] = (true, touch, true);
-                        });
+                        if (renamed != null) {
+                          setState(() {
+                            int index = widget.credentialsFromUri!.indexWhere(
+                                (element) =>
+                                    element.name == cred.name &&
+                                    (element.issuer == cred.issuer));
+                            widget.credentialsFromUri![index] = renamed;
+                            _credStates.remove(cred);
+                            _credStates[renamed] = (true, touch, true);
+                          });
+                        }
                       },
                       icon: IconTheme(
                           data: IconTheme.of(context),
