@@ -172,14 +172,7 @@ class _OathAddMultiAccountPageState
         ));
   }
 
-  bool isTouchSupported() {
-    bool touch = true;
-    if (!(widget.state?.version.isAtLeast(4, 2) ?? true)) {
-      // Touch not supported
-      touch = false;
-    }
-    return touch;
-  }
+  bool isTouchSupported() => widget.state?.version.isAtLeast(4, 2) ?? true;
 
   void checkForDuplicates() {
     for (final item in _credStates.entries) {
@@ -204,9 +197,10 @@ class _OathAddMultiAccountPageState
   }
 
   bool isValid() {
-    final credsToAdd = _credStates.values.where((element) => element.$1).length;
     if (widget.state != null) {
-      int? capacity = widget.state!.version.isAtLeast(4) ? 32 : null;
+      final credsToAdd =
+          _credStates.values.where((element) => element.$1).length;
+      final capacity = widget.state!.version.isAtLeast(4) ? 32 : null;
       return (credsToAdd > 0) &&
           (capacity == null || (_numCreds! + credsToAdd <= capacity));
     } else {

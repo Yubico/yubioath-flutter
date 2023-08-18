@@ -65,8 +65,8 @@ Widget oathBuildActions(
                         final qrScanner = ref.read(qrScannerProvider);
                         if (qrScanner != null) {
                           final uri = await qrScanner.scanQr();
-                          handleUri(withContext, credentials, uri, devicePath,
-                              oathState, l10n);
+                          await withContext((context) => handleUri(context,
+                              credentials, uri, devicePath, oathState, l10n));
                         }
                       } else {
                         await showBlurDialog(
