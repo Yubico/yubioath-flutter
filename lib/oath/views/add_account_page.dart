@@ -456,7 +456,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         if (isValid) submit();
                       },
                     ),
-                    const Divider(),
+                    const SizedBox(height: 8),
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 4.0,
