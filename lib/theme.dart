@@ -36,7 +36,7 @@ class AppTheme {
           tertiary: amber.withOpacity(0.7),
         ),
         textTheme: TextTheme(
-          bodySmall: TextStyle(color: Colors.grey.shade900),
+          bodySmall: TextStyle(color: Colors.grey.shade600),
         ),
         dialogTheme: const DialogTheme(
           surfaceTintColor: Colors.white70,
@@ -55,8 +55,7 @@ class AppTheme {
         ).copyWith(
           primary: primaryGreen,
           //onPrimary: Colors.grey.shade900,
-          //secondary: accentGreen,
-          //secondary: const Color(0xff5d7d90),
+          secondary: Colors.grey.shade400,
           //onSecondary: Colors.grey.shade900,
           //primaryContainer: Colors.grey.shade800,
           //onPrimaryContainer: Colors.grey.shade100,
