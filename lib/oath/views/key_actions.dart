@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yubico_authenticator/oath/icon_provider/icon_pack_dialog.dart';
+import 'package:yubico_authenticator/oath/views/add_account_dialog.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -25,13 +26,12 @@ import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../../core/state.dart';
-import '../../exception/cancellation_exception.dart';
 import '../models.dart';
-import '../state.dart';
 import '../keys.dart' as keys;
-import 'add_account_page.dart';
+import '../state.dart';
 import 'manage_password_dialog.dart';
 import 'reset_dialog.dart';
+import 'utils.dart';
 
 Widget oathBuildActions(
   BuildContext context,
@@ -48,49 +48,35 @@ Widget oathBuildActions(
       children: [
         ActionListSection(l10n.s_setup, children: [
           ActionListItem(
-            key: keys.addAccountAction,
-            actionStyle: ActionStyle.primary,
-            icon: const Icon(Icons.person_add_alt_1_outlined),
-            title: l10n.s_add_account,
-            subtitle: used == null
-                ? l10n.l_unlock_first
-                : (capacity != null
-                    ? l10n.l_accounts_used(used, capacity)
-                    : ''),
-            onTap: used != null && (capacity == null || capacity > used)
-                ? (context) async {
-                    final credentials = ref.read(credentialsProvider);
-                    final withContext = ref.read(withContextProvider);
-                    Navigator.of(context).pop();
-                    CredentialData? otpauth;
-                    if (isAndroid) {
-                      final scanner = ref.read(qrScannerProvider);
-                      if (scanner != null) {
-                        try {
-                          final url = await scanner.scanQr();
-                          if (url != null) {
-                            otpauth = CredentialData.fromUri(Uri.parse(url));
-                          }
-                        } on CancellationException catch (_) {
-                          // ignored - user cancelled
-                          return;
+              title: l10n.s_add_account,
+              subtitle: used == null
+                  ? l10n.l_unlock_first
+                  : (capacity != null
+                      ? l10n.l_accounts_used(used, capacity)
+                      : ''),
+              actionStyle: ActionStyle.primary,
+              icon: const Icon(Icons.person_add_alt_1_outlined),
+              onTap: used != null && (capacity == null || capacity > used)
+                  ? (context) async {
+                      final credentials = ref.read(credentialsProvider);
+                      final withContext = ref.read(withContextProvider);
+                      Navigator.of(context).pop();
+                      if (isAndroid) {
+                        final qrScanner = ref.read(qrScannerProvider);
+                        if (qrScanner != null) {
+                          final uri = await qrScanner.scanQr();
+                          await withContext((context) => handleUri(context,
+                              credentials, uri, devicePath, oathState, l10n));
                         }
+                      } else {
+                        await showBlurDialog(
+                          context: context,
+                          builder: (context) =>
+                              AddAccountDialog(devicePath, oathState),
+                        );
                       }
                     }
-                    await withContext((context) async {
-                      await showBlurDialog(
-                        context: context,
-                        builder: (context) => OathAddAccountPage(
-                          devicePath,
-                          oathState,
-                          credentials: credentials,
-                          credentialData: otpauth,
-                        ),
-                      );
-                    });
-                  }
-                : null,
-          ),
+                  : null),
         ]),
         ActionListSection(l10n.s_manage, children: [
           ActionListItem(

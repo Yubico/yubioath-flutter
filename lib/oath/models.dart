@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import 'dart:typed_data';
+import 'dart:convert';
+import 'package:base32/base32.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -120,10 +123,83 @@ class CredentialData with _$CredentialData {
   factory CredentialData.fromJson(Map<String, dynamic> json) =>
       _$CredentialDataFromJson(json);
 
-  factory CredentialData.fromUri(Uri uri) {
-    if (uri.scheme.toLowerCase() != 'otpauth') {
-      throw ArgumentError('Invalid scheme, must be "otpauth://"');
+  static List<CredentialData> fromUri(Uri uri) {
+    if (uri.scheme.toLowerCase() == 'otpauth-migration') {
+      return CredentialData.fromMigration(uri);
+    } else if (uri.scheme.toLowerCase() == 'otpauth') {
+      return [CredentialData.fromOtpauth(uri)];
+    } else {
+      throw ArgumentError('Invalid scheme');
     }
+  }
+
+  static List<CredentialData> fromMigration(Uri uri) {
+    // Parse single protobuf encoded integer
+    (int value, Uint8List rem) protoInt(Uint8List data) {
+      final extras = data.takeWhile((b) => b & 0x80 != 0).length;
+      int value = 0;
+      for (int i = extras; i >= 0; i--) {
+        value = (value << 7) | (data[i] & 0x7F);
+      }
+      return (value, data.sublist(1 + extras));
+    }
+
+    // Parse a single protobuf value from a buffer
+    (int tag, dynamic value, Uint8List rem) protoValue(Uint8List data) {
+      final first = data[0];
+      final int len;
+      (len, data) = protoInt(data.sublist(1));
+      final index = first >> 3;
+      switch (first & 0x07) {
+        case 0:
+          return (index, len, data);
+        case 2:
+          return (index, data.sublist(0, len), data.sublist(len));
+      }
+      throw ArgumentError('Unsupported value type!');
+    }
+
+    // Parse a protobuf message into map of tags and values
+    Map<int, dynamic> protoMap(Uint8List data) {
+      Map<int, dynamic> values = {};
+      while (data.isNotEmpty) {
+        final (tag, value, rem) = protoValue(data);
+        values[tag] = value;
+        data = rem;
+      }
+      return values;
+    }
+
+    // Parse encoded credentials from data (tag 1) ignoring trailing extra data
+    Iterable<Map<int, dynamic>> splitCreds(Uint8List rem) sync* {
+      Uint8List credrem;
+      while (rem[0] == 0x0a) {
+        (_, credrem, rem) = protoValue(rem);
+        yield protoMap(credrem);
+      }
+    }
+
+    // Convert parsed credential values into CredentialData objects
+    return splitCreds(base64.decode(uri.queryParameters['data']!))
+        .map((values) => CredentialData(
+              secret: base32.encode(values[1]),
+              name: utf8.decode(values[2], allowMalformed: true),
+              issuer: values[3] != null
+                  ? utf8.decode(values[3], allowMalformed: true)
+                  : null,
+              hashAlgorithm: switch (values[4]) {
+                2 => HashAlgorithm.sha256,
+                3 => HashAlgorithm.sha512,
+                _ => HashAlgorithm.sha1,
+              },
+              digits: values[5] == 2 ? 8 : defaultDigits,
+              oathType: values[6] == 1 ? OathType.hotp : OathType.totp,
+              counter: values[7] ?? defaultCounter,
+            ))
+        .toList();
+  }
+
+  factory CredentialData.fromOtpauth(Uri uri) {
     final oathType = OathType.values.byName(uri.host.toLowerCase());
     final params = uri.queryParameters;
     String? issuer;

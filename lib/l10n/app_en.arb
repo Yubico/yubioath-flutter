@@ -285,6 +285,9 @@
     "s_accounts": "Accounts",
     "s_no_accounts": "No accounts",
     "s_add_account": "Add account",
+    "s_add_accounts" : "Add account(s)",
+    "p_add_description" : "To scan a QR code, make sure the full code is visible on screen and press the button below. You can also drag a saved image from a folder onto this dialog. If you have the account credential details in writing, use the manual entry instead.",
+    "s_add_manually" : "Add manually",
     "s_account_added": "Account added",
     "l_account_add_failed": "Failed adding account: {message}",
     "@l_account_add_failed" : {
@@ -294,7 +297,9 @@
     },
     "l_account_name_required": "Your account must have a name",
     "l_name_already_exists": "This name already exists for the issuer",
+    "l_account_already_exists": "This account already exists on the YubiKey",
     "l_invalid_character_issuer": "Invalid character: ':' is not allowed in issuer",
+    "l_select_accounts" : "Select account(s) to add to the YubiKey",
     "s_pinned": "Pinned",
     "s_pin_account": "Pin account",
     "s_unpin_account": "Unpin account",
@@ -597,6 +602,7 @@
     "s_nfc_dialog_oath_delete_account": "Action: delete account",
     "s_nfc_dialog_oath_calculate_code": "Action: calculate OATH code",
     "s_nfc_dialog_oath_failure": "OATH operation failed",
+    "s_nfc_dialog_oath_add_multiple_accounts": "Action: add multiple accounts",
 
     "@_eof": {}
 }

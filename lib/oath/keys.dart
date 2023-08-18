@@ -27,6 +27,7 @@ final searchAccountsField = GlobalKey();
 const setOrManagePasswordAction =
     Key('$_keyAction.action.set_or_manage_password');
 const addAccountAction = Key('$_keyAction.add_account');
+const migrateAccountAction = Key('$_keyAction.migrate_account');
 const resetAction = Key('$_keyAction.reset');
 const customIconsAction = Key('$_keyAction.custom_icons');
 

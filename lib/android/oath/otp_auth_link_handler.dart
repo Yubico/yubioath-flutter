@@ -18,10 +18,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../app/message.dart';
-import '../../oath/models.dart';
-import '../../oath/views/add_account_page.dart';
+import '../../oath/views/utils.dart';
 
 const _appLinkMethodsChannel = MethodChannel('app.link.methods');
 
@@ -30,24 +29,11 @@ void setupOtpAuthLinkHandler(BuildContext context) {
     final args = jsonDecode(call.arguments);
     switch (call.method) {
       case 'handleOtpAuthLink':
-        {
-          var url = args['link'];
-          var otpauth = CredentialData.fromUri(Uri.parse(url));
-          Navigator.popUntil(context, ModalRoute.withName('/'));
-          await showBlurDialog(
-            context: context,
-            routeSettings: const RouteSettings(name: 'oath_add_account'),
-            builder: (_) {
-              return OathAddAccountPage(
-                null,
-                null,
-                credentials: null,
-                credentialData: otpauth,
-              );
-            },
-          );
-          break;
-        }
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+        final l10n = AppLocalizations.of(context)!;
+        final uri = args['link'];
+        await handleUri(context, null, uri, null, null, l10n);
+        break;
       default:
         throw PlatformException(
           code: 'NotImplemented',

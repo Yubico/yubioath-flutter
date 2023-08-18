@@ -51,8 +51,6 @@ final _log = Logger('oath.view.add_account_page');
 final _secretFormatterPattern =
     RegExp('[abcdefghijklmnopqrstuvwxyz234567 ]', caseSensitive: false);
 
-enum _QrScanState { none, scanning, success, failed }
-
 class OathAddAccountPage extends ConsumerStatefulWidget {
   final DevicePath? devicePath;
   final OathState? state;
@@ -82,8 +80,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   OathType _oathType = defaultOathType;
   HashAlgorithm _hashAlgorithm = defaultHashAlgorithm;
   int _digits = defaultDigits;
+  int _counter = defaultCounter;
   bool _validateSecretLength = false;
-  _QrScanState _qrState = _QrScanState.none;
+  bool _dataLoaded = false;
   bool _isObscure = true;
   List<int> _periodValues = [20, 30, 45, 60];
   List<int> _digitsValues = [6, 8];
@@ -107,55 +106,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     }
   }
 
-  _scanQrCode(QrScanner qrScanner) async {
-    final l10n = AppLocalizations.of(context)!;
-    try {
-      setState(() {
-        // If we have a previous scan result stored, clear it
-        if (_qrState == _QrScanState.success) {
-          _issuerController.text = '';
-          _accountController.text = '';
-          _secretController.text = '';
-          _oathType = defaultOathType;
-          _hashAlgorithm = defaultHashAlgorithm;
-          _periodController.text = '$defaultPeriod';
-          _digits = defaultDigits;
-        }
-        _qrState = _QrScanState.scanning;
-      });
-      final otpauth = await qrScanner.scanQr();
-      if (otpauth == null) {
-        if (!mounted) return;
-        showMessage(context, l10n.l_qr_not_found);
-        setState(() {
-          _qrState = _QrScanState.failed;
-        });
-      } else {
-        final data = CredentialData.fromUri(Uri.parse(otpauth));
-        _loadCredentialData(data);
-      }
-    } catch (e) {
-      final String errorMessage;
-      // TODO: Make this cleaner than importing desktop specific RpcError.
-      if (e is RpcError) {
-        errorMessage = e.message;
-      } else {
-        errorMessage = e.toString();
-      }
-
-      if (e is! CancellationException) {
-        showMessage(
-          context,
-          l10n.l_qr_not_read(errorMessage),
-          duration: const Duration(seconds: 4),
-        );
-      }
-      setState(() {
-        _qrState = _QrScanState.failed;
-      });
-    }
-  }
-
   _loadCredentialData(CredentialData data) {
     setState(() {
       _issuerController.text = data.issuer?.trim() ?? '';
@@ -167,8 +117,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       _periodController.text = '${data.period}';
       _digitsValues = [data.digits];
       _digits = data.digits;
+      _counter = data.counter;
       _isObscure = true;
-      _qrState = _QrScanState.success;
+      _dataLoaded = true;
     });
   }
 
@@ -176,7 +127,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       {DevicePath? devicePath, required Uri credUri}) async {
     final l10n = AppLocalizations.of(context)!;
     try {
-
       FocusUtils.unfocus(context);
 
       if (devicePath == null) {
@@ -304,8 +254,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         nameRemaining >= 0 &&
         period > 0;
 
-    final qrScanner = ref.watch(qrScannerProvider);
-
     final hashAlgorithms = HashAlgorithm.values
         .where((alg) =>
             alg != HashAlgorithm.sha512 ||
@@ -330,6 +278,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           hashAlgorithm: _hashAlgorithm,
           digits: _digits,
           period: period,
+          counter: _counter,
         );
 
         final devicePath = deviceNode?.path;
@@ -368,6 +317,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       ],
       child: FileDropTarget(
         onFileDropped: (fileData) async {
+          final qrScanner = ref.read(qrScannerProvider);
           if (qrScanner != null) {
             final b64Image = base64Encode(fileData);
             final otpauth = await qrScanner.scanQr(b64Image);
@@ -375,8 +325,20 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
               if (!mounted) return;
               showMessage(context, l10n.l_qr_not_found);
             } else {
-              final data = CredentialData.fromUri(Uri.parse(otpauth));
-              _loadCredentialData(data);
+              try {
+                final data = CredentialData.fromOtpauth(Uri.parse(otpauth));
+                _loadCredentialData(data);
+              } catch (e) {
+                final String errorMessage;
+                // TODO: Make this cleaner than importing desktop specific RpcError.
+                if (e is RpcError) {
+                  errorMessage = e.message;
+                } else {
+                  errorMessage = e.toString();
+                }
+                if (!mounted) return;
+                showMessage(context, errorMessage);
+              }
             }
           }
         },
@@ -483,7 +445,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                           errorText: _validateSecretLength && !secretLengthValid
                               ? l10n.s_invalid_length
                               : null),
-                      readOnly: _qrState == _QrScanState.success,
+                      readOnly: _dataLoaded,
                       textInputAction: TextInputAction.done,
                       onChanged: (value) {
                         setState(() {
@@ -494,25 +456,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         if (isValid) submit();
                       },
                     ),
-                    if (isDesktop && qrScanner != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16.0),
-                        child: ActionChip(
-                            avatar: _qrState != _QrScanState.scanning
-                                ? (_qrState == _QrScanState.success
-                                    ? const Icon(Icons.qr_code)
-                                    : const Icon(
-                                        Icons.qr_code_scanner_outlined))
-                                : const CircularProgressIndicator(
-                                    strokeWidth: 2.0),
-                            label: _qrState == _QrScanState.success
-                                ? Text(l10n.l_qr_scanned)
-                                : Text(l10n.s_qr_scan),
-                            onPressed: () {
-                              _scanQrCode(qrScanner);
-                            }),
-                      ),
-                    const Divider(),
+                    const SizedBox(height: 8),
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 4.0,
@@ -534,7 +478,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                           selected: _oathType != defaultOathType,
                           itemBuilder: (value) =>
                               Text(value.getDisplayName(l10n)),
-                          onChanged: _qrState != _QrScanState.success
+                          onChanged: !_dataLoaded
                               ? (value) {
                                   setState(() {
                                     _oathType = value;
@@ -547,7 +491,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                           value: _hashAlgorithm,
                           selected: _hashAlgorithm != defaultHashAlgorithm,
                           itemBuilder: (value) => Text(value.displayName),
-                          onChanged: _qrState != _QrScanState.success
+                          onChanged: !_dataLoaded
                               ? (value) {
                                   setState(() {
                                     _hashAlgorithm = value;
@@ -564,7 +508,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                                 defaultPeriod,
                             itemBuilder: ((value) =>
                                 Text(l10n.s_num_sec(value))),
-                            onChanged: _qrState != _QrScanState.success
+                            onChanged: !_dataLoaded
                                 ? (period) {
                                     setState(() {
                                       _periodController.text = '$period';
@@ -578,7 +522,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                           selected: _digits != defaultDigits,
                           itemBuilder: (value) =>
                               Text(l10n.s_num_digits(value)),
-                          onChanged: _qrState != _QrScanState.success
+                          onChanged: !_dataLoaded
                               ? (digits) {
                                   setState(() {
                                     _digits = digits;

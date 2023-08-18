@@ -40,6 +40,7 @@ class ResponsiveDialog extends StatefulWidget {
 class _ResponsiveDialogState extends State<ResponsiveDialog> {
   final Key _childKey = GlobalKey();
   final _focus = FocusScopeNode();
+  bool _hasLostFocus = false;
 
   @override
   void dispose() {
@@ -101,8 +102,9 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
           node: _focus,
           autofocus: true,
           onFocusChange: (focused) {
-            if (!focused) {
+            if (!focused && !_hasLostFocus) {
               _focus.requestFocus();
+              _hasLostFocus = true;
             }
           },
           child: constraints.maxWidth < 540

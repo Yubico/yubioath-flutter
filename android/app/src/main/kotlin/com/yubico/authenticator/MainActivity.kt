@@ -193,7 +193,10 @@ class MainActivity : FlutterFragmentActivity() {
 
         // Handle opening through otpauth:// link
         val intentData = intent.data
-        if (intentData != null && intentData.scheme == "otpauth") {
+        if (intentData != null &&
+            (intentData.scheme == "otpauth" ||
+                    intentData.scheme == "otpauth-migration")
+        ) {
             intent.data = null
             appLinkMethodChannel.handleUri(intentData)
         }
