@@ -65,13 +65,12 @@ String getTextName(OathCredential credential) {
 Future<void> handleUri(
   BuildContext context,
   List<OathCredential>? credentials,
-  String? uri,
+  String qrData,
   DevicePath? devicePath,
   OathState? state,
   AppLocalizations l10n,
 ) async {
-  List<CredentialData> creds =
-      uri != null ? CredentialData.fromUri(Uri.parse(uri)) : [];
+  List<CredentialData> creds = CredentialData.fromUri(Uri.parse(qrData));
   if (creds.isEmpty) {
     showMessage(context, l10n.l_qr_not_found);
   } else if (creds.length == 1) {
