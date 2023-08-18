@@ -22,6 +22,7 @@ import 'package:logging/logging.dart';
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../desktop/models.dart';
 import '../../widgets/focus_utils.dart';
@@ -36,97 +37,121 @@ final _log = Logger('oath.view.rename_account_dialog');
 
 class RenameAccountDialog extends ConsumerStatefulWidget {
   final DeviceNode device;
-  final OathCredential credential;
-  final List<OathCredential>? credentials;
+  final String? issuer;
+  final String name;
+  final OathType oathType;
+  final int period;
+  final List<(String? issuer, String name)> existing;
+  final Future<dynamic> Function(String? issuer, String name) rename;
 
-  const RenameAccountDialog(this.device, this.credential, this.credentials,
-      {super.key});
+  const RenameAccountDialog({
+    required this.device,
+    required this.issuer,
+    required this.name,
+    required this.oathType,
+    this.period = defaultPeriod,
+    this.existing = const [],
+    required this.rename,
+    super.key,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
       _RenameAccountDialogState();
+
+  factory RenameAccountDialog.forOathCredential(
+      WidgetRef ref,
+      DeviceNode device,
+      OathCredential credential,
+      List<(String? issuer, String name)> existing) {
+    return RenameAccountDialog(
+      device: device,
+      issuer: credential.issuer,
+      name: credential.name,
+      oathType: credential.oathType,
+      period: credential.period,
+      existing: existing,
+      rename: (issuer, name) async {
+        final withContext = ref.read(withContextProvider);
+        try {
+          // Rename credentials
+          final renamed = await ref
+              .read(credentialListProvider(device.path).notifier)
+              .renameAccount(credential, issuer, name);
+
+          // Update favorite
+          ref
+              .read(favoritesProvider.notifier)
+              .renameCredential(credential.id, renamed.id);
+
+          await withContext((context) async => showMessage(
+              context, AppLocalizations.of(context)!.s_account_renamed));
+          return renamed;
+        } on CancellationException catch (_) {
+          // ignored
+        } catch (e) {
+          _log.error('Failed to add account', e);
+          final String errorMessage;
+          // TODO: Make this cleaner than importing desktop specific RpcError.
+          if (e is RpcError) {
+            errorMessage = e.message;
+          } else {
+            errorMessage = e.toString();
+          }
+          await withContext((context) async => showMessage(
+                context,
+                AppLocalizations.of(context)!
+                    .l_account_add_failed(errorMessage),
+                duration: const Duration(seconds: 4),
+              ));
+          return null;
+        }
+      },
+    );
+  }
 }
 
 class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   late String _issuer;
-  late String _account;
+  late String _name;
 
   @override
   void initState() {
     super.initState();
-    _issuer = widget.credential.issuer?.trim() ?? '';
-    _account = widget.credential.name.trim();
+    _issuer = widget.issuer?.trim() ?? '';
+    _name = widget.name.trim();
   }
 
   void _submit() async {
-    final l10n = AppLocalizations.of(context)!;
-    try {
-
-      FocusUtils.unfocus(context);
-
-      // Rename credentials
-      final renamed = await ref
-          .read(credentialListProvider(widget.device.path).notifier)
-          .renameAccount(
-              widget.credential, _issuer.isNotEmpty ? _issuer : null, _account);
-
-      // Update favorite
-      ref
-          .read(favoritesProvider.notifier)
-          .renameCredential(widget.credential.id, renamed.id);
-
-      if (!mounted) return;
-      Navigator.of(context).pop(renamed);
-      showMessage(context, l10n.s_account_renamed);
-    } on CancellationException catch (_) {
-      // ignored
-    } catch (e) {
-      _log.error('Failed to add account', e);
-      final String errorMessage;
-      // TODO: Make this cleaner than importing desktop specific RpcError.
-      if (e is RpcError) {
-        errorMessage = e.message;
-      } else {
-        errorMessage = e.toString();
-      }
-      showMessage(
-        context,
-        l10n.l_account_add_failed(errorMessage),
-        duration: const Duration(seconds: 4),
-      );
-    }
+    FocusUtils.unfocus(context);
+    final nav = Navigator.of(context);
+    final renamed =
+        await widget.rename(_issuer.isNotEmpty ? _issuer : null, _name);
+    nav.pop(renamed);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final credential = widget.credential;
 
     final (issuerRemaining, nameRemaining) = getRemainingKeySpace(
-      oathType: credential.oathType,
-      period: credential.period,
+      oathType: widget.oathType,
+      period: widget.period,
       issuer: _issuer,
-      name: _account,
+      name: _name,
     );
 
-    // is this credentials name/issuer pair different from all other?
-    final isUnique = widget.credentials
-            ?.where((element) =>
-                element != credential &&
-                element.name == _account &&
-                (element.issuer ?? '') == _issuer)
-            .isEmpty ??
-        false;
+    // are the name/issuer values different from original
+    final didChange = (widget.issuer ?? '') != _issuer || widget.name != _name;
+
+    // is this credentials name/issuer pair different from all other, or initial value?
+    final isUnique = !widget.existing.contains((_issuer, _name)) || !didChange;
 
     // is this credential name/issuer of valid format
-    final isValidFormat = _account.isNotEmpty;
-
-    // are the name/issuer values different from original
-    final didChange = (widget.credential.issuer ?? '') != _issuer ||
-        widget.credential.name != _account;
+    final nameNotEmpty = _name.isNotEmpty;
 
     // can we rename with the new values
-    final isValid = isUnique && isValidFormat;
+    final isValid = isUnique && nameNotEmpty;
 
     return ResponsiveDialog(
       title: Text(l10n.s_rename_account),
@@ -142,7 +167,9 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.q_rename_target(getTextName(credential))),
+            Text(l10n.q_rename_target(widget.issuer != null
+                ? '${widget.issuer} (${widget.name})'
+                : widget.name)),
             Text(l10n.p_rename_will_change_account_displayed),
             TextFormField(
               initialValue: _issuer,
@@ -165,16 +192,16 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               },
             ),
             TextFormField(
-              initialValue: _account,
+              initialValue: _name,
               maxLength: nameRemaining,
               inputFormatters: [limitBytesLength(nameRemaining)],
-              buildCounter: buildByteCounterFor(_account),
+              buildCounter: buildByteCounterFor(_name),
               key: keys.nameField,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_account_name,
                 helperText: '', // Prevents dialog resizing when disabled
-                errorText: !isValidFormat
+                errorText: !nameNotEmpty
                     ? l10n.l_account_name_required
                     : !isUnique
                         ? l10n.l_name_already_exists
@@ -184,7 +211,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               textInputAction: TextInputAction.done,
               onChanged: (value) {
                 setState(() {
-                  _account = value.trim();
+                  _name = value.trim();
                 });
               },
               onFieldSubmitted: (_) {
