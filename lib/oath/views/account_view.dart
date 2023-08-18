@@ -96,12 +96,16 @@ class _AccountViewState extends ConsumerState<AccountView> {
         EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
           final node = ref.read(currentDeviceProvider)!;
           final credentials = ref.read(credentialsProvider);
-          return await ref.read(withContextProvider)(
-              (context) async => await showBlurDialog(
-                    context: context,
-                    builder: (context) =>
-                        RenameAccountDialog(node, credential, credentials),
-                  ));
+          final withContext = ref.read(withContextProvider);
+          return await withContext((context) async => await showBlurDialog(
+                context: context,
+                builder: (context) => RenameAccountDialog.forOathCredential(
+                  ref,
+                  node,
+                  credential,
+                  credentials?.map((e) => (e.issuer, e.name)).toList() ?? [],
+                ),
+              ));
         }),
         DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
           final node = ref.read(currentDeviceProvider)!;
