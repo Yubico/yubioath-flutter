@@ -33,7 +33,11 @@ class AppTheme {
         ).copyWith(
           primary: primaryBlue,
           //secondary: accentGreen,
+          secondary: Colors.grey.shade400,
+          onSecondary: Colors.grey.shade800,
           tertiary: amber.withOpacity(0.7),
+          error: darkRed,
+          onError: Colors.white.withOpacity(0.9),
         ),
         textTheme: TextTheme(
           bodySmall: TextStyle(color: Colors.grey.shade600),
