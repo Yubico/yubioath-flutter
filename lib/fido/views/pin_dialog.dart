@@ -22,6 +22,7 @@ import 'package:logging/logging.dart';
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
@@ -184,10 +185,14 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       } else {
         errorMessage = e.toString();
       }
-      showMessage(
-        context,
-        l10n.l_set_pin_failed(errorMessage),
-        duration: const Duration(seconds: 4),
+      await ref.read(withContextProvider)(
+        (context) async {
+          showMessage(
+            context,
+            l10n.l_set_pin_failed(errorMessage),
+            duration: const Duration(seconds: 4),
+          );
+        },
       );
     }
   }
