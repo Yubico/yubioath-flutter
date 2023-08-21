@@ -34,7 +34,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  intl: ^0.18.0
+  intl: ^0.18.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -45,7 +45,7 @@ dependencies:
   logging: 1.1.1
   collection: ^1.16.0
   shared_preferences: ^2.1.2
-  flutter_riverpod: ^2.3.6
+  flutter_riverpod: ^2.3.7
   json_annotation: ^4.8.1
   freezed_annotation: ^2.2.0
   window_manager: ^0.3.2
@@ -54,9 +54,9 @@ dependencies:
   screen_retriever: ^0.1.6
   desktop_drop: ^0.4.0
   url_launcher: ^6.1.7
-  path_provider: ^2.0.14
-  vector_graphics: ^1.1.5
-  vector_graphics_compiler: ^1.1.5
+  path_provider: ^2.1.0
+  vector_graphics: ^1.1.7
+  vector_graphics_compiler: ^1.1.7
   path: ^1.8.2
   file_picker: ^5.3.2
   archive: ^3.3.2
@@ -81,7 +81,7 @@ dev_dependencies:
   flutter_lints: ^2.0.1
 
   build_runner: ^2.4.5
-  freezed: ^2.3.5
+  freezed: ^2.4.2
   json_serializable: ^6.7.0
 
 # For information on the generic Dart part of this file, see the
