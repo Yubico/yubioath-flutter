@@ -7,7 +7,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      FLUTTER: '3.10.6'
+      FLUTTER: '3.13.0'
 
     steps:
     - uses: actions/checkout@v3
