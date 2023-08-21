@@ -224,7 +224,11 @@ class AppPage extends StatelessWidget {
               child: IconButton(
                 key: actionsIconButtonKey,
                 onPressed: () {
-                  showBlurDialog(context: context, builder: keyActionsBuilder!);
+                  showBlurDialog(
+                    context: context,
+                    barrierColor: Colors.transparent,
+                    builder: keyActionsBuilder!,
+                  );
                 },
                 icon: keyActionsBadge
                     ? const Badge(
