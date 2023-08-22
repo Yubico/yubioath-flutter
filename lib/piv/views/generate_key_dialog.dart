@@ -65,6 +65,11 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
+    // This is what ListTile uses for subtitle
+    final subtitleStyle = textTheme.bodyMedium!.copyWith(
+      color: textTheme.bodySmall!.color,
+    );
 
     return ResponsiveDialog(
       allowCancel: !_generating,
@@ -135,6 +140,11 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              l10n.s_subject,
+              style: textTheme.bodyLarge,
+            ),
+            Text(l10n.p_subject_desc),
             TextField(
               autofocus: true,
               key: keys.subjectField,
@@ -142,40 +152,31 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_subject,
                   errorText: _subject.isNotEmpty && _invalidSubject
-                      ? l10n.l_invalid_rfc4514
+                      ? l10n.l_rfc4514_invalid
                       : null),
               textInputAction: TextInputAction.next,
               enabled: !_generating,
               onChanged: (value) {
                 setState(() {
-                  if (value.isEmpty) {
-                    _subject = '';
-                    _invalidSubject = true;
-                  } else {
-                    _subject = value.contains('=') ? value : 'CN=$value';
-                    _invalidSubject = false;
-                  }
+                  _invalidSubject = value.isEmpty;
+                  _subject = value;
                 });
               },
             ),
+            Text(
+              l10n.rfc4514_examples,
+              style: subtitleStyle,
+            ),
+            Text(
+              l10n.s_options,
+              style: textTheme.bodyLarge,
+            ),
+            Text(l10n.p_cert_options_desc),
             Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
                 spacing: 4.0,
                 runSpacing: 8.0,
                 children: [
-                  ChoiceFilterChip<GenerateType>(
-                    items: GenerateType.values,
-                    value: _generateType,
-                    selected: _generateType != defaultGenerateType,
-                    itemBuilder: (value) => Text(value.getDisplayName(l10n)),
-                    onChanged: _generating
-                        ? null
-                        : (value) {
-                            setState(() {
-                              _generateType = value;
-                            });
-                          },
-                  ),
                   ChoiceFilterChip<KeyType>(
                     items: KeyType.values,
                     value: _keyType,
@@ -186,6 +187,19 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                         : (value) {
                             setState(() {
                               _keyType = value;
+                            });
+                          },
+                  ),
+                  ChoiceFilterChip<GenerateType>(
+                    items: GenerateType.values,
+                    value: _generateType,
+                    selected: _generateType != defaultGenerateType,
+                    itemBuilder: (value) => Text(value.getDisplayName(l10n)),
+                    onChanged: _generating
+                        ? null
+                        : (value) {
+                            setState(() {
+                              _generateType = value;
                             });
                           },
                   ),

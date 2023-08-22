@@ -34,6 +34,7 @@
     "s_name": "Name",
     "s_usb": "USB",
     "s_nfc": "NFC",
+    "s_options": "Options",
     "s_show_window": "Show window",
     "s_hide_window": "Hide window",
     "q_rename_target": "Rename {label}?",
@@ -463,7 +464,10 @@
             "slot": {}
         }
     },
-    "l_invalid_rfc4514": "Invalid RFC4514 string",
+    "p_subject_desc": "A distinguished name (DN) formatted in accordance to the RFC 4514 specification.",
+    "l_rfc4514_invalid": "Invalid RFC 4514 format",
+    "rfc4514_examples": "Examples:\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
+    "p_cert_options_desc": "Key algorithm to use, output format, and an expiration date (if applicable).",
 
     "@_piv_slots": {},
     "s_slot_display_name": "{name} ({hexid})",
