@@ -78,7 +78,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
       scrollable: true,
       contentPadding: const EdgeInsets.symmetric(vertical: 8),
       content: SizedBox(
-        width: 380,
+        width: 550,
         child: Container(key: _childKey, child: widget.child),
       ),
       actions: [
@@ -107,7 +107,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               _hasLostFocus = true;
             }
           },
-          child: constraints.maxWidth < 540
+          child: constraints.maxWidth < 400
               ? _buildFullscreen(context)
               : _buildDialog(context),
         );
