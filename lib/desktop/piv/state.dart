@@ -380,9 +380,7 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
 
   @override
   Future<PivExamineResult> examine(String data, {String? password}) async {
-    final result = await _session.command('examine_file', target: [
-      'slots',
-    ], params: {
+    final result = await _session.command('examine_file', params: {
       'data': data,
       'password': password,
     });
@@ -392,6 +390,14 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
     } else {
       return PivExamineResult.invalidPassword();
     }
+  }
+
+  @override
+  Future<bool> validateRfc4514(String value) async {
+    final result = await _session.command('validate_rfc4514', params: {
+      'data': value,
+    });
+    return result['status'];
   }
 
   @override

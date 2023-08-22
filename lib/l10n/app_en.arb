@@ -463,6 +463,7 @@
             "slot": {}
         }
     },
+    "l_invalid_rfc4514": "Invalid RFC4514 string",
 
     "@_piv_slots": {},
     "s_slot_display_name": "{name} ({hexid})",

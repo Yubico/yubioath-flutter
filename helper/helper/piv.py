@@ -42,6 +42,7 @@ from ykman.piv import (
     generate_self_signed_certificate,
     generate_csr,
     generate_chuid,
+    parse_rfc4514_string,
 )
 from ykman.util import (
     parse_certificates,
@@ -233,6 +234,30 @@ class PivNode(RpcNode):
     def slots(self):
         return SlotsNode(self.session)
 
+    @action(closes_child=False)
+    def examine_file(self, params, event, signal):
+        data = bytes.fromhex(params.pop("data"))
+        password = params.pop("password", None)
+        try:
+            private_key, certs = _parse_file(data, password)
+            return dict(
+                status=True,
+                password=password is not None,
+                private_key=bool(private_key),
+                certificates=len(certs),
+            )
+        except InvalidPasswordError:
+            logger.debug("Invalid or missing password", exc_info=True)
+            return dict(status=False)
+
+    @action(closes_child=False)
+    def validate_rfc4514(self, params, event, signal):
+        try:
+            parse_rfc4514_string(params.pop("data"))
+            return dict(status=True)
+        except ValueError:
+            return dict(status=False)
+
 
 def _slot_for(name):
     return SLOT(int(name, base=16))
@@ -309,22 +334,6 @@ class SlotsNode(RpcNode):
             metadata, certificate = self._slots[slot]
             return SlotNode(self.session, slot, metadata, certificate, self.refresh)
         return super().create_child(name)
-
-    @action
-    def examine_file(self, params, event, signal):
-        data = bytes.fromhex(params.pop("data"))
-        password = params.pop("password", None)
-        try:
-            private_key, certs = _parse_file(data, password)
-            return dict(
-                status=True,
-                password=password is not None,
-                private_key=bool(private_key),
-                certificates=len(certs),
-            )
-        except InvalidPasswordError:
-            logger.debug("Invalid or missing password", exc_info=True)
-            return dict(status=False)
 
 
 class SlotNode(RpcNode):
@@ -413,7 +422,9 @@ class SlotNode(RpcNode):
         pin_policy = PIN_POLICY(params.pop("pin_policy", PIN_POLICY.DEFAULT))
         touch_policy = TOUCH_POLICY(params.pop("touch_policy", TOUCH_POLICY.DEFAULT))
         subject = params.pop("subject")
-        generate_type = GENERATE_TYPE(params.pop("generate_type", GENERATE_TYPE.CERTIFICATE))
+        generate_type = GENERATE_TYPE(
+            params.pop("generate_type", GENERATE_TYPE.CERTIFICATE)
+        )
         public_key = self.session.generate_key(
             self.slot, key_type, pin_policy, touch_policy
         )
