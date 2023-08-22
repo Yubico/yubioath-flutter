@@ -17,7 +17,7 @@ jobs:
 
     - name: Reformat arb files
       run: |
-        find lib/l10n/ -name "*.arb" -print0 | xargs -r -n 1 -0 ./reformat_strings.py
+        find lib/l10n/ -name "app_en.arb" -prune -o -name "*.arb" -print0 | xargs -r -n 1 -0 ./reformat_strings.py
 
     - name: Check remaining locales
       run: |
