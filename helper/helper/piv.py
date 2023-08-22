@@ -21,13 +21,12 @@ from .base import (
     TimeoutException,
     AuthRequiredException,
 )
-from yubikit.core import NotSupportedError, BadResponseError
+from yubikit.core import NotSupportedError, BadResponseError, InvalidPinError
 from yubikit.core.smartcard import ApduError, SW
 from yubikit.piv import (
     PivSession,
     OBJECT_ID,
     MANAGEMENT_KEY_TYPE,
-    InvalidPinError,
     SLOT,
     require_version,
     KEY_TYPE,
