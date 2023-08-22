@@ -81,6 +81,8 @@ class SlotDialog extends ConsumerWidget {
             child: TooltipIfTruncated(
               text: value,
               style: subtitleStyle,
+              tooltip: value.replaceAllMapped(
+                  RegExp(r',([A-Z]+)='), (match) => '\n${match[1]}='),
             ),
           ),
         ],

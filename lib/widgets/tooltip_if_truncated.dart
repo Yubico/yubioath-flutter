@@ -19,8 +19,9 @@ import 'package:flutter/material.dart';
 class TooltipIfTruncated extends StatelessWidget {
   final String text;
   final TextStyle style;
+  final String? tooltip;
   const TooltipIfTruncated(
-      {super.key, required this.text, required this.style});
+      {super.key, required this.text, required this.style, this.tooltip});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,7 @@ class TooltipIfTruncated extends StatelessWidget {
         return textPainter.didExceedMaxLines
             ? Tooltip(
                 margin: const EdgeInsets.all(16),
-                message: text,
+                message: tooltip ?? text,
                 child: textWidget,
               )
             : textWidget;
