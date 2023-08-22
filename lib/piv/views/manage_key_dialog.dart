@@ -42,24 +42,26 @@ class ManageKeyDialog extends ConsumerStatefulWidget {
 }
 
 class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
+  late bool _hasMetadata;
   late bool _defaultKeyUsed;
   late bool _usesStoredKey;
   late bool _storeKey;
-  String _currentKeyOrPin = '';
   bool _currentIsWrong = false;
   int _attemptsRemaining = -1;
   ManagementKeyType _keyType = ManagementKeyType.tdes;
+  final _currentController = TextEditingController();
   final _keyController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
 
+    _hasMetadata = widget.pivState.metadata != null;
     _defaultKeyUsed =
         widget.pivState.metadata?.managementKeyMetadata.defaultValue ?? false;
     _usesStoredKey = widget.pivState.protectedKey;
     if (!_usesStoredKey && _defaultKeyUsed) {
-      _currentKeyOrPin = defaultManagementKey;
+      _currentController.text = defaultManagementKey;
     }
     _storeKey = _usesStoredKey;
   }
@@ -67,13 +69,14 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   @override
   void dispose() {
     _keyController.dispose();
+    _currentController.dispose();
     super.dispose();
   }
 
   _submit() async {
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
     if (_usesStoredKey) {
-      final status = (await notifier.verifyPin(_currentKeyOrPin)).when(
+      final status = (await notifier.verifyPin(_currentController.text)).when(
         success: () => true,
         failure: (attemptsRemaining) {
           setState(() {
@@ -87,7 +90,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
         return;
       }
     } else {
-      if (!await notifier.authenticate(_currentKeyOrPin)) {
+      if (!await notifier.authenticate(_currentController.text)) {
         setState(() {
           _currentIsWrong = true;
         });
@@ -126,9 +129,10 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
             ManagementKeyType.tdes;
     final hexLength = _keyType.keyLength * 2;
     final protected = widget.pivState.protectedKey;
+    final currentKeyOrPin = _currentController.text;
     final currentLenOk = protected
-        ? _currentKeyOrPin.length >= 4
-        : _currentKeyOrPin.length == currentType.keyLength * 2;
+        ? currentKeyOrPin.length >= 4
+        : currentKeyOrPin.length == currentType.keyLength * 2;
     final newLenOk = _keyController.text.length == hexLength;
 
     return ResponsiveDialog(
@@ -153,6 +157,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 autofillHints: const [AutofillHints.password],
                 key: keys.pinPukField,
                 maxLength: 8,
+                controller: _currentController,
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
                     labelText: l10n.s_pin,
@@ -166,7 +171,6 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 onChanged: (value) {
                   setState(() {
                     _currentIsWrong = false;
-                    _currentKeyOrPin = value;
                   });
                 },
               ),
@@ -175,16 +179,34 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 key: keys.managementKeyField,
                 autofocus: !_defaultKeyUsed,
                 autofillHints: const [AutofillHints.password],
-                initialValue: _defaultKeyUsed ? defaultManagementKey : null,
+                controller: _currentController,
                 readOnly: _defaultKeyUsed,
                 maxLength: !_defaultKeyUsed ? currentType.keyLength * 2 : null,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_current_management_key,
-                  prefixIcon: const Icon(Icons.password_outlined),
+                  prefixIcon: const Icon(Icons.key_outlined),
                   errorText: _currentIsWrong ? l10n.l_wrong_key : null,
                   errorMaxLines: 3,
                   helperText: _defaultKeyUsed ? l10n.l_default_key_used : null,
+                  suffixIcon: _hasMetadata
+                      ? null
+                      : IconButton(
+                          icon: Icon(_defaultKeyUsed
+                              ? Icons.auto_awesome
+                              : Icons.auto_awesome_outlined),
+                          tooltip: l10n.s_use_default,
+                          onPressed: () {
+                            setState(() {
+                              _defaultKeyUsed = !_defaultKeyUsed;
+                              if (_defaultKeyUsed) {
+                                _currentController.text = defaultManagementKey;
+                              } else {
+                                _currentController.clear();
+                              }
+                            });
+                          },
+                        ),
                 ),
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.allow(
@@ -194,7 +216,6 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 onChanged: (value) {
                   setState(() {
                     _currentIsWrong = false;
-                    _currentKeyOrPin = value;
                   });
                 },
               ),
@@ -211,10 +232,11 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_management_key,
-                prefixIcon: const Icon(Icons.password_outlined),
+                prefixIcon: const Icon(Icons.key_outlined),
                 enabled: currentLenOk,
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.refresh),
+                  tooltip: l10n.s_generate_random,
                   onPressed: currentLenOk
                       ? () {
                           final random = Random.secure();

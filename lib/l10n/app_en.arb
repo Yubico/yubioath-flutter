@@ -282,6 +282,8 @@
     "p_change_management_key_desc": "Change your management key. You can optionally choose to allow the PIN to be used instead of the management key.",
     "l_management_key_changed": "Management key changed",
     "l_default_key_used": "Default management key used",
+    "s_generate_random": "Generate random",
+    "s_use_default": "Use default",
     "l_warning_default_key": "Warning: Default key used",
     "s_protect_key": "Protect with PIN",
     "l_pin_protected_key": "PIN can be used instead",
