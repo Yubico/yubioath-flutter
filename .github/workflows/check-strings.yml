@@ -15,6 +15,10 @@ jobs:
     - name: Ensure main locale is correct
       run: python check_strings.py lib/l10n/app_en.arb
 
+    - name: Reformat arb files
+      run: |
+        find lib/l10n/ -name "*.arb" -print0 | xargs -r -n 1 -0 ./reformat_strings.py
+
     - name: Check remaining locales
       run: |
         find lib/l10n/ -name "app_en.arb" -prune -o -name "*.arb" -print0 | xargs -r -n 1 -0 ./check_strings.py >> $GITHUB_STEP_SUMMARY || echo "::warning::Problems in locales"
