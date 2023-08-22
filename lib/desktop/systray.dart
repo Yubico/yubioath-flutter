@@ -94,7 +94,7 @@ Future<OathCode?> _calculateCode(
 
 String _getIcon() {
   if (Platform.isMacOS) {
-    return 'resources/icons/systray-template-inv.png';
+    return 'resources/icons/systray-template.png';
   }
   if (Platform.isWindows) {
     return 'resources/icons/com.yubico.yubioath.ico';
