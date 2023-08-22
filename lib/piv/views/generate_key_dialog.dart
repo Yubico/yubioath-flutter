@@ -42,6 +42,7 @@ class GenerateKeyDialog extends ConsumerStatefulWidget {
 
 class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
   String _subject = '';
+  bool _invalidSubject = true;
   GenerateType _generateType = defaultGenerateType;
   KeyType _keyType = defaultKeyType;
   late DateTime _validFrom;
@@ -71,36 +72,47 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: _generating || _subject.isEmpty
+          onPressed: _generating || _invalidSubject
               ? null
               : () async {
                   setState(() {
                     _generating = true;
                   });
 
-                  Function()? close;
+                  final pivNotifier =
+                      ref.read(pivSlotsProvider(widget.devicePath).notifier);
+                  final withContext = ref.read(withContextProvider);
+
+                  if (!await pivNotifier.validateRfc4514(_subject)) {
+                    setState(() {
+                      _generating = false;
+                    });
+                    _invalidSubject = true;
+                    return;
+                  }
+
+                  void Function()? close;
                   final PivGenerateResult result;
                   try {
-                    close = showMessage(
-                      context,
-                      l10n.l_generating_private_key,
-                      duration: const Duration(seconds: 30),
+                    close = await withContext<void Function()>(
+                        (context) async => showMessage(
+                              context,
+                              l10n.l_generating_private_key,
+                              duration: const Duration(seconds: 30),
+                            ));
+                    result = await pivNotifier.generate(
+                      widget.pivSlot.slot,
+                      _keyType,
+                      parameters: switch (_generateType) {
+                        GenerateType.certificate =>
+                          PivGenerateParameters.certificate(
+                              subject: _subject,
+                              validFrom: _validFrom,
+                              validTo: _validTo),
+                        GenerateType.csr =>
+                          PivGenerateParameters.csr(subject: _subject),
+                      },
                     );
-                    result = await ref
-                        .read(pivSlotsProvider(widget.devicePath).notifier)
-                        .generate(
-                          widget.pivSlot.slot,
-                          _keyType,
-                          parameters: switch (_generateType) {
-                            GenerateType.certificate =>
-                              PivGenerateParameters.certificate(
-                                  subject: _subject,
-                                  validFrom: _validFrom,
-                                  validTo: _validTo),
-                            GenerateType.csr =>
-                              PivGenerateParameters.csr(subject: _subject),
-                          },
-                        );
                   } finally {
                     close?.call();
                   }
@@ -127,17 +139,21 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
               autofocus: true,
               key: keys.subjectField,
               decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: l10n.s_subject,
-              ),
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_subject,
+                  errorText: _subject.isNotEmpty && _invalidSubject
+                      ? l10n.l_invalid_rfc4514
+                      : null),
               textInputAction: TextInputAction.next,
               enabled: !_generating,
               onChanged: (value) {
                 setState(() {
                   if (value.isEmpty) {
                     _subject = '';
+                    _invalidSubject = true;
                   } else {
                     _subject = value.contains('=') ? value : 'CN=$value';
+                    _invalidSubject = false;
                   }
                 });
               },
