@@ -1860,20 +1860,23 @@ PivExamineResult _$PivExamineResultFromJson(Map<String, dynamic> json) {
 mixin _$PivExamineResult {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool password, bool privateKey, int certificates)
+    required TResult Function(
+            bool password, KeyType? keyType, CertInfo? certInfo)
         result,
     required TResult Function() invalidPassword,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool password, bool privateKey, int certificates)? result,
+    TResult? Function(bool password, KeyType? keyType, CertInfo? certInfo)?
+        result,
     TResult? Function()? invalidPassword,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool password, bool privateKey, int certificates)? result,
+    TResult Function(bool password, KeyType? keyType, CertInfo? certInfo)?
+        result,
     TResult Function()? invalidPassword,
     required TResult orElse(),
   }) =>
@@ -1924,7 +1927,9 @@ abstract class _$$_ExamineResultCopyWith<$Res> {
           _$_ExamineResult value, $Res Function(_$_ExamineResult) then) =
       __$$_ExamineResultCopyWithImpl<$Res>;
   @useResult
-  $Res call({bool password, bool privateKey, int certificates});
+  $Res call({bool password, KeyType? keyType, CertInfo? certInfo});
+
+  $CertInfoCopyWith<$Res>? get certInfo;
 }
 
 /// @nodoc
@@ -1939,23 +1944,35 @@ class __$$_ExamineResultCopyWithImpl<$Res>
   @override
   $Res call({
     Object? password = null,
-    Object? privateKey = null,
-    Object? certificates = null,
+    Object? keyType = freezed,
+    Object? certInfo = freezed,
   }) {
     return _then(_$_ExamineResult(
       password: null == password
           ? _value.password
           : password // ignore: cast_nullable_to_non_nullable
               as bool,
-      privateKey: null == privateKey
-          ? _value.privateKey
-          : privateKey // ignore: cast_nullable_to_non_nullable
-              as bool,
-      certificates: null == certificates
-          ? _value.certificates
-          : certificates // ignore: cast_nullable_to_non_nullable
-              as int,
+      keyType: freezed == keyType
+          ? _value.keyType
+          : keyType // ignore: cast_nullable_to_non_nullable
+              as KeyType?,
+      certInfo: freezed == certInfo
+          ? _value.certInfo
+          : certInfo // ignore: cast_nullable_to_non_nullable
+              as CertInfo?,
     ));
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $CertInfoCopyWith<$Res>? get certInfo {
+    if (_value.certInfo == null) {
+      return null;
+    }
+
+    return $CertInfoCopyWith<$Res>(_value.certInfo!, (value) {
+      return _then(_value.copyWith(certInfo: value));
+    });
   }
 }
 
@@ -1964,8 +1981,8 @@ class __$$_ExamineResultCopyWithImpl<$Res>
 class _$_ExamineResult implements _ExamineResult {
   _$_ExamineResult(
       {required this.password,
-      required this.privateKey,
-      required this.certificates,
+      required this.keyType,
+      required this.certInfo,
       final String? $type})
       : $type = $type ?? 'result';
 
@@ -1975,16 +1992,16 @@ class _$_ExamineResult implements _ExamineResult {
   @override
   final bool password;
   @override
-  final bool privateKey;
+  final KeyType? keyType;
   @override
-  final int certificates;
+  final CertInfo? certInfo;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'PivExamineResult.result(password: $password, privateKey: $privateKey, certificates: $certificates)';
+    return 'PivExamineResult.result(password: $password, keyType: $keyType, certInfo: $certInfo)';
   }
 
   @override
@@ -1994,16 +2011,14 @@ class _$_ExamineResult implements _ExamineResult {
             other is _$_ExamineResult &&
             (identical(other.password, password) ||
                 other.password == password) &&
-            (identical(other.privateKey, privateKey) ||
-                other.privateKey == privateKey) &&
-            (identical(other.certificates, certificates) ||
-                other.certificates == certificates));
+            (identical(other.keyType, keyType) || other.keyType == keyType) &&
+            (identical(other.certInfo, certInfo) ||
+                other.certInfo == certInfo));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, password, privateKey, certificates);
+  int get hashCode => Object.hash(runtimeType, password, keyType, certInfo);
 
   @JsonKey(ignore: true)
   @override
@@ -2014,31 +2029,34 @@ class _$_ExamineResult implements _ExamineResult {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool password, bool privateKey, int certificates)
+    required TResult Function(
+            bool password, KeyType? keyType, CertInfo? certInfo)
         result,
     required TResult Function() invalidPassword,
   }) {
-    return result(password, privateKey, certificates);
+    return result(password, keyType, certInfo);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool password, bool privateKey, int certificates)? result,
+    TResult? Function(bool password, KeyType? keyType, CertInfo? certInfo)?
+        result,
     TResult? Function()? invalidPassword,
   }) {
-    return result?.call(password, privateKey, certificates);
+    return result?.call(password, keyType, certInfo);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool password, bool privateKey, int certificates)? result,
+    TResult Function(bool password, KeyType? keyType, CertInfo? certInfo)?
+        result,
     TResult Function()? invalidPassword,
     required TResult orElse(),
   }) {
     if (result != null) {
-      return result(password, privateKey, certificates);
+      return result(password, keyType, certInfo);
     }
     return orElse();
   }
@@ -2085,15 +2103,15 @@ class _$_ExamineResult implements _ExamineResult {
 abstract class _ExamineResult implements PivExamineResult {
   factory _ExamineResult(
       {required final bool password,
-      required final bool privateKey,
-      required final int certificates}) = _$_ExamineResult;
+      required final KeyType? keyType,
+      required final CertInfo? certInfo}) = _$_ExamineResult;
 
   factory _ExamineResult.fromJson(Map<String, dynamic> json) =
       _$_ExamineResult.fromJson;
 
   bool get password;
-  bool get privateKey;
-  int get certificates;
+  KeyType? get keyType;
+  CertInfo? get certInfo;
   @JsonKey(ignore: true)
   _$$_ExamineResultCopyWith<_$_ExamineResult> get copyWith =>
       throw _privateConstructorUsedError;
@@ -2145,7 +2163,8 @@ class _$_InvalidPassword implements _InvalidPassword {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool password, bool privateKey, int certificates)
+    required TResult Function(
+            bool password, KeyType? keyType, CertInfo? certInfo)
         result,
     required TResult Function() invalidPassword,
   }) {
@@ -2155,7 +2174,8 @@ class _$_InvalidPassword implements _InvalidPassword {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool password, bool privateKey, int certificates)? result,
+    TResult? Function(bool password, KeyType? keyType, CertInfo? certInfo)?
+        result,
     TResult? Function()? invalidPassword,
   }) {
     return invalidPassword?.call();
@@ -2164,7 +2184,8 @@ class _$_InvalidPassword implements _InvalidPassword {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool password, bool privateKey, int certificates)? result,
+    TResult Function(bool password, KeyType? keyType, CertInfo? certInfo)?
+        result,
     TResult Function()? invalidPassword,
     required TResult orElse(),
   }) {

@@ -130,7 +130,8 @@ Widget registerPivActions(
           });
         }),
         ImportIntent: CallbackAction<ImportIntent>(onInvoke: (intent) async {
-          if (!await _authIfNeeded(ref, devicePath, pivState)) {
+          if (!pivState.protectedKey &&
+              !await _authIfNeeded(ref, devicePath, pivState)) {
             return false;
           }
 
@@ -198,9 +199,11 @@ Widget registerPivActions(
           return true;
         }),
         DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
-          if (!await _authIfNeeded(ref, devicePath, pivState)) {
+          if (!pivState.protectedKey &&
+              !await _authIfNeeded(ref, devicePath, pivState)) {
             return false;
           }
+
           final withContext = ref.read(withContextProvider);
           final bool? deleted = await withContext((context) async =>
               await showBlurDialog(
