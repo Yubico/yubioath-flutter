@@ -43,20 +43,9 @@
             "label": {}
         }
     },
-    "l_bullet": "• {item}",
-    "@l_bullet" : {
-        "placeholders": {
-            "item": {}
-        }
-    },
-    "s_definition": "{item}:",
-    "@s_definition" : {
-        "placeholders": {
-            "item": {}
-        }
-    },
 
     "s_about": "About",
+    "s_algorithm": "Algorithm",
     "s_appearance": "Appearance",
     "s_authenticator": "Authenticator",
     "s_actions": "Actions",
@@ -460,7 +449,7 @@
     },
     "l_certificate_deleted": "Certificate deleted",
     "p_password_protected_file": "The selected file is password protected. Enter the password to proceed.",
-    "p_import_items_desc": "The following items will be imported into PIV slot {slot}.",
+    "p_import_items_desc": "The following item(s) will be imported into PIV slot {slot}.",
     "@p_import_items_desc" : {
         "placeholders": {
             "slot": {}

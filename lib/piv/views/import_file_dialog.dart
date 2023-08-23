@@ -25,6 +25,7 @@ import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
+import 'cert_info_view.dart';
 
 class ImportFileDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -77,6 +78,11 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
+    // This is what ListTile uses for subtitle
+    final subtitleStyle = textTheme.bodyMedium!.copyWith(
+      color: textTheme.bodySmall!.color,
+    );
     final state = _state;
     if (state == null) {
       return ResponsiveDialog(
@@ -141,7 +147,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
           ),
         ),
       ),
-      result: (_, privateKey, certificates) => ResponsiveDialog(
+      result: (_, keyType, certInfo) => ResponsiveDialog(
         title: Text(l10n.l_import_file),
         actions: [
           TextButton(
@@ -171,8 +177,37 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
             children: [
               Text(l10n.p_import_items_desc(
                   widget.pivSlot.slot.getDisplayName(l10n))),
-              if (privateKey) Text(l10n.l_bullet(l10n.s_private_key)),
-              if (certificates > 0) Text(l10n.l_bullet(l10n.s_certificate)),
+              if (keyType != null) ...[
+                Text(
+                  l10n.s_private_key,
+                  style: textTheme.bodyLarge,
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(l10n.s_algorithm),
+                    const SizedBox(width: 8),
+                    Text(
+                      keyType.name.toUpperCase(),
+                      style: subtitleStyle,
+                    ),
+                  ],
+                )
+              ],
+              if (certInfo != null) ...[
+                Text(
+                  l10n.s_certificate,
+                  style: textTheme.bodyLarge,
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 120, // Needed for layout, adapt if text sizes changes
+                  child: CertInfoTable(certInfo),
+                ),
+              ]
             ]
                 .map((e) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),

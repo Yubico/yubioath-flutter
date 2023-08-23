@@ -17,16 +17,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
-import '../../app/message.dart';
 import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
-import '../../widgets/tooltip_if_truncated.dart';
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
+import 'cert_info_view.dart';
 
 class SlotDialog extends ConsumerWidget {
   final SlotId pivSlot;
@@ -48,8 +46,6 @@ class SlotDialog extends ConsumerWidget {
     final subtitleStyle = textTheme.bodyMedium!.copyWith(
       color: textTheme.bodySmall!.color,
     );
-    final clipboard = ref.watch(clipboardProvider);
-    final withContext = ref.read(withContextProvider);
 
     final pivState = ref.watch(pivStateProvider(node.path)).valueOrNull;
     final slotData = ref.watch(pivSlotsProvider(node.path).select((value) =>
@@ -59,34 +55,6 @@ class SlotDialog extends ConsumerWidget {
 
     if (pivState == null || slotData == null) {
       return const FsDialog(child: CircularProgressIndicator());
-    }
-
-    TableRow detailRow(String title, String value) {
-      return TableRow(
-        children: [
-          Text(
-            l10n.s_definition(title),
-            textAlign: TextAlign.right,
-          ),
-          const SizedBox(width: 8.0),
-          GestureDetector(
-            onDoubleTap: () async {
-              await clipboard.setText(value);
-              if (!clipboard.platformGivesFeedback()) {
-                await withContext((context) async {
-                  showMessage(context, l10n.p_target_copied_clipboard(title));
-                });
-              }
-            },
-            child: TooltipIfTruncated(
-              text: value,
-              style: subtitleStyle,
-              tooltip: value.replaceAllMapped(
-                  RegExp(r',([A-Z]+)='), (match) => '\n${match[1]}='),
-            ),
-          ),
-        ],
-      );
     }
 
     final certInfo = slotData.certInfo;
@@ -113,27 +81,7 @@ class SlotDialog extends ConsumerWidget {
                     if (certInfo != null) ...[
                       Padding(
                         padding: const EdgeInsets.all(16),
-                        child: Table(
-                          defaultColumnWidth: const IntrinsicColumnWidth(),
-                          columnWidths: const {2: FlexColumnWidth()},
-                          children: [
-                            detailRow(l10n.s_subject, certInfo.subject),
-                            detailRow(l10n.s_issuer, certInfo.issuer),
-                            detailRow(l10n.s_serial, certInfo.serial),
-                            detailRow(l10n.s_certificate_fingerprint,
-                                certInfo.fingerprint),
-                            detailRow(
-                              l10n.s_valid_from,
-                              DateFormat.yMMMEd().format(
-                                  DateTime.parse(certInfo.notValidBefore)),
-                            ),
-                            detailRow(
-                              l10n.s_valid_to,
-                              DateFormat.yMMMEd().format(
-                                  DateTime.parse(certInfo.notValidAfter)),
-                            ),
-                          ],
-                        ),
+                        child: CertInfoTable(certInfo),
                       ),
                     ] else ...[
                       Padding(

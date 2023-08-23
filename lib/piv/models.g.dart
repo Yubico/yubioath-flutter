@@ -168,16 +168,18 @@ const _$SlotIdEnumMap = {
 _$_ExamineResult _$$_ExamineResultFromJson(Map<String, dynamic> json) =>
     _$_ExamineResult(
       password: json['password'] as bool,
-      privateKey: json['private_key'] as bool,
-      certificates: json['certificates'] as int,
+      keyType: $enumDecodeNullable(_$KeyTypeEnumMap, json['key_type']),
+      certInfo: json['cert_info'] == null
+          ? null
+          : CertInfo.fromJson(json['cert_info'] as Map<String, dynamic>),
       $type: json['runtimeType'] as String?,
     );
 
 Map<String, dynamic> _$$_ExamineResultToJson(_$_ExamineResult instance) =>
     <String, dynamic>{
       'password': instance.password,
-      'private_key': instance.privateKey,
-      'certificates': instance.certificates,
+      'key_type': _$KeyTypeEnumMap[instance.keyType],
+      'cert_info': instance.certInfo,
       'runtimeType': instance.$type,
     };
 
