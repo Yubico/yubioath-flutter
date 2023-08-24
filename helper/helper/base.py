@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from yubikit.core import InvalidPinError
 from functools import partial
 
 import logging
@@ -123,6 +124,8 @@ class RpcNode:
         except ChildResetException as e:
             self._close_child()
             raise StateResetException(e.message, traversed)
+        except InvalidPinError:
+            raise  # Prevent catching this as a ValueError below
         except ValueError as e:
             raise InvalidParametersException(e)
         raise NoSuchActionException(action)

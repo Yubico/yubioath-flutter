@@ -266,8 +266,8 @@ class PivSlot with _$PivSlot {
 class PivExamineResult with _$PivExamineResult {
   factory PivExamineResult.result({
     required bool password,
-    required bool privateKey,
-    required int certificates,
+    required KeyType? keyType,
+    required CertInfo? certInfo,
   }) = _ExamineResult;
   factory PivExamineResult.invalidPassword() = _InvalidPassword;
 

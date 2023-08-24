@@ -21,13 +21,12 @@ from .base import (
     TimeoutException,
     AuthRequiredException,
 )
-from yubikit.core import NotSupportedError, BadResponseError
+from yubikit.core import NotSupportedError, BadResponseError, InvalidPinError
 from yubikit.core.smartcard import ApduError, SW
 from yubikit.piv import (
     PivSession,
     OBJECT_ID,
     MANAGEMENT_KEY_TYPE,
-    InvalidPinError,
     SLOT,
     require_version,
     KEY_TYPE,
@@ -43,6 +42,7 @@ from ykman.piv import (
     generate_self_signed_certificate,
     generate_csr,
     generate_chuid,
+    parse_rfc4514_string,
 )
 from ykman.util import (
     parse_certificates,
@@ -234,6 +234,34 @@ class PivNode(RpcNode):
     def slots(self):
         return SlotsNode(self.session)
 
+    @action(closes_child=False)
+    def examine_file(self, params, event, signal):
+        data = bytes.fromhex(params.pop("data"))
+        password = params.pop("password", None)
+        try:
+            private_key, certs = _parse_file(data, password)
+            certificate = _choose_cert(certs)
+
+            return dict(
+                status=True,
+                password=password is not None,
+                key_type=KEY_TYPE.from_public_key(private_key.public_key())
+                if private_key
+                else None,
+                cert_info=_get_cert_info(certificate),
+            )
+        except InvalidPasswordError:
+            logger.debug("Invalid or missing password", exc_info=True)
+            return dict(status=False)
+
+    @action(closes_child=False)
+    def validate_rfc4514(self, params, event, signal):
+        try:
+            parse_rfc4514_string(params.pop("data"))
+            return dict(status=True)
+        except ValueError:
+            return dict(status=False)
+
 
 def _slot_for(name):
     return SLOT(int(name, base=16))
@@ -253,6 +281,29 @@ def _parse_file(data, password=None):
         private_key = None
 
     return private_key, certs
+
+
+def _choose_cert(certs):
+    if certs:
+        if len(certs) > 1:
+            leafs = get_leaf_certificates(certs)
+            return leafs[0]
+        else:
+            return certs[0]
+    return None
+
+
+def _get_cert_info(cert):
+    if cert is None:
+        return None
+    return dict(
+        subject=cert.subject.rfc4514_string(),
+        issuer=cert.issuer.rfc4514_string(),
+        serial=hex(cert.serial_number)[2:],
+        not_valid_before=cert.not_valid_before.isoformat(),
+        not_valid_after=cert.not_valid_after.isoformat(),
+        fingerprint=cert.fingerprint(hashes.SHA256()),
+    )
 
 
 class SlotsNode(RpcNode):
@@ -290,16 +341,7 @@ class SlotsNode(RpcNode):
                 slot=int(slot),
                 name=slot.name,
                 has_key=metadata is not None if self._has_metadata else None,
-                cert_info=dict(
-                    subject=cert.subject.rfc4514_string(),
-                    issuer=cert.issuer.rfc4514_string(),
-                    serial=hex(cert.serial_number)[2:],
-                    not_valid_before=cert.not_valid_before.isoformat(),
-                    not_valid_after=cert.not_valid_after.isoformat(),
-                    fingerprint=cert.fingerprint(hashes.SHA256()),
-                )
-                if cert
-                else None,
+                cert_info=_get_cert_info(cert),
             )
             for slot, (metadata, cert) in self._slots.items()
         }
@@ -310,22 +352,6 @@ class SlotsNode(RpcNode):
             metadata, certificate = self._slots[slot]
             return SlotNode(self.session, slot, metadata, certificate, self.refresh)
         return super().create_child(name)
-
-    @action
-    def examine_file(self, params, event, signal):
-        data = bytes.fromhex(params.pop("data"))
-        password = params.pop("password", None)
-        try:
-            private_key, certs = _parse_file(data, password)
-            return dict(
-                status=True,
-                password=password is not None,
-                private_key=bool(private_key),
-                certificates=len(certs),
-            )
-        except InvalidPasswordError:
-            logger.debug("Invalid or missing password", exc_info=True)
-            return dict(status=False)
 
 
 class SlotNode(RpcNode):
@@ -382,12 +408,8 @@ class SlotNode(RpcNode):
             except (ApduError, BadResponseError):
                 pass
 
-        if certs:
-            if len(certs) > 1:
-                leafs = get_leaf_certificates(certs)
-                certificate = leafs[0]
-            else:
-                certificate = certs[0]
+        certificate = _choose_cert(certs)
+        if certificate:
             self.session.put_certificate(self.slot, certificate)
             self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
             self.certificate = certificate
@@ -414,7 +436,9 @@ class SlotNode(RpcNode):
         pin_policy = PIN_POLICY(params.pop("pin_policy", PIN_POLICY.DEFAULT))
         touch_policy = TOUCH_POLICY(params.pop("touch_policy", TOUCH_POLICY.DEFAULT))
         subject = params.pop("subject")
-        generate_type = GENERATE_TYPE(params.pop("generate_type", GENERATE_TYPE.CERTIFICATE))
+        generate_type = GENERATE_TYPE(
+            params.pop("generate_type", GENERATE_TYPE.CERTIFICATE)
+        )
         public_key = self.session.generate_key(
             self.slot, key_type, pin_policy, touch_policy
         )

@@ -27,6 +27,7 @@ import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
+import 'overwrite_confirm_dialog.dart';
 
 class GenerateKeyDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -42,6 +43,7 @@ class GenerateKeyDialog extends ConsumerStatefulWidget {
 
 class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
   String _subject = '';
+  bool _invalidSubject = true;
   GenerateType _generateType = defaultGenerateType;
   KeyType _keyType = defaultKeyType;
   late DateTime _validFrom;
@@ -64,6 +66,11 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
+    // This is what ListTile uses for subtitle
+    final subtitleStyle = textTheme.bodyMedium!.copyWith(
+      color: textTheme.bodySmall!.color,
+    );
 
     return ResponsiveDialog(
       allowCancel: !_generating,
@@ -71,36 +78,56 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: _generating || _subject.isEmpty
+          onPressed: _generating || _invalidSubject
               ? null
               : () async {
+                  if (!await confirmOverwrite(
+                    context,
+                    widget.pivSlot,
+                    writeKey: true,
+                    writeCert: _generateType == GenerateType.certificate,
+                  )) {
+                    return;
+                  }
+
                   setState(() {
                     _generating = true;
                   });
 
-                  Function()? close;
+                  final pivNotifier =
+                      ref.read(pivSlotsProvider(widget.devicePath).notifier);
+                  final withContext = ref.read(withContextProvider);
+
+                  if (!await pivNotifier.validateRfc4514(_subject)) {
+                    setState(() {
+                      _generating = false;
+                    });
+                    _invalidSubject = true;
+                    return;
+                  }
+
+                  void Function()? close;
                   final PivGenerateResult result;
                   try {
-                    close = showMessage(
-                      context,
-                      l10n.l_generating_private_key,
-                      duration: const Duration(seconds: 30),
+                    close = await withContext<void Function()>(
+                        (context) async => showMessage(
+                              context,
+                              l10n.l_generating_private_key,
+                              duration: const Duration(seconds: 30),
+                            ));
+                    result = await pivNotifier.generate(
+                      widget.pivSlot.slot,
+                      _keyType,
+                      parameters: switch (_generateType) {
+                        GenerateType.certificate =>
+                          PivGenerateParameters.certificate(
+                              subject: _subject,
+                              validFrom: _validFrom,
+                              validTo: _validTo),
+                        GenerateType.csr =>
+                          PivGenerateParameters.csr(subject: _subject),
+                      },
                     );
-                    result = await ref
-                        .read(pivSlotsProvider(widget.devicePath).notifier)
-                        .generate(
-                          widget.pivSlot.slot,
-                          _keyType,
-                          parameters: switch (_generateType) {
-                            GenerateType.certificate =>
-                              PivGenerateParameters.certificate(
-                                  subject: _subject,
-                                  validFrom: _validFrom,
-                                  validTo: _validTo),
-                            GenerateType.csr =>
-                              PivGenerateParameters.csr(subject: _subject),
-                          },
-                        );
                   } finally {
                     close?.call();
                   }
@@ -123,43 +150,45 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+                l10n.p_generate_desc(widget.pivSlot.slot.getDisplayName(l10n))),
+            Text(
+              l10n.s_subject,
+              style: textTheme.bodyLarge,
+            ),
+            Text(l10n.p_subject_desc),
             TextField(
               autofocus: true,
               key: keys.subjectField,
               decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: l10n.s_subject,
-              ),
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_subject,
+                  errorText: _subject.isNotEmpty && _invalidSubject
+                      ? l10n.l_rfc4514_invalid
+                      : null),
               textInputAction: TextInputAction.next,
               enabled: !_generating,
               onChanged: (value) {
                 setState(() {
-                  if (value.isEmpty) {
-                    _subject = '';
-                  } else {
-                    _subject = value.contains('=') ? value : 'CN=$value';
-                  }
+                  _invalidSubject = value.isEmpty;
+                  _subject = value;
                 });
               },
             ),
+            Text(
+              l10n.rfc4514_examples,
+              style: subtitleStyle,
+            ),
+            Text(
+              l10n.s_options,
+              style: textTheme.bodyLarge,
+            ),
+            Text(l10n.p_cert_options_desc),
             Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
                 spacing: 4.0,
                 runSpacing: 8.0,
                 children: [
-                  ChoiceFilterChip<GenerateType>(
-                    items: GenerateType.values,
-                    value: _generateType,
-                    selected: _generateType != defaultGenerateType,
-                    itemBuilder: (value) => Text(value.getDisplayName(l10n)),
-                    onChanged: _generating
-                        ? null
-                        : (value) {
-                            setState(() {
-                              _generateType = value;
-                            });
-                          },
-                  ),
                   ChoiceFilterChip<KeyType>(
                     items: KeyType.values,
                     value: _keyType,
@@ -170,6 +199,19 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                         : (value) {
                             setState(() {
                               _keyType = value;
+                            });
+                          },
+                  ),
+                  ChoiceFilterChip<GenerateType>(
+                    items: GenerateType.values,
+                    value: _generateType,
+                    selected: _generateType != defaultGenerateType,
+                    itemBuilder: (value) => Text(value.getDisplayName(l10n)),
+                    onChanged: _generating
+                        ? null
+                        : (value) {
+                            setState(() {
+                              _generateType = value;
                             });
                           },
                   ),

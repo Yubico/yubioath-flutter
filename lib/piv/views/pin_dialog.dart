@@ -33,22 +33,30 @@ class PinDialog extends ConsumerStatefulWidget {
 }
 
 class _PinDialogState extends ConsumerState<PinDialog> {
-  String _pin = '';
+  final _pinController = TextEditingController();
   bool _pinIsWrong = false;
   int _attemptsRemaining = -1;
+  bool _isObscure = true;
+
+  @override
+  void dispose() {
+    _pinController.dispose();
+    super.dispose();
+  }
 
   Future<void> _submit() async {
     final navigator = Navigator.of(context);
     try {
       final status = await ref
           .read(pivStateProvider(widget.devicePath).notifier)
-          .verifyPin(_pin);
+          .verifyPin(_pinController.text);
       status.when(
         success: () {
           navigator.pop(true);
         },
         failure: (attemptsRemaining) {
           setState(() {
+            _pinController.clear();
             _attemptsRemaining = attemptsRemaining;
             _pinIsWrong = true;
           });
@@ -67,7 +75,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: _pin.length >= 4 ? _submit : null,
+          onPressed: _pinController.text.length >= 4 ? _submit : null,
           child: Text(l10n.s_unlock),
         ),
       ],
@@ -79,23 +87,35 @@ class _PinDialogState extends ConsumerState<PinDialog> {
             Text(l10n.p_pin_required_desc),
             TextField(
               autofocus: true,
-              obscureText: true,
+              obscureText: _isObscure,
               maxLength: 8,
               autofillHints: const [AutofillHints.password],
               key: keys.managementKeyField,
+              controller: _pinController,
               decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: l10n.s_pin,
-                  prefixIcon: const Icon(Icons.pin_outlined),
-                  errorText: _pinIsWrong
-                      ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
-                      : null,
-                  errorMaxLines: 3),
+                border: const OutlineInputBorder(),
+                labelText: l10n.s_pin,
+                prefixIcon: const Icon(Icons.pin_outlined),
+                errorText: _pinIsWrong
+                    ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
+                    : null,
+                errorMaxLines: 3,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isObscure ? Icons.visibility : Icons.visibility_off,
+                    color: IconTheme.of(context).color,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isObscure = !_isObscure;
+                    });
+                  },
+                ),
+              ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
                   _pinIsWrong = false;
-                  _pin = value;
                 });
               },
               onSubmitted: (_) => _submit(),

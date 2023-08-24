@@ -114,7 +114,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                       : l10n.s_current_puk,
                   prefixIcon: const Icon(Icons.password_outlined),
                   errorText: _currentIsWrong
-                      ? (widget.target == ManageTarget.puk
+                      ? (widget.target == ManageTarget.pin
                           ? l10n.l_wrong_pin_attempts_remaining(
                               _attemptsRemaining)
                           : l10n.l_wrong_puk_attempts_remaining(

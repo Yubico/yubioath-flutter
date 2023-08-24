@@ -37,12 +37,20 @@ class AuthenticationDialog extends ConsumerStatefulWidget {
 }
 
 class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
-  String _managementKey = '';
+  bool _defaultKeyUsed = false;
   bool _keyIsWrong = false;
+  final _keyController = TextEditingController();
+
+  @override
+  void dispose() {
+    _keyController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final hasMetadata = widget.pivState.metadata != null;
     final keyLen = (widget.pivState.metadata?.managementKeyMetadata.keyType ??
                 ManagementKeyType.tdes)
             .keyLength *
@@ -52,13 +60,13 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: _managementKey.length == keyLen
+          onPressed: _keyController.text.length == keyLen
               ? () async {
                   final navigator = Navigator.of(context);
                   try {
                     final status = await ref
                         .read(pivStateProvider(widget.devicePath).notifier)
-                        .authenticate(_managementKey);
+                        .authenticate(_keyController.text);
                     if (status) {
                       navigator.pop(true);
                     } else {
@@ -88,24 +96,44 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
             TextField(
               key: keys.managementKeyField,
               autofocus: true,
-              maxLength: keyLen,
               autofillHints: const [AutofillHints.password],
+              controller: _keyController,
               inputFormatters: [
                 FilteringTextInputFormatter.allow(
                     RegExp('[a-f0-9]', caseSensitive: false))
               ],
+              readOnly: _defaultKeyUsed,
+              maxLength: !_defaultKeyUsed ? keyLen : null,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_management_key,
                 prefixIcon: const Icon(Icons.key_outlined),
                 errorText: _keyIsWrong ? l10n.l_wrong_key : null,
                 errorMaxLines: 3,
+                helperText: _defaultKeyUsed ? l10n.l_default_key_used : null,
+                suffixIcon: hasMetadata
+                    ? null
+                    : IconButton(
+                        icon: Icon(_defaultKeyUsed
+                            ? Icons.auto_awesome
+                            : Icons.auto_awesome_outlined),
+                        tooltip: l10n.s_use_default,
+                        onPressed: () {
+                          setState(() {
+                            _defaultKeyUsed = !_defaultKeyUsed;
+                            if (_defaultKeyUsed) {
+                              _keyController.text = defaultManagementKey;
+                            } else {
+                              _keyController.clear();
+                            }
+                          });
+                        },
+                      ),
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
                   _keyIsWrong = false;
-                  _managementKey = value;
                 });
               },
             ),

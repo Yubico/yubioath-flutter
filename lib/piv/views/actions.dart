@@ -47,23 +47,23 @@ class ExportIntent extends Intent {
 }
 
 Future<bool> _authenticate(
-    WidgetRef ref, DevicePath devicePath, PivState pivState) async {
-  final withContext = ref.read(withContextProvider);
-  return await withContext((context) async =>
-      await showBlurDialog(
+    BuildContext context, DevicePath devicePath, PivState pivState) async {
+  return await showBlurDialog(
         context: context,
-        builder: (context) => AuthenticationDialog(
-          devicePath,
-          pivState,
-        ),
+        builder: (context) => pivState.protectedKey
+            ? PinDialog(devicePath)
+            : AuthenticationDialog(
+                devicePath,
+                pivState,
+              ),
       ) ??
-      false);
+      false;
 }
 
 Future<bool> _authIfNeeded(
-    WidgetRef ref, DevicePath devicePath, PivState pivState) async {
+    BuildContext context, DevicePath devicePath, PivState pivState) async {
   if (pivState.needsAuth) {
-    return await _authenticate(ref, devicePath, pivState);
+    return await _authenticate(context, devicePath, pivState);
   }
   return true;
 }
@@ -80,12 +80,12 @@ Widget registerPivActions(
       actions: {
         GenerateIntent:
             CallbackAction<GenerateIntent>(onInvoke: (intent) async {
+          final withContext = ref.read(withContextProvider);
           if (!pivState.protectedKey &&
-              !await _authIfNeeded(ref, devicePath, pivState)) {
+              !await withContext(
+                  (context) => _authIfNeeded(context, devicePath, pivState))) {
             return false;
           }
-
-          final withContext = ref.read(withContextProvider);
 
           // TODO: Avoid asking for PIN if not needed?
           final verified = await withContext((context) async =>
@@ -130,11 +130,12 @@ Widget registerPivActions(
           });
         }),
         ImportIntent: CallbackAction<ImportIntent>(onInvoke: (intent) async {
-          if (!await _authIfNeeded(ref, devicePath, pivState)) {
+          final withContext = ref.read(withContextProvider);
+
+          if (!await withContext(
+              (context) => _authIfNeeded(context, devicePath, pivState))) {
             return false;
           }
-
-          final withContext = ref.read(withContextProvider);
 
           final picked = await withContext(
             (context) async {
@@ -198,10 +199,12 @@ Widget registerPivActions(
           return true;
         }),
         DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
-          if (!await _authIfNeeded(ref, devicePath, pivState)) {
+          final withContext = ref.read(withContextProvider);
+          if (!await withContext(
+              (context) => _authIfNeeded(context, devicePath, pivState))) {
             return false;
           }
-          final withContext = ref.read(withContextProvider);
+
           final bool? deleted = await withContext((context) async =>
               await showBlurDialog(
                 context: context,

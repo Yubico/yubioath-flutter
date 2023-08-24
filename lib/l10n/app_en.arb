@@ -30,10 +30,12 @@
     "s_unlock": "Unlock",
     "s_calculate": "Calculate",
     "s_import": "Import",
+    "s_overwrite": "Overwrite",
     "s_label": "Label",
     "s_name": "Name",
     "s_usb": "USB",
     "s_nfc": "NFC",
+    "s_options": "Options",
     "s_show_window": "Show window",
     "s_hide_window": "Hide window",
     "q_rename_target": "Rename {label}?",
@@ -48,14 +50,9 @@
             "item": {}
         }
     },
-    "s_definition": "{item}:",
-    "@s_definition" : {
-        "placeholders": {
-            "item": {}
-        }
-    },
 
     "s_about": "About",
+    "s_algorithm": "Algorithm",
     "s_appearance": "Appearance",
     "s_authenticator": "Authenticator",
     "s_actions": "Actions",
@@ -281,6 +278,8 @@
     "p_change_management_key_desc": "Change your management key. You can optionally choose to allow the PIN to be used instead of the management key.",
     "l_management_key_changed": "Management key changed",
     "l_default_key_used": "Default management key used",
+    "s_generate_random": "Generate random",
+    "s_use_default": "Use default",
     "l_warning_default_key": "Warning: Default key used",
     "s_protect_key": "Protect with PIN",
     "l_pin_protected_key": "PIN can be used instead",
@@ -457,12 +456,26 @@
     },
     "l_certificate_deleted": "Certificate deleted",
     "p_password_protected_file": "The selected file is password protected. Enter the password to proceed.",
-    "p_import_items_desc": "The following items will be imported into PIV slot {slot}.",
+    "p_import_items_desc": "The following item(s) will be imported into PIV slot {slot}.",
     "@p_import_items_desc" : {
         "placeholders": {
             "slot": {}
         }
     },
+    "p_subject_desc": "A distinguished name (DN) formatted in accordance to the RFC 4514 specification.",
+    "l_rfc4514_invalid": "Invalid RFC 4514 format",
+    "rfc4514_examples": "Examples:\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
+    "p_cert_options_desc": "Key algorithm to use, output format, and expiration date (certificate only).",
+    "s_overwrite_slot": "Overwrite slot",
+    "p_overwrite_slot_desc": "This will permanently overwrite existing content in slot {slot}.",
+    "@p_overwrite_slot_desc" : {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "l_overwrite_cert": "The certificate will be overwritten",
+    "l_overwrite_key": "The private key will be overwritten",
+    "l_overwrite_key_maybe": "Any existing private key in the slot will be overwritten",
 
     "@_piv_slots": {},
     "s_slot_display_name": "{name} ({hexid})",
