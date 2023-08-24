@@ -28,7 +28,7 @@ on `yubikey-manager >=5, <6`. It will likely not work with versions outside
 this range!
 
 === Building the Yubico Authenticator Helper
-Requirements: Python >= 3.8 and Poetry.
+*Requirements: Python >= 3.8, SWIG, and Poetry.*
 
 The GUI requires a compiled version of Helper to run, which is built from the
 sources in helper/ in this repository. This needs to be build prior to running
