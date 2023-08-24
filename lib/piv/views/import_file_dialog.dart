@@ -26,6 +26,7 @@ import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
 import 'cert_info_view.dart';
+import 'overwrite_confirm_dialog.dart';
 
 class ImportFileDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -152,21 +153,34 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
         actions: [
           TextButton(
             key: keys.unlockButton,
-            onPressed: () async {
-              final navigator = Navigator.of(context);
-              try {
-                await ref
-                    .read(pivSlotsProvider(widget.devicePath).notifier)
-                    .import(widget.pivSlot.slot, _data,
-                        password: _password.isNotEmpty ? _password : null);
-                navigator.pop(true);
-              } catch (_) {
-                // TODO: More error cases
-                setState(() {
-                  _passwordIsWrong = true;
-                });
-              }
-            },
+            onPressed: (keyType == null && certInfo == null)
+                ? null
+                : () async {
+                    final navigator = Navigator.of(context);
+
+                    if (!await confirmOverwrite(
+                      context,
+                      widget.pivSlot,
+                      writeKey: keyType != null,
+                      writeCert: certInfo != null,
+                    )) {
+                      return;
+                    }
+
+                    try {
+                      await ref
+                          .read(pivSlotsProvider(widget.devicePath).notifier)
+                          .import(widget.pivSlot.slot, _data,
+                              password:
+                                  _password.isNotEmpty ? _password : null);
+                      navigator.pop(true);
+                    } catch (err) {
+                      // TODO: More error cases
+                      setState(() {
+                        _passwordIsWrong = true;
+                      });
+                    }
+                  },
             child: Text(l10n.s_import),
           ),
         ],

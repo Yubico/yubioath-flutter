@@ -30,6 +30,7 @@
     "s_unlock": "Unlock",
     "s_calculate": "Calculate",
     "s_import": "Import",
+    "s_overwrite": "Overwrite",
     "s_label": "Label",
     "s_name": "Name",
     "s_usb": "USB",
@@ -41,6 +42,12 @@
     "@q_rename_target" : {
         "placeholders": {
             "label": {}
+        }
+    },
+    "l_bullet": "• {item}",
+    "@l_bullet" : {
+        "placeholders": {
+            "item": {}
         }
     },
 
@@ -459,6 +466,16 @@
     "l_rfc4514_invalid": "Invalid RFC 4514 format",
     "rfc4514_examples": "Examples:\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
     "p_cert_options_desc": "Key algorithm to use, output format, and an expiration date (if applicable).",
+    "s_overwrite_slot": "Overwrite slot",
+    "p_overwrite_slot_desc": "This will permanently overwrite existing content in slot {slot}.",
+    "@p_overwrite_slot_desc" : {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "l_overwrite_cert": "The certificate will be overwritten",
+    "l_overwrite_key": "The private key will be overwritten",
+    "l_overwrite_key_maybe": "Any existing private key in the slot will be overwritten",
 
     "@_piv_slots": {},
     "s_slot_display_name": "{name} ({hexid})",
