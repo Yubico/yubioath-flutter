@@ -27,6 +27,7 @@ import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
+import 'overwrite_confirm_dialog.dart';
 
 class GenerateKeyDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -80,6 +81,15 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
           onPressed: _generating || _invalidSubject
               ? null
               : () async {
+                  if (!await confirmOverwrite(
+                    context,
+                    widget.pivSlot,
+                    writeKey: true,
+                    writeCert: _generateType == GenerateType.certificate,
+                  )) {
+                    return;
+                  }
+
                   setState(() {
                     _generating = true;
                   });
