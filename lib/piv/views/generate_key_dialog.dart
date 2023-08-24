@@ -151,6 +151,8 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
+                l10n.p_generate_desc(widget.pivSlot.slot.getDisplayName(l10n))),
+            Text(
               l10n.s_subject,
               style: textTheme.bodyLarge,
             ),
