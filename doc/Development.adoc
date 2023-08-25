@@ -50,8 +50,8 @@ Make sure the http://www.swig.org/[swig] executable is in your PATH.
     # Tested on Fedora 34
     $ sudo dnf install pcsc-lite-devel python3-devel swig
 
- When prerequisites are installed you build the helper by running
-`build-helper.sh` (or`build-helper.bat` on Windows).
+When prerequisites are installed you build the helper by running `build-helper.sh`
+(or `build-helper.bat` on Windows).
 
 NOTE: You will need to re-run the build script if changes have been made to
 Helper's code, or if `flutter clean` has been run.
