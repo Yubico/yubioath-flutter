@@ -7,11 +7,13 @@ jobs:
 
     runs-on: macos-latest
     env:
-      PYVER: '3.11.4'
       MACOSX_DEPLOYMENT_TARGET: "10.15"
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Read variables from repo
+      run: cat .github/workflows/env >> $GITHUB_ENV
 
     - name: Check app versions
       run: |
@@ -49,7 +51,7 @@ jobs:
       with:
         channel: 'stable'
         architecture: 'x64'
-        flutter-version: '3.13.0'
+        flutter-version: ${{ env.FLUTTER }}
     - run: flutter config --enable-macos-desktop
     - run: flutter --version
 
