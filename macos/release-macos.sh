@@ -45,32 +45,10 @@ if [ -n "$1" ] && [ -n "$2" ] # Standalone
 then
 	echo "# Compress the .app to .zip and notarize"
 	ditto -c -k --sequesterRsrc --keepParent "Yubico Authenticator.app" "Yubico Authenticator.zip" 
-	RES=$(xcrun altool -t osx -f "Yubico Authenticator.zip" --primary-bundle-id com.yubico.authenticator --notarize-app -u $1 -p $2)
-	echo ${RES}
-	ERRORS=${RES:0:9}
-	if [ "$ERRORS" != "No errors" ]; then
-		echo "Error uploading for notarization"
-		exit
-	fi
-	UUID=${RES#*=}
-	STATUS=$(xcrun altool --notarization-info $UUID -u $1 -p $2)
+	STATUS=$(xcrun notarytool submit "Yubico Authenticator.zip" --apple-id $1 --team-id LQA3CS5MM7 --password $2 --wait)
+	echo ${STATUS}
 
-	while true
-	do
-		if [[ "$STATUS" == *"in progress"* ]]; then
-			echo "Notarization still in progress. Sleep 30s."
-			sleep 30
-			echo "Retrieving status again."
-			STATUS=$(xcrun altool --notarization-info $UUID -u $1 -p $2)
-		else
-			echo "Status changed."
-			break
-		fi
-	done
-
-	echo "${STATUS}"
-
-	if [[ "$STATUS" == *"success"* ]]; then
+	if [[ "$STATUS" == *"Accepted"* ]]; then
 		echo "Notarization successfull. Staple the .app"
 		xcrun stapler staple -v "Yubico Authenticator.app"
 
@@ -80,6 +58,9 @@ then
 		mv "Yubico Authenticator.app" source_folder
 		sh create-dmg.sh
 		echo "# .dmg created. Everything should be ready for release!"
+	else
+		echo "Error uploading for notarization"
+		exit
 	fi
 else # App store
 	echo "# Build the package for AppStore submission"
