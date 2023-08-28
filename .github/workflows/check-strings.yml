@@ -6,11 +6,12 @@ jobs:
   strings:
 
     runs-on: ubuntu-latest
-    env:
-      FLUTTER: '3.13.0'
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Read variables from repo
+      run: cat .github/workflows/env >> $GITHUB_ENV
 
     - name: Ensure main locale is correct
       run: python check_strings.py lib/l10n/app_en.arb

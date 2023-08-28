@@ -6,15 +6,19 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      PYVER: '3.11.4'
-      FLUTTER: '3.13.0'
     container:
       image: ubuntu:20.04
       env:
         DEBIAN_FRONTEND: noninteractive
 
     steps:
+    - uses: actions/checkout@v3
+      with:
+        sparse-checkout: .github/workflows/env
+
+    - name: Read variables from repo
+      run: cat .github/workflows/env >> $GITHUB_ENV
+
     - name: Install dependencies
       run: |
         export PYVER_MINOR=${PYVER%.*}

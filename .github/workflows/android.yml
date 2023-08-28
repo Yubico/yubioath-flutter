@@ -13,18 +13,22 @@ jobs:
           distribution: 'zulu'
           java-version: '11'
 
+      - uses: actions/checkout@v3
+        with:
+          path: 'app'
+
+      - name: Read variables from repo
+        run: cat .github/workflows/env >> $GITHUB_ENV
+        working-directory: ./app
+
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.13.0'
+          flutter-version: ${{ env.FLUTTER }}
       - run: |
           flutter config
           flutter --version
-
-      - uses: actions/checkout@v3
-        with:
-          path: 'app'
 
       - name: Check app versions
         run: |
