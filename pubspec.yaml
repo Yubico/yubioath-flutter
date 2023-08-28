@@ -42,7 +42,7 @@ dependencies:
   # cupertino_icons: ^1.0.2
 
   async: ^2.8.2
-  logging: 1.1.1
+  logging: ^1.2.0
   collection: ^1.16.0
   shared_preferences: ^2.1.2
   flutter_riverpod: ^2.3.7
