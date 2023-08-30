@@ -18,10 +18,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:yubico_authenticator/app/message.dart';
-import 'package:yubico_authenticator/app/state.dart';
-import 'package:yubico_authenticator/piv/models.dart';
-import 'package:yubico_authenticator/widgets/tooltip_if_truncated.dart';
+
+import '../../app/message.dart';
+import '../../app/state.dart';
+import '../../widgets/tooltip_if_truncated.dart';
+import '../models.dart';
 
 class CertInfoTable extends ConsumerWidget {
   final CertInfo certInfo;
@@ -36,7 +37,8 @@ class CertInfoTable extends ConsumerWidget {
     final subtitleStyle = textTheme.bodyMedium!.copyWith(
       color: textTheme.bodySmall!.color,
     );
-    final dateFormat = DateFormat.yMMMEd();
+    final dateFormat =
+        DateFormat.yMMMEd(ref.watch(currentLocaleProvider).toString());
     final clipboard = ref.watch(clipboardProvider);
     final withContext = ref.watch(withContextProvider);
 
