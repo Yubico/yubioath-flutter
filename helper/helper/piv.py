@@ -405,7 +405,7 @@ class SlotNode(RpcNode):
             self.session.put_key(self.slot, private_key, pin_policy, touch_policy)
             try:
                 metadata = self.session.get_slot_metadata(self.slot)
-            except (ApduError, BadResponseError):
+            except (ApduError, BadResponseError, NotSupportedError):
                 pass
 
         certificate = _choose_cert(certs)

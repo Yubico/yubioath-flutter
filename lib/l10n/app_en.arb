@@ -428,6 +428,8 @@
     "l_certificate_exported": "Certificate exported",
     "l_import_file": "Import file",
     "l_import_desc": "Import a key and/or certificate",
+    "l_importing_file": "Importing file\u2026",
+    "s_file_imported": "File imported",
     "l_delete_certificate": "Delete certificate",
     "l_delete_certificate_desc": "Remove the certificate from your YubiKey",
     "s_issuer": "Issuer",
