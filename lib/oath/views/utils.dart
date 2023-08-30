@@ -70,7 +70,13 @@ Future<void> handleUri(
   OathState? state,
   AppLocalizations l10n,
 ) async {
-  List<CredentialData> creds = CredentialData.fromUri(Uri.parse(qrData));
+  List<CredentialData> creds;
+  try {
+    creds = CredentialData.fromUri(Uri.parse(qrData));
+  } catch (_) {
+    showMessage(context, l10n.l_invalid_qr);
+    return;
+  }
   if (creds.isEmpty) {
     showMessage(context, l10n.l_qr_not_found);
   } else if (creds.length == 1) {
