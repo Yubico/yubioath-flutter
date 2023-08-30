@@ -20,7 +20,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
@@ -47,6 +49,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
   PivExamineResult? _state;
   String _password = '';
   bool _passwordIsWrong = false;
+  bool _importing = false;
 
   @override
   void initState() {
@@ -153,10 +156,10 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
         actions: [
           TextButton(
             key: keys.unlockButton,
-            onPressed: (keyType == null && certInfo == null)
+            onPressed: (keyType == null && certInfo == null) || _importing
                 ? null
                 : () async {
-                    final navigator = Navigator.of(context);
+                    final withContext = ref.read(withContextProvider);
 
                     if (!await confirmOverwrite(
                       context,
@@ -167,18 +170,37 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                       return;
                     }
 
+                    setState(() {
+                      _importing = true;
+                    });
+
+                    void Function()? close;
                     try {
+                      close = await withContext<void Function()>(
+                          (context) async => showMessage(
+                                context,
+                                l10n.l_importing_file,
+                                duration: const Duration(seconds: 30),
+                              ));
                       await ref
                           .read(pivSlotsProvider(widget.devicePath).notifier)
                           .import(widget.pivSlot.slot, _data,
                               password:
                                   _password.isNotEmpty ? _password : null);
-                      navigator.pop(true);
+                      await withContext(
+                        (context) async {
+                          Navigator.of(context).pop(true);
+                          showMessage(context, l10n.s_file_imported);
+                        },
+                      );
                     } catch (err) {
                       // TODO: More error cases
                       setState(() {
                         _passwordIsWrong = true;
+                        _importing = false;
                       });
+                    } finally {
+                      close?.call();
                     }
                   },
             child: Text(l10n.s_import),
