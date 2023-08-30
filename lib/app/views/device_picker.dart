@@ -19,6 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../android/state.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
 import '../models.dart';
@@ -118,6 +119,26 @@ class DevicePickerContent extends ConsumerWidget {
 
     final showUsb = isDesktop && devices.whereType<UsbYubiKeyNode>().isEmpty;
 
+    Widget? androidNoKeyWidget;
+    if (isAndroid && devices.isEmpty) {
+      var hasNfcSupport = ref.watch(androidNfcSupportProvider);
+      var isNfcEnabled = ref.watch(androidNfcStateProvider);
+      final subtitle = hasNfcSupport && isNfcEnabled
+          ? l10n.l_insert_or_tap_yk
+          : l10n.l_insert_yk;
+
+      androidNoKeyWidget = _DeviceRow(
+        leading: const DeviceAvatar(child: Icon(Icons.usb)),
+        title: l10n.l_no_yk_present,
+        subtitle: subtitle,
+        onTap: () {
+          ref.read(currentDeviceProvider.notifier).setCurrentDevice(null);
+        },
+        selected: currentNode == null,
+        extended: extended,
+      );
+    }
+
     List<Widget> children = [
       if (showUsb)
         _DeviceRow(
@@ -130,6 +151,8 @@ class DevicePickerContent extends ConsumerWidget {
           selected: currentNode == null,
           extended: extended,
         ),
+      if (androidNoKeyWidget != null)
+        androidNoKeyWidget,
       ...devices.map(
         (e) => e.path == currentNode?.path
             ? _buildCurrentDeviceRow(
