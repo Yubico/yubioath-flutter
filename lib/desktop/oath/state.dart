@@ -71,8 +71,21 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
       ..setErrorHandler('state-reset', (_) async {
         ref.invalidate(_sessionProvider(devicePath));
       })
-      ..setErrorHandler('auth-required', (_) async {
-        ref.invalidateSelf();
+      ..setErrorHandler('auth-required', (e) async {
+        final key = ref.read(_oathLockKeyProvider(_session.devicePath));
+        if (key != null) {
+          final result =
+              await _session.command('validate', params: {'key': key});
+          if (result['valid']) {
+            ref.invalidateSelf();
+            return;
+          } else {
+            ref
+                .read(_oathLockKeyProvider(_session.devicePath).notifier)
+                .unsetKey();
+          }
+        }
+        throw e;
       });
     ref.onDispose(() {
       _session
@@ -81,17 +94,7 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
     });
     final result = await _session.command('get');
     _log.debug('application status', jsonEncode(result));
-    var oathState = OathState.fromJson(result['data']);
-    final key = ref.read(_oathLockKeyProvider(_session.devicePath));
-    if (oathState.locked && key != null) {
-      final result = await _session.command('validate', params: {'key': key});
-      if (result['valid']) {
-        oathState = oathState.copyWith(locked: false);
-      } else {
-        ref.read(_oathLockKeyProvider(_session.devicePath).notifier).unsetKey();
-      }
-    }
-    return oathState;
+    return OathState.fromJson(result['data']);
   }
 
   @override

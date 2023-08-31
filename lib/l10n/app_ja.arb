@@ -428,6 +428,8 @@
     "l_certificate_exported": "証明書がエクスポートされました",
     "l_import_file": "ファイルのインポート",
     "l_import_desc": "キーや証明書のインポート",
+    "l_importing_file": "ファイルのインポート中\u2026",
+    "s_file_imported": "ファイル をインポートしました",
     "l_delete_certificate": "証明書を削除",
     "l_delete_certificate_desc": "YubiKeyか証明書の削除",
     "s_issuer": "発行者",
