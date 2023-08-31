@@ -97,24 +97,27 @@ class _CertificateListItem extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return AppListItem(
-      leading: CircleAvatar(
-        foregroundColor: colorScheme.onSecondary,
-        backgroundColor: colorScheme.secondary,
-        child: const Icon(Icons.approval),
-      ),
-      title: slot.getDisplayName(l10n),
-      subtitle: certInfo != null
-          // Simplify subtitle by stripping "CN=", etc.
-          ? certInfo.subject.replaceAll(RegExp(r'[A-Z]+='), ' ').trimLeft()
-          : pivSlot.hasKey == true
-              ? l10n.l_key_no_certificate
-              : l10n.l_no_certificate,
-      trailing: OutlinedButton(
-        onPressed: Actions.handler(context, const OpenIntent()),
-        child: const Icon(Icons.more_horiz),
-      ),
-      buildPopupActions: (context) => buildSlotActions(certInfo != null, l10n),
-    );
+    return Semantics(
+        label: slot.getDisplayName(l10n),
+        child: AppListItem(
+          leading: CircleAvatar(
+            foregroundColor: colorScheme.onSecondary,
+            backgroundColor: colorScheme.secondary,
+            child: const Icon(Icons.approval),
+          ),
+          title: slot.getDisplayName(l10n),
+          subtitle: certInfo != null
+              // Simplify subtitle by stripping "CN=", etc.
+              ? certInfo.subject.replaceAll(RegExp(r'[A-Z]+='), ' ').trimLeft()
+              : pivSlot.hasKey == true
+                  ? l10n.l_key_no_certificate
+                  : l10n.l_no_certificate,
+          trailing: OutlinedButton(
+            onPressed: Actions.handler(context, const OpenIntent()),
+            child: const Icon(Icons.more_horiz),
+          ),
+          buildPopupActions: (context) =>
+              buildSlotActions(certInfo != null, l10n),
+        ));
   }
 }
