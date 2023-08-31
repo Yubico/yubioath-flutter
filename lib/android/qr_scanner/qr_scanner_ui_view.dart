@@ -44,12 +44,15 @@ class QRScannerUI extends StatelessWidget {
                 screenSize.height + scannerAreaWidth / 2.0 + 8.0),
             width: screenSize.width,
             height: screenSize.height),
-        child: Text(
-          status != ScanStatus.error
-              ? l10n.l_point_camera_scan
-              : l10n.l_invalid_qr,
-          style: const TextStyle(color: Colors.white),
-          textAlign: TextAlign.center,
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Text(
+            status != ScanStatus.error
+                ? l10n.l_point_camera_scan
+                : l10n.l_invalid_qr,
+            style: const TextStyle(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
 

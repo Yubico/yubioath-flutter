@@ -20,11 +20,11 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:io/io.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:yubico_authenticator/app/logging.dart';
-import 'package:io/io.dart';
 
 import 'icon_cache.dart';
 import 'icon_pack.dart';
@@ -116,7 +116,16 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
 
     final unpackDirectory = Directory(join(tempDirectory.path, 'unpack'));
 
-    final archive = ZipDecoder().decodeBytes(bytes, verify: true);
+    Archive archive;
+    try {
+      archive = ZipDecoder().decodeBytes(bytes, verify: true);
+    } on Exception catch (_) {
+      _log.error('File is not an icon pack: zip decoding failed');
+      _lastError = l10n.l_invalid_icon_pack;
+      state = AsyncValue.error('File is not an icon pack', StackTrace.current);
+      return false;
+    }
+
     for (final file in archive) {
       final filename = file.name;
       if (file.size > 0) {
@@ -172,7 +181,8 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
     } catch (e) {
       _log.error('Failed to copy icon pack files to destination: $e');
       _lastError = l10n.l_icon_pack_copy_failed;
-      state = AsyncValue.error('Failed to copy icon pack files.', StackTrace.current);
+      state = AsyncValue.error(
+          'Failed to copy icon pack files.', StackTrace.current);
       return false;
     }
 
