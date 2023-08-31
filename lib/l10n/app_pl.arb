@@ -113,6 +113,7 @@
         }
     },
     "l_import_icon_pack_failed": "Błąd importu pakietu ikon: {message}",
+    "l_importing_file": "Importowanie pliku…",
     "l_insert_or_tap_yk": "Podłącz lub przystaw YubiKey",
     "l_insert_yk": "Podłącz klucz YubiKey",
     "l_invalid_character_issuer": "Nieprawidłowy znak: „:” nie jest dozwolony w polu wydawcy",
@@ -378,6 +379,7 @@
     "s_factory_reset": "Ustawienia fabryczne",
     "s_fido_disabled": "FIDO2 wyłączone",
     "s_fido_pin_protection": "Ochrona FIDO kodem PIN",
+    "s_file_imported": "Plik został zaimportowany",
     "s_fingerprint_added": "Dodano odcisk palca",
     "s_fingerprint_deleted": "Odcisk palca został usunięty",
     "s_fingerprint_renamed": "Zmieniono nazwę odcisku palca",
