@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yubico_authenticator/core/state.dart';
 
 class ResponsiveDialog extends StatefulWidget {
   final Widget? title;
@@ -97,6 +98,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
   @override
   Widget build(BuildContext context) =>
       LayoutBuilder(builder: ((context, constraints) {
+        var maxWidth = isDesktop ? 400 : 600;
         // This keeps the focus in the dialog, even if the underlying page changes.
         return FocusScope(
           node: _focus,
@@ -107,7 +109,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               _hasLostFocus = true;
             }
           },
-          child: constraints.maxWidth < 400
+          child: constraints.maxWidth < maxWidth
               ? _buildFullscreen(context)
               : _buildDialog(context),
         );
