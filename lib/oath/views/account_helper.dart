@@ -171,6 +171,7 @@ class _CodeLabel extends StatelessWidget {
             // This helps with vertical centering on desktop
             applyHeightToFirstAscent: !isDesktop,
           ),
+          semanticsLabel: code?.value.characters.map((c) => '$c ' ).toString(),
         ),
       );
 }
