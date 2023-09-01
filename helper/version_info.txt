@@ -31,11 +31,11 @@ VSVersionInfo(
         '040904b0',
         [StringStruct('CompanyName', 'Yubico'),
         StringStruct('FileDescription', 'Yubico Authenticator Helper'),
-        StringStruct('FileVersion', '6.3.0-dev.0'),
+        StringStruct('FileVersion', '6.3.0'),
         StringStruct('LegalCopyright', 'Copyright (c) Yubico'),
         StringStruct('OriginalFilename', 'authenticator-helper.exe'),
         StringStruct('ProductName', 'Yubico Authenticator'),
-        StringStruct('ProductVersion', '6.3.0-dev.0')])
+        StringStruct('ProductVersion', '6.3.0')])
       ]),
     VarFileInfo([VarStruct('Translation', [1033, 1200])])
   ]
