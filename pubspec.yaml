@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # This field is updated by running ./set-version.py <version>
 # DO NOT MANUALLY EDIT THIS!
-version: 6.3.0-dev.0+60300
+version: 6.3.1-dev.0+60301
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -45,7 +45,7 @@ dependencies:
   logging: ^1.2.0
   collection: ^1.16.0
   shared_preferences: ^2.1.2
-  flutter_riverpod: ^2.3.7
+  flutter_riverpod: ^2.3.10
   json_annotation: ^4.8.1
   freezed_annotation: ^2.2.0
   window_manager: ^0.3.2
@@ -59,7 +59,7 @@ dependencies:
   vector_graphics_compiler: ^1.1.7
   path: ^1.8.2
   file_picker: ^5.3.2
-  archive: ^3.3.2
+  archive: ^3.3.8
   crypto: ^3.0.2
   tray_manager: ^0.2.0
   local_notifier: ^0.1.5
