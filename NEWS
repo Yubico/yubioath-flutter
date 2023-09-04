@@ -2,7 +2,7 @@
  ** Add support for importing accounts through QR codes from Google Authenticator.
  ** Add community translations for French, Japanese, German and Polish languages.
  ** Improve user interface with new Material UI widgets.
- ** Security and general bug fixes based on user feedback.
+ ** Bug fixes and improvements based on user feedback.
  ** Desktop: Add support for PIV.
  ** Android: Update Android 14 compatibility.
 
