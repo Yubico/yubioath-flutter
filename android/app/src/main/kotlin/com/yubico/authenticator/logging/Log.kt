@@ -18,7 +18,6 @@ package com.yubico.authenticator.logging
 
 import ch.qos.logback.classic.Level
 import com.yubico.authenticator.BuildConfig
-
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -37,7 +36,7 @@ object Log {
     private const val MAX_BUFFER_SIZE = 1000
     private val buffer = arrayListOf<String>()
 
-    fun getBuffer() : List<String> {
+    fun getBuffer(): List<String> {
         return buffer
     }
 

@@ -52,7 +52,11 @@ dependencies:
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
   screen_retriever: ^0.1.6
-  desktop_drop: ^0.4.0
+  desktop_drop:
+    git:
+      url: https://github.com/AdamVe/mixin-network-flutter-plugins.git
+      path: packages/desktop_drop
+      ref: feature/AGP8_namespace
   url_launcher: ^6.1.7
   path_provider: ^2.1.0
   vector_graphics: ^1.1.7
