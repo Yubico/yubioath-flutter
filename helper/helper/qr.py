@@ -22,7 +22,6 @@ import subprocess  # nosec
 import tempfile
 from mss.exception import ScreenShotError
 from PIL import Image
-import numpy.core.multiarray  # noqa
 
 
 def _capture_screen():

@@ -36,7 +36,7 @@ exe = EXE(
     manifest="authenticator-helper.exe.manifest",
     version="version_info.txt",
     disable_windowed_traceback=False,
-    target_arch=None,
+    target_arch="universal2",
     codesign_identity=None,
     entitlements_file=None,
 )
