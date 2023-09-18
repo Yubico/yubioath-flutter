@@ -49,7 +49,7 @@ then
 	echo ${STATUS}
 
 	if [[ "$STATUS" == *"Accepted"* ]]; then
-		echo "Notarization successfull. Staple the .app"
+		echo "# Notarization successfull. Staple the .app"
 		xcrun stapler staple -v "Yubico Authenticator.app"
 
 		echo "# Create dmg"
@@ -57,11 +57,21 @@ then
 		mkdir source_folder
 		mv "Yubico Authenticator.app" source_folder
 		sh create-dmg.sh
-		echo "# .dmg created. Everything should be ready for release!"
+		echo "# .dmg created."
 	else
 		echo "Error uploading for notarization"
 		exit
 	fi
+
+	echo "# Sign the .dmg"
+	codesign -f --timestamp --options runtime --sign 'Application' yubioath-desktop.dmg
+	echo "# Notarize the .dmg"
+	STATUS=$(xcrun notarytool submit "yubioath-desktop.dmg" --apple-id $1 --team-id LQA3CS5MM7 --password $2 --wait)
+	echo ${STATUS}
+	echo "# Staple the .dmg"
+	xcrun stapler staple -v yubioath-desktop.dmg
+
+	echo "# Everything should be ready for release!"
 else # App store
 	echo "# Build the package for AppStore submission"
 	productbuild --sign 'Installer' --component "Yubico Authenticator.app" /Applications/ output-appstore.pkg
