@@ -6,11 +6,6 @@ jobs:
   build:
 
     runs-on: macos-latest
-    env:
-      MACOSX_DEPLOYMENT_TARGET: "10.15"
-      CFLAGS: -arch x86_64 -arch arm64
-      ARCHFLAGS: -arch x86_64 -arch arm64
-      CMAKE_OSX_ARCHITECTURES: arm64;x86_64
 
     steps:
     - uses: actions/checkout@v3

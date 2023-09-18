@@ -27,6 +27,9 @@ if [ "$OS" = "macos" ]; then
 	echo "Using Python: $PYTHON"
 	if [ $(lipo -archs $PYTHON | grep -c 'x86_64 arm64') -ne 0 ]; then
 		echo "Fixing single-arch dependencies..."
+		export MACOSX_DEPLOYMENT_TARGET="10.15"
+		export CFLAGS="-arch x86_64 -arch arm64"
+		export ARCHFLAGS="-arch x86_64 -arch arm64"
 		HELPER="../$OUTPUT/helper"
 		rm -rf $HELPER
 		mkdir -p $HELPER
