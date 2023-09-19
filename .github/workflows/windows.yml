@@ -42,11 +42,7 @@ jobs:
 
       - name: Build the Helper
         if: steps.cache-helper.outputs.cache-hit != 'true'
-        run: |
-          # Needed for zxing-cpp build
-          $env:TMPDIR = "C:\e"
-          poetry config virtualenvs.path C:\e
-          .\build-helper.bat
+        run: .\build-helper.bat
 
       - uses: subosito/flutter-action@v2
         with:
