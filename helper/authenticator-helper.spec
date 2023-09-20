@@ -1,4 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
+import sys
+import subprocess
 
 
 block_cipher = None
@@ -21,6 +23,13 @@ a = Analysis(
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
+target_arch = None
+# MacOS: If the running Python process is "universal", build a univeral2 binary.
+if sys.platform == "darwin":
+    r = subprocess.run(['lipo', '-archs', sys.executable], capture_output=True).stdout
+    if b"x86_64" in r and b"arm64" in r:
+        target_arch = "universal2"
+
 exe = EXE(
     pyz,
     a.scripts,
@@ -36,7 +45,7 @@ exe = EXE(
     manifest="authenticator-helper.exe.manifest",
     version="version_info.txt",
     disable_windowed_traceback=False,
-    target_arch=None,
+    target_arch=target_arch,
     codesign_identity=None,
     entitlements_file=None,
 )
