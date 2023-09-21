@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,6 +103,7 @@ class _QrScannerViewState extends State<QrScannerView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final screenSize = MediaQuery.of(context).size;
+    final overlayWidgetKey = GlobalKey();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
@@ -153,12 +154,14 @@ class _QrScannerViewState extends State<QrScannerView> {
               child: QRScannerOverlay(
                 status: _status,
                 screenSize: screenSize,
+                overlayWidgetKey: overlayWidgetKey,
               )),
           Visibility(
               visible: _permissionsGranted,
               child: QRScannerUI(
                 status: _status,
                 screenSize: screenSize,
+                overlayWidgetKey: overlayWidgetKey,
               )),
           Visibility(
               visible: _previewInitialized && !_permissionsGranted,
