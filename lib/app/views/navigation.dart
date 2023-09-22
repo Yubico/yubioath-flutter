@@ -71,18 +71,15 @@ class NavigationItem extends StatelessWidget {
               ),
       );
     } else {
-      return Material(
-        type: MaterialType.transparency,
-        child: ListTile(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
-          leading: leading,
-          title: Text(title),
-          minVerticalPadding: 16,
-          onTap: onTap,
-          tileColor: selected ? colorScheme.secondaryContainer : null,
-          textColor: selected ? colorScheme.onSecondaryContainer : null,
-          iconColor: selected ? colorScheme.onSecondaryContainer : null,
-        ),
+      return ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
+        leading: leading,
+        title: Text(title),
+        minVerticalPadding: 16,
+        onTap: onTap,
+        tileColor: selected ? colorScheme.secondaryContainer : null,
+        textColor: selected ? colorScheme.onSecondaryContainer : null,
+        iconColor: selected ? colorScheme.onSecondaryContainer : null,
       );
     }
   }
