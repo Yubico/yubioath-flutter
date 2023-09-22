@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory
 
 object Log {
 
-    private val logger = LoggerFactory.getLogger("com.yubico.authenticator")
+    private val logger = LoggerFactory.getLogger("com.yubico.authenticator.Log")
 
     enum class LogLevel {
         TRAFFIC,
@@ -32,13 +32,6 @@ object Log {
         INFO,
         WARNING,
         ERROR
-    }
-
-    private const val MAX_BUFFER_SIZE = 1000
-    private val buffer = arrayListOf<String>()
-
-    fun getBuffer() : List<String> {
-        return buffer
     }
 
     private var level = if (BuildConfig.DEBUG) {
@@ -56,17 +49,10 @@ object Log {
             return
         }
 
-        if (buffer.size > MAX_BUFFER_SIZE) {
-            buffer.removeAt(0)
-        }
-
         val logMessage = (if (error == null)
-            "[$loggerName] ${level.name}: $message"
+            "$message [$loggerName]"
         else
-            "[$loggerName] ${level.name}: $message (err: $error)"
-                ).also {
-                buffer.add(it)
-            }
+            "$message [$loggerName] (err: $error)")
 
         when (level) {
             LogLevel.TRAFFIC -> logger.trace(logMessage)
