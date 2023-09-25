@@ -74,8 +74,7 @@ class MainPage extends ConsumerWidget {
       isDarkTheme
           ? 'assets/graphics/no-key_dark.png'
           : 'assets/graphics/no-key.png',
-      filterQuality: FilterQuality.medium,
-      scale: 2,
+      filterQuality: FilterQuality.medium
     );
     if (deviceNode == null) {
       if (isAndroid) {
