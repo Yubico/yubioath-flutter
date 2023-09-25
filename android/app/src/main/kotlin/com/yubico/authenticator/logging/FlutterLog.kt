@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,18 @@ package com.yubico.authenticator.logging
 
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class FlutterLog(messenger: BinaryMessenger) {
     private var channel = MethodChannel(messenger, "android.log.redirect")
 
+    private val bufferAppender =
+        (LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger)
+            .getAppender("buffer") as BufferAppender
+
     init {
+
         channel.setMethodCallHandler { call, result ->
 
             when (call.method) {
@@ -53,7 +60,7 @@ class FlutterLog(messenger: BinaryMessenger) {
                     result.success(null)
                 }
                 "getLogs" -> {
-                    result.success(Log.getBuffer())
+                    result.success(bufferAppender.getLogBuffer())
                 }
                 else -> {
                     result.notImplemented()
