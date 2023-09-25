@@ -569,9 +569,6 @@ class OathManager(
                 useOathSessionUsb(usbYubiKeyDevice) { session ->
                     try {
                         oathViewModel.updateCredentials(calculateOathCodes(session))
-                    } catch (ioException: IOException) {
-                        logger.error("Exception while calculating codes: ", ioException)
-                        clearCodes()
                     } catch (apduException: ApduException) {
                         if (apduException.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
                             logger.debug("Handled oath credential refresh on locked session.")
