@@ -19,6 +19,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:yubico_authenticator/android/state.dart';
+import 'package:yubico_authenticator/android/views/nfc/fade_in_out.dart';
 import 'package:yubico_authenticator/app/views/horizontal_shake.dart';
 
 import '../../../theme.dart';
@@ -37,23 +38,28 @@ class NfcActivityIcon extends StatelessWidget {
         NfcActivity.processingStarted => Stack(
             fit: StackFit.loose,
             children: [
-              ImageFiltered(
-                imageFilter: ImageFilter.blur(
-                  sigmaX: 7.0,
-                  sigmaY: 7.0,
-                  tileMode: TileMode.decal,
-                ),
-                child: const Opacity(
-                  opacity: 0.6,
-                  child: _NfcIcon(
-                    color: accentGreen,
+              FadeInOut(
+                minOpacity: 0.1,
+                maxOpacity: 1.0,
+                pulseDuration: const Duration(milliseconds: 300),
+                delayBetweenShakesDuration: const Duration(milliseconds: 20),
+                child: ImageFiltered(
+                  imageFilter: ImageFilter.blur(
+                    sigmaX: 7.0,
+                    sigmaY: 7.0,
+                    tileMode: TileMode.decal,
+                  ),
+                  child: const Opacity(
+                    opacity: 0.6,
+                    child: _NfcIcon(
+                      color: accentGreen,
+                    ),
                   ),
                 ),
               ),
               const _NfcIcon(),
             ],
           ),
-
         NfcActivity.processingInterrupted =>
           const _NfcIconWrapper(Icons.warning_amber_rounded),
         _ => const _NfcIcon(),

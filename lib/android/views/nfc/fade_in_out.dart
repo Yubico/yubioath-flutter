@@ -2,47 +2,50 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-class HorizontalShake extends StatefulWidget {
+/// Repeatedly fades in and out its child
+class FadeInOut extends StatefulWidget {
   final Widget child;
-  final double shakeAmount;
-  final int shakeCount;
-  final Duration shakeDuration;
+  final double minOpacity;
+  final double maxOpacity;
+  final Duration pulseDuration;
   final Duration delayBetweenShakesDuration;
   final Duration startupDelay;
 
-  const HorizontalShake(
+  const FadeInOut(
       {super.key,
       required this.child,
-      this.shakeAmount = 2,
-      this.shakeCount = 3,
-      this.shakeDuration = const Duration(milliseconds: 50),
+      this.minOpacity = 0.0,
+      this.maxOpacity = 1.0,
+      this.pulseDuration = const Duration(milliseconds: 300),
       this.delayBetweenShakesDuration = const Duration(seconds: 3),
-      this.startupDelay = const Duration(seconds: 0)});
+      this.startupDelay = Duration.zero});
 
   @override
-  State<HorizontalShake> createState() => _HorizontalShakeState();
+  State<FadeInOut> createState() => _FadeInOutState();
 }
 
-class _HorizontalShakeState extends State<HorizontalShake>
+class _FadeInOutState extends State<FadeInOut>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   late Timer delayTimer;
 
-  int _shakeCounter = 0;
+  bool playingForward = true;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: widget.shakeDuration);
+    _controller = AnimationController(
+        vsync: this,
+        duration:
+            Duration(milliseconds: widget.pulseDuration.inMilliseconds ~/ 2));
 
     _controller.addListener(() async {
       if (_controller.isCompleted || _controller.isDismissed) {
-        var delay = const Duration(milliseconds: 0);
-        if (_shakeCounter++ > widget.shakeCount * 2) {
+        playingForward = !playingForward;
+        var delay = Duration.zero;
+        if (playingForward == true) {
           delay = widget.delayBetweenShakesDuration;
-          _shakeCounter = 0;
         }
 
         if (delayTimer.isActive) {
@@ -60,8 +63,7 @@ class _HorizontalShakeState extends State<HorizontalShake>
     });
 
     _animation =
-        Tween<double>(begin: 0, end: widget.shakeAmount)
-            .animate(
+        Tween<double>(begin: widget.minOpacity, end: widget.maxOpacity).animate(
       CurvedAnimation(parent: _controller, curve: Curves.ease),
     );
 
@@ -82,8 +84,8 @@ class _HorizontalShakeState extends State<HorizontalShake>
     return AnimatedBuilder(
       animation: _controller,
       builder: (BuildContext context, Widget? child) {
-        return Transform.translate(
-          offset: Offset(_animation.value, 0),
+        return Opacity(
+          opacity: _animation.value,
           child: widget.child,
         );
       },
