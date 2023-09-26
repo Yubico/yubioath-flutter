@@ -43,6 +43,7 @@ class FidoLockedPage extends ConsumerWidget {
           header: l10n.s_no_fingerprints,
           message: l10n.l_set_pin_fingerprints,
           keyActionsBuilder: _buildActions,
+          keyActionsBadge: fidoShowActionsNotifier(state),
         );
       } else {
         return MessagePage(
@@ -53,6 +54,7 @@ class FidoLockedPage extends ConsumerWidget {
               : l10n.l_ready_to_use,
           message: l10n.l_optionally_set_a_pin,
           keyActionsBuilder: _buildActions,
+          keyActionsBadge: fidoShowActionsNotifier(state),
         );
       }
     }

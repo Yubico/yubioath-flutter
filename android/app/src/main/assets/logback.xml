@@ -24,8 +24,14 @@
         </encoder>
     </appender>
 
-    <!-- Write TRACE (and higher-level) messages to logcat -->
+    <appender name="buffer" class="com.yubico.authenticator.logging.BufferAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss:SSS} [%thread] %-5level %logger{36} - %X{app} %msg</pattern>
+        </encoder>
+    </appender>
+
     <root level="TRACE">
         <appender-ref ref="logcat" />
+        <appender-ref ref="buffer" />
     </root>
 </configuration>

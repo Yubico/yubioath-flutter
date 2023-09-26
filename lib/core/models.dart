@@ -16,6 +16,7 @@
 
 import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:intl/intl.dart';
 
 import '../management/models.dart';
 
@@ -152,3 +153,5 @@ class Version with _$Version implements Comparable<Version> {
     return a - b;
   }
 }
+
+final DateFormat dateFormatter = DateFormat('yyyy-MM-dd');

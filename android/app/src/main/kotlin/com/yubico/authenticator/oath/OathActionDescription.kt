@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,22 @@
  * limitations under the License.
  */
 
-/// list of YubiKey serial numbers which are approved to be used with integration tests
-var approvedYubiKeys = <String>[];
+package com.yubico.authenticator.oath
+
+const val dialogDescriptionOathIndex = 100
+
+enum class OathActionDescription(private val value: Int) {
+    Reset(0),
+    Unlock(1),
+    SetPassword(2),
+    UnsetPassword(3),
+    AddAccount(4),
+    RenameAccount(5),
+    DeleteAccount(6),
+    CalculateCode(7),
+    ActionFailure(8),
+    AddMultipleAccounts(9);
+
+    val id: Int
+        get() = value + dialogDescriptionOathIndex
+}

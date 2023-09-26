@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import 'dart:ui';
-
-const double scannerAreaRadius = 40.0;
-
-double getScannerAreaWidth(Size size) => size.width - scannerAreaRadius;
+/// list of YubiKey serial numbers which are approved to be used with integration tests
+var approvedYubiKeys = <String>[
+  '',
+];

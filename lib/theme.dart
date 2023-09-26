@@ -21,6 +21,7 @@ const accentGreen = Color(0xff9aca3c);
 const primaryBlue = Color(0xff325f74);
 const primaryRed = Color(0xffea4335);
 const darkRed = Color(0xffda4d41);
+const amber = Color(0xffffca28);
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
@@ -32,12 +33,20 @@ class AppTheme {
         ).copyWith(
           primary: primaryBlue,
           //secondary: accentGreen,
+          secondary: Colors.grey.shade400,
+          onSecondary: Colors.grey.shade800,
+          tertiary: amber.withOpacity(0.7),
+          error: darkRed,
+          onError: Colors.white.withOpacity(0.9),
         ),
         textTheme: TextTheme(
-          bodySmall: TextStyle(color: Colors.grey.shade900),
+          bodySmall: TextStyle(color: Colors.grey.shade600),
         ),
         dialogTheme: const DialogTheme(
           surfaceTintColor: Colors.white70,
+        ),
+        tooltipTheme: const TooltipThemeData(
+          waitDuration: Duration(seconds: 1),
         ),
       );
 
@@ -50,19 +59,22 @@ class AppTheme {
         ).copyWith(
           primary: primaryGreen,
           //onPrimary: Colors.grey.shade900,
-          //secondary: accentGreen,
-          //secondary: const Color(0xff5d7d90),
+          secondary: Colors.grey.shade400,
           //onSecondary: Colors.grey.shade900,
           //primaryContainer: Colors.grey.shade800,
           //onPrimaryContainer: Colors.grey.shade100,
           error: darkRed,
           onError: Colors.white.withOpacity(0.9),
+          tertiary: amber.withOpacity(0.7),
         ),
         textTheme: TextTheme(
           bodySmall: TextStyle(color: Colors.grey.shade500),
         ),
         dialogTheme: DialogTheme(
           surfaceTintColor: Colors.grey.shade700,
+        ),
+        tooltipTheme: const TooltipThemeData(
+          waitDuration: Duration(seconds: 1),
         ),
       );
 

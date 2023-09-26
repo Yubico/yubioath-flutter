@@ -6,11 +6,13 @@ jobs:
   build:
 
     runs-on: windows-latest
-    env:
-      PYVER: '3.11.3'
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Read variables from repo
+        shell: bash
+        run: cat .github/workflows/env >> $GITHUB_ENV
 
       - name: Check app versions
         run: |
@@ -45,7 +47,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.10.1'
+          flutter-version: ${{ env.FLUTTER }}
       - run: flutter config --enable-windows-desktop
       - run: flutter --version
 

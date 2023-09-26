@@ -93,7 +93,7 @@ if len(sys.argv) != 2:
 
 
 target = sys.argv[1]
-with open(target) as f:
+with open(target, encoding='utf-8') as f:
     values = json.load(f, object_pairs_hook=check_duplicate_keys)
 
 strings = {k: v for k, v in values.items() if not k.startswith("@")}

@@ -22,6 +22,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/exception/cancellation_exception.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
@@ -36,33 +37,31 @@ final _log = Logger('android.oath.state');
 
 const _methods = MethodChannel('android.oath.methods');
 
-final androidOathStateProvider = StateNotifierProvider.autoDispose
-    .family<OathStateNotifier, AsyncValue<OathState>, DevicePath>(
-        (ref, devicePath) => _AndroidOathStateNotifier());
+final androidOathStateProvider = AsyncNotifierProvider.autoDispose
+    .family<OathStateNotifier, OathState, DevicePath>(
+        _AndroidOathStateNotifier.new);
 
 class _AndroidOathStateNotifier extends OathStateNotifier {
   final _events = const EventChannel('android.oath.sessionState');
   late StreamSubscription _sub;
-  _AndroidOathStateNotifier() : super() {
+
+  @override
+  FutureOr<OathState> build(DevicePath arg) {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
-      if (mounted) {
-        if (json == null) {
-          state = const AsyncValue.loading();
-        } else {
-          final oathState = OathState.fromJson(json);
-          state = AsyncValue.data(oathState);
-        }
+      if (json == null) {
+        state = const AsyncValue.loading();
+      } else {
+        final oathState = OathState.fromJson(json);
+        state = AsyncValue.data(oathState);
       }
     }, onError: (err, stackTrace) {
       state = AsyncValue.error(err, stackTrace);
     });
-  }
 
-  @override
-  void dispose() {
-    _sub.cancel();
-    super.dispose();
+    ref.onDispose(_sub.cancel);
+
+    return Completer<OathState>().future;
   }
 
   @override
@@ -138,6 +137,35 @@ final addCredentialToAnyProvider =
           } on PlatformException catch (pe) {
             _log.error('Failed to add account.', pe);
             throw pe.decode();
+          }
+        });
+
+final addCredentialsToAnyProvider = Provider(
+    (ref) => (List<String> credentialUris, List<bool> touchRequired) async {
+          try {
+            _log.debug(
+                'Calling android with ${credentialUris.length} credentials to be added');
+
+            String resultString = await _methods.invokeMethod(
+              'addAccountsToAny',
+              {
+                'uris': credentialUris,
+                'requireTouch': touchRequired,
+              },
+            );
+
+            _log.debug('Call result: $resultString');
+            var result = jsonDecode(resultString);
+            return result['succeeded'] == credentialUris.length;
+          } on PlatformException catch (pe) {
+            var decodedException = pe.decode();
+            if (decodedException is CancellationException) {
+              _log.debug('User cancelled adding multiple accounts');
+            } else {
+              _log.error('Failed to add multiple accounts.', pe);
+            }
+
+            throw decodedException;
           }
         });
 

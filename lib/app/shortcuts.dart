@@ -28,6 +28,7 @@ import '../oath/keys.dart';
 import 'message.dart';
 import 'models.dart';
 import 'state.dart';
+import 'views/keys.dart';
 import 'views/settings_page.dart';
 
 class OpenIntent extends Intent {
@@ -100,7 +101,10 @@ Widget registerGlobalShortcuts(
         }),
         NextDeviceIntent: CallbackAction<NextDeviceIntent>(onInvoke: (_) {
           ref.read(withContextProvider)((context) async {
-            if (!Navigator.of(context).canPop()) {
+            // Only allow switching keys if no other views are open,
+            // with the exception of the drawer.
+            if (!Navigator.of(context).canPop() ||
+                scaffoldGlobalKey.currentState?.isDrawerOpen == true) {
               final attached = ref
                   .read(attachedDevicesProvider)
                   .whereType<UsbYubiKeyNode>()
@@ -145,17 +149,23 @@ Widget registerGlobalShortcuts(
       child: Shortcuts(
         shortcuts: {
           ctrlOrCmd(LogicalKeyboardKey.keyC): const CopyIntent(),
-          ctrlOrCmd(LogicalKeyboardKey.keyW): const HideIntent(),
+          const SingleActivator(LogicalKeyboardKey.copy): const CopyIntent(),
           ctrlOrCmd(LogicalKeyboardKey.keyF): const SearchIntent(),
           if (isDesktop) ...{
             const SingleActivator(LogicalKeyboardKey.tab, control: true):
                 const NextDeviceIntent(),
           },
           if (Platform.isMacOS) ...{
+            const SingleActivator(LogicalKeyboardKey.keyW, meta: true):
+                const HideIntent(),
             const SingleActivator(LogicalKeyboardKey.keyQ, meta: true):
                 const CloseIntent(),
             const SingleActivator(LogicalKeyboardKey.comma, meta: true):
                 const SettingsIntent(),
+          },
+          if (Platform.isWindows) ...{
+            const SingleActivator(LogicalKeyboardKey.keyW, control: true):
+                const HideIntent(),
           },
           if (Platform.isLinux) ...{
             const SingleActivator(LogicalKeyboardKey.keyQ, control: true):

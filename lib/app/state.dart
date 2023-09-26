@@ -15,6 +15,7 @@
  */
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -64,14 +65,32 @@ class CommunityTranslationsNotifier extends StateNotifier<bool> {
   }
 }
 
-final supportedLocalesProvider = Provider<List<Locale>>((ref) =>
-    ref.watch(communityTranslationsProvider)
-        ? AppLocalizations.supportedLocales
-        : officialLocales);
+final supportedLocalesProvider = Provider<List<Locale>>((ref) {
+  final locales = [...officialLocales];
+  final localeStr = Platform.environment['_YA_LOCALE'];
+  if (localeStr != null) {
+    // Force locale
+    final locale = Locale(localeStr, '');
+    locales.add(locale);
+  }
+  return ref.watch(communityTranslationsProvider)
+      ? AppLocalizations.supportedLocales
+      : locales;
+});
 
 final currentLocaleProvider = Provider<Locale>(
-  (ref) => basicLocaleListResolution(
-      PlatformDispatcher.instance.locales, ref.watch(supportedLocalesProvider)),
+  (ref) {
+    final localeStr = Platform.environment['_YA_LOCALE'];
+    if (localeStr != null) {
+      // Force locale
+      final locale = Locale(localeStr, '');
+      return basicLocaleListResolution(
+          [locale], AppLocalizations.supportedLocales);
+    }
+    // Choose from supported
+    return basicLocaleListResolution(PlatformDispatcher.instance.locales,
+        ref.watch(supportedLocalesProvider));
+  },
 );
 
 final l10nProvider = Provider<AppLocalizations>(

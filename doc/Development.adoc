@@ -28,12 +28,30 @@ on `yubikey-manager >=5, <6`. It will likely not work with versions outside
 this range!
 
 === Building the Yubico Authenticator Helper
-Requirements: Python >= 3.8 and Poetry.
-
 The GUI requires a compiled version of Helper to run, which is built from the
-sources in helper/ in this repository. This needs to be build prior to running
-`flutter build` or `flutter run`, by running `build-helper.sh` (or
-`build-helper.bat` on Windows).
+sources in helper/ in this repository. Requirements for all platforms are
+Python >= 3.8 and Poetry. This needs to be built prior to running
+`flutter build` or `flutter run`.
+
+==== Windows
+
+Make sure the http://www.swig.org/[swig] executable is in your PATH.
+
+==== macOS
+
+    $ brew install swig
+
+==== Linux (Debian-based distributions)
+
+    $ sudo apt install swig libu2f-udev pcscd libpcsclite-dev
+
+==== Linux (RPM-based distributons)
+
+    # Tested on Fedora 34
+    $ sudo dnf install pcsc-lite-devel python3-devel swig
+
+When prerequisites are installed you build the helper by running `build-helper.sh`
+(or `build-helper.bat` on Windows).
 
 NOTE: You will need to re-run the build script if changes have been made to
 Helper's code, or if `flutter clean` has been run.

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,15 +38,11 @@ GlobalKey<QRScannerZxingViewState> _zxingViewKey = GlobalKey();
 class _QrScannerViewState extends State<QrScannerView> {
   String? _scannedString;
 
-  // will be used later
-  // ignore: unused_field
-  CredentialData? _credentialData;
   ScanStatus _status = ScanStatus.scanning;
   bool _previewInitialized = false;
   bool _permissionsGranted = false;
 
   void setError() {
-    _credentialData = null;
     _scannedString = null;
     _status = ScanStatus.error;
 
@@ -59,7 +55,6 @@ class _QrScannerViewState extends State<QrScannerView> {
 
   void resetError() {
     setState(() {
-      _credentialData = null;
       _scannedString = null;
       _status = ScanStatus.scanning;
 
@@ -67,17 +62,17 @@ class _QrScannerViewState extends State<QrScannerView> {
     });
   }
 
-  void handleResult(String barCode) {
+  void handleResult(String qrCodeData) {
     if (_status != ScanStatus.scanning) {
       // on success and error ignore reported codes
       return;
     }
     setState(() {
-      if (barCode.isNotEmpty) {
+      if (qrCodeData.isNotEmpty) {
         try {
-          var parsedCredential = CredentialData.fromUri(Uri.parse(barCode));
-          _credentialData = parsedCredential;
-          _scannedString = barCode;
+          CredentialData.fromUri(Uri.parse(
+              qrCodeData)); // throws ArgumentError if validation fails
+          _scannedString = qrCodeData;
           _status = ScanStatus.success;
 
           final navigator = Navigator.of(context);
@@ -108,6 +103,7 @@ class _QrScannerViewState extends State<QrScannerView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final screenSize = MediaQuery.of(context).size;
+    final overlayWidgetKey = GlobalKey();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
@@ -143,7 +139,7 @@ class _QrScannerViewState extends State<QrScannerView> {
               visible: _permissionsGranted,
               child: QRScannerZxingView(
                   key: _zxingViewKey,
-                  marginPct: 50,
+                  marginPct: 10,
                   onDetect: (scannedData) => handleResult(scannedData),
                   onViewInitialized: (bool permissionsGranted) {
                     Future.delayed(const Duration(milliseconds: 50), () {
@@ -158,12 +154,14 @@ class _QrScannerViewState extends State<QrScannerView> {
               child: QRScannerOverlay(
                 status: _status,
                 screenSize: screenSize,
+                overlayWidgetKey: overlayWidgetKey,
               )),
           Visibility(
               visible: _permissionsGranted,
               child: QRScannerUI(
                 status: _status,
                 screenSize: screenSize,
+                overlayWidgetKey: overlayWidgetKey,
               )),
           Visibility(
               visible: _previewInitialized && !_permissionsGranted,
