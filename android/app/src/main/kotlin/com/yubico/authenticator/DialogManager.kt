@@ -18,17 +18,14 @@ package com.yubico.authenticator
 
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 typealias OnDialogCancelled = suspend () -> Unit
-
-enum class DialogIcon(val value: Int) {
-    Nfc(0),
-    Success(1),
-    Failure(2);
-}
 
 enum class DialogTitle(val value: Int) {
     TapKey(0),
@@ -52,7 +49,6 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
     }
 
     fun showDialog(
-        dialogIcon: DialogIcon,
         dialogTitle: DialogTitle,
         dialogDescriptionId: Int,
         cancelled: OnDialogCancelled?
@@ -64,8 +60,7 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
                 Json.encodeToString(
                     mapOf(
                         "title" to dialogTitle.value,
-                        "description" to dialogDescriptionId,
-                        "icon" to dialogIcon.value
+                        "description" to dialogDescriptionId
                     )
                 )
             )
@@ -73,7 +68,6 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
     }
 
     suspend fun updateDialogState(
-        dialogIcon: DialogIcon? = null,
         dialogTitle: DialogTitle,
         dialogDescriptionId: Int? = null,
     ) {
@@ -82,8 +76,7 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
             Json.encodeToString(
                 mapOf(
                     "title" to dialogTitle.value,
-                    "description" to dialogDescriptionId,
-                    "icon" to dialogIcon?.value
+                    "description" to dialogDescriptionId
                 )
             )
         )

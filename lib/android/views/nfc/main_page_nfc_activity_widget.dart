@@ -17,9 +17,11 @@
 import 'package:flutter/material.dart';
 import 'package:yubico_authenticator/android/state.dart';
 import 'package:yubico_authenticator/android/views/nfc/nfc_activity_widget.dart';
+import 'package:yubico_authenticator/app/views/horizontal_shake.dart';
 
 class MainPageNfcActivityWidget extends StatelessWidget {
   final Widget widget;
+
   const MainPageNfcActivityWidget(this.widget, {super.key});
 
   @override
@@ -28,13 +30,16 @@ class MainPageNfcActivityWidget extends StatelessWidget {
       width: 128.0,
       height: 128.0,
       iconView: (nfcActivityState) {
-        return Opacity(
-          opacity: switch (nfcActivityState) {
-            NfcActivity.processingStarted => 1.0,
-            _ => 0.8
-          },
-          child: widget,
-        );
+        return switch (nfcActivityState) {
+          NfcActivity.ready => HorizontalShake(
+              shakeCount: 2,
+              shakeDuration: const Duration(milliseconds: 50),
+              delayBetweenShakesDuration: const Duration(seconds: 6),
+              startupDelay: const Duration(seconds: 3),
+              child: widget,
+            ),
+          _ => widget
+        };
       },
     );
   }

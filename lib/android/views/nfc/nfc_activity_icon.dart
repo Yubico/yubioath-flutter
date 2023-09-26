@@ -15,9 +15,13 @@
  */
 
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:yubico_authenticator/android/state.dart';
+import 'package:yubico_authenticator/app/views/horizontal_shake.dart';
+
+import '../../../theme.dart';
 
 /// Default icon for [NfcActivityWidget]
 class NfcActivityIcon extends StatelessWidget {
@@ -27,8 +31,32 @@ class NfcActivityIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (nfcActivity) {
-        NfcActivity.processingStarted => const _NfcIconWithOpacity(1.0),
-        _ => const _NfcIconWithOpacity(0.8)
+        NfcActivity.ready => const HorizontalShake(
+            startupDelay: Duration(seconds: 4),
+            child: _NfcIconWithOpacity(0.8)),
+        NfcActivity.processingStarted => Stack(
+            fit: StackFit.loose,
+            children: [
+              ImageFiltered(
+                imageFilter: ImageFilter.blur(
+                  sigmaX: 7.0,
+                  sigmaY: 7.0,
+                  tileMode: TileMode.decal,
+                ),
+                child: const Opacity(
+                  opacity: 0.6,
+                  child: _NfcIcon(
+                    color: accentGreen,
+                  ),
+                ),
+              ),
+              const _NfcIcon(),
+            ],
+          ),
+
+        NfcActivity.processingInterrupted =>
+          const _NfcIconWrapper(Icons.warning_amber_rounded),
+        _ => const _NfcIcon(),
       };
 }
 
@@ -44,8 +72,26 @@ class _NfcIconWithOpacity extends StatelessWidget {
       );
 }
 
+class _NfcIconWrapper extends StatelessWidget {
+  final IconData _iconData;
+
+  const _NfcIconWrapper(this._iconData);
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+        builder: (BuildContext buildContext, BoxConstraints constraints) =>
+            Icon(
+              _iconData,
+              size: constraints.biggest.width,
+            ));
+  }
+}
+
 class _NfcIcon extends StatelessWidget {
-  const _NfcIcon();
+  final Color? color;
+
+  const _NfcIcon({this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +100,7 @@ class _NfcIcon extends StatelessWidget {
       builder: (BuildContext buildContext, BoxConstraints constraints) =>
           CustomPaint(
         size: Size.copy(constraints.biggest),
-        painter: _NfcIconPainter(theme.color ?? Colors.black),
+        painter: _NfcIconPainter(color ?? theme.color ?? Colors.black),
       ),
     );
   }

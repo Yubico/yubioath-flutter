@@ -22,31 +22,30 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'views/nfc/nfc_activity_widget.dart';
-
 import '../app/state.dart';
 import '../app/views/user_interaction.dart';
+import 'views/nfc/nfc_activity_widget.dart';
 
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
 // _DDesc contains id of title resource for the dialog
-enum _DTitle {
+enum _DialogTitle {
   tapKey,
   operationSuccessful,
   operationFailed,
   invalid;
 
-  static _DTitle fromId(int? id) =>
+  static _DialogTitle fromId(int? id) =>
       const {
-        0: _DTitle.tapKey,
-        1: _DTitle.operationSuccessful,
-        2: _DTitle.operationFailed
+        0: _DialogTitle.tapKey,
+        1: _DialogTitle.operationSuccessful,
+        2: _DialogTitle.operationFailed
       }[id] ??
-      _DTitle.invalid;
+      _DialogTitle.invalid;
 }
 
 // _DDesc contains action description in the dialog
-enum _DDesc {
+enum _DialogDescription {
   // oath descriptions
   oathResetApplet,
   oathUnlockSession,
@@ -62,20 +61,21 @@ enum _DDesc {
 
   static const int dialogDescriptionOathIndex = 100;
 
-  static _DDesc fromId(int? id) =>
+  static _DialogDescription fromId(int? id) =>
       const {
-        dialogDescriptionOathIndex + 0: _DDesc.oathResetApplet,
-        dialogDescriptionOathIndex + 1: _DDesc.oathUnlockSession,
-        dialogDescriptionOathIndex + 2: _DDesc.oathSetPassword,
-        dialogDescriptionOathIndex + 3: _DDesc.oathUnsetPassword,
-        dialogDescriptionOathIndex + 4: _DDesc.oathAddAccount,
-        dialogDescriptionOathIndex + 5: _DDesc.oathRenameAccount,
-        dialogDescriptionOathIndex + 6: _DDesc.oathDeleteAccount,
-        dialogDescriptionOathIndex + 7: _DDesc.oathCalculateCode,
-        dialogDescriptionOathIndex + 8: _DDesc.oathActionFailure,
-        dialogDescriptionOathIndex + 9: _DDesc.oathAddMultipleAccounts
+        dialogDescriptionOathIndex + 0: _DialogDescription.oathResetApplet,
+        dialogDescriptionOathIndex + 1: _DialogDescription.oathUnlockSession,
+        dialogDescriptionOathIndex + 2: _DialogDescription.oathSetPassword,
+        dialogDescriptionOathIndex + 3: _DialogDescription.oathUnsetPassword,
+        dialogDescriptionOathIndex + 4: _DialogDescription.oathAddAccount,
+        dialogDescriptionOathIndex + 5: _DialogDescription.oathRenameAccount,
+        dialogDescriptionOathIndex + 6: _DialogDescription.oathDeleteAccount,
+        dialogDescriptionOathIndex + 7: _DialogDescription.oathCalculateCode,
+        dialogDescriptionOathIndex + 8: _DialogDescription.oathActionFailure,
+        dialogDescriptionOathIndex + 9:
+            _DialogDescription.oathAddMultipleAccounts
       }[id] ??
-      _DDesc.invalid;
+      _DialogDescription.invalid;
 }
 
 final androidDialogProvider = Provider<_DialogProvider>(
@@ -97,11 +97,10 @@ class _DialogProvider {
           _closeDialog();
           break;
         case 'show':
-          await _showDialog(args['title'], args['description'], args['icon']);
+          await _showDialog(args['title'], args['description']);
           break;
         case 'state':
-          await _updateDialogState(
-              args['title'], args['description'], args['icon']);
+          await _updateDialogState(args['title'], args['description']);
           break;
         default:
           throw PlatformException(
@@ -119,44 +118,50 @@ class _DialogProvider {
 
   String _getTitle(BuildContext context, int? titleId) {
     final l10n = AppLocalizations.of(context)!;
-    return switch (_DTitle.fromId(titleId)) {
-      _DTitle.tapKey => l10n.s_nfc_dialog_tap_key,
-      _DTitle.operationSuccessful => l10n.s_nfc_dialog_operation_success,
-      _DTitle.operationFailed => l10n.s_nfc_dialog_operation_failed,
+    return switch (_DialogTitle.fromId(titleId)) {
+      _DialogTitle.tapKey => l10n.s_nfc_dialog_tap_key,
+      _DialogTitle.operationSuccessful => l10n.s_nfc_dialog_operation_success,
+      _DialogTitle.operationFailed => l10n.s_nfc_dialog_operation_failed,
       _ => ''
     };
   }
 
   String _getDialogDescription(BuildContext context, int? descriptionId) {
     final l10n = AppLocalizations.of(context)!;
-    return switch (_DDesc.fromId(descriptionId)) {
-      _DDesc.oathResetApplet => l10n.s_nfc_dialog_oath_reset,
-      _DDesc.oathUnlockSession => l10n.s_nfc_dialog_oath_unlock,
-      _DDesc.oathSetPassword => l10n.s_nfc_dialog_oath_set_password,
-      _DDesc.oathUnsetPassword => l10n.s_nfc_dialog_oath_unset_password,
-      _DDesc.oathAddAccount => l10n.s_nfc_dialog_oath_add_account,
-      _DDesc.oathRenameAccount => l10n.s_nfc_dialog_oath_rename_account,
-      _DDesc.oathDeleteAccount => l10n.s_nfc_dialog_oath_delete_account,
-      _DDesc.oathCalculateCode => l10n.s_nfc_dialog_oath_calculate_code,
-      _DDesc.oathActionFailure => l10n.s_nfc_dialog_oath_failure,
-      _DDesc.oathAddMultipleAccounts => l10n.s_nfc_dialog_oath_add_multiple_accounts,
-      _ => ''
+    return switch (_DialogDescription.fromId(descriptionId)) {
+      _DialogDescription.oathResetApplet => l10n.s_nfc_dialog_oath_reset,
+      _DialogDescription.oathUnlockSession => l10n.s_nfc_dialog_oath_unlock,
+      _DialogDescription.oathSetPassword => l10n.s_nfc_dialog_oath_set_password,
+      _DialogDescription.oathUnsetPassword =>
+        l10n.s_nfc_dialog_oath_unset_password,
+      _DialogDescription.oathAddAccount => l10n.s_nfc_dialog_oath_add_account,
+      _DialogDescription.oathRenameAccount =>
+        l10n.s_nfc_dialog_oath_rename_account,
+      _DialogDescription.oathDeleteAccount =>
+        l10n.s_nfc_dialog_oath_delete_account,
+      _DialogDescription.oathCalculateCode =>
+        l10n.s_nfc_dialog_oath_calculate_code,
+      _DialogDescription.oathActionFailure => l10n.s_nfc_dialog_oath_failure,
+      _DialogDescription.oathAddMultipleAccounts =>
+        l10n.s_nfc_dialog_oath_add_multiple_accounts,
+      _ => ' '
     };
   }
 
-  Future<void> _updateDialogState(
-      int? title, int? description, int? iconName) async {
+  Future<void> _updateDialogState(int? title, int? description) async {
     await _withContext((context) async {
       _controller?.updateContent(
         title: _getTitle(context, title),
         description: _getDialogDescription(context, description),
-        icon: _icon,
+        icon: (_DialogDescription.fromId(description) !=
+                _DialogDescription.oathActionFailure)
+            ? _icon
+            : const Icon(Icons.warning_amber_rounded, size: 64),
       );
     });
   }
 
-  Future<void> _showDialog(
-      int title, int description, int? iconName) async {
+  Future<void> _showDialog(int title, int description) async {
     _controller = await _withContext((context) async {
       return promptUserInteraction(
         context,
