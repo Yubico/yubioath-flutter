@@ -47,3 +47,17 @@
 #-keepnames class <1>$$serializer { # -keepnames suffices; class is kept when serializer() is kept.
 #    static <1>$$serializer INSTANCE;
 #}
+
+# app specific rules
+-keep public class com.yubico.authenticator.logging.BufferAppender
+-keepclassmembers class com.yubico.authenticator.logging.BufferAppender { *; }
+
+# consumer rules for logcat-android
+# see: https://github.com/tony19/logback-android/blob/v_3.0.0/logback-android/consumer-rules.pro
+-keepclassmembers class ch.qos.logback.classic.pattern.* { <init>(); }
+
+-keepclassmembers class ch.qos.logback.** { *; }
+-keepclassmembers class org.slf4j.impl.** { *; }
+-keepattributes *Annotation*
+
+-keep public class ch.qos.logback.classic.android.LogcatAppender
