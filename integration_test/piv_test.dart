@@ -26,12 +26,10 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   group('PIV Settings', skip: isAndroid, () {
+    appTest('Lock PIN, unlock with PUK', (WidgetTester tester) async {});
+    appTest('Lock PUK, factory reset', (WidgetTester tester) async {});
     appTest('Change PIN', (WidgetTester tester) async {});
     appTest('Change PUK', (WidgetTester tester) async {});
-    appTest('Change Management Key', (WidgetTester tester) async {});
-    appTest('Lock PIN, unlock with PUK', (WidgetTester tester) async {});
-    appTest(
-        'Lock PUK, unlock with Management Key', (WidgetTester tester) async {});
     appTest('Change Management Key', (WidgetTester tester) async {});
     appTest('Lock Management Key with PIN', (WidgetTester tester) async {});
     appTest('Reset PIV', (WidgetTester tester) async {});
@@ -50,7 +48,7 @@ void main() {
   //       UID     userId (0.9.2342.19200300.100.1.1)
   //       Example: CN=cn,L=l,ST=st,O=o,OU=ou,C=c,STREET=street,DC=dc,DC=net,UID=uid
 
-  group('PIV Certificates', skip: isAndroid, () {
+  group('PIV Certificate load', skip: isAndroid, () {
     appTest('Generate 9a', (WidgetTester tester) async {
       //  Subject:
       //  RSA1024
@@ -75,5 +73,9 @@ void main() {
       //  Certificate
       //  Date [unchanged]
     });
+    appTest('Load Certificate from file', (WidgetTester tester) async {});
+    appTest('Export Certificate to file', (WidgetTester tester) async {});
+    appTest('Delete Certificate', (WidgetTester tester) async {});
+    appTest('Generate a CSR', (WidgetTester tester) async {});
   });
 }
