@@ -66,6 +66,17 @@ class FidoLockedPage extends ConsumerWidget {
         header: l10n.l_ready_to_use,
         message: l10n.l_register_sk_on_websites,
         keyActionsBuilder: _buildActions,
+        keyActionsBadge: fidoShowActionsNotifier(state),
+      );
+    }
+
+    if (state.forcePinChange) {
+      return MessagePage(
+        title: Text(l10n.s_webauthn),
+        header: l10n.s_pin_change_required,
+        message: l10n.l_pin_change_required_desc,
+        keyActionsBuilder: _buildActions,
+        keyActionsBadge: fidoShowActionsNotifier(state),
       );
     }
 

@@ -28,12 +28,16 @@ import 'pin_dialog.dart';
 import 'reset_dialog.dart';
 
 bool fidoShowActionsNotifier(FidoState state) {
-  return (state.alwaysUv && !state.hasPin) || state.bioEnroll == false;
+  return (state.alwaysUv && !state.hasPin) ||
+      state.bioEnroll == false ||
+      state.forcePinChange;
 }
 
 Widget fidoBuildActions(
     BuildContext context, DeviceNode node, FidoState state, int fingerprints) {
   final l10n = AppLocalizations.of(context)!;
+  final colors = Theme.of(context).buttonTheme.colorScheme ??
+      Theme.of(context).colorScheme;
 
   return FsDialog(
     child: Column(
@@ -52,8 +56,9 @@ Widget fidoBuildActions(
                     : state.hasPin
                         ? l10n.l_unlock_pin_first
                         : l10n.l_set_pin_first,
-                trailing:
-                    fingerprints == 0 ? const Icon(Icons.warning_amber) : null,
+                trailing: fingerprints == 0
+                    ? Icon(Icons.warning_amber, color: colors.tertiary)
+                    : null,
                 onTap: state.unlocked && fingerprints < 5
                     ? (context) {
                         Navigator.of(context).pop();
@@ -74,11 +79,14 @@ Widget fidoBuildActions(
                 icon: const Icon(Icons.pin_outlined),
                 title: state.hasPin ? l10n.s_change_pin : l10n.s_set_pin,
                 subtitle: state.hasPin
-                    ? l10n.s_fido_pin_protection
+                    ? (state.forcePinChange
+                        ? l10n.s_pin_change_required
+                        : l10n.s_fido_pin_protection)
                     : l10n.l_fido_pin_protection_optional,
-                trailing: state.alwaysUv && !state.hasPin
-                    ? const Icon(Icons.warning_amber)
-                    : null,
+                trailing:
+                    state.alwaysUv && !state.hasPin || state.forcePinChange
+                        ? Icon(Icons.warning_amber, color: colors.tertiary)
+                        : null,
                 onTap: (context) {
                   Navigator.of(context).pop();
                   showBlurDialog(
